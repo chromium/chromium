@@ -9,16 +9,19 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import org.chromium.base.ContextUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * The View that renders the ManagementPage (chrome://management).
  * Consists of an medium size image icon over title and descriptive text.
  */
-public class ManagementView extends LinearLayout {
+public class ManagementView extends ConstraintLayout {
     private boolean mIsManaged;
     private @Nullable String mManagerName;
 
@@ -38,6 +41,14 @@ public class ManagementView extends LinearLayout {
         mTitle = (TextView) findViewById(R.id.title_text);
         mDescription = (TextView) findViewById(R.id.description_text);
         mLearnMore = (TextView) findViewById(R.id.learn_more);
+
+        // Tablet layout has a 48dp padding.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                    ContextUtils.getApplicationContext())) {
+            float pixelsPerDp = getResources().getDisplayMetrics().density;
+            int paddingPixels = Math.round(48 * pixelsPerDp);
+            this.setPadding(paddingPixels, paddingPixels, paddingPixels, paddingPixels);
+        }
 
         // Set default management status
         mIsManaged = false;

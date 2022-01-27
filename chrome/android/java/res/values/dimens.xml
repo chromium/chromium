@@ -113,7 +113,6 @@
     <dimen name="fre_content_margin">24dp</dimen>
     <dimen name="fre_vertical_spacing">32dp</dimen>
     <dimen name="fre_landscape_top_padding">72dp</dimen>
-    <dimen name="fre_margin">24dp</dimen>
 
     <dimen name="fre_image_bottom_margin">36dp</dimen>
     <dimen name="fre_tos_image_height">110dp</dimen>
@@ -129,6 +128,12 @@
 
 
     <dimen name="fre_button_vertical_margin_small">16dp</dimen>
+
+    <!-- Chrome Management dimensions -->
+    <dimen name="cm_max_width">600dp</dimen>
+    <dimen name="cm_padding">32dp</dimen>
+    <dimen name="cm_logo_width">40dp</dimen>
+    <dimen name="cm_logo_height">36dp</dimen>
 
     <!-- Account Signin dimensions -->
     <!-- The Account Signin page appears in the First Run Experience (amongst other places), so uses
