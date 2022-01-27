@@ -7576,6 +7576,7 @@ crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipb
 # Flakiness of WIP MediaStreamTrack on workers.
 crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-in-worker.https.html [ Crash Pass ]
 crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-pipes-data-in-worker.https.html [ Crash Pass ]
+crbug.com/1290976 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-in-shared-worker.https.html [ Crash Pass ]
 
 # Temporarily disable tests to land branded types related changes.
 crbug.com/1253323 [ Win ] http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Skip ]
