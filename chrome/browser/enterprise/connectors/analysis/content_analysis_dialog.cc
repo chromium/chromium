@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,7 +65,7 @@ constexpr int kMessageAndIconRowTrailingPadding = 48;
 constexpr int kSideIconBetweenChildSpacing = 16;
 constexpr int kPaddingBeforeBypassJustification = 16;
 
-constexpr size_t kMaxBypassJustificationLength = 200;
+constexpr size_t kMaxBypassJustificationLength = 280;
 
 // These time values are non-const in order to be overridden in test so they
 // complete faster.
@@ -272,11 +273,22 @@ void ContentAnalysisDialog::SuccessCallback() {
 void ContentAnalysisDialog::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
+  bypass_justification_text_length_->SetText(l10n_util::GetStringFUTF16(
+      IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
+      base::NumberToString16(new_contents.size()),
+      base::NumberToString16(kMaxBypassJustificationLength)));
+
   if (new_contents.size() == 0 ||
-      new_contents.size() > kMaxBypassJustificationLength)
+      new_contents.size() > kMaxBypassJustificationLength) {
     DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
-  else
+    bypass_justification_text_length_->SetEnabledColor(
+        bypass_justification_text_length_->GetColorProvider()->GetColor(
+            ui::kColorAlertHighSeverity));
+  } else {
     DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+    bypass_justification_text_length_->SetEnabledColor(
+        justification_text_label_->GetEnabledColor());
+  }
 }
 
 bool ContentAnalysisDialog::ShouldShowCloseButton() const {
@@ -313,7 +325,7 @@ views::View* ContentAnalysisDialog::GetContentsView() {
                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
         .AddPaddingColumn(views::TableLayout::kFixedSize,
                           kMessageAndIconRowTrailingPadding)
-        .AddRows(4, views::TableLayout::kFixedSize);
+        .AddRows(5, views::TableLayout::kFixedSize);
 
     // Add the side icon.
     message_container->AddChildView(CreateSideIcon());
@@ -361,6 +373,17 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     bypass_justification_->SetAssociatedLabel(justification_text_label_);
     bypass_justification_->SetController(this);
     bypass_justification_->SetVisible(false);
+
+    message_container->AddChildView(
+        std::make_unique<views::View>());  // Skip a column
+    bypass_justification_text_length_ =
+        message_container->AddChildView(std::make_unique<views::Label>());
+    bypass_justification_text_length_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    bypass_justification_text_length_->SetText(l10n_util::GetStringFUTF16(
+        IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
+        base::NumberToString16(0),
+        base::NumberToString16(kMaxBypassJustificationLength)));
+    bypass_justification_text_length_->SetVisible(false);
 
     // If the dialog was started in a state other than pending, setup the views
     // accordingly.
@@ -473,10 +496,18 @@ void ContentAnalysisDialog::UpdateViews() {
   // display.
   learn_more_link_->SetVisible((is_failure() || is_warning()) &&
                                has_learn_more_url());
-  justification_text_label_->SetVisible(is_warning() &&
-                                        bypass_requires_justification());
-  bypass_justification_->SetVisible(is_warning() &&
-                                    bypass_requires_justification());
+  bool requires_justification = is_warning() && bypass_requires_justification();
+  justification_text_label_->SetVisible(requires_justification);
+  bypass_justification_->SetVisible(requires_justification);
+  bypass_justification_text_length_->SetVisible(requires_justification);
+  if (requires_justification) {
+    // Set the color to red here because a 0 length message is invalid, but the
+    // label doesn't have a Color Provider yet when it's created in
+    // GetContentsView.
+    bypass_justification_text_length_->SetEnabledColor(
+        bypass_justification_text_length_->GetColorProvider()->GetColor(
+            ui::kColorAlertHighSeverity));
+  }
 }
 
 void ContentAnalysisDialog::UpdateDialog() {

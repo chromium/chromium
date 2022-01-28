@@ -255,6 +255,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   raw_ptr<views::Link> learn_more_link_ = nullptr;
   raw_ptr<views::Label> justification_text_label_ = nullptr;
   raw_ptr<views::Textarea> bypass_justification_ = nullptr;
+  raw_ptr<views::Label> bypass_justification_text_length_ = nullptr;
 
   base::TimeTicks first_shown_timestamp_;
 
