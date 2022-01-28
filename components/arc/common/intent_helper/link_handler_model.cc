@@ -26,9 +26,6 @@ namespace {
 
 constexpr int kMaxValueLen = 2048;
 
-// Not owned. Must outlive all LinkHandlerModel instances.
-ArcIconCacheDelegate* g_arc_icon_cache_delegate = nullptr;
-
 bool GetQueryValue(const GURL& url,
                    const std::string& key_to_find,
                    std::u16string* out) {
@@ -91,17 +88,6 @@ void LinkHandlerModel::OpenLinkWithHandler(uint32_t handler_id) {
 #endif
 }
 
-// static
-void LinkHandlerModel::SetArcIconCacheDelegate(ArcIconCacheDelegate* delegate) {
-  // SetArcIconCacheDelegate should be called only when overwriting nullptr or
-  // unsetting to nullptr except for testing.
-  if (g_arc_icon_cache_delegate && delegate) {
-    LOG(ERROR) << "g_arc_icon_cache_delegate is modified. "
-               << "This should not happen except for testing.";
-  }
-  g_arc_icon_cache_delegate = delegate;
-}
-
 LinkHandlerModel::LinkHandlerModel(
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate)
     : mojo_delegate_(std::move(mojo_delegate)) {}
@@ -130,8 +116,8 @@ void LinkHandlerModel::OnUrlHandlerList(
   }
 
   bool icon_info_notified = false;
-  if (!g_arc_icon_cache_delegate) {
-    // g_arc_icon_cache_delegate should be already set on the product.
+  if (!ArcIconCacheDelegate::GetInstance()) {
+    // ArcIconCacheDelegate instance should be already set on the product.
     // It is not set for some tests such as browser_tests since crosapi is
     // disabled. In this case, ignore the step to get icons and immediately
     // notify observers with no result.
@@ -147,7 +133,7 @@ void LinkHandlerModel::OnUrlHandlerList(
                             handlers_[i].activity_name);
   }
   const ArcIconCacheDelegate::GetResult result =
-      g_arc_icon_cache_delegate->GetActivityIcons(
+      ArcIconCacheDelegate::GetInstance()->GetActivityIcons(
           activities, base::BindOnce(&LinkHandlerModel::NotifyObserver,
                                      weak_ptr_factory_.GetWeakPtr()));
   icon_info_notified =

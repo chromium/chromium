@@ -23,6 +23,7 @@
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 
 ChromeBrowserMainExtraPartsLacros::ChromeBrowserMainExtraPartsLacros() =
     default;
@@ -80,8 +81,12 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   }
 #endif
 
+  // Construct ArcIconCache and set it to provider.
   arc_icon_cache_ = std::make_unique<ArcIconCache>();
   arc_icon_cache_->Start();
+  arc_icon_cache_delegate_provider_ =
+      std::make_unique<arc::ArcIconCacheDelegateProvider>(
+          arc_icon_cache_.get());
 
   // Start Lacros' drive mount point path caching, since it is available in Ash.
   drivefs_cache_ = std::make_unique<DriveFsCache>();

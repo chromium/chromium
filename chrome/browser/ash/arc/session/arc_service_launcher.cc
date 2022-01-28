@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
+#include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -215,6 +216,12 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   if (ash::features::IsArcInputOverlayEnabled())
     ArcInputOverlayManager::GetForBrowserContext(profile);
   ArcInstanceThrottle::GetForBrowserContext(profile);
+  {
+    auto* intent_helper = ArcIntentHelperBridge::GetForBrowserContext(profile);
+    intent_helper->SetDelegate(std::make_unique<FactoryResetDelegate>());
+    arc_icon_cache_delegate_provider_ =
+        std::make_unique<ArcIconCacheDelegateProvider>(intent_helper);
+  }
   ArcIntentHelperBridge::GetForBrowserContext(profile)->SetDelegate(
       std::make_unique<FactoryResetDelegate>());
   ArcKeyboardShortcutBridge::GetForBrowserContext(profile);
@@ -285,6 +292,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 void ArcServiceLauncher::Shutdown() {
   arc_play_store_enabled_preference_handler_.reset();
   arc_session_manager_->Shutdown();
+  arc_icon_cache_delegate_provider_.reset();
 }
 
 void ArcServiceLauncher::ResetForTesting() {

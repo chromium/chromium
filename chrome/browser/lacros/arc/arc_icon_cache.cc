@@ -5,13 +5,10 @@
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
 
 #include "chromeos/lacros/lacros_service.h"
-#include "components/arc/common/intent_helper/link_handler_model.h"
 
 ArcIconCache::ArcIconCache() = default;
 
-ArcIconCache::~ArcIconCache() {
-  arc::LinkHandlerModel::SetArcIconCacheDelegate(nullptr);
-}
+ArcIconCache::~ArcIconCache() = default;
 
 void ArcIconCache::Start() {
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -19,7 +16,6 @@ void ArcIconCache::Start() {
     LOG(WARNING) << "ARC is not supported in Lacros.";
     return;
   }
-  arc::LinkHandlerModel::SetArcIconCacheDelegate(this);
   lacros_service->GetRemote<crosapi::mojom::Arc>()->AddObserver(
       receiver_.BindNewPipeAndPassRemoteWithVersion());
 }

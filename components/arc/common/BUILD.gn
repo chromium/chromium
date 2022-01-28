@@ -10,6 +10,7 @@ static_library("common") {
     "intent_helper/activity_icon_loader.cc",
     "intent_helper/activity_icon_loader.h",
     "intent_helper/adaptive_icon_delegate.h",
+    "intent_helper/arc_icon_cache_delegate.cc",
     "intent_helper/arc_icon_cache_delegate.h",
     "intent_helper/arc_intent_helper_mojo_delegate.cc",
     "intent_helper/arc_intent_helper_mojo_delegate.h",

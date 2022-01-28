@@ -53,9 +53,6 @@ class LinkHandlerModel {
 
   static GURL RewriteUrlFromQueryIfAvailableForTesting(const GURL& url);
 
-  // Sets the ArcIconCacheDelegate instance.
-  static void SetArcIconCacheDelegate(ArcIconCacheDelegate* delegate);
-
  private:
   explicit LinkHandlerModel(
       std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate);

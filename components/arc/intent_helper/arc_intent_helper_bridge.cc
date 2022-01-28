@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "components/arc/common/intent_helper/link_handler_model.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
@@ -161,13 +160,11 @@ ArcIntentHelperBridge::ArcIntentHelperBridge(content::BrowserContext* context,
       arc_bridge_service_(bridge_service),
       allowed_arc_schemes_(std::cbegin(kArcSchemes), std::cend(kArcSchemes)) {
   arc_bridge_service_->intent_helper()->SetHost(this);
-  LinkHandlerModel::SetArcIconCacheDelegate(this);
 }
 
 ArcIntentHelperBridge::~ArcIntentHelperBridge() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   arc_bridge_service_->intent_helper()->SetHost(nullptr);
-  LinkHandlerModel::SetArcIconCacheDelegate(nullptr);
 }
 
 void ArcIntentHelperBridge::Shutdown() {

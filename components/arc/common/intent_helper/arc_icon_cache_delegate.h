@@ -15,7 +15,7 @@ namespace arc {
 // access to the cache.
 class ArcIconCacheDelegate {
  public:
-  virtual ~ArcIconCacheDelegate() = default;
+  virtual ~ArcIconCacheDelegate();
 
   // internal::ActivityIconLoader types.
   using ActivityIconLoader = internal::ActivityIconLoader;
@@ -25,11 +25,29 @@ class ArcIconCacheDelegate {
   using OnIconsReadyCallback =
       internal::ActivityIconLoader::OnIconsReadyCallback;
 
+  // Return ArcIconCacheDelegate instance.
+  static ArcIconCacheDelegate* GetInstance();
+
   // Retrieves icons for the |activities| and calls |callback|.
   // See internal::ActivityIconLoader::GetActivityIcons() for more details.
   virtual GetResult GetActivityIcons(
       const std::vector<ActivityName>& activities,
       OnIconsReadyCallback callback) = 0;
+};
+
+// Provides ArcIconCacheDelegate implementation.
+class ArcIconCacheDelegateProvider {
+ public:
+  explicit ArcIconCacheDelegateProvider(ArcIconCacheDelegate* delegate);
+  ArcIconCacheDelegateProvider(const ArcIconCacheDelegateProvider&) = delete;
+  ArcIconCacheDelegateProvider& operator=(const ArcIconCacheDelegateProvider&) =
+      delete;
+  ~ArcIconCacheDelegateProvider();
+
+  ArcIconCacheDelegate* GetInstance();
+
+ private:
+  ArcIconCacheDelegate* delegate_;
 };
 
 }  // namespace arc
