@@ -32,6 +32,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 import android.widget.ImageView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -404,6 +405,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onPreCreate() {
         CachedFeatureFlags.onStartOrResumeCheckpoint();
         super.onPreCreate();
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                ChromeActivity.this.handleOnBackPressed();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
@@ -2352,8 +2360,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return true;
     }
 
-    @Override
-    public final void onBackPressed() {
+    /** Handles back press events for Chrome in various states. */
+    protected final void handleOnBackPressed() {
         if (mNativeInitialized) RecordUserAction.record("SystemBack");
 
         TextBubble.dismissBubbles();
@@ -2374,9 +2382,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return;
         }
 
-        if (handleBackPressed()) return;
-
-        super.onBackPressed();
+        handleBackPressed();
     }
 
     @Override
