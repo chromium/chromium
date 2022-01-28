@@ -5,12 +5,9 @@
 #ifndef CHROMEOS_NETWORK_POLICY_UTIL_H_
 #define CHROMEOS_NETWORK_POLICY_UTIL_H_
 
-#include <map>
-#include <memory>
 #include <string>
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -24,9 +21,6 @@ namespace policy_util {
 // be used by any user. Used to determine saved but unknown credential
 // (PSK/Passphrase/Password) in UI (see network_password_input.js).
 extern const char kFakeCredential[];
-
-using GuidToPolicyMap =
-    std::map<std::string, std::unique_ptr<base::DictionaryValue>>;
 
 // Creates a managed ONC dictionary from the given arguments. Depending on the
 // profile type, the policies are assumed to come from the user or device policy
@@ -58,11 +52,13 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
                                      const base::Value* network_policy,
                                      const base::Value* user_settings);
 
-// Returns the policy from |policies| matching |actual_network|, if any exists.
-// Returns NULL otherwise. |actual_network| must be part of a ONC
-// NetworkConfiguration.
-const base::Value* FindMatchingPolicy(const GuidToPolicyMap& policies,
-                                      const base::Value& actual_network);
+// Returns true if |policy| matches |actual_network|, which must be part of a
+// ONC NetworkConfiguration. This should be the only such matching function
+// within Chrome. Shill does such matching in several functions for network
+// identification. For compatibility, we currently should stick to Shill's
+// matching behavior.
+bool IsPolicyMatching(const base::Value& policy,
+                      const base::Value& actual_network);
 
 }  // namespace policy_util
 

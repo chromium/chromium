@@ -46,8 +46,8 @@ class PolicyApplicator {
     // before. |callback| will be called after the configuration update has been
     // reflected in NetworkStateHandler, or on error.
     virtual void UpdateExistingConfigurationWithPropertiesFromPolicy(
-        const base::DictionaryValue& existing_properties,
-        const base::DictionaryValue& new_properties,
+        const base::Value& existing_properties,
+        const base::Value& new_properties,
         base::OnceClosure callback) = 0;
 
     // Called after all policies for |profile| were applied. At this point, the
@@ -55,14 +55,11 @@ class PolicyApplicator {
     virtual void OnPoliciesApplied(const NetworkProfile& profile) = 0;
   };
 
-  using GuidToPolicyMap =
-      std::map<std::string, std::unique_ptr<base::DictionaryValue>>;
-
   // |handler| must outlive this object.
   // |modified_policy_guids| must not be nullptr and will be empty afterwards.
   PolicyApplicator(const NetworkProfile& profile,
-                   const GuidToPolicyMap& all_policies,
-                   const base::DictionaryValue& global_network_config,
+                   std::map<std::string, base::Value> all_policies,
+                   base::Value global_network_config,
                    ConfigurationHandler* handler,
                    CellularPolicyHandler* cellular_policy_handler,
                    std::set<std::string>* modified_policy_guids);
@@ -109,10 +106,9 @@ class PolicyApplicator {
   // |entry_properties|}  are the current properties for the entry.
   // |callback| will be called when policy application for |entry_identifier|
   // has finished or immediately if no global network policy is present.
-  void ApplyGlobalPolicyOnUnmanagedEntry(
-      const std::string& entry_identifier,
-      const base::DictionaryValue& entry_properties,
-      base::OnceClosure callback);
+  void ApplyGlobalPolicyOnUnmanagedEntry(const std::string& entry_identifier,
+                                         const base::Value& entry_properties,
+                                         base::OnceClosure callback);
 
   // Sends Shill the command to delete profile entry |entry_identifier| from
   // |profile_|. |callback| will be called when the profile entry has been
@@ -152,8 +148,8 @@ class PolicyApplicator {
   CellularPolicyHandler* cellular_policy_handler_ = nullptr;
   ConfigurationHandler* handler_;
   NetworkProfile profile_;
-  GuidToPolicyMap all_policies_;
-  base::DictionaryValue global_network_config_;
+  std::map<std::string, base::Value> all_policies_;
+  base::Value global_network_config_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

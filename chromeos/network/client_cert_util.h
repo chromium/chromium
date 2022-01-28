@@ -15,7 +15,6 @@
 
 namespace base {
 class Value;
-class DictionaryValue;
 }
 
 namespace chromeos {
@@ -80,11 +79,10 @@ std::string GetPkcs11AndSlotIdFromEapCertId(const std::string& cert_id,
 // will be set to CONFIG_TYPE_NONE, |tpm_slot| to -1 and |pkcs11_id| to the
 // empty string.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void GetClientCertFromShillProperties(
-    const base::DictionaryValue& shill_properties,
-    ConfigType* cert_config_type,
-    int* tpm_slot,
-    std::string* pkcs11_id);
+void GetClientCertFromShillProperties(const base::Value& shill_properties,
+                                      ConfigType* cert_config_type,
+                                      int* tpm_slot,
+                                      std::string* pkcs11_id);
 
 // Sets the properties of a client cert and the TPM slot that it's contained in.
 // |cert_config_type| determines which dictionary entries to set.
@@ -104,7 +102,7 @@ void SetEmptyShillProperties(const ConfigType cert_config_type,
 // pattern within an EAP, IPsec or OpenVPN configuration.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void OncToClientCertConfig(::onc::ONCSource onc_source,
-                           const base::DictionaryValue& network_config,
+                           const base::Value& network_config,
                            ClientCertConfig* cert_config);
 
 }  // namespace client_cert

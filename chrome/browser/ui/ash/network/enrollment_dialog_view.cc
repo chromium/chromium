@@ -294,7 +294,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   std::string username_hash = ProfileHelper::GetUserIdHashFromProfile(profile);
 
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
-  const base::DictionaryValue* policy =
+  const base::Value* policy =
       NetworkHandler::Get()
           ->managed_network_configuration_handler()
           ->FindPolicyByGUID(username_hash, network_id, &onc_source);

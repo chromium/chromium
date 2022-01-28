@@ -106,11 +106,10 @@ std::string GetPkcs11AndSlotIdFromEapCertId(const std::string& cert_id,
   return cert_id.substr(delimiter_pos + 1);
 }
 
-void GetClientCertFromShillProperties(
-    const base::DictionaryValue& shill_properties,
-    ConfigType* cert_config_type,
-    int* tpm_slot,
-    std::string* pkcs11_id) {
+void GetClientCertFromShillProperties(const base::Value& shill_properties,
+                                      ConfigType* cert_config_type,
+                                      int* tpm_slot,
+                                      std::string* pkcs11_id) {
   *cert_config_type = CONFIG_TYPE_NONE;
   *tpm_slot = -1;
   pkcs11_id->clear();
@@ -119,9 +118,9 @@ void GetClientCertFromShillProperties(
   //
   // VPN Provider values are read from the "Provider" dictionary, not the
   // "Provider.Type", etc keys (which are used only to set the values).
-  const base::DictionaryValue* provider_properties = NULL;
-  if (shill_properties.GetDictionaryWithoutPathExpansion(
-          shill::kProviderProperty, &provider_properties)) {
+  const base::Value* provider_properties =
+      shill_properties.FindDictKey(shill::kProviderProperty);
+  if (provider_properties) {
     const std::string* pkcs11_id_str = nullptr;
     // Look for OpenVPN specific properties.
     pkcs11_id_str =
@@ -257,18 +256,16 @@ ClientCertConfig::ClientCertConfig(const ClientCertConfig& other) = default;
 ClientCertConfig::~ClientCertConfig() = default;
 
 void OncToClientCertConfig(::onc::ONCSource onc_source,
-                           const base::DictionaryValue& network_config,
+                           const base::Value& network_config,
                            ClientCertConfig* cert_config) {
   *cert_config = ClientCertConfig();
 
-  const base::DictionaryValue* dict_with_client_cert = NULL;
+  const base::Value* dict_with_client_cert = nullptr;
 
-  const base::DictionaryValue* wifi = NULL;
-  network_config.GetDictionaryWithoutPathExpansion(::onc::network_config::kWiFi,
-                                                   &wifi);
+  const base::Value* wifi =
+      network_config.FindDictKey(::onc::network_config::kWiFi);
   if (wifi) {
-    const base::DictionaryValue* eap = NULL;
-    wifi->GetDictionaryWithoutPathExpansion(::onc::wifi::kEAP, &eap);
+    const base::Value* eap = wifi->FindDictKey(::onc::wifi::kEAP);
     if (!eap)
       return;
 
@@ -276,14 +273,11 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
     cert_config->location = CONFIG_TYPE_EAP;
   }
 
-  const base::DictionaryValue* vpn = NULL;
-  network_config.GetDictionaryWithoutPathExpansion(::onc::network_config::kVPN,
-                                                   &vpn);
+  const base::Value* vpn =
+      network_config.FindDictKey(::onc::network_config::kVPN);
   if (vpn) {
-    const base::DictionaryValue* openvpn = NULL;
-    vpn->GetDictionaryWithoutPathExpansion(::onc::vpn::kOpenVPN, &openvpn);
-    const base::DictionaryValue* ipsec = NULL;
-    vpn->GetDictionaryWithoutPathExpansion(::onc::vpn::kIPsec, &ipsec);
+    const base::Value* openvpn = vpn->FindDictKey(::onc::vpn::kOpenVPN);
+    const base::Value* ipsec = vpn->FindDictKey(::onc::vpn::kIPsec);
     if (openvpn) {
       dict_with_client_cert = openvpn;
       cert_config->location = CONFIG_TYPE_OPENVPN;
@@ -295,12 +289,10 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
     }
   }
 
-  const base::DictionaryValue* ethernet = NULL;
-  network_config.GetDictionaryWithoutPathExpansion(
-      ::onc::network_config::kEthernet, &ethernet);
+  const base::Value* ethernet =
+      network_config.FindDictKey(::onc::network_config::kEthernet);
   if (ethernet) {
-    const base::DictionaryValue* eap = NULL;
-    ethernet->GetDictionaryWithoutPathExpansion(::onc::wifi::kEAP, &eap);
+    const base::Value* eap = ethernet->FindDictKey(::onc::wifi::kEAP);
     if (!eap)
       return;
     dict_with_client_cert = eap;

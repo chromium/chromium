@@ -39,12 +39,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                     network_handler::PropertiesCallback callback));
   MOCK_METHOD4(SetProperties,
                void(const std::string& service_path,
-                    const base::DictionaryValue& user_settings,
+                    const base::Value& user_settings,
                     base::OnceClosure callback,
                     network_handler::ErrorCallback error_callback));
   MOCK_CONST_METHOD4(CreateConfiguration,
                      void(const std::string& userhash,
-                          const base::DictionaryValue& properties,
+                          const base::Value& properties,
                           network_handler::ServiceResultCallback callback,
                           network_handler::ErrorCallback error_callback));
   MOCK_CONST_METHOD2(ConfigurePolicyNetwork,
@@ -64,19 +64,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                     const base::Value& network_configs_onc,
                     const base::Value& global_network_config));
   MOCK_CONST_METHOD0(IsAnyPolicyApplicationRunning, bool());
-  MOCK_CONST_METHOD3(
-      FindPolicyByGUID,
-      const base::DictionaryValue*(const std::string userhash,
-                                   const std::string& guid,
-                                   ::onc::ONCSource* onc_source));
+  MOCK_CONST_METHOD3(FindPolicyByGUID,
+                     const base::Value*(const std::string userhash,
+                                        const std::string& guid,
+                                        ::onc::ONCSource* onc_source));
   MOCK_CONST_METHOD1(HasAnyPolicyNetwork, bool(const std::string& userhash));
   MOCK_CONST_METHOD1(GetGlobalConfigFromPolicy,
-                     const base::DictionaryValue*(const std::string& userhash));
-  MOCK_CONST_METHOD3(
-      FindPolicyByGuidAndProfile,
-      const base::DictionaryValue*(const std::string& guid,
-                                   const std::string& profile_path,
-                                   ::onc::ONCSource* onc_source));
+                     const base::Value*(const std::string& userhash));
+  MOCK_CONST_METHOD3(FindPolicyByGuidAndProfile,
+                     const base::Value*(const std::string& guid,
+                                        const std::string& profile_path,
+                                        ::onc::ONCSource* onc_source));
   MOCK_CONST_METHOD2(IsNetworkConfiguredByPolicy,
                      bool(const std::string& guid,
                           const std::string& profile_path));

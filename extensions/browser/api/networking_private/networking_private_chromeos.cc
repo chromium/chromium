@@ -724,7 +724,7 @@ NetworkingPrivateChromeOS::GetDeviceStateList() {
 
 base::Value NetworkingPrivateChromeOS::GetGlobalPolicy() {
   base::Value result(base::Value::Type::DICTIONARY);
-  const base::DictionaryValue* global_network_config =
+  const base::Value* global_network_config =
       GetManagedConfigurationHandler()->GetGlobalConfigFromPolicy(
           std::string() /* no username hash, device policy */);
   if (global_network_config)

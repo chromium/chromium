@@ -38,13 +38,22 @@ void LogErrorMessageAndInvokeCallback(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
-const base::DictionaryValue* GetByGUID(
-    const PolicyApplicator::GuidToPolicyMap& policies,
-    const std::string& guid) {
+const base::Value* GetByGUID(const std::map<std::string, base::Value>& policies,
+                             const std::string& guid) {
   auto it = policies.find(guid);
   if (it == policies.end())
     return nullptr;
-  return it->second.get();
+  return &(it->second);
+}
+
+const base::Value* FindMatchingPolicy(
+    const std::map<std::string, base::Value>& policies,
+    const base::Value& actual_network) {
+  for (auto& policy : policies) {
+    if (policy_util::IsPolicyMatching(policy.second, actual_network))
+      return &(policy.second);
+  }
+  return nullptr;
 }
 
 // Returns the GUID property from |onc_part|, or an empty string if no GUID was
@@ -57,14 +66,13 @@ std::string GetGUIDFromONCPart(const base::Value& onc_part) {
   return guid_value->GetString();
 }
 
-bool IsCellularPolicy(const base::DictionaryValue& onc_config) {
+bool IsCellularPolicy(const base::Value& onc_config) {
   const std::string* type =
       onc_config.FindStringKey(::onc::network_config::kType);
   return type && *type == ::onc::network_type::kCellular;
 }
 
-const std::string* GetSMDPAddressFromONC(
-    const base::DictionaryValue& onc_config) {
+const std::string* GetSMDPAddressFromONC(const base::Value& onc_config) {
   const std::string* type =
       onc_config.FindStringKey(::onc::network_config::kType);
   const base::Value* cellular_dict =
@@ -78,11 +86,11 @@ const std::string* GetSMDPAddressFromONC(
   return smdp_address;
 }
 
-void CopyStringKey(const base::DictionaryValue* old_shill_properties,
+void CopyStringKey(const base::Value& old_shill_properties,
                    base::Value* new_shill_properties,
                    const std::string& property_key_name) {
   const std::string* value_in_old_entry =
-      old_shill_properties->FindStringKey(property_key_name);
+      old_shill_properties.FindStringKey(property_key_name);
   const std::string* value_in_new_entry =
       new_shill_properties->FindStringKey(property_key_name);
   if (value_in_old_entry &&
@@ -94,11 +102,10 @@ void CopyStringKey(const base::DictionaryValue* old_shill_properties,
   }
 }
 
-void CopyRequiredCellularProperies(
-    const base::DictionaryValue* old_shill_properties,
-    base::Value* new_shill_properties) {
+void CopyRequiredCellularProperies(const base::Value& old_shill_properties,
+                                   base::Value* new_shill_properties) {
   const std::string* type =
-      old_shill_properties->FindStringKey(shill::kTypeProperty);
+      old_shill_properties.FindStringKey(shill::kTypeProperty);
   if (!type || *type != shill::kTypeCellular)
     return;
 
@@ -116,20 +123,17 @@ const char kEthernetAnyService[] = "ethernet_any";
 
 PolicyApplicator::PolicyApplicator(
     const NetworkProfile& profile,
-    const GuidToPolicyMap& all_policies,
-    const base::DictionaryValue& global_network_config,
+    std::map<std::string, base::Value> all_policies,
+    base::Value global_network_config,
     ConfigurationHandler* handler,
     CellularPolicyHandler* cellular_policy_handler,
     std::set<std::string>* modified_policy_guids)
     : cellular_policy_handler_(cellular_policy_handler),
       handler_(handler),
-      profile_(profile) {
-  global_network_config_.MergeDictionary(&global_network_config);
+      profile_(profile),
+      all_policies_(std::move(all_policies)),
+      global_network_config_(std::move(global_network_config)) {
   remaining_policy_guids_.swap(*modified_policy_guids);
-  for (const auto& policy_pair : all_policies) {
-    all_policies_.insert(std::make_pair(policy_pair.first,
-                                        policy_pair.second->CreateDeepCopy()));
-  }
 }
 
 PolicyApplicator::~PolicyApplicator() {
@@ -198,13 +202,13 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
   VLOG(2) << "Received properties for entry " << entry_identifier
           << " of profile " << profile_.ToDebugString();
 
-  std::unique_ptr<base::DictionaryValue> onc_part(
-      onc::TranslateShillServiceToONCPart(
+  base::Value onc_part(
+      base::Value::FromUniquePtrValue(onc::TranslateShillServiceToONCPart(
           base::Value::AsDictionaryValue(entry_properties),
           ::onc::ONC_SOURCE_UNKNOWN, &onc::kNetworkWithStateSignature,
-          nullptr /* network_state */));
+          nullptr /* network_state */)));
 
-  std::string old_guid = GetGUIDFromONCPart(*onc_part);
+  std::string old_guid = GetGUIDFromONCPart(onc_part);
   std::unique_ptr<NetworkUIData> ui_data =
       shill_property_util::GetUIDataFromProperties(
           base::Value::AsDictionaryValue(entry_properties));
@@ -231,7 +235,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
 
   if (!new_policy) {
     // If we didn't find a policy by GUID, still a new policy might match.
-    new_policy = policy_util::FindMatchingPolicy(all_policies_, *onc_part);
+    new_policy = FindMatchingPolicy(all_policies_, onc_part);
   }
 
   auto profile_entry_finished_callback =
@@ -264,9 +268,8 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
     return;
   }
 
-  ApplyGlobalPolicyOnUnmanagedEntry(
-      entry_identifier, base::Value::AsDictionaryValue(entry_properties),
-      std::move(profile_entry_finished_callback));
+  ApplyGlobalPolicyOnUnmanagedEntry(entry_identifier, entry_properties,
+                                    std::move(profile_entry_finished_callback));
 }
 
 void PolicyApplicator::GetEntryError(const std::string& entry_identifier,
@@ -295,25 +298,18 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
   }
   remaining_policy_guids_.erase(new_guid);
 
-  const base::DictionaryValue* new_policy_as_dict = nullptr;
-  new_policy.GetAsDictionary(&new_policy_as_dict);
-  DCHECK(new_policy_as_dict);
+  DCHECK(new_policy.is_dict());
+  DCHECK(entry_properties.is_dict());
 
-  const base::DictionaryValue* entry_properties_as_dict = nullptr;
-  entry_properties.GetAsDictionary(&entry_properties_as_dict);
-  DCHECK(entry_properties_as_dict);
-
-  const base::DictionaryValue* user_settings =
+  const base::Value* user_settings =
       ui_data ? ui_data->GetUserSettingsDictionary() : nullptr;
   base::Value new_shill_properties = policy_util::CreateShillConfiguration(
-      profile_, new_guid, &global_network_config_, new_policy_as_dict,
-      user_settings);
+      profile_, new_guid, &global_network_config_, &new_policy, user_settings);
 
   // Copy over the value of ICCID and EID property from old entry to new shill
   // properties since Shill requires ICCID and EID to create or update the
   // existing service.
-  CopyRequiredCellularProperies(entry_properties_as_dict,
-                                &new_shill_properties);
+  CopyRequiredCellularProperies(entry_properties, &new_shill_properties);
 
   // A new policy has to be applied to this profile entry. In order to keep
   // implicit state of Shill like "connected successfully before", keep the
@@ -324,9 +320,8 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
   // SSID changed might not be a good idea anyways. If the policy GUID
   // changed, or there was no policy before, we delete the entry at first to
   // ensure that no old configuration remains.
-  if (old_guid == new_guid &&
-      shill_property_util::DoIdentifyingPropertiesMatch(
-          new_shill_properties, *entry_properties_as_dict)) {
+  if (old_guid == new_guid && shill_property_util::DoIdentifyingPropertiesMatch(
+                                  new_shill_properties, entry_properties)) {
     NET_LOG(EVENT) << "Updating previously managed configuration with the "
                    << "updated policy " << new_guid << ".";
     WriteNewShillConfiguration(std::move(new_shill_properties),
@@ -354,12 +349,12 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
 
 void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
     const std::string& entry_identifier,
-    const base::DictionaryValue& entry_properties,
+    const base::Value& entry_properties,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The entry wasn't managed and doesn't match any current policy. Global
   // network settings have to be applied.
-  base::DictionaryValue shill_properties_to_update;
+  base::Value shill_properties_to_update(base::Value::Type::DICTIONARY);
   policy_util::SetShillPropertiesForGlobalPolicy(
       entry_properties, global_network_config_, &shill_properties_to_update);
   if (shill_properties_to_update.DictEmpty()) {
@@ -370,12 +365,8 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   }
   NET_LOG(EVENT) << "Apply global network config to unmanaged entry "
                  << entry_identifier << ".";
-  const base::DictionaryValue* entry_properties_as_dict = nullptr;
-  entry_properties.GetAsDictionary(&entry_properties_as_dict);
-  DCHECK(entry_properties_as_dict);
   handler_->UpdateExistingConfigurationWithPropertiesFromPolicy(
-      *entry_properties_as_dict, shill_properties_to_update,
-      std::move(callback));
+      entry_properties, shill_properties_to_update, std::move(callback));
 }
 
 void PolicyApplicator::DeleteEntry(const std::string& entry_identifier,
@@ -443,8 +434,7 @@ void PolicyApplicator::ApplyRemainingPolicies() {
   for (std::set<std::string>::iterator it = remaining_policy_guids_.begin();
        it != remaining_policy_guids_.end();) {
     const std::string& guid = *it;
-    const base::DictionaryValue* network_policy =
-        GetByGUID(all_policies_, guid);
+    const base::Value* network_policy = GetByGUID(all_policies_, guid);
     DCHECK(network_policy);
 
     NET_LOG(EVENT) << "Creating new configuration managed by policy " << guid

@@ -165,7 +165,7 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
       continue;
 
     // Read the SMDP address from ONC.
-    const base::DictionaryValue* policy =
+    const base::Value* policy =
         chromeos::NetworkHandler::Get()
             ->managed_network_configuration_handler()
             ->FindPolicyByGUID(/*userhash=*/std::string(), network->guid(),
@@ -173,7 +173,7 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
     DCHECK(policy);
 
     const base::Value* cellular_dict =
-        policy->FindKey(::onc::network_config::kCellular);
+        policy->FindDictKey(::onc::network_config::kCellular);
     DCHECK(cellular_dict);
 
     const std::string* smdp_address =

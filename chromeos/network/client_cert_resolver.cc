@@ -706,7 +706,7 @@ void ClientCertResolver::ResolveNetworks(
       continue;
 
     ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
-    const base::DictionaryValue* policy =
+    const base::Value* policy =
         managed_network_config_handler_->FindPolicyByGuidAndProfile(
             network->guid(), network->profile_path(), &onc_source);
 

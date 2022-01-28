@@ -34,8 +34,8 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 
 CellularPolicyHandler::InstallPolicyESimRequest::InstallPolicyESimRequest(
     const std::string& smdp_address,
-    const base::DictionaryValue& onc_config)
-    : smdp_address(smdp_address), onc_config(onc_config.CreateDeepCopy()) {}
+    const base::Value& onc_config)
+    : smdp_address(smdp_address), onc_config(onc_config.Clone()) {}
 
 CellularPolicyHandler::InstallPolicyESimRequest::~InstallPolicyESimRequest() =
     default;
@@ -55,9 +55,8 @@ void CellularPolicyHandler::Init(
       managed_network_configuration_handler;
 }
 
-void CellularPolicyHandler::InstallESim(
-    const std::string& smdp_address,
-    const base::DictionaryValue& onc_config) {
+void CellularPolicyHandler::InstallESim(const std::string& smdp_address,
+                                        const base::Value& onc_config) {
   const std::string* guid =
       onc_config.FindStringKey(::onc::network_config::kGUID);
   DCHECK(guid);
@@ -112,13 +111,13 @@ void CellularPolicyHandler::AttemptInstallESim() {
       network_profile_handler_->GetProfileForUserhash(
           /*userhash=*/std::string());
   const std::string* guid =
-      remaining_install_requests_.front()->onc_config->FindStringKey(
+      remaining_install_requests_.front()->onc_config.FindStringKey(
           ::onc::network_config::kGUID);
   DCHECK(guid);
 
   base::Value new_shill_properties = policy_util::CreateShillConfiguration(
       *profile, *guid, /*global_policy=*/nullptr,
-      remaining_install_requests_.front()->onc_config.get(),
+      &(remaining_install_requests_.front()->onc_config),
       /*user_settings=*/nullptr);
   NET_LOG(EVENT) << "Install policy eSIM profile with properties: "
                  << new_shill_properties;
@@ -142,7 +141,7 @@ std::string CellularPolicyHandler::GetCurrentPolicyGuid() const {
   DCHECK(is_installing_);
 
   const std::string* guid =
-      remaining_install_requests_.front()->onc_config->FindStringKey(
+      remaining_install_requests_.front()->onc_config.FindStringKey(
           ::onc::network_config::kGUID);
   return guid ? *guid : std::string();
 }

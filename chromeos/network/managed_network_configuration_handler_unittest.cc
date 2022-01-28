@@ -98,7 +98,7 @@ constexpr char kEmptyUnencryptedConfiguration[] =
     "{\"Type\":\"UnencryptedConfiguration\",\"NetworkConfigurations\":[],"
     "\"Certificates\":[]}";
 
-std::string PrettyJson(const base::DictionaryValue& value) {
+std::string PrettyJson(const base::Value& value) {
   std::string pretty;
   base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &pretty);
@@ -289,23 +289,20 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
       return;
     }
 
-    base::ListValue network_configs;
-    const base::Value* found_network_configs = validated_policy->FindKeyOfType(
-        ::onc::toplevel_config::kNetworkConfigurations,
-        base::Value::Type::LIST);
+    base::Value network_configs(base::Value::Type::LIST);
+    const base::Value* found_network_configs = validated_policy->FindListKey(
+        ::onc::toplevel_config::kNetworkConfigurations);
     if (found_network_configs) {
       for (const auto& network_config : found_network_configs->GetList()) {
         network_configs.Append(network_config.Clone());
       }
     }
 
-    base::DictionaryValue global_config;
-    const base::Value* found_global_config = validated_policy->FindKeyOfType(
-        ::onc::toplevel_config::kGlobalNetworkConfiguration,
-        base::Value::Type::DICTIONARY);
+    base::Value global_config(base::Value::Type::DICTIONARY);
+    const base::Value* found_global_config = validated_policy->FindDictKey(
+        ::onc::toplevel_config::kGlobalNetworkConfiguration);
     if (found_global_config) {
-      global_config = std::move(*base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(found_global_config->Clone())));
+      global_config = found_global_config->Clone();
     }
 
     managed_network_configuration_handler_->SetPolicy(
@@ -315,9 +312,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   void SetUpEntry(const std::string& path_to_shill_json,
                   const std::string& profile_path,
                   const std::string& entry_path) {
-    std::unique_ptr<base::DictionaryValue> entry =
-        test_utils::ReadTestDictionary(path_to_shill_json);
-    GetShillProfileClient()->AddEntry(profile_path, entry_path, *entry);
+    base::Value entry = test_utils::ReadTestDictionaryValue(path_to_shill_json);
+    GetShillProfileClient()->AddEntry(profile_path, entry_path, entry);
   }
 
   void ResetManagedNetworkConfigurationHandler() {
@@ -371,9 +367,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
   InitializeStandardProfiles();
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unconfigured_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unconfigured_wifi1.json");
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
             "policy/policy_wifi1_with_redundant_fields.onc");
@@ -385,7 +380,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
@@ -394,9 +389,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
   InitializeStandardProfiles();
   InitializeEuicc();
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unconfigured_cellular.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unconfigured_cellular.json");
 
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_cellular.onc");
@@ -408,7 +402,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 
   // Verify that applying a new cellular policy with same ICCID should update
   // the old shill configuration.
@@ -464,9 +458,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnconfigured) {
   InitializeStandardProfiles();
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unconfigured_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unconfigured_wifi1.json");
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
   base::RunLoop().RunUntilIdle();
@@ -477,14 +470,13 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnconfigured) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, EnableManagedCredentialsWiFi) {
   InitializeStandardProfiles();
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_autoconnect_on_unconfigured_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_autoconnect_on_unconfigured_wifi1.json");
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
             "policy/policy_wifi1_autoconnect.onc");
@@ -496,14 +488,13 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, EnableManagedCredentialsWiFi) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, EnableManagedCredentialsVPN) {
   InitializeStandardProfiles();
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_autoconnect_on_unconfigured_vpn.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_autoconnect_on_unconfigured_vpn.json");
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
             "policy/policy_vpn_autoconnect.onc");
@@ -515,7 +506,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, EnableManagedCredentialsVPN) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_EQ(*expected_shill_properties, *properties);
+  EXPECT_EQ(expected_shill_properties, *properties);
 }
 
 // Ensure that EAP settings for ethernet are matched with the right profile
@@ -523,10 +514,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, EnableManagedCredentialsVPN) {
 TEST_F(ManagedNetworkConfigurationHandlerTest,
        SetPolicyManageUnmanagedEthernetEAP) {
   InitializeStandardProfiles();
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/"
-          "shill_policy_on_unmanaged_ethernet_eap.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/"
+      "shill_policy_on_unmanaged_ethernet_eap.json");
 
   GetShillServiceClient()->AddService(
       "eth_entry", std::string() /* guid */, std::string() /* name */,
@@ -553,7 +543,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyIgnoreUnmodified) {
@@ -579,9 +569,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, PolicyApplicationRunning) {
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
   managed_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),             // no userhash
-      base::ListValue(),         // no device network policy
-      base::DictionaryValue());  // no device global config
+      std::string(),                                // no userhash
+      base::Value(base::Value::Type::LIST),         // no device network policy
+      base::Value(base::Value::Type::DICTIONARY));  // no device global config
 
   EXPECT_TRUE(managed_handler()->IsAnyPolicyApplicationRunning());
   base::RunLoop().RunUntilIdle();
@@ -631,9 +621,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnmanaged) {
   SetUpEntry("policy/shill_unmanaged_wifi1.json", kUser1ProfilePath,
              "old_entry_path");
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unmanaged_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unmanaged_wifi1.json");
 
   // Before setting policy, old_entry_path should exist.
   ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
@@ -650,7 +639,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnmanaged) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedNewGUID) {
@@ -658,14 +647,13 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedNewGUID) {
   SetUpEntry("policy/shill_managed_wifi1.json", kUser1ProfilePath,
              "old_entry_path");
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unmanaged_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unmanaged_wifi1.json");
 
   // The passphrase isn't sent again, because it's configured by the user and
   // Shill doesn't send it on GetProperties calls.
-  expected_shill_properties->RemoveKey(shill::kPassphraseProperty);
-  expected_shill_properties->RemoveKey(shill::kPassphraseRequiredProperty);
+  expected_shill_properties.RemoveKey(shill::kPassphraseProperty);
+  expected_shill_properties.RemoveKey(shill::kPassphraseRequiredProperty);
 
   // Before setting policy, old_entry_path should exist.
   ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
@@ -682,7 +670,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedNewGUID) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedVPN) {
@@ -698,9 +686,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedVPN) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary("policy/shill_policy_on_managed_vpn.json");
-  EXPECT_EQ(*expected_shill_properties, *properties);
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_managed_vpn.json");
+  EXPECT_EQ(expected_shill_properties, *properties);
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
@@ -719,10 +707,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const NetworkState* network_state =
       network_state_handler_->GetNetworkStateFromGuid(kTestGuidVpn);
   ASSERT_TRUE(network_state);
-  std::unique_ptr<base::DictionaryValue> ui_config =
-      test_utils::ReadTestDictionary("policy/policy_vpn_ui.json");
+  base::Value ui_config =
+      test_utils::ReadTestDictionaryValue("policy/policy_vpn_ui.json");
   managed_network_configuration_handler_->SetProperties(
-      network_state->path(), *ui_config, base::DoNothing(),
+      network_state->path(), ui_config, base::DoNothing(),
       base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
@@ -732,10 +720,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_managed_vpn_plus_ui.json");
-  EXPECT_EQ(*expected_shill_properties, *properties);
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_managed_vpn_plus_ui.json");
+  EXPECT_EQ(expected_shill_properties, *properties);
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
@@ -753,10 +740,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const NetworkState* network_state =
       network_state_handler_->GetNetworkStateFromGuid(kTestGuidVpn);
   ASSERT_TRUE(network_state);
-  std::unique_ptr<base::DictionaryValue> ui_config =
-      test_utils::ReadTestDictionary("policy/policy_vpn_ipsec_ui.json");
+  base::Value ui_config =
+      test_utils::ReadTestDictionaryValue("policy/policy_vpn_ipsec_ui.json");
   managed_network_configuration_handler_->SetProperties(
-      network_state->path(), *ui_config, base::DoNothing(),
+      network_state->path(), ui_config, base::DoNothing(),
       base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
@@ -768,10 +755,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_managed_vpn_ipsec_plus_ui.json");
-  EXPECT_EQ(*expected_shill_properties, *properties);
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_managed_vpn_ipsec_plus_ui.json");
+  EXPECT_EQ(expected_shill_properties, *properties);
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
@@ -779,8 +765,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   InitializeStandardProfiles();
   SetUpEntry("policy/shill_managed_vpn.json", kUser1ProfilePath, "entry_path");
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary("policy/shill_policy_on_managed_vpn.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_managed_vpn.json");
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
             "policy/policy_vpn_no_user_auth_type.onc");
@@ -792,7 +778,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_EQ(*expected_shill_properties, *properties);
+  EXPECT_EQ(expected_shill_properties, *properties);
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyReapplyToManaged) {
@@ -800,14 +786,13 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyReapplyToManaged) {
   SetUpEntry("policy/shill_policy_on_unmanaged_wifi1.json", kUser1ProfilePath,
              "old_entry_path");
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unmanaged_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unmanaged_wifi1.json");
 
   // The passphrase isn't sent again, because it's configured by the user and
   // Shill doesn't send it on GetProperties calls.
-  expected_shill_properties->RemoveKey(shill::kPassphraseProperty);
-  expected_shill_properties->RemoveKey(shill::kPassphraseRequiredProperty);
+  expected_shill_properties.RemoveKey(shill::kPassphraseProperty);
+  expected_shill_properties.RemoveKey(shill::kPassphraseRequiredProperty);
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
   base::RunLoop().RunUntilIdle();
@@ -819,7 +804,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyReapplyToManaged) {
     const base::Value* properties =
         GetShillServiceClient()->GetServiceProperties(service_path);
     ASSERT_TRUE(properties);
-    EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+    EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
   }
 
   // If we apply the policy again, without change, then the Shill profile will
@@ -834,7 +819,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyReapplyToManaged) {
     const base::Value* properties =
         GetShillServiceClient()->GetServiceProperties(service_path);
     ASSERT_TRUE(properties);
-    EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+    EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
   }
 }
 
@@ -876,9 +861,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyIgnoreUnmanaged) {
   SetUpEntry("policy/shill_unmanaged_wifi2.json", kUser1ProfilePath,
              "wifi2_entry_path");
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unconfigured_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unconfigured_wifi1.json");
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
   base::RunLoop().RunUntilIdle();
@@ -889,7 +873,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyIgnoreUnmanaged) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
@@ -899,9 +883,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   SetUpEntry("policy/shill_unmanaged_wifi2.json", kUser1ProfilePath,
              "wifi2_entry_path");
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_disallow_autoconnect_on_unmanaged_wifi2.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_disallow_autoconnect_on_unmanaged_wifi2.json");
 
   // Apply the user policy with global autoconnect config and expect that
   // autoconnect is disabled in the network's profile entry.
@@ -915,7 +898,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(wifi2_service_path);
   ASSERT_TRUE(properties);
-  EXPECT_TRUE(PropertiesMatch(*expected_shill_properties, *properties));
+  EXPECT_TRUE(PropertiesMatch(expected_shill_properties, *properties));
 
   // Verify that GetManagedProperties correctly augments the properties with the
   // global config from the user policy.
@@ -923,23 +906,21 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   // unset.
   managed_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),             // no userhash
-      base::ListValue(),         // no device network policy
-      base::DictionaryValue());  // no device global config
+      std::string(),                                // no userhash
+      base::Value(base::Value::Type::LIST),         // no device network policy
+      base::Value(base::Value::Type::DICTIONARY));  // no device global config
 
   base::RunLoop get_properties_run_loop;
-  std::unique_ptr<base::DictionaryValue> dictionary;
+  base::Value dictionary;
   managed_handler()->GetManagedProperties(
       kUser1, wifi2_service_path,
       base::BindOnce(
-          [](std::unique_ptr<base::DictionaryValue>* dictionary_out,
-             base::RepeatingClosure quit_closure,
+          [](base::Value* dictionary_out, base::RepeatingClosure quit_closure,
              const std::string& service_path,
              absl::optional<base::Value> dictionary,
              absl::optional<std::string> error) {
             if (dictionary) {
-              *dictionary_out = base::DictionaryValue::From(
-                  base::Value::ToUniquePtrValue(std::move(*dictionary)));
+              *dictionary_out = std::move(*dictionary);
             } else {
               FAIL();
             }
@@ -949,21 +930,19 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
 
   get_properties_run_loop.Run();
 
-  ASSERT_TRUE(dictionary.get());
-  std::unique_ptr<base::DictionaryValue> expected_managed_onc =
-      test_utils::ReadTestDictionary(
-          "policy/"
-          "managed_onc_disallow_autoconnect_on_unmanaged_wifi2.onc");
-  EXPECT_TRUE(PropertiesMatch(*expected_managed_onc, *dictionary));
+  ASSERT_TRUE(!dictionary.is_none());
+  base::Value expected_managed_onc = test_utils::ReadTestDictionaryValue(
+      "policy/"
+      "managed_onc_disallow_autoconnect_on_unmanaged_wifi2.onc");
+  EXPECT_TRUE(PropertiesMatch(expected_managed_onc, dictionary));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, LateProfileLoading) {
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
   base::RunLoop().RunUntilIdle();
 
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unconfigured_wifi1.json");
+  base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
+      "policy/shill_policy_on_unconfigured_wifi1.json");
 
   InitializeStandardProfiles();
   base::RunLoop().RunUntilIdle();
@@ -974,7 +953,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, LateProfileLoading) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
@@ -1164,26 +1143,24 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
 
   managed_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),             // no userhash
-      base::ListValue(),         // no device network policy
-      base::DictionaryValue());  // no device global config
+      std::string(),                                // no userhash
+      base::Value(base::Value::Type::LIST),         // no device network policy
+      base::Value(base::Value::Type::DICTIONARY));  // no device global config
 
-  std::unique_ptr<base::DictionaryValue> dictionary_before_pref,
-      dictionary_after_pref;
+  base::Value dictionary_before_pref;
+  base::Value dictionary_after_pref;
 
   base::RunLoop get_initial_properties_run_loop;
   // Get properties and verify that proxy is used.
   managed_handler()->GetManagedProperties(
       kUser1, wifi_service_path,
       base::BindOnce(
-          [](std::unique_ptr<base::DictionaryValue>* dictionary_out,
-             base::RepeatingClosure quit_closure,
+          [](base::Value* dictionary_out, base::RepeatingClosure quit_closure,
              const std::string& service_path,
              absl::optional<base::Value> dictionary,
              absl::optional<std::string> error) {
             if (dictionary) {
-              *dictionary_out = base::DictionaryValue::From(
-                  base::Value::ToUniquePtrValue(std::move(*dictionary)));
+              *dictionary_out = std::move(*dictionary);
             } else {
               ADD_FAILURE() << error.value_or("Failed");
             }
@@ -1195,9 +1172,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   get_initial_properties_run_loop.Run();
 
   std::string policy_before_pref =
-      dictionary_before_pref->FindPath("ProxySettings.Type.UserPolicy")
+      dictionary_before_pref.FindPath("ProxySettings.Type.UserPolicy")
           ->GetString();
-  ASSERT_TRUE(dictionary_before_pref.get());
+  ASSERT_TRUE(!dictionary_before_pref.is_none());
   ASSERT_EQ(policy_before_pref, "PAC");
 
   // Set pref not to use proxy.
@@ -1211,14 +1188,12 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   managed_handler()->GetManagedProperties(
       kUser1, wifi_service_path,
       base::BindOnce(
-          [](std::unique_ptr<base::DictionaryValue>* dictionary_out,
-             base::RepeatingClosure quit_closure,
+          [](base::Value* dictionary_out, base::RepeatingClosure quit_closure,
              const std::string& service_path,
              absl::optional<base::Value> dictionary,
              absl::optional<std::string> error) {
             if (dictionary) {
-              *dictionary_out = base::DictionaryValue::From(
-                  base::Value::ToUniquePtrValue(std::move(*dictionary)));
+              *dictionary_out = std::move(*dictionary);
             } else {
               ADD_FAILURE() << error.value_or("Failed");
             }
@@ -1230,10 +1205,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   get_merged_properties_run_loop.Run();
 
   std::string policy_after_pref =
-      dictionary_after_pref->FindPath("ProxySettings.Type.UserPolicy")
+      dictionary_after_pref.FindPath("ProxySettings.Type.UserPolicy")
           ->GetString();
 
-  ASSERT_TRUE(dictionary_after_pref.get());
+  ASSERT_TRUE(!dictionary_after_pref.is_none());
   ASSERT_NE(dictionary_before_pref, dictionary_after_pref);
   ASSERT_EQ(policy_after_pref, "Direct");
 }

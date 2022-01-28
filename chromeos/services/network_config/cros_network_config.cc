@@ -2889,7 +2889,7 @@ void CrosNetworkConfig::RequestNetworkScan(mojom::NetworkType type) {
 void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
   auto result = mojom::GlobalPolicy::New();
   // Global network configuration policy values come from the device policy.
-  const base::DictionaryValue* global_policy_dict =
+  const base::Value* global_policy_dict =
       network_configuration_handler_->GetGlobalConfigFromPolicy(
           /*userhash=*/std::string());
   if (global_policy_dict) {
