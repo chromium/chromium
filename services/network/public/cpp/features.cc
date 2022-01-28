@@ -20,15 +20,6 @@ const base::Feature kExpectCTReporting{"ExpectCTReporting",
 
 const base::Feature kNetworkErrorLogging{"NetworkErrorLogging",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
-// Enables the network service.
-const base::Feature kNetworkService {
-#if BUILDFLAG(IS_ANDROID)
-  "NetworkService",
-#else
-  "NetworkServiceNotSupported",
-#endif
-      base::FEATURE_ENABLED_BY_DEFAULT
-};
 
 const base::Feature kReporting{"Reporting", base::FEATURE_ENABLED_BY_DEFAULT};
 

@@ -42,9 +42,6 @@ CastWebSocketHandshakeThrottleProvider::CreateThrottle(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return nullptr;
-
   auto* activity_url_filter =
       cast_activity_url_filter_manager_->GetActivityUrlFilterForRenderFrameID(
           render_frame_id);

@@ -163,8 +163,6 @@ void WebEngineContentRendererClient::RenderFrameCreated(
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 WebEngineContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type) {
-  DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService));
-
   // TODO(crbug.com/976975): Add support for service workers.
   if (type == blink::URLLoaderThrottleProviderType::kWorker)
     return nullptr;
