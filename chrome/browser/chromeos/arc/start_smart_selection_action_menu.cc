@@ -39,8 +39,8 @@ namespace arc {
 namespace {
 
 apps::mojom::IntentPtr CreateIntent(
-    arc::TextSelectionActionDelegate::IntentInfo arc_intent,
-    arc::TextSelectionActionDelegate::ActivityName activity) {
+    arc::ArcIntentHelperMojoDelegate::IntentInfo arc_intent,
+    arc::ArcIntentHelperMojoDelegate::ActivityName activity) {
   auto intent = apps::mojom::Intent::New();
   intent->action = std::move(arc_intent.action);
   intent->data = std::move(arc_intent.data);
@@ -64,7 +64,7 @@ constexpr size_t kMaxMainMenuCommands = 5;
 StartSmartSelectionActionMenu::StartSmartSelectionActionMenu(
     content::BrowserContext* context,
     RenderViewContextMenuProxy* proxy,
-    std::unique_ptr<TextSelectionActionDelegate> delegate)
+    std::unique_ptr<ArcIntentHelperMojoDelegate> delegate)
     : context_(context), proxy_(proxy), delegate_(std::move(delegate)) {}
 
 StartSmartSelectionActionMenu::~StartSmartSelectionActionMenu() = default;
@@ -130,7 +130,7 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
 }
 
 void StartSmartSelectionActionMenu::HandleTextSelectionActions(
-    std::vector<TextSelectionActionDelegate::TextSelectionAction> actions) {
+    std::vector<ArcIntentHelperMojoDelegate::TextSelectionAction> actions) {
   actions_ = std::move(actions);
 
   for (size_t i = 0; i < actions_.size(); ++i) {

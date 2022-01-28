@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/arc/common/intent_helper/text_selection_action_delegate.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -29,7 +29,7 @@ class StartSmartSelectionActionMenu : public RenderViewContextMenuObserver {
   explicit StartSmartSelectionActionMenu(
       content::BrowserContext* context,
       RenderViewContextMenuProxy* proxy,
-      std::unique_ptr<TextSelectionActionDelegate> delegate);
+      std::unique_ptr<ArcIntentHelperMojoDelegate> delegate);
   StartSmartSelectionActionMenu(const StartSmartSelectionActionMenu&) = delete;
   StartSmartSelectionActionMenu& operator=(
       const StartSmartSelectionActionMenu&) = delete;
@@ -44,16 +44,16 @@ class StartSmartSelectionActionMenu : public RenderViewContextMenuObserver {
 
  private:
   void HandleTextSelectionActions(
-      std::vector<TextSelectionActionDelegate::TextSelectionAction> actions);
+      std::vector<ArcIntentHelperMojoDelegate::TextSelectionAction> actions);
 
   content::BrowserContext* context_;
   RenderViewContextMenuProxy* const proxy_;  // Owned by RenderViewContextMenu.
 
   // The text selection actions passed from ARC.
-  std::vector<TextSelectionActionDelegate::TextSelectionAction> actions_;
+  std::vector<ArcIntentHelperMojoDelegate::TextSelectionAction> actions_;
 
   // The delegate instance to handle TextSelectionActions.
-  std::unique_ptr<TextSelectionActionDelegate> delegate_;
+  std::unique_ptr<ArcIntentHelperMojoDelegate> delegate_;
 
   base::WeakPtrFactory<StartSmartSelectionActionMenu> weak_ptr_factory_{this};
 };

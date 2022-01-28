@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/intent_helper/text_selection_action_ash.h"
+#include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 
 #include "ash/components/arc/mojom/scale_factor.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -24,10 +24,44 @@ constexpr size_t kMaxIconSizeInPx = 200;
 
 }  // namespace
 
-TextSelectionActionAsh::TextSelectionActionAsh() = default;
-TextSelectionActionAsh::~TextSelectionActionAsh() = default;
+ArcIntentHelperMojoAsh::ArcIntentHelperMojoAsh() = default;
+ArcIntentHelperMojoAsh::~ArcIntentHelperMojoAsh() = default;
 
-bool TextSelectionActionAsh::RequestTextSelectionActions(
+bool ArcIntentHelperMojoAsh::RequestUrlHandlerList(
+    const std::string& url,
+    RequestUrlHandlerListCallback callback) {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        RequestUrlHandlerList);
+  }
+  if (!instance) {
+    LOG(ERROR) << "Failed to get instance for RequestUrlHandlerList().";
+    std::move(callback).Run(std::vector<IntentHandlerInfo>());
+    return false;
+  }
+
+  instance->RequestUrlHandlerList(
+      url, base::BindOnce(&ArcIntentHelperMojoAsh::OnRequestUrlHandlerList,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  return true;
+}
+
+void ArcIntentHelperMojoAsh::OnRequestUrlHandlerList(
+    RequestUrlHandlerListCallback callback,
+    std::vector<mojom::IntentHandlerInfoPtr> handlers) {
+  std::vector<IntentHandlerInfo> converted_handlers;
+  for (auto const& handler : handlers) {
+    converted_handlers.push_back(IntentHandlerInfo(
+        handler->name, handler->package_name, handler->activity_name));
+  }
+  std::move(callback).Run(std::move(converted_handlers));
+}
+
+bool ArcIntentHelperMojoAsh::RequestTextSelectionActions(
     const std::string& text,
     ui::ResourceScaleFactor scale_factor,
     RequestTextSelectionActionsCallback callback) {
@@ -41,17 +75,18 @@ bool TextSelectionActionAsh::RequestTextSelectionActions(
   }
   if (!instance) {
     LOG(ERROR) << "Failed to get instance for RequestTextSelectionActions().";
+    std::move(callback).Run(std::vector<TextSelectionAction>());
     return false;
   }
 
   instance->RequestTextSelectionActions(
       text, mojom::ScaleFactor(scale_factor),
-      base::BindOnce(&TextSelectionActionAsh::OnRequestTextSelectionActions,
+      base::BindOnce(&ArcIntentHelperMojoAsh::OnRequestTextSelectionActions,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return true;
 }
 
-void TextSelectionActionAsh::OnRequestTextSelectionActions(
+void ArcIntentHelperMojoAsh::OnRequestTextSelectionActions(
     RequestTextSelectionActionsCallback callback,
     std::vector<mojom::TextSelectionActionPtr> actions) {
   size_t actions_count = actions.size();
@@ -89,13 +124,13 @@ void TextSelectionActionAsh::OnRequestTextSelectionActions(
 
     apps::ArcRawIconPngDataToImageSkia(
         std::move(action->icon->icon_png_data), kSmallIconSizeInDip,
-        base::BindOnce(&TextSelectionActionAsh::ConvertTextSelectionAction,
+        base::BindOnce(&ArcIntentHelperMojoAsh::ConvertTextSelectionAction,
                        weak_ptr_factory_.GetWeakPtr(), converted_action,
                        std::move(action), barrier_closure));
   }
 }
 
-void TextSelectionActionAsh::ConvertTextSelectionAction(
+void ArcIntentHelperMojoAsh::ConvertTextSelectionAction(
     TextSelectionAction** converted_action,
     mojom::TextSelectionActionPtr action,
     base::OnceClosure callback,
@@ -112,8 +147,9 @@ void TextSelectionActionAsh::ConvertTextSelectionAction(
   // OnRequestTextSelectionAction() by explicitly deleting it.
   *converted_action = new TextSelectionAction(
       std::move(app_id), image,
-      ActivityName(std::move(action->activity->package_name),
-                   std::move(action->activity->activity_name)),
+      ActivityName(
+          std::move(action->activity->package_name),
+          std::move(action->activity->activity_name.value_or(std::string()))),
       std::move(action->title),
       IntentInfo(std::move(action->action_intent->action),
                  std::move(action->action_intent->categories),
@@ -123,6 +159,24 @@ void TextSelectionActionAsh::ConvertTextSelectionAction(
                  std::move(action->action_intent->extras)));
 
   std::move(callback).Run();
+}
+
+bool ArcIntentHelperMojoAsh::HandleUrl(const std::string& url,
+                                       const std::string& package_name) {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(), HandleUrl);
+  }
+  if (!instance) {
+    LOG(ERROR) << "Failed to get instance for HandleUrl().";
+    return false;
+  }
+
+  instance->HandleUrl(url, package_name);
+  return true;
 }
 
 }  // namespace arc

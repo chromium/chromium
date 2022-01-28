@@ -246,7 +246,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/arc/intent_helper/text_selection_action_ash.h"
+#include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
@@ -255,7 +255,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/arc/text_selection_action_lacros.h"
+#include "chrome/browser/lacros/arc/arc_intent_helper_mojo_lacros.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
@@ -1499,14 +1499,14 @@ void RenderViewContextMenu::AppendQuickAnswersItems() {
 void RenderViewContextMenu::AppendSmartSelectionActionItems() {
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  using TextSelectionActionDelegate = arc::TextSelectionActionAsh;
+  using ArcIntentHelperMojoDelegate = arc::ArcIntentHelperMojoAsh;
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS_
-  using TextSelectionActionDelegate = arc::TextSelectionActionLacros;
+  using ArcIntentHelperMojoDelegate = arc::ArcIntentHelperMojoLacros;
 #endif
   start_smart_selection_action_menu_observer_ =
       std::make_unique<arc::StartSmartSelectionActionMenu>(
           browser_context_, this,
-          std::make_unique<TextSelectionActionDelegate>());
+          std::make_unique<ArcIntentHelperMojoDelegate>());
   observers_.AddObserver(start_smart_selection_action_menu_observer_.get());
 
   if (menu_model_.GetItemCount())

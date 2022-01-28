@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/common/intent_helper/link_handler_model_delegate.h"
+#include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -37,7 +37,7 @@ class OpenUrlDelegate;
 // Receives intents from ARC.
 class ArcIntentHelperBridge : public KeyedService,
                               public mojom::IntentHelperHost,
-                              public LinkHandlerModelDelegate {
+                              public ArcIconCacheDelegate {
  public:
   class Delegate {
    public:
@@ -113,13 +113,9 @@ class ArcIntentHelperBridge : public KeyedService,
   void OnOpenAppWithIntent(const GURL& start_url,
                            arc::mojom::LaunchIntentPtr intent) override;
 
-  // LinkHandlerModelDelegete:
+  // ArcIconCacheDelegete:
   GetResult GetActivityIcons(const std::vector<ActivityName>& activities,
                              OnIconsReadyCallback callback) override;
-  bool RequestUrlHandlerList(const std::string& url,
-                             RequestUrlHandlerListCallback callback) override;
-  bool HandleUrl(const std::string& url,
-                 const std::string& package_name) override;
 
   // Returns true when |url| can only be handled by Chrome. Otherwise, which is
   // when there might be one or more ARC apps that can handle |url|, returns
@@ -158,12 +154,6 @@ class ArcIntentHelperBridge : public KeyedService,
 
  private:
   THREAD_CHECKER(thread_checker_);
-
-  // Convert vector of mojom::IntentHandlerInfoPtr to vector of
-  // LinkHandlerModelDelegate::IntentHandlerInfo.
-  void OnRequestUrlHandlerList(
-      RequestUrlHandlerListCallback callback,
-      std::vector<mojom::IntentHandlerInfoPtr> handlers);
 
   content::BrowserContext* const context_;
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.

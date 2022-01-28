@@ -11,7 +11,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/arc/common/intent_helper/link_handler_model_delegate.h"
+#include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -39,7 +40,8 @@ class LinkHandlerModel {
   // Creates and inits a model. Will return null if Init() fails.
   static std::unique_ptr<LinkHandlerModel> Create(
       content::BrowserContext* context,
-      const GURL& link_url);
+      const GURL& link_url,
+      std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate);
 
   LinkHandlerModel(const LinkHandlerModel&) = delete;
   LinkHandlerModel& operator=(const LinkHandlerModel&) = delete;
@@ -51,11 +53,12 @@ class LinkHandlerModel {
 
   static GURL RewriteUrlFromQueryIfAvailableForTesting(const GURL& url);
 
-  // Sets the LinkHandlerModelDelegate instance.
-  static void SetDelegate(LinkHandlerModelDelegate* delegate);
+  // Sets the ArcIconCacheDelegate instance.
+  static void SetArcIconCacheDelegate(ArcIconCacheDelegate* delegate);
 
  private:
-  LinkHandlerModel();
+  explicit LinkHandlerModel(
+      std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate);
 
   // Starts retrieving handler information for the |url| and returns true.
   // Returns false when the information cannot be retrieved. In that case,
@@ -63,9 +66,9 @@ class LinkHandlerModel {
   bool Init(content::BrowserContext* context, const GURL& url);
 
   void OnUrlHandlerList(
-      std::vector<LinkHandlerModelDelegate::IntentHandlerInfo> handlers);
+      std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers);
   void NotifyObserver(
-      std::unique_ptr<LinkHandlerModelDelegate::ActivityToIconsMap> icons);
+      std::unique_ptr<ArcIconCacheDelegate::ActivityToIconsMap> icons);
 
   // Checks if the |url| matches the following pattern:
   //   "http(s)://<valid_google_hostname>/url?...&url=<valid_url>&..."
@@ -80,9 +83,12 @@ class LinkHandlerModel {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // Url handler info passed from ARC.
-  std::vector<LinkHandlerModelDelegate::IntentHandlerInfo> handlers_;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers_;
   // Activity icon info passed from ARC.
-  LinkHandlerModelDelegate::ActivityToIconsMap icons_;
+  ArcIconCacheDelegate::ActivityToIconsMap icons_;
+
+  // a delegate instance for calling mojo API.
+  std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate_;
 
   base::WeakPtrFactory<LinkHandlerModel> weak_ptr_factory_{this};
 };

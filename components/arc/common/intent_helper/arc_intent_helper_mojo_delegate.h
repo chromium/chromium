@@ -2,43 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_COMMON_INTENT_HELPER_TEXT_SELECTION_ACTION_DELEGATE_H_
-#define COMPONENTS_ARC_COMMON_INTENT_HELPER_TEXT_SELECTION_ACTION_DELEGATE_H_
+#ifndef COMPONENTS_ARC_COMMON_INTENT_HELPER_ARC_INTENT_HELPER_MOJO_DELEGATE_H_
+#define COMPONENTS_ARC_COMMON_INTENT_HELPER_ARC_INTENT_HELPER_MOJO_DELEGATE_H_
 
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "components/arc/common/intent_helper/activity_icon_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace arc {
 
-// The delegate to handle RequestTextSelectionActions mojo API and required
-// structs for it.
-class TextSelectionActionDelegate {
+// This class provides API to use mojo connection.
+// For ash-chrome, it connects to ARC. For lacros-chrome, it connects to
+// ash-chrome which forwards to ARC.
+class ArcIntentHelperMojoDelegate {
  public:
-  virtual ~TextSelectionActionDelegate() = default;
+  virtual ~ArcIntentHelperMojoDelegate() = default;
+
+  // To make ActivityName type consistent between ArcIconCacheDelegate, use
+  // internal::ActivityIconLoader::ActivityName.
+  using ActivityName = internal::ActivityIconLoader::ActivityName;
 
   // Following structs basically refer to //ash/components/arc/mojom.
   // Convert arc::mojom and crosapi::mojom into common structs available from
   // both ash and lacros.
   // Some unnecessary parameters are dropped here.
-
-  // Describes an activity.
-  // See //ash/components/arc/mojom/intent_common.mojom for more details.
-  struct ActivityName {
-    ActivityName(std::string package_name,
-                 absl::optional<std::string> activity_name);
-    ActivityName(const ActivityName& other);
-    ActivityName& operator=(const ActivityName&) = delete;
-    ~ActivityName();
-
-    std::string package_name;
-    absl::optional<std::string> activity_name;
-  };
 
   // Describes an intent.
   // See //ash/components/arc/mojom/intent_helper.mojom for more details.
@@ -89,16 +82,46 @@ class TextSelectionActionDelegate {
     IntentInfo action_intent;
   };
 
+  // Describes a package that can handle an intent.
+  // See //ash/components/arc/mojom/intent_helper.mojom for more details.
+  struct IntentHandlerInfo {
+    IntentHandlerInfo(std::string name,
+                      std::string package_name,
+                      std::string activity_name);
+    IntentHandlerInfo(const IntentHandlerInfo& other);
+    IntentHandlerInfo& operator=(const IntentHandlerInfo&) = delete;
+    ~IntentHandlerInfo();
+
+    // The name of the package used as a description text.
+    std::string name;
+    // The name of the package used as an ID.
+    std::string package_name;
+    // A hint for retrieving the package's icon.
+    std::string activity_name;
+  };
+
+  using RequestUrlHandlerListCallback =
+      base::OnceCallback<void(std::vector<IntentHandlerInfo>)>;
+
   using RequestTextSelectionActionsCallback =
       base::OnceCallback<void(std::vector<TextSelectionAction>)>;
+
+  // Calls RequestUrlHandlerList mojo API.
+  virtual bool RequestUrlHandlerList(
+      const std::string& url,
+      RequestUrlHandlerListCallback callback) = 0;
 
   // Calls RequestTextSelectionActions mojo API.
   virtual bool RequestTextSelectionActions(
       const std::string& text,
       ui::ResourceScaleFactor scale_factor,
       RequestTextSelectionActionsCallback callback) = 0;
+
+  // Calls HandleUrl mojo API.
+  virtual bool HandleUrl(const std::string& url,
+                         const std::string& package_name) = 0;
 };
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_COMMON_INTENT_HELPER_TEXT_SELECTION_ACTION_DELEGATE_H_
+#endif  // COMPONENTS_ARC_COMMON_INTENT_HELPER_ARC_INTENT_HELPER_MOJO_DELEGATE_H_

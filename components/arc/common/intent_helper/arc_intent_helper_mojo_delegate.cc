@@ -2,22 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/common/intent_helper/text_selection_action_delegate.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
 
 namespace arc {
 
-TextSelectionActionDelegate::ActivityName::ActivityName(
-    std::string package_name,
-    absl::optional<std::string> activity_name)
-    : package_name(std::move(package_name)),
-      activity_name(std::move(activity_name)) {}
-
-TextSelectionActionDelegate::ActivityName::ActivityName(
-    const ActivityName& other) = default;
-
-TextSelectionActionDelegate::ActivityName::~ActivityName() = default;
-
-TextSelectionActionDelegate::IntentInfo::IntentInfo(
+ArcIntentHelperMojoDelegate::IntentInfo::IntentInfo(
     std::string action,
     absl::optional<std::vector<std::string>> categories,
     absl::optional<std::string> data,
@@ -31,12 +20,12 @@ TextSelectionActionDelegate::IntentInfo::IntentInfo(
       ui_bypassed(ui_bypassed),
       extras(std::move(extras)) {}
 
-TextSelectionActionDelegate::IntentInfo::IntentInfo(const IntentInfo& other) =
+ArcIntentHelperMojoDelegate::IntentInfo::IntentInfo(const IntentInfo& other) =
     default;
 
-TextSelectionActionDelegate::IntentInfo::~IntentInfo() = default;
+ArcIntentHelperMojoDelegate::IntentInfo::~IntentInfo() = default;
 
-TextSelectionActionDelegate::TextSelectionAction::TextSelectionAction(
+ArcIntentHelperMojoDelegate::TextSelectionAction::TextSelectionAction(
     std::string app_id,
     gfx::ImageSkia icon,
     ActivityName activity,
@@ -48,10 +37,23 @@ TextSelectionActionDelegate::TextSelectionAction::TextSelectionAction(
       title(std::move(title)),
       action_intent(std::move(action_intent)) {}
 
-TextSelectionActionDelegate::TextSelectionAction::TextSelectionAction(
+ArcIntentHelperMojoDelegate::TextSelectionAction::TextSelectionAction(
     const TextSelectionAction& other) = default;
 
-TextSelectionActionDelegate::TextSelectionAction::~TextSelectionAction() =
+ArcIntentHelperMojoDelegate::TextSelectionAction::~TextSelectionAction() =
     default;
+
+ArcIntentHelperMojoDelegate::IntentHandlerInfo::IntentHandlerInfo(
+    std::string name,
+    std::string package_name,
+    std::string activity_name)
+    : name(std::move(name)),
+      package_name(std::move(package_name)),
+      activity_name(std::move(activity_name)) {}
+
+ArcIntentHelperMojoDelegate::IntentHandlerInfo::IntentHandlerInfo(
+    const IntentHandlerInfo& other) = default;
+
+ArcIntentHelperMojoDelegate::IntentHandlerInfo::~IntentHandlerInfo() = default;
 
 }  // namespace arc
