@@ -26,7 +26,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-04-10">
   <owner>patrykd@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Tracks the error during fingerprint authentication session. It is recorded
@@ -37,9 +37,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
     expires_after="2022-04-10">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Tracks the scan result during fingerprint authentication session. It is
@@ -62,9 +62,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
     expires_after="2022-04-10">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Tracks the scan result during fingerprint enrollment session. It is recorded
@@ -121,9 +121,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.AttemptsCountBeforeSuccess" units="count"
     expires_after="2022-05-01">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Counts the number of fingerprint attempts until successful screen unlock.
   </summary>
@@ -131,9 +131,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
     expires_after="2022-04-03">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Counts the number of times that the fingerprint match successfully vs.
     rejected.
@@ -142,17 +142,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
     expires_after="2022-04-03">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>Counts the number of fingers enrolled by the user.</summary>
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Capture" units="ms"
     expires_after="2022-05-01">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Measures the time it took to capture the fingerprint image in the 'match'
     case.
@@ -161,9 +161,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Matcher" units="ms"
     expires_after="2022-04-24">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Measures the time it took to run matcher in the 'match' case.
   </summary>
@@ -171,9 +171,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Overall" units="ms"
     expires_after="2022-04-24">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Measures the time it took between the detection of a finger and the 'match'
     event being sent to the AP.
@@ -201,9 +201,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Capture" units="ms"
     expires_after="2022-05-01">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Measures the time it took to capture the fingerprint image in the 'no-match'
     case.
@@ -212,9 +212,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Matcher" units="ms"
     expires_after="2022-05-01">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Measures the time it took to run the matcher in the 'no-match' case.
   </summary>
@@ -222,9 +222,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Overall" units="ms"
     expires_after="2022-04-24">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>jessejames@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Measures the time it took between the detection of a finger and the
     'no-match' event being sent to the AP.
@@ -251,9 +251,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
     expires_after="2022-04-03">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Tracks the result of the fingerprint authentication attempt on the lock
