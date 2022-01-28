@@ -1109,7 +1109,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
     } else if (event.GetClickCount() == 1 && event.IsLeftMouseButton()) {
       // Select the current word and record it for later. This is done to handle
       // an edge case where the wrong word is selected on a double click when
-      // the elided URL is selected prior to the dobule click. Unelision happens
+      // the elided URL is selected prior to the double click. Unelision happens
       // between the first and second click, causing the wrong word to be
       // selected because it's based on the click position in the newly unelided
       // URL. See https://crbug.com/1084406.

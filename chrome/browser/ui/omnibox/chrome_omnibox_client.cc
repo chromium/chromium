@@ -402,6 +402,11 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
   }
 }
 
+void ChromeOmniboxClient::FocusWebContents() {
+  if (controller_->GetWebContents())
+    controller_->GetWebContents()->Focus();
+}
+
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = controller_->GetWebContents();
 

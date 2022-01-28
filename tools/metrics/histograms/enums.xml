@@ -52157,6 +52157,7 @@ from previous Chrome versions.
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
+  <int value="-1280274244" label="OmniboxClosePopupWithEscape:disabled"/>
   <int value="-1278796760" label="QueryInOmnibox:enabled"/>
   <int value="-1276912933" label="enable-quick-unlock-pin"/>
   <int value="-1276579737" label="PictureInPictureAPI:disabled"/>
@@ -52633,6 +52634,7 @@ from previous Chrome versions.
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
+  <int value="-948684341" label="OmniboxBlurWithEscape:enabled"/>
   <int value="-948256052" label="EnableInputInDiagnosticsApp:enabled"/>
   <int value="-946366838" label="MetricsSettingsAndroid:enabled"/>
   <int value="-945806012" label="DownloadsUi:enabled"/>
@@ -53896,6 +53898,7 @@ from previous Chrome versions.
   <int value="-9599490" label="KernelnextVMs:disabled"/>
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
+  <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
   <int value="-5052940" label="enable-simplified-fullscreen"/>
   <int value="-3093629" label="DcheckIsFatal:disabled"/>
   <int value="-2953333" label="AndroidHistoryManager:disabled"/>
@@ -55142,6 +55145,7 @@ from previous Chrome versions.
   <int value="902839593" label="WebContentsForceDark:disabled"/>
   <int value="903267263" label="disable-offline-pages"/>
   <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
+  <int value="904437796" label="OmniboxBlurWithEscape:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
   <int value="907056713" label="DetectFormSubmissionOnFormClear:enabled"/>
   <int value="908302031"
@@ -66081,6 +66085,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="mouse click on hint view"/>
   <int value="7" label="tap gesture on hint view"/>
   <int value="8" label="select suggestion"/>
+</enum>
+
+<enum name="OmniboxEscapeAction">
+  <int value="0" label="None; omnibox state unaffected"/>
+  <int value="1" label="Reverted temporary Text"/>
+  <int value="2" label="Closed popup"/>
+  <int value="3" label="Cleared user input"/>
+  <int value="4" label="Closed popup and cleared user input"/>
+  <int value="5" label="Blurred"/>
 </enum>
 
 <enum name="OmniboxFocusReason">

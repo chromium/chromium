@@ -37,6 +37,8 @@ class TestOmniboxEditModel : public OmniboxEditModel {
                           bool is_keyword_hint,
                           const std::u16string& additional_text) override;
 
+  bool HasTemporaryText() { return has_temporary_text_; }
+
   const std::u16string& text() const { return text_; }
   bool is_temporary_text() const { return is_temporary_text_; }
 

@@ -166,6 +166,9 @@ class OmniboxClient {
 
   // Presents prompt to update Chrome.
   virtual void OpenUpdateChromeDialog() {}
+
+  // Focuses the `WebContents`, i.e. the web page of the current tab.
+  virtual void FocusWebContents() {}
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CLIENT_H_

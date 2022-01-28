@@ -284,6 +284,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Escape" enum="OmniboxEscapeAction"
+    expires_after="2022-07-15">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    When the omnibox is focused and escape is pressed, the 1st of the following
+    occurs:
+
+    1) If there is temporary text (i.e. a non default suggestion is selected),
+    it is cleared.
+
+    2) If the popup is open and the `kClosePopupWithEscape` feature is enabled,
+    the popup is closed.
+
+    3) If the popup is open, which is considered as user input in progress, then
+    the popup is closed and user input is cleared.
+
+    4) If user input is in progress, it is cleared. This state (i.e. input in
+    progress with the popup closed) typically occurs when input was in progress,
+    then the omnibox was blurred, and then it was refocused.
+
+    5) If the `kBlurWithEscape` feature is enabled, it is blurred.
+
+    6) Otherwise, omnibox state is unchanged. This doesn't mean the escape did
+    nothing; e.g., it may have stopped a navigation. Some of the cases,
+    including case (6), may also select the omnibox's entire text, but this
+    isn't recorded.
+
+    This histogram records which of the above occurred.
+
+    It is recorded every time escape is pressed with the omnibox focused. With
+    the `kBlurWithEscape` feature disabled, pressing escape e.g. 10 times will
+    emit the metric 10 times; but with the feature enabled, it emits at most 4
+    times until the omnibox is blurred.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.FocusResultedInNavigation" enum="BooleanNavigated"
     expires_after="2022-06-12">
   <owner>ender@chromium.org</owner>

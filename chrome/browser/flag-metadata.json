@@ -4227,6 +4227,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "omnibox-blur-with-escape",
+    "owners": ["manukh", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-bookmark-paths",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 100
@@ -4240,6 +4245,11 @@
     "name": "omnibox-clobber-triggers-contextual-web-zero-suggest",
     "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 100
+  },
+  {
+    "name": "omnibox-close-popup-with-escape",
+    "owners": ["manukh", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-disable-cgi-param-matching",

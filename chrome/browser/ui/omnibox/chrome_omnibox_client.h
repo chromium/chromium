@@ -83,6 +83,7 @@ class ChromeOmniboxClient : public OmniboxClient {
   void OnBookmarkLaunched() override;
   void DiscardNonCommittedNavigations() override;
   void OpenUpdateChromeDialog() override;
+  void FocusWebContents() override;
 
   // Update shortcuts when a navigation succeeds.
   static void OnSuccessfulNavigation(Profile* profile,

@@ -4674,6 +4674,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAggregateShortcutsName,
      flag_descriptions::kOmniboxAggregateShortcutsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAggregateShortcuts)},
+    {"omnibox-close-popup-with-escape",
+     flag_descriptions::kOmniboxClosePopupWithEscapeName,
+     flag_descriptions::kOmniboxClosePopupWithEscapeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kClosePopupWithEscape)},
+    {"omnibox-blur-with-escape", flag_descriptions::kOmniboxBlurWithEscapeName,
+     flag_descriptions::kOmniboxBlurWithEscapeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kBlurWithEscape)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 

@@ -1672,6 +1672,11 @@ const char kOmniboxAssistantVoiceSearchDescription[] =
     "When enabled, use Assistant for omnibox voice query recognition instead of"
     " Android's built-in voice recognition service. Only works on Android.";
 
+const char kOmniboxBlurWithEscapeName[] = "Omnibox Blur with Escape";
+const char kOmniboxBlurWithEscapeDescription[] =
+    "When enabled, pressing escape when the omnibox is focused without user "
+    "input will blur the omnibox and focus the web page.";
+
 const char kOmniboxBookmarkPathsName[] = "Omnibox Bookmark Paths";
 const char kOmniboxBookmarkPathsDescription[] =
     "Allows inputs to match with bookmark paths. E.g. 'planets jupiter' can "
@@ -1684,6 +1689,13 @@ const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[] =
     "If enabled, when the user clears the whole omnibox text (i.e. via "
     "Backspace), Chrome will request ZeroSuggest suggestions for the OTHER "
     "page classification (contextual web).";
+
+const char kOmniboxClosePopupWithEscapeName[] =
+    "Omnibox Close Popup with Escape";
+const char kOmniboxClosePopupWithEscapeDescription[] =
+    "When enabled, pressing escape when the omnibox popup is open and the "
+    "default suggestion is selected will close the omnibox without removing "
+    "its focus or clearing user input.";
 
 const char kOmniboxDisableCGIParamMatchingName[] =
     "Disable CGI Param Name Matching";

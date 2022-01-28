@@ -311,6 +311,12 @@ const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
 const base::Feature kOmniboxAssistantVoiceSearch{
     "OmniboxAssistantVoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kClosePopupWithEscape{"OmniboxClosePopupWithEscape",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kBlurWithEscape{"OmniboxBlurWithEscape",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, a setting is added to chrome://settings/searchEngines to
 // control whether <space> can be used to trigger keyword mode.
 const base::Feature kKeywordSpaceTriggeringSetting{

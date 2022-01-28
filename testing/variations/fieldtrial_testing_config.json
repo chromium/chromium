@@ -3966,6 +3966,8 @@
                     },
                     "enable_features": [
                         "OmniboxAggregateShortcuts",
+                        "OmniboxBlurWithEscape",
+                        "OmniboxClosePopupWithEscape",
                         "OmniboxDocumentProviderAso",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxKeywordSearchButton",
