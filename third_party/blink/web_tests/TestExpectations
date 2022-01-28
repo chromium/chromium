@@ -7638,3 +7638,10 @@ crbug.com/1291488 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTC
 # Sheriff 2022-01-28
 crbug.com/1248386 http/tests/text-autosizing/wide-iframe.html [ Failure Pass Timeout ]
 crbug.com/1287563 [ Linux ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation-stress-glare-linear.https.html [ Crash Failure Pass ]
+
+# DevTools - Temporarily disable for new Interest Groups panel that requires tests to be rebaselined after the roll.
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Pass Failure ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-websql.js [ Pass Failure ]
