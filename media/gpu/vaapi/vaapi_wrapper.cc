@@ -513,7 +513,7 @@ class VADisplayState {
   VADisplay va_display() const { return va_display_; }
   VAImplementation implementation_type() const { return implementation_type_; }
 
-  void SetDrmFd(base::PlatformFile fd) { drm_fd_.reset(HANDLE_EINTR(dup(fd))); }
+  void SetDrmFd(base::ScopedFD fd) { drm_fd_ = std::move(fd); }
 
  private:
   friend class base::NoDestructor<VADisplayState>;
@@ -576,7 +576,8 @@ void VADisplayState::PreSandboxInitialization() {
     drmFreeVersion(version);
     if (base::LowerCaseEqualsASCII(version_name, "vgem"))
       continue;
-    VADisplayState::Get()->SetDrmFd(drm_file.GetPlatformFile());
+    VADisplayState::Get()->SetDrmFd(
+        base::ScopedFD(drm_file.TakePlatformFile()));
     return;
   }
 }
