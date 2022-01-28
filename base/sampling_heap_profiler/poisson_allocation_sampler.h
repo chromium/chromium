@@ -93,7 +93,13 @@ class BASE_EXPORT PoissonAllocationSampler {
   // want to put observers notification loop under a reader-writer lock.
   void RemoveSamplesObserver(SamplesObserver*);
 
-  void SetSamplingInterval(size_t sampling_interval);
+  // Sets the mean number of bytes that will be allocated before taking a
+  // sample.
+  void SetSamplingInterval(size_t sampling_interval_bytes);
+
+  // Returns the current mean sampling interval, in bytes.
+  size_t SamplingInterval() const;
+
   void SuppressRandomnessForTest(bool suppress);
 
   static void RecordAlloc(void* address,

@@ -2413,6 +2413,23 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Stop"/>
 </enum>
 
+<enum name="AndroidStackUnwinder">
+  <int value="0" label="Not checked">
+    The stack unwinding implementation was not checked. The SamplingHeapProfiler
+    will collect stack samples but they may be invalid.
+  </int>
+  <int value="1" label="Default">
+    The SamplingHeapProfiler uses the default unwind tables.
+  </int>
+  <int value="2" label="CFIBackTrace">
+    The SamplingHeapProfiler uses the trace_event::CFIBacktraceAndroid class.
+  </int>
+  <int value="3" label="Unavailable">
+    Stack unwinding is not available. The SamplingHeapProfiler will not collect
+    stack samples.
+  </int>
+</enum>
+
 <enum name="AndroidTabCloseUndoToastEvent">
   <int value="0" label="Undo Shown (Cold)"/>
   <int value="1" label="Undo Shown (Warm)"/>

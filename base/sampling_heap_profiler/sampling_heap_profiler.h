@@ -69,7 +69,7 @@ class BASE_EXPORT SamplingHeapProfiler
   void Stop();
 
   // Sets sampling interval in bytes.
-  void SetSamplingInterval(size_t sampling_interval);
+  void SetSamplingInterval(size_t sampling_interval_bytes);
 
   // Enables recording thread name that made the sampled allocation.
   void SetRecordThreadNames(bool value);

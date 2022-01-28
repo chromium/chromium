@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
@@ -82,8 +83,19 @@ const char* UpdateAndGetThreadName(const char* name) {
   return thread_name;
 }
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_ANDROID)
+
+// Logged to UMA - keep in sync with enums.xml.
+enum class AndroidStackUnwinder {
+  kNotChecked,
+  kDefault,
+  kCFIBacktrace,
+  kUnavailable,
+  kMaxValue = kUnavailable,
+};
+
+#if BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
+
 // Checks whether unwinding from this function works.
 bool HasDefaultUnwindTables() {
   void* stack[kMaxStackEntries];
@@ -92,7 +104,27 @@ bool HasDefaultUnwindTables() {
   // First frame is the current function and can be found without unwind tables.
   return frame_count > 1;
 }
-#endif
+
+AndroidStackUnwinder ChooseAndroidStackUnwinder() {
+  if (trace_event::CFIBacktraceAndroid::GetInitializedInstance()
+          ->can_unwind_stack_frames()) {
+    return AndroidStackUnwinder::kCFIBacktrace;
+  }
+  if (HasDefaultUnwindTables()) {
+    return AndroidStackUnwinder::kDefault;
+  }
+  return AndroidStackUnwinder::kUnavailable;
+}
+
+#else  // !(BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD))
+
+AndroidStackUnwinder ChooseAndroidStackUnwinder() {
+  return AndroidStackUnwinder::kNotChecked;
+}
+
+#endif  // BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -111,23 +143,30 @@ SamplingHeapProfiler::~SamplingHeapProfiler() {
 }
 
 uint32_t SamplingHeapProfiler::Start() {
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
-  if (!trace_event::CFIBacktraceAndroid::GetInitializedInstance()
-           ->can_unwind_stack_frames()) {
-    if (HasDefaultUnwindTables()) {
+#if BUILDFLAG(IS_ANDROID)
+  const auto unwinder = ChooseAndroidStackUnwinder();
+  base::UmaHistogramEnumeration("HeapProfiling.AndroidStackUnwinder", unwinder);
+  switch (unwinder) {
+    case AndroidStackUnwinder::kNotChecked:
+    case AndroidStackUnwinder::kCFIBacktrace:
+      // Nothing to do.
+      break;
+    case AndroidStackUnwinder::kDefault:
       use_default_unwinder_ = true;
-    } else {
+      break;
+    case AndroidStackUnwinder::kUnavailable:
       LOG(WARNING)
           << "Sampling heap profiler: Stack unwinding is not available.";
       return 0;
-    }
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
+  auto* poisson_allocation_sampler = PoissonAllocationSampler::Get();
+  base::UmaHistogramCounts10M("HeapProfiling.SamplingInterval",
+                              poisson_allocation_sampler->SamplingInterval());
   AutoLock lock(start_stop_mutex_);
   if (!running_sessions_++)
-    PoissonAllocationSampler::Get()->AddSamplesObserver(this);
+    poisson_allocation_sampler->AddSamplesObserver(this);
   return last_sample_ordinal_;
 }
 
@@ -138,8 +177,8 @@ void SamplingHeapProfiler::Stop() {
     PoissonAllocationSampler::Get()->RemoveSamplesObserver(this);
 }
 
-void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval) {
-  PoissonAllocationSampler::Get()->SetSamplingInterval(sampling_interval);
+void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval_bytes) {
+  PoissonAllocationSampler::Get()->SetSamplingInterval(sampling_interval_bytes);
 }
 
 void SamplingHeapProfiler::SetRecordThreadNames(bool value) {

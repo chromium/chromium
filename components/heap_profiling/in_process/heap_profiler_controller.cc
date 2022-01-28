@@ -30,14 +30,14 @@ namespace {
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 // Average 1M bytes per sample.
-constexpr int kDefaultSamplingRate = 1000000;
+constexpr int kDefaultSamplingRateBytes = 1'000'000;
 
 // Default on iOS is equal to mean value of up process time. Android is
 // more similar to iOS than to Desktop.
 constexpr int kDefaultCollectionIntervalInMinutes = 30;
 #else
 // Average 10M bytes per sample.
-constexpr int kDefaultSamplingRate = 10000000;
+constexpr int kDefaultSamplingRateBytes = 10'000'000;
 
 // Default on desktop is once per day.
 constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
@@ -56,9 +56,9 @@ constexpr base::FeatureParam<double> kNonStableProbability{
     0.5};
 
 // Sets heap sampling interval in bytes.
-constexpr base::FeatureParam<int> kSamplingRate{
+constexpr base::FeatureParam<int> kSamplingRateBytes{
     &HeapProfilerController::kHeapProfilerReporting, "sampling-rate",
-    kDefaultSamplingRate};
+    kDefaultSamplingRateBytes};
 
 // Sets the interval between snapshots.
 constexpr base::FeatureParam<int> kCollectionIntervalMinutes{
@@ -107,9 +107,9 @@ void HeapProfilerController::Start() {
                             profiling_enabled_);
   if (!profiling_enabled_)
     return;
-  int sampling_rate = kSamplingRate.Get();
-  if (sampling_rate > 0)
-    base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate);
+  int sampling_rate_bytes = kSamplingRateBytes.Get();
+  if (sampling_rate_bytes > 0)
+    base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate_bytes);
   base::SamplingHeapProfiler::Get()->Start();
   const int interval = kCollectionIntervalMinutes.Get();
   DCHECK_GT(interval, 0);
@@ -130,6 +130,14 @@ void HeapProfilerController::ScheduleNextSnapshot(
       heap_collection_interval.use_random_interval
           ? RandomInterval(heap_collection_interval.interval)
           : heap_collection_interval.interval;
+  // Poisson distribution gives ~1% chance of >5 days on desktop, so set the
+  // overflow bucket just beyond that. Use minute granularity at the lower end
+  // the distribution is centered around 30 min on mobile.
+  constexpr base::TimeDelta kMinHistogramTime = base::Minutes(1);
+  constexpr base::TimeDelta kMaxHistogramTime = base::Days(6);
+  base::UmaHistogramCustomTimes("HeapProfiling.InProcess.SnapshotInterval",
+                                next_interval, kMinHistogramTime,
+                                kMaxHistogramTime, 50);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(stopped),
@@ -151,6 +159,8 @@ void HeapProfilerController::TakeSnapshot(
 void HeapProfilerController::RetrieveAndSendSnapshot() {
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
+  base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
+                                 samples.size());
   if (samples.empty())
     return;
 

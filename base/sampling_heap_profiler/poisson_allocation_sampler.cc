@@ -473,9 +473,14 @@ bool PoissonAllocationSampler::AreHookedSamplesMuted() {
   return g_mute_hooked_samples;
 }
 
-void PoissonAllocationSampler::SetSamplingInterval(size_t sampling_interval) {
+void PoissonAllocationSampler::SetSamplingInterval(
+    size_t sampling_interval_bytes) {
   // TODO(alph): Reset the sample being collected if running.
-  g_sampling_interval = sampling_interval;
+  g_sampling_interval = sampling_interval_bytes;
+}
+
+size_t PoissonAllocationSampler::SamplingInterval() const {
+  return g_sampling_interval.load(std::memory_order_relaxed);
 }
 
 // static
