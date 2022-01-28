@@ -5,8 +5,8 @@
 #ifndef BASE_WIN_SHORTCUT_H_
 #define BASE_WIN_SHORTCUT_H_
 
-#include <windows.h>
-#include <commctrl.h>
+#include "guiddef.h"
+
 #include <stdint.h>
 
 #include "base/base_export.h"
@@ -67,12 +67,7 @@ struct BASE_EXPORT ShortcutProperties {
     options |= PROPERTIES_ARGUMENTS;
   }
 
-  void set_description(const std::wstring& description_in) {
-    // Size restriction as per MSDN at http://goo.gl/OdNQq.
-    DCHECK_LE(description_in.size(), static_cast<size_t>(INFOTIPSIZE));
-    description = description_in;
-    options |= PROPERTIES_DESCRIPTION;
-  }
+  void set_description(const std::wstring& description_in);
 
   void set_icon(const FilePath& icon_in, int icon_index_in) {
     icon = icon_in;

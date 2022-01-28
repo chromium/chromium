@@ -60,6 +60,13 @@ ShortcutProperties::ShortcutProperties(const ShortcutProperties& other) =
 
 ShortcutProperties::~ShortcutProperties() = default;
 
+void ShortcutProperties::set_description(const std::wstring& description_in) {
+  // Size restriction as per MSDN at http://goo.gl/OdNQq.
+  DCHECK_LE(description_in.size(), static_cast<size_t>(INFOTIPSIZE));
+  description = description_in;
+  options |= PROPERTIES_DESCRIPTION;
+}
+
 bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
                                 const ShortcutProperties& properties,
                                 ShortcutOperation operation) {
