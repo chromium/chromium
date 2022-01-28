@@ -29,7 +29,6 @@ all,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
 all,chrome/browser/ash/net/network_diagnostics/http_request_manager.cc
 all,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
 all,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.cc
-all,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc
 all,chrome/browser/search/background/ntp_background_service.cc
 all,chromeos/components/quick_answers/result_loader.cc
 all,chrome/browser/apps/app_service/webapk/webapk_install_task.cc
