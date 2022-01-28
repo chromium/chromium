@@ -53,10 +53,7 @@ enum class SignedExchangeLoadResult {
   kCertValidityPeriodTooLong,
   // SXG had "Vary: Cookie" inner header but we had a cookie for the URL.
   kHadCookieForCookielessOnlySXG,
-  // The certificate didn't match the built-in public key pins for the host
-  // name.
-  kPKPViolationError,
-  kMaxValue = kPKPViolationError
+  kMaxValue = kHadCookieForCookielessOnlySXG
 };
 
 struct SignedExchangeError {
