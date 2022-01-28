@@ -73,27 +73,38 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
   if (!IsFeatureAllowed(context))
     return nullptr;
 
-  if (ProfileHelper::IsSigninProfile(Profile::FromBrowserContext(context))) {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  // The SigninProfile is a special Profile used at the login screen.
+  if (ProfileHelper::IsSigninProfile(profile)) {
     if (!context->IsOffTheRecord())
       return nullptr;
 
+    // There is only one "on the record" SigninProfile instantiated during the
+    // login screen's lifetime, regardless of how many users have previously
+    // signed into this device. This means only one EasyUnlockServiceSignin is
+    // instantiated. This single EasyUnlockServiceSignin instance manages the
+    // Smart Lock user flow for all user pods on the login screen.
     service = new EasyUnlockServiceSignin(
-        Profile::FromBrowserContext(context),
+        profile,
         secure_channel::SecureChannelClientProvider::GetInstance()
             ->GetClient());
-  } else if (!ProfileHelper::IsRegularProfile(
-                 Profile::FromBrowserContext(context))) {
+  } else if (!ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
 
   if (!service) {
+    // This is otherwise a "regular" Profile, i.e., a signed-in user (and
+    // therefore this service will be serving the lock screen, not the login
+    // screen). In contrast to EasyUnlockServiceSignin, an
+    // EasyUnlockServiceRegular instance manages the Smart Lock user flow for
+    // only one user.
     service = new EasyUnlockServiceRegular(
         Profile::FromBrowserContext(context),
         secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
-        device_sync::DeviceSyncClientFactory::GetForProfile(
-            Profile::FromBrowserContext(context)),
+        device_sync::DeviceSyncClientFactory::GetForProfile(profile),
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
-            Profile::FromBrowserContext(context)));
+            profile));
   }
 
   service->Initialize();
