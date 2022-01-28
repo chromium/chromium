@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardDisabledTest,
 // installation. In this case canMakePayment() returns true and
 // hasEnrolledInstrument() returns false.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardDisabledTest,
-                       CanMakePayment_NotSupported) {
+                       DISABLED_CanMakePayment_NotSupported) {
   std::string method = nickpay_server_.GetURL("nickpay.com", "/pay").spec();
 
   NavigateTo("/payment_request_can_make_payment_query_test.html");
