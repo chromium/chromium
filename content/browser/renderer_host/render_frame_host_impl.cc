@@ -10177,39 +10177,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     return false;
   }
 
-  // file: URLs can be allowed to access any other origin, based on settings.
-  bool bypass_checks_for_file_scheme = false;
-  if (params->origin.scheme() == url::kFileScheme) {
-    auto prefs = GetOrCreateWebPreferences();
-    if (prefs.allow_universal_access_from_file_urls)
-      bypass_checks_for_file_scheme = true;
-  }
-
-  // If the --disable-web-security flag is specified, all bets are off and the
-  // renderer process can send any origin it wishes.
-  bool bypass_checks_for_disable_web_security =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableWebSecurity);
-
-  // WebView's loadDataWithBaseURL API is allowed to bypass normal commit
-  // checks because it is allowed to commit anything into its unlocked process
-  // and its data: URL and non-opaque origin would fail the normal commit
-  // checks. We should also allow same-document navigations within pages loaded
-  // with loadDataWithBaseURL. Since renderer-initiated same-document
-  // navigations won't have a NavigationRequest at this point, we need to check
-  // |renderer_url_info_.was_loaded_from_load_data_with_base_url|.
-  DCHECK(navigation_request || is_same_document_navigation ||
-         frame_tree_node_->is_on_initial_empty_document());
-  bool bypass_checks_for_webview = false;
-  if ((navigation_request && navigation_request->IsLoadDataWithBaseURL()) ||
-      (is_same_document_navigation &&
-       renderer_url_info_.was_loaded_from_load_data_with_base_url)) {
-    // Allow bypass if the process isn't locked. Otherwise run normal checks.
-    bypass_checks_for_webview = !process->GetProcessLock().is_locked_to_site();
-  }
-
-  if (!bypass_checks_for_error_page && !bypass_checks_for_file_scheme &&
-      !bypass_checks_for_disable_web_security && !bypass_checks_for_webview &&
+  if (!bypass_checks_for_error_page &&
       !ValidateURLAndOrigin(params->url, params->origin,
                             is_same_document_navigation, navigation_request)) {
     return false;
@@ -10296,7 +10264,37 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
     const url::Origin& origin,
     bool is_same_document_navigation,
     NavigationRequest* navigation_request) {
+  // file: URLs can be allowed to access any other origin, based on settings.
+  if (origin.scheme() == url::kFileScheme) {
+    auto prefs = GetOrCreateWebPreferences();
+    if (prefs.allow_universal_access_from_file_urls)
+      return true;
+  }
+
+  // If the --disable-web-security flag is specified, all bets are off and the
+  // renderer process can send any origin it wishes.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity)) {
+    return true;
+  }
+
+  // WebView's loadDataWithBaseURL API is allowed to bypass normal commit
+  // checks because it is allowed to commit anything into its unlocked process
+  // and its data: URL and non-opaque origin would fail the normal commit
+  // checks. We should also allow same-document navigations within pages loaded
+  // with loadDataWithBaseURL. Since renderer-initiated same-document
+  // navigations won't have a NavigationRequest at this point, we need to check
+  // |renderer_url_info_.was_loaded_from_load_data_with_base_url|.
+  DCHECK(navigation_request || is_same_document_navigation ||
+         frame_tree_node_->is_on_initial_empty_document());
   RenderProcessHost* process = GetProcess();
+  if ((navigation_request && navigation_request->IsLoadDataWithBaseURL()) ||
+      (is_same_document_navigation &&
+       renderer_url_info_.was_loaded_from_load_data_with_base_url)) {
+    // Allow bypass if the process isn't locked. Otherwise run normal checks.
+    if (!process->GetProcessLock().is_locked_to_site())
+      return true;
+  }
 
   // Use the value of `is_pdf` from `navigation_request` (if provided). This may
   // be needed to verify the process lock in `CanCommitOriginAndUrl()`, but
