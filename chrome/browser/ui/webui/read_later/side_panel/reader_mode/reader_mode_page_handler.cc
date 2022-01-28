@@ -45,7 +45,7 @@ const ui::AXNode* GetArticleNode(const ui::AXNode* node) {
   while (!queue.empty()) {
     const ui::AXNode* popped = queue.front();
     queue.pop();
-    if (popped->data().role == ax::mojom::Role::kArticle)
+    if (popped->GetRole() == ax::mojom::Role::kArticle)
       return popped;
     for (auto iter = popped->UnignoredChildrenBegin();
          iter != popped->UnignoredChildrenEnd(); ++iter) {
@@ -58,18 +58,15 @@ const ui::AXNode* GetArticleNode(const ui::AXNode* node) {
 
 void AddTextNodesToVector(const ui::AXNode* node,
                           std::vector<std::string>* strings) {
-  const ui::AXNodeData& node_data = node->data();
-
-  if (node_data.role == ax::mojom::Role::kStaticText) {
-    if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-      strings->emplace_back(
-          node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
-    }
+  if (node->GetRole() == ax::mojom::Role::kStaticText) {
+    std::string value;
+    if (node->GetStringAttribute(ax::mojom::StringAttribute::kName, &value))
+      strings->emplace_back(value);
     return;
   }
 
   for (const auto role : kRolesToSkip) {
-    if (role == node_data.role)
+    if (role == node->GetRole())
       return;
   }
   for (auto iter = node->UnignoredChildrenBegin();

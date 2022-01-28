@@ -844,13 +844,10 @@ namespace {
 // TODO(avi): Move this to be a lambda when P0839R0 lands in C++.
 void AddTextNodesToVector(const ui::AXNode* node,
                           std::vector<std::u16string>* strings) {
-  const ui::AXNodeData& node_data = node->data();
-
-  if (node_data.role == ax::mojom::Role::kStaticText) {
-    if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-      strings->emplace_back(
-          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-    }
+  if (node->GetRole() == ax::mojom::Role::kStaticText) {
+    std::u16string value;
+    if (node->GetString16Attribute(ax::mojom::StringAttribute::kName, &value))
+      strings->emplace_back(value);
     return;
   }
 
