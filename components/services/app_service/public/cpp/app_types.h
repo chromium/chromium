@@ -163,6 +163,9 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // Whether the app publisher allows the app to be uninstalled.
   absl::optional<bool> allow_uninstall;
 
+  // Whether the app icon should add the notification badging.
+  absl::optional<bool> has_badge;
+
   // TODO(crbug.com/1253250): Add other App struct fields.
 
   // When adding new fields to the App type, the `Clone` function and the

@@ -239,7 +239,11 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
   apps::mojom::AppPtr app =
       publisher_helper_->app_notifications_.GetAppWithHasBadgeStatus(
           publisher_helper_->app_type(), app_id);
-  app->has_badge = publisher_helper_->ShouldShowBadge(app_id, app->has_badge);
+  app->has_badge =
+      publisher_helper_->ShouldShowBadge(
+          app_id, app->has_badge == apps::mojom::OptionalBool::kTrue)
+          ? apps::mojom::OptionalBool::kTrue
+          : apps::mojom::OptionalBool::kFalse;
   publisher_helper_->delegate_->PublishWebApp(std::move(app));
 }
 #endif
@@ -510,6 +514,11 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
 #if BUILDFLAG(IS_CHROMEOS)
   if (readiness != apps::Readiness::kReady)
     UpdateAppDisabledMode(*app);
+
+  app->has_badge = ShouldShowBadge(
+      web_app->app_id(), app_notifications_.HasNotification(web_app->app_id()));
+#else
+  app->has_badge = false;
 #endif
 
   app->allow_uninstall = web_app->CanUserUninstallWebApp();
@@ -604,11 +613,11 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     UpdateAppDisabledMode(app);
   }
 
-  apps::mojom::OptionalBool has_notification =
-      app_notifications_.HasNotification(web_app->app_id())
+  app->has_badge =
+      ShouldShowBadge(web_app->app_id(),
+                      app_notifications_.HasNotification(web_app->app_id()))
           ? apps::mojom::OptionalBool::kTrue
           : apps::mojom::OptionalBool::kFalse;
-  app->has_badge = ShouldShowBadge(web_app->app_id(), has_notification);
 #else
   app->has_badge = apps::mojom::OptionalBool::kFalse;
 #endif
@@ -1278,7 +1287,11 @@ void WebAppPublisherHelper::OnNotificationClosed(
   for (const auto& app_id : app_ids) {
     apps::mojom::AppPtr app =
         app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
-    app->has_badge = ShouldShowBadge(app_id, app->has_badge);
+    app->has_badge =
+        ShouldShowBadge(app_id,
+                        app->has_badge == apps::mojom::OptionalBool::kTrue)
+            ? apps::mojom::OptionalBool::kTrue
+            : apps::mojom::OptionalBool::kFalse;
     delegate_->PublishWebApp(std::move(app));
   }
 }
@@ -1547,7 +1560,10 @@ bool WebAppPublisherHelper::MaybeAddNotification(
   app_notifications_.AddNotification(app_id, notification_id);
   apps::mojom::AppPtr app =
       app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
-  app->has_badge = ShouldShowBadge(app_id, app->has_badge);
+  app->has_badge = ShouldShowBadge(app_id, app->has_badge ==
+                                               apps::mojom::OptionalBool::kTrue)
+                       ? apps::mojom::OptionalBool::kTrue
+                       : apps::mojom::OptionalBool::kFalse;
   delegate_->PublishWebApp(std::move(app));
   return true;
 }
@@ -1589,18 +1605,15 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
   }
 }
 
-apps::mojom::OptionalBool WebAppPublisherHelper::ShouldShowBadge(
-    const std::string& app_id,
-    apps::mojom::OptionalBool has_notification) {
+bool WebAppPublisherHelper::ShouldShowBadge(const std::string& app_id,
+                                            bool has_notification) {
   // We show a badge if either the Web Badging API recently has a badge set, or
   // the Badging API has not been recently used by the app and a notification is
   // showing.
   if (!badge_manager_ || !badge_manager_->HasRecentApiUsage(app_id))
     return has_notification;
 
-  return badge_manager_->GetBadgeValue(app_id).has_value()
-             ? apps::mojom::OptionalBool::kTrue
-             : apps::mojom::OptionalBool::kFalse;
+  return badge_manager_->GetBadgeValue(app_id).has_value();
 }
 #endif
 

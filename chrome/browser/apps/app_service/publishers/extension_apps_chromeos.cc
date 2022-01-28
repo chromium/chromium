@@ -572,6 +572,8 @@ void ExtensionAppsChromeOs::OnNotificationClosed(
     PublisherBase::Publish(
         app_notifications_.GetAppWithHasBadgeStatus(mojom_app_type(), app_id),
         subscribers());
+    AppPublisher::Publish(
+        app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id));
   }
 }
 
@@ -592,6 +594,8 @@ bool ExtensionAppsChromeOs::MaybeAddNotification(
   PublisherBase::Publish(
       app_notifications_.GetAppWithHasBadgeStatus(mojom_app_type(), app_id),
       subscribers());
+  AppPublisher::Publish(
+      app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id));
   return true;
 }
 
@@ -811,6 +815,9 @@ std::unique_ptr<App> ExtensionAppsChromeOs::CreateApp(
   }
   if (disable_for_lacros)
     app->show_in_management = false;
+
+  app->has_badge = app_notifications_.HasNotification(extension->id());
+
   return app;
 }
 

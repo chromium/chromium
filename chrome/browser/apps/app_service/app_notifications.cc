@@ -61,6 +61,14 @@ std::set<std::string> AppNotifications::GetAppIdsForNotification(
   return it->second;
 }
 
+std::unique_ptr<App> AppNotifications::CreateAppWithHasBadgeStatus(
+    AppType app_type,
+    const std::string& app_id) {
+  std::unique_ptr<App> app = std::make_unique<App>(app_type, app_id);
+  app->has_badge = HasNotification(app_id);
+  return app;
+}
+
 apps::mojom::AppPtr AppNotifications::GetAppWithHasBadgeStatus(
     apps::mojom::AppType app_type,
     const std::string& app_id) {

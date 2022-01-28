@@ -181,6 +181,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool AllowUninstallChanged() const;
 
   apps::mojom::OptionalBool HasBadge() const;
+  absl::optional<bool> GetHasBadge() const;
   bool HasBadgeChanged() const;
 
   apps::mojom::OptionalBool Paused() const;

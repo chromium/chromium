@@ -342,9 +342,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const NotificationCommon::Metadata* const metadata);
 
   // Returns whether the app should show a badge.
-  apps::mojom::OptionalBool ShouldShowBadge(
-      const std::string& app_id,
-      apps::mojom::OptionalBool has_notification_indicator);
+  bool ShouldShowBadge(const std::string& app_id,
+                       bool has_notification_indicator);
 #endif
 
   // Called after the user has allowed or denied an app launch with files.

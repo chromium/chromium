@@ -48,6 +48,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -1431,6 +1432,8 @@ void ArcApps::OnNotificationUpdated(const std::string& notification_id,
   PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
                              apps::mojom::AppType::kArc, app_id),
                          subscribers_);
+  AppPublisher::Publish(
+      app_notifications_.CreateAppWithHasBadgeStatus(AppType::kArc, app_id));
 }
 
 void ArcApps::OnNotificationRemoved(const std::string& notification_id) {
@@ -1446,6 +1449,8 @@ void ArcApps::OnNotificationRemoved(const std::string& notification_id) {
     PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
                                apps::mojom::AppType::kArc, app_id),
                            subscribers_);
+    AppPublisher::Publish(
+        app_notifications_.CreateAppWithHasBadgeStatus(AppType::kArc, app_id));
   }
 }
 
@@ -1570,6 +1575,8 @@ std::unique_ptr<App> ArcApps::CreateApp(
   app->handles_intents = show;
 
   app->allow_uninstall = app_info.ready && !app_info.sticky;
+
+  app->has_badge = app_notifications_.HasNotification(app_id);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

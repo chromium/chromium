@@ -228,7 +228,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                  absl::optional<bool> show_in_search = absl::nullopt,
                  absl::optional<bool> show_in_management = absl::nullopt,
                  absl::optional<bool> handles_intents = absl::nullopt,
-                 absl::optional<bool> allow_uninstall = absl::nullopt) {
+                 absl::optional<bool> allow_uninstall = absl::nullopt,
+                 absl::optional<bool> has_badge = absl::nullopt) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
 
@@ -262,6 +263,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                        cache.states_[app_id]->show_in_management);
     VerifyOptionalBool(handles_intents, cache.states_[app_id]->handles_intents);
     VerifyOptionalBool(allow_uninstall, cache.states_[app_id]->allow_uninstall);
+    VerifyOptionalBool(has_badge, cache.states_[app_id]->has_badge);
   }
 
   void VerifyAppIsRemoved(const std::string& app_id) {
@@ -301,7 +303,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           /*show_in_launcher=*/true, /*show_in_shelf=*/true,
           /*show_in_search=*/true, /*show_in_management=*/true,
           /*handles_intents=*/true,
-          /*allow_uninstall=*/app_info->ready && !app_info->sticky);
+          /*allow_uninstall=*/app_info->ready && !app_info->sticky,
+          /*has_badge=*/false);
       // Simulate the app is removed.
       RemoveArcApp(app_id);
       VerifyAppIsRemoved(app_id);
@@ -327,7 +330,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           /*show_in_launcher=*/true, /*show_in_shelf=*/true,
           /*show_in_search=*/true, /*show_in_management=*/true,
           /*handles_intents=*/true,
-          /*allow_uninstall=*/app_info->ready && !app_info->sticky);
+          /*allow_uninstall=*/app_info->ready && !app_info->sticky,
+          /*has_badge=*/false);
 
       // Test OnAppLastLaunchTimeUpdated.
       const base::Time before_time = base::Time::Now();
@@ -417,6 +421,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     app->show_in_management = apps::mojom::OptionalBool::kFalse;
     app->handles_intents = apps::mojom::OptionalBool::kFalse;
     app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+    app->has_badge = apps::mojom::OptionalBool::kFalse;
     apps.push_back(std::move(app));
     chrome_apps->OnApps(std::move(apps));
   }
@@ -443,6 +448,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     app->show_in_management = apps::mojom::OptionalBool::kTrue;
     app->handles_intents = apps::mojom::OptionalBool::kTrue;
     app->allow_uninstall = apps::mojom::OptionalBool::kTrue;
+    app->has_badge = apps::mojom::OptionalBool::kTrue;
     apps.push_back(std::move(app));
     web_apps_crosapi->OnApps(std::move(apps));
   }
@@ -472,7 +478,8 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
             /*searchable=*/false,
             /*show_in_launcher=*/false, /*show_in_shelf=*/false,
             /*show_in_search=*/false, /*show_in_management=*/false,
-            /*handles_intents=*/false, /*allow_uninstall=*/false);
+            /*handles_intents=*/false, /*allow_uninstall=*/false,
+            /*has_badge=*/false);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
@@ -484,7 +491,8 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
-            /*handles_intents=*/true, /*allow_uninstall=*/true);
+            /*handles_intents=*/true, /*allow_uninstall=*/true,
+            /*has_badge=*/true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -506,7 +514,8 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
-            /*handles_intents=*/true, /*allow_uninstall=*/true);
+            /*handles_intents=*/true, /*allow_uninstall=*/true,
+            /*has_badge=*/false);
 
   // Uninstall the Chrome app.
   service_->UninstallExtension(
@@ -519,7 +528,8 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
-            /*handles_intents=*/true, /*allow_uninstall=*/true);
+            /*handles_intents=*/true, /*allow_uninstall=*/true,
+            /*has_badge=*/false);
 
   // Reinstall the Chrome app.
   service_->AddExtension(store.get());
@@ -530,7 +540,8 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
-            /*handles_intents=*/true, /*allow_uninstall=*/true);
+            /*handles_intents=*/true, /*allow_uninstall=*/true,
+            /*has_badge=*/false);
 
   // Test OnExtensionLastLaunchTimeChanged.
   extensions::ExtensionPrefs::Get(profile())->SetLastLaunchTime(
@@ -554,7 +565,8 @@ TEST_F(PublisherTest, WebAppsOnApps) {
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
-            /*handles_intents=*/true, /*allow_uninstall=*/true);
+            /*handles_intents=*/true, /*allow_uninstall=*/true,
+            /*has_badge=*/false);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
