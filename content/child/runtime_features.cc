@@ -64,12 +64,8 @@ void SetRuntimeFeatureDefaultsForPlatform(
   WebRuntimeFeatures::EnableCompositedSelectionUpdate(true);
 #endif
 #if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10)
     WebRuntimeFeatures::EnableWebBluetooth(true);
-    WebRuntimeFeatures::EnableWebBluetoothRemoteCharacteristicNewWriteValue(
-        true);
-    WebRuntimeFeatures::EnableWebBluetoothManufacturerDataFilter(true);
-  }
 #endif
 
 #if BUILDFLAG(IS_MAC)

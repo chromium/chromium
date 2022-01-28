@@ -69,16 +69,6 @@ void WebRuntimeFeatures::EnableWebBluetoothGetDevices(bool enable) {
   RuntimeEnabledFeatures::SetWebBluetoothGetDevicesEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableWebBluetoothManufacturerDataFilter(bool enable) {
-  RuntimeEnabledFeatures::SetWebBluetoothManufacturerDataFilterEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableWebBluetoothRemoteCharacteristicNewWriteValue(
-    bool enable) {
-  RuntimeEnabledFeatures::
-      SetWebBluetoothRemoteCharacteristicNewWriteValueEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableWebBluetoothWatchAdvertisements(bool enable) {
   RuntimeEnabledFeatures::SetWebBluetoothWatchAdvertisementsEnabled(enable);
 }

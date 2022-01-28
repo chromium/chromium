@@ -2546,27 +2546,6 @@
       name: "WebBluetoothGetDevices",
       status: "experimental",
     },
-    // WebBluetoothManufacturerDataFilter is enabled by default on Android,
-    // ChromeOS and Mac. It is also supported in Windows 10 which is handled in
-    // runtime_features.cc
-    {
-      name: "WebBluetoothManufacturerDataFilter",
-      status: {
-        "Android": "stable",
-        "ChromeOS": "stable",
-        "Mac": "stable",
-        "default": "experimental",
-      },
-    },
-    {
-      name: "WebBluetoothRemoteCharacteristicNewWriteValue",
-      status: {
-        "Android": "stable",
-        "ChromeOS": "stable",
-        "Mac": "stable",
-        "default": "experimental",
-      },
-    },
     {
       name: "WebBluetoothScanning",
       status: "experimental",
