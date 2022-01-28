@@ -315,7 +315,6 @@ SyncTest::~SyncTest() = default;
 void SyncTest::SetUp() {
 #if BUILDFLAG(IS_ANDROID)
   sync_test_utils_android::SetUpAuthForTesting();
-  sync_test_utils_android::SetUpAndroidSyncSettingsForTesting();
 #endif
 
   // Sets |server_type_| if it wasn't specified by the test.

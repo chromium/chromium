@@ -177,7 +177,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private Context mContext;
     private FakeServerHelper mFakeServerHelper;
     private SyncService mSyncService;
-    private MockSyncContentResolverDelegate mSyncContentResolver;
     private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     private void ruleTearDown() {
@@ -202,10 +201,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public SyncService getSyncService() {
         return mSyncService;
-    }
-
-    MockSyncContentResolverDelegate getSyncContentResolver() {
-        return mSyncContentResolver;
     }
 
     public void startMainActivityForSyncTest() throws Exception {
@@ -363,11 +358,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         final Statement base = super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                mSyncContentResolver = new MockSyncContentResolverDelegate();
-                mSyncContentResolver.setMasterSyncAutomatically(true);
-                TestThreadUtils.runOnUiThreadBlocking(
-                        () -> SyncContentResolverDelegate.overrideForTests(mSyncContentResolver));
-
                 TrustedVaultClient.setInstanceForTesting(
                         new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
 
