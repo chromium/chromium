@@ -1569,6 +1569,8 @@ std::unique_ptr<App> ArcApps::CreateApp(
 
   app->handles_intents = show;
 
+  app->allow_uninstall = app_info.ready && !app_info.sticky;
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }

@@ -400,6 +400,9 @@ std::unique_ptr<App> CrostiniApps::CreateApp(
   // Management.
   app->show_in_management = false;
 
+  app->allow_uninstall =
+      crostini::IsUninstallable(profile_, registration.app_id());
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }

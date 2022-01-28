@@ -95,6 +95,8 @@ class AppUpdateTest : public testing::Test {
 
   absl::optional<bool> expect_handles_intents_;
 
+  absl::optional<bool> expect_allow_uninstall_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -643,6 +645,26 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_handles_intents_, state->handles_intents);
+      CheckExpects(u);
+    }
+
+    // AllowUninstall tests
+
+    if (state) {
+      state->allow_uninstall = false;
+      expect_allow_uninstall_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->allow_uninstall = true;
+      expect_allow_uninstall_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_allow_uninstall_, state->allow_uninstall);
       CheckExpects(u);
     }
   }

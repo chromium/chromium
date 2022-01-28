@@ -243,6 +243,12 @@ std::unique_ptr<App> ExtensionAppsBase::CreateAppImpl(
 
   SetShowInFields(extension, *app);
 
+  const extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(profile())->management_policy();
+  DCHECK(policy);
+  app->allow_uninstall = policy->UserMayModifySettings(extension, nullptr) &&
+                         !policy->MustRemainInstalled(extension, nullptr);
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }

@@ -71,6 +71,7 @@ std::unique_ptr<App> StandaloneBrowserApps::CreateStandaloneBrowserApp() {
   app->show_in_search = true;
   app->show_in_management = true;
   app->handles_intents = true;
+  app->allow_uninstall = false;
   return app;
 }
 

@@ -55,6 +55,7 @@ std::unique_ptr<apps::App> CreateApp(
   app->show_in_shelf = app->show_in_search = internal_app.searchable;
   app->show_in_management = false;
   app->handles_intents = app->show_in_launcher;
+  app->allow_uninstall = false;
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

@@ -41,6 +41,7 @@ std::unique_ptr<App> App::Clone() const {
   app->show_in_search = show_in_search;
   app->show_in_management = show_in_management;
   app->handles_intents = handles_intents;
+  app->allow_uninstall = allow_uninstall;
 
   return app;
 }
@@ -229,6 +230,7 @@ std::unique_ptr<App> ConvertMojomAppToApp(
   app->show_in_search = GetOptionalBool(mojom_app->show_in_search);
   app->show_in_management = GetOptionalBool(mojom_app->show_in_management);
   app->handles_intents = GetOptionalBool(mojom_app->handles_intents);
+  app->allow_uninstall = GetOptionalBool(mojom_app->allow_uninstall);
 
   return app;
 }

@@ -410,6 +410,7 @@ std::unique_ptr<App> PluginVmApps::CreateApp(
   app->show_in_search = false;
   app->show_in_shelf = false;
   app->show_in_management = false;
+  app->allow_uninstall = false;
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

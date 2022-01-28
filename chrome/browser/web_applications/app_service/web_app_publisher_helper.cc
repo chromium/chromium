@@ -512,6 +512,8 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
     UpdateAppDisabledMode(*app);
 #endif
 
+  app->allow_uninstall = web_app->CanUserUninstallWebApp();
+
   return app;
 }
 #endif

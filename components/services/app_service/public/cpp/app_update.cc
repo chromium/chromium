@@ -213,6 +213,7 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(show_in_search);
   SET_OPTIONAL_VALUE(show_in_management);
   SET_OPTIONAL_VALUE(handles_intents);
+  SET_OPTIONAL_VALUE(allow_uninstall);
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -779,6 +780,10 @@ apps::mojom::OptionalBool AppUpdate::AllowUninstall() const {
     return mojom_state_->allow_uninstall;
   }
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetAllowUninstall() const {
+  GET_VALUE_WITH_FALLBACK(allow_uninstall, absl::nullopt)
 }
 
 bool AppUpdate::AllowUninstallChanged() const {

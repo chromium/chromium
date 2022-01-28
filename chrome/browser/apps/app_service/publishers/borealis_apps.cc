@@ -95,6 +95,9 @@ std::unique_ptr<apps::App> CreateBorealisLauncher(Profile* profile,
 
   SetAppAllowed(allowed, *app);
 
+  app->allow_uninstall =
+      borealis::BorealisService::GetForProfile(profile)->Features().IsEnabled();
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
