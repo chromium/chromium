@@ -17,12 +17,10 @@ import match_util
 
 BUILD_CONFIG_GIT_REVISION = 'git_revision'
 BUILD_CONFIG_GN_ARGS = 'gn_args'
-BUILD_CONFIG_LINKER_NAME = 'linker_name'
 
 BUILD_CONFIG_KEYS = (
     BUILD_CONFIG_GIT_REVISION,
     BUILD_CONFIG_GN_ARGS,
-    BUILD_CONFIG_LINKER_NAME,
 )
 
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.

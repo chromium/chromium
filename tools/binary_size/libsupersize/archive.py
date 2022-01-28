@@ -10,7 +10,6 @@ import collections
 import dataclasses
 import datetime
 import functools
-import gzip
 import itertools
 import logging
 import os
@@ -89,8 +88,6 @@ class NativeSpec:
   map_path: str = None
   # Path to unstripped ELF file (if present).
   elf_path: str = None
-  # Requires map_path. Either 'gold' or 'lld'.
-  linker_name: str = None
   # Whether to create symbols for each string literal.
   track_string_literals: bool = True
   # component to use for all symbols.
@@ -137,13 +134,6 @@ class ApkSpec:
   # Component to use for symbols when not specified by DIR_METADATA, provided by
   # json config.
   default_component: str = ''
-
-
-def _OpenMaybeGzAsText(path):
-  """Calls `gzip.open()` if |path| ends in ".gz", otherwise calls `open()`."""
-  if path.endswith('.gz'):
-    return gzip.open(path, 'rt')
-  return open(path, 'rt')
 
 
 def _NormalizeNames(raw_symbols):
@@ -727,9 +717,6 @@ def CreateMetadata(*, build_config, apk_spec, native_spec, source_directory,
 
   if native_spec:
     metadata[models.METADATA_ELF_ALGORITHM] = native_spec.algorithm
-    if native_spec.linker_name:
-      update_build_config(models.BUILD_CONFIG_LINKER_NAME,
-                          native_spec.linker_name)
 
     if native_spec.elf_path:
       metadata[models.METADATA_ELF_FILENAME] = shorten_path(
@@ -863,12 +850,11 @@ def _ParseElfInfo(native_spec, outdir_context=None):
 
   if native_spec.map_path:
     logging.info('Parsing Linker Map')
-    with _OpenMaybeGzAsText(native_spec.map_path) as f:
-      map_section_ranges, raw_symbols, linker_map_extras = (
-          linker_map_parser.MapFileParser().Parse(native_spec.linker_name, f))
+    map_section_ranges, raw_symbols, linker_map_extras = (
+        linker_map_parser.ParseFile(native_spec.map_path))
 
-      if outdir_context and outdir_context.thin_archives:
-        _ResolveThinArchivePaths(raw_symbols, outdir_context.thin_archives)
+    if outdir_context and outdir_context.thin_archives:
+      _ResolveThinArchivePaths(raw_symbols, outdir_context.thin_archives)
   else:
     logging.info('Collecting symbols from nm')
     raw_symbols = nm.CreateUniqueSymbols(native_spec.elf_path,
@@ -1586,11 +1572,6 @@ def _ParseGnArgs(args_path):
   return ["%s=%s" % x for x in sorted(args.items())]
 
 
-def _DetectLinkerName(map_path):
-  with _OpenMaybeGzAsText(map_path) as f:
-    return linker_map_parser.DetectLinkerNameFromMapFile(f)
-
-
 def _ElfInfoFromApk(apk_path, apk_so_path):
   """Returns a tuple of (build_id, section_ranges, elf_overhead_size)."""
   with zip_util.UnzipToTemp(apk_path, apk_so_path) as temp:
@@ -1804,7 +1785,6 @@ def _MakeNativeSpec(json_config, **kwargs):
     #     files. nm emits some string literal symbols, but most are missing.
     native_spec.track_string_literals = False
     return native_spec
-  native_spec.linker_name = _DetectLinkerName(native_spec.map_path)
 
   return native_spec
 

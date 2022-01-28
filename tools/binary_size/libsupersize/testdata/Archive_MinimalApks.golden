@@ -1,6 +1,5 @@
 git_revision=abc123
 gn_args=var1=true var2="foo"
-linker_name=gold
 apk_file_name=Bundle.minimal.apks
 apk_signature_block_size=0
 apk_size=147858981
