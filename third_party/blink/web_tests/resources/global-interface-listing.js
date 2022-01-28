@@ -273,10 +273,11 @@ function globalInterfaceListing(
       .forEach(outputProperty);
 }
 
-// We're in a paint worklet, invoke the test function immediately.
+// We're in a worklet, invoke the test function immediately.
 // This is done here because worklets can not easily import non-module
 // libraries (i.e. load more than one script and share access to state).
-if (typeof PaintWorkletGlobalScope == 'function') {
+if (typeof PaintWorkletGlobalScope == 'function' ||
+    typeof AudioWorkletGlobalScope == 'function') {
   // Generally, Worklet should not have a reference to the global object.
   // https://drafts.css-houdini.org/worklets/#code-idempotency
   if (this) {
