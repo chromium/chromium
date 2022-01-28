@@ -2488,6 +2488,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SearchModelUpdateInterval" units="ms"
     expires_after="2022-12-01">
+  <obsolete>
+    Deprecated 01/2022 to split metrics based on tablet/clamshell mode.
+  </obsolete>
   <owner>yulunwu@google.com</owner>
   <owner>tbarzic@google.com</owner>
   <summary>
@@ -2495,6 +2498,18 @@ chromium-metrics-reviews@google.com.
     the user starts a search query. Used to record how quickly users update the
     search model after passing in their first keystroke.
   </summary>
+</histogram>
+
+<histogram name="Ash.SearchModelUpdateTime.{TabletOrClamshell}" units="ms"
+    expires_after="2022-12-01">
+  <owner>yulunwu@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <summary>
+    Records the time interval between user-initiated search model updates after
+    the user starts a search query. Used to record how quickly users update the
+    search model in {TabletOrClamshell} after the first keystroke.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"

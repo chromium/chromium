@@ -38,24 +38,12 @@ void SearchBoxModel::Update(const std::u16string& text,
     return;
 
   if (initiated_by_user) {
-    const base::TimeTicks current_time = base::TimeTicks::Now();
-
     if (text_.empty() && !text.empty()) {
       UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchCommenced", 1, 2);
       base::RecordAction(base::UserMetricsAction("AppList_EnterSearch"));
-      // The user started a new search. Record search start time.
-      user_initiated_model_update_time_ = current_time;
     } else if (!text_.empty() && text.empty()) {
       // The user ended a search interaction. Reset search start time.
       base::RecordAction(base::UserMetricsAction("AppList_LeaveSearch"));
-      user_initiated_model_update_time_ = base::TimeTicks();
-    } else {
-      DCHECK(!user_initiated_model_update_time_.is_null());
-      UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateInterval",
-                          current_time - user_initiated_model_update_time_);
-      // The user updated an existing query. Record metrics and update
-      // user_initiated_model_update_time_.
-      user_initiated_model_update_time_ = current_time;
     }
   }
 

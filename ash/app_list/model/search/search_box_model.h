@@ -10,7 +10,6 @@
 
 #include "ash/app_list/model/app_list_model_export.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "ui/gfx/selection_model.h"
 
 namespace ash {
@@ -44,11 +43,6 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   std::u16string text_;
   bool search_engine_is_google_ = false;
   bool show_assistant_button_ = false;
-
-  // The timestamp taken when the search box model's query is updated by the
-  // user. Used in metrics. Metrics are only recorded for search model updates
-  // that occur after a search has been initiated.
-  base::TimeTicks user_initiated_model_update_time_;
 
   base::ObserverList<SearchBoxModelObserver> observers_;
 };

@@ -17,6 +17,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_base.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
@@ -225,6 +226,11 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // ProductivityLauncherSearchPage (for bubble launcher).
   ResultSelectionController* result_selection_controller_ = nullptr;
+
+  // The timestamp taken when the search box model's query is updated by the
+  // user. Used in metrics. Metrics are only recorded for search model updates
+  // that occur after a search has been initiated.
+  base::TimeTicks user_initiated_model_update_time_;
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_model_observer_{this};
