@@ -202,8 +202,8 @@ export class SettingsPersonalizationOptionsElement extends
     }
     // </if>
     if (this.pageVisibility === undefined) {
-      // Happens in tests.
-      return false;
+      // pageVisibility isn't defined in non-Guest profiles (crbug.com/1288911).
+      return true;
     }
     return this.pageVisibility.searchPrediction;
   }
