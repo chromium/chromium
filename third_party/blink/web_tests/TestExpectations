@@ -7368,11 +7368,11 @@ crbug.com/1267734 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-a
 
 # This test is flaky on all platforms
 crbug.com/1191846 [ Fuchsia ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
-crbug.com/1191846 [ Mac10.12 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
-crbug.com/1191846 [ Mac10.13 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
-crbug.com/1191846 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
-crbug.com/1191846 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
-crbug.com/1191846 [ Mac11-arm64 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
+crbug.com/1191846 [ Mac10.12 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout Failure Pass ]
+crbug.com/1191846 [ Mac10.13 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout Failure Pass ]
+crbug.com/1191846 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout Failure Pass ]
+crbug.com/1191846 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout Failure Pass ]
+crbug.com/1191846 [ Mac11-arm64 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout Failure Pass ]
 crbug.com/1191846 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
 
 # Sheriff 2021-11-10
