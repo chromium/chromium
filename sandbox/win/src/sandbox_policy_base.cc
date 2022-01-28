@@ -487,7 +487,10 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
   return SBOX_ALL_OK;
 }
 
-ResultCode PolicyBase::AddTarget(std::unique_ptr<TargetProcess> target) {
+ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
+  if (target_)
+    return SBOX_ERROR_UNEXPECTED_CALL;
+
   if (policy_) {
     if (!policy_maker_->Done())
       return SBOX_ERROR_NO_SPACE;
@@ -536,27 +539,19 @@ ResultCode PolicyBase::AddTarget(std::unique_ptr<TargetProcess> target) {
   if (SBOX_ALL_OK != ret)
     return ret;
 
-  base::AutoLock lock(lock_);
-  targets_.push_back(std::move(target));
+  target_ = std::move(target);
   return SBOX_ALL_OK;
 }
 
 bool PolicyBase::OnJobEmpty(HANDLE job) {
-  base::AutoLock lock(lock_);
-  targets_.erase(
-      std::remove_if(targets_.begin(), targets_.end(),
-                     [&](auto&& p) -> bool { return p->Job() == job; }),
-      targets_.end());
+  if (target_->Job() == job)
+    target_.reset();
   return true;
 }
 
 bool PolicyBase::OnProcessFinished(DWORD process_id) {
-  base::AutoLock lock(lock_);
-  targets_.erase(std::remove_if(targets_.begin(), targets_.end(),
-                                [&](auto&& p) -> bool {
-                                  return p->ProcessId() == process_id;
-                                }),
-                 targets_.end());
+  if (target_->ProcessId() == process_id)
+    target_.reset();
   return true;
 }
 

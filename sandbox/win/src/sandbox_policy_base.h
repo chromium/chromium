@@ -100,9 +100,9 @@ class PolicyBase final : public TargetPolicy {
                         base::win::ScopedHandle* lockdown,
                         base::win::ScopedHandle* lowbox);
 
-  // Adds a target process to the internal list of targets. Internally a
+  // Applies the sandbox to |target| and takes ownership. Internally a
   // call to TargetProcess::Init() is issued.
-  ResultCode AddTarget(std::unique_ptr<TargetProcess> target);
+  ResultCode ApplyToTarget(std::unique_ptr<TargetProcess> target);
 
   // Called when there are no more active processes in a Job.
   // Removes a Job object associated with this policy and the target associated
@@ -136,12 +136,8 @@ class PolicyBase final : public TargetPolicy {
                              Semantics semantics,
                              const wchar_t* pattern);
 
-  // This lock synchronizes operations on the targets_ collection.
-  base::Lock lock_;
-  // Maintains the list of target process associated with this policy.
-  // The policy takes ownership of them.
-  typedef std::list<std::unique_ptr<TargetProcess>> TargetSet;
-  TargetSet targets_;
+  // The policy takes ownership of a target as it is applied to it.
+  std::unique_ptr<TargetProcess> target_;
   // Standard object-lifetime reference counter.
   volatile LONG ref_count;
   // The user-defined global policy settings.
