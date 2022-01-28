@@ -46,8 +46,8 @@ sys.path.append(
 from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, RmTree)
 
-# Trunk on 1/6/2021
-RUST_REVISION = '2e2c86eba21a08cf505cd67073736d03ff3887ad'
+# Trunk on 1/26/2021
+RUST_REVISION = 'a7f3757'
 RUST_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION,
@@ -60,6 +60,11 @@ RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'config.toml.template')
+
+# Desired tools and libraries in our Rust toolchain.
+DISTRIBUTION_ARTIFACTS = [
+    'cargo', 'clippy', 'library/std', 'rust-analyzer', 'rustfmt', 'src/librustc'
+]
 
 
 def RunCommand(command, env=None, fail_hard=True):
@@ -74,16 +79,25 @@ def RunCommand(command, env=None, fail_hard=True):
 
 
 def CheckoutRust(commit, dir):
+  # Submodules we must update early since bootstrap wants them before it starts
+  # managing them.
+  force_update_submodules = [
+      'src/tools/rust-analyzer', 'compiler/rustc_codegen_cranelift'
+  ]
+
+  # Shared between first checkout and subsequent updates.
+  def UpdateSubmodules():
+    return RunCommand(['git', 'submodule', 'update', '--init', '--recursive'] +
+                      force_update_submodules,
+                      fail_hard=False)
+
   # Try updating the current repo if it exists and has no local diff.
   if os.path.isdir(dir):
     os.chdir(dir)
     # git diff-index --quiet returns success when there is no diff.
     # Also check that the first commit is reachable.
     if (RunCommand(['git', 'diff-index', '--quiet', 'HEAD'], fail_hard=False)
-        and RunCommand(['git', 'fetch'], fail_hard=False)
-        and RunCommand(['git', 'checkout', commit], fail_hard=False)
-        and RunCommand(['git', 'submodule', 'update', '--recursive'],
-                       fail_hard=False)):
+        and UpdateSubmodules()):
       return
 
     # If we can't use the current repo, delete it.
@@ -95,7 +109,8 @@ def CheckoutRust(commit, dir):
 
   if RunCommand(clone_cmd, fail_hard=False):
     os.chdir(dir)
-    if RunCommand(['git', 'checkout', commit], fail_hard=False):
+    if (RunCommand(['git', 'checkout', commit], fail_hard=False)
+        and UpdateSubmodules()):
       return
 
   print('CheckoutRust failed.')
@@ -157,6 +172,9 @@ def main():
   parser.add_argument('--skip-test',
                       action='store_true',
                       help='skip running rustc and libstd tests')
+  parser.add_argument('--skip-install',
+                      action='store_true',
+                      help='do not install to RUST_TOOLCHAIN_OUT_DIR')
   args = parser.parse_args()
 
   if not args.skip_checkout:
@@ -184,11 +202,9 @@ def main():
     ],
            verbose=args.verbose)
 
-  artifacts = [
-      'cargo', 'clippy', 'library/std', 'rust-analyzer', 'rustfmt',
-      'src/librustc'
-  ]
-  RunXPy('install', ['--stage', '1', '--keep-stage', '1'] + artifacts)
+  if not args.skip_install:
+    RunXPy('install',
+           ['--stage', '1', '--keep-stage', '1'] + DISTRIBUTION_ARTIFACTS)
 
 
 if __name__ == '__main__':
