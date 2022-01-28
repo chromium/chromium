@@ -75,7 +75,7 @@ export class FirmwareUpdateDialogElement extends
       dialogContent: {
         type: Object,
         value: initialDialogContent,
-        computed: 'computeDialogContent_(installationProgress.*' +
+        computed: 'computeDialogContent_(installationProgress.*,' +
             'isInitiallyInflight_)',
       },
     };
