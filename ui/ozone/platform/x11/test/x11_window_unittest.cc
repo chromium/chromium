@@ -380,8 +380,7 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
 }
 
 // Flaky on Linux ASAN and ChromeOS. https://crbug.com/1291868
-#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
-    BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WindowManagerTogglesFullscreen \
   DISABLED_WindowManagerTogglesFullscreen
 #else
