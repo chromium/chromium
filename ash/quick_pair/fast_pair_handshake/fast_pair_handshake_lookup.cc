@@ -54,6 +54,10 @@ bool FastPairHandshakeLookup::Erase(scoped_refptr<Device> device) {
   return fast_pair_handshakes_.erase(device) == 1;
 }
 
+void FastPairHandshakeLookup::Clear() {
+  fast_pair_handshakes_.clear();
+}
+
 FastPairHandshake* FastPairHandshakeLookup::Create(
     scoped_refptr<device::BluetoothAdapter> adapter,
     scoped_refptr<Device> device,

@@ -22,6 +22,7 @@ source_set("scanning") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/repository",
@@ -66,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":scanning",
     ":test_support",
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/fast_pair_handshake:test_support",
     "//ash/quick_pair/proto:fastpair_proto",

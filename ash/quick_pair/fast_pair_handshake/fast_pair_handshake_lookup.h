@@ -52,6 +52,9 @@ class FastPairHandshakeLookup {
   // Erases the FastPairHandshake instance for |device| if exists.
   bool Erase(scoped_refptr<Device> device);
 
+  // Deletes all existing FastPairHandshake instances.
+  void Clear();
+
   // Creates and returns a new instance for |device| if no instance already
   // exists. Returns the existing instance if there is one.
   FastPairHandshake* Create(scoped_refptr<device::BluetoothAdapter> adapter,
