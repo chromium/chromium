@@ -2594,6 +2594,7 @@
     },
     {
       name: "WebID",
+      origin_trial_feature_name: "FedCM",
       status: "test",
     },
     {
