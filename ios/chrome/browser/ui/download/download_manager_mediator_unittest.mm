@@ -172,7 +172,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
   mediator_.SetConsumer(consumer_);
 
   task()->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
-  task()->SetDone(true);
+  task()->SetState(web::DownloadTask::State::kFailed);
   EXPECT_EQ(kDownloadManagerStateFailed, consumer_.state);
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
 }

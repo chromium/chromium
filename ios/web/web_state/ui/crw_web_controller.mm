@@ -2026,6 +2026,18 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [self loadCompleteWithSuccess:loadSuccess forContext:context];
 }
 
+- (void)resumeDownloadWithData:(NSData*)data
+             completionHandler:(void (^)(WKDownload*))completionHandler
+    API_AVAILABLE(ios(15)) {
+  // Reports some failure to higher level code if |webView| doesn't exist
+  if (!_webView) {
+    completionHandler(nil);
+    return;
+  }
+  [_webView resumeDownloadFromResumeData:data
+                       completionHandler:completionHandler];
+}
+
 #pragma mark - CRWWebRequestControllerDelegate
 
 - (void)webRequestControllerStopLoading:

@@ -12,6 +12,14 @@
 #error "This file requires ARC support."
 #endif
 
+@interface DownloadNativeTaskBridge ()
+
+@property(nonatomic, readwrite, strong) NSData* resumeData;
+@property(nonatomic, readwrite, strong)
+    WKDownload* download API_AVAILABLE(ios(15));
+
+@end
+
 @implementation DownloadNativeTaskBridge {
   void (^_startDownloadBlock)(NSURL*);
   id<DownloadNativeTaskBridgeDelegate> _delegate;
@@ -64,7 +72,10 @@
 
   [self stopObservingDownloadProgress];
 
-  [_download cancel:^(NSData* data){/* do nothing */}];
+  __weak __typeof(self) weakSelf = self;
+  [_download cancel:^(NSData* data) {
+    weakSelf.resumeData = data;
+  }];
   _download = nil;
 }
 
@@ -74,12 +85,37 @@
   _progressionHandler = progressionHandler;
   _completionHandler = completionHandler;
 
-  [self startObservingDownloadProgress];
-
   _urlForDownload = [url copy];
 
+  if (_resumeData) {
+    DCHECK(!_startDownloadBlock);
+    if (@available(iOS 15, *)) {
+      __weak __typeof(self) weakSelf = self;
+      [_delegate resumeDownloadNativeTask:_resumeData
+                        completionHandler:^(WKDownload* download) {
+                          [weakSelf onResumedDownload:download];
+                        }];
+    }
+    return;
+  }
+
+  [self startObservingDownloadProgress];
   _startDownloadBlock(_urlForDownload);
   _startDownloadBlock = nil;
+}
+
+- (void)onResumedDownload:(WKDownload*)download API_AVAILABLE(ios(15)) {
+  _resumeData = nil;
+  if (download) {
+    _download = download;
+    _download.delegate = self;
+    // WKDownload will call
+    //-decideDestinationUsingResponse:suggestedFilename:completionHandler:
+    // where the download will be started.
+  } else {
+    web::DownloadResult download_result(net::ERR_FAILED, /*can_retry=*/false);
+    (_completionHandler)(download_result);
+  }
 }
 
 #pragma mark - Properties
@@ -97,29 +133,34 @@
                      (void (^)(NSURL* destination))completionHandler API_AVAILABLE(ios(15)) {
   _response = response;
   _suggestedFilename = suggestedFilename;
-  _startDownloadBlock = completionHandler;
 
-  [_delegate onDownloadNativeTaskBridgeReadyForDownload:self];
+  if (_urlForDownload) {
+    // Resuming a download.
+    [self startObservingDownloadProgress];
+    completionHandler(_urlForDownload);
+  } else {
+    _startDownloadBlock = completionHandler;
+    [_delegate onDownloadNativeTaskBridgeReadyForDownload:self];
+  }
 }
 
 - (void)download:(WKDownload*)download
     didFailWithError:(NSError*)error
           resumeData:(NSData*)resumeData API_AVAILABLE(ios(15)) {
+  self.resumeData = resumeData;
+  [self stopObservingDownloadProgress];
   if (_completionHandler) {
     web::DownloadResult download_result(net::ERR_FAILED, resumeData != nil);
     (_completionHandler)(download_result);
   }
-
-  [self stopObservingDownloadProgress];
 }
 
 - (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(15)) {
+  [self stopObservingDownloadProgress];
   if (_completionHandler) {
     web::DownloadResult download_result(net::OK);
     (_completionHandler)(download_result);
   }
-
-  [self stopObservingDownloadProgress];
 }
 
 #pragma mark - KVO

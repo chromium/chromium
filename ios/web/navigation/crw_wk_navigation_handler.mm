@@ -1092,6 +1092,13 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
   [_nativeTaskBridges removeObject:bridge];
 }
 
+- (void)resumeDownloadNativeTask:(NSData*)data
+               completionHandler:(void (^)(WKDownload*))completionHandler
+    API_AVAILABLE(ios(15)) {
+  [self.delegate resumeDownloadWithData:data
+                      completionHandler:completionHandler];
+}
+
 #pragma mark - Private methods
 
 // Returns the UserAgent that needs to be used for the |navigationAction| from

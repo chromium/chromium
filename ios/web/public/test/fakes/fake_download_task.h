@@ -50,6 +50,7 @@ class FakeDownloadTask : public DownloadTask {
 
   // Setters for task properties. Setters invoke OnDownloadUpdated callback.
   void SetWebState(WebState* web_state);
+  void SetState(DownloadTask::State state);
   void SetDone(bool done);
   void SetErrorCode(int error_code);
   void SetHttpCode(int http_code);

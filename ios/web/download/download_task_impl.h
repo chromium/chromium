@@ -19,7 +19,6 @@
 
 namespace web {
 
-class DownloadResult;
 class DownloadTaskObserver;
 class WebState;
 

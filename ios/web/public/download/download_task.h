@@ -41,6 +41,12 @@ class DownloadTask {
 
     // Download is completely finished.
     kComplete,
+
+    // Download has failed but can be resumed
+    kFailed,
+
+    // Downkoad has failed but cannot be resumed
+    kFailedNotResumable,
   };
 
   enum class Destination {

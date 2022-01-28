@@ -487,7 +487,7 @@ TEST_F(DownloadSessionTaskImplTest, FailureInTheBeginning) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
     return task_->IsDone();
   }));
-  EXPECT_EQ(DownloadTask::State::kComplete, task_->GetState());
+  EXPECT_EQ(DownloadTask::State::kFailed, task_->GetState());
   EXPECT_TRUE(task_->GetErrorCode() == net::ERR_INTERNET_DISCONNECTED);
   EXPECT_EQ(0, task_->GetTotalBytes());
   EXPECT_EQ(0, task_->GetReceivedBytes());
@@ -532,7 +532,7 @@ TEST_F(DownloadSessionTaskImplTest, FailureInTheMiddle) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
     return task_->IsDone();
   }));
-  EXPECT_EQ(DownloadTask::State::kComplete, task_->GetState());
+  EXPECT_EQ(DownloadTask::State::kFailed, task_->GetState());
   EXPECT_TRUE(task_->GetErrorCode() == net::ERR_INTERNET_DISCONNECTED);
   EXPECT_EQ(kExpectedDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kReceivedDataSize, task_->GetReceivedBytes());
@@ -739,7 +739,7 @@ TEST_F(DownloadSessionTaskImplTest, EmptyDataUrl) {
   }));
 
   // Verify the state of downloaded task.
-  EXPECT_EQ(DownloadTask::State::kComplete, task->GetState());
+  EXPECT_EQ(DownloadTask::State::kFailed, task->GetState());
   EXPECT_EQ(net::ERR_INVALID_URL, task->GetErrorCode());
   EXPECT_EQ(-1, task->GetTotalBytes());
   EXPECT_EQ(0, task->GetReceivedBytes());

@@ -198,6 +198,8 @@ void ARQuickLookTabHelper::OnDownloadUpdated(web::DownloadTask* download_task) {
       // Do nothing. Histogram is already logged after the task was started.
       break;
     case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable:
       LogHistogram(download_task_.get());
       DidFinishDownload();
       break;

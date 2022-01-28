@@ -18,6 +18,11 @@
 - (void)onDownloadNativeTaskBridgeReadyForDownload:
     (DownloadNativeTaskBridge*)bridge API_AVAILABLE(ios(15));
 
+// Calls CRWWKNavigationHandlerDelegate to resume download using |webView|
+- (void)resumeDownloadNativeTask:(NSData*)data
+               completionHandler:(void (^)(WKDownload*))completionHandler
+    API_AVAILABLE(ios(15));
+
 @end
 
 // Class used to create a download task object that handles downloads through

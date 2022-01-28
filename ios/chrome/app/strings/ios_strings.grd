@@ -834,6 +834,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_COULDNT_DOWNLOAD" desc="Label displaying that downloading a file was unsuccessful. [Length: 25em] [iOS only]">
         Couldn't Download
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED" desc="Label displaying that downloading a file has failed and cannot be retried. [Length: 25em] [iOS only]">
+          Download failed and cannot be retried.
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_INSTALL_GOOGLE_DRIVE" desc="Button to install the Google Drive app. [Length: 25em] [iOS only]">
         Install Google Drive
       </message>

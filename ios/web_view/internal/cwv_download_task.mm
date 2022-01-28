@@ -120,7 +120,9 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
       }
       break;
     }
-    case web::DownloadTask::State::kComplete: {
+    case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable: {
       int errorCode = _internalTask->GetErrorCode();
       [self notifyFinishWithErrorCode:errorCode];
       break;

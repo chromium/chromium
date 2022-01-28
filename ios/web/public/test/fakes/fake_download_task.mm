@@ -125,6 +125,11 @@ void FakeDownloadTask::SetWebState(WebState* web_state) {
   web_state_ = web_state;
 }
 
+void FakeDownloadTask::SetState(DownloadTask::State state) {
+  state_ = state;
+  OnDownloadUpdated();
+}
+
 void FakeDownloadTask::SetDone(bool done) {
   if (!response_data_) {
     response_data_ = [NSData data];

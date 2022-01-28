@@ -111,7 +111,16 @@ NSString* DownloadTaskImpl::GetHttpMethod() const {
 
 bool DownloadTaskImpl::IsDone() const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return state_ == State::kComplete || state_ == State::kCancelled;
+  switch (state_) {
+    case State::kNotStarted:
+    case State::kInProgress:
+      return false;
+    case State::kCancelled:
+    case State::kComplete:
+    case State::kFailed:
+    case State::kFailedNotResumable:
+      return true;
+  }
 }
 
 int DownloadTaskImpl::GetErrorCode() const {
@@ -184,7 +193,13 @@ void DownloadTaskImpl::OnDownloadUpdated() {
 
 void DownloadTaskImpl::OnDownloadFinished(DownloadResult download_result) {
   download_result_ = download_result;
-  state_ = State::kComplete;
+  if (download_result_.error_code()) {
+    state_ = download_result_.can_retry() ? State::kFailed
+                                          : State::kFailedNotResumable;
+  } else {
+    state_ = State::kComplete;
+  }
+
   OnDownloadUpdated();
 }
 
