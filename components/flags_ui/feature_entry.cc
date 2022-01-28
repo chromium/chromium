@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -87,8 +88,9 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
   const char* description = nullptr;
   if (type == FeatureEntry::ENABLE_DISABLE_VALUE ||
       type == FeatureEntry::FEATURE_VALUE) {
-    const char* kEnableDisableDescriptions[] = {
-        kGenericExperimentChoiceDefault, kGenericExperimentChoiceEnabled,
+    const char* const kEnableDisableDescriptions[] = {
+        kGenericExperimentChoiceDefault,
+        kGenericExperimentChoiceEnabled,
         kGenericExperimentChoiceDisabled,
     };
     description = kEnableDisableDescriptions[index];
@@ -100,11 +102,9 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
     } else if (index < NumOptions() - 1) {
       // First two options do not have variations params.
       int variation_index = index - 2;
-      return base::ASCIIToUTF16(
-                 base::StringPiece(kGenericExperimentChoiceEnabled)) +
-             u" " +
-             base::ASCIIToUTF16(
-                 feature.feature_variations[variation_index].description_text);
+      return base::ASCIIToUTF16(base::StrCat(
+          {kGenericExperimentChoiceEnabled, " ",
+           feature.feature_variations[variation_index].description_text}));
     } else {
       DCHECK_EQ(NumOptions() - 1, index);
       description = kGenericExperimentChoiceDisabled;
@@ -112,7 +112,7 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
   } else {
     description = choices[index].description;
   }
-  return base::ASCIIToUTF16(base::StringPiece(description));
+  return base::ASCIIToUTF16(description);
 }
 
 const FeatureEntry::Choice& FeatureEntry::ChoiceForOption(int index) const {
