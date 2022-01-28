@@ -1137,7 +1137,7 @@ public class ShoppingPersistedTabDataTest {
         }
 
         @Override
-        protected void deserializeAndLog(@Nullable ByteBuffer bytes) {
+        public void deserializeAndLog(@Nullable ByteBuffer bytes) {
             ThreadUtils.assertOnBackgroundThread();
             super.deserializeAndLog(bytes);
         }

@@ -294,7 +294,8 @@ public abstract class PersistedTabData implements UserData {
      */
     abstract boolean deserialize(@Nullable ByteBuffer bytes);
 
-    protected void deserializeAndLog(@Nullable ByteBuffer bytes) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void deserializeAndLog(@Nullable ByteBuffer bytes) {
         boolean success;
         try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Deserialize")) {
             success = deserialize(bytes);

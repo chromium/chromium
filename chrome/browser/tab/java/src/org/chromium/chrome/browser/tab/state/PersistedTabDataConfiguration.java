@@ -22,6 +22,7 @@ public enum PersistedTabDataConfiguration {
     ENCRYPTED_MOCK_PERSISTED_TAB_DATA("EMPTD"),
     SHOPPING_PERSISTED_TAB_DATA("SPTD"),
     STORE_PERSISTED_TAB_DATA("STPTD"),
+    EMPTY_BYTE_BUFFER_TEST_CONFIG("EBBTC"),
     // TODO(crbug.com/1113828) investigate separating test from prod test implementations
     TEST_CONFIG("TC");
 
@@ -36,6 +37,16 @@ public enum PersistedTabDataConfiguration {
     private static FilePersistedTabDataStorage sFilePersistedTabDataStorage;
     private static EncryptedFilePersistedTabDataStorage sEncrpytedFilePersistedTabDataStorage;
     private static MockPersistedTabDataStorage sMockPersistedTabDataStorage;
+    private static EmptyByteBufferPersistedTabDataStorage sEmptyByteBufferPersistedTabDataStorage;
+    private static boolean sUseEmptyByteBufferTestConfig;
+
+    private static EmptyByteBufferPersistedTabDataStorage
+    getEmptyByteBufferPersistedTabDataStorage() {
+        if (sEmptyByteBufferPersistedTabDataStorage == null) {
+            sEmptyByteBufferPersistedTabDataStorage = new EmptyByteBufferPersistedTabDataStorage();
+        }
+        return sEmptyByteBufferPersistedTabDataStorage;
+    }
 
     private static FilePersistedTabDataStorage getFilePersistedTabDataStorage() {
         if (sFilePersistedTabDataStorage == null) {
@@ -90,6 +101,10 @@ public enum PersistedTabDataConfiguration {
         TEST_CONFIG.mStorageFactory = () -> {
             return getMockPersistedTabDataStorage();
         };
+
+        EMPTY_BYTE_BUFFER_TEST_CONFIG.mStorageFactory = () -> {
+            return getEmptyByteBufferPersistedTabDataStorage();
+        };
     }
 
     private final String mId;
@@ -123,6 +138,9 @@ public enum PersistedTabDataConfiguration {
      */
     public static PersistedTabDataConfiguration get(
             Class<? extends PersistedTabData> clazz, boolean isEncrypted) {
+        if (sUseEmptyByteBufferTestConfig) {
+            return EMPTY_BYTE_BUFFER_TEST_CONFIG;
+        }
         if (sUseTestConfig) {
             return TEST_CONFIG;
         }
@@ -132,9 +150,16 @@ public enum PersistedTabDataConfiguration {
         return sLookup.get(clazz);
     }
 
+    // TODO(crbug.com/1290977) merge test config options into an enum so there can be just one
+    // setter).
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setUseTestConfig(boolean useTestConfig) {
         sUseTestConfig = useTestConfig;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void setUseEmptyByteBufferTestConfig(boolean useEmptyByteBufferTestConfig) {
+        sUseEmptyByteBufferTestConfig = useEmptyByteBufferTestConfig;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
