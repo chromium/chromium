@@ -52126,6 +52126,7 @@ from previous Chrome versions.
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
   <int value="-1296499702" label="WebViewEmptyComponent:enabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
+  <int value="-1294944922" label="Canvas2dStaysGPUOnReadback:disabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
   <int value="-1293566107" label="DocumentTransition:disabled"/>
@@ -54220,6 +54221,7 @@ from previous Chrome versions.
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
   <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
+  <int value="255274700" label="Canvas2dStaysGPUOnReadback:enabled"/>
   <int value="255375615" label="stop-non-timers-in-background:enabled"/>
   <int value="255765456"
       label="ActivateMetricsReportingEnabledPolicyAndroid:disabled"/>

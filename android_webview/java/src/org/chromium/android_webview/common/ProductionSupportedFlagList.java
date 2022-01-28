@@ -247,5 +247,7 @@ public final class ProductionSupportedFlagList {
                     "Enables more efficient scheduling of work in WebRTC."),
             Flag.baseFeature(BlinkFeatures.INITIAL_NAVIGATION_ENTRY,
                     "Enables creation of initial NavigationEntries on WebContents creation."),
+            Flag.baseFeature(BlinkFeatures.CANVAS2D_STAYS_GPU_ON_READBACK,
+                    "Accelerated canvases that a read back from remain accelerated."),
     };
 }
