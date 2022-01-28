@@ -157,7 +157,7 @@ Status StubWebView::InsertText(const std::string& text,
   return Status(kOk);
 }
 
-Status StubWebView::GetCookies(std::unique_ptr<base::ListValue>* cookies,
+Status StubWebView::GetCookies(base::Value* cookies,
                                const std::string& current_page_url) {
   return Status(kOk);
 }

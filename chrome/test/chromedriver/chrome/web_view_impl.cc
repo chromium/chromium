@@ -806,7 +806,7 @@ Status WebViewImpl::InsertText(const std::string& text,
   return status;
 }
 
-Status WebViewImpl::GetCookies(std::unique_ptr<base::ListValue>* cookies,
+Status WebViewImpl::GetCookies(base::Value* cookies,
                                const std::string& current_page_url) {
   base::DictionaryValue params;
   base::DictionaryValue result;
@@ -826,10 +826,10 @@ Status WebViewImpl::GetCookies(std::unique_ptr<base::ListValue>* cookies,
       return status;
   }
 
-  base::ListValue* cookies_tmp;
-  if (!result.GetList("cookies", &cookies_tmp))
+  base::Value* const cookies_tmp = result.FindListKey("cookies");
+  if (!cookies_tmp)
     return Status(kUnknownError, "DevTools didn't return cookies");
-  *cookies = cookies_tmp->CreateDeepCopy();
+  *cookies = cookies_tmp->Clone();
   return Status(kOk);
 }
 

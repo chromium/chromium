@@ -176,7 +176,7 @@ class WebView {
                             bool async_dispatch_events) = 0;
 
   // Return all the cookies visible to the current page.
-  virtual Status GetCookies(std::unique_ptr<base::ListValue>* cookies,
+  virtual Status GetCookies(base::Value* cookies,
                             const std::string& current_page_url) = 0;
 
   // Delete the cookie with the given name.

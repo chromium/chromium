@@ -125,7 +125,7 @@ class WebViewImpl : public WebView {
                            bool async_dispatch_events = false) override;
   Status InsertText(const std::string& text,
                     bool async_dispatch_events = false) override;
-  Status GetCookies(std::unique_ptr<base::ListValue>* cookies,
+  Status GetCookies(base::Value* cookies,
                     const std::string& current_page_url) override;
   Status DeleteCookie(const std::string& name,
                       const std::string& url,

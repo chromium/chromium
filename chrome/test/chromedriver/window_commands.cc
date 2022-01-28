@@ -269,12 +269,12 @@ Status GetVisibleCookies(Session* for_session,
       GetUrl(web_view, for_session->GetCurrentFrameId(), &current_page_url);
   if (status.IsError())
     return status;
-  std::unique_ptr<base::ListValue> internal_cookies;
+  base::Value internal_cookies;
   status = web_view->GetCookies(&internal_cookies, current_page_url);
   if (status.IsError())
     return status;
   std::list<Cookie> cookies_tmp;
-  for (const base::Value& cookie_value : internal_cookies->GetList()) {
+  for (const base::Value& cookie_value : internal_cookies.GetList()) {
     if (!cookie_value.is_dict())
       return Status(kUnknownError, "DevTools returns a non-dictionary cookie");
 
