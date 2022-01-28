@@ -74,7 +74,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/observer_list_threadsafe.h"
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"

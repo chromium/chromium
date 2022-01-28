@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/invoke.h"
 #include "base/ranges/algorithm.h"

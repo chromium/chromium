@@ -10,6 +10,7 @@
 #include "ash/system/holding_space/holding_space_progress_icon_animation.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
 #include "ash/system/holding_space/holding_space_progress_ring_animation.h"
+#include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"

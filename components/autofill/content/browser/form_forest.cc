@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/form_forest.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
 #include "base/debug/dump_without_crashing.h"
