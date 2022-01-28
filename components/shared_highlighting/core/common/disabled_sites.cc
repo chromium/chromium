@@ -53,6 +53,8 @@ bool ShouldOfferLinkToText(const GURL& url) {
   return true;
 }
 
+// TODO(graysonlafleur): rename IsAmpUrl to something more
+// indictive of purpose such as SupportsLinkGenerationInIframe
 bool IsAmpUrl(GURL url) {
   const std::unordered_set<std::string> good_hosts = {
       "www.google.com", "m.google.com", "mobile.google.com",

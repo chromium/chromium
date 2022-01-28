@@ -644,7 +644,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         << selected_frame->Selection()
                .ComputeVisibleSelectionInDOMTreeDeprecated();
     if (!result.IsContentEditable()) {
-      UpdateTextFragmentHandler(selected_frame);
+      TextFragmentHandler::OpenedContextMenuOverSelection(selected_frame);
     }
   }
 
@@ -780,20 +780,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data, host_context_menu_location);
 
   return true;
-}
-
-void ContextMenuController::UpdateTextFragmentHandler(
-    LocalFrame* selected_frame) {
-  if (!selected_frame->GetTextFragmentHandler()) {
-    if (!base::FeatureList::IsEnabled(
-            shared_highlighting::kSharedHighlightingAmp)) {
-      return;
-    }
-
-    selected_frame->CreateTextFragmentHandler();
-  }
-
-  selected_frame->GetTextFragmentHandler()->StartPreemptiveGenerationIfNeeded();
 }
 
 }  // namespace blink

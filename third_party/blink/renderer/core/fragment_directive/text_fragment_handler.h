@@ -32,6 +32,13 @@ class CORE_EXPORT TextFragmentHandler final
   // Determine if |result| represents a click on an existing highlight.
   static bool IsOverTextFragment(HitTestResult result);
 
+  // Returns whether preemptive generation should run for the given frame
+  static bool ShouldPreemptivelyGenerateFor(LocalFrame* frame);
+
+  // Called to notify the frame's TextFragmentHandler on context menu open over
+  // a selection
+  static void OpenedContextMenuOverSelection(LocalFrame* frame);
+
   // mojom::blink::TextFragmentReceiver interface
   void Cancel() override;
   void RequestSelector(RequestSelectorCallback callback) override;

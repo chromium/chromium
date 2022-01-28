@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive_utils.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -256,6 +257,31 @@ TextFragmentAnchor* TextFragmentHandler::GetTextFragmentAnchor() {
     return nullptr;
   }
   return static_cast<TextFragmentAnchor*>(fragmentAnchor);
+}
+
+// static
+bool TextFragmentHandler::ShouldPreemptivelyGenerateFor(LocalFrame* frame) {
+  if (frame->GetTextFragmentHandler())
+    return true;
+
+  // Main frames always have a handler.
+  DCHECK(!frame->IsMainFrame());
+
+  // Generate for iframes only if it's an AMP url and the AMP urls are allowed
+  return base::FeatureList::IsEnabled(
+             shared_highlighting::kSharedHighlightingAmp) &&
+         shared_highlighting::IsAmpUrl(frame->GetDocument()->Url());
+}
+
+// static
+void TextFragmentHandler::OpenedContextMenuOverSelection(LocalFrame* frame) {
+  if (!TextFragmentHandler::ShouldPreemptivelyGenerateFor(frame))
+    return;
+
+  if (!frame->GetTextFragmentHandler())
+    frame->CreateTextFragmentHandler();
+
+  frame->GetTextFragmentHandler()->StartPreemptiveGenerationIfNeeded();
 }
 
 }  // namespace blink
