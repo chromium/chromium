@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
-#include "base/bind.h"
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
