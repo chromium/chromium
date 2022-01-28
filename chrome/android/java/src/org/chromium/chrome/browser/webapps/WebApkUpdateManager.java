@@ -206,10 +206,20 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         if (nameChanging) histogramAction |= CHANGING_APP_NAME;
         if (shortNameChanging) histogramAction |= CHANGING_SHORTNAME;
 
-        if (!iconOrNameUpdateDialogEnabled()
+        String hash = getAppIdentityHash(mFetchedInfo, mFetchedPrimaryIconUrl);
+        boolean alreadyUserApproved = !hash.isEmpty()
+                && TextUtils.equals(hash, mStorage.getLastWebApkUpdateHashAccepted());
+
+        if (!iconOrNameUpdateDialogEnabled() || alreadyUserApproved
                 || (!iconChanging && !shortNameChanging && !nameChanging)) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Webapp.AppIdentityDialog.NotShowing", histogramAction, HISTOGRAM_SCOPE);
+            if (alreadyUserApproved) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Webapp.AppIdentityDialog.AlreadyApproved", histogramAction,
+                        HISTOGRAM_SCOPE);
+            } else {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Webapp.AppIdentityDialog.NotShowing", histogramAction, HISTOGRAM_SCOPE);
+            }
 
             // It might seem non-obvious why the POSITIVE button is selected when we've determined
             // that App Identity updates are not enabled or when nothing meaningful is changing.
@@ -245,6 +255,13 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 this::onUserApprovedUpdate);
     }
 
+    private String getAppIdentityHash(WebappInfo info, String primaryIconUrl) {
+        if (info == null) return "";
+        return info.name() + "|" + info.shortName() + "|"
+                + info.iconUrlToMurmur2HashMap().get(primaryIconUrl)
+                + (info.isIconAdaptive() ? "|Adaptive" : "|NotAdaptive");
+    }
+
     protected void onUserApprovedUpdate(int dismissalCause) {
         // Set WebAPK update as having failed in case that Chrome is killed prior to
         // {@link onBuiltWebApk} being called.
@@ -257,6 +274,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 && dismissalCause != DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
             return;
         }
+
+        String hash = getAppIdentityHash(mFetchedInfo, mFetchedPrimaryIconUrl);
+        if (!hash.isEmpty()) mStorage.updateLastWebApkUpdateHashAccepted(hash);
 
         if (mFetchedInfo != null) {
             buildUpdateRequestAndSchedule(mFetchedInfo, mFetchedPrimaryIconUrl,
