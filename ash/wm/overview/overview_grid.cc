@@ -650,8 +650,10 @@ void OverviewGrid::AddItem(aura::Window* window,
   auto* item = window_list_[index].get();
   item->PrepareForOverview();
 
-  if (animate && use_spawn_animation && reposition &&
-      !IsShowingDesksTemplatesGrid()) {
+  // No animations if the templates grid is showing, even if `animate` is true.
+  const bool should_animate = animate && !IsShowingDesksTemplatesGrid();
+
+  if (should_animate && use_spawn_animation && reposition) {
     item->set_should_use_spawn_animation(true);
   } else {
     // The item is added after overview enter animation is complete, so
@@ -663,16 +665,16 @@ void OverviewGrid::AddItem(aura::Window* window,
   }
 
   if (restack) {
-    if (reposition && animate)
+    if (reposition && should_animate)
       item->set_should_restack_on_animation_end(true);
     else
       item->Restack();
   }
   if (reposition)
-    PositionWindows(animate, ignored_items);
+    PositionWindows(should_animate, ignored_items);
 
   if (IsShowingDesksTemplatesGrid())
-    item->HideForDesksTemplatesGrid();
+    item->HideForDesksTemplatesGrid(/*animate=*/false);
 }
 
 void OverviewGrid::AppendItem(aura::Window* window,
@@ -1703,7 +1705,7 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   }
 
   for (auto& overview_mode_item : window_list_)
-    overview_mode_item->HideForDesksTemplatesGrid();
+    overview_mode_item->HideForDesksTemplatesGrid(/*animate=*/true);
 
   desks_templates_grid_widget_->Show();
 

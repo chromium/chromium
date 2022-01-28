@@ -209,18 +209,24 @@ bool OverviewItem::Contains(const aura::Window* target) const {
   return transform_window_.Contains(target);
 }
 
-void OverviewItem::HideForDesksTemplatesGrid() {
+void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
   // To hide the window, we will set its layer opacity to 0. This would normally
   // also hide the window from the mini view, which we don't want. By setting a
   // property on the window, we can force it to stay visible.
   GetWindow()->SetProperty(kForceVisibleInMiniViewKey, true);
 
   DCHECK(item_widget_);
-  PerformFadeOutLayer(item_widget_->GetLayer());
+  if (animate)
+    PerformFadeOutLayer(item_widget_->GetLayer());
+  else
+    item_widget_->GetLayer()->SetOpacity(0.f);
 
   for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
     transient_child->SetProperty(kForceVisibleInMiniViewKey, true);
-    PerformFadeOutLayer(transient_child->layer());
+    if (animate)
+      PerformFadeOutLayer(transient_child->layer());
+    else
+      transient_child->layer()->SetOpacity(0.f);
   }
 
   item_widget_event_blocker_ =

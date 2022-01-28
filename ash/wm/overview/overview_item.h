@@ -79,8 +79,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void Shutdown();
 
   // Hides the overview item. This is used to hide any overview items that may
-  // be present when entering the desk templates UI.
-  void HideForDesksTemplatesGrid();
+  // be present when entering the desk templates UI. Animates `item_widget_` and
+  // the windows in the transient tree to 0 opacity if `animate` is true,
+  // otherwise just sets them to 0 opacity.
+  void HideForDesksTemplatesGrid(bool animate);
 
   // This shows overview items that were hidden by the desk templates grid.
   // Called when exiting the desk templates UI and going back to the overview

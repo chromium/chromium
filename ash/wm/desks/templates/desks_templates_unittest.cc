@@ -2259,4 +2259,37 @@ TEST_F(DesksTemplatesTest, ReplaceTemplateMetric) {
   EXPECT_TRUE(GetOverviewSession());
 }
 
+// Tests that there is no animation when removing a desk with windows while the
+// grid is shown. Regression test for https://crbug.com/1291770.
+TEST_F(DesksTemplatesTest, NoAnimationWhenRemovingDesk) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  // Create and a new desk, and create a test window on the active desk.
+  DesksController* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  auto test_window = CreateAppWindow();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+  ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window.get()));
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  ui::ScopedAnimationDurationScaleMode animation(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove the active desk. Ensure that there are no animations on the overview
+  // item, otherwise a flicker will be seen as they should be hidden when the
+  // desks templates grid is shown.
+  RemoveDesk(desks_controller->active_desk());
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  OverviewItem* overview_item =
+      overview_grid->GetOverviewItemContaining(test_window.get());
+  ASSERT_TRUE(overview_item);
+  ui::Layer* item_widget_layer = overview_item->item_widget()->GetLayer();
+  EXPECT_FALSE(item_widget_layer->GetAnimator()->is_animating());
+  EXPECT_EQ(0.f, item_widget_layer->opacity());
+  EXPECT_FALSE(test_window->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(0.f, test_window->layer()->opacity());
+}
+
 }  // namespace ash
