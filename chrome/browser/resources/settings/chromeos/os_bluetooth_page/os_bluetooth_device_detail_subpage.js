@@ -143,6 +143,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
 
     this.deviceId_ = '';
     this.pageState_ = PageState.DISCONNECTED;
+    this.device_ = null;
 
     const queryParams = Router.getInstance().getQueryParameters();
     const deviceId = queryParams.get('id') || '';
@@ -201,11 +202,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @private
    */
   getBluetoothConnectDisconnectBtnLabel_() {
-    if (this.pageState_ === PageState.CONNECTED) {
-      return this.i18n('bluetoothDisconnect');
-    }
-
-    return this.i18n('bluetoothConnect');
+    return this.isDeviceConnected_ ? this.i18n('bluetoothDisconnect') :
+                                     this.i18n('bluetoothConnect');
   }
 
   /**
@@ -260,6 +258,10 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     }
     this.parentNode.pageTitle = getDeviceName(this.device_);
 
+    // Special case a where user is still on detail page and has
+    // tried to connect to device but failed. The current |pageState_|
+    // is CONNECTION_FAILED, but another device property not
+    // |connectionState| has changed.
     if (this.pageState_ === PageState.CONNECTION_FAILED &&
         this.device_.deviceProperties.connectionState ===
             mojom.DeviceConnectionState.kNotConnected) {

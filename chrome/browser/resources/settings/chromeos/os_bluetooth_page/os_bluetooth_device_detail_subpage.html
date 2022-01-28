@@ -80,7 +80,7 @@
             disabled$="[[isConnectDisconnectBtnDisabled(pageState_)]]"
             class="action-button"
             on-click="onConnectDisconnectBtnClick_">
-          [[getBluetoothConnectDisconnectBtnLabel_(device_.*, pageState_)]]
+          [[getBluetoothConnectDisconnectBtnLabel_(isDeviceConnected_)]]
         </cr-button>
       </template>
     </div>

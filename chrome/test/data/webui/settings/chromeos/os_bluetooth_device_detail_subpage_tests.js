@@ -363,7 +363,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothConfig.appendToPairedDeviceList([device1]);
     await flushAsync();
 
-    const params = new URLSearchParams();
+    let params = new URLSearchParams();
     params.append('id', '123456789');
     settings.Router.getInstance().navigateTo(
         settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
@@ -422,6 +422,26 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         bluetoothDeviceDetailPage.i18n(
             'bluetoothDeviceDetailHIDMessageConnected'),
         getNonAudioOutputDeviceMessage().textContent.trim());
+
+    device1.deviceProperties.audioCapability =
+        mojom.AudioOutputCapability.kCapableOfAudioOutput;
+    bluetoothConfig.updatePairedDevice(device1);
+    // Navigate away from details subpage with while connected and navigate
+    // back.
+    const windowPopstatePromise = test_util.eventToPromise('popstate', window);
+    settings.Router.getInstance().navigateToPreviousRoute();
+    await windowPopstatePromise;
+
+    params = new URLSearchParams();
+    params.append('id', '123456789');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+    await flushAsync();
+
+    assertTrue(!!getBluetoothStateBtn());
+    assertEquals(
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
+        getBluetoothStateText().textContent.trim());
   });
 
   test(
