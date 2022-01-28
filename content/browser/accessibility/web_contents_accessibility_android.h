@@ -95,7 +95,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                  jboolean screen_reader_mode,
                  jboolean is_accessibility_enabled);
 
-  base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
+  base::android::ScopedJavaGlobalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
@@ -194,7 +194,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                        jint start_id,
                        const base::android::JavaParamRef<jstring>& element_type,
                        jboolean forwards,
-                       jboolean can_wrap_to_last_element);
+                       jboolean can_wrap_to_last_element,
+                       jboolean use_default_predicate);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track

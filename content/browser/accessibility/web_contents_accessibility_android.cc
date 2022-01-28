@@ -47,25 +47,6 @@ base::LazyInstance<SearchKeyToPredicateMap>::Leaky
 base::LazyInstance<std::u16string>::Leaky g_all_search_keys =
     LAZY_INSTANCE_INITIALIZER;
 
-bool SectionPredicate(BrowserAccessibility* start, BrowserAccessibility* node) {
-  switch (node->GetRole()) {
-    case ax::mojom::Role::kApplication:
-    case ax::mojom::Role::kArticle:
-    case ax::mojom::Role::kBanner:
-    case ax::mojom::Role::kComplementary:
-    case ax::mojom::Role::kContentInfo:
-    case ax::mojom::Role::kHeading:
-    case ax::mojom::Role::kMain:
-    case ax::mojom::Role::kNavigation:
-    case ax::mojom::Role::kRegion:
-    case ax::mojom::Role::kSearch:
-    case ax::mojom::Role::kSection:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool AllInterestingNodesPredicate(BrowserAccessibility* start,
                                   BrowserAccessibility* node) {
   BrowserAccessibilityAndroid* android_node =
@@ -89,6 +70,7 @@ void InitSearchKeyToPredicateMapIfNeeded() {
     return;
 
   AddToPredicateMap("ARTICLE", AccessibilityArticlePredicate);
+  AddToPredicateMap("BLOCKQUOTE", AccessibilityBlockquotePredicate);
   AddToPredicateMap("BUTTON", AccessibilityButtonPredicate);
   AddToPredicateMap("CHECKBOX", AccessibilityCheckboxPredicate);
   AddToPredicateMap("COMBOBOX", AccessibilityComboboxPredicate);
@@ -103,16 +85,23 @@ void InitSearchKeyToPredicateMapIfNeeded() {
   AddToPredicateMap("H5", AccessibilityH5Predicate);
   AddToPredicateMap("H6", AccessibilityH6Predicate);
   AddToPredicateMap("HEADING", AccessibilityHeadingPredicate);
+  AddToPredicateMap("HEADING_SAME", AccessibilityHeadingSameLevelPredicate);
   AddToPredicateMap("LANDMARK", AccessibilityLandmarkPredicate);
   AddToPredicateMap("LINK", AccessibilityLinkPredicate);
   AddToPredicateMap("LIST", AccessibilityListPredicate);
   AddToPredicateMap("LIST_ITEM", AccessibilityListItemPredicate);
+  AddToPredicateMap("LIVE", AccessibilityLiveRegionPredicate);
   AddToPredicateMap("MAIN", AccessibilityMainPredicate);
   AddToPredicateMap("MEDIA", AccessibilityMediaPredicate);
   AddToPredicateMap("RADIO", AccessibilityRadioButtonPredicate);
-  AddToPredicateMap("SECTION", SectionPredicate);
+  AddToPredicateMap("RADIO_GROUP", AccessibilityRadioGroupPredicate);
+  AddToPredicateMap("SECTION", AccessibilitySectionPredicate);
   AddToPredicateMap("TABLE", AccessibilityTablePredicate);
   AddToPredicateMap("TEXT_FIELD", AccessibilityTextfieldPredicate);
+  AddToPredicateMap("TEXT_BOLD", AccessibilityTextStyleBoldPredicate);
+  AddToPredicateMap("TEXT_ITALIC", AccessibilityTextStyleItalicPredicate);
+  AddToPredicateMap("TEXT_UNDERLINE", AccessibilityTextStyleUnderlinePredicate);
+  AddToPredicateMap("TREE", AccessibilityTreePredicate);
   AddToPredicateMap("UNVISITED_LINK", AccessibilityUnvisitedLinkPredicate);
   AddToPredicateMap("VISITED_LINK", AccessibilityVisitedLinkPredicate);
 }
@@ -630,12 +619,12 @@ WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
           env, obj, unique_id));
 }
 
-base::android::ScopedJavaLocalRef<jstring>
+base::android::ScopedJavaGlobalRef<jstring>
 WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   InitSearchKeyToPredicateMapIfNeeded();
-  return base::android::ConvertUTF16ToJavaString(env, g_all_search_keys.Get());
+  return GetCanonicalJNIString(env, g_all_search_keys.Get());
 }
 
 jint WebContentsAccessibilityAndroid::GetRootId(
@@ -1132,7 +1121,8 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     jint start_id,
     const JavaParamRef<jstring>& element_type_str,
     jboolean forwards,
-    jboolean can_wrap_to_last_element) {
+    jboolean can_wrap_to_last_element,
+    jboolean use_default_predicate) {
   BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_id);
   if (!start_node)
     return 0;
@@ -1146,8 +1136,14 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   if (!root)
     return 0;
 
-  AccessibilityMatchPredicate predicate = PredicateForSearchKey(
-      base::android::ConvertJavaStringToUTF16(env, element_type_str));
+  // If |element_type_str| was empty, we can skip to the default predicate.
+  AccessibilityMatchPredicate predicate;
+  if (use_default_predicate) {
+    predicate = AllInterestingNodesPredicate;
+  } else {
+    predicate = PredicateForSearchKey(
+        base::android::ConvertJavaStringToUTF16(env, element_type_str));
+  }
 
   OneShotAccessibilityTreeSearch tree_search(root);
   tree_search.SetStartNode(start_node);

@@ -1153,7 +1153,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private boolean jumpToElementType(
             int virtualViewId, String elementType, boolean forwards, boolean canWrap) {
         int id = WebContentsAccessibilityImplJni.get().findElementType(mNativeObj,
-                WebContentsAccessibilityImpl.this, virtualViewId, elementType, forwards, canWrap);
+                WebContentsAccessibilityImpl.this, virtualViewId, elementType, forwards, canWrap,
+                elementType.isEmpty());
         if (id == 0) return false;
 
         moveAccessibilityFocusToId(id);
@@ -2302,7 +2303,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 WebContentsAccessibilityImpl caller, int id);
         int findElementType(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int startId, String elementType,
-                boolean forwards, boolean canWrapToLastElement);
+                boolean forwards, boolean canWrapToLastElement, boolean useDefaultPredicate);
         void setTextFieldValue(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int id, String newValue);
         void setSelection(long nativeWebContentsAccessibilityAndroid,
