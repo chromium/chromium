@@ -1446,14 +1446,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTree) {
   RunAriaTest(FILE_PATH_LITERAL("aria-tree.html"));
 }
 
-// TODO(crbug.com/1291575): Fix this test on Windows 7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityAriaTreeGrid DISABLED_AccessibilityAriaTreeGrid
-#else
-#define MAYBE_AccessibilityAriaTreeGrid AccessibilityAriaTreeGrid
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaTreeGrid) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTreeGrid) {
   RunAriaTest(FILE_PATH_LITERAL("aria-treegrid.html"));
 }
 
