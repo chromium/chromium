@@ -12,11 +12,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/federated_learning/features/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -157,10 +157,10 @@ PrivacySandboxService::DialogType
 PrivacySandboxService::GetRequiredDialogType() {
   // Only consult feature parameters
   // TODO(crbug.com/1286276): Implement additional behavior.
-  if (features::kPrivacySandboxSettings3ForceShowConsent.Get())
+  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowConsent.Get())
     return DialogType::kConsent;
 
-  if (features::kPrivacySandboxSettings3ForceShowNotice.Get())
+  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNotice.Get())
     return DialogType::kNotice;
 
   return DialogType::kNone;

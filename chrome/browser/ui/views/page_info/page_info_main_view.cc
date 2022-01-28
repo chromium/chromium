@@ -20,10 +20,10 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/permission_util.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -119,7 +119,7 @@ PageInfoMainView::PageInfoMainView(
     about_this_site_section_ = AddChildView(CreateContainerView());
   }
 
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings3)) {
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
     ads_personalization_section_ = AddChildView(CreateContainerView());
   }
 

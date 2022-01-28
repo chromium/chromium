@@ -876,14 +876,6 @@ const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
 const base::Feature kPrivacyReview{"PrivacyReview",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the third release of the Privacy Sandbox settings
-const base::Feature kPrivacySandboxSettings3{"PrivacySandboxSettings3",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-const base::FeatureParam<bool> kPrivacySandboxSettings3ForceShowConsent{
-    &kPrivacySandboxSettings3, "force-show-consent", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3ForceShowNotice{
-    &kPrivacySandboxSettings3, "force-show-notice", false};
-
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
 const base::Feature kPushMessagingBackgroundMode{
