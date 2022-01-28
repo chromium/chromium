@@ -43,8 +43,6 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     return about_this_site_metadata->site_info();
   }
 
-  // TODO(crbug.com/1250653): Remove returning fake data after server-side is
-  // ready.
   if (kShowSampleContent.Get()) {
     page_info::proto::SiteInfo site_info;
     if (url == GURL("https://example.com")) {
