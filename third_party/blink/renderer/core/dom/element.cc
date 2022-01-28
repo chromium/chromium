@@ -7116,4 +7116,9 @@ void Element::RebuildTransitionPseudoLayoutTree(
                                                    rebuild_pseudo_tree);
 }
 
+bool Element::IsInertRoot() {
+  return RuntimeEnabledFeatures::InertAttributeEnabled() &&
+         FastHasAttribute(html_names::kInertAttr) && IsHTMLElement();
+}
+
 }  // namespace blink

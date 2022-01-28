@@ -1059,6 +1059,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RebuildTransitionPseudoLayoutTree(
       const Vector<AtomicString>& document_transition_tags);
 
+  // Returns true if the element has the 'inert' attribute, forcing itself and
+  // all its subtree to be inert.
+  bool IsInertRoot();
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();

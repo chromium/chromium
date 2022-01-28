@@ -740,9 +740,7 @@ static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
   if (!element || style.IsForcedInert())
     return;
 
-  if (RuntimeEnabledFeatures::InertAttributeEnabled() &&
-      element->FastHasAttribute(html_names::kInertAttr) &&
-      element->IsHTMLElement()) {
+  if (element->IsInertRoot()) {
     style.SetIsForcedInert();
     return;
   }

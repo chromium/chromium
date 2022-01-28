@@ -1397,10 +1397,60 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(p2_text, kAXInertSubtree);
 }
 
+TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
+  ScopedInertAttributeForTest enabled_scope(true);
+  SetBodyInnerHTML(R"HTML(
+    <main inert>
+      main
+      <foo inert>
+        foo
+        <svg inert>
+          foo
+          <foreignObject inert>
+            foo
+            <div inert>
+              div
+              <math inert>
+                div
+                <mi inert>
+                  div
+                  <span inert>
+                    span
+                  </span>
+                </mi>
+              </math>
+            </div>
+          </foreignObject>
+        </svg>
+      </foo>
+    </main>
+  )HTML");
+
+  Document& document = GetDocument();
+  Element* element = document.QuerySelector("main");
+  while (element) {
+    Node* node = element->firstChild();
+    AXObject* ax_node = GetAXObjectCache().GetOrCreate(node);
+
+    // The text indicates the expected inert root, which is the nearest HTML
+    // element ancestor with the 'inert' attribute.
+    AtomicString selector(node->textContent().Impl());
+    Element* inert_root = document.QuerySelector(selector);
+    AXObject* ax_inert_root = GetAXObjectCache().GetOrCreate(inert_root);
+
+    AXObject::IgnoredReasons reasons;
+    ASSERT_TRUE(ax_node->ComputeIsInert(&reasons));
+    ASSERT_EQ(reasons.size(), 1u);
+    ASSERT_EQ(reasons[0].reason, kAXInertSubtree);
+    ASSERT_EQ(reasons[0].related_object.Get(), ax_inert_root);
+
+    element = ElementTraversal::FirstChild(*element);
+  }
+}
+
 TEST_F(AccessibilityTest, IsInertInDisplayNone) {
   const Document& document = GetDocument();
   ScopedInertAttributeForTest enabled_scope(true);
-  NonThrowableExceptionState exception_state;
   SetBodyInnerHTML(R"HTML(
     <div hidden>
       foo
@@ -1449,7 +1499,6 @@ TEST_F(AccessibilityTest, IsInertInDisplayNone) {
 
 TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
   ScopedInertAttributeForTest enabled_scope(true);
-  NonThrowableExceptionState exception_state;
   SetBodyInnerHTML(R"HTML(
     <canvas>
       <section>
