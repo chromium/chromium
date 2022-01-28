@@ -717,7 +717,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   cc::Layer* CcLayer() const override;
   void Stop() override;
-  void FinalizeFrame() override;
+  void FinalizeFrame(bool printing) override;
   bool PushFrame() override;
 
   // DrawingBuffer::Client implementation.

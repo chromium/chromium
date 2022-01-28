@@ -1354,8 +1354,8 @@ void CanvasResourceProvider::FlushCanvas() {
 }
 
 sk_sp<cc::PaintRecord>
-CanvasResourceProvider::FlushCanvasAndMaybePreserveRecording() {
-  return FlushCanvasInternal(IsPrinting() && clear_frame_);
+CanvasResourceProvider::FlushCanvasAndMaybePreserveRecording(bool printing) {
+  return FlushCanvasInternal((printing || IsPrinting()) && clear_frame_);
 }
 
 gfx::Size CanvasResourceProvider::Size() const {

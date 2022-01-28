@@ -513,7 +513,7 @@ void Canvas2DLayerBridge::FinishRasterTimers(
   }
 }
 
-void Canvas2DLayerBridge::FlushRecording() {
+void Canvas2DLayerBridge::FlushRecording(bool printing) {
   if (!have_recorded_draw_commands_ || !GetOrCreateResourceProvider())
     return;
 
@@ -551,7 +551,8 @@ void Canvas2DLayerBridge::FlushRecording() {
     timer.emplace();
   }
 
-  last_recording_ = ResourceProvider()->FlushCanvasAndMaybePreserveRecording();
+  last_recording_ =
+      ResourceProvider()->FlushCanvasAndMaybePreserveRecording(printing);
 
   last_record_tainted_by_write_pixels_ = false;
 
@@ -692,7 +693,7 @@ void Canvas2DLayerBridge::DidDraw() {
   have_recorded_draw_commands_ = true;
 }
 
-void Canvas2DLayerBridge::FinalizeFrame() {
+void Canvas2DLayerBridge::FinalizeFrame(bool printing) {
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
 
   // Make sure surface is ready for painting: fix the rendering mode now
@@ -700,7 +701,7 @@ void Canvas2DLayerBridge::FinalizeFrame() {
   if (!GetOrCreateResourceProvider())
     return;
 
-  FlushRecording();
+  FlushRecording(printing);
   if (is_being_displayed_) {
     ++frames_since_last_commit_;
     // Make sure the GPU is never more than two animation frames behind.

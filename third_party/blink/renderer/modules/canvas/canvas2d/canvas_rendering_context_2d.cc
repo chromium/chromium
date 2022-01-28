@@ -662,10 +662,10 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
       sx, sy, sw, sh, image_data_settings, exception_state);
 }
 
-void CanvasRenderingContext2D::FinalizeFrame() {
+void CanvasRenderingContext2D::FinalizeFrame(bool printing) {
   TRACE_EVENT0("blink", "CanvasRenderingContext2D::FinalizeFrame");
   if (IsPaintable())
-    canvas()->GetCanvas2DLayerBridge()->FinalizeFrame();
+    canvas()->GetCanvas2DLayerBridge()->FinalizeFrame(printing);
 }
 
 CanvasRenderingContextHost*

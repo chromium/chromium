@@ -448,7 +448,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   int layer_count_ = 0;
   AntiAliasingMode clip_antialiasing_;
 
-  virtual void FinalizeFrame() {}
+  virtual void FinalizeFrame(bool printing = false) {}
 
   float GetFontBaseline(const SimpleFontData&) const;
   virtual void DispatchContextLostEvent(TimerBase*);
