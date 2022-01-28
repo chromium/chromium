@@ -149,7 +149,11 @@ class RenderFrameHostAdapter
 
   std::unique_ptr<FrameAdapter> GetLocalParentOrOpener() const override {
     content::RenderFrameHost* parent_or_opener = frame_->GetParent();
-    if (!parent_or_opener) {
+    // Non primary pages(e.g. fenced frame, prerendered page, bfcache, and
+    // portals) can't look at the opener, and WebContents::GetOpener returns the
+    // opener on the primary frame tree. Thus, GetOpener should be called when
+    // |frame_| is a primary main frame.
+    if (!parent_or_opener && frame_->IsInPrimaryMainFrame()) {
       parent_or_opener =
           content::WebContents::FromRenderFrameHost(frame_)->GetOpener();
     }
