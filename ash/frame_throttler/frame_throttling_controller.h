@@ -37,6 +37,9 @@ struct ThrottleCandidates {
   ThrottleCandidates(const ThrottleCandidates&);
   ThrottleCandidates& operator=(const ThrottleCandidates&);
 
+  // Returns true if there are no candidates to throttle.
+  bool IsEmpty() const;
+
   // The frame sink ids of the browser windows to be throttled this frame.
   base::flat_set<viz::FrameSinkId> browser_frame_sink_ids;
 
@@ -94,6 +97,15 @@ class ASH_EXPORT FrameThrottlingController final
       const base::flat_set<viz::FrameSinkId>& ids,
       base::flat_map<aura::Window*, viz::FrameSinkId>* candidates,
       aura::Window* lacros_window = nullptr);
+
+  // Collect the lacros candidate in the given |window|. This function
+  // recursively walks through |window|'s descendents and finds the lacros
+  // candidate if any.
+  void CollectLacrosCandidates(
+      aura::Window* window,
+      base::flat_map<aura::Window*, viz::FrameSinkId>* candidates,
+      aura::Window* lacros_window);
+
   void UpdateThrottlingOnFrameSinks();
 
   void ResetThrottleCandidates(ThrottleCandidates* candidates);
@@ -110,9 +122,10 @@ class ASH_EXPORT FrameThrottlingController final
   // candidates, including browser and lacros windows.
   WindowTreeHostMap host_to_candidates_map_;
 
-  // Frame sink ids to be throttled in special UI modes, such as overview and
-  // window cycling. This set will be empty when UI is not in such modes.
-  base::flat_set<viz::FrameSinkId> manually_throttled_ids_;
+  // Window candidates (browser and lacros windows inclusive) to be throttled in
+  // special UI modes, such as overview and window cycling. This will be empty
+  // when UI is not in such modes.
+  ThrottleCandidates manually_throttled_candidates_;
 
   // The fps used for throttling.
   uint8_t throttled_fps_ = kDefaultThrottleFps;
