@@ -1277,14 +1277,16 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
       ConstraintSpace(), style, BorderPadding(), style.LogicalMinHeight());
   max = std::max(max, min);
 
-  // If this multicol container is nested inside another fragmentation
-  // context, we need to subtract the space consumed in previous fragments.
-  if (BreakToken())
-    max -= BreakToken()->ConsumedBlockSize();
+  if (max != LayoutUnit::Max()) {
+    // If this multicol container is nested inside another fragmentation
+    // context, we need to subtract the space consumed in previous fragments.
+    if (BreakToken())
+      max -= BreakToken()->ConsumedBlockSize();
 
-  // We may already have used some of the available space in earlier column rows
-  // or spanners.
-  max -= CurrentContentBlockOffset(row_offset);
+    // We may already have used some of the available space in earlier column
+    // rows or spanners.
+    max -= CurrentContentBlockOffset(row_offset);
+  }
 
   // Constrain and convert the value back to content-box.
   size = std::min(size, max);

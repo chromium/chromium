@@ -880,8 +880,21 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
       intrinsic_block_size_,
       CalculateQuirkyBodyMarginBlockSum(end_margin_strut));
 
+  // In order to calculate the block-size for the fragment, we need to compare
+  // the combined intrinsic block-size of all fragments to e.g. specified
+  // block-size. We'll skip this part if this is a fragmentainer.
+  // Fragmentainers never have a specified block-size anyway, but, more
+  // importantly, adding consumed block-size, and then subtracting it again
+  // later (when setting the final fragment size) would produce incorrect
+  // results if the sum becomes "infinity", i.e. LayoutUnit::Max(). Skipping
+  // this will allow the total block-size of all the fragmentainers to become
+  // greater than LayoutUnit::Max(). This is important for column balancing, or
+  // we'd fail to finish very tall child content properly, ending up with too
+  // many fragmentainers, since the fragmentainers produced would be too short
+  // to fit as much as necessary. Basically: don't mess up (clamp) the measument
+  // we've already done.
   LayoutUnit previously_consumed_block_size;
-  if (UNLIKELY(BreakToken()))
+  if (UNLIKELY(BreakToken() && !container_builder_.IsFragmentainerBoxType()))
     previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
 
   // Recompute the block-axis size now that we know our content size.

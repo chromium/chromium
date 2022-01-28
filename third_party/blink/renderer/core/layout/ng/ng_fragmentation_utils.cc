@@ -565,15 +565,13 @@ NGBreakStatus FinishFragmentationForFragmentainer(
     builder->SetConsumedBlockSizeLegacyAdjustment(
         consumed_block_size_legacy_adjustment);
   } else {
-    // When we are in the initial column balancing pass, use the block-size
-    // calculated by the algorithm. Since any previously consumed block-size
-    // is already baked in (in order to correctly honor specified block-size
-    // (which makes sense to everyone but fragmentainers)), we need to extract
-    // it again now.
     LayoutUnit fragments_total_block_size = builder->FragmentsTotalBlockSize();
-    builder->SetFragmentBlockSize(fragments_total_block_size -
+    // Just pass the value through. This is a fragmentainer, and fragmentainers
+    // don't have previously consumed block-size baked in, unlike any other
+    // fragments.
+    builder->SetFragmentBlockSize(fragments_total_block_size);
+    builder->SetConsumedBlockSize(fragments_total_block_size +
                                   consumed_block_size);
-    builder->SetConsumedBlockSize(fragments_total_block_size);
   }
   if (builder->IsEmptySpannerParent() &&
       builder->HasOutOfFlowFragmentainerDescendants())
