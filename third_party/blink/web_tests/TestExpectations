@@ -6314,7 +6314,7 @@ crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigat
 # Sheriff 2021-03-19
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Skip ]
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-editing-dom-from-inspector.js [ Skip ]
-crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Failure Pass ]
+crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Failure Pass Crash ]
 
 crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
 
@@ -7638,5 +7638,6 @@ crbug.com/1291383 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTC
 # Sheriff 2022-01-27 Flaky test
 crbug.com/1291488 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTCPeerConnection-addMultipleTracks.html [ Skip ]
 
-# Sheriff 2022-01-28 Flaky test
+# Sheriff 2022-01-28
 crbug.com/1248386 http/tests/text-autosizing/wide-iframe.html [ Failure Pass Timeout ]
+crbug.com/1287563 [ Linux ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation-stress-glare-linear.https.html [ Crash Failure Pass ]
