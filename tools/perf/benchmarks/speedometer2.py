@@ -44,9 +44,9 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
 
   def CreateStorySet(self, options):
     should_filter_suites = bool(options.suite)
-    filtered_suite_names = map(
-        speedometer2_pages.Speedometer2Story.GetFullSuiteName,
-            speedometer2_pages.Speedometer2Story.GetSuites(options.suite))
+    filtered_suite_names = list(
+        map(speedometer2_pages.Speedometer2Story.GetFullSuiteName,
+            speedometer2_pages.Speedometer2Story.GetSuites(options.suite)))
 
     ps = story.StorySet(base_dir=_SPEEDOMETER_DIR)
 
