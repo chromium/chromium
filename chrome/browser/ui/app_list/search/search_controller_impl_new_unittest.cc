@@ -45,7 +45,7 @@ class TestSearchResult : public ChromeSearchResult {
     SetCategory(category);
     scoring().best_match_rank = best_match_rank;
     set_relevance(relevance);
-    scoring().normalized_relevance = relevance;
+    scoring().ftrl_result_score = relevance;
   }
 
   TestSearchResult(const TestSearchResult&) = delete;
