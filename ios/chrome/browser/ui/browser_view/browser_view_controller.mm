@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
 #import <MessageUI/MessageUI.h>
@@ -36,7 +37,6 @@
 #include "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
@@ -274,26 +274,20 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - BVC
 
-@interface BrowserViewController () <BubblePresenterDelegate,
-                                     CaptivePortalTabHelperDelegate,
-                                     ChromeLensControllerDelegate,
+// Note other delegates defined in the Delegates category header.
+@interface BrowserViewController () <CaptivePortalTabHelperDelegate,
                                      CRWWebStateObserver,
+                                     ChromeLensControllerDelegate,
                                      FindBarPresentationDelegate,
                                      FullscreenUIElement,
                                      InfobarPositioner,
                                      KeyCommandsPlumbing,
                                      MainContentUI,
-                                     ManageAccountsDelegate,
                                      MFMailComposeViewControllerDelegate,
-                                     NetExportTabHelperDelegate,
-                                     NewTabPageTabHelperDelegate,
                                      OmniboxPopupPresenterDelegate,
-                                     OverscrollActionsControllerDelegate,
-                                     PasswordControllerDelegate,
                                      PreloadControllerDelegate,
                                      SideSwipeControllerDelegate,
                                      SigninPresenter,
-                                     SnapshotGeneratorDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
                                      URLLoadingObserver,
@@ -2582,8 +2576,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Private Methods: Tab creation and selection
 
+// DEPRECATED -- Do not add further logic to this method.
 // Add all delegates to the provided |webState|.
 // Unregistration happens when the WebState is removed from the WebStateList.
+// TODO(crbug.com/1290819): Remove this method.
 - (void)installDelegatesForWebState:(web::WebState*)webState {
   // If the WebState is unrealized, don't install the delegate. Instead they
   // will be installed when -webStateRealized: method is called.
@@ -2595,8 +2591,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       PrerenderServiceFactory::GetForBrowserState(self.browserState);
   DCHECK(!prerenderService ||
          !prerenderService->IsWebStatePrerendered(webState));
-
-  SnapshotTabHelper::FromWebState(webState)->SetDelegate(self);
 
   if (PasswordTabHelper* passwordTabHelper =
           PasswordTabHelper::FromWebState(webState)) {
@@ -2615,20 +2609,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   NetExportTabHelper::CreateForWebState(webState, self);
   CaptivePortalTabHelper::CreateForWebState(webState, self);
 
-  OfflinePageTabHelper::CreateForWebState(
-      webState, ReadingListModelFactory::GetForBrowserState(self.browserState));
-
   // DownloadManagerTabHelper cannot function without delegate.
   DCHECK(_downloadManagerCoordinator);
   DownloadManagerTabHelper::CreateForWebState(webState,
                                               _downloadManagerCoordinator);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
-
-  language::IOSLanguageDetectionTabHelper::CreateForWebState(
-      webState,
-      UrlLanguageHistogramFactory::GetForBrowserState(self.browserState));
-  ChromeIOSTranslateClient::CreateForWebState(webState);
 
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
@@ -2637,7 +2623,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
+// DEPRECATED -- Do not add further logic to this method.
 // Remove delegates from the provided |webState|.
+// TODO(crbug.com/1290819): Remove this method.
 - (void)uninstallDelegatesForWebState:(web::WebState*)webState {
   // If the WebState is unrealized, then the delegate had not been installed
   // and thus don't need to be uninstalled.
@@ -2662,8 +2650,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
               self.browserState)) {
     accountConsistencyService->RemoveWebStateHandler(webState);
   }
-
-  SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
   // No need to stop _ntpCoordinator with Single NTP enabled since shutdown will
