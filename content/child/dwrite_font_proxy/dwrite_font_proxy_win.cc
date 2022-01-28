@@ -212,6 +212,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
 absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     const std::u16string& family_name,
     HRESULT* hresult_out) {
+  DCHECK(!hresult_out || *hresult_out == S_OK);
   {
     base::AutoLock families_lock(families_lock_);
     auto iter = family_names_.find(family_name);
