@@ -30,7 +30,7 @@ class BrowserPolicyNewTabPageRewriterTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
-// Test that chrome://newtab is re-written to the custom NTP Location URL when
+// Tests that chrome://newtab is re-written to the custom NTP Location URL when
 // it is set by the policy.
 TEST_F(BrowserPolicyNewTabPageRewriterTest, CustomNtpUrl) {
   std::string custom_url = "https://store.google.com";
@@ -43,8 +43,8 @@ TEST_F(BrowserPolicyNewTabPageRewriterTest, CustomNtpUrl) {
   EXPECT_EQ(url, GURL(custom_url));
 }
 
-// Test that chrome://newtab is not re-written if the custom NTP Location URL is
-// the same.
+// Tests that chrome://newtab is not re-written if the custom NTP Location URL
+// set by the policy is the same.
 TEST_F(BrowserPolicyNewTabPageRewriterTest, SameNtpUrl) {
   std::string custom_url = kChromeUINewTabURL;
   browser_state_->GetPrefs()->SetString(prefs::kNewTabPageLocationOverride,
@@ -57,8 +57,8 @@ TEST_F(BrowserPolicyNewTabPageRewriterTest, SameNtpUrl) {
   EXPECT_EQ(url, GURL(kChromeUINewTabURL));
 }
 
-// Test that chrome://newtab is not re-written if the custom NTP Location URL is
-// not valid.
+// Tests that chrome://newtab is not re-written if the custom NTP Location URL
+// set by the policy is not valid.
 TEST_F(BrowserPolicyNewTabPageRewriterTest, InvalidCustomNtpUrl) {
   std::string custom_url = "blabla";
   browser_state_->GetPrefs()->SetString(prefs::kNewTabPageLocationOverride,
@@ -70,8 +70,8 @@ TEST_F(BrowserPolicyNewTabPageRewriterTest, InvalidCustomNtpUrl) {
   EXPECT_EQ(url, GURL(kChromeUINewTabURL));
 }
 
-// Test that chrome://newtab is not re-written when there is no custom NTP
-// Location URL.
+// Tests that chrome://newtab is not re-written when there is no custom NTP
+// Location URL set by the policy.
 TEST_F(BrowserPolicyNewTabPageRewriterTest, NoCustomNtpUrl) {
   GURL url = GURL(kChromeUINewTabURL);
   EXPECT_FALSE(
@@ -79,7 +79,7 @@ TEST_F(BrowserPolicyNewTabPageRewriterTest, NoCustomNtpUrl) {
   EXPECT_EQ(url, GURL(kChromeUINewTabURL));
 }
 
-// Test that chrome://newtab is not re-written when it is in incognito mode.
+// Tests that chrome://newtab is not re-written when it is in incognito mode.
 TEST_F(BrowserPolicyNewTabPageRewriterTest, IncognitoMode) {
   web::FakeBrowserState fake_browser_state;
   fake_browser_state.SetOffTheRecord(true);

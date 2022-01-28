@@ -4,12 +4,17 @@
 
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_command_line.h"
+#include "components/policy/core/common/policy_test_utils.h"
+#import "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -95,13 +100,21 @@ BOOL WaitForHistoryToDisappear() {
 
 #pragma mark - Helpers
 
-// Add the NTP Location policy to the app's launch configuration.
-- (void)configureAppWithNTPLocation:(std::string)ntpLocation {
-  AppLaunchConfiguration config;
-  config.additional_args.push_back("-NTPLocation");
-  config.additional_args.push_back(ntpLocation);
-  config.relaunch_policy = ForceRelaunchByKilling;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+// Sets up the NTP Location policy dynamically at runtime.
+- (void)setNTPPolicyValue:(std::string)ntpLocation {
+  policy_test_utils::SetPolicyWithStringValue(ntpLocation,
+                                              policy::key::kNewTabPageLocation);
+}
+
+// Validates that the new tab URL is the expected one.
+- (void)validateNTPURL:(GURL)expectedURL {
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Validate the URL.
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
 }
 
 #pragma mark - Tests
@@ -193,41 +206,147 @@ BOOL WaitForHistoryToDisappear() {
   [ChromeEarlGrey closeAllIncognitoTabs];
 }
 
+#pragma mark - Policy NTP Location Tests
+
 // Tests that the new tab opens the policy's New Tab Page Location when the URL
 // is valid.
 - (void)testValidNTPLocation {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL expectedURL = self.testServer->GetURL(kPageURL);
 
-  // Setup the policy's NTP Location URL.
-  [self configureAppWithNTPLocation:expectedURL.spec().c_str()];
+  // Set the policy's NTP Location value at runtime.
+  [self setNTPPolicyValue:expectedURL.spec()];
 
   // Open a new tab page.
   [ChromeEarlGrey openNewTab];
-
-  // Wait until the page has finished loading.
-  [ChromeEarlGrey waitForPageToFinishLoading];
-
-  // Verify that the new tab URL is the correct one.
-  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
-  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
-                  currentURL.spec().c_str());
+  [self validateNTPURL:expectedURL];
 }
 
 // Tests that the new tab doesn't open the policy's New Tab Page Location when
 // the URL is invalid.
 - (void)testInvalidNTPLocation {
-  // Setup the policy's NTP Location URL.
-  [self configureAppWithNTPLocation:kInvalidNTPLocation];
+  // Set the policy's NTP Location value at runtime.
+  [self setNTPPolicyValue:kInvalidNTPLocation];
 
   // Open a new tab page.
   [ChromeEarlGrey openNewTab];
 
   // Verify that the new tab URL is chrome://newtab/.
   const GURL expectedURL(kChromeUINewTabURL);
-  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
-  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
-                  currentURL.spec().c_str());
+  [self validateNTPURL:expectedURL];
+}
+
+// Tests that the incognito new tab doesn't open the policy's New Tab Page
+// Location even if the URL is valid.
+- (void)testIncognitoNTPLocation {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL testURL = self.testServer->GetURL(kPageURL);
+
+  // Set the policy's NTP Location value at runtime.
+  [self setNTPPolicyValue:testURL.spec()];
+
+  // Open a new incognito tab page.
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  // Verify that the new tab URL is chrome://newtab/.
+  const GURL expectedURL(kChromeUINewTabURL);
+  [self validateNTPURL:expectedURL];
+
+  [ChromeEarlGrey closeAllIncognitoTabs];
+}
+
+// Verifies that the app launches with a new tab page with the correct policy's
+// New Tab Page Location URL.
+- (void)testNewTabOnLaunchWithNTPLocation {
+  // Close all existing tabs.
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey closeAllIncognitoTabs];
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL(kPageURL);
+
+  // Adds the NTP Location policy to the app's launch configuration.
+  AppLaunchConfiguration config;
+  config.additional_args.push_back("-NTPLocation");
+  config.additional_args.push_back(expectedURL.spec());
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self validateNTPURL:expectedURL];
+}
+
+// Verifies opening a new tab from the New Tab button on the toolbar with the
+// correct policy's New Tab Page Location URL.
+- (void)testNewTabByNewTabButtonTapWithNTPLocation {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL(kPageURL);
+
+  // Set the policy's NTP Location value at runtime.
+  [self setNTPPolicyValue:expectedURL.spec()];
+
+  // Open tab via the UI.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabButton()]
+      performAction:grey_tap()];
+
+  [self validateNTPURL:expectedURL];
+}
+
+// Verifies opening a new tab from the tools menu with the correct policy's New
+// Tab Page Location URL.
+- (void)testNewTabFromToolsMenuWithNTPLocation {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL(kPageURL);
+
+  // Set the policy's NTP Location value at runtime.
+  [self setNTPPolicyValue:expectedURL.spec()];
+
+  // Open tab via the UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> newTabButtonMatcher =
+      grey_accessibilityID(kToolsMenuNewTabId);
+  [[EarlGrey selectElementWithMatcher:newTabButtonMatcher]
+      performAction:grey_tap()];
+
+  [self validateNTPURL:expectedURL];
+}
+
+// Verifies opening a new tab by long pressing the tab grid view and selecting
+// "New Tab" with the correct policy's New Tab Page Location URL.
+- (void)testNewTabByLongPressTabGridViewWithNTPLocation {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL(kPageURL);
+
+  // Set the policy's NTP Location value at runtime.
+  [self setNTPPolicyValue:expectedURL.spec()];
+
+  // Open tab via the UI.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_longPress()];
+
+  id<GREYMatcher> menuNewTabButtonMatcher =
+      grey_accessibilityID(kToolsMenuNewTabId);
+  [[EarlGrey selectElementWithMatcher:menuNewTabButtonMatcher]
+      performAction:grey_tap()];
+
+  [self validateNTPURL:expectedURL];
+}
+
+// Verifies opening a new tab from the tab grid view by tapping on the New Tab
+// button with the correct policy's New Tab Page Location URL.
+- (void)testNewTabFromTabGridViewWithNTPLocation {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL(kPageURL);
+
+  // Set the policy's NTP Location value at runtime.
+  [self setNTPPolicyValue:expectedURL.spec()];
+
+  // Open tab via the UI.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+
+  [self validateNTPURL:expectedURL];
 }
 
 @end

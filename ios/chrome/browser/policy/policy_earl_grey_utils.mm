@@ -34,6 +34,11 @@ void SetPolicy(int value, const std::string& policy_key) {
   SetPolicy(base::Value(value), policy_key);
 }
 
+void SetPolicyWithStringValue(const std::string& value,
+                              const std::string& policy_key) {
+  SetPolicy(base::Value(value), policy_key);
+}
+
 void SetPolicy(const std::string& json_value, const std::string& policy_key) {
   [PolicyAppInterface setPolicyValue:base::SysUTF8ToNSString(json_value)
                               forKey:base::SysUTF8ToNSString(policy_key)];

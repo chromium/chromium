@@ -16,8 +16,8 @@ namespace policy {
 
 class NewTabPageLocationPolicyHandlerTest : public PlatformTest {};
 
-// Checks that calling `ApplyPolicySettings` set the preference to the correct
-// value when policies overrides "NewTabPageLocation".
+// Tests that calling `ApplyPolicySettings` set the preference to the correct
+// value when the policy overrides "NewTabPageLocation".
 TEST_F(NewTabPageLocationPolicyHandlerTest, ApplyPolicySettings) {
   std::string value = "https://store.google.com";
 
@@ -34,8 +34,8 @@ TEST_F(NewTabPageLocationPolicyHandlerTest, ApplyPolicySettings) {
   EXPECT_TRUE(prefs.GetString(prefs::kNewTabPageLocationOverride, &value));
 }
 
-// Checks that calling `ApplyPolicySettings` does not set the preference when
-// policies does not overrides "NewTabPageLocation".
+// Tests that calling `ApplyPolicySettings` does not set the preference when the
+// policy does not override "NewTabPageLocation".
 TEST_F(NewTabPageLocationPolicyHandlerTest, ApplyPolicySettings_NoOverride) {
   bool value = true;
   PolicyMap policies;
@@ -45,7 +45,7 @@ TEST_F(NewTabPageLocationPolicyHandlerTest, ApplyPolicySettings_NoOverride) {
   EXPECT_FALSE(prefs.GetBoolean(prefs::kNewTabPageLocationOverride, &value));
 }
 
-// Check that `CheckPolicySettings` does not report an error if the policy
+// Tests that `CheckPolicySettings` does not report an error if the policy
 // overrides "NewTabPageLocation" with a valid value.
 TEST_F(NewTabPageLocationPolicyHandlerTest, CheckPolicySettings) {
   std::string value = "https://store.google.com";
@@ -62,8 +62,8 @@ TEST_F(NewTabPageLocationPolicyHandlerTest, CheckPolicySettings) {
   EXPECT_FALSE(errors.HasError(key::kNewTabPageLocation));
 }
 
-// Checks that `CheckPolicySettings` reports an error if the policy can't
-// overrides "NewTabPageLocation" because it is not a valid URL string.
+// Tests that `CheckPolicySettings` reports an error if the policy can't
+// override "NewTabPageLocation" because it is not a valid URL string.
 TEST_F(NewTabPageLocationPolicyHandlerTest,
        CheckPolicySettings_InvalidURLFormat) {
   std::string value = "blabla";
@@ -80,8 +80,8 @@ TEST_F(NewTabPageLocationPolicyHandlerTest,
   EXPECT_TRUE(errors.HasError(key::kNewTabPageLocation));
 }
 
-// Checks that `CheckPolicySettings` does report an error if the policy can't
-// overrides "NewTabPageLocation" because it is not a valid type.
+// Tests that `CheckPolicySettings` does report an error if the policy can't
+// override "NewTabPageLocation" because it is not a valid type.
 TEST_F(NewTabPageLocationPolicyHandlerTest, CheckPolicySettings_InvalidType) {
   bool value = true;
 

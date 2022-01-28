@@ -22,6 +22,11 @@ void SetPolicy(bool enabled, const std::string& policy_key);
 // value.
 void SetPolicy(int value, const std::string& policy_key);
 
+// Sets the value of the policy with the |policy_key| key to the given string
+// value.
+void SetPolicyWithStringValue(const std::string& value,
+                              const std::string& policy_key);
+
 // Sets the value of the policy with the |policy_key| key to the given value.
 // The value must be serialized as a JSON string.
 // Prefer using the other type-specific helpers instead of this generic helper
