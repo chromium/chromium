@@ -17,6 +17,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -37,6 +38,7 @@ const char kDeviceId[] = "/device/id";
 
 using chromeos::bluetooth_config::AdapterStateController;
 using chromeos::bluetooth_config::FakeDeviceOperationHandler;
+using chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper;
 using chromeos::bluetooth_config::mojom::AudioOutputCapability;
 using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
@@ -139,7 +141,8 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
   std::unique_ptr<views::View> detailed_view_;
 
   BluetoothSystemState GetBluetoothAdapterState() {
-    return scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
+    return bluetooth_config_test_helper()
+        ->fake_adapter_state_controller()
         ->GetAdapterState();
   }
 
@@ -154,13 +157,14 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
 
   void SetPairedDevices(
       std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices) {
-    scoped_bluetooth_config_test_helper_.fake_device_cache()->SetPairedDevices(
+    bluetooth_config_test_helper()->fake_device_cache()->SetPairedDevices(
         std::move(paired_devices));
     base::RunLoop().RunUntilIdle();
   }
 
   void SetBluetoothAdapterState(BluetoothSystemState system_state) {
-    scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
+    bluetooth_config_test_helper()
+        ->fake_adapter_state_controller()
         ->SetSystemState(system_state);
     base::RunLoop().RunUntilIdle();
   }
@@ -179,13 +183,15 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
   }
 
   FakeDeviceOperationHandler* fake_device_operation_handler() {
-    return scoped_bluetooth_config_test_helper_.fake_device_operation_handler();
+    return bluetooth_config_test_helper()->fake_device_operation_handler();
   }
 
  private:
+  ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {
+    return ash_test_helper()->bluetooth_config_test_helper();
+  }
+
   base::test::ScopedFeatureList feature_list_;
-  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
-      scoped_bluetooth_config_test_helper_;
   std::unique_ptr<BluetoothDetailedViewController>
       bluetooth_detailed_view_controller_;
   FakeBluetoothDetailedViewFactory bluetooth_detailed_view_factory_;

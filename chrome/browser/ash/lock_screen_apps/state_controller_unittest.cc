@@ -43,7 +43,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -407,8 +406,9 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
     SetUpStylusAvailability();
 
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
-    session_manager_->SetSessionState(
+    // SessionManager is created by
+    // |AshTestHelper::bluetooth_config_test_helper()|.
+    session_manager()->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
     // Initialize arc session manager - NoteTakingHelper expects it to be set.
@@ -457,7 +457,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     extensions::ExtensionSystem::Get(profile())->Shutdown();
     ash::NoteTakingHelper::Shutdown();
     arc_session_manager_.reset();
-    session_manager_.reset();
     app_window_.reset();
     BrowserWithTestWindowTest::TearDown();
     command_line_.reset();
@@ -566,7 +565,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
         ->AddExtension(app_.get());
     SetFirstRunCompletedIfNeeded(app_->id());
 
-    session_manager_->SetSessionState(session_manager::SessionState::LOCKED);
+    session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
     state_controller_->FlushTrayActionForTesting();
 
     if (app_manager_->state() != TestAppManager::State::kStarted) {
@@ -640,7 +639,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   }
 
   session_manager::SessionManager* session_manager() {
-    return session_manager_.get();
+    return session_manager::SessionManager::Get();
   }
 
   TestStateObserver* observer() { return &observer_; }
@@ -691,8 +690,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   // needed to properly initialize NoteTakingHelper.
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
-
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
   std::unique_ptr<lock_screen_apps::StateController> state_controller_;
 

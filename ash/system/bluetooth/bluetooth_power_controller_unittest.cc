@@ -4,14 +4,17 @@
 
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -49,6 +52,13 @@ device::BluetoothAdapter* GetBluetoothAdapter() {
 class BluetoothPowerControllerTest : public AshTestBase {
  public:
   BluetoothPowerControllerTest() {
+    feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+
+    // Manually register local state prefs because AshTestBase attempts to
+    // register local state prefs before this constructor is called when
+    // the kBluetoothRevamp flag is still enabled.
+    BluetoothPowerController::RegisterLocalStatePrefs(
+        local_state()->registry());
     BluetoothPowerController::RegisterProfilePrefs(
         active_user_prefs_.registry());
   }
@@ -105,12 +115,46 @@ class BluetoothPowerControllerTest : public AshTestBase {
 
   TestingPrefServiceSimple active_user_prefs_;
   base::HistogramTester histogram_tester;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class BluetoothPowerControllerNoSessionTest
     : public BluetoothPowerControllerTest {
  public:
   BluetoothPowerControllerNoSessionTest() { set_start_session(false); }
+};
+
+// This "integration" test aims to provide a closer simulation of production
+// logic behavior (see http://crbug.com/762567) using the PrefService objects
+// provided by AshTestBase and TestSessionControllerClient. However, we do have
+// to manually register some prefs since this test needs the kBluetoothRevamp
+// feature flag to be disabled. For more details see SetUp().
+class BluetoothPowerControllerIntegrationTest : public NoSessionAshTestBase {
+ public:
+  BluetoothPowerControllerIntegrationTest() = default;
+
+  BluetoothPowerControllerIntegrationTest(
+      const BluetoothPowerControllerIntegrationTest&) = delete;
+  BluetoothPowerControllerIntegrationTest& operator=(
+      const BluetoothPowerControllerIntegrationTest&) = delete;
+
+  void SetUp() override {
+    // These tests should only be run with the kBluetoothRevamp feature flag is
+    // disabled, and so we force it off here and ensure that the local state
+    // prefs that would have been registered had the feature flag been off are
+    // registered.
+    if (ash::features::IsBluetoothRevampEnabled()) {
+      feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+      BluetoothPowerController::RegisterLocalStatePrefs(
+          local_state()->registry());
+    }
+    NoSessionAshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests toggling Bluetooth setting on and off.
@@ -452,11 +496,6 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothPrimaryUserPrefOn) {
   EXPECT_TRUE(GetBluetoothAdapter()->IsPowered());
 }
 
-using BluetoothPowerControllerIntegrationTest = NoSessionAshTestBase;
-
-// An "integration" test using the PrefService objects provided by AshTestBase
-// and TestSessionControllerClient to provide a closer simulation of production
-// login behavior. http://crbug.com/762567
 TEST_F(BluetoothPowerControllerIntegrationTest, Basics) {
   SetupBluetoothAdapter();
   device::BluetoothAdapter* adapter = GetBluetoothAdapter();

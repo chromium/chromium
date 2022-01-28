@@ -33,7 +33,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/display/manager/display_configurator.h"
@@ -933,8 +932,13 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
     user_manager_->AddUser(test_account_id);
     user_manager_->LoginUser(test_account_id);
-    session_manager_.CreateSession(test_account_id, test_user_email, false);
-    session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
+
+    // SessionManager is created by
+    // |AshTestHelper::bluetooth_config_test_helper()|.
+    session_manager::SessionManager::Get()->CreateSession(
+        test_account_id, test_user_email, false);
+    session_manager::SessionManager::Get()->SetSessionState(
+        session_manager::SessionState::ACTIVE);
 
     logger_ = std::make_unique<display::test::ActionLogger>();
     native_display_delegate_ =
@@ -945,11 +949,13 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   }
 
   void LockScreen() {
-    session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
+    session_manager::SessionManager::Get()->SetSessionState(
+        session_manager::SessionState::LOCKED);
   }
 
   void UnLockScreen() {
-    session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
+    session_manager::SessionManager::Get()->SetSessionState(
+        session_manager::SessionState::ACTIVE);
   }
 
   void TurnDisplayOff() {
@@ -971,7 +977,6 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   RelaunchNotificationControllerPlatformImpl impl_;
   ash::AshTestHelper ash_test_helper_;
-  session_manager::SessionManager session_manager_;
   ash::FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<display::test::ActionLogger> logger_;

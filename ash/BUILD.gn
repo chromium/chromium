@@ -3181,6 +3181,7 @@ static_library("test_support") {
     "//chromeos/network:test_support",
     "//chromeos/services/assistant:test_support",
     "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/bluetooth_config:test_support",
     "//chromeos/system",
     "//chromeos/ui/frame",
     "//components/account_id",

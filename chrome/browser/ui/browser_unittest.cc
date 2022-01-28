@@ -258,8 +258,6 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
-  session_manager::SessionManager session_manager;
-
   // Setting up user manager state to be in kiosk mode:
   // Creating a new user manager.
   auto* user_manager = new ash::FakeChromeUserManager();
@@ -271,7 +269,8 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
 
   TestingProfile profile;
 
-  session_manager.SetSessionState(SessionState::LOGIN_PRIMARY);
+  session_manager::SessionManager::Get()->SetSessionState(
+      SessionState::LOGIN_PRIMARY);
   // Browser should not be created during login session state.
   EXPECT_EQ(Browser::CreationStatus::kErrorLoadingKiosk,
             Browser::GetCreationStatusForProfile(&profile));
@@ -279,7 +278,7 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
   Browser::CreateParams create_params = Browser::CreateParams(&profile, false);
   std::unique_ptr<BrowserWindow> window = CreateBrowserWindow();
   create_params.window = window.get();
-  session_manager.SetSessionState(SessionState::ACTIVE);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::ACTIVE);
   std::unique_ptr<Browser> test_browser(Browser::Create(create_params));
   // Normal flow, creation succeeds.
   EXPECT_TRUE(test_browser);

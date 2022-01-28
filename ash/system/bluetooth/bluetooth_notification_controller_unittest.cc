@@ -13,6 +13,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/test/ash_test_base.h"
@@ -20,6 +21,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -160,6 +162,37 @@ class BluetoothNotificationControllerTest : public AshTestBase {
   ToastManagerImpl* toast_manager_ = nullptr;
 };
 
+// Legacy test class used to provide additional setup to a subset of the tests
+// below that we would still like to run, but cannot be run with the Bluetooth
+// revamp feature flag enabled since we no longer show a notification when a
+// device becomes paired.
+class BluetoothNotificationControllerTestLegacy
+    : public BluetoothNotificationControllerTest {
+ public:
+  BluetoothNotificationControllerTestLegacy() = default;
+
+  BluetoothNotificationControllerTestLegacy(
+      const BluetoothNotificationControllerTestLegacy&) = delete;
+  BluetoothNotificationControllerTestLegacy& operator=(
+      const BluetoothNotificationControllerTestLegacy&) = delete;
+
+  void SetUp() override {
+    // These tests should only be run with the kBluetoothRevamp feature flag is
+    // disabled, and so we force it off here and ensure that the local state
+    // prefs that would have been registered had the feature flag been off are
+    // registered.
+    if (ash::features::IsBluetoothRevampEnabled()) {
+      feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+      BluetoothPowerController::RegisterLocalStatePrefs(
+          local_state()->registry());
+    }
+    BluetoothNotificationControllerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_F(BluetoothNotificationControllerTest, DiscoverableToast) {
   VerifyDiscoverableToastVisibility(/*visible=*/false);
 
@@ -194,7 +227,7 @@ TEST_F(BluetoothNotificationControllerTest,
   VerifyDiscoverableToastVisibility(/*visible=*/false);
 }
 
-TEST_F(BluetoothNotificationControllerTest,
+TEST_F(BluetoothNotificationControllerTestLegacy,
        PairedDeviceNotification_TapNotification) {
   // Show the notification to the user.
   ShowPairedNotification(notification_controller_.get(),
@@ -211,7 +244,7 @@ TEST_F(BluetoothNotificationControllerTest,
   EXPECT_EQ(1, system_tray_client_->show_bluetooth_settings_count());
 }
 
-TEST_F(BluetoothNotificationControllerTest,
+TEST_F(BluetoothNotificationControllerTestLegacy,
        PairedDeviceNotification_MultipleNotifications) {
   // Show the notification to the user.
   ShowPairedNotification(notification_controller_.get(),
@@ -225,7 +258,7 @@ TEST_F(BluetoothNotificationControllerTest,
   VerifyPairedNotificationIsVisible(bluetooth_device_2_.get());
 }
 
-TEST_F(BluetoothNotificationControllerTest,
+TEST_F(BluetoothNotificationControllerTestLegacy,
        PairedDeviceNotification_UserDismissesNotification) {
   ShowPairedNotification(notification_controller_.get(),
                          bluetooth_device_1_.get());
@@ -245,7 +278,7 @@ TEST_F(BluetoothNotificationControllerTest,
   EXPECT_EQ(0, system_tray_client_->show_bluetooth_settings_count());
 }
 
-TEST_F(BluetoothNotificationControllerTest,
+TEST_F(BluetoothNotificationControllerTestLegacy,
        PairedDeviceNotification_SystemDismissesNotification) {
   ShowPairedNotification(notification_controller_.get(),
                          bluetooth_device_1_.get());
@@ -258,7 +291,7 @@ TEST_F(BluetoothNotificationControllerTest,
   EXPECT_EQ(0, system_tray_client_->show_bluetooth_settings_count());
 }
 
-TEST_F(BluetoothNotificationControllerTest,
+TEST_F(BluetoothNotificationControllerTestLegacy,
        PairedDeviceNotification_DeviceConnectionInitiatedByNearbyClient) {
   VerifyPairedNotificationIsNotVisible(bluetooth_device_1_.get());
 

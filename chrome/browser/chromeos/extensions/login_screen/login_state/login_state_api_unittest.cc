@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/api_test_utils.h"
 #endif
@@ -83,18 +82,7 @@ class LoginStateApiAshUnittest : public LoginStateApiUnittest {
 
   ~LoginStateApiAshUnittest() override = default;
 
-  void SetUp() override {
-    // |session_manager::SessionManager| is not initialized by default.
-    // This sets up the static instance of |SessionManager| so
-    // |session_manager::SessionManager::Get()| will return this particular
-    // instance.
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
-
-    LoginStateApiUnittest::SetUp();
-  }
-
- protected:
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  void SetUp() override { LoginStateApiUnittest::SetUp(); }
 };
 
 // Test that calling |loginState.getSessionState()| returns the correctly mapped
@@ -114,7 +102,9 @@ TEST_F(LoginStateApiAshUnittest, GetSessionState) {
   };
 
   for (const auto& test : kTestCases) {
-    session_manager_->SetSessionState(test.session_state);
+    // SessionManager is created by
+    // |AshTestHelper::bluetooth_config_test_helper()|.
+    session_manager::SessionManager::Get()->SetSessionState(test.session_state);
     auto function = base::MakeRefCounted<LoginStateGetSessionStateFunction>();
     std::unique_ptr<base::Value> result =
         RunFunctionAndReturnValue(function.get(), "[]");

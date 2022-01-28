@@ -17,6 +17,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/system/message_center/test_notifier_settings_controller.h"
 #include "base/test/scoped_command_line.h"
+#include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "ui/aura/test/aura_test_helper.h"
 
@@ -130,6 +131,11 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return ambient_ash_test_helper_.get();
   }
 
+  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper*
+  bluetooth_config_test_helper() {
+    return &scoped_bluetooth_config_test_helper_;
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -160,6 +166,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       test_keyboard_controller_observer_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
+  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
+      scoped_bluetooth_config_test_helper_;
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().

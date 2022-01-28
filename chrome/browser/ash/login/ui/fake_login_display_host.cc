@@ -27,8 +27,12 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
 };
 
 FakeLoginDisplayHost::FakeLoginDisplayHost()
-    : session_manager_(std::make_unique<session_manager::SessionManager>()),
-      wizard_context_(std::make_unique<WizardContext>()) {}
+    : wizard_context_(std::make_unique<WizardContext>()) {
+  // Only one SessionManager can be instantiated at a time. Check to see if one
+  // has already been instantiated before creating one.
+  if (!session_manager::SessionManager::Get())
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+}
 
 FakeLoginDisplayHost::~FakeLoginDisplayHost() = default;
 

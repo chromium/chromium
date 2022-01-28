@@ -1047,12 +1047,18 @@ TEST_F(AutoclickTest, AvoidsShelfBubble) {
 
     unified_system_tray->ShowBubble();
     gfx::Rect new_menu_bounds = menu->GetBoundsInScreen();
-    // Y is unchanged when the bubble shows.
-    EXPECT_TRUE(abs(menu_bounds.y() - new_menu_bounds.y()) < 5);
-    // X is pushed over by at least the bubble's bounds.
-    EXPECT_TRUE(menu_bounds.x() -
-                    unified_system_tray->GetBubbleBoundsInScreen().width() >
-                new_menu_bounds.x());
+
+    const int dx = abs(menu_bounds.x() - new_menu_bounds.x());
+    const int dy = abs(menu_bounds.y() - new_menu_bounds.y());
+    const gfx::Rect bubble_bounds =
+        unified_system_tray->GetBubbleBoundsInScreen();
+
+    // The height of the system tray bubble is dependent on the number of
+    // feature pods, and whether the a11y widget goes above or to the side of
+    // the system tray is dependent on the height of the system tray. Test that
+    // one and only one of these situations is applicable.
+    EXPECT_TRUE((dx < 5 && dy > bubble_bounds.height()) ||
+                (dy < 5 && dx > bubble_bounds.width()));
 
     unified_system_tray->CloseBubble();
     new_menu_bounds = menu->GetBoundsInScreen();

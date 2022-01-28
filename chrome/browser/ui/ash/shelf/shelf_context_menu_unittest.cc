@@ -56,7 +56,6 @@
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session_manager.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -129,7 +128,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     app_service_test_.SetUp(profile());
     arc_test_.SetUp(profile());
 
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
     model_ = std::make_unique<ash::ShelfModel>();
     shelf_item_factory_ = std::make_unique<ChromeShelfItemFactory>();
     model_->SetShelfItemFactory(shelf_item_factory_.get());
@@ -246,7 +244,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   std::unique_ptr<CrostiniTestHelper> crostini_helper_;
   ArcAppTest arc_test_;
   apps::AppServiceTest app_service_test_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ash::ShelfModel> model_;
   std::unique_ptr<ChromeShelfItemFactory> shelf_item_factory_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;

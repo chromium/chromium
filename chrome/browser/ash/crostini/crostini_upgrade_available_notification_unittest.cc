@@ -27,7 +27,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
-#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,7 +128,6 @@ class CrostiniUpgradeAvailableNotificationTest
 
  private:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  session_manager::SessionManager session_manager_;
 };
 
 TEST_F(CrostiniUpgradeAvailableNotificationTest, ShowsWhenNotified) {

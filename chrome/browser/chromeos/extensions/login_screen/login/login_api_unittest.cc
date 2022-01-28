@@ -34,7 +34,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -147,7 +146,10 @@ class LoginApiUnittest : public ExtensionApiUnittest {
         std::make_unique<MockExistingUserController>();
     mock_lock_handler_ = std::make_unique<MockLoginApiLockHandler>();
     // Set `LOGIN_PRIMARY` as the default state.
-    session_manager_.SetSessionState(
+
+    // SessionManager is created by
+    // |AshTestHelper::bluetooth_config_test_helper()|.
+    session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
     EXPECT_CALL(*mock_login_display_host_, GetExistingUserController())
@@ -182,8 +184,6 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
   std::unique_ptr<MockLoginApiLockHandler> mock_lock_handler_;
-  // Sets up the global `SessionManager` instance.
-  session_manager::SessionManager session_manager_;
 };
 
 MATCHER_P(MatchSigninSpecifics, expected, "") {

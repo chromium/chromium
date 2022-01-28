@@ -8,10 +8,10 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_notifier.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using chromeos::bluetooth_config::mojom::BatteryProperties;
@@ -76,14 +76,13 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
  private:
   chromeos::bluetooth_config::FakeBluetoothDeviceStatusNotifier*
   fake_device_status_notifier() {
-    return scoped_bluetooth_config_test_helper_
-        .fake_bluetooth_device_status_notifier();
+    return ash_test_helper()
+        ->bluetooth_config_test_helper()
+        ->fake_bluetooth_device_status_notifier();
   }
 
   std::unique_ptr<MockBluetoothDeviceStatusUiHandler> device_status_ui_handler_;
   base::test::ScopedFeatureList feature_list_;
-  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
-      scoped_bluetooth_config_test_helper_;
 };
 
 TEST_F(BluetoothDeviceStatusUiHandlerTest, PairedDevice) {
