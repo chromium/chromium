@@ -195,6 +195,8 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS +
         "/home_button_on_grid_tab_switcher/false"})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O,
+                     message = "https://crbug.com/1291957")
     public void testShow_SingleAsHomepage() {
         // clang-format on
         if (!mImmediateReturn) {
@@ -233,6 +235,8 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O,
+                     message = "https://crbug.com/1291957")
     public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
