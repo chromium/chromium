@@ -2,28 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_TAGGING_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_TAGGING_H_
+#ifndef BASE_MEMORY_TAGGING_H_
+#define BASE_MEMORY_TAGGING_H_
 
 // This file contains method definitions to support Armv8.5-A's memory tagging
 // extension.
-
-#include <cstddef>
+#include <stddef.h>
+#include <stdint.h>
 #include <cstdint>
-
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
+#if defined(ARCH_CPU_ARM64) && defined(__clang__) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
+#define HAS_MEMORY_TAGGING 1
+#endif
+
 constexpr int kMemTagGranuleSize = 16u;
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if defined(HAS_MEMORY_TAGGING)
 constexpr uint64_t kMemTagUnmask = 0x00ffffffffffffffuLL;
 #else
 constexpr uint64_t kMemTagUnmask = 0xffffffffffffffffuLL;
 #endif
 
-namespace partition_alloc {
+namespace base {
+namespace memory {
 
 // Enum configures Arm's MTE extension to operate in different modes
 enum class TagViolationReportingMode {
@@ -38,17 +42,15 @@ enum class TagViolationReportingMode {
   kAsynchronous,
 };
 
-// Changes the memory tagging mode for the calling thread.
-BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(
-    TagViolationReportingMode);
-
-namespace internal {
-
 #if BUILDFLAG(IS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
 BASE_EXPORT void ChangeMemoryTaggingModeForAllThreadsPerProcess(
     TagViolationReportingMode);
 #endif
+
+// Changes the memory tagging mode for the calling thread.
+BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(
+    TagViolationReportingMode);
 
 // Gets the memory tagging mode for the calling thread.
 BASE_EXPORT TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
@@ -67,6 +69,7 @@ BASE_EXPORT void InitializeMTESupportIfNeeded();
 // (needed for supporting old Android versions) doesn't support them. Initial
 // solution should be good enough for fuzzing/debug, ideally needs fixing for
 // async deployment on end-user devices.
+namespace internal {
 // TODO(bartekn): void* -> uintptr_t
 using RemaskPtrInternalFn = void*(void* ptr);
 using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
@@ -79,6 +82,7 @@ extern BASE_EXPORT TagMemoryRangeRandomlyInternalFn*
 extern BASE_EXPORT TagMemoryRangeIncrementInternalFn*
     global_tag_memory_range_increment_fn;
 extern BASE_EXPORT RemaskPtrInternalFn* global_remask_void_ptr_fn;
+}  // namespace internal
 
 // Increments the tag of the memory range ptr. Useful for provable revocations
 // (e.g. free). Returns the pointer with the new tag. Ensures that the entire
@@ -86,8 +90,9 @@ extern BASE_EXPORT RemaskPtrInternalFn* global_remask_void_ptr_fn;
 // TODO(bartekn): Remove the T* variant.
 template <typename T>
 ALWAYS_INLINE T* TagMemoryRangeIncrement(T* ptr, size_t size) {
-#if defined(PA_HAS_MEMORY_TAGGING)
-  return reinterpret_cast<T*>(global_tag_memory_range_increment_fn(ptr, size));
+#if defined(HAS_MEMORY_TAGGING)
+  return reinterpret_cast<T*>(
+      internal::global_tag_memory_range_increment_fn(ptr, size));
 #else
   return ptr;
 #endif
@@ -105,9 +110,9 @@ template <typename T>
 ALWAYS_INLINE T* TagMemoryRangeRandomly(T* ptr,
                                         size_t size,
                                         uint64_t mask = 0u) {
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if defined(HAS_MEMORY_TAGGING)
   return reinterpret_cast<T*>(
-      global_tag_memory_range_randomly_fn(ptr, size, mask));
+      internal::global_tag_memory_range_randomly_fn(ptr, size, mask));
 #else
   return ptr;
 #endif
@@ -123,8 +128,8 @@ ALWAYS_INLINE uintptr_t TagMemoryRangeRandomly(uintptr_t ptr,
 // TODO(bartekn): Remove the T* variant.
 template <typename T>
 ALWAYS_INLINE T* RemaskPtr(T* ptr) {
-#if defined(PA_HAS_MEMORY_TAGGING)
-  return reinterpret_cast<T*>(global_remask_void_ptr_fn(ptr));
+#if defined(HAS_MEMORY_TAGGING)
+  return reinterpret_cast<T*>(internal::global_remask_void_ptr_fn(ptr));
 #else
   return ptr;
 #endif
@@ -137,7 +142,7 @@ ALWAYS_INLINE uintptr_t RemaskPtr(uintptr_t address) {
 
 // Strips the tag bits off address.
 ALWAYS_INLINE uintptr_t UnmaskPtr(uintptr_t address) {
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if defined(HAS_MEMORY_TAGGING)
   return address & kMemTagUnmask;
 #else
   return address;
@@ -150,8 +155,7 @@ ALWAYS_INLINE T* UnmaskPtr(T* ptr) {
   return reinterpret_cast<T*>(UnmaskPtr(reinterpret_cast<uintptr_t>(ptr)));
 }
 
-}  // namespace internal
+}  // namespace memory
+}  // namespace base
 
-}  // namespace partition_alloc
-
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_TAGGING_H_
+#endif  // BASE_MEMORY_TAGGING_H_

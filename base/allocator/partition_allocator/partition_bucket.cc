@@ -21,7 +21,6 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
@@ -772,8 +771,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 
   if (LIKELY(size <= kMaxMemoryTaggingSize)) {
     // Ensure the memory tag of the return_slot is unguessable.
-    return_slot =
-        ::partition_alloc::internal::TagMemoryRangeRandomly(return_slot, size);
+    return_slot = memory::TagMemoryRangeRandomly(return_slot, size);
   }
 
   // Add all slots that fit within so far committed pages to the free list.
@@ -782,8 +780,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
     if (LIKELY(size <= kMaxMemoryTaggingSize)) {
-      next_slot =
-          ::partition_alloc::internal::TagMemoryRangeRandomly(next_slot, size);
+      next_slot = memory::TagMemoryRangeRandomly(next_slot, size);
     }
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot);
     if (!slot_span->get_freelist_head()) {

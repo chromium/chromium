@@ -15,7 +15,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/tagging.h"
+#include "base/memory/tagging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
@@ -231,7 +231,7 @@ static constexpr pool_handle kConfigurablePoolHandle = 3;
 // PROT_MTE.
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if HAS_MEMORY_TAGGING
 // Returns whether the tag of a pointer/slot overflowed and slot needs to be
 // moved to quarantine.
 constexpr ALWAYS_INLINE bool HasOverflowTag(uintptr_t ptr) {
@@ -241,7 +241,7 @@ constexpr ALWAYS_INLINE bool HasOverflowTag(uintptr_t ptr) {
                 "Overflow tag must be in tag bits");
   return (ptr & ~kMemTagUnmask) == kOverflowTag;
 }
-#endif  // defined(PA_HAS_MEMORY_TAGGING)
+#endif  // HAS_MEMORY_TAGGING
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 NumPartitionPagesPerSuperPage() {
@@ -408,9 +408,9 @@ namespace base {
 using ::partition_alloc::internal::DirectMapAllocationGranularity;
 using ::partition_alloc::internal::DirectMapAllocationGranularityOffsetMask;
 using ::partition_alloc::internal::DirectMapAllocationGranularityShift;
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if HAS_MEMORY_TAGGING
 using ::partition_alloc::internal::HasOverflowTag;
-#endif  // defined(PA_HAS_MEMORY_TAGGING)
+#endif  // HAS_MEMORY_TAGGING
 using ::partition_alloc::internal::kBitsPerSizeT;
 using ::partition_alloc::internal::kBRPPoolHandle;
 using ::partition_alloc::internal::kConfigurablePoolHandle;

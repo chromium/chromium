@@ -58,9 +58,9 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
+#include "base/memory/tagging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -512,7 +512,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE bool ShouldQuarantine(uintptr_t slot_start) const {
     if (UNLIKELY(quarantine_mode != QuarantineMode::kEnabled))
       return false;
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if HAS_MEMORY_TAGGING
     if (UNLIKELY(quarantine_always_for_testing))
       return true;
     // If quarantine is enabled and tag overflows, move slot to quarantine, to
@@ -822,14 +822,13 @@ ALWAYS_INLINE uintptr_t PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
   // Get the offset from the beginning of the slot span.
   uintptr_t slot_span_start =
       SlotSpanMetadata<ThreadSafe>::ToSlotSpanStart(slot_span);
-  PA_DCHECK(slot_span_start ==
-            ::partition_alloc::internal::UnmaskPtr(slot_span_start));
+  PA_DCHECK(slot_span_start == memory::UnmaskPtr(slot_span_start));
   size_t offset_in_slot_span = address - slot_span_start;
 
   auto* bucket = slot_span->bucket;
-  return ::partition_alloc::internal::RemaskPtr(
-      slot_span_start +
-      bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span));
+  return memory::RemaskPtr(slot_span_start +
+                           bucket->slot_size *
+                               bucket->GetSlotNumber(offset_in_slot_span));
 }
 
 // Checks whether a given address stays within the same allocation slot after
@@ -1041,9 +1040,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
     // Incrementing the memory range returns the true underlying tag, so
     // RemaskPtr is not required here.
     // TODO(bartekn): |slot_start| shouldn't have MTE tag.
-    slot_start = ::partition_alloc::internal::TagMemoryRangeIncrement(
-        slot_start, slot_size);
-    object = ::partition_alloc::internal::RemaskPtr(object);
+    slot_start = memory::TagMemoryRangeIncrement(slot_start, slot_size);
+    object = memory::RemaskPtr(object);
   }
 
   // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
@@ -1114,8 +1112,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // default.
   if (UNLIKELY(IsQuarantineEnabled())) {
     if (LIKELY(internal::IsManagedByNormalBuckets(slot_start))) {
-      uintptr_t unmasked_slot_start =
-          ::partition_alloc::internal::UnmaskPtr(slot_start);
+      uintptr_t unmasked_slot_start = memory::UnmaskPtr(slot_start);
       // Mark the state in the state bitmap as freed.
       internal::StateBitmapFromAddr(unmasked_slot_start)
           ->Free(unmasked_slot_start);
@@ -1281,7 +1278,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(
 template <bool thread_safe>
 ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsValidSlotSpan(
     SlotSpan* slot_span) {
-  slot_span = ::partition_alloc::internal::UnmaskPtr(slot_span);
+  slot_span = memory::UnmaskPtr(slot_span);
   PartitionRoot* root = FromSlotSpan(slot_span);
   return root->inverted_self == ~reinterpret_cast<uintptr_t>(root);
 }
@@ -1643,8 +1640,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // default.
   if (UNLIKELY(is_quarantine_enabled)) {
     if (LIKELY(internal::IsManagedByNormalBuckets(slot_start))) {
-      uintptr_t unmasked_slot_start =
-          ::partition_alloc::internal::UnmaskPtr(slot_start);
+      uintptr_t unmasked_slot_start = memory::UnmaskPtr(slot_start);
       // Mark the corresponding bits in the state bitmap as allocated.
       internal::StateBitmapFromAddr(unmasked_slot_start)
           ->Allocate(unmasked_slot_start);

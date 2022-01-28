@@ -17,10 +17,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/memory/tagging.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -56,7 +56,7 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       uintptr_t address) {
-    address = ::partition_alloc::internal::UnmaskPtr(address);
+    address = memory::UnmaskPtr(address);
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
     PA_DCHECK(!IsInBRPPool(address));
@@ -140,8 +140,7 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
-    return ::partition_alloc::internal::UnmaskPtr(address) -
-           setup_.brp_pool_base_address_;
+    return memory::UnmaskPtr(address) - setup_.brp_pool_base_address_;
   }
 
   // PartitionAddressSpace is static_only class.
