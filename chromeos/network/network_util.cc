@@ -142,30 +142,29 @@ bool ParseCellularScanResults(const base::Value::ConstListView list,
   scan_results->clear();
   scan_results->reserve(list.size());
   for (const auto& value : list) {
-    const base::DictionaryValue* dict;
-    if (!value.GetAsDictionary(&dict))
+    if (!value.is_dict())
       return false;
     CellularScanResult scan_result;
     // If the network id property is not present then this network cannot be
     // connected to so don't include it in the results.
     const std::string* network_id =
-        dict->FindStringKey(shill::kNetworkIdProperty);
+        value.FindStringKey(shill::kNetworkIdProperty);
     if (!network_id)
       continue;
     scan_result.network_id = *network_id;
-    const std::string* status = dict->FindStringKey(shill::kStatusProperty);
+    const std::string* status = value.FindStringKey(shill::kStatusProperty);
     if (status)
       scan_result.status = *status;
     const std::string* long_name =
-        dict->FindStringKey(shill::kLongNameProperty);
+        value.FindStringKey(shill::kLongNameProperty);
     if (long_name)
       scan_result.long_name = *long_name;
     const std::string* short_name =
-        dict->FindStringKey(shill::kShortNameProperty);
+        value.FindStringKey(shill::kShortNameProperty);
     if (short_name)
       scan_result.short_name = *short_name;
     const std::string* technology =
-        dict->FindStringKey(shill::kTechnologyProperty);
+        value.FindStringKey(shill::kTechnologyProperty);
     if (technology)
       scan_result.technology = *technology;
     scan_results->push_back(scan_result);
@@ -204,12 +203,10 @@ bool ParseCellularSIMSlotInfo(
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> TranslateNetworkStateToONC(
-    const NetworkState* network) {
+base::Value TranslateNetworkStateToONC(const NetworkState* network) {
   // Get the properties from the NetworkState.
-  std::unique_ptr<base::DictionaryValue> shill_dictionary(
-      new base::DictionaryValue);
-  network->GetStateProperties(shill_dictionary.get());
+  base::Value shill_dictionary(base::Value::Type::DICTIONARY);
+  network->GetStateProperties(&shill_dictionary);
 
   // Get any Device properties required to translate state.
   if (NetworkTypePattern::Cellular().MatchesType(network->type())) {
@@ -217,7 +214,7 @@ std::unique_ptr<base::DictionaryValue> TranslateNetworkStateToONC(
         NetworkHandler::Get()->network_state_handler()->GetDeviceState(
             network->device_path());
     if (device) {
-      base::DictionaryValue device_dict;
+      base::Value device_dict(base::Value::Type::DICTIONARY);
       // We need to set Device.Cellular.ProviderRequiresRoaming so that
       // Cellular.RoamingState can be set correctly for badging network icons.
       device_dict.SetKey(shill::kProviderRequiresRoamingProperty,
@@ -225,7 +222,7 @@ std::unique_ptr<base::DictionaryValue> TranslateNetworkStateToONC(
       // Scanning is also used in the UI when displaying a list of networks.
       device_dict.SetKey(shill::kScanningProperty,
                          base::Value(device->scanning()));
-      shill_dictionary->SetKey(shill::kDeviceProperty, std::move(device_dict));
+      shill_dictionary.SetKey(shill::kDeviceProperty, std::move(device_dict));
     }
   }
 
@@ -239,35 +236,31 @@ std::unique_ptr<base::DictionaryValue> TranslateNetworkStateToONC(
       ->managed_network_configuration_handler()
       ->FindPolicyByGUID(user_id_hash, network->guid(), &onc_source);
 
-  std::unique_ptr<base::DictionaryValue> onc_dictionary =
-      TranslateShillServiceToONCPart(*shill_dictionary, onc_source,
-                                     &onc::kNetworkWithStateSignature, network);
+  base::Value onc_dictionary = TranslateShillServiceToONCPart(
+      shill_dictionary, onc_source, &onc::kNetworkWithStateSignature, network);
 
   // Remove IPAddressConfigType/NameServersConfigType as these were
   // historically not provided by TranslateNetworkStateToONC.
   // The source shill properties for those ONC properties are not provided by
   // NetworkState::GetStateProperties, however since CL:2530330 these are
   // assumed to have defaults that are always enforced during ONC translation.
-  onc_dictionary->RemoveKey(::onc::network_config::kIPAddressConfigType);
-  onc_dictionary->RemoveKey(::onc::network_config::kNameServersConfigType);
+  onc_dictionary.RemoveKey(::onc::network_config::kIPAddressConfigType);
+  onc_dictionary.RemoveKey(::onc::network_config::kNameServersConfigType);
 
   return onc_dictionary;
 }
 
-std::unique_ptr<base::ListValue> TranslateNetworkListToONC(
-    NetworkTypePattern pattern,
-    bool configured_only,
-    bool visible_only,
-    int limit) {
+base::Value TranslateNetworkListToONC(NetworkTypePattern pattern,
+                                      bool configured_only,
+                                      bool visible_only,
+                                      int limit) {
   NetworkStateHandler::NetworkStateList network_states;
   NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
       pattern, configured_only, visible_only, limit, &network_states);
 
-  std::unique_ptr<base::ListValue> network_properties_list(new base::ListValue);
+  base::Value network_properties_list(base::Value::Type::LIST);
   for (const NetworkState* state : network_states) {
-    std::unique_ptr<base::DictionaryValue> onc_dictionary =
-        TranslateNetworkStateToONC(state);
-    network_properties_list->Append(std::move(onc_dictionary));
+    network_properties_list.Append(TranslateNetworkStateToONC(state));
   }
   return network_properties_list;
 }

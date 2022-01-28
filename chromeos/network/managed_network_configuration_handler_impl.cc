@@ -1125,10 +1125,9 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
       network_state_handler_->GetNetworkState(service_path);
   ::onc::ONCSource onc_source;
   FindPolicyByGUID(userhash, *guid, &onc_source);
-  base::Value onc_network =
-      base::Value::FromUniquePtrValue(onc::TranslateShillServiceToONCPart(
-          base::Value::AsDictionaryValue(*shill_properties), onc_source,
-          &onc::kNetworkWithStateSignature, network_state));
+  base::Value onc_network = onc::TranslateShillServiceToONCPart(
+      *shill_properties, onc_source, &onc::kNetworkWithStateSignature,
+      network_state);
 
   if (properties_type == PropertiesType::kUnmanaged) {
     std::move(callback).Run(service_path,

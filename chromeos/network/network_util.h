@@ -21,10 +21,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace chromeos {
 
 class NetworkState;
@@ -111,14 +107,14 @@ int32_t NetmaskToPrefixLength(const std::string& netmask);
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::string FormattedMacAddress(const std::string& shill_mac_address);
 
-// Parses |list|, which contains DictionaryValues and returns a vector of
+// Parses |list|, which contains dictionary Values and returns a vector of
 // CellularScanResult in |scan_results|. Returns false if parsing fails,
 // in which case the contents of |scan_results| will be undefined.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool ParseCellularScanResults(const base::Value::ConstListView list,
                               std::vector<CellularScanResult>* scan_results);
 
-// Parses |list|, which contains DictionaryValues and returns a vector of
+// Parses |list|, which contains dictionary Values and returns a vector of
 // CellularSIMSlotInfo in |sim_slot_infos|. Returns false if parsing fails,
 // in which case the contents of |sim_slot_infos| will be undefined.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -129,8 +125,7 @@ bool ParseCellularSIMSlotInfo(const base::Value::ConstListView list,
 // This includes properties from the corresponding NetworkState if it exists.
 // Assumed to be called from the primary user profile.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::DictionaryValue> TranslateNetworkStateToONC(
-    const NetworkState* network);
+base::Value TranslateNetworkStateToONC(const NetworkState* network);
 
 // Retrieves the list of network services by passing |pattern|,
 // |configured_only|, and |visible_only| to NetworkStateHandler::
@@ -138,11 +133,10 @@ std::unique_ptr<base::DictionaryValue> TranslateNetworkStateToONC(
 // dictionaries using TranslateShillServiceToONCPart. |limit| is used to limit
 // the number of results.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::ListValue> TranslateNetworkListToONC(
-    NetworkTypePattern pattern,
-    bool configured_only,
-    bool visible_only,
-    int limit);
+base::Value TranslateNetworkListToONC(NetworkTypePattern pattern,
+                                      bool configured_only,
+                                      bool visible_only,
+                                      int limit);
 
 // Returns the Shill type corresponding to ONC |type| or an empty string if
 // there is no match. Only valid for ethernet, wifi, cellular, and vpn.

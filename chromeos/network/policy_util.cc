@@ -276,11 +276,9 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
                                  effective);
   effective = std::move(*normalized_network);
 
-  std::unique_ptr<base::DictionaryValue> shill_dictionary(
-      onc::TranslateONCObjectToShill(&onc::kNetworkConfigurationSignature,
-                                     effective));
-
-  shill_dictionary->SetKey(shill::kProfileProperty, base::Value(profile.path));
+  base::Value shill_dictionary = onc::TranslateONCObjectToShill(
+      &onc::kNetworkConfigurationSignature, effective);
+  shill_dictionary.SetKey(shill::kProfileProperty, base::Value(profile.path));
 
   // If AutoConnect is enabled by policy, set the ManagedCredentials property to
   // indicate to Shill that this network can be used for autoconnect even
@@ -293,14 +291,14 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
   if (network_policy && IsAutoConnectEnabledInPolicy(*network_policy)) {
     VLOG(1) << "Enable ManagedCredentials for managed network with GUID "
             << guid;
-    shill_dictionary->SetKey(shill::kManagedCredentialsProperty,
-                             base::Value(true));
+    shill_dictionary.SetKey(shill::kManagedCredentialsProperty,
+                            base::Value(true));
   }
 
   if (!network_policy && global_policy) {
     // The network isn't managed. Global network policies have to be applied.
-    SetShillPropertiesForGlobalPolicy(*shill_dictionary, *global_policy,
-                                      shill_dictionary.get());
+    SetShillPropertiesForGlobalPolicy(shill_dictionary, *global_policy,
+                                      &shill_dictionary);
   }
 
   std::unique_ptr<NetworkUIData> ui_data(
@@ -320,7 +318,7 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
     // time they're viewed (instead of masked-out-placeholders, which would
     // suggest that a credential has been saved).
     const bool saving_credentials =
-        shill_dictionary->FindBoolKey(shill::kSaveCredentialsProperty)
+        shill_dictionary.FindBoolKey(shill::kSaveCredentialsProperty)
             .value_or(true);
     const std::string credential_mask =
         saving_credentials ? kFakeCredential : std::string();
@@ -331,13 +329,13 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
     ui_data->SetUserSettingsDictionary(std::move(sanitized_user_settings));
   }
 
-  shill_property_util::SetUIDataAndSource(*ui_data, shill_dictionary.get());
+  shill_property_util::SetUIDataAndSource(*ui_data, &shill_dictionary);
   shill_property_util::SetRandomMACPolicy(ui_data->onc_source(),
-                                          shill_dictionary.get());
+                                          &shill_dictionary);
 
-  VLOG(2) << "Created Shill properties: " << *shill_dictionary;
+  VLOG(2) << "Created Shill properties: " << shill_dictionary;
 
-  return std::move(*shill_dictionary);
+  return shill_dictionary;
 }
 
 bool IsPolicyMatching(const base::Value& policy,

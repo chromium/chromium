@@ -202,11 +202,9 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
   VLOG(2) << "Received properties for entry " << entry_identifier
           << " of profile " << profile_.ToDebugString();
 
-  base::Value onc_part(
-      base::Value::FromUniquePtrValue(onc::TranslateShillServiceToONCPart(
-          base::Value::AsDictionaryValue(entry_properties),
-          ::onc::ONC_SOURCE_UNKNOWN, &onc::kNetworkWithStateSignature,
-          nullptr /* network_state */)));
+  base::Value onc_part = onc::TranslateShillServiceToONCPart(
+      entry_properties, ::onc::ONC_SOURCE_UNKNOWN,
+      &onc::kNetworkWithStateSignature, nullptr /* network_state */);
 
   std::string old_guid = GetGUIDFromONCPart(onc_part);
   std::unique_ptr<NetworkUIData> ui_data =

@@ -518,17 +518,16 @@ int ImportNetworksForUser(const user_manager::User* user,
 
     // TODO(pneubeck): Use ONC and ManagedNetworkConfigurationHandler instead.
     // crbug.com/457936
-    std::unique_ptr<base::DictionaryValue> shill_dict =
-        onc::TranslateONCObjectToShill(&onc::kNetworkConfigurationSignature,
-                                       *normalized_network);
+    base::Value shill_dict = onc::TranslateONCObjectToShill(
+        &onc::kNetworkConfigurationSignature, *normalized_network);
 
     std::unique_ptr<NetworkUIData> ui_data(
         NetworkUIData::CreateFromONC(::onc::ONC_SOURCE_USER_IMPORT));
-    shill_dict->SetKey(shill::kUIDataProperty,
-                       base::Value(ui_data->GetAsJson()));
-    shill_dict->SetKey(shill::kProfileProperty, base::Value(profile->path));
+    shill_dict.SetKey(shill::kUIDataProperty,
+                      base::Value(ui_data->GetAsJson()));
+    shill_dict.SetKey(shill::kProfileProperty, base::Value(profile->path));
 
-    std::string type = GetString(*shill_dict, shill::kTypeProperty);
+    std::string type = GetString(shill_dict, shill::kTypeProperty);
     NetworkConfigurationHandler* config_handler =
         NetworkHandler::Get()->network_configuration_handler();
     if (NetworkTypePattern::Ethernet().MatchesType(type)) {
@@ -537,7 +536,7 @@ int ImportNetworksForUser(const user_manager::User* user,
           NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
               NetworkTypePattern::Ethernet());
       if (ethernet) {
-        config_handler->SetShillProperties(ethernet->path(), *shill_dict,
+        config_handler->SetShillProperties(ethernet->path(), shill_dict,
                                            base::OnceClosure(),
                                            network_handler::ErrorCallback());
       } else {
@@ -546,7 +545,7 @@ int ImportNetworksForUser(const user_manager::User* user,
 
     } else {
       config_handler->CreateShillConfiguration(
-          *shill_dict, network_handler::ServiceResultCallback(),
+          shill_dict, network_handler::ServiceResultCallback(),
           network_handler::ErrorCallback());
       ++networks_created;
     }

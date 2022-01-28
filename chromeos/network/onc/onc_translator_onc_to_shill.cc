@@ -544,13 +544,11 @@ void TranslateONCHierarchy(const OncValueSignature& signature,
 
 }  // namespace
 
-std::unique_ptr<base::DictionaryValue> TranslateONCObjectToShill(
-    const OncValueSignature* onc_signature,
-    const base::Value& onc_object) {
+base::Value TranslateONCObjectToShill(const OncValueSignature* onc_signature,
+                                      const base::Value& onc_object) {
   CHECK(onc_signature != NULL);
-  std::unique_ptr<base::DictionaryValue> shill_dictionary(
-      new base::DictionaryValue);
-  TranslateONCHierarchy(*onc_signature, onc_object, shill_dictionary.get());
+  base::Value shill_dictionary(base::Value::Type::DICTIONARY);
+  TranslateONCHierarchy(*onc_signature, onc_object, &shill_dictionary);
   return shill_dictionary;
 }
 
