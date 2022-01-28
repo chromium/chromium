@@ -23,43 +23,13 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ArcPerformanceAppCategories">
-  <variant name=".CasualGame" summary="Casual game.">
-    <obsolete>
-      Replaced with CasualGame2 in 2020/09.
-    </obsolete>
-  </variant>
-  <variant name=".CasualGame2" summary="Casual game 2.">
-    <obsolete>
-      Replaced in M91 by GachaClub
-    </obsolete>
-  </variant>
   <variant name=".GachaClub" summary="Casual game 2: Gacha Club"/>
   <variant name=".GarenaFreeFire" summary="Shooter game: Garena Free Fire"/>
-  <variant name=".HeavyGame" summary="Heavy Game.">
-    <obsolete>
-      Replaced in M91 by PUBGMobile
-    </obsolete>
-  </variant>
   <variant name=".MinecraftEducationEdition"
       summary="Online game 2: Minecraft: Education Edition"/>
   <variant name=".Netflix" summary="Video playback app: Netflix"/>
-  <variant name=".OnlineGame" summary="Online game.">
-    <obsolete>
-      Replaced in M91 by Roblox
-    </obsolete>
-  </variant>
   <variant name=".PUBGMobile" summary="Heavy Game: PUBG Mobile"/>
   <variant name=".Roblox" summary="Online game: Roblox"/>
-  <variant name=".ShooterGame" summary="Shooter game.">
-    <obsolete>
-      Replaced in M91 by GarenaFreeFire
-    </obsolete>
-  </variant>
-  <variant name=".Video" summary="Video playback app.">
-    <obsolete>
-      Replaced in M91 by Netflix
-    </obsolete>
-  </variant>
 </variants>
 
 <variants name="ArcUserTypes">

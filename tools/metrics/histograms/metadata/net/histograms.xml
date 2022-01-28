@@ -1510,19 +1510,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.FTP.StartResult" enum="FTPStartResult" expires_after="M79">
-  <obsolete>
-    Removed from code 2020-08.
-  </obsolete>
-  <owner>tervay@google.com</owner>
-  <owner>asanka@chromium.org</owner>
-  <summary>
-    Each bucket is the result of whether or not the initiated FTP transaction.
-    Successful transactions are recorded as either authenticated or
-    unauthenticated.
-  </summary>
-</histogram>
-
 <histogram name="Net.HasBrokenNEON" enum="BooleanBroken"
     expires_after="2022-05-01">
   <owner>davidben@chromium.org</owner>

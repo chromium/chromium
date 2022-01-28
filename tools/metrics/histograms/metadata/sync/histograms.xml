@@ -25,12 +25,6 @@ chromium-metrics-reviews@google.com.
 <variants name="SyncConfigureResults">
   <variant name=".ABORTED" summary="When configuration gets aborted."/>
   <variant name=".OK" summary="When configuration is successful"/>
-  <variant name=".UNRECOVERABLE_ERROR"
-      summary="When configuration encounters an unrecoverable error">
-    <obsolete>
-      Removed 06/2020, no longer used.
-    </obsolete>
-  </variant>
 </variants>
 
 <variants name="SyncDeviceType">
@@ -42,18 +36,8 @@ chromium-metrics-reviews@google.com.
 <variants name="SyncModelType">
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
-  <variant name=".APP_NOTIFICATION" summary="APP_NOTIFICATION">
-    <obsolete>
-      Removed on 2/2017.
-    </obsolete>
-  </variant>
   <variant name=".APP_SETTING" summary="APP_SETTING"/>
   <variant name=".ARC_PACKAGE" summary="ARC_PACKAGE"/>
-  <variant name=".ARTICLE" summary="ARTICLE">
-    <obsolete>
-      Removed on 7/2018.
-    </obsolete>
-  </variant>
   <variant name=".AUTOFILL" summary="AUTOFILL"/>
   <variant name=".AUTOFILL_OFFER" summary="AUTOFILL_OFFER"/>
   <variant name=".AUTOFILL_PROFILE" summary="AUTOFILL_PROFILE"/>
@@ -61,46 +45,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
   <variant name=".DEVICE_INFO" summary="DEVICE_INFO"/>
   <variant name=".DICTIONARY" summary="DICTIONARY"/>
-  <variant name=".EXPERIMENTS" summary="EXPERIMENTS">
-    <obsolete>
-      Removed on 4/2020.
-    </obsolete>
-  </variant>
   <variant name=".EXTENSION" summary="EXTENSION"/>
   <variant name=".EXTENSION_SETTING" summary="EXTENSION_SETTING"/>
-  <variant name=".FAVICON_IMAGE" summary="FAVICON_IMAGE">
-    <obsolete>
-      Removed on 01/2021 (M90).
-    </obsolete>
-  </variant>
-  <variant name=".FAVICON_TRACKING" summary="FAVICON_TRACKING">
-    <obsolete>
-      Removed on 01/2021 (M90).
-    </obsolete>
-  </variant>
   <variant name=".HISTORY_DELETE_DIRECTIVE" summary="HISTORY_DELETE_DIRECTIVE"/>
-  <variant name=".MANAGED_USER" summary="MANAGED_USER">
-    <obsolete>
-      Removed on 4/2018.
-    </obsolete>
-  </variant>
   <variant name=".MANAGED_USER_SETTING" summary="MANAGED_USER_SETTING"/>
-  <variant name=".MANAGED_USER_SHARED_SETTING"
-      summary="MANAGED_USER_SHARED_SETTING">
-    <obsolete>
-      Removed on 4/2018.
-    </obsolete>
-  </variant>
-  <variant name=".MANAGED_USER_WHITELIST" summary="MANAGED_USER_ALLOWLIST">
-    <obsolete>
-      Removed 4/2021.
-    </obsolete>
-  </variant>
-  <variant name=".MOUNTAIN_SHARE" summary="MOUNTAIN_SHARE">
-    <obsolete>
-      Removed 11/2019.
-    </obsolete>
-  </variant>
   <variant name=".NIGORI" summary="NIGORI"/>
   <variant name=".OS_PREFERENCE" summary="OS_PREFERENCE"/>
   <variant name=".OS_PRIORITY_PREFERENCE" summary="OS_PRIORITY_PREFERENCE"/>
@@ -115,17 +63,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".SEND_TAB_TO_SELF" summary="SEND_TAB_TO_SELF"/>
   <variant name=".SESSION" summary="SESSION"/>
   <variant name=".SHARING_MESSAGE" summary="SHARING_MESSAGE"/>
-  <variant name=".SYNCED_NOTIFICATION" summary="SYNCED_NOTIFICATION">
-    <obsolete>
-      Removed in M53.
-    </obsolete>
-  </variant>
-  <variant name=".SYNCED_NOTIFICATION_APP_INFO"
-      summary="SYNCED_NOTIFICATION_APP_INFO">
-    <obsolete>
-      Removed in M53.
-    </obsolete>
-  </variant>
   <variant name=".THEME" summary="THEME"/>
   <variant name=".TYPED_URL" summary="TYPED_URL"/>
   <variant name=".USER_CONSENT" summary="USER_CONSENT"/>
@@ -133,11 +70,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".WALLET_METADATA" summary="WALLET_METADATA"/>
   <variant name=".WEB_APP" summary="WEB_APP"/>
   <variant name=".WIFI_CONFIGURATION" summary="WIFI_CONFIGURATION"/>
-  <variant name=".WIFI_CREDENTIAL" summary="WIFI_CREDENTIAL">
-    <obsolete>
-      This never got launched and is removed.
-    </obsolete>
-  </variant>
   <variant name=".WORKSPACE_DESK" summary="WORKSPACE_DESK"/>
 </variants>
 
