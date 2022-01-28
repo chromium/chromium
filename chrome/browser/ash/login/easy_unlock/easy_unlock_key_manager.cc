@@ -40,7 +40,9 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
   auto do_refresh_keys = base::BindRepeating(
       &EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent,
       weak_ptr_factory_.GetWeakPtr(), user_context,
-      base::Passed(remote_devices.CreateDeepCopy()), base::Passed(&callback));
+      base::Passed(base::ListValue::From(
+          base::Value::ToUniquePtrValue(remote_devices.Clone()))),
+      base::Passed(&callback));
 
   // Private TPM key is needed only when adding new keys.
   if (remote_devices.GetList().empty() ||
