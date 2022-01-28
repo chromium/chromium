@@ -24,7 +24,8 @@ class RuntimeApplication {
  public:
   using StatusCallback = base::OnceCallback<void(grpc::Status)>;
 
-  RuntimeApplication();
+  RuntimeApplication(std::string cast_session_id,
+                     cast::common::ApplicationConfig app_config);
   virtual ~RuntimeApplication() = 0;
 
   // NOTE: These fields are the empty string until after Load().
@@ -35,16 +36,14 @@ class RuntimeApplication {
   // NOTE: These fields are the empty string until after Load().
   const std::string& cast_session_id() const { return cast_session_id_; }
 
-  // NOTE: This is the empty string until after Launch().
-  const std::string& cast_media_service_grpc_endpoint() const {
-    return cast_media_service_grpc_endpoint_;
-  }
+  // Returns the Cast application URL.
+  virtual const GURL& GetApplicationUrl() const = 0;
 
-  // NOTE: This is the empty string until after Launch().
-  const GURL& app_url() const { return app_url_; }
-
-  // NOTE: These fields are the empty until after Load().
+  // Returns the root instance of CastWebContents.
   virtual CastWebContents* GetCastWebContents() = 0;
+
+  // Returns the Cast media service endpoint for MZ.
+  virtual const std::string& GetCastMediaServiceEndpoint() const = 0;
 
   // Called before Launch() to perform any pre-launch loading that is
   // necessary. The |callback| will be called indicating if the operation
@@ -64,28 +63,9 @@ class RuntimeApplication {
   // Returns whether this instance is associated with cast streaming.
   virtual bool IsStreamingApplication() const = 0;
 
- protected:
-  void set_application_config(cast::common::ApplicationConfig app_config) {
-    app_config_ = std::move(app_config);
-  }
-
-  void set_cast_session_id(std::string cast_session_id) {
-    cast_session_id_ = std::move(cast_session_id);
-  }
-
-  void set_cast_media_service_grpc_endpoint(
-      std::string cast_media_service_grpc_endpoint) {
-    cast_media_service_grpc_endpoint_ =
-        std::move(cast_media_service_grpc_endpoint);
-  }
-
-  void set_app_url(GURL app_url) { app_url_ = std::move(app_url); }
-
  private:
-  cast::common::ApplicationConfig app_config_;
-  std::string cast_session_id_;
-  std::string cast_media_service_grpc_endpoint_;
-  GURL app_url_;
+  const std::string cast_session_id_;
+  const cast::common::ApplicationConfig app_config_;
 };
 
 std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app);

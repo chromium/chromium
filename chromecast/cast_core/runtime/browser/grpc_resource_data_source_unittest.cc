@@ -14,22 +14,21 @@ namespace chromecast {
 class GrpcResourceDataSourceTest : public ::testing::Test {
  public:
   GrpcResourceDataSourceTest()
-      : grpc_resource_data_source_(
-            new GrpcResourceDataSource("chrome", true, nullptr)) {}
+      : grpc_resource_data_source_("chrome", true, nullptr) {}
 
  protected:
   std::string GetMimeType(const std::string& path) {
-    return grpc_resource_data_source_->GetMimeType(path);
+    return grpc_resource_data_source_.GetMimeType(path);
   }
 
   std::string GetAccessControlAllowOriginForOrigin(const std::string& origin) {
-    return grpc_resource_data_source_->GetAccessControlAllowOriginForOrigin(
+    return grpc_resource_data_source_.GetAccessControlAllowOriginForOrigin(
         origin);
   }
 
   base::test::TaskEnvironment task_environment_;
   std::string core_application_service_address_ = "fake-address";
-  GrpcResourceDataSource* grpc_resource_data_source_;
+  GrpcResourceDataSource grpc_resource_data_source_;
 };
 
 TEST_F(GrpcResourceDataSourceTest, GetMimeTypeEmptyParam) {

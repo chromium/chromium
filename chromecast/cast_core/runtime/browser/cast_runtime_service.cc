@@ -57,7 +57,7 @@ std::unique_ptr<CastEventBuilder> CastRuntimeService::CreateEventBuilder() {
 }
 
 const std::string& CastRuntimeService::GetAudioChannelEndpoint() {
-  return app_dispatcher_.GetCastMediaServiceGrpcEndpoint();
+  return app_dispatcher_.GetCastMediaServiceEndpoint();
 }
 
 WebCryptoServer* CastRuntimeService::GetWebCryptoServer() {

@@ -24,6 +24,7 @@ class StreamingRuntimeApplication final
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   StreamingRuntimeApplication(
+      std::string cast_session_id,
       cast::common::ApplicationConfig app_config,
       CastWebService* web_service,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -32,10 +33,14 @@ class StreamingRuntimeApplication final
   ~StreamingRuntimeApplication() override;
 
  private:
+  // RuntimeApplication implementation:
+  const GURL& GetApplicationUrl() const override;
+
   // RuntimeApplicationBase implementation:
   cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
       cast::web::Message message) override;
-  void InitializeApplication(StatusCallback callback) override;
+  void InitializeApplication(
+      base::OnceClosure app_initialized_callback) override;
   void StopApplication() override;
   bool IsStreamingApplication() const override;
 

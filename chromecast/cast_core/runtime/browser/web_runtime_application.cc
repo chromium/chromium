@@ -16,17 +16,24 @@
 namespace chromecast {
 
 WebRuntimeApplication::WebRuntimeApplication(
-    cast::common::ApplicationConfig app_config,
+    std::string cast_session_id,
+    cast::common::ApplicationConfig config,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : RuntimeApplicationBase(std::move(app_config),
+    : RuntimeApplicationBase(std::move(cast_session_id),
+                             std::move(config),
                              mojom::RendererType::MOJO_RENDERER,
                              web_service,
-                             std::move(task_runner)) {}
+                             std::move(task_runner)),
+      app_url_(app_config().cast_web_app_config().url()) {}
 
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopApplication();
+}
+
+const GURL& WebRuntimeApplication::GetApplicationUrl() const {
+  return app_url_;
 }
 
 cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
@@ -35,10 +42,9 @@ WebRuntimeApplication::HandlePortMessage(cast::web::Message message) {
   return bindings_manager_->HandleMessage(std::move(message));
 }
 
-void WebRuntimeApplication::InitializeApplication(StatusCallback callback) {
+void WebRuntimeApplication::InitializeApplication(
+    base::OnceClosure app_initialized_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(app_url().is_empty());
-  set_app_url(GURL(app_config().cast_web_app_config().url()));
 
   // Register GrpcWebUI for handling Cast apps with URLs in the form
   // chrome*://* that use WebUIs.
@@ -53,7 +59,8 @@ void WebRuntimeApplication::InitializeApplication(StatusCallback callback) {
   std::move(call).InvokeAsync(base::BindPostTask(
       task_runner(),
       base::BindOnce(&WebRuntimeApplication::OnAllBindingsReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(app_initialized_callback))));
 }
 
 bool WebRuntimeApplication::IsStreamingApplication() const {
@@ -74,7 +81,7 @@ void WebRuntimeApplication::InnerContentsCreated(
   base::Value features(base::Value::Type::DICTIONARY);
   base::Value dev_mode_config(base::Value::Type::DICTIONARY);
   dev_mode_config.SetKey(feature::kDevModeOrigin,
-                         base::Value(app_url().spec()));
+                         base::Value(GetApplicationUrl().spec()));
   features.SetKey(feature::kEnableDevMode, std::move(dev_mode_config));
   inner_contents->AddRendererFeatures(std::move(features));
 #endif
@@ -86,8 +93,8 @@ void WebRuntimeApplication::InnerContentsCreated(
   // root CastWebContents so that the same url rewrites are applied.
   inner_contents->SetAppProperties(
       app_config().app_id(), cast_session_id(), false /*is_audio_app*/,
-      app_url(), false /*enforce_feature_permissions*/, feature_permissions,
-      additional_feature_permission_origins);
+      GetApplicationUrl(), false /*enforce_feature_permissions*/,
+      feature_permissions, additional_feature_permission_origins);
 
   CastWebContents::Observer::Observe(inner_contents);
 
@@ -97,13 +104,12 @@ void WebRuntimeApplication::InnerContentsCreated(
 }
 
 void WebRuntimeApplication::OnAllBindingsReceived(
-    StatusCallback callback,
+    base::OnceClosure app_initialized_callback,
     cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!response_or.ok()) {
     LOG(ERROR) << "Failed to get all bindings: " << response_or.ToString();
-    std::move(callback).Run(
-        grpc::Status(grpc::StatusCode::INTERNAL, "Failed to get all bindings"));
+    StopApplication();
     return;
   }
 
@@ -117,25 +123,26 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   GetCastWebContents()->ConnectToBindingsService(
       bindings_manager_->CreateRemote());
 
+  // Application is initialized now.
+  std::move(app_initialized_callback).Run();
+
   SetApplicationState(
       cast::v2::ApplicationStatusRequest::STARTED,
       base::BindPostTask(
           task_runner(),
           base::BindOnce(&WebRuntimeApplication::OnApplicationStateChanged,
-                         weak_factory_.GetWeakPtr(), std::move(callback))));
+                         weak_factory_.GetWeakPtr())));
 }
 
-void WebRuntimeApplication::OnApplicationStateChanged(StatusCallback callback,
-                                                      grpc::Status status) {
+void WebRuntimeApplication::OnApplicationStateChanged(grpc::Status status) {
   if (!status.ok()) {
     LOG(ERROR) << "Failed to set application state to started: " << *this
                << ", status=" << cast::utils::GrpcStatusToString(status);
-    std::move(callback).Run(status);
     StopApplication();
     return;
   }
 
-  std::move(callback).Run(grpc::Status::OK);
+  LOG(INFO) << "Cast web application started: " << *this;
 }
 
 }  // namespace chromecast

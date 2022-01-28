@@ -11,6 +11,7 @@
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/runtime_application_service.castcore.pb.h"
@@ -30,7 +31,8 @@ class RuntimeApplicationBase : public RuntimeApplication {
   using CoreApplicationServiceGrpc = cast::v2::CoreApplicationService::Stub;
 
   // |web_service| is expected to exist for the lifetime of this instance.
-  RuntimeApplicationBase(cast::common::ApplicationConfig app_config,
+  RuntimeApplicationBase(std::string cast_session_id,
+                         cast::common::ApplicationConfig app_config,
                          mojom::RendererType renderer_type_used,
                          CastWebService* web_service,
                          scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -48,12 +50,6 @@ class RuntimeApplicationBase : public RuntimeApplication {
     return task_runner_;
   }
 
-  // Returns a pointer to CastWebService.
-  CastWebService* cast_web_service() const { return web_service_; }
-
-  // Returns a pointer to a CastWebView.
-  CastWebView* cast_web_view() { return cast_web_view_.get(); }
-
   // Returns a stub to CoreApplicationService.
   cast::v2::CoreApplicationServiceStub* core_app_stub() {
     return &*core_app_stub_;
@@ -67,10 +63,12 @@ class RuntimeApplicationBase : public RuntimeApplication {
 
   // RuntimeApplication implementation:
   CastWebContents* GetCastWebContents() override;
+  const std::string& GetCastMediaServiceEndpoint() const override;
 
-  // Called following the creation of a CastWebView. Must initialize the
-  // application and set the application URL as a result.
-  virtual void InitializeApplication(StatusCallback callback) = 0;
+  // Initializes the Cast application. If initialization passes, the
+  // |app_initialized_callback| is called.
+  virtual void InitializeApplication(
+      base::OnceClosure app_initialized_callback) = 0;
 
   // Processes an incoming |message|, returning the status of this processing in
   // |response| after being received over gRPC.
@@ -95,11 +93,11 @@ class RuntimeApplicationBase : public RuntimeApplication {
                          cast::v2::RuntimeMessagePortApplicationServiceHandler::
                              PostMessage::Reactor* reactor);
 
-  // Called when a new CastWebView is created.
+  // Creates the root CastWebView for this Cast session.
   void CreateCastWebView();
 
-  // Called when application finished initialization.
-  void OnApplicationInitialized(StatusCallback callback, grpc::Status status);
+  // Notifies that the application has been initialized.
+  void OnApplicationInitialized();
 
   // The |web_service_| used to create |cast_web_view_|.
   CastWebService* const web_service_;
@@ -113,10 +111,10 @@ class RuntimeApplicationBase : public RuntimeApplication {
   absl::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;
   absl::optional<cast::v2::CoreMessagePortApplicationServiceStub>
       core_message_port_app_stub_;
-  // Set to true when StopApplication() is called. This variable is required
-  // rather than always executing StopApplication() in the dtor due to how
-  // virtual function calls are handled during destruction.
-  bool is_application_stopped_ = false;
+  absl::optional<std::string> cast_media_service_grpc_endpoint_;
+
+  // Flags if application is stopped.
+  bool is_application_running_ = false;
 
   // Renderer type used by this application.
   mojom::RendererType renderer_type_;

@@ -130,6 +130,11 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
     cast::runtime::LoadApplicationRequest request,
     cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request.cast_session_id().empty()) {
+    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                "Application session ID is missing"));
+    return;
+  }
   if (!request.has_application_config()) {
     reactor->Write(
         grpc::Status(grpc::INVALID_ARGUMENT, "Application config is missing"));
@@ -140,10 +145,11 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
   if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
     // Deliberately copy |network_context_getter_|.
     app_ = std::make_unique<StreamingRuntimeApplication>(
-        request.application_config(), web_service_, task_runner_,
-        network_context_getter_, video_plane_controller_);
+        request.cast_session_id(), request.application_config(), web_service_,
+        task_runner_, network_context_getter_, video_plane_controller_);
   } else {
-    app_ = std::make_unique<WebRuntimeApplication>(request.application_config(),
+    app_ = std::make_unique<WebRuntimeApplication>(request.cast_session_id(),
+                                                   request.application_config(),
                                                    web_service_, task_runner_);
   }
 
@@ -354,9 +360,9 @@ void RuntimeApplicationDispatcher::ResetApp() {
   }
 }
 
-const std::string&
-RuntimeApplicationDispatcher::GetCastMediaServiceGrpcEndpoint() const {
-  return app_->cast_media_service_grpc_endpoint();
+const std::string& RuntimeApplicationDispatcher::GetCastMediaServiceEndpoint()
+    const {
+  return app_->GetCastMediaServiceEndpoint();
 }
 
 CastWebService* RuntimeApplicationDispatcher::GetCastWebService() const {

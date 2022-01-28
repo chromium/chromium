@@ -43,7 +43,7 @@ class RuntimeApplicationDispatcher {
              const std::string& runtime_service_endpoint);
   void Stop();
 
-  const std::string& GetCastMediaServiceGrpcEndpoint() const;
+  const std::string& GetCastMediaServiceEndpoint() const;
   CastWebService* GetCastWebService() const;
   RuntimeApplication* GetRuntimeApplication();
 

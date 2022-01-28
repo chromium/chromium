@@ -41,6 +41,7 @@ cast_source_set("metrics_recorder") {
 
   deps = [
     "//chromecast/base/metrics",
+    "//third_party/abseil-cpp:absl",
     "//third_party/metrics_proto",
   ]
 }
@@ -69,6 +70,7 @@ cast_source_set("grpc_webui") {
 
   public_deps = [
     "//chromecast/browser:public",
+    "//third_party/abseil-cpp:absl",
     "//third_party/cast_core/public/src/proto/v2:core_application_service_proto_castcore",
   ]
 
@@ -116,6 +118,7 @@ cast_source_set("runtime_application") {
   ]
 
   public_deps = [
+    "//base",
     "//third_party/cast_core/public/src/proto/common:application_config_proto",
     "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
     "//url",
@@ -143,6 +146,7 @@ cast_source_set("streaming_receiver_session_client") {
     "//components/cast/message_port",
     "//components/cast_streaming/browser",
     "//media/mojo/mojom",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
@@ -186,6 +190,7 @@ cast_source_set("runtime_application_dispatcher") {
     "//chromecast/common:feature_constants",
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
+    "//third_party/abseil-cpp:absl",
     "//third_party/cast_core/public/src/proto/core:cast_core_service_proto_castcore",
     "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto_castcore",
     "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto_castcore",
