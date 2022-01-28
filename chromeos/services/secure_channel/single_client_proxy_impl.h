@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include "ash/services/secure_channel/channel_impl.h"
+#include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
-#include "chromeos/services/secure_channel/channel_impl.h"
-#include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/single_client_proxy.h"
 #include "mojo/public/cpp/bindings/remote.h"

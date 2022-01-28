@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "chromeos/services/secure_channel/connection_attempt_delegate.h"
-#include "chromeos/services/secure_channel/connection_details.h"
+#include "ash/services/secure_channel/connection_attempt_delegate.h"
+#include "ash/services/secure_channel/connection_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

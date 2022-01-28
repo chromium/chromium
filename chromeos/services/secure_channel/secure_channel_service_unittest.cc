@@ -4,6 +4,12 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/active_connection_manager_impl.h"
+#include "ash/services/secure_channel/ble_connection_manager_impl.h"
+#include "ash/services/secure_channel/ble_scanner_impl.h"
+#include "ash/services/secure_channel/ble_synchronizer.h"
+#include "ash/services/secure_channel/bluetooth_helper_impl.h"
+#include "ash/services/secure_channel/client_connection_parameters_impl.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -16,12 +22,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/secure_channel/active_connection_manager_impl.h"
-#include "chromeos/services/secure_channel/ble_connection_manager_impl.h"
-#include "chromeos/services/secure_channel/ble_scanner_impl.h"
-#include "chromeos/services/secure_channel/ble_synchronizer.h"
-#include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
-#include "chromeos/services/secure_channel/client_connection_parameters_impl.h"
 #include "chromeos/services/secure_channel/fake_active_connection_manager.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_ble_connection_manager.h"

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SYNCHRONIZER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SYNCHRONIZER_H_
 
+#include "ash/services/secure_channel/ble_synchronizer_base.h"
 #include "base/callback_forward.h"
-#include "chromeos/services/secure_channel/ble_synchronizer_base.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 

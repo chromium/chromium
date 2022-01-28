@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 
+#include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

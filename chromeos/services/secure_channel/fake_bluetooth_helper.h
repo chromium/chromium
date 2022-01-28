@@ -10,9 +10,9 @@
 #include <unordered_map>
 #include <utility>
 
+#include "ash/services/secure_channel/bluetooth_helper.h"
+#include "ash/services/secure_channel/data_with_timestamp.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/secure_channel/bluetooth_helper.h"
-#include "chromeos/services/secure_channel/data_with_timestamp.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

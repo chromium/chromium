@@ -2,4 +2,6 @@ include_rules = [
   "+ash/constants",
   "+chromeos/services/device_sync",
   "+chromeos/services/secure_channel",
+  "+third_party/securemessage",
+  "+third_party/ukey2",
 ]

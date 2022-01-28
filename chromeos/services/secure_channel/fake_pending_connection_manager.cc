@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/check_op.h"
-#include "chromeos/services/secure_channel/authenticated_channel.h"
 
 namespace chromeos {
 

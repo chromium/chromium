@@ -4,13 +4,13 @@
 
 #include "chromeos/services/secure_channel/presence_monitor_delegate.h"
 
+#include "ash/services/secure_channel/ble_scanner_impl.h"
+#include "ash/services/secure_channel/ble_synchronizer.h"
+#include "ash/services/secure_channel/bluetooth_helper_impl.h"
+#include "ash/services/secure_channel/connection_role.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
-#include "chromeos/services/secure_channel/ble_scanner_impl.h"
-#include "chromeos/services/secure_channel/ble_synchronizer.h"
-#include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
-#include "chromeos/services/secure_channel/connection_role.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace chromeos {

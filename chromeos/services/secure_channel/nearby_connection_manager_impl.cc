@@ -4,10 +4,10 @@
 
 #include "chromeos/services/secure_channel/nearby_connection_manager_impl.h"
 
+#include "ash/services/secure_channel/authenticated_channel_impl.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/authenticated_channel_impl.h"
 #include "chromeos/services/secure_channel/nearby_connection.h"
 #include "chromeos/services/secure_channel/secure_channel_disconnector.h"
 

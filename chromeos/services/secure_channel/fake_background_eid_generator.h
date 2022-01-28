@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "chromeos/services/secure_channel/background_eid_generator.h"
+#include "ash/services/secure_channel/background_eid_generator.h"
 
 namespace cryptauth {
 class BeaconSeed;

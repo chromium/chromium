@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/authenticated_channel.h"
+#include "ash/services/secure_channel/connection_details.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
-#include "chromeos/services/secure_channel/authenticated_channel.h"
-#include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/multiplexed_channel.h"
 #include "chromeos/services/secure_channel/single_client_proxy.h"

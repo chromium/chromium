@@ -7,12 +7,12 @@
 #include <memory>
 #include <sstream>
 
+#include "ash/services/secure_channel/ble_initiator_connection_attempt.h"
+#include "ash/services/secure_channel/ble_listener_connection_attempt.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/secure_channel/ble_initiator_connection_attempt.h"
-#include "chromeos/services/secure_channel/ble_listener_connection_attempt.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_ble_connection_manager.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"

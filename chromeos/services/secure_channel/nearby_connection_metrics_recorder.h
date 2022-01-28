@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_METRICS_RECORDER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_METRICS_RECORDER_H_
 
+#include "ash/services/secure_channel/device_id_pair.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/secure_channel/device_id_pair.h"
 
 namespace base {
 class Time;

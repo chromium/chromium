@@ -10,13 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/connection_details.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"

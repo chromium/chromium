@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/test/gtest_util.h"
-#include "chromeos/services/secure_channel/device_id_pair.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

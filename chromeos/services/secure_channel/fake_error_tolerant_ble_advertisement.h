@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_
 
+#include "ash/services/secure_channel/device_id_pair.h"
+#include "ash/services/secure_channel/error_tolerant_ble_advertisement.h"
 #include "base/callback.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/secure_channel/device_id_pair.h"
-#include "chromeos/services/secure_channel/error_tolerant_ble_advertisement.h"
 
 namespace chromeos {
 

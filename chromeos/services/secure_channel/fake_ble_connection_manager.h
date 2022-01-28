@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_CONNECTION_MANAGER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_CONNECTION_MANAGER_H_
 
+#include "ash/services/secure_channel/ble_connection_manager.h"
+#include "ash/services/secure_channel/connection_role.h"
+#include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/services/secure_channel/ble_connection_manager.h"
-#include "chromeos/services/secure_channel/connection_role.h"
-#include "chromeos/services/secure_channel/device_id_pair.h"
 
 namespace chromeos {
 

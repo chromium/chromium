@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_CONNECT_TO_DEVICE_OPERATION_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_CONNECT_TO_DEVICE_OPERATION_H_
 
+#include "ash/services/secure_channel/connect_to_device_operation.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/callback.h"
-#include "chromeos/services/secure_channel/connect_to_device_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

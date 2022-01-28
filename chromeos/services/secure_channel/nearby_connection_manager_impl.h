@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_MANAGER_IMPL_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_MANAGER_IMPL_H_
 
-#include "chromeos/services/secure_channel/ble_scanner.h"
+#include "ash/services/secure_channel/ble_scanner.h"
 #include "chromeos/services/secure_channel/nearby_connection_manager.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
 

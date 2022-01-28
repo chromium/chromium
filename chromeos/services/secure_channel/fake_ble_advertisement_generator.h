@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_ADVERTISEMENT_GENERATOR_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_ADVERTISEMENT_GENERATOR_H_
 
-#include "chromeos/services/secure_channel/ble_advertisement_generator.h"
-#include "chromeos/services/secure_channel/data_with_timestamp.h"
+#include "ash/services/secure_channel/ble_advertisement_generator.h"
+#include "ash/services/secure_channel/data_with_timestamp.h"
 
 namespace chromeos {
 

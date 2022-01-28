@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/client_connection_parameters.h"
+#include "ash/services/secure_channel/connection_details.h"
 #include "base/callback.h"
-#include "chromeos/services/secure_channel/client_connection_parameters.h"
-#include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/multiplexed_channel.h"
 
 namespace chromeos {

@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "chromeos/services/secure_channel/client_connection_parameters.h"
-#include "chromeos/services/secure_channel/connection_details.h"
+#include "ash/services/secure_channel/client_connection_parameters.h"
+#include "ash/services/secure_channel/connection_details.h"
 
 namespace chromeos {
 

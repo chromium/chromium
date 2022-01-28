@@ -4,8 +4,8 @@
 
 #include "chromeos/services/secure_channel/fake_active_connection_manager.h"
 
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/check_op.h"
-#include "chromeos/services/secure_channel/authenticated_channel.h"
 
 namespace chromeos {
 

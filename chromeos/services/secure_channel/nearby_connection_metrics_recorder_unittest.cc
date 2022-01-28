@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/device_id_pair.h"
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/services/secure_channel/device_id_pair.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

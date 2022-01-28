@@ -4,11 +4,11 @@
 
 #include "chromeos/services/secure_channel/nearby_initiator_operation.h"
 
+#include "ash/services/secure_channel/authenticated_channel.h"
+#include "ash/services/secure_channel/connection_metrics_logger.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "chromeos/services/secure_channel/authenticated_channel.h"
-#include "chromeos/services/secure_channel/connection_metrics_logger.h"
 #include "chromeos/services/secure_channel/nearby_connection_manager.h"
 #include "chromeos/services/secure_channel/nearby_connection_metrics_recorder.h"
 

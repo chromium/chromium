@@ -4,9 +4,9 @@
 
 #include "chromeos/services/secure_channel/nearby_connection_manager.h"
 
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/containers/contains.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/authenticated_channel.h"
 
 namespace chromeos {
 

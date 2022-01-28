@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
 
 namespace chromeos {

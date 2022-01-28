@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chromeos/services/secure_channel/connection_attempt_base.h"
+#include "ash/services/secure_channel/connection_attempt_base.h"
 #include "chromeos/services/secure_channel/nearby_initiator_failure_type.h"
 
 namespace chromeos {

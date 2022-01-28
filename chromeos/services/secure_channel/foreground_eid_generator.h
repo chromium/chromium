@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/secure_channel/data_with_timestamp.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/clock.h"
-#include "chromeos/services/secure_channel/data_with_timestamp.h"
 
 namespace cryptauth {
 class BeaconSeed;

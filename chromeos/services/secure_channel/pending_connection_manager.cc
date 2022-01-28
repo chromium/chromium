@@ -4,7 +4,7 @@
 
 #include "chromeos/services/secure_channel/pending_connection_manager.h"
 
-#include "chromeos/services/secure_channel/authenticated_channel.h"
+#include "ash/services/secure_channel/authenticated_channel.h"
 
 namespace chromeos {
 

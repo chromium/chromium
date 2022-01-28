@@ -10,10 +10,10 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/services/secure_channel/active_connection_manager.h"
+#include "ash/services/secure_channel/client_connection_parameters.h"
+#include "ash/services/secure_channel/connection_details.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/services/secure_channel/active_connection_manager.h"
-#include "chromeos/services/secure_channel/client_connection_parameters.h"
-#include "chromeos/services/secure_channel/connection_details.h"
 
 namespace chromeos {
 

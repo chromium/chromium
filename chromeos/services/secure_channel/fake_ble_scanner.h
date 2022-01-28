@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "chromeos/services/secure_channel/ble_scanner.h"
-#include "chromeos/services/secure_channel/device_id_pair.h"
+#include "ash/services/secure_channel/ble_scanner.h"
+#include "ash/services/secure_channel/device_id_pair.h"
 
 namespace chromeos {
 

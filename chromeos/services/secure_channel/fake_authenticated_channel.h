@@ -9,10 +9,10 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
-#include "chromeos/services/secure_channel/authenticated_channel.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/register_payload_file_request.h"
 

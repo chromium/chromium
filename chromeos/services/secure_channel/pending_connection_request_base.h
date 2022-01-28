@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_connection_request.h"
 
 namespace chromeos {
