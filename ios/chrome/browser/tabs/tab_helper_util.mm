@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/web/invalid_url_tab_helper.h"
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/permissions_tab_helper.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
@@ -213,6 +214,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   OfflinePageTabHelper::CreateForWebState(
       web_state, ReadingListModelFactory::GetForBrowserState(browser_state));
+  PermissionsTabHelper::CreateForWebState(web_state);
 
   // The language detection helper accepts a callback from the translate
   // client, so must be created after it.
