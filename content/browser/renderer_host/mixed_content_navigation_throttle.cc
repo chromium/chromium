@@ -179,10 +179,8 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
   // Cancel the prerendering page to prevent the problems that can be the
   // logging UMA, UKM and calling DidChangeVisibleSecurityState() through this
   // throttle.
-  if (mixed_content_frame->GetLifecycleState() ==
-      RenderFrameHost::LifecycleState::kPrerendering) {
-    mixed_content_frame->CancelPrerendering(
-        PrerenderHost::FinalStatus::kMixedContent);
+  if (mixed_content_frame->CancelPrerendering(
+          PrerenderHost::FinalStatus::kMixedContent)) {
     return true;
   }
 

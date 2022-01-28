@@ -651,15 +651,10 @@ void CallCancelRequest(
 bool CancelIfPrerendering(int frame_tree_node_id,
                           PrerenderHost::FinalStatus final_status) {
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (frame_tree_node && frame_tree_node->frame_tree()->is_prerendering()) {
-    auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
-    int root_node_id =
-        frame_tree_node->frame_tree()->root()->frame_tree_node_id();
-    web_contents->GetPrerenderHostRegistry()->CancelHost(root_node_id,
-                                                         final_status);
-    return true;
-  }
-  return false;
+  if (!frame_tree_node)
+    return false;
+  auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
+  return web_contents->CancelPrerendering(frame_tree_node, final_status);
 }
 
 // Cancels prerendering if `render_frame_host_id` is in a prerendered frame
@@ -669,13 +664,9 @@ bool CancelIfPrerendering(GlobalRenderFrameHostId render_frame_host_id,
                           PrerenderHost::FinalStatus final_status) {
   auto* render_frame_host_impl =
       RenderFrameHostImpl::FromID(render_frame_host_id);
-  if (render_frame_host_impl &&
-      render_frame_host_impl->lifecycle_state() ==
-          RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
-    render_frame_host_impl->CancelPrerendering(final_status);
-    return true;
-  }
-  return false;
+  if (!render_frame_host_impl)
+    return false;
+  return render_frame_host_impl->CancelPrerendering(final_status);
 }
 
 void OnCertificateRequestedContinuation(

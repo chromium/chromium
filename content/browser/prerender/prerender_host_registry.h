@@ -73,10 +73,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
                          WebContents& web_contents);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
-  // immediately removed from the map of non-reserved or reserved hosts but
-  // asynchronously destroyed so that prerendered pages can cancel themselves
-  // without concern for self destruction.
-  void CancelHost(int frame_tree_node_id,
+  // immediately removed from the map of non-reserved hosts but asynchronously
+  // destroyed so that prerendered pages can cancel themselves without concern
+  // for self destruction.
+  // Returns true if a cancelation has occurred.
+  bool CancelHost(int frame_tree_node_id,
                   PrerenderHost::FinalStatus final_status);
 
   // Applies CancelHost for all existing PrerenderHost.

@@ -160,7 +160,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
   return frame_tree_node_id;
 }
 
-void PrerenderHostRegistry::CancelHost(
+bool PrerenderHostRegistry::CancelHost(
     int frame_tree_node_id,
     PrerenderHost::FinalStatus final_status) {
   TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHost",
@@ -177,7 +177,7 @@ void PrerenderHostRegistry::CancelHost(
   // record the cancellation reason.
   auto iter = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   if (iter == prerender_host_by_frame_tree_node_id_.end())
-    return;
+    return false;
 
   // Remove the prerender host from the host map so that it's not used for
   // activation during asynchronous deletion.
@@ -186,6 +186,7 @@ void PrerenderHostRegistry::CancelHost(
 
   // Asynchronously delete the prerender host.
   ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
+  return true;
 }
 
 void PrerenderHostRegistry::CancelAllHosts(
