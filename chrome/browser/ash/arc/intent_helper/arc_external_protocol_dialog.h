@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
@@ -29,8 +29,7 @@ class DeviceInfo;
 
 namespace arc {
 
-using GurlAndActivityInfo =
-    std::pair<GURL, ArcIntentHelperBridge::ActivityName>;
+using GurlAndActivityInfo = std::pair<GURL, ArcIconCacheDelegate::ActivityName>;
 
 // An enum returned from GetAction function. This is visible for testing.
 enum class GetActionResult {
@@ -134,23 +133,26 @@ void RunArcExternalProtocolDialog(
     int routing_id,
     ui::PageTransition page_transition,
     bool has_user_gesture,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb);
 
 GetActionResult GetActionForTesting(
     const GURL& original_url,
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers,
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>& handlers,
     size_t selected_app_index,
     GurlAndActivityInfo* out_url_and_activity_name,
     bool* safe_to_bypass_ui);
 
 GURL GetUrlToNavigateOnDeactivateForTesting(
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers);
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers);
 
 bool GetAndResetSafeToRedirectToArcWithoutUserConfirmationFlagForTesting(
     content::WebContents* web_contents);
 
 bool IsChromeAnAppCandidateForTesting(
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers);
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers);
 
 ProtocolAction GetProtocolAction(Scheme scheme,
                                  apps::PickerEntryType entry_type,
@@ -162,7 +164,8 @@ void OnIntentPickerClosedForTesting(
     int routing_id,
     const GURL& url,
     bool safe_to_bypass_ui,
-    std::vector<mojom::IntentHandlerInfoPtr> handlers,
+    std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,

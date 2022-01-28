@@ -45,6 +45,20 @@ static_library("common") {
   }
 }
 
+static_library("arc_test_support") {
+  testonly = true
+  sources = [
+    "test/fake_arc_icon_cache.cc",
+    "test/fake_arc_icon_cache.h",
+    "test/fake_arc_intent_helper_mojo.cc",
+    "test/fake_arc_intent_helper_mojo.h",
+  ]
+  deps = [
+    "//components/arc/common",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
