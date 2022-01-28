@@ -559,6 +559,10 @@ test("components_unittests") {
     ]
   }
 
+  if (safe_browsing_mode != 0 && !is_ios && !is_fuchsia) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies_policy_util_unittest" ]
+  }
+
   if (safe_browsing_mode == 1) {
     deps += [
       "//components/safe_browsing/content/renderer:websocket_sb_handshake_throttle_unittest",

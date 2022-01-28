@@ -19,6 +19,7 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/safe_browsing/download_protection/document_analysis_service.h"
@@ -90,7 +91,7 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
 
   DownloadFileType::InspectionType inspection_type =
       FileTypePolicies::GetInstance()
-          ->PolicyForFile(target_path_)
+          ->PolicyForFile(target_path_, GURL{}, nullptr)
           .inspection_type();
 
   if (inspection_type == DownloadFileType::ZIP) {

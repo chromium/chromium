@@ -785,11 +785,13 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
 }
 
 void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
-    base::FilePath* filename) {
+    base::FilePath* filename,
+    const GURL& source_url) {
   safe_browsing::FileTypePolicies* file_type_policies =
       safe_browsing::FileTypePolicies::GetInstance();
 
-  if (file_type_policies->GetFileDangerLevel(*filename) ==
+  const PrefService* prefs = profile_->GetPrefs();
+  if (file_type_policies->GetFileDangerLevel(*filename, source_url, prefs) ==
       safe_browsing::DownloadFileType::NOT_DANGEROUS)
     return;
 

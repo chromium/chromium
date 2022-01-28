@@ -29545,6 +29545,62 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       Cleanup will only run when strictly necessary, but will still impact the login time.
       Setting the policy to false (the default) ensures the login time is not affected.''',
     },
+    {
+      'name': 'ExemptDomainFileTypePairsFromFileTypeDownloadWarnings',
+      'owners': ['flowerhorne@google.com'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'id': 'DomainFiletypePair',
+          'properties': {
+            'file_extension': { 'type': 'string' },
+            'domains': {
+              'type': 'array',
+              'items': { 'type': 'string'}
+            },
+          }
+        }
+      },
+      'example_value': [
+        { "file_extension": "jnlp", "domains": ["https://example.com", "example2.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ],
+      'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'features': {
+        'can_be_recommended': False,
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'id': 947,
+      'caption': '''Disable download file type extension-based warnings for specified file types on domains''',
+      'tags': ['system-security'],
+      'desc': '''You can enable this policy to create a dictionary of file type extensions with a corresponding list of domains that will be exempted from file type extension-based download warnings. This lets enterprise administrators block file type extension-based download warnings for files that are associated with a listed domain. For example, if  the "jnlp" extension is associated with "website1.com", users would not see a warning when downloading "jnlp" files from "website1.com", but see a download warning when downloading "jnlp" files from "website2.com".
+
+      Files with file type extensions specified for domains identified by this policy will still be subject to non-file type extension-based security warnings such as mixed-content download warnings and Safe Browsing warnings.
+
+      If you disable this policy or don't configure it, file types that trigger extension-based download warnings will show warnings to the user.
+
+      If you enable this policy:
+
+      * The URL pattern should be formatted according to https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+      * The file type extension entered must be in lower-cased ASCII. The leading separator should not be included when listing the file type extension, so list "jnlp" should be used instead of ".jnlp".
+
+      Example:
+
+      The following example value would prevent file type extension-based download warnings on swf, exe, and jnlp extensions for *.example.com domains. It will show the user a file type extension-based download warning on any other domain for exe and jnlp files, but not for swf files.
+
+      [
+        { "file_extension": "jnlp", "domains": ["example.com"] },
+        { "file_extension": "exe", "domains": ["example.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+      Note that while the preceding example shows the suppression of file type extension-based download warnings for "swf" files for all domains, applying suppression of such warnings for all domains for any dangerous file type extension is not recommended due to security concerns. It is shown in the example merely to demonstrate the ability to do so.
+
+      If this policy is enabled alongside <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME">DownloadRestrictions</ph> and DownloadRestrictions is set to block dangerous file types, download blocks determined by DownloadRestrictions take precedence. For example, if this policy is set to enable "exe" extension downloads from "website1.com", and DownloadRestrictions is set to block malicious downloads and dangerous file types, then "exe" extension downloads will still be blocked in all domains. If DownloadRestrictions is not set to block dangerous file types, then file types specified in this policy will be exempted from file-type extension-based download warnings in the specified domains. Read more about DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -30523,6 +30579,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 946,
+  'highest_id_currently_used': 947,
   'highest_atomic_group_id_currently_used': 41
 }

@@ -89,6 +89,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/proxy_config/proxy_policy_handler.h"
+#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_policy_handler.h"
@@ -2262,6 +2263,16 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                             prefs::kAllowSystemNotifications,
                                             base::Value::Type::BOOLEAN)));
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if !BUILDFLAG(IS_ANDROID)
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      safe_browsing::file_type::prefs::
+          kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      chrome_schema, SCHEMA_ALLOW_UNKNOWN,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return handlers;
 }

@@ -7,11 +7,49 @@
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/grit/components_resources.h"
+#include "components/safe_browsing/content/common/file_type_policies_policy_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "url/gurl.h"
 
 namespace safe_browsing {
+
+namespace policy {
+
+using ExtensionToPolicyMap = std::map<std::string, const DownloadFileType>;
+
+ExtensionToPolicyMap& GetExtensionToPolicyMap() {
+  static base::NoDestructor<ExtensionToPolicyMap> ext_map;
+  return *ext_map;
+}
+
+const DownloadFileType& GetOrCreatePolicyForExtensionOverrideNotDangerous(
+    const std::string& extension,
+    const DownloadFileType& base_policy) {
+  ExtensionToPolicyMap& ext_map = GetExtensionToPolicyMap();
+  auto it = ext_map.find(extension);
+  // Cache hit, don't bother recreating a duplicate policy structure.
+  if (it != ext_map.end())
+    return it->second;
+
+  // Create copy of existing settings.
+  const DownloadFileType::PlatformSettings& base_settings =
+      base_policy.platform_settings(0);
+  DownloadFileType override_policy = base_policy;
+
+  // Override only the danger level.
+  override_policy.clear_platform_settings();
+  auto* override_settings = override_policy.add_platform_settings();
+  *override_settings = base_settings;
+  override_settings->set_danger_level(DownloadFileType::NOT_DANGEROUS);
+
+  // Add element to our map so we can hand out a valid reference.
+  return ext_map.insert({extension, override_policy}).first->second;
+}
+
+}  // namespace policy
 
 using base::AutoLock;
 
@@ -143,6 +181,10 @@ void FileTypePolicies::SwapConfigLocked(
     // If there are dups, first one wins.
     file_type_by_ext_.insert(std::make_pair(file_type.extension(), &file_type));
   }
+
+  // |ext_map| is now stale since |file_type_by_ext_| has been cleared
+  // and recreated, so clear it.
+  policy::GetExtensionToPolicyMap().clear();
 }
 
 // static
@@ -177,7 +219,9 @@ float FileTypePolicies::SampledPingProbability() const {
 }
 
 const DownloadFileType& FileTypePolicies::PolicyForExtension(
-    const std::string& ascii_ext) const {
+    const std::string& ascii_ext,
+    const GURL& source_url,
+    const PrefService* prefs) const {
   lock_.AssertAcquired();
   // This could happen if the ResourceBundle is corrupted.
   if (!config_) {
@@ -185,6 +229,16 @@ const DownloadFileType& FileTypePolicies::PolicyForExtension(
     return last_resort_default_;
   }
   auto itr = file_type_by_ext_.find(ascii_ext);
+
+  if (safe_browsing::IsInNotDangerousOverrideList(ascii_ext, source_url,
+                                                  prefs)) {
+    if (itr != file_type_by_ext_.find(ascii_ext))
+      return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
+          ascii_ext, *itr->second);
+    return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
+        ascii_ext, config_->default_file_type());
+  }
+
   if (itr != file_type_by_ext_.end())
     return *itr->second;
   else
@@ -192,30 +246,35 @@ const DownloadFileType& FileTypePolicies::PolicyForExtension(
 }
 
 DownloadFileType FileTypePolicies::PolicyForFile(
-    const base::FilePath& file) const {
+    const base::FilePath& file,
+    const GURL& source_url,
+    const PrefService* prefs) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
-  return PolicyForExtension(ext);
+  return PolicyForExtension(ext, source_url, prefs);
 }
 
 DownloadFileType::PlatformSettings FileTypePolicies::SettingsForFile(
-    const base::FilePath& file) const {
+    const base::FilePath& file,
+    const GURL& source_url,
+    const PrefService* prefs) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
-  DCHECK_EQ(1, PolicyForExtension(ext).platform_settings().size());
-  return PolicyForExtension(ext).platform_settings(0);
+  DCHECK_EQ(
+      1, PolicyForExtension(ext, source_url, prefs).platform_settings().size());
+  return PolicyForExtension(ext, source_url, prefs).platform_settings(0);
 }
 
 int64_t FileTypePolicies::UmaValueForFile(const base::FilePath& file) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
-  return PolicyForExtension(ext).uma_value();
+  return PolicyForExtension(ext, GURL{}, nullptr).uma_value();
 }
 
 bool FileTypePolicies::IsArchiveFile(const base::FilePath& file) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
-  return PolicyForExtension(ext).is_archive();
+  return PolicyForExtension(ext, GURL{}, nullptr).is_archive();
 }
 
 // TODO(nparker): Add unit tests for these accessors.
@@ -226,15 +285,16 @@ bool FileTypePolicies::IsAllowedToOpenAutomatically(
   if (ext.empty())
     return false;
   AutoLock lock(lock_);
-  return PolicyForExtension(ext).platform_settings(0).auto_open_hint() ==
-         DownloadFileType::ALLOW_AUTO_OPEN;
+  return PolicyForExtension(ext, GURL{}, nullptr)
+             .platform_settings(0)
+             .auto_open_hint() == DownloadFileType::ALLOW_AUTO_OPEN;
 }
 
 DownloadFileType::PingSetting FileTypePolicies::PingSettingForFile(
     const base::FilePath& file) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
-  return PolicyForExtension(ext).ping_setting();
+  return PolicyForExtension(ext, GURL{}, nullptr).ping_setting();
 }
 
 bool FileTypePolicies::IsCheckedBinaryFile(const base::FilePath& file) const {
@@ -242,16 +302,20 @@ bool FileTypePolicies::IsCheckedBinaryFile(const base::FilePath& file) const {
 }
 
 DownloadFileType::DangerLevel FileTypePolicies::GetFileDangerLevel(
-    const base::FilePath& file) const {
+    const base::FilePath& file,
+    const GURL& source_url,
+    const PrefService* prefs) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
-  return PolicyForExtension(ext).platform_settings(0).danger_level();
+  return PolicyForExtension(ext, source_url, prefs)
+      .platform_settings(0)
+      .danger_level();
 }
 
 uint64_t FileTypePolicies::GetMaxFileSizeToAnalyze(
     const std::string& ascii_ext) const {
   AutoLock lock(lock_);
-  return PolicyForExtension(ascii_ext)
+  return PolicyForExtension(ascii_ext, GURL{}, nullptr)
       .platform_settings(0)
       .max_file_size_to_analyze();
 }

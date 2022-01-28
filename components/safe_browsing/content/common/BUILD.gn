@@ -26,15 +26,23 @@ if (safe_browsing_mode != 0) {
     sources = [
       "file_type_policies.cc",
       "file_type_policies.h",
+      "file_type_policies_policy_util.cc",
+      "file_type_policies_policy_util.h",
+      "file_type_policies_prefs.cc",
+      "file_type_policies_prefs.h",
     ]
 
     public_deps = [
       "//base",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
+      "//url:url",
     ]
 
     deps = [
+      "//components/policy/core/browser",
+      "//components/prefs",
       "//components/resources:components_resources",
+      "//components/url_matcher:url_matcher",
       "//ui/base",
     ]
   }
@@ -47,6 +55,20 @@ if (safe_browsing_mode != 0) {
     ]
 
     deps = [ ":file_type_policies" ]
+  }
+
+  source_set("file_type_policies_policy_util_unittest") {
+    testonly = true
+    sources = [ "file_type_policies_policy_util_unittest.cc" ]
+
+    deps = [
+      ":file_type_policies",
+      "//base:base",
+      "//components/policy/core/browser:test_support",
+      "//components/prefs:test_support",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest",
+    ]
   }
 
   source_set("file_type_policies_unittest") {

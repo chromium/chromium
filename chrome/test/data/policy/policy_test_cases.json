@@ -17915,5 +17915,29 @@
   },
   "DeviceRunAutomaticCleanupOnLogin": {
     "reason_for_missing_test": "Chrome OS device policy used by cryptohome only, not used in Chrome."
+  },
+  "ExemptDomainFileTypePairsFromFileTypeDownloadWarnings": {
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExemptDomainFileTypePairsFromFileTypeDownloadWarnings": [
+            {"file_extension": "txt", "domains": ["*"]},
+            {"file_extension": "exe", "domains": ["example.com"]},
+            {"file_extension": "jpg", "domains": [".example.com"]}
+          ]
+        },
+        "prefs": {
+          "downloads.exempt_domain_filetype_pair_from_file_type_downloads_warnings": {
+            "value": [
+              {"file_extension": "txt", "domains": ["*"]},
+              {"file_extension": "exe", "domains": ["example.com"]},
+              {"file_extension": "jpg", "domains": [".example.com"]}
+            ]
+          }
+        }
+      }
+    ]
   }
 }

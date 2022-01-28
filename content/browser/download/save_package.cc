@@ -451,7 +451,7 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
 
   DownloadManagerDelegate* delegate = download_manager_->GetDelegate();
   if (delegate)
-    delegate->SanitizeSavePackageResourceName(&file_path);
+    delegate->SanitizeSavePackageResourceName(&file_path, url);
 
   DCHECK_EQ(file_path.value(), file_path.BaseName().value())
       << "SanitizeSavePackageResourceName should only return a basename.";
