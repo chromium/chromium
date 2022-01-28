@@ -17,8 +17,10 @@ _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 #   wrapping), and has not been validated on others.
 # - Windows: debug CRT is not compatible, see below.
 _disable_partition_alloc = is_component_build || (is_win && is_debug)
-_is_partition_alloc_platform =
-    is_android || is_win || is_mac || is_linux || is_chromeos || is_fuchsia
+
+# - NaCl: No plans to support it.
+# - iOS: not done yet.
+_is_partition_alloc_platform = !is_nacl && !is_ios
 
 # Under Windows Debug the allocator shim is not compatible with CRT.
 #     NaCl in particular does seem to link some binaries statically
@@ -27,7 +29,7 @@ _is_partition_alloc_platform =
 # For all other platforms & configurations, the shim is required, to replace
 #     the default system allocators, e.g. with tcmalloc.
 if ((is_linux || is_chromeos || is_android || is_apple ||
-     (is_fuchsia && _is_partition_alloc_platform && !is_component_build) ||
+     (is_fuchsia && !_disable_partition_alloc) ||
      (is_win && !is_component_build && !is_debug)) && !_is_using_sanitizers) {
   _default_use_allocator_shim = true
 } else {
