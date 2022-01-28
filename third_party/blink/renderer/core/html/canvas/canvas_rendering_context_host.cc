@@ -108,7 +108,6 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
       } else if (IsWebGL()) {
         CreateCanvasResourceProviderWebGL();
       } else {
-        DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext());
         CreateCanvasResourceProvider2D(hint);
       }
     }
@@ -218,7 +217,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
 
 void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     RasterModeHint hint) {
-  DCHECK(IsRenderingContext2D());
+  DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext());
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       GetOrCreateResourceDispatcher()
           ? GetOrCreateResourceDispatcher()->GetWeakPtr()
