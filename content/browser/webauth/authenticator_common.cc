@@ -626,7 +626,7 @@ void AuthenticatorCommon::MakeCredential(
       CancelWithStatus(blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     } else {
       std::move(callback).Run(
-          blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr);
+          blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr, nullptr);
       return;
     }
   }
@@ -917,7 +917,7 @@ void AuthenticatorCommon::GetAssertion(
       CancelWithStatus(blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     } else {
       std::move(callback).Run(
-          blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr);
+          blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr, nullptr);
       return;
     }
   }
@@ -1212,7 +1212,7 @@ void AuthenticatorCommon::OnRegisterResponse(
           status_code == device::MakeCredentialStatus::kWinInvalidStateError) {
         CompleteMakeCredentialRequest(
             blink::mojom::AuthenticatorStatus::CREDENTIAL_EXCLUDED, nullptr,
-            Focus::kDoCheck);
+            nullptr, Focus::kDoCheck);
       } else {
         SignalFailureToRequestDelegate(
             authenticator,
@@ -1225,7 +1225,7 @@ void AuthenticatorCommon::OnRegisterResponse(
       // The response from the authenticator was corrupted.
       CompleteMakeCredentialRequest(
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
-          Focus::kDoCheck);
+          nullptr, Focus::kDoCheck);
       return;
     case device::MakeCredentialStatus::kUserConsentDenied:
       SignalFailureToRequestDelegate(
@@ -1391,7 +1391,7 @@ void AuthenticatorCommon::OnRegisterResponse(
             blink::mojom::AuthenticatorStatus::SUCCESS,
             CreateMakeCredentialResponse(std::move(*response_data),
                                          *attestation_erasure),
-            Focus::kDoCheck);
+            nullptr, Focus::kDoCheck);
       }
 
       return;
@@ -1440,7 +1440,7 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
       blink::mojom::AuthenticatorStatus::SUCCESS,
       CreateMakeCredentialResponse(std::move(response_data),
                                    attestation_erasure),
-      Focus::kDoCheck);
+      nullptr, Focus::kDoCheck);
 }
 
 void AuthenticatorCommon::OnSignResponse(
@@ -1776,14 +1776,15 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
 void AuthenticatorCommon::CompleteMakeCredentialRequest(
     blink::mojom::AuthenticatorStatus status,
     blink::mojom::MakeCredentialAuthenticatorResponsePtr response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details,
     Focus check_focus) {
   DCHECK(make_credential_response_callback_);
   if (check_focus != Focus::kDontCheck && !(request_delegate_ && IsFocused())) {
     std::move(make_credential_response_callback_)
-        .Run(blink::mojom::AuthenticatorStatus::NOT_FOCUSED, nullptr);
+        .Run(blink::mojom::AuthenticatorStatus::NOT_FOCUSED, nullptr, nullptr);
   } else {
     std::move(make_credential_response_callback_)
-        .Run(status, std::move(response));
+        .Run(status, std::move(response), std::move(dom_exception_details));
   }
 
   Cleanup();
@@ -1877,9 +1878,11 @@ AuthenticatorCommon::CreateGetAssertionResponse(
 
 void AuthenticatorCommon::CompleteGetAssertionRequest(
     blink::mojom::AuthenticatorStatus status,
-    blink::mojom::GetAssertionAuthenticatorResponsePtr response) {
+    blink::mojom::GetAssertionAuthenticatorResponsePtr response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   DCHECK(get_assertion_response_callback_);
-  std::move(get_assertion_response_callback_).Run(status, std::move(response));
+  std::move(get_assertion_response_callback_)
+      .Run(status, std::move(response), std::move(dom_exception_details));
   Cleanup();
 }
 
@@ -1962,12 +1965,20 @@ AuthenticatorCommon::GetWebAuthnRequestProxyIfActive() {
 
 void AuthenticatorCommon::OnMakeCredentialProxyResponse(
     WebAuthenticationRequestProxy::RequestId request_id,
-    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
     blink::mojom::MakeCredentialAuthenticatorResponsePtr response) {
   DCHECK_EQ(*request_proxy_make_credential_id_, request_id);
   DCHECK(make_credential_response_callback_);
   request_proxy_make_credential_id_.reset();
-  CompleteMakeCredentialRequest(status, std::move(response), Focus::kDoCheck);
+  if (error) {
+    DCHECK(!response);
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS,
+        nullptr, std::move(error), Focus::kDoCheck);
+    return;
+  }
+  CompleteMakeCredentialRequest(blink::mojom::AuthenticatorStatus::SUCCESS,
+                                std::move(response), nullptr, Focus::kDoCheck);
 }
 
 }  // namespace content

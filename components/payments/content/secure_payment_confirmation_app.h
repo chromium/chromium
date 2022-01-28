@@ -103,7 +103,8 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   void OnGetAssertion(
       base::WeakPtr<Delegate> delegate,
       blink::mojom::AuthenticatorStatus status,
-      blink::mojom::GetAssertionAuthenticatorResponsePtr response);
+      blink::mojom::GetAssertionAuthenticatorResponsePtr response,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
   // Used only for comparison with the RenderFrameHost pointer in
   // RenderFrameDeleted() method.

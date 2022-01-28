@@ -134,6 +134,8 @@ using blink::mojom::PublicKeyCredentialRpEntityPtr;
 using blink::mojom::PublicKeyCredentialType;
 using blink::mojom::PublicKeyCredentialUserEntity;
 using blink::mojom::PublicKeyCredentialUserEntityPtr;
+using blink::mojom::WebAuthnDOMExceptionDetails;
+using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 using cbor::Reader;
 using cbor::Value;
 using device::VirtualCtap2Device;
@@ -316,12 +318,15 @@ constexpr OriginClaimedAuthorityPair kInvalidRelyingPartyTestCases[] = {
 };
 
 using TestIsUvpaaCallback = device::test::ValueCallbackReceiver<bool>;
-using TestMakeCredentialCallback = device::test::StatusAndValueCallbackReceiver<
+using TestMakeCredentialCallback =
+    device::test::StatusAndValuesCallbackReceiver<
+        AuthenticatorStatus,
+        MakeCredentialAuthenticatorResponsePtr,
+        WebAuthnDOMExceptionDetailsPtr>;
+using TestGetAssertionCallback = device::test::StatusAndValuesCallbackReceiver<
     AuthenticatorStatus,
-    MakeCredentialAuthenticatorResponsePtr>;
-using TestGetAssertionCallback = device::test::StatusAndValueCallbackReceiver<
-    AuthenticatorStatus,
-    GetAssertionAuthenticatorResponsePtr>;
+    GetAssertionAuthenticatorResponsePtr,
+    WebAuthnDOMExceptionDetailsPtr>;
 using TestRequestStartedCallback = device::test::TestCallbackReceiver<>;
 
 std::vector<uint8_t> GetTestChallengeBytes() {
@@ -600,7 +605,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     authenticator->MakeCredential(std::move(options),
                                   callback_receiver.callback());
     callback_receiver.WaitForCallback();
-    auto [status, response] = callback_receiver.TakeResult();
+    auto [status, response, dom_exception] = callback_receiver.TakeResult();
     return {status, std::move(response)};
   }
 
@@ -613,7 +618,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
                                   callback_receiver.callback());
     task_environment()->FastForwardBy(kTestTimeout);
     callback_receiver.WaitForCallback();
-    auto [status, response] = callback_receiver.TakeResult();
+    auto [status, response, dom_exception] = callback_receiver.TakeResult();
     return {status, std::move(response)};
   }
 
@@ -635,7 +640,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     authenticator->GetAssertion(std::move(options),
                                 callback_receiver.callback());
     callback_receiver.WaitForCallback();
-    auto [status, response] = callback_receiver.TakeResult();
+    auto [status, response, dom_exception] = callback_receiver.TakeResult();
     return {status, std::move(response)};
   }
 
@@ -647,7 +652,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     authenticator->GetAssertion(std::move(options),
                                 callback_receiver.callback());
     task_environment()->FastForwardBy(kTestTimeout);
-    auto [status, response] = callback_receiver.TakeResult();
+    auto [status, response, dom_exception] = callback_receiver.TakeResult();
     return {status, std::move(response)};
   }
 
@@ -1687,9 +1692,14 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     // The fake response to SignalIsUVPAARequest().
     bool is_uvpaa = true;
 
-    // Fake response values to SignalCreateRequest().
-    blink::mojom::AuthenticatorStatus make_credential_status =
-        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+    // Whether the request to SignalCreateRequest() should succeed.
+    bool make_credential_success = true;
+
+    // If `make_credential_success` is false, the name of the DOMError to be
+    // returned.
+    std::string make_credential_error_name = "NotAllowedError";
+
+    // If `make_credential_success` is true, the fake response to be returned.
     blink::mojom::MakeCredentialAuthenticatorResponsePtr
         make_credential_response = nullptr;
   };
@@ -1717,14 +1727,11 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
     current_request_id_++;
     call_counts_.signal_create_request++;
+    pending_create_callback_ = std::move(callback);
     if (config_.resolve_callbacks) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), current_request_id_,
-                                    config_.make_credential_status,
-                                    config_.make_credential_response.Clone()));
+      RunPendingCreateCallback();
       return current_request_id_;
     }
-    pending_create_callback_ = std::move(callback);
     return current_request_id_;
   }
 
@@ -1753,9 +1760,18 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
   void RunPendingCreateCallback() {
     DCHECK(pending_create_callback_);
-    std::move(pending_create_callback_)
-        .Run(current_request_id_, config_.make_credential_status,
-             config_.make_credential_response.Clone());
+    auto callback =
+        config_.make_credential_success
+            ? base::BindOnce(std::move(pending_create_callback_),
+                             current_request_id_, nullptr,
+                             config_.make_credential_response.Clone())
+            : base::BindOnce(std::move(pending_create_callback_),
+                             current_request_id_,
+                             WebAuthnDOMExceptionDetails::New(
+                                 config_.make_credential_error_name, "message"),
+                             nullptr);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
   }
 
   void RunPendingIsUvpaaCallback() {
@@ -8290,8 +8306,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
-  request_proxy().config().make_credential_status =
-      blink::mojom::AuthenticatorStatus::SUCCESS;
+  request_proxy().config().make_credential_success = true;
   request_proxy().config().make_credential_response =
       MakeCredentialAuthenticatorResponse::New();
   request_proxy().config().make_credential_response->info =
@@ -8308,8 +8323,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
 
 // Verify requests with an attached proxy run RP ID checks.
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
-  request_proxy().config().make_credential_status =
-      blink::mojom::AuthenticatorStatus::SUCCESS;
+  request_proxy().config().make_credential_success = true;
   request_proxy().config().make_credential_response =
       MakeCredentialAuthenticatorResponse::New();
   request_proxy().config().make_credential_response->info =
@@ -8337,8 +8351,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
   request_proxy().config().resolve_callbacks = false;
-  request_proxy().config().make_credential_status =
-      blink::mojom::AuthenticatorStatus::SUCCESS;
+  request_proxy().config().make_credential_success = true;
   request_proxy().config().make_credential_response =
       MakeCredentialAuthenticatorResponse::New();
   request_proxy().config().make_credential_response->info =

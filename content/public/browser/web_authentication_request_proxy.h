@@ -19,11 +19,11 @@ class WebAuthenticationRequestProxy {
   using RequestId = int32_t;
 
   // CreateCallback is the response callback type for `SignalCreateRequest`. It
-  // is invoked with the status and optional response that resulted from the
-  // proxied request.
+  // receives either the error or the response that resulted from the proxied
+  // request.
   using CreateCallback = base::OnceCallback<void(
       RequestId,
-      blink::mojom::AuthenticatorStatus,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr)>;
 
   // IsUvpaaCallback is the response callback type for `SignalIsUvpaaRequest`.

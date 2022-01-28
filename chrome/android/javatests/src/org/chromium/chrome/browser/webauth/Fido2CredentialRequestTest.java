@@ -626,7 +626,8 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.makeCredential(mCreationOptions,
-                    (status, response) -> mCallback.onRegisterResponse(status, response));
+                    (status, response,
+                            dom_exception) -> mCallback.onRegisterResponse(status, response));
         });
 
         mCallback.blockUntilCalled();
@@ -643,7 +644,8 @@ public class Fido2CredentialRequestTest {
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.makeCredential(mCreationOptions,
-                    (status, response) -> mCallback.onRegisterResponse(status, response));
+                    (status, response,
+                            dom_exception) -> mCallback.onRegisterResponse(status, response));
         });
 
         mCallback.blockUntilCalled();
@@ -872,7 +874,8 @@ public class Fido2CredentialRequestTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.getAssertion(mRequestOptions,
-                    (status, response) -> mCallback.onSignResponse(status, response));
+                    (status, response,
+                            dom_exception) -> mCallback.onSignResponse(status, response));
         });
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
@@ -888,7 +891,8 @@ public class Fido2CredentialRequestTest {
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.getAssertion(mRequestOptions,
-                    (status, response) -> mCallback.onSignResponse(status, response));
+                    (status, response,
+                            dom_exception) -> mCallback.onSignResponse(status, response));
         });
         mCallback.blockUntilCalled();
         Assert.assertEquals(

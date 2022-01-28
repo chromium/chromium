@@ -212,6 +212,8 @@ class CONTENT_EXPORT AuthenticatorCommon {
   void CompleteMakeCredentialRequest(
       blink::mojom::AuthenticatorStatus status,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr response = nullptr,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details =
+          nullptr,
       Focus focus_check = Focus::kDontCheck);
 
   // Creates a get assertion response.
@@ -221,7 +223,9 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // Runs |get_assertion_callback_| and then Cleanup().
   void CompleteGetAssertionRequest(
       blink::mojom::AuthenticatorStatus status,
-      blink::mojom::GetAssertionAuthenticatorResponsePtr response = nullptr);
+      blink::mojom::GetAssertionAuthenticatorResponsePtr response = nullptr,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details =
+          nullptr);
 
   BrowserContext* GetBrowserContext() const;
 
@@ -236,7 +240,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
 
   void OnMakeCredentialProxyResponse(
       WebAuthenticationRequestProxy::RequestId request_id,
-      blink::mojom::AuthenticatorStatus status,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr response);
 
   const GlobalRenderFrameHostId render_frame_host_id_;

@@ -43,6 +43,11 @@ enum AuthenticatorStatus {
   CANNOT_READ_AND_WRITE_LARGE_BLOB,
   INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB,
   FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION,
+
+  // ERROR_WITH_DOM_EXCEPTION_DETAILS indicates that the error will be
+  // described in a `WebAuthnDOMExceptionDetails` structure.
+  ERROR_WITH_DOM_EXCEPTION_DETAILS,
+
   UNKNOWN_ERROR,
 };
 
@@ -545,19 +550,34 @@ struct PublicKeyCredentialDescriptor {
   array<AuthenticatorTransport> transports;
 };
 
+// Describes the DOMException to be returned to the caller if MakeCredential or
+// GetAssertion returns ERROR_WITH_DOM_EXCEPTION_DETAILS.
+struct WebAuthnDOMExceptionDetails {
+  string name;
+  string message;
+};
+
 // Interface to direct authenticators to create or use a public key credential.
 interface Authenticator {
   // Gets the credential info for a new public key credential created by an
-  // authenticator for the given |PublicKeyCredentialCreationOptions|
-  // [MakeCredentialAuthenticatorResponse] will be set if and only if status == SUCCESS.
+  // authenticator for the given |PublicKeyCredentialCreationOptions|.
+  // [MakeCredentialAuthenticatorResponse] will be set if and only if status ==
+  // SUCCESS. [WebAuthnDOMExceptionDetails] will be set if and only if
+  // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
   MakeCredential(PublicKeyCredentialCreationOptions options)
-      => (AuthenticatorStatus status, MakeCredentialAuthenticatorResponse? credential);
+      => (AuthenticatorStatus status,
+          MakeCredentialAuthenticatorResponse? credential,
+          WebAuthnDOMExceptionDetails? dom_exception_details);
 
   // Uses an existing credential to produce an assertion for the given
   // |PublicKeyCredentialRequestOptions|.
   // |GetAssertionResponse| will be set if and only if status == SUCCESS.
+  // [WebAuthnDOMExceptionDetails] will be set if and only if
+  // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
   GetAssertion(PublicKeyCredentialRequestOptions options)
-      => (AuthenticatorStatus status, GetAssertionAuthenticatorResponse? credential);
+      => (AuthenticatorStatus status,
+          GetAssertionAuthenticatorResponse? credential,
+          WebAuthnDOMExceptionDetails? dom_exception_details);
 
   // Returns true if the user platform provides an authenticator. Relying
   // Parties use this method to determine whether they can create a new

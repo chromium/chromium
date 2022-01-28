@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
@@ -71,7 +72,11 @@ public class InternalAuthenticator {
     public void makeCredential(ByteBuffer optionsByteBuffer) {
         mAuthenticator.makeCredential(
                 PublicKeyCredentialCreationOptions.deserialize(optionsByteBuffer),
-                (status, response) -> {
+                (status, response, domExceptionDetails) -> {
+                    // DOMExceptions can only be passed through the webAuthenticationProxy
+                    // extensions API, which doesn't exist on Android.
+                    assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
+                            && domExceptionDetails == null;
                     if (mNativeInternalAuthenticatorAndroid != 0) {
                         InternalAuthenticatorJni.get().invokeMakeCredentialResponse(
                                 mNativeInternalAuthenticatorAndroid, status.intValue(),
@@ -88,7 +93,11 @@ public class InternalAuthenticator {
     public void getAssertion(ByteBuffer optionsByteBuffer) {
         mAuthenticator.getAssertion(
                 PublicKeyCredentialRequestOptions.deserialize(optionsByteBuffer),
-                (status, response) -> {
+                (status, response, domExceptionDetails) -> {
+                    // DOMExceptions can only be passed through the webAuthenticationProxy
+                    // extensions API, which doesn't exist on Android.
+                    assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
+                            && domExceptionDetails == null;
                     if (mNativeInternalAuthenticatorAndroid != 0) {
                         InternalAuthenticatorJni.get().invokeGetAssertionResponse(
                                 mNativeInternalAuthenticatorAndroid, status.intValue(),

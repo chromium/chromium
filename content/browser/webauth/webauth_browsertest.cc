@@ -70,15 +70,18 @@ using blink::mojom::Authenticator;
 using blink::mojom::AuthenticatorStatus;
 using blink::mojom::GetAssertionAuthenticatorResponsePtr;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
+using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 
 using TestCreateCallbackReceiver =
-    ::device::test::StatusAndValueCallbackReceiver<
+    device::test::StatusAndValuesCallbackReceiver<
         AuthenticatorStatus,
-        MakeCredentialAuthenticatorResponsePtr>;
+        MakeCredentialAuthenticatorResponsePtr,
+        WebAuthnDOMExceptionDetailsPtr>;
 
-using TestGetCallbackReceiver = ::device::test::StatusAndValueCallbackReceiver<
+using TestGetCallbackReceiver = device::test::StatusAndValuesCallbackReceiver<
     AuthenticatorStatus,
-    GetAssertionAuthenticatorResponsePtr>;
+    GetAssertionAuthenticatorResponsePtr,
+    WebAuthnDOMExceptionDetailsPtr>;
 
 constexpr char kOkMessage[] = "webauth: OK";
 

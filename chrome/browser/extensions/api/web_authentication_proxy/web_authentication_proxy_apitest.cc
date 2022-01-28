@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
 
   // Call makeCredential() and tell the extension that there is a result. The
   // extension never resolves the request but detaches itself.
-  EXPECT_THAT(NavigateAndCallMakeCredential(), IsDomError("NotAllowedError"));
+  EXPECT_THAT(NavigateAndCallMakeCredential(), IsDomError("AbortError"));
   ready_listener.Reply("");
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }

@@ -234,7 +234,8 @@ void SecurePaymentConfirmationApp::RenderFrameDeleted(
 void SecurePaymentConfirmationApp::OnGetAssertion(
     base::WeakPtr<Delegate> delegate,
     blink::mojom::AuthenticatorStatus status,
-    blink::mojom::GetAssertionAuthenticatorResponsePtr response) {
+    blink::mojom::GetAssertionAuthenticatorResponsePtr response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   if (!delegate)
     return;
 

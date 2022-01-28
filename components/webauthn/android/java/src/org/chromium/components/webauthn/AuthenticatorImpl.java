@@ -55,10 +55,8 @@ public final class AuthenticatorImpl implements Authenticator {
     /** The payment information to be added to the "clientDataJson". */
     private PaymentOptions mPayment;
 
-    private org.chromium.mojo.bindings.Callbacks
-            .Callback2<Integer, MakeCredentialAuthenticatorResponse> mMakeCredentialCallback;
-    private org.chromium.mojo.bindings.Callbacks
-            .Callback2<Integer, GetAssertionAuthenticatorResponse> mGetAssertionCallback;
+    private MakeCredential_Response mMakeCredentialCallback;
+    private GetAssertion_Response mGetAssertionCallback;
     // A queue is used to store pending IsUserVerifyingPlatformAuthenticatorAvailable request
     // callbacks when there are multiple requests pending on the result from GMSCore. Noted that
     // the callbacks may not be invoked in the same order as the pending requests, which in this
@@ -112,7 +110,7 @@ public final class AuthenticatorImpl implements Authenticator {
     public void makeCredential(
             PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
         if (mIsOperationPending) {
-            callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
+            callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
             return;
         }
 
@@ -136,7 +134,7 @@ public final class AuthenticatorImpl implements Authenticator {
     public void getAssertion(
             PublicKeyCredentialRequestOptions options, GetAssertion_Response callback) {
         if (mIsOperationPending) {
-            callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
+            callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
             return;
         }
 
@@ -203,7 +201,8 @@ public final class AuthenticatorImpl implements Authenticator {
         if (!mIsOperationPending) return;
 
         assert mMakeCredentialCallback != null;
-        mMakeCredentialCallback.call(status, response);
+        assert status == AuthenticatorStatus.SUCCESS;
+        mMakeCredentialCallback.call(status, response, null);
         close();
     }
 
@@ -212,7 +211,7 @@ public final class AuthenticatorImpl implements Authenticator {
         if (!mIsOperationPending) return;
 
         assert mGetAssertionCallback != null;
-        mGetAssertionCallback.call(status, response);
+        mGetAssertionCallback.call(status, response, null);
         close();
     }
 
@@ -227,10 +226,11 @@ public final class AuthenticatorImpl implements Authenticator {
 
         assert ((mMakeCredentialCallback != null && mGetAssertionCallback == null)
                 || (mMakeCredentialCallback == null && mGetAssertionCallback != null));
+        assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS;
         if (mMakeCredentialCallback != null) {
-            mMakeCredentialCallback.call(status, null);
+            mMakeCredentialCallback.call(status, null, null);
         } else if (mGetAssertionCallback != null) {
-            mGetAssertionCallback.call(status, null);
+            mGetAssertionCallback.call(status, null, null);
         }
         close();
     }

@@ -26,35 +26,6 @@
 
 namespace extensions {
 
-namespace {
-
-absl::optional<blink::mojom::AuthenticatorStatus>
-ToAuthenticatorStatusForMakeCredential(const std::string& error_name) {
-  constexpr std::pair<const char*, blink::mojom::AuthenticatorStatus>
-      kErrors[] = {
-          {"NotAllowedError",
-           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR},
-          {"InvalidStateError",
-           blink::mojom::AuthenticatorStatus::CREDENTIAL_EXCLUDED},
-          {"OperationError",
-           blink::mojom::AuthenticatorStatus::PENDING_REQUEST},
-          {"NotSupportedError",
-           blink::mojom::AuthenticatorStatus::ALGORITHM_UNSUPPORTED},
-          {"AbortError", blink::mojom::AuthenticatorStatus::ABORT_ERROR},
-          {"NotReadableError",
-           blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR},
-          {"SecurityError", blink::mojom::AuthenticatorStatus::INVALID_DOMAIN},
-      };
-  for (const auto& err : kErrors) {
-    if (err.first == error_name) {
-      return err.second;
-    }
-  }
-  return absl::nullopt;
-}
-
-}  // namespace
-
 WebAuthenticationProxyService::WebAuthenticationProxyService(
     content::BrowserContext* browser_context)
     : event_router_(EventRouter::Get(browser_context)),
@@ -117,16 +88,9 @@ bool WebAuthenticationProxyService::CompleteCreateRequest(
   pending_create_callbacks_.erase(callback_it);
 
   if (details.error_name) {
-    absl::optional<blink::mojom::AuthenticatorStatus> status =
-        ToAuthenticatorStatusForMakeCredential(*details.error_name);
-    // TODO(https://crbug.com/1231802): Allow passing DOMErrors through the
-    // Authenticator interface rather than having to project them back into
-    // AuthenticatorStatus values, which is inherently lossy.
-    if (!status) {
-      *error_out = "Invalid CreateResponseDetails.errorName";
-      return false;
-    }
-    std::move(callback).Run(details.request_id, *status, nullptr);
+    auto error = blink::mojom::WebAuthnDOMExceptionDetails::New();
+    error->name = *details.error_name;
+    std::move(callback).Run(details.request_id, std::move(error), nullptr);
     return true;
   }
   if (!details.response_json) {
@@ -149,9 +113,7 @@ bool WebAuthenticationProxyService::CompleteCreateRequest(
     return false;
   }
 
-  std::move(callback).Run(details.request_id,
-                          blink::mojom::AuthenticatorStatus::SUCCESS,
-                          std::move(response));
+  std::move(callback).Run(details.request_id, nullptr, std::move(response));
   return true;
 }
 
@@ -192,9 +154,10 @@ void WebAuthenticationProxyService::CancelPendingCallbacks() {
   DCHECK(IsActive());
   auto create_callbacks = std::move(pending_create_callbacks_);
   for (auto& pair : create_callbacks) {
-    std::move(pair.second)
-        .Run(pair.first, blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR,
-             nullptr);
+    auto error = blink::mojom::WebAuthnDOMExceptionDetails::New();
+    error->name = "AbortError";
+    error->message = "The operation was aborted.";
+    std::move(pair.second).Run(pair.first, std::move(error), nullptr);
   }
 
   auto is_uvpaa_callbacks = std::move(pending_is_uvpaa_callbacks_);

@@ -394,7 +394,8 @@ void CreditCardFIDOAuthenticator::OptChange(
 
 void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     AuthenticatorStatus status,
-    GetAssertionAuthenticatorResponsePtr assertion_response) {
+    GetAssertionAuthenticatorResponsePtr assertion_response,
+    WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   LogWebauthnResult(status);
 
   // End the flow if there was an authentication error.
@@ -469,7 +470,8 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
 
 void CreditCardFIDOAuthenticator::OnDidMakeCredential(
     AuthenticatorStatus status,
-    MakeCredentialAuthenticatorResponsePtr attestation_response) {
+    MakeCredentialAuthenticatorResponsePtr attestation_response,
+    WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   LogWebauthnResult(status);
 
   // End the flow if there was an authentication error.

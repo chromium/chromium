@@ -33,6 +33,7 @@ using blink::mojom::PublicKeyCredentialCreationOptions;
 using blink::mojom::PublicKeyCredentialCreationOptionsPtr;
 using blink::mojom::PublicKeyCredentialRequestOptions;
 using blink::mojom::PublicKeyCredentialRequestOptionsPtr;
+using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 using device::AttestationConveyancePreference;
 using device::AuthenticatorAttachment;
 using device::AuthenticatorSelectionCriteria;
@@ -200,14 +201,16 @@ class CreditCardFIDOAuthenticator
   // card details.
   void OnDidGetAssertion(
       AuthenticatorStatus status,
-      GetAssertionAuthenticatorResponsePtr assertion_response);
+      GetAssertionAuthenticatorResponsePtr assertion_response,
+      WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
   // The callback invoked from the WebAuthn prompt including the
   // |attestation_response|, which will be sent to Google Payments to enroll the
   // credential for this user.
   void OnDidMakeCredential(
       AuthenticatorStatus status,
-      MakeCredentialAuthenticatorResponsePtr attestation_response);
+      MakeCredentialAuthenticatorResponsePtr attestation_response,
+      WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
   // Sets prefstore to enable credit card authentication if rpc was successful.
   void OnDidGetOptChangeResult(

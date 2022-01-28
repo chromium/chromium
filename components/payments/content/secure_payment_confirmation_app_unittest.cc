@@ -68,7 +68,8 @@ class MockAuthenticator : public webauthn::InternalAuthenticator {
     std::move(callback).Run(
         should_succeed_ ? blink::mojom::AuthenticatorStatus::SUCCESS
                         : blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR,
-        blink::mojom::GetAssertionAuthenticatorResponse::New());
+        blink::mojom::GetAssertionAuthenticatorResponse::New(),
+        /*dom_exception_details=*/nullptr);
   }
 
   content::WebContents* web_contents() { return web_contents_; }

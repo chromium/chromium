@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/modules/credentialmanager/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/scoped_promise_resolver.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -88,6 +89,7 @@ using mojom::blink::CredentialInfoPtr;
 using mojom::blink::CredentialManagerError;
 using mojom::blink::CredentialMediationRequirement;
 using mojom::blink::PaymentCredentialInstrument;
+using mojom::blink::WebAuthnDOMExceptionDetailsPtr;
 using MojoPublicKeyCredentialCreationOptions =
     mojom::blink::PublicKeyCredentialCreationOptions;
 using mojom::blink::MakeCredentialAuthenticatorResponsePtr;
@@ -367,7 +369,11 @@ DOMException* CredentialManagerErrorToDOMException(
   return nullptr;
 }
 
-DOMException* AuthenticatorStatusToDOMException(AuthenticatorStatus status) {
+DOMException* AuthenticatorStatusToDOMException(
+    AuthenticatorStatus status,
+    const WebAuthnDOMExceptionDetailsPtr& dom_exception_details) {
+  DCHECK_EQ(status != AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS,
+            dom_exception_details.is_null());
   switch (status) {
     case AuthenticatorStatus::SUCCESS:
       NOTREACHED();
@@ -469,6 +475,10 @@ DOMException* AuthenticatorStatusToDOMException(AuthenticatorStatus status) {
           DOMExceptionCode::kNotReadableError,
           "Failed to save the credential identifier for the 'payment' "
           "extension.");
+    case AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS:
+      return DOMException::Create(
+          /*message=*/dom_exception_details->message,
+          /*name=*/dom_exception_details->name);
     case AuthenticatorStatus::UNKNOWN_ERROR:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotReadableError,
@@ -565,12 +575,14 @@ void OnMakePublicKeyCredentialComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     RequiredOriginType required_origin_type,
     AuthenticatorStatus status,
-    MakeCredentialAuthenticatorResponsePtr credential) {
+    MakeCredentialAuthenticatorResponsePtr credential,
+    WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   auto* resolver = scoped_resolver->Release();
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
     DCHECK(!credential);
-    resolver->Reject(AuthenticatorStatusToDOMException(status));
+    resolver->Reject(
+        AuthenticatorStatusToDOMException(status, dom_exception_details));
     return;
   }
   DCHECK(credential);
@@ -649,7 +661,7 @@ void OnSaveCredentialIdForPaymentExtension(
   OnMakePublicKeyCredentialComplete(
       std::move(scoped_resolver),
       RequiredOriginType::kSecureWithPaymentPermissionPolicy, status,
-      std::move(credential));
+      std::move(credential), /*dom_exception_details=*/nullptr);
 }
 
 void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
@@ -657,7 +669,8 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
     const String& rp_id_for_payment_extension,
     const WTF::Vector<uint8_t>& user_id_for_payment_extension,
     AuthenticatorStatus status,
-    MakeCredentialAuthenticatorResponsePtr credential) {
+    MakeCredentialAuthenticatorResponsePtr credential,
+    WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   auto* resolver = scoped_resolver->Release();
   const auto required_origin_type =
       RequiredOriginType::kSecureWithPaymentPermissionPolicy;
@@ -665,7 +678,8 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
     DCHECK(!credential);
-    resolver->Reject(AuthenticatorStatusToDOMException(status));
+    resolver->Reject(
+        AuthenticatorStatusToDOMException(status, dom_exception_details));
     return;
   }
 
@@ -684,7 +698,8 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
 void OnGetAssertionComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     AuthenticatorStatus status,
-    GetAssertionAuthenticatorResponsePtr credential) {
+    GetAssertionAuthenticatorResponsePtr credential,
+    WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   auto* resolver = scoped_resolver->Release();
   const auto required_origin_type = RequiredOriginType::kSecure;
 
@@ -745,7 +760,8 @@ void OnGetAssertionComplete(
     return;
   }
   DCHECK(!credential);
-  resolver->Reject(AuthenticatorStatusToDOMException(status));
+  resolver->Reject(
+      AuthenticatorStatusToDOMException(status, dom_exception_details));
 }
 
 void OnSmsReceive(ScriptPromiseResolver* resolver,
