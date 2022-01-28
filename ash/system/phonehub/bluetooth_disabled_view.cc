@@ -32,15 +32,12 @@ using phone_hub_metrics::Screen;
 
 BluetoothDisabledView::BluetoothDisabledView() {
   SetID(PhoneHubViewID::kBluetoothDisabledView);
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* content_view = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/false));
-
-  gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_PHONE_HUB_ERROR_STATE_IMAGE);
-  content_view->SetImage(*image);
+  content_view->SetImage(
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_PHONE_HUB_ERROR_STATE_IMAGE));
   content_view->SetTitle(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_TITLE));
   content_view->SetDescription(l10n_util::GetStringFUTF16(

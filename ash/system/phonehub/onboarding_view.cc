@@ -67,10 +67,8 @@ class OnboardingMainView : public PhoneHubInterstitialView {
 
  private:
   void InitLayout() {
-    gfx::ImageSkia* image =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_PHONE_HUB_ONBOARDING_IMAGE);
-    SetImage(*image);
+    SetImage(ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+        IDR_PHONE_HUB_ONBOARDING_IMAGE));
     SetTitle(
         l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_TITLE));
     SetDescription(l10n_util::GetStringUTF16(

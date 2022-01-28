@@ -28,12 +28,9 @@ TetherConnectionPendingView::TetherConnectionPendingView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   content_view_ = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/true));
-
-  gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_PHONE_HUB_CONNECTING_IMAGE);
-  content_view_->SetImage(*image);
-
+  content_view_->SetImage(
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_PHONE_HUB_CONNECTING_IMAGE));
   content_view_->SetTitle(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_TETHER_CONNECTION_PENDING_DIALOG_TITLE));
   content_view_->SetDescription(l10n_util::GetStringUTF16(

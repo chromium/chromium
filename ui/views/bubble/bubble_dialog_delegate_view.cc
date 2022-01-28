@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -21,6 +22,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/display/screen.h"
@@ -160,6 +162,10 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
   else
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kDrop;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bubble_params.background_elevation =
+      ui::ColorProviderManager::ElevationMode::kHigh;
+#endif
   gfx::NativeView parent = nullptr;
   if (bubble->has_parent()) {
     if (bubble->parent_window()) {
