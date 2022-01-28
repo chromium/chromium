@@ -38,25 +38,6 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
           AmbientAnimationTheme::kFeelTheBreeze,
           {
               // Assets
-              {"bg.png", IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_BG_PNG},
-              {"clips_bottom.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_CLIPS_BOTTOM_PNG},
-              {"clips_top.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_CLIPS_TOP_PNG},
-              {"shadow_1.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_SHADOW_1_PNG},
-              {"shadow_2.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_SHADOW_2_PNG},
-              {"shadow_3.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_SHADOW_3_PNG},
-              {"shadow_4.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_SHADOW_4_PNG},
-              {"shadow_5.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_SHADOW_5_PNG},
-              {"shadow_6.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_SHADOW_6_PNG},
-              {"time_weather.png",
-               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_TIME_WEATHER_PNG},
               {"tree_shadow.png",
                IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_TREE_SHADOW_PNG}
               // End Assets
