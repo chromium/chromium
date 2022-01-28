@@ -24,8 +24,6 @@ constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(6);
 constexpr uint8_t kFilterPatternStartPosition = 0;
 const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
 constexpr base::TimeDelta kRssiSamplingPeriod = base::Milliseconds(500);
-constexpr base::TimeDelta kLowPowerScanningActiveTime = base::Seconds(2);
-constexpr base::TimeDelta kLowPowerScanningInactiveTime = base::Seconds(3);
 
 }  // namespace
 
@@ -86,7 +84,7 @@ void FastPairScannerImpl::StartScanning() {
         FROM_HERE,
         base::BindOnce(&FastPairScannerImpl::StopScanning,
                        weak_ptr_factory_.GetWeakPtr()),
-        kLowPowerScanningActiveTime);
+        base::Seconds(features::kFastPairLowPowerActiveSeconds.Get()));
   }
 }
 
@@ -99,7 +97,7 @@ void FastPairScannerImpl::StopScanning() {
       FROM_HERE,
       base::BindOnce(&FastPairScannerImpl::StartScanning,
                      weak_ptr_factory_.GetWeakPtr()),
-      kLowPowerScanningInactiveTime);
+      base::Seconds(features::kFastPairLowPowerInactiveSeconds.Get()));
 }
 
 void FastPairScannerImpl::AddObserver(FastPairScanner::Observer* observer) {

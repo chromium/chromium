@@ -233,6 +233,10 @@ extern const base::Feature kFamilyLinkOnSchoolDevice;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFastPair;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFastPairLowPower;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<double> kFastPairLowPowerActiveSeconds;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<double> kFastPairLowPowerInactiveSeconds;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFastPairSoftwareScanning;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesArchivemount;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesArchivemount2;

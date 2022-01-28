@@ -594,6 +594,14 @@ const base::Feature kFastPair{"FastPair", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFastPairLowPower{"FastPairLowPower",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The amount of seconds we should scan while in low power mode before stopping.
+const base::FeatureParam<double> kFastPairLowPowerActiveSeconds{
+    &kFastPairLowPower, "active-seconds", 2};
+
+// The amount of seconds we should pause scanning while in low power mode.
+const base::FeatureParam<double> kFastPairLowPowerInactiveSeconds{
+    &kFastPairLowPower, "inactive-seconds", 3};
+
 // Allows Fast Pair to use software scanning on devices which don't support
 // hardware offloading of BLE scans.
 const base::Feature kFastPairSoftwareScanning{
