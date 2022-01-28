@@ -284,11 +284,13 @@ public class FeedSurfaceCoordinator
 
         // Pull-to-refresh set up.
         if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.getParent() == null) {
-            mSwipeRefreshLayout.addOnRefreshListener(this);
             mSwipeRefreshLayout.addView(mRecyclerView);
             mRootView.addView(mSwipeRefreshLayout);
         } else {
             mRootView.addView(mRecyclerView);
+        }
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.addOnRefreshListener(this);
         }
 
         mHandler = new Handler(Looper.getMainLooper());
