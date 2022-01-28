@@ -47,7 +47,6 @@ js_type_check("closure_compile") {
 
   deps = [
     ":app",
-    ":customize_dialog",
     ":doodle_share_dialog",
     ":lazy_load",
     ":new_tab_page",
@@ -85,7 +84,6 @@ js_library("new_tab_page") {
 
 js_library("lazy_load") {
   deps = [
-    ":customize_dialog",
     ":middle_slot_promo",
     "modules/dummy_v2:module",
   ]
@@ -128,58 +126,7 @@ js_library("middle_slot_promo") {
   ]
 }
 
-js_library("customize_dialog") {
-  deps = [
-    ":customize_backgrounds",
-    ":customize_dialog_types",
-    ":customize_modules",
-    ":customize_shortcuts",
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    ":utils",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-  ]
-}
-
 js_library("customize_dialog_types") {
-}
-
-js_library("customize_backgrounds") {
-  deps = [
-    ":customize_dialog_types",
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("customize_shortcuts") {
-  deps = [
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-  ]
-}
-
-js_library("customize_modules") {
-  deps = [
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    "modules:module_registry",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
 }
 
 js_library("utils") {
@@ -223,16 +170,16 @@ js_library("i18n_setup") {
 html_to_js("web_components_local") {
   js_files = [
     "app.js",
-    "customize_backgrounds.js",
-    "customize_dialog.js",
-    "customize_shortcuts.js",
+    "customize_backgrounds.ts",
+    "customize_dialog.ts",
+    "customize_shortcuts.ts",
     "doodle_share_dialog.js",
     "logo.ts",
     "middle_slot_promo.js",
     "mini_page.ts",
     "iframe.ts",
     "voice_search_overlay.ts",
-    "customize_modules.js",
+    "customize_modules.ts",
   ]
 }
 
@@ -277,11 +224,11 @@ preprocess_if_expr("preprocess_gen") {
   in_files = [
     "app.js",
     "middle_slot_promo.js",
-    "customize_dialog.js",
+    "customize_dialog.ts",
     "voice_search_overlay.ts",
-    "customize_backgrounds.js",
-    "customize_modules.js",
-    "customize_shortcuts.js",
+    "customize_backgrounds.ts",
+    "customize_modules.ts",
+    "customize_shortcuts.ts",
     "iframe.ts",
     "mini_page.ts",
     "logo.ts",
@@ -459,11 +406,11 @@ ts_library("build_ts") {
   in_files = [
                "app.js",
                "background_manager.js",
-               "customize_backgrounds.js",
-               "customize_dialog.js",
+               "customize_backgrounds.ts",
+               "customize_dialog.ts",
                "customize_dialog_types.js",
-               "customize_modules.js",
-               "customize_shortcuts.js",
+               "customize_modules.ts",
+               "customize_shortcuts.ts",
                "doodle_share_dialog.js",
                "i18n_setup.js",
                "iframe.ts",

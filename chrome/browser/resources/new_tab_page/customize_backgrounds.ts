@@ -7,43 +7,40 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './mini_page.js';
 import './iframe.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CollectionImage, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
-/**
- * Element that lets the user configure the background.
- * @polymer
- * @extends {PolymerElement}
- */
-class CustomizeBackgroundsElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+/** Event interface for dom-repeat. */
+interface RepeaterEvent<T> extends CustomEvent {
+  model: {
+    item: T,
+    index: number,
+  };
+}
+
+/** Element that lets the user configure the background. */
+export class CustomizeBackgroundsElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-customize-backgrounds';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @private */
       customBackgroundDisabledByPolicy_: {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('customBackgroundDisabledByPolicy'),
       },
 
-      /** @private */
       showBackgroundSelection_: {
         type: Boolean,
         computed: 'computeShowBackgroundSelection_(selectedCollection)',
       },
 
-      /** @private {BackgroundCollection} */
       selectedCollection: {
         notify: true,
         observer: 'onSelectedCollectionChange_',
@@ -51,42 +48,38 @@ class CustomizeBackgroundsElement extends mixinBehaviors
         value: null,
       },
 
-      /** @type {!Theme} */
       theme: Object,
-
-      /** @private {!Array<!BackgroundCollection>} */
       collections_: Array,
-
-      /** @private {!Array<!CollectionImage>} */
       images_: Array,
     };
   }
+
+  theme: Theme;
+  selectedCollection: BackgroundCollection|null;
+
+  private customBackgroundDisabledByPolicy_: boolean;
+  private showBackgroundSelection_: boolean;
+  private collections_: BackgroundCollection[];
+  private images_: CollectionImage[];
+
+  private pageHandler_: PageHandlerRemote
 
   constructor() {
     super();
     if (this.customBackgroundDisabledByPolicy_) {
       return;
     }
-    /** @private {PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     this.pageHandler_.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
     });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowBackgroundSelection_() {
+  private computeShowBackgroundSelection_(): boolean {
     return !this.customBackgroundDisabledByPolicy_ && !this.selectedCollection;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getCustomBackgroundClass_() {
+  private getCustomBackgroundClass_(): string {
     return this.theme && this.theme.backgroundImage &&
             this.theme.backgroundImage.url.url.startsWith(
                 'chrome-untrusted://new-tab-page/background.jpg') ?
@@ -94,11 +87,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
         '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getNoBackgroundClass_() {
+  private getNoBackgroundClass_(): string {
     return this.theme &&
             (this.theme.backgroundImage && !this.theme.isCustomBackground ||
              !this.theme.backgroundImage &&
@@ -107,12 +96,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
         '';
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getImageSelectedClass_(index) {
+  private getImageSelectedClass_(index: number): string {
     const {url} = this.images_[index].imageUrl;
     return this.theme && this.theme.backgroundImage &&
             this.theme.backgroundImage.url.url === url &&
@@ -121,18 +105,13 @@ class CustomizeBackgroundsElement extends mixinBehaviors
         '';
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onCollectionClick_(e) {
-    this.selectedCollection = this.$.collectionsRepeat.itemForElement(e.target);
+  private onCollectionClick_(e: RepeaterEvent<BackgroundCollection>) {
+    this.selectedCollection = e.model.item;
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kBackgroundsCollectionOpened);
   }
 
-  /** @private */
-  async onUploadFromDeviceClick_() {
+  private async onUploadFromDeviceClick_() {
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kBackgroundsUploadFromDeviceClicked);
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
@@ -143,8 +122,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
     }
   }
 
-  /** @private */
-  onDefaultClick_() {
+  private onDefaultClick_() {
     if (!this.theme.isCustomBackground) {
       this.pageHandler_.onCustomizeDialogAction(
           CustomizeDialogAction.kBackgroundsNoBackgroundSelected);
@@ -152,14 +130,10 @@ class CustomizeBackgroundsElement extends mixinBehaviors
     this.pageHandler_.setNoBackgroundImage();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onImageClick_(e) {
-    const image = this.$.imagesRepeat.itemForElement(e.target);
+  private onImageClick_(e: RepeaterEvent<CollectionImage>) {
+    const image = e.model.item;
     if (this.theme.isCustomBackground &&
-        this.theme.backgroundImage.url.url !== image.imageUrl.url) {
+        this.theme.backgroundImage!.url.url !== image.imageUrl.url) {
       this.pageHandler_.onCustomizeDialogAction(
           CustomizeDialogAction.kBackgroundsImageSelected);
     }
@@ -168,8 +142,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
         attribution1, attribution2, attributionUrl, imageUrl);
   }
 
-  /** @private */
-  async onSelectedCollectionChange_() {
+  private async onSelectedCollectionChange_() {
     this.images_ = [];
     if (!this.selectedCollection) {
       return;
@@ -191,6 +164,10 @@ class CustomizeBackgroundsElement extends mixinBehaviors
 
   confirmBackgroundChanges() {
     this.pageHandler_.confirmBackgroundChanges();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

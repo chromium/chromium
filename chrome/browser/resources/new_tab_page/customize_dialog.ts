@@ -13,56 +13,54 @@ import './customize_backgrounds.js';
 import './customize_shortcuts.js';
 import './customize_modules.js';
 
+import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CustomizeBackgroundsElement} from './customize_backgrounds.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
-import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
 
 
-/**
- * Workaround until new_tab_page is migrated to TypeScript.
- * @interface
- */
-class CustomizeThemesElement {
-  revertThemeChanges() {}
-  confirmThemeChanges() {}
+interface CustomizeDialogElement {
+  $: {
+    backgrounds: CustomizeBackgroundsElement,
+    bottomPageScrollBorder: HTMLElement,
+    customizeThemes: CustomizeThemesElement,
+    dialog: CrDialogElement,
+    menu: HTMLElement,
+    pages: HTMLElement,
+    refreshToggle: CrToggleElement,
+    topPageScrollBorder: HTMLElement,
+  };
 }
 
 /**
  * Dialog that lets the user customize the NTP such as the background color or
  * image.
- * @polymer
- * @extends {PolymerElement}
  */
-class CustomizeDialogElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+class CustomizeDialogElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-customize-dialog';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {!Theme} */
       theme: Object,
 
-      /** @type {CustomizeDialogPage} */
       selectedPage: {
         type: String,
         observer: 'onSelectedPageChange_',
       },
 
-      /** @private {BackgroundCollection} */
       selectedCollection_: Object,
 
-      /** @private */
       showTitleNavigation_: {
         type: Boolean,
         computed:
@@ -70,19 +68,16 @@ class CustomizeDialogElement extends mixinBehaviors
         value: false,
       },
 
-      /** @private */
       isRefreshToggleChecked_: {
         type: Boolean,
         computed: `computeIsRefreshToggleChecked_(theme, selectedCollection_)`,
       },
 
-      /** @private */
       shortcutsEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('shortcutsEnabled'),
       },
 
-      /** @private */
       modulesEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesEnabled'),
@@ -90,15 +85,22 @@ class CustomizeDialogElement extends mixinBehaviors
     };
   }
 
+  theme: Theme;
+  selectedPage: CustomizeDialogPage;
+  private selectedCollection_: BackgroundCollection|null;
+  private showTitleNavigation_: boolean;
+  private isRefreshToggleChecked_: boolean;
+  private shortcutsEnabled_: boolean;
+  private modulesEnabled_: boolean;
+
+  private pageHandler_: PageHandlerRemote;
+  private intersectionObservers_: IntersectionObserver[] = [];
+
   constructor() {
     super();
-    /** @private {PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
-    /** @private {!Array<!IntersectionObserver>} */
-    this.intersectionObservers_ = [];
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.intersectionObservers_.forEach(observer => {
@@ -107,7 +109,6 @@ class CustomizeDialogElement extends mixinBehaviors
     this.intersectionObservers_ = [];
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.intersectionObservers_ = [
@@ -122,59 +123,43 @@ class CustomizeDialogElement extends mixinBehaviors
         CustomizeDialogAction.kOpenClicked);
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_() {
     this.$.backgrounds.revertBackgroundChanges();
-    /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
-        .revertThemeChanges();
+    this.$.customizeThemes.revertThemeChanges();
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_() {
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kCancelClicked);
     this.$.dialog.cancel();
   }
 
-  /**
-   * @private
-   */
-  onDoneClick_() {
+  private onDoneClick_() {
     this.$.backgrounds.confirmBackgroundChanges();
-    /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
-        .confirmThemeChanges();
-    this.shadowRoot.querySelector('ntp-customize-shortcuts').apply();
+    this.$.customizeThemes.confirmThemeChanges();
+    this.shadowRoot!.querySelector('ntp-customize-shortcuts')!.apply();
     if (this.modulesEnabled_) {
-      this.shadowRoot.querySelector('ntp-customize-modules').apply();
+      this.shadowRoot!.querySelector('ntp-customize-modules')!.apply();
     }
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kDoneClicked);
     this.$.dialog.close();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onMenuItemKeyDown_(e) {
+  private onMenuItemKeyDown_(e: KeyboardEvent) {
     if (!['Enter', ' '].includes(e.key)) {
       return;
     }
     e.preventDefault();
     e.stopPropagation();
-    this.selectedPage = e.target.getAttribute('page-name');
+    this.selectedPage = (e.target as HTMLElement).getAttribute('page-name')!;
   }
 
-  /** @private */
-  onSelectedPageChange_() {
+  private onSelectedPageChange_() {
     this.$.pages.scrollTop = 0;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsRefreshToggleChecked_() {
+  private computeIsRefreshToggleChecked_(): boolean {
     if (!this.selectedCollection_) {
       return false;
     }
@@ -182,33 +167,31 @@ class CustomizeDialogElement extends mixinBehaviors
         this.selectedCollection_.id === this.theme.dailyRefreshCollectionId;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowTitleNavigation_() {
+  private computeShowTitleNavigation_(): boolean {
     return this.selectedPage === CustomizeDialogPage.BACKGROUNDS &&
         !!this.selectedCollection_;
   }
 
-  /** @private */
-  onBackClick_() {
+  private onBackClick_() {
     this.selectedCollection_ = null;
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kBackgroundsBackClicked);
     this.$.pages.scrollTop = 0;
   }
 
-  /** @private */
-  onBackgroundDailyRefreshToggleChange_() {
+  private onBackgroundDailyRefreshToggleChange_() {
     if (this.$.refreshToggle.checked) {
       this.pageHandler_.setDailyRefreshCollectionId(
-          this.selectedCollection_.id);
+          this.selectedCollection_!.id);
     } else {
       this.pageHandler_.setDailyRefreshCollectionId('');
     }
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kBackgroundsRefreshToggleClicked);
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

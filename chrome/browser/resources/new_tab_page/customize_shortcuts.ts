@@ -11,39 +11,32 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from './i18n_setup.js';
+import {I18nMixin} from './i18n_setup.js';
 import {CustomizeDialogAction, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
-/**
- * Element that lets the user configure shortcut settings.
- * @polymer
- * @extends {PolymerElement}
- */
-class CustomizeShortcutsElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+/** Element that lets the user configure shortcut settings. */
+class CustomizeShortcutsElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-customize-shortcuts';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @private */
       customLinksEnabled_: Boolean,
-
-      /** @private */
       hide_: Boolean,
     };
   }
 
+  private customLinksEnabled_: boolean;
+  private hide_: boolean;
+
+  private pageHandler_: PageHandlerRemote;
+
   constructor() {
     super();
     const {handler} = NewTabPageProxy.getInstance();
-    /** @private {!PageHandlerRemote} */
     this.pageHandler_ = handler;
     this.pageHandler_.getMostVisitedSettings().then(
         ({customLinksEnabled, shortcutsVisible}) => {
@@ -52,7 +45,6 @@ class CustomizeShortcutsElement extends mixinBehaviors
         });
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     FocusOutlineManager.forDocument(document);
@@ -63,48 +55,27 @@ class CustomizeShortcutsElement extends mixinBehaviors
         this.customLinksEnabled_, /* shortcutsVisible= */ !this.hide_);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getCustomLinksAriaPressed_() {
+  private getCustomLinksAriaPressed_(): string {
     return !this.hide_ && this.customLinksEnabled_ ? 'true' : 'false';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getCustomLinksSelected_() {
+  private getCustomLinksSelected_(): string {
     return !this.hide_ && this.customLinksEnabled_ ? 'selected' : '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getHideClass_() {
+  private getHideClass_(): string {
     return this.hide_ ? 'selected' : '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getMostVisitedAriaPressed_() {
+  private getMostVisitedAriaPressed_(): string {
     return !this.hide_ && !this.customLinksEnabled_ ? 'true' : 'false';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getMostVisitedSelected_() {
+  private getMostVisitedSelected_(): string {
     return !this.hide_ && !this.customLinksEnabled_ ? 'selected' : '';
   }
 
-  /** @private */
-  onCustomLinksClick_() {
+  private onCustomLinksClick_() {
     if (!this.customLinksEnabled_) {
       this.pageHandler_.onCustomizeDialogAction(
           CustomizeDialogAction.kShortcutsCustomLinksClicked);
@@ -113,25 +84,29 @@ class CustomizeShortcutsElement extends mixinBehaviors
     this.hide_ = false;
   }
 
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onHideChange_(e) {
+  private onHideChange_(e: CustomEvent<boolean>) {
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kShortcutsVisibilityToggleClicked);
     this.hide_ = e.detail;
   }
 
-
-  /** @private */
-  onMostVisitedClick_() {
+  private onMostVisitedClick_() {
     if (this.customLinksEnabled_) {
       this.pageHandler_.onCustomizeDialogAction(
           CustomizeDialogAction.kShortcutsMostVisitedClicked);
     }
     this.customLinksEnabled_ = false;
     this.hide_ = false;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-customize-shortcuts': CustomizeShortcutsElement;
   }
 }
 
