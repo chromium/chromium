@@ -68,14 +68,9 @@ class ServiceProcessLauncherDelegateImpl
   size_t adjust_count_ = 0;
 };
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 // TODO(qsr): Multiprocess service manager tests are not supported on android.
-// TODO(crbug.com/1288830): Flakes on macOS.
-#define MAYBE_StartJoin DISABLED_StartJoin
-#else
-#define MAYBE_StartJoin StartJoin
-#endif  // BUILDFLAG(IS_ANDROID)
-TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
+// TODO(crbug.com/1288830): Flakes on all platforms.
+TEST(ServiceProcessLauncherTest, DISABLED_StartJoin) {
   base::test::TaskEnvironment task_environment;
 
   // The test executable is a data_deps and thus generated test data.
