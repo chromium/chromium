@@ -33,5 +33,6 @@ export {Service, ServiceInterface} from './service.js';
 export {ExtensionsShortcutInputElement} from './shortcut_input.js';
 export {isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';
 export {ExtensionsSidebarElement} from './sidebar.js';
+export {ExtensionsSitePermissionsElement} from './site_permissions.js';
 export {ExtensionsToggleRowElement} from './toggle_row.js';
 export {ExtensionsToolbarElement} from './toolbar.js';

@@ -1,4 +1,4 @@
-<style include="shared-style">
+<style include="cr-shared-style shared-style">
   #container {
     box-sizing: border-box;
   }
@@ -8,7 +8,26 @@
     margin: 31px auto 16px auto;
     width: var(--cr-toolbar-field-width);
   }
+
+  #site-permissions-container {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    box-sizing: border-box;
+    color: var(--cr-primary-text-color);
+    margin: 0 auto;
+    padding: var(--cr-section-padding);
+    width: var(--cr-toolbar-field-width);
+  }
 </style>
 <div class="page-container" id="container">
   <div id="header">$i18n{sitePermissionsPageTitle}</div>
+  <div id="site-permissions-container">
+    <site-permissions-list
+        header="$i18n{permittedSites}"
+        sites="[[permittedSites_]]"></site-permissions-list>
+    <site-permissions-list
+        header="$i18n{restrictedSites}"
+        sites="[[restrictedSites_]]"></site-permissions-list>
+  </div>
 </div>

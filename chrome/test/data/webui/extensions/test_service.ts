@@ -12,7 +12,8 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   profileStateChangedTarget: FakeChromeEvent = new FakeChromeEvent();
   extensionActivityTarget: FakeChromeEvent = new FakeChromeEvent();
   acceptRuntimeHostPermission: boolean = true;
-  testActivities?: chrome.activityLogPrivate.ActivityResultSet|undefined;
+  testActivities?: chrome.activityLogPrivate.ActivityResultSet;
+  userSiteSettings?: chrome.developerPrivate.UserSiteSettings;
 
   private retryLoadUnpackedError_?: chrome.developerPrivate.LoadError;
   private forceReloadItemError_: boolean = false;
@@ -33,6 +34,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'getExtensionSize',
       'getFilteredExtensionActivityLog',
       'getProfileConfiguration',
+      'getUserSiteSettings',
       'inspectItemView',
       'installDroppedFile',
       'loadUnpacked',
@@ -309,5 +311,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   installDroppedFile() {
     this.methodCalled('installDroppedFile');
+  }
+
+  getUserSiteSettings() {
+    this.methodCalled('getUserSiteSettings');
+    return Promise.resolve(this.userSiteSettings!);
   }
 }

@@ -74,7 +74,8 @@
   </cr-lazy-render>
   <cr-lazy-render id="site-permissions">
     <template>
-      <extensions-site-permissions slot="view"></extensions-site-permissions>
+      <extensions-site-permissions delegate="[[delegate]]" slot="view">
+      </extensions-site-permissions>
     </template>
   </cr-lazy-render>
   <cr-lazy-render id="keyboard-shortcuts">

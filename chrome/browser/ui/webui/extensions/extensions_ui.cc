@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -31,6 +32,7 @@
 #include "chrome/grit/extensions_resources.h"
 #include "chrome/grit/extensions_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/google/core/common/google_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -245,6 +247,9 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
     {"packDialogConfirm", IDS_EXTENSIONS_PACK_DIALOG_CONFIRM_BUTTON},
     {"sitePermissions", IDS_EXTENSIONS_SITE_PERMISSIONS},
     {"sitePermissionsPageTitle", IDS_EXTENSIONS_SITE_PERMISSIONS_PAGE_TITLE},
+    {"permittedSites", IDS_EXTENSIONS_PERMITTED_SITES},
+    {"restrictedSites", IDS_EXTENSIONS_RESTRICTED_SITES},
+    {"noSitesAdded", IDS_EXTENSIONS_NO_SITES_ADDED},
     {"editShortcut", IDS_EXTENSIONS_EDIT_SHORTCUT},
     {"shortcutNotSet", IDS_EXTENSIONS_SHORTCUT_NOT_SET},
     {"shortcutScopeGlobal", IDS_EXTENSIONS_SHORTCUT_SCOPE_GLOBAL},
@@ -373,6 +378,9 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src 'self';");
 
   content::WebUIDataSource::Add(profile, source);
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 }
 
 ExtensionsUI::~ExtensionsUI() = default;

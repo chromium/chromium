@@ -864,3 +864,17 @@ var CrExtensionsHostPermissionsToggleListTest =
 TEST_F('CrExtensionsHostPermissionsToggleListTest', 'All', () => {
   mocha.run();
 });
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissions tests
+
+var CrExtensionsSitePermissionsTest = class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsTest', 'All', () => {
+  mocha.run();
+});
