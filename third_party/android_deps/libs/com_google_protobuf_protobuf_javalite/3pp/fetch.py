@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/3.13.0/protobuf-javalite-3.13.0.jar'
-_FILE_NAME = 'protobuf-javalite-3.13.0.jar'
-_FILE_VERSION = '3.13.0'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/3.19.3/protobuf-javalite-3.19.3.jar'
+_FILE_NAME = 'protobuf-javalite-3.19.3.jar'
+_FILE_VERSION = '3.19.3'
 
 
 def do_latest():

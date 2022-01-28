@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/common/30.0.0-alpha10/common-30.0.0-alpha10.jar'
-_FILE_NAME = 'common-30.0.0-alpha10.jar'
-_FILE_VERSION = '30.0.0-alpha10'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/common/30.2.0-beta01/common-30.2.0-beta01.jar'
+_FILE_NAME = 'common-30.2.0-beta01.jar'
+_FILE_VERSION = '30.2.0-beta01'
 
 
 def do_latest():
