@@ -640,8 +640,11 @@ Node* AXObjectCacheImpl::FocusedElement() {
     focused_node = document_;
 
   // See if there's a page popup, for example a calendar picker.
-  Element* adjusted_focused_element = document_->AdjustedFocusedElement();
-  if (auto* input = DynamicTo<HTMLInputElement>(adjusted_focused_element)) {
+  auto* input = DynamicTo<HTMLInputElement>(focused_node);
+  if (!input && focused_node->IsInUserAgentShadowRoot()) {
+    input = DynamicTo<HTMLInputElement>(focused_node->OwnerShadowHost());
+  }
+  if (input) {
     if (AXObject* ax_popup = input->PopupRootAXObject()) {
       if (Element* focused_element_in_popup =
               ax_popup->GetDocument()->FocusedElement())
