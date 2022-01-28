@@ -152,7 +152,14 @@ void SameThreadMediaSourceAttachment::RemoveAudioTracksFromMediaElement(
 
   HTMLMediaElement* element = GetMediaElement(tracer);
   for (auto& audio_id : audio_ids) {
-    element->audioTracks().Remove(audio_id);
+    if (element->audioTracks().getTrackById(audio_id)) {
+      element->audioTracks().Remove(audio_id);
+    } else {
+      // This case can happen on element noneSupported() after MSE had added
+      // some track(s). See https://crbug.com/1204656.
+      DVLOG(3) << __func__ << " this=" << this
+               << ", skipping removal of missing audio track id " << audio_id;
+    }
   }
 
   if (enqueue_change_event) {
@@ -177,7 +184,14 @@ void SameThreadMediaSourceAttachment::RemoveVideoTracksFromMediaElement(
 
   HTMLMediaElement* element = GetMediaElement(tracer);
   for (auto& video_id : video_ids) {
-    element->videoTracks().Remove(video_id);
+    if (element->videoTracks().getTrackById(video_id)) {
+      element->videoTracks().Remove(video_id);
+    } else {
+      // This case can happen on element noneSupported() after MSE had added
+      // some track(s). See https://crbug.com/1204656.
+      DVLOG(3) << __func__ << " this=" << this
+               << ", skipping removal of missing video track id " << video_id;
+    }
   }
 
   if (enqueue_change_event) {
