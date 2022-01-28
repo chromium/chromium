@@ -57,6 +57,7 @@
 //third_party/catapult/devil/devil/android/sdk/version_codes.py
 //third_party/catapult/devil/devil/android/tools/__init__.py
 //third_party/catapult/devil/devil/android/tools/script_common.py
+//third_party/catapult/devil/devil/android/tools/system_app.py
 //third_party/catapult/devil/devil/base_error.py
 //third_party/catapult/devil/devil/constants/__init__.py
 //third_party/catapult/devil/devil/constants/exit_codes.py
