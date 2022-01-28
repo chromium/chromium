@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UserAction} from 'chrome://extensions/extensions.js';
-
+import {ExtensionsHostPermissionsToggleListElement, ExtensionsToggleRowElement, UserAction} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestService} from './test_service.js';
 
 suite('HostPermissionsToggleList', function() {
-  /** @type {HostPermissionsToggleListElement} */ let element;
-  /** @type {TestService} */ let delegate;
+  let element: ExtensionsHostPermissionsToggleListElement;
+  let delegate: TestService;
 
   const HostAccess = chrome.developerPrivate.HostAccess;
   const ITEM_ID = 'a'.repeat(32);
@@ -46,26 +47,28 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    assertTrue(!!element.$);
+    assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
-    expectFalse(allSites.checked);
+    assertFalse(allSites.checked);
 
-    const hostToggles = element.shadowRoot.querySelectorAll('.host-toggle');
+    const hostToggles =
+        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+            '.host-toggle');
     assertEquals(3, hostToggles.length);
 
     // There should be three toggles, all enabled, and checked corresponding to
     // whether the host is granted.
-    expectEquals(CHROMIUM_ORG, hostToggles[0].innerText.trim());
-    expectFalse(hostToggles[0].disabled);
-    expectTrue(hostToggles[0].checked);
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
+    assertFalse(hostToggles[0]!.disabled);
+    assertTrue(hostToggles[0]!.checked);
 
-    expectEquals(EXAMPLE_COM, hostToggles[1].innerText.trim());
-    expectFalse(hostToggles[1].disabled);
-    expectTrue(hostToggles[1].checked);
+    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText!.trim());
+    assertFalse(hostToggles[1]!.disabled);
+    assertTrue(hostToggles[1]!.checked);
 
-    expectEquals(GOOGLE_COM, hostToggles[2].innerText.trim());
-    expectFalse(hostToggles[2].disabled);
-    expectFalse(hostToggles[2].checked);
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
+    assertFalse(hostToggles[2]!.disabled);
+    assertFalse(hostToggles[2]!.checked);
   });
 
   // Tests the display when the user has chosen to allow on all the requested
@@ -84,27 +87,29 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    assertTrue(!!element.$);
+    assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
-    expectTrue(allSites.checked);
+    assertTrue(allSites.checked);
 
-    const hostToggles = element.shadowRoot.querySelectorAll('.host-toggle');
+    const hostToggles =
+        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+            '.host-toggle');
     assertEquals(3, hostToggles.length);
 
     // There should be three toggles, and they should all be disabled and
     // checked, since the user selected to allow the extension to run on all
     // (requested) sites.
-    expectEquals(CHROMIUM_ORG, hostToggles[0].innerText.trim());
-    expectTrue(hostToggles[0].disabled);
-    expectTrue(hostToggles[0].checked);
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
+    assertTrue(hostToggles[0]!.disabled);
+    assertTrue(hostToggles[0]!.checked);
 
-    expectEquals(EXAMPLE_COM, hostToggles[1].innerText.trim());
-    expectTrue(hostToggles[1].disabled);
-    expectTrue(hostToggles[1].checked);
+    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText!.trim());
+    assertTrue(hostToggles[1]!.disabled);
+    assertTrue(hostToggles[1]!.checked);
 
-    expectEquals(GOOGLE_COM, hostToggles[2].innerText.trim());
-    expectTrue(hostToggles[2].disabled);
-    expectTrue(hostToggles[2].checked);
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
+    assertTrue(hostToggles[2]!.disabled);
+    assertTrue(hostToggles[2]!.checked);
   });
 
   // Tests the permissions display when a user has chosen to only run an
@@ -123,26 +128,28 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    assertTrue(!!element.$);
+    assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
-    expectFalse(allSites.checked);
+    assertFalse(allSites!.checked);
 
-    const hostToggles = element.shadowRoot.querySelectorAll('.host-toggle');
+    const hostToggles =
+        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+            '.host-toggle');
     assertEquals(3, hostToggles.length);
 
     // There should be three toggles, all enabled, and all unchecked, since no
     // host has been granted.
-    expectEquals(CHROMIUM_ORG, hostToggles[0].innerText.trim());
-    expectFalse(hostToggles[0].disabled);
-    expectFalse(hostToggles[0].checked);
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
+    assertFalse(hostToggles[0]!.disabled);
+    assertFalse(hostToggles[0]!.checked);
 
-    expectEquals(EXAMPLE_COM, hostToggles[1].innerText.trim());
-    expectFalse(hostToggles[1].disabled);
-    expectFalse(hostToggles[1].checked);
+    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText!.trim());
+    assertFalse(hostToggles[1]!.disabled);
+    assertFalse(hostToggles[1]!.checked);
 
-    expectEquals(GOOGLE_COM, hostToggles[2].innerText.trim());
-    expectFalse(hostToggles[2].disabled);
-    expectFalse(hostToggles[2].checked);
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
+    assertFalse(hostToggles[2]!.disabled);
+    assertFalse(hostToggles[2]!.checked);
   });
 
   // Tests that clicking the "learn more" button is logged as a user action
@@ -159,15 +166,15 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    const learnMoreButton =
-        element.shadowRoot.querySelector('#link-icon-button');
+    const learnMoreButton = element.$.linkIconButton;
+    assertTrue(!!learnMoreButton);
     // Prevent triggering the navigation, which could interfere with tests.
     learnMoreButton.href = '#';
     learnMoreButton.target = '_self';
     learnMoreButton.click();
 
     const metricName = await delegate.whenCalled('recordUserAction');
-    expectEquals(UserAction.LEARN_MORE, metricName);
+    assertEquals(UserAction.LEARN_MORE, metricName);
   });
 
   // Tests that clicking the "allow on the following sites" toggle when it is in
@@ -185,17 +192,17 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    assertTrue(!!element.$);
+    assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
     return delegate.whenCalled('setItemHostAccess')
         .then(([id, access]) => {
-          expectEquals(ITEM_ID, id);
-          expectEquals(HostAccess.ON_ALL_SITES, access);
+          assertEquals(ITEM_ID, id);
+          assertEquals(HostAccess.ON_ALL_SITES, access);
           return delegate.whenCalled('recordUserAction');
         })
         .then(metricName => {
-          expectEquals(UserAction.ALL_TOGGLED_ON, metricName);
+          assertEquals(UserAction.ALL_TOGGLED_ON, metricName);
         });
   });
 
@@ -214,17 +221,17 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    assertTrue(!!element.$);
+    assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
     return delegate.whenCalled('setItemHostAccess')
         .then(([id, access]) => {
-          expectEquals(ITEM_ID, id);
-          expectEquals(HostAccess.ON_SPECIFIC_SITES, access);
+          assertEquals(ITEM_ID, id);
+          assertEquals(HostAccess.ON_SPECIFIC_SITES, access);
           return delegate.whenCalled('recordUserAction');
         })
-        .then((metricName) => {
-          expectEquals(UserAction.ALL_TOGGLED_OFF, metricName);
+        .then((metricName: UserAction) => {
+          assertEquals(UserAction.ALL_TOGGLED_OFF, metricName);
         });
   });
 
@@ -244,33 +251,35 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    const hostToggles = element.shadowRoot.querySelectorAll('.host-toggle');
+    const hostToggles =
+        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+            '.host-toggle');
     assertEquals(3, hostToggles.length);
 
-    expectEquals(CHROMIUM_ORG, hostToggles[0].innerText.trim());
-    expectEquals(GOOGLE_COM, hostToggles[2].innerText.trim());
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
 
-    hostToggles[0].getLabel().click();
+    hostToggles[0]!.getLabel().click();
     return delegate.whenCalled('removeRuntimeHostPermission')
         .then(([id, site]) => {
-          expectEquals(ITEM_ID, id);
-          expectEquals(CHROMIUM_ORG, site);
+          assertEquals(ITEM_ID, id);
+          assertEquals(CHROMIUM_ORG, site);
           return delegate.whenCalled('recordUserAction');
         })
-        .then((metricName) => {
-          expectEquals(UserAction.SPECIFIC_TOGGLED_OFF, metricName);
+        .then((metricName: UserAction) => {
+          assertEquals(UserAction.SPECIFIC_TOGGLED_OFF, metricName);
           delegate.resetResolver('recordUserAction');
 
-          hostToggles[2].getLabel().click();
+          hostToggles[2]!.getLabel().click();
           return delegate.whenCalled('addRuntimeHostPermission');
         })
         .then(([id, site]) => {
-          expectEquals(ITEM_ID, id);
-          expectEquals(GOOGLE_COM, site);
+          assertEquals(ITEM_ID, id);
+          assertEquals(GOOGLE_COM, site);
           return delegate.whenCalled('recordUserAction');
         })
-        .then((metricName) => {
-          expectEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
+        .then((metricName: UserAction) => {
+          assertEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
         });
   });
 });

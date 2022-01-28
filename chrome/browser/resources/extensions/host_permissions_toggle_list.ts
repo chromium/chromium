@@ -16,7 +16,14 @@ import {ItemDelegate} from './item.js';
 import {UserAction} from './item_util.js';
 import {ExtensionsToggleRowElement} from './toggle_row.js';
 
-class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
+export interface ExtensionsHostPermissionsToggleListElement {
+  $: {
+    allHostsToggle: ExtensionsToggleRowElement,
+    linkIconButton: HTMLAnchorElement,
+  };
+}
+
+export class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
   static get is() {
     return 'extensions-host-permissions-toggle-list';
   }
@@ -39,7 +46,7 @@ class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
   }
 
   permissions: chrome.developerPrivate.RuntimeHostPermissions;
-  private itemId: string;
+  itemId: string;
   delegate: ItemDelegate;
 
   /**
@@ -103,6 +110,13 @@ class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
 
   private onLearnMoreClick_() {
     this.delegate.recordUserAction(UserAction.LEARN_MORE);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-host-permissions-toggle-list':
+        ExtensionsHostPermissionsToggleListElement;
   }
 }
 

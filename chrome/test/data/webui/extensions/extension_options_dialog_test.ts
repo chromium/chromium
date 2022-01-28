@@ -11,6 +11,7 @@ import 'chrome://extensions/extensions.js';
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('ExtensionOptionsDialogTest', () => {
@@ -24,19 +25,23 @@ suite('ExtensionOptionsDialogTest', () => {
     assertTrue(!!manager);
     await eventToPromise('view-enter-start', manager);
     const extensionDetailView =
-        manager.shadowRoot.querySelector('extensions-detail-view');
+        manager.shadowRoot!.querySelector('extensions-detail-view');
     assertTrue(!!extensionDetailView);
 
-    const optionsButton =
-        extensionDetailView.shadowRoot.querySelector('#extensions-options');
+    const optionsButton = extensionDetailView.$.extensionsOptions;
+    assertTrue(!!optionsButton);
     optionsButton.click();
     await eventToPromise('cr-dialog-open', manager);
-    const dialog = manager.shadowRoot.querySelector('#options-dialog');
+    const dialog =
+        manager.shadowRoot!.querySelector('extensions-options-dialog');
+    assertTrue(!!dialog);
     let waitForClose = eventToPromise('close', dialog);
     dialog.$.dialog.cancel();
     await waitForClose;
     const activeElement = getDeepActiveElement();
-    assertEquals('CR-ICON-BUTTON', activeElement.tagName);
-    assertEquals(optionsButton.$.icon, getDeepActiveElement());
+    assertEquals('CR-ICON-BUTTON', activeElement!.tagName);
+    assertEquals(
+        optionsButton.shadowRoot!.querySelector('#icon'),
+        getDeepActiveElement());
   });
 });
