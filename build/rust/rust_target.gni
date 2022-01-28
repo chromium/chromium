@@ -85,6 +85,14 @@ template("rust_target") {
   if (defined(invoker.deps)) {
     _deps += invoker.deps
   }
+
+  # Always consume `invoker.test_deps`, even if `_test_deps` might end up not
+  # being used below.  It must be used somewhere along all code branches or GN
+  # produces an error that it's unused.
+  _test_deps = []
+  if (defined(invoker.test_deps)) {
+    _test_deps += invoker.test_deps
+  }
   _build_unit_tests = build_rust_unit_tests
   if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
     _build_unit_tests = false
@@ -204,16 +212,15 @@ template("rust_target") {
       forward_variables_from(invoker, [ "sources" ])
       crate_root = _crate_root
       rustflags = _rustflags
-      deps = _deps
+      deps = _deps + _test_deps
       if (defined(invoker.executable_configs)) {
         configs = []
         configs = invoker.executable_configs
       }
-      if (defined(invoker.test_deps)) {
-        deps += invoker.test_deps
-      }
       deps += _deps_for_rust_targets
     }
+  } else {
+    not_needed([ "_test_deps" ])
   }
 
   if (defined(_cxx_bindings)) {
