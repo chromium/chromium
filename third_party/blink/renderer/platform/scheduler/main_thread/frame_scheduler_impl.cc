@@ -963,8 +963,8 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   if (queue_priority_pair != resource_loading_task_queue_priorities_.end())
     return queue_priority_pair->value;
 
-  // TODO(kdillon): Ordering here is relative to the experiments below. Cleanup
-  // unused experiment logic so that this switch can be merged with the
+  // TODO(crbug.com/986569): Ordering here is relative to the experiments below.
+  // Cleanup unused experiment logic so that this switch can be merged with the
   // prioritisation type decisions below.
   switch (task_queue->GetPrioritisationType()) {
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::

@@ -40,8 +40,8 @@ class FrameSchedulerImpl;
 class MainThreadSchedulerImpl;
 class WakeUpBudgetPool;
 
-// TODO(kdillon): Remove ref-counting of MainThreadTaskQueues as it's no longer
-// needed.
+// TODO(crbug.com/1143007): Remove ref-counting of MainThreadTaskQueues as it's
+// no longer needed.
 class PLATFORM_EXPORT MainThreadTaskQueue
     : public base::RefCountedThreadSafe<MainThreadTaskQueue> {
  public:
@@ -449,7 +449,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   void OnWebSchedulingTaskQueueDestroyed();
 
-  // TODO(kdillon): Improve MTTQ API surface so that we no longer
+  // TODO(crbug.com/1143007): Improve MTTQ API surface so that we no longer
   // need to expose the raw pointer to the queue.
   TaskQueue* GetTaskQueue() { return task_queue_.get(); }
 
@@ -521,8 +521,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);
 
-  // TODO(kdillon): Remove references to TaskQueueImpl once TaskQueueImpl
-  // inherits from TaskQueue.
+  // TODO(crbug.com/1143007): Remove references to TaskQueueImpl once
+  // TaskQueueImpl inherits from TaskQueue.
   MainThreadTaskQueue(
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
       const TaskQueue::Spec& spec,

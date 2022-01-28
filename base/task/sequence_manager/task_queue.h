@@ -378,8 +378,8 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   }
 
   // Checks whether or not this TaskQueue has a TaskQueueImpl.
-  // TODO(kdillon): Remove this method when TaskQueueImpl inherits from
-  // TaskQueue and TaskQueue no longer owns an Impl.
+  // TODO(crbug.com/1143007): Remove this method when TaskQueueImpl inherits
+  // from TaskQueue and TaskQueue no longer owns an Impl.
   bool HasImpl() { return !!impl_; }
 
   using OnTaskStartedHandler =

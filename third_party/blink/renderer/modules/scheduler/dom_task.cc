@@ -51,8 +51,8 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
     : callback_(callback),
       resolver_(resolver),
       signal_(signal),
-      // TODO(kdillon): Expose queuing time from base::sequence_manager so we
-      // don't have to recalculate it here.
+      // TODO(crbug.com/1291798): Expose queuing time from
+      // base::sequence_manager so we don't have to recalculate it here.
       queue_time_(delay.is_zero() ? base::TimeTicks::Now() : base::TimeTicks()),
       delay_(delay) {
   DCHECK(signal_);
