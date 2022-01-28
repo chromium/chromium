@@ -34,7 +34,6 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class BrowsingInstance;
-class RenderProcessHostFactory;
 class SiteInstanceGroup;
 class StoragePartitionConfig;
 class StoragePartitionImpl;
@@ -535,9 +534,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       const IsolationContext& isolation_context,
       const GURL& url,
       const SiteInfo& site_info);
-
-  // An object used to construct RenderProcessHosts.
-  static const RenderProcessHostFactory* g_render_process_host_factory_;
 
   // A unique ID for this SiteInstance.
   SiteInstanceId id_;
