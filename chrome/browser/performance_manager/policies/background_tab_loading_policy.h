@@ -25,6 +25,7 @@ class PageLoader;
 FORWARD_DECLARE_TEST(BackgroundTabLoadingBrowserTest,
                      RestoredTabsAreLoadedGradually);
 class BackgroundTabLoadingBrowserTest;
+class SiteDataReader;
 
 namespace policies {
 
@@ -95,6 +96,10 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // SystemNodeObserver:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override;
+
+  // Returns the SiteDataReader instance for |page_node|, if any. Virtual for
+  // testing.
+  virtual SiteDataReader* GetSiteDataReader(const PageNode* page_node) const;
 
   // Determines whether or not the given PageNode should be loaded. If this
   // returns false, then the policy no longer attempts to load |page_node| and
