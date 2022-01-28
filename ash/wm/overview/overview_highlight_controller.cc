@@ -203,6 +203,8 @@ OverviewHighlightController::GetTraversableViews() const {
   std::vector<OverviewHighlightableView*> traversable_views;
   traversable_views.reserve(32);  // Conservative default.
 
+  // Note that this order matches the order of the chromevox cycling in
+  // `OverviewSession::UpdateAccessibilityFocus`.
   for (auto& grid : overview_session_->grid_list()) {
     // If the grid is visible, we shouldn't try to add any overview items.
     if (grid->IsShowingDesksTemplatesGrid()) {

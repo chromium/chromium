@@ -1861,16 +1861,13 @@ TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInOverview) {
 
   auto* save_widget =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-
-  // Overview items are in MRU order, so the expected order in the grid list is
-  // the reverse creation order.
   auto* item_widget = GetOverviewItemForWindow(window.get())->item_widget();
 
-  // Order should be [focus_widget, save_widget, item_widget, desk_widget].
-  CheckA11yOverrides("focus", focus_widget, desk_widget, save_widget);
-  CheckA11yOverrides("save", save_widget, focus_widget, item_widget);
-  CheckA11yOverrides("item", item_widget, save_widget, desk_widget);
-  CheckA11yOverrides("desk", desk_widget, item_widget, focus_widget);
+  // Order should be [focus_widget, item_widget, desk_widget, save_widget].
+  CheckA11yOverrides("focus", focus_widget, save_widget, item_widget);
+  CheckA11yOverrides("item", item_widget, focus_widget, desk_widget);
+  CheckA11yOverrides("desk", desk_widget, item_widget, save_widget);
+  CheckA11yOverrides("save", save_widget, desk_widget, focus_widget);
 }
 
 TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {

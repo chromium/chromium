@@ -233,7 +233,7 @@ void OverviewSession::Init(const WindowList& windows,
 
   // Create the widget that will receive focus while in overview mode for
   // accessibility purposes. Add a button as the contents so that
-  // UpdateAccessibilityFocus can put it on the accessibility focus
+  // `UpdateAccessibilityFocus` can put it on the accessibility focus
   // cycler.
   overview_focus_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params;
@@ -1040,15 +1040,17 @@ void OverviewSession::UpdateAccessibilityFocus() {
   if (overview_focus_widget_)
     a11y_widgets.push_back(overview_focus_widget_.get());
 
+  // Note that this order matches the order of the tab cycling in
+  // `OverviewHighlightController::GetTraversableViews`.
   for (auto& grid : grid_list_) {
-    if (grid->IsSaveDeskAsTemplateButtonVisible())
-      a11y_widgets.push_back(grid->save_desk_as_template_widget());
-
     for (const auto& item : grid->window_list())
       a11y_widgets.push_back(item->item_widget());
 
     if (grid->desks_widget())
       a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
+
+    if (grid->IsSaveDeskAsTemplateButtonVisible())
+      a11y_widgets.push_back(grid->save_desk_as_template_widget());
 
     auto* no_windows_widget = grid->no_windows_widget();
     if (no_windows_widget) {
