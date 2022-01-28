@@ -1073,7 +1073,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/survey/ChromeSurveyController.java",
   "java/src/org/chromium/chrome/browser/survey/SurveyController.java",
   "java/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridge.java",
-  "java/src/org/chromium/chrome/browser/sync/AndroidSyncSettings.java",
   "java/src/org/chromium/chrome/browser/sync/SyncContentResolverDelegate.java",
   "java/src/org/chromium/chrome/browser/sync/SyncErrorNotifier.java",
   "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",

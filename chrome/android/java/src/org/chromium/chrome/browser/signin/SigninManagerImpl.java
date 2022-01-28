@@ -27,10 +27,8 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -71,7 +69,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private final AccountTrackerService mAccountTrackerService;
     private final IdentityManager mIdentityManager;
     private final IdentityMutator mIdentityMutator;
-    private final AndroidSyncSettings mAndroidSyncSettings;
     private final ObserverList<SignInStateObserver> mSignInStateObservers = new ObserverList<>();
     private final List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
     private boolean mSigninAllowedByPolicy;
@@ -114,7 +111,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         assert identityManager != null;
         assert identityMutator != null;
         final SigninManagerImpl signinManager = new SigninManagerImpl(nativeSigninManagerAndroid,
-                accountTrackerService, identityManager, identityMutator, AndroidSyncSettings.get());
+                accountTrackerService, identityManager, identityMutator);
 
         identityManager.addObserver(signinManager);
         AccountInfoServiceProvider.init(identityManager, accountTrackerService);
@@ -126,14 +123,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
     private SigninManagerImpl(long nativeSigninManagerAndroid,
             AccountTrackerService accountTrackerService, IdentityManager identityManager,
-            IdentityMutator identityMutator, AndroidSyncSettings androidSyncSettings) {
+            IdentityMutator identityMutator) {
         ThreadUtils.assertOnUiThread();
-        assert androidSyncSettings != null;
         mNativeSigninManagerAndroid = nativeSigninManagerAndroid;
         mAccountTrackerService = accountTrackerService;
         mIdentityManager = identityManager;
         mIdentityMutator = identityMutator;
-        mAndroidSyncSettings = androidSyncSettings;
 
         mSigninAllowedByPolicy =
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
@@ -347,17 +342,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
             SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(
                     mSignInState.mCoreAccountInfo.getEmail());
 
-            // Cache the signed-in account name. This must be done after the native call, otherwise
-            // sync tries to start without being signed in the native code and crashes.
-            mAndroidSyncSettings.updateAccount(
-                    AccountUtils.createAccountFromName(mSignInState.mCoreAccountInfo.getEmail()));
             boolean atLeastOneDataTypeSynced = !SyncService.get().getChosenDataTypes().isEmpty();
             if (atLeastOneDataTypeSynced) {
                 // Turn on sync only when user has at least one data type to sync, this is
                 // consistent with {@link ManageSyncSettings#updataSyncStateFromSelectedModelTypes},
                 // in which we turn off sync we stop sync service when the user toggles off all the
                 // sync types.
-                mAndroidSyncSettings.enableChromeSync();
+                SyncService.get().setSyncRequested(true);
             }
 
             RecordUserAction.record("Signin_Signin_Succeed");
@@ -639,7 +630,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         if (mSignOutState.mSignOutCallback != null) {
             mSignOutState.mSignOutCallback.preWipeData();
         }
-        mAndroidSyncSettings.updateAccount(null);
         if (shouldWipeUserData) {
             SigninManagerImplJni.get().wipeProfileData(
                     mNativeSigninManagerAndroid, wipeDataCallback);

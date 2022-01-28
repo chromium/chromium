@@ -27,13 +27,11 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -66,7 +64,6 @@ public class SigninManagerImplTest {
             mock(IdentityManager.Natives.class);
     private final AccountTrackerService mAccountTrackerService = mock(AccountTrackerService.class);
     private final IdentityMutator mIdentityMutator = mock(IdentityMutator.class);
-    private final AndroidSyncSettings mAndroidSyncSettings = mock(AndroidSyncSettings.class);
     private final ExternalAuthUtils mExternalAuthUtils = mock(ExternalAuthUtils.class);
     private final SyncService mSyncService = mock(SyncService.class);
 
@@ -79,7 +76,6 @@ public class SigninManagerImplTest {
         mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
         SyncService.overrideForTests(mSyncService);
-        AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
@@ -132,9 +128,7 @@ public class SigninManagerImplTest {
 
         mSigninManager.finishSignInAfterPolicyEnforced();
         verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
-        verify(mAndroidSyncSettings)
-                .updateAccount(CoreAccountInfo.getAndroidAccountFrom(ACCOUNT_INFO));
-        verify(mAndroidSyncSettings).enableChromeSync();
+        verify(mSyncService).setSyncRequested(true);
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
@@ -168,8 +162,7 @@ public class SigninManagerImplTest {
 
         verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN);
 
-        verify(mAndroidSyncSettings, never()).updateAccount(any());
-        verify(mAndroidSyncSettings, never()).enableChromeSync();
+        verify(mSyncService, never()).setSyncRequested(true);
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
