@@ -36,9 +36,14 @@ message HostPattern {
 
 message HeuristicLaunchConfig {
   // The heuristic to be launched with a warning UI.
-  // Important: Edits to heuristics MUST increment the heuristic ID. Otherwise,
-  // old implementation of the heuristic will still be affected by the rollout
-  // and risk showing buggy warnings.
+  // Important: Changes to heuristics MUST be added as a NEW heuristic (e.g.
+  // by adding a new enum value with "_V2" at the end).
+  // Otherwise, rolling out the new version will also enable the buggy version
+  // of the heuristic on older versions of Chrome.
+  //
+  // The values in this enum are intended to be temporary and used only for
+  // new heuristic launches. Do not reuse this enum for any other purpose,
+  // use the existing LookalikeHeuristic enum in this file.
   enum Heuristic {
     HEURISTIC_UNKNOWN = 0;
     HEURISTIC_CHARACTER_SWAP = 1;
@@ -90,7 +95,7 @@ message SafetyTipsConfig {
   // used in some lookalike heuristics to prevent common false positives.
   repeated string common_word = 5;
 
-  // Launch configurations for new heuristics. Each new heuristic gets its own
-  // config. Multiple heuristics may be enabled on
+  // Launch configurations for new heuristics. Each new heuristic being launched
+  // gets its own config. Multiple heuristics can be enabled at the same time.
   repeated HeuristicLaunchConfig launch_config = 6;
 }
