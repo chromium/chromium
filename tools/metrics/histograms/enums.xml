@@ -52644,6 +52644,8 @@ from previous Chrome versions.
   <int value="-956696029" label="scheduler-configuration"/>
   <int value="-955667686"
       label="AutofillSuppressCreditCardSaveForAssistant:enabled"/>
+  <int value="-954972757"
+      label="QuickAnswersAlwaysTriggerForSingleWord:enabled"/>
   <int value="-954789862" label="ProductivityLauncher:enabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
   <int value="-952996862" label="ArcUseHighMemoryDalvikProfile:enabled"/>
@@ -55193,6 +55195,8 @@ from previous Chrome versions.
   <int value="917561046" label="ConversionMeasurement:disabled"/>
   <int value="918046854" label="NtlmV2Enabled:disabled"/>
   <int value="918608729" label="finch-seed-min-download-period"/>
+  <int value="919605713"
+      label="QuickAnswersAlwaysTriggerForSingleWord:disabled"/>
   <int value="921536672" label="OfflinePagesDescriptiveFailStatus:enabled"/>
   <int value="921561616" label="WebAssemblyTiering:disabled"/>
   <int value="923923308" label="WifiSyncAllowDeletes:enabled"/>

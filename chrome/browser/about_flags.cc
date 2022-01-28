@@ -5531,6 +5531,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableQuickAnswersV2TranslationName,
      flag_descriptions::kDisableQuickAnswersV2TranslationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDisableQuickAnswersV2Translation)},
+
+    {"quick-answers-always-trigger-for-single-word",
+     flag_descriptions::kQuickAnswersAlwaysTriggerForSingleWordName,
+     flag_descriptions::kQuickAnswersAlwaysTriggerForSingleWordDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

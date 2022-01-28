@@ -2610,6 +2610,9 @@ extern const char kEnablePalmSuppressionDescription[];
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];
 
+extern const char kQuickAnswersAlwaysTriggerForSingleWordName[];
+extern const char kQuickAnswersAlwaysTriggerForSingleWordDescription[];
+
 extern const char kESimPolicyName[];
 extern const char kESimPolicyDescription[];
 

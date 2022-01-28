@@ -4790,6 +4790,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "quick-answers-always-trigger-for-single-word",
+    "owners": [ "croissant-eng", "updowndota" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "quick-dim",
     "owners": [ "charleszhao", "martis", "napper" ],
     "expiry_milestone": 100
