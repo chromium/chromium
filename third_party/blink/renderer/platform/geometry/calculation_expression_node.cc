@@ -109,7 +109,7 @@ CalculationExpressionOperatorNode::CreateSimplified(Children&& children,
           To<CalculationExpressionPixelsAndPercentNode>(
               *maybe_pixels_and_percent_node);
       PixelsAndPercent value(pixels_and_percent.Pixels() * number.Value(),
-                             pixels_and_percent.Percent());
+                             pixels_and_percent.Percent() * number.Value());
       return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
           value);
     }

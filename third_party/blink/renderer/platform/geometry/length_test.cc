@@ -17,6 +17,7 @@ const PixelsAndPercent twenty_px(20, 0);
 const PixelsAndPercent thirty_px(30, 0);
 const PixelsAndPercent ten_percent(0, 10);
 const PixelsAndPercent twenty_percent(0, 20);
+const PixelsAndPercent twenty_px_ten_percent(20, 10);
 
 }  // namespace
 
@@ -329,6 +330,30 @@ TEST_F(LengthTest, SimplifiedExpressionFromComparisonCreation) {
     auto result = zoomed.GetCalculationValue().GetPixelsAndPercent();
     EXPECT_EQ(30.0f, result.pixels);
   }
+}
+
+// Non-simplified and simplified CalculationExpressionOperatorNode creation
+// with CalculationOperator::kMultiply should return the same evaluation result.
+TEST_F(LengthTest, MultiplyPixelsAndPercent) {
+  // Multiply (20px + 10%) by 2
+  Length non_simplified =
+      CreateLength(Multiply(PixelsAndPercent(twenty_px_ten_percent), 2));
+  const auto& non_simplified_calc_value = non_simplified.GetCalculationValue();
+  EXPECT_TRUE(non_simplified_calc_value.IsExpression());
+  float result_for_non_simplified =
+      non_simplified_calc_value.GetOrCreateExpression()->Evaluate(100);
+  EXPECT_EQ(60.0f, result_for_non_simplified);
+
+  Length simplified =
+      CreateLength(CalculationExpressionOperatorNode::CreateSimplified(
+          CalculationExpressionOperatorNode::Children(
+              {PixelsAndPercent(twenty_px_ten_percent),
+               base::MakeRefCounted<CalculationExpressionNumberNode>(2)}),
+          CalculationOperator::kMultiply));
+  const auto& simplified_calc_value = simplified.GetCalculationValue();
+  EXPECT_FALSE(simplified_calc_value.IsExpression());
+  float result_for_simplified = simplified_calc_value.Evaluate(100);
+  EXPECT_EQ(60.0f, result_for_simplified);
 }
 
 TEST_F(LengthTest, ZoomToOperator) {
