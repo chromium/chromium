@@ -103,7 +103,6 @@ const char kSignalFileTerm[] = "TerminatedChildProcess.die";
 const char kSignalFileClone[] = "ClonedDir.die";
 const char kDataDirHasStaged[] = "DataDirHasStaged.die";
 const char kFooDirHasStaged[] = "FooDirHasStaged.die";
-const char kFooDirDoesNotHaveStaged[] = "FooDirDoesNotHaveStaged.die";
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -385,13 +384,9 @@ TEST_F(ProcessUtilTest, CloneTmp) {
   EXPECT_EQ(kSuccess, exit_code);
 }
 
-MULTIPROCESS_TEST_MAIN(CheckMountedDirDoesNotExist) {
-  if (PathExists(base::FilePath("/foo"))) {
-    return 1;
-  }
-  WaitToDie(
-      ProcessUtilTest::GetSignalFilePath(kFooDirDoesNotHaveStaged).c_str());
-  return kSuccess;
+MULTIPROCESS_TEST_MAIN(NeverCalled) {
+  CHECK(false) << "Process should not have been launched.";
+  return 99;
 }
 
 TEST_F(ProcessUtilTest, TransferInvalidHandleFails) {
@@ -402,17 +397,8 @@ TEST_F(ProcessUtilTest, TransferInvalidHandleFails) {
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
   // Verify that the process is never constructed.
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kFooDirDoesNotHaveStaged);
-  remove(signal_file.c_str());
-  Process process(
-      SpawnChildWithOptions("CheckMountedDirDoesNotExist", options));
+  Process process(SpawnChildWithOptions("NeverCalled", options));
   EXPECT_FALSE(process.IsValid());
-}
-
-MULTIPROCESS_TEST_MAIN(NeverCalled) {
-  CHECK(false) << "Process should not have been launched.";
-  return 99;
 }
 
 TEST_F(ProcessUtilTest, CloneInvalidDirFails) {
