@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +60,26 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
     return record;
   }
 
+  static std::vector<EncryptedRecord> GetRecordListWithCorruptionAtIndex(
+      size_t num_records,
+      size_t corrupted_record_index) {
+    DCHECK(corrupted_record_index < num_records)
+        << "Corrupted record index greater than or equal to record count";
+
+    std::vector<EncryptedRecord> records;
+    records.reserve(num_records);
+    for (size_t counter = 0; counter < num_records; ++counter) {
+      records.push_back(GenerateEncryptedRecord(
+          base::StrCat({"TEST_INFO_", base::NumberToString(counter)})));
+    }
+    // Corrupt one record.
+    records[corrupted_record_index]
+        .mutable_sequence_information()
+        ->clear_generation_id();
+
+    return records;
+  }
+
   static int64_t GetNextSequencingId() {
     static int64_t sequencing_id = 0;
     return sequencing_id++;
@@ -105,18 +126,8 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
 
 TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
   static constexpr size_t kNumRecords = 10;
-
-  std::vector<EncryptedRecord> records;
-  records.reserve(kNumRecords);
-  for (size_t counter = 0; counter < kNumRecords; ++counter) {
-    records.push_back(GenerateEncryptedRecord(
-        base::StrCat({"TEST_INFO_", base::NumberToString(counter)})));
-  }
-  // Corrupt one record.
-  records[kNumRecords - 2]
-      .mutable_sequence_information()
-      ->clear_generation_id();
-
+  const auto records = GetRecordListWithCorruptionAtIndex(
+      kNumRecords, /*corrupted_record_index=*/kNumRecords - 2);
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
   for (auto record : records) {
     builder.AddRecord((std::move(record)));
@@ -156,6 +167,36 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   encryption_info->set_public_key_id(1234);
 
   EXPECT_TRUE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
+}
+
+TEST_P(RecordUploadRequestBuilderTest, AcceptRequestId) {
+  const auto request_id = base::Token::CreateRandom().ToString();
+  UploadEncryptedReportingRequestBuilder builder;
+  builder.SetRequestId(request_id);
+
+  const auto request_payload = builder.Build();
+  ASSERT_TRUE(request_payload.has_value());
+  ASSERT_TRUE(request_payload.value().is_dict());
+
+  auto* payload_request_id = request_payload->FindStringKey(
+      UploadEncryptedReportingRequestBuilder::kRequestId);
+  EXPECT_THAT(*payload_request_id, ::testing::StrEq(request_id));
+}
+
+TEST_P(RecordUploadRequestBuilderTest, DenyRequestIdWhenBadRecordSet) {
+  static constexpr size_t kNumRecords = 5;
+  const auto records = GetRecordListWithCorruptionAtIndex(
+      kNumRecords, /*corrupted_record_index=*/kNumRecords - 2);
+  UploadEncryptedReportingRequestBuilder builder;
+  for (auto record : records) {
+    builder.AddRecord((std::move(record)));
+  }
+
+  const auto request_id = base::Token::CreateRandom().ToString();
+  builder.SetRequestId(request_id);
+
+  const auto request_payload = builder.Build();
+  ASSERT_FALSE(request_payload.has_value());
 }
 
 TEST_P(RecordUploadRequestBuilderTest,

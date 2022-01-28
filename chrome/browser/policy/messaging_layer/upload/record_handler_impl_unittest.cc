@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -462,6 +464,47 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   EXPECT_THAT(response,
               Property(&DmServerUploadService::CompletionResponse::status,
                        Property(&Status::error_code, Eq(error::INTERNAL))));
+}
+
+TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
+  static constexpr int64_t kNumTestRecords = 1;
+  static constexpr int64_t kGenerationId = 1234;
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
+  const auto force_confirm_by_server = force_confirm();
+
+  DmServerUploadService::SuccessfulUploadResponse expected_response{
+      .sequence_information = test_records->back().sequence_information(),
+      .force_confirm = force_confirm()};
+
+  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+      .WillOnce(WithArgs<0, 2>(
+          Invoke([&force_confirm_by_server](
+                     base::Value request,
+                     policy::CloudPolicyClient::ResponseCallback response_cb) {
+            // Validate request id is set
+            ASSERT_TRUE(request.is_dict());
+            auto* request_id = request.FindStringKey(
+                UploadEncryptedReportingRequestBuilder::kRequestId);
+            ASSERT_NE(request_id, nullptr);
+            EXPECT_THAT(*request_id, Not(IsEmpty()));
+
+            // Trigger response callback to complete flow
+            base::Value response{base::Value::Type::DICTIONARY};
+            SucceedResponseFromRequest(request, force_confirm_by_server,
+                                       response);
+            std::move(response_cb).Run(std::move(response));
+          })));
+
+  test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
+  RecordHandlerImpl handler(client_.get());
+  handler.HandleRecords(need_encryption_key(), std::move(test_records),
+                        responder_event.cb(), base::DoNothing());
+
+  // We need to wait until the upload operation is marked complete (after it
+  // triggers the response callback) so we can avoid leaking unmanaged
+  // resources.
+  auto response = responder_event.result();
+  EXPECT_THAT(response, ResponseEquals(expected_response));
 }
 
 INSTANTIATE_TEST_SUITE_P(

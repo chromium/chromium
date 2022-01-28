@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/token.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
@@ -183,6 +184,13 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   for (auto record : *records_) {
     request_builder.AddRecord((std::move(record)));
   }
+
+  // Assign random UUID as the request id for server side log correlation
+  const auto request_id = base::Token::CreateRandom().ToString();
+  LOG(WARNING) << "Processing upload record request with request id: "
+               << request_id;
+  request_builder.SetRequestId(request_id);
+
   auto request_result = request_builder.Build();
   if (!request_result.has_value()) {
     std::move(response_cb).Run(absl::nullopt);

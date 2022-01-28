@@ -60,11 +60,17 @@ namespace reporting {
 
 class UploadEncryptedReportingRequestBuilder {
  public:
+  // RequestId key used to build UploadEncryptedReportingRequest
+  static constexpr char kRequestId[] = "requestId";
+
   explicit UploadEncryptedReportingRequestBuilder(
       bool attach_encryption_settings = false);
   ~UploadEncryptedReportingRequestBuilder();
 
   UploadEncryptedReportingRequestBuilder& AddRecord(EncryptedRecord record);
+
+  UploadEncryptedReportingRequestBuilder& SetRequestId(
+      base::StringPiece request_id);
 
   absl::optional<base::Value> Build();
 

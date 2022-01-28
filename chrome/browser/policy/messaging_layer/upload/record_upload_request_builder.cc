@@ -104,6 +104,24 @@ UploadEncryptedReportingRequestBuilder::AddRecord(EncryptedRecord record) {
   return *this;
 }
 
+UploadEncryptedReportingRequestBuilder&
+UploadEncryptedReportingRequestBuilder::SetRequestId(
+    base::StringPiece request_id) {
+  if (!result_.has_value()) {
+    // Some errors were already detected
+    return *this;
+  }
+
+  auto* request_id_key = result_.value().FindStringKey(
+      UploadEncryptedReportingRequestBuilder::kRequestId);
+  if (!request_id_key) {
+    result_.value().SetStringKey(
+        UploadEncryptedReportingRequestBuilder::kRequestId, request_id);
+  }
+
+  return *this;
+}
+
 absl::optional<base::Value> UploadEncryptedReportingRequestBuilder::Build() {
   return std::move(result_);
 }
