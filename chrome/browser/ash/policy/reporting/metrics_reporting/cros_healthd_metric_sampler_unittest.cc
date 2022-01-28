@@ -45,6 +45,7 @@ constexpr int64_t kBootUpTimestampSeconds = 23;
 constexpr int64_t kShutdownSeconds = 44003;
 constexpr int64_t kShutdownTimestampSeconds = 49;
 constexpr char kShutdownReason[] = "user-request";
+constexpr char kShutdownReasonNotApplicable[] = "N/A";
 
 cros_healthd::KeylockerInfoPtr CreateKeylockerInfo(bool configured) {
   return cros_healthd::KeylockerInfo::New(configured);
@@ -379,21 +380,49 @@ TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceCommonBehavior) {
   ASSERT_TRUE(result.telemetry_data().has_boot_performance_telemetry());
   ASSERT_THAT(
       result.telemetry_data().boot_performance_telemetry().boot_up_seconds(),
-      Eq(5054));
+      Eq(kBootUpSeconds));
   ASSERT_THAT(result.telemetry_data()
                   .boot_performance_telemetry()
                   .boot_up_timestamp_seconds(),
-              Eq(23));
+              Eq(kBootUpTimestampSeconds));
   ASSERT_THAT(
       result.telemetry_data().boot_performance_telemetry().shutdown_seconds(),
-      Eq(44003));
+      Eq(kShutdownSeconds));
   ASSERT_THAT(result.telemetry_data()
                   .boot_performance_telemetry()
                   .shutdown_timestamp_seconds(),
-              Eq(49));
+              Eq(kShutdownTimestampSeconds));
   EXPECT_EQ(
       result.telemetry_data().boot_performance_telemetry().shutdown_reason(),
-      "user-request");
+      kShutdownReason);
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceShutdownReasonNA) {
+  MetricData result = CollectData(
+      CreateBootPerformanceResult(kBootUpSeconds, kBootUpTimestampSeconds,
+                                  kShutdownSeconds, kShutdownTimestampSeconds,
+                                  kShutdownReasonNotApplicable),
+      cros_healthd::ProbeCategoryEnum::kBootPerformance,
+      CrosHealthdMetricSampler::MetricType::kTelemetry, MetricData{});
+
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_boot_performance_telemetry());
+  ASSERT_THAT(
+      result.telemetry_data().boot_performance_telemetry().boot_up_seconds(),
+      Eq(kBootUpSeconds));
+  ASSERT_THAT(result.telemetry_data()
+                  .boot_performance_telemetry()
+                  .boot_up_timestamp_seconds(),
+              Eq(kBootUpTimestampSeconds));
+  EXPECT_FALSE(result.telemetry_data()
+                   .boot_performance_telemetry()
+                   .has_shutdown_seconds());
+  EXPECT_FALSE(result.telemetry_data()
+                   .boot_performance_telemetry()
+                   .has_shutdown_timestamp_seconds());
+  EXPECT_EQ(
+      result.telemetry_data().boot_performance_telemetry().shutdown_reason(),
+      kShutdownReasonNotApplicable);
 }
 
 INSTANTIATE_TEST_SUITE_P(

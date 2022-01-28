@@ -151,10 +151,12 @@ void HandleCpuResult(MetricCallback callback,
     std::move(callback).Run(std::move(metric_data));
   }
 }
+
 void HandleBootPerformanceResult(
     MetricCallback callback,
     CrosHealthdMetricSampler::MetricType metric_type,
     chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
+  const std::string kShutdownReasonNotApplicable = "N/A";
   MetricData metric_data;
   auto* const boot_info_out = metric_data.mutable_telemetry_data()
                                   ->mutable_boot_performance_telemetry();
@@ -182,10 +184,13 @@ void HandleBootPerformanceResult(
             (int64_t)boot_performance_info->boot_up_seconds);
         boot_info_out->set_boot_up_timestamp_seconds(
             (int64_t)boot_performance_info->boot_up_timestamp);
-        boot_info_out->set_shutdown_seconds(
-            (int64_t)boot_performance_info->shutdown_seconds);
-        boot_info_out->set_shutdown_timestamp_seconds(
-            (int64_t)boot_performance_info->shutdown_timestamp);
+        if (boot_performance_info->shutdown_reason !=
+            kShutdownReasonNotApplicable) {
+          boot_info_out->set_shutdown_seconds(
+              (int64_t)boot_performance_info->shutdown_seconds);
+          boot_info_out->set_shutdown_timestamp_seconds(
+              (int64_t)boot_performance_info->shutdown_timestamp);
+        }
         boot_info_out->set_shutdown_reason(
             boot_performance_info->shutdown_reason);
 
