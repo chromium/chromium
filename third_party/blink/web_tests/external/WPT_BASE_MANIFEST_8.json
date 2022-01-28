@@ -309666,6 +309666,10 @@
      "70f3136dd3c022599f81291f348e11c4c7787f44",
      []
     ],
+    "README.md": [
+     "52f08265c5d108dcd33632a10313fd2e80b12136",
+     []
+    ],
     "cross-origin-report-no-credentials.https.sub.html.sub.headers": [
      "24eaf19fecb9299e1d0cf157ef4c94af709db640",
      []
@@ -340467,13 +340471,6 @@
     ],
     "battery-disallowed-in-cross-origin-iframe.https.sub.html": [
      "097db219cf7947cf61e6a29ea89a561ee59834b7",
-     [
-      null,
-      {}
-     ]
-    ],
-    "battery-insecure-context.html": [
-     "336a094d6b90e054e701a4c35e320bcac439518e",
      [
       null,
       {}
@@ -507955,7 +507952,7 @@
       ]
      ],
      "window.html": [
-      "beaf548fe641c51408fd3e1083ea1c005c9c2500",
+      "11c868356b69a1f628cdd8891df6a66c327161da",
       [
        null,
        {}

@@ -3177,6 +3177,7 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-public [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/service-worker.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/shared-worker-fetch.https.window.html [ Timeout ]
