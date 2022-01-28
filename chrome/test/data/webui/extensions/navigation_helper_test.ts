@@ -2,27 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Dialog, NavigationHelper, Page} from 'chrome://extensions/extensions.js';
-
+import {Dialog, NavigationHelper, Page, PageState} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockMethod} from 'chrome://webui-test/mock_controller.js';
 
-window.extension_navigation_helper_tests = {};
-extension_navigation_helper_tests.suiteName = 'ExtensionNavigationHelperTest';
-/** @enum {string} */
-extension_navigation_helper_tests.TestNames = {
-  Basic: 'basic',
-  Conversions: 'conversions',
-  PushAndReplaceState: 'push and replace state',
-  SupportedRoutes: 'supported routes'
+const extension_navigation_helper_tests = {
+  suiteName: 'ExtensionNavigationHelperTest',
+  TestNames: {
+    Basic: 'basic',
+    Conversions: 'conversions',
+    PushAndReplaceState: 'push and replace state',
+    SupportedRoutes: 'supported routes'
+  },
 };
 
+Object.assign(window, {extension_navigation_helper_tests});
+
 /**
- * @return {!Promise<void>} A promise that resolves after the next popstate
- *     event.
+ * @return A promise that resolves after the next popstate event.
  */
-function getOnPopState() {
-  return new Promise(function(resolve, reject) {
+function getOnPopState(): Promise<void> {
+  return new Promise<void>(function(resolve) {
     window.addEventListener('popstate', function listener() {
       window.removeEventListener('popstate', listener);
       // Resolve asynchronously to allow all other listeners to run.
@@ -32,7 +33,7 @@ function getOnPopState() {
 }
 
 suite(extension_navigation_helper_tests.suiteName, function() {
-  let navigationHelper;
+  let navigationHelper: NavigationHelper;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -42,20 +43,22 @@ suite(extension_navigation_helper_tests.suiteName, function() {
   test(assert(extension_navigation_helper_tests.TestNames.Basic), function() {
     const id = 'a'.repeat(32);
     const mock = new MockMethod();
-    const changePage = function(state) {
+
+    function changePage(state: PageState) {
       mock.recordCall([state]);
-    };
+    }
 
     navigationHelper.addListener(changePage);
 
-    expectDeepEquals({page: Page.LIST}, navigationHelper.getCurrentPage());
+    assertDeepEquals({page: Page.LIST}, navigationHelper.getCurrentPage());
 
     let currentLength = history.length;
-    navigationHelper.updateHistory({page: Page.DETAILS, extensionId: id});
-    expectEquals(++currentLength, history.length);
+    navigationHelper.updateHistory(
+        {page: Page.DETAILS, extensionId: id}, false);
+    assertEquals(++currentLength, history.length);
 
-    navigationHelper.updateHistory({page: Page.ERRORS, extensionId: id});
-    expectEquals(++currentLength, history.length);
+    navigationHelper.updateHistory({page: Page.ERRORS, extensionId: id}, false);
+    assertEquals(++currentLength, history.length);
 
     mock.addExpectation({page: Page.DETAILS, extensionId: id});
     const waitForPop = getOnPopState();
@@ -78,7 +81,7 @@ suite(extension_navigation_helper_tests.suiteName, function() {
       assert(extension_navigation_helper_tests.TestNames.Conversions),
       function() {
         const id = 'a'.repeat(32);
-        const stateUrlPairs = {
+        const stateUrlPairs: {[k: string]: {url: string, state: PageState}} = {
           extensions: {
             url: 'chrome://extensions/',
             state: {page: Page.LIST},
@@ -112,15 +115,17 @@ suite(extension_navigation_helper_tests.suiteName, function() {
         // Test url -> state.
         for (let key in stateUrlPairs) {
           let entry = stateUrlPairs[key];
+          assertTrue(!!entry);
           history.pushState({}, '', entry.url);
-          expectDeepEquals(entry.state, navigationHelper.getCurrentPage(), key);
+          assertDeepEquals(entry.state, navigationHelper.getCurrentPage(), key);
         }
 
         // Test state -> url.
         for (let key in stateUrlPairs) {
           let entry = stateUrlPairs[key];
-          navigationHelper.updateHistory(entry.state);
-          expectEquals(entry.url, location.href, key);
+          assertTrue(!!entry);
+          navigationHelper.updateHistory(entry.state, false);
+          assertEquals(entry.url, location.href, key);
         }
       });
 
@@ -131,59 +136,64 @@ suite(extension_navigation_helper_tests.suiteName, function() {
         const id2 = 'b'.repeat(32);
 
         history.pushState({}, '', 'chrome://extensions/');
-        expectDeepEquals({page: Page.LIST}, navigationHelper.getCurrentPage());
+        assertDeepEquals({page: Page.LIST}, navigationHelper.getCurrentPage());
 
         let expectedLength = history.length;
 
         // Navigating to a new page pushes new state.
-        navigationHelper.updateHistory({page: Page.DETAILS, extensionId: id1});
-        expectEquals(++expectedLength, history.length);
+        navigationHelper.updateHistory(
+            {page: Page.DETAILS, extensionId: id1}, false);
+        assertEquals(++expectedLength, history.length);
 
         // Navigating to a subpage (like the options page) just opens a
         // dialog, and shouldn't push new state.
         navigationHelper.updateHistory(
-            {page: Page.DETAILS, extensionId: id1, subpage: Dialog.OPTIONS});
-        expectEquals(expectedLength, history.length);
+            {page: Page.DETAILS, extensionId: id1, subpage: Dialog.OPTIONS},
+            false);
+        assertEquals(expectedLength, history.length);
 
         // Navigating away from a subpage also shouldn't push state (it just
         // closes the dialog).
-        navigationHelper.updateHistory({page: Page.DETAILS, extensionId: id1});
-        expectEquals(expectedLength, history.length);
+        navigationHelper.updateHistory(
+            {page: Page.DETAILS, extensionId: id1}, false);
+        assertEquals(expectedLength, history.length);
 
         // Navigating away should push new state.
-        navigationHelper.updateHistory({page: Page.LIST});
-        expectEquals(++expectedLength, history.length);
+        navigationHelper.updateHistory({page: Page.LIST}, false);
+        assertEquals(++expectedLength, history.length);
 
         // Navigating to a subpage of a different page should push state.
         navigationHelper.updateHistory(
-            {page: Page.DETAILS, extensionId: id1, subpage: Dialog.OPTIONS});
-        expectEquals(++expectedLength, history.length);
+            {page: Page.DETAILS, extensionId: id1, subpage: Dialog.OPTIONS},
+            false);
+        assertEquals(++expectedLength, history.length);
 
         // Navigating away from a subpage to a page for a different item
         // should push state.
-        navigationHelper.updateHistory({page: Page.DETAILS, extensionId: id2});
-        expectEquals(++expectedLength, history.length);
+        navigationHelper.updateHistory(
+            {page: Page.DETAILS, extensionId: id2}, false);
+        assertEquals(++expectedLength, history.length);
 
         // Using replaceWith, which passes true for replaceState should not
         // push state.
         navigationHelper.updateHistory(
             {page: Page.DETAILS, extensionId: id1}, true /* replaceState */);
-        expectEquals(expectedLength, history.length);
+        assertEquals(expectedLength, history.length);
       });
 
   test(
       assert(extension_navigation_helper_tests.TestNames.SupportedRoutes),
       function() {
-        function removeEndSlash(url) {
+        function removeEndSlash(url: string): string {
           const CANONICAL_PATH_REGEX = /([\/-\w]+)\/$/;
           return url.replace(CANONICAL_PATH_REGEX, '$1');
         }
 
         // If it should not redirect, leave newUrl as undefined.
-        function testIfRedirected(url, newUrl) {
+        function testIfRedirected(url: string, newUrl?: string) {
           history.pushState({}, '', url);
-          const testNavigationHelper = new NavigationHelper();
-          expectEquals(
+          new NavigationHelper();  // Called for its side-effects.
+          assertEquals(
               removeEndSlash(window.location.href),
               removeEndSlash(newUrl || url));
         }

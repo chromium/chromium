@@ -20,14 +20,25 @@ export interface ServiceInterface extends ActivityLogDelegate,
                                           ErrorPageDelegate, ItemDelegate,
                                           KeyboardShortcutDelegate,
                                           LoadErrorDelegate, PackDialogDelegate,
-                                          ToolbarDelegate {}
+                                          ToolbarDelegate {
+  notifyDragInstallInProgress(): void;
+  loadUnpackedFromDrag(): Promise<boolean>;
+  installDroppedFile(): void;
+  getItemStateChangedTarget():
+      ChromeEvent<(data: chrome.developerPrivate.EventData) => void>;
+  getProfileStateChangedTarget():
+      ChromeEvent<(info: chrome.developerPrivate.ProfileInfo) => void>;
+  getProfileConfiguration(): Promise<chrome.developerPrivate.ProfileInfo>;
+  getExtensionsInfo(): Promise<Array<chrome.developerPrivate.ExtensionInfo>>;
+  getExtensionSize(id: string): Promise<string>;
+}
 
 export class Service implements ServiceInterface {
   private isDeleting_: boolean = false;
   private eventsToIgnoreOnce_: Set<string> = new Set();
 
-  getProfileConfiguration(): Promise<chrome.developerPrivate.ProfileInfo> {
-    return new Promise(function(resolve) {
+  getProfileConfiguration() {
+    return new Promise<chrome.developerPrivate.ProfileInfo>(function(resolve) {
       chrome.developerPrivate.getProfileConfiguration(resolve);
     });
   }
@@ -51,15 +62,16 @@ export class Service implements ServiceInterface {
     return chrome.developerPrivate.onProfileStateChanged;
   }
 
-  getExtensionsInfo(): Promise<Array<chrome.developerPrivate.ExtensionInfo>> {
-    return new Promise(function(resolve) {
+  getExtensionsInfo() {
+    return new Promise<Array<chrome.developerPrivate.ExtensionInfo>>(function(
+        resolve) {
       chrome.developerPrivate.getExtensionsInfo(
           {includeDisabled: true, includeTerminated: true}, resolve);
     });
   }
 
-  getExtensionSize(id: string): Promise<string> {
-    return new Promise(function(resolve) {
+  getExtensionSize(id: string) {
+    return new Promise<string>(function(resolve) {
       chrome.developerPrivate.getExtensionSize(id, resolve);
     });
   }
@@ -458,13 +470,13 @@ export class Service implements ServiceInterface {
     chrome.developerPrivate.notifyDragInstallInProgress();
   }
 
-  static getInstance(): Service {
+  static getInstance(): ServiceInterface {
     return instance || (instance = new Service());
   }
 
-  static setInstance(obj: Service) {
+  static setInstance(obj: ServiceInterface) {
     instance = obj;
   }
 }
 
-let instance: Service|null = null;
+let instance: ServiceInterface|null = null;

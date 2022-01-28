@@ -8,38 +8,33 @@
  * chrome.developerPrivate API.
  */
 
-import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
-
+import {ExtensionsManagerElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
 
-window.extension_manager_unit_tests = {};
-extension_manager_unit_tests.suiteName = 'ExtensionManagerUnitTest';
-/** @enum {string} */
-extension_manager_unit_tests.TestNames = {
-  EnableAndDisable: 'enable and disable',
-  ItemOrder: 'item order',
-  ProfileSettings: 'profile settings',
-  ToggleIncognitoMode: 'toggle incognito mode',
-  Uninstall: 'uninstall',
-  UninstallFromDetails: 'uninstall while in details view',
-  SetItemData: 'set item data',
-  UpdateItemData: 'update item data',
+const extension_manager_unit_tests = {
+  suiteName: 'ExtensionManagerUnitTest',
+  TestNames: {
+    EnableAndDisable: 'enable and disable',
+    ItemOrder: 'item order',
+    ProfileSettings: 'profile settings',
+    ToggleIncognitoMode: 'toggle incognito mode',
+    Uninstall: 'uninstall',
+    UninstallFromDetails: 'uninstall while in details view',
+    SetItemData: 'set item data',
+    UpdateItemData: 'update item data',
+  },
 };
 
+Object.assign(window, {extension_manager_unit_tests});
+
 suite(extension_manager_unit_tests.suiteName, function() {
-  /** @type {Manager} */
-  let manager;
-
-  /** @type {TestService} */
-  let service;
-
-  /** @type {?KioskBrowserProxy} */
-  let browserProxy;
-
-  const testActivities = {activities: []};
+  let manager: ExtensionsManagerElement;
+  let service: TestService;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -60,61 +55,91 @@ suite(extension_manager_unit_tests.suiteName, function() {
 
   /**
    * Trigger an event that indicates that an extension was installed.
-   * @param {!chrome.developerPrivate.ExtensionInfo} info
    */
-  function simulateExtensionInstall(info) {
+  function simulateExtensionInstall(
+      info: chrome.developerPrivate.ExtensionInfo) {
     service.itemStateChangedTarget.callListeners({
       event_type: chrome.developerPrivate.EventType.INSTALLED,
       extensionInfo: info,
     });
   }
 
+  function getExtensions(): chrome.developerPrivate.ExtensionInfo[] {
+    return manager.shadowRoot!.querySelector(
+                                  'extensions-item-list')!.extensions;
+  }
+
+  function getExtension(index: number): chrome.developerPrivate.ExtensionInfo {
+    const extensions = getExtensions();
+    const extension = extensions[index];
+    assertTrue(!!extension);
+    return extension;
+  }
+
   // Test that newly added items are inserted in the correct order.
   test(assert(extension_manager_unit_tests.TestNames.ItemOrder), function() {
-    expectEquals(0, manager.extensions_.length);
+    assertEquals(0, getExtensions().length);
 
-    const alphaFromStore = createExtensionInfo(
-        {location: 'FROM_STORE', name: 'Alpha', id: 'a'.repeat(32)});
+    const alphaFromStore = createExtensionInfo({
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      name: 'Alpha',
+      id: 'a'.repeat(32)
+    });
     simulateExtensionInstall(alphaFromStore);
-    expectEquals(1, manager.extensions_.length);
-    expectEquals(alphaFromStore.id, manager.extensions_[0].id);
+    assertEquals(1, getExtensions().length);
+    assertEquals(alphaFromStore.id, getExtension(0).id);
 
     // Unpacked extensions come first.
-    const betaUnpacked = createExtensionInfo(
-        {location: 'UNPACKED', name: 'Beta', id: 'b'.repeat(32)});
+    const betaUnpacked = createExtensionInfo({
+      location: chrome.developerPrivate.Location.UNPACKED,
+      name: 'Beta',
+      id: 'b'.repeat(32)
+    });
     simulateExtensionInstall(betaUnpacked);
-    expectEquals(2, manager.extensions_.length);
-    expectEquals(betaUnpacked.id, manager.extensions_[0].id);
-    expectEquals(alphaFromStore.id, manager.extensions_[1].id);
+    assertEquals(2, getExtensions().length);
+    assertEquals(betaUnpacked.id, getExtension(0).id);
+    assertEquals(alphaFromStore.id, getExtension(1).id);
 
     // Extensions from the same location are sorted by name.
-    let gammaUnpacked = createExtensionInfo(
-        {location: 'UNPACKED', name: 'Gamma', id: 'c'.repeat(32)});
+    let gammaUnpacked = createExtensionInfo({
+      location: chrome.developerPrivate.Location.UNPACKED,
+      name: 'Gamma',
+      id: 'c'.repeat(32)
+    });
     simulateExtensionInstall(gammaUnpacked);
-    expectEquals(3, manager.extensions_.length);
-    expectEquals(betaUnpacked.id, manager.extensions_[0].id);
-    expectEquals(gammaUnpacked.id, manager.extensions_[1].id);
-    expectEquals(alphaFromStore.id, manager.extensions_[2].id);
+    assertEquals(3, getExtensions().length);
+    assertEquals(betaUnpacked.id, getExtension(0).id);
+    assertEquals(gammaUnpacked.id, getExtension(1).id);
+    assertEquals(alphaFromStore.id, getExtension(2).id);
 
     // The name-sort should be case-insensitive, and should fall back on
     // id.
-    const aaFromStore = createExtensionInfo(
-        {location: 'FROM_STORE', name: 'AA', id: 'd'.repeat(32)});
+    const aaFromStore = createExtensionInfo({
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      name: 'AA',
+      id: 'd'.repeat(32)
+    });
     simulateExtensionInstall(aaFromStore);
-    const AaFromStore = createExtensionInfo(
-        {location: 'FROM_STORE', name: 'Aa', id: 'e'.repeat(32)});
+    const AaFromStore = createExtensionInfo({
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      name: 'Aa',
+      id: 'e'.repeat(32)
+    });
     simulateExtensionInstall(AaFromStore);
-    const aAFromStore = createExtensionInfo(
-        {location: 'FROM_STORE', name: 'aA', id: 'f'.repeat(32)});
+    const aAFromStore = createExtensionInfo({
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      name: 'aA',
+      id: 'f'.repeat(32)
+    });
     simulateExtensionInstall(aAFromStore);
 
-    expectEquals(6, manager.extensions_.length);
-    expectEquals(betaUnpacked.id, manager.extensions_[0].id);
-    expectEquals(gammaUnpacked.id, manager.extensions_[1].id);
-    expectEquals(aaFromStore.id, manager.extensions_[2].id);
-    expectEquals(AaFromStore.id, manager.extensions_[3].id);
-    expectEquals(aAFromStore.id, manager.extensions_[4].id);
-    expectEquals(alphaFromStore.id, manager.extensions_[5].id);
+    assertEquals(6, getExtensions().length);
+    assertEquals(betaUnpacked.id, getExtension(0).id);
+    assertEquals(gammaUnpacked.id, getExtension(1).id);
+    assertEquals(aaFromStore.id, getExtension(2).id);
+    assertEquals(AaFromStore.id, getExtension(3).id);
+    assertEquals(aAFromStore.id, getExtension(4).id);
+    assertEquals(alphaFromStore.id, getExtension(5).id);
   });
 
   test(assert(extension_manager_unit_tests.TestNames.SetItemData), function() {
@@ -124,17 +149,17 @@ suite(extension_manager_unit_tests.suiteName, function() {
     simulateExtensionInstall(extension);
 
     // The detail view is not present until navigation.
-    expectFalse(!!manager.shadowRoot.querySelector('extensions-detail-view'));
+    assertFalse(!!manager.shadowRoot!.querySelector('extensions-detail-view'));
     navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
     const detailsView =
-        manager.shadowRoot.querySelector('extensions-detail-view');
-    expectTrue(!!detailsView);  // View should now be present.
-    expectEquals(extension.id, detailsView.data.id);
-    expectEquals(description, detailsView.data.description);
-    expectEquals(
-        description,
-        detailsView.shadowRoot.querySelector('.section .section-content')
-            .textContent.trim());
+        manager.shadowRoot!.querySelector('extensions-detail-view');
+    assertTrue(!!detailsView);  // View should now be present.
+    assertEquals(extension.id, detailsView.data.id);
+    assertEquals(description, detailsView.data.description);
+    const content =
+        detailsView.shadowRoot!.querySelector('.section .section-content');
+    assertTrue(!!content);
+    assertEquals(description, content.textContent!.trim());
   });
 
   test(
@@ -153,7 +178,8 @@ suite(extension_manager_unit_tests.suiteName, function() {
 
         navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
         const detailsView =
-            manager.shadowRoot.querySelector('extensions-detail-view');
+            manager.shadowRoot!.querySelector('extensions-detail-view');
+        assertTrue(!!detailsView);
 
         let extensionCopy = Object.assign({}, extension);
         extensionCopy.description = newDescription;
@@ -169,43 +195,47 @@ suite(extension_manager_unit_tests.suiteName, function() {
           event_type: chrome.developerPrivate.EventType.PREFS_CHANGED,
           extensionInfo: secondExtensionCopy,
         });
-        expectEquals(extension.id, detailsView.data.id);
-        expectEquals(newDescription, detailsView.data.description);
-        expectEquals(
-            newDescription,
-            detailsView.shadowRoot.querySelector('.section .section-content')
-                .textContent.trim());
+        assertEquals(extension.id, detailsView.data.id);
+        assertEquals(newDescription, detailsView.data.description);
+
+        const content =
+            detailsView.shadowRoot!.querySelector('.section .section-content');
+        assertTrue(!!content);
+        assertEquals(newDescription, content.textContent!.trim());
       });
 
   test(
       assert(extension_manager_unit_tests.TestNames.ProfileSettings),
       function() {
-        expectFalse(manager.inDevMode);
+        assertFalse(manager.inDevMode);
 
         service.profileStateChangedTarget.callListeners(
             {inDeveloperMode: true});
-        expectTrue(manager.inDevMode);
+        assertTrue(manager.inDevMode);
 
         service.profileStateChangedTarget.callListeners(
             {inDeveloperMode: false});
-        expectFalse(manager.inDevMode);
+        assertFalse(manager.inDevMode);
 
         service.profileStateChangedTarget.callListeners(
             {canLoadUnpacked: true});
-        expectTrue(manager.canLoadUnpacked);
+        assertTrue(manager.canLoadUnpacked);
 
         service.profileStateChangedTarget.callListeners(
             {canLoadUnpacked: false});
-        expectFalse(manager.canLoadUnpacked);
+        assertFalse(manager.canLoadUnpacked);
       });
 
   test(assert(extension_manager_unit_tests.TestNames.Uninstall), function() {
-    expectEquals(0, manager.extensions_.length);
+    assertEquals(0, getExtensions().length);
 
-    const extension = createExtensionInfo(
-        {location: 'FROM_STORE', name: 'Alpha', id: 'a'.repeat(32)});
+    const extension = createExtensionInfo({
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      name: 'Alpha',
+      id: 'a'.repeat(32)
+    });
     simulateExtensionInstall(extension);
-    expectEquals(1, manager.extensions_.length);
+    assertEquals(1, getExtensions().length);
 
     service.itemStateChangedTarget.callListeners({
       event_type: chrome.developerPrivate.EventType.UNINSTALLED,
@@ -214,19 +244,21 @@ suite(extension_manager_unit_tests.suiteName, function() {
       item_id: extension.id,
     });
 
-    expectEquals(0, manager.extensions_.length);
+    assertEquals(0, getExtensions().length);
   });
 
-  /** @param {string} tagName */
-  function assertViewActive(tagName) {
-    expectTrue(!!manager.$.viewManager.querySelector(`${tagName}.active`));
+  function assertViewActive(tagName: string) {
+    assertTrue(!!manager.$.viewManager.querySelector(`${tagName}.active`));
   }
 
   test(
       assert(extension_manager_unit_tests.TestNames.UninstallFromDetails),
       function(done) {
-        const extension = createExtensionInfo(
-            {location: 'FROM_STORE', name: 'Alpha', id: 'a'.repeat(32)});
+        const extension = createExtensionInfo({
+          location: chrome.developerPrivate.Location.FROM_STORE,
+          name: 'Alpha',
+          id: 'a'.repeat(32)
+        });
         simulateExtensionInstall(extension);
 
         navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
@@ -249,15 +281,18 @@ suite(extension_manager_unit_tests.suiteName, function() {
   test(
       assert(extension_manager_unit_tests.TestNames.ToggleIncognitoMode),
       function() {
-        expectEquals(0, manager.extensions_.length);
-        const extension = createExtensionInfo(
-            {location: 'FROM_STORE', name: 'Alpha', id: 'a'.repeat(32)});
+        assertEquals(0, getExtensions().length);
+        const extension = createExtensionInfo({
+          location: chrome.developerPrivate.Location.FROM_STORE,
+          name: 'Alpha',
+          id: 'a'.repeat(32)
+        });
         simulateExtensionInstall(extension);
-        expectEquals(1, manager.extensions_.length);
+        assertEquals(1, getExtensions().length);
 
-        expectEquals(extension, manager.extensions_[0]);
-        expectTrue(extension.incognitoAccess.isEnabled);
-        expectFalse(extension.incognitoAccess.isActive);
+        assertEquals(extension, getExtension(0));
+        assertTrue(extension.incognitoAccess.isEnabled);
+        assertFalse(extension.incognitoAccess.isActive);
 
         // Simulate granting incognito permission.
         const extensionCopy1 = Object.assign({}, extension);
@@ -267,7 +302,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
           extensionInfo: extensionCopy1,
         });
 
-        expectTrue(manager.extensions_[0].incognitoAccess.isActive);
+        assertTrue(getExtension(0).incognitoAccess.isActive);
 
         // Simulate revoking incognito permission.
         const extensionCopy2 = Object.assign({}, extension);
@@ -276,25 +311,25 @@ suite(extension_manager_unit_tests.suiteName, function() {
           event_type: chrome.developerPrivate.EventType.LOADED,
           extensionInfo: extensionCopy2,
         });
-        expectFalse(manager.extensions_[0].incognitoAccess.isActive);
+        assertFalse(getExtension(0).incognitoAccess.isActive);
       });
 
   test(
       assert(extension_manager_unit_tests.TestNames.EnableAndDisable),
       function() {
         const ExtensionState = chrome.developerPrivate.ExtensionState;
-        expectEquals(0, manager.extensions_.length);
+        assertEquals(0, getExtensions().length);
         const extension = createExtensionInfo({
-          location: 'FROM_STORE',
+          location: chrome.developerPrivate.Location.FROM_STORE,
           name: 'My extension 1',
           id: 'a'.repeat(32)
         });
         simulateExtensionInstall(extension);
-        expectEquals(1, manager.extensions_.length);
+        assertEquals(1, getExtensions().length);
 
-        expectEquals(extension, manager.extensions_[0]);
-        expectEquals('My extension 1', extension.name);
-        expectEquals(ExtensionState.ENABLED, extension.state);
+        assertEquals(extension, getExtension(0));
+        assertEquals('My extension 1', extension.name);
+        assertEquals(ExtensionState.ENABLED, extension.state);
 
         // Simulate disabling an extension.
         const extensionCopy1 = Object.assign({}, extension);
@@ -303,7 +338,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
           event_type: chrome.developerPrivate.EventType.LOADED,
           extensionInfo: extensionCopy1,
         });
-        expectEquals(ExtensionState.DISABLED, manager.extensions_[0].state);
+        assertEquals(ExtensionState.DISABLED, getExtension(0).state);
 
         // Simulate re-enabling an extension.
         // Simulate disabling an extension.
@@ -313,6 +348,6 @@ suite(extension_manager_unit_tests.suiteName, function() {
           event_type: chrome.developerPrivate.EventType.LOADED,
           extensionInfo: extensionCopy2,
         });
-        expectEquals(ExtensionState.ENABLED, manager.extensions_[0].state);
+        assertEquals(ExtensionState.ENABLED, getExtension(0).state);
       });
 });

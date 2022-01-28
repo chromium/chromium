@@ -18,7 +18,7 @@ type Filter = (info: chrome.developerPrivate.ExtensionInfo) => boolean;
 const ExtensionsItemListElementBase =
     I18nMixin(CrContainerShadowMixin(PolymerElement));
 
-class ExtensionsItemListElement extends ExtensionsItemListElementBase {
+export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   static get is() {
     return 'extensions-item-list';
   }

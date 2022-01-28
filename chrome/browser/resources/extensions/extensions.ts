@@ -20,7 +20,8 @@ export {UserAction} from './item_util.js';
 // <if expr="chromeos">
 export {KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl, KioskSettings} from './kiosk_browser_proxy.js';
 // </if>
-export {Dialog, navigation, NavigationHelper, Page} from './navigation_helper.js';
+export {ExtensionsManagerElement} from './manager.js';
+export {Dialog, navigation, NavigationHelper, Page, PageState} from './navigation_helper.js';
 export {OptionsDialogMaxHeight, OptionsDialogMinWidth} from './options_dialog.js';
 export {ExtensionsOptionsDialogElement} from './options_dialog.js';
 export {ExtensionsPackDialogElement, PackDialogDelegate} from './pack_dialog.js';

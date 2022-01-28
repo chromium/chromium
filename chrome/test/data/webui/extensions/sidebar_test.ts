@@ -45,7 +45,7 @@ suite(extension_sidebar_tests.suiteName, function() {
         .then(function() {
           assertEquals(
               sidebar.shadowRoot!.querySelector(selector)!.id,
-              'sections-shortcuts');
+              'sectionsShortcuts');
 
           window.history.replaceState(undefined, '', '/');
           document.body.innerHTML = '';
@@ -59,7 +59,7 @@ suite(extension_sidebar_tests.suiteName, function() {
         .then(function() {
           assertEquals(
               sidebar.shadowRoot!.querySelector(selector)!.id,
-              'sections-extensions');
+              'sectionsExtensions');
         });
   });
 
@@ -67,12 +67,12 @@ suite(extension_sidebar_tests.suiteName, function() {
       assert(extension_sidebar_tests.TestNames.LayoutAndClickHandlers),
       function(done) {
         const boundTestVisible = testVisible.bind(null, sidebar);
-        boundTestVisible('#sections-extensions', true);
+        boundTestVisible('#sectionsExtensions', true);
 
         // The site permissions link should not be visible if
         // enableEnhancedSiteControls is set to false.
         boundTestVisible('#sections-site-permissions', false);
-        boundTestVisible('#sections-shortcuts', true);
+        boundTestVisible('#sectionsShortcuts', true);
         boundTestVisible('#more-extensions', true);
 
         sidebar.enableEnhancedSiteControls = true;
@@ -84,12 +84,10 @@ suite(extension_sidebar_tests.suiteName, function() {
           currentPage = newPage;
         });
 
-        sidebar.shadowRoot!.querySelector<HTMLElement>(
-                               '#sections-shortcuts')!.click();
+        sidebar.$.sectionsShortcuts.click();
         assertDeepEquals(currentPage, {page: Page.SHORTCUTS});
 
-        sidebar.shadowRoot!.querySelector<HTMLElement>(
-                               '#sections-extensions')!.click();
+        sidebar.$.sectionsExtensions.click();
         assertDeepEquals(currentPage, {page: Page.LIST});
 
         sidebar.shadowRoot!
@@ -98,7 +96,6 @@ suite(extension_sidebar_tests.suiteName, function() {
 
         // Clicking on the link for the current page should close the dialog.
         sidebar.addEventListener('close-drawer', () => done());
-        sidebar.shadowRoot!.querySelector<HTMLElement>(
-                               '#sections-extensions')!.click();
+        sidebar.$.sectionsExtensions.click();
       });
 });

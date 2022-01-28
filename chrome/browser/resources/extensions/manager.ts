@@ -24,6 +24,7 @@ import './site_permissions.js';
 import './toolbar.js';
 // <if expr="chromeos">
 import './kiosk_dialog.js';
+
 // </if>
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
@@ -33,6 +34,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import {ExtensionsDetailViewElement} from './detail_view.js';
+import {ExtensionsItemListElement} from './item_list.js';
 // <if expr="chromeos">
 import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 // </if>
@@ -73,13 +75,14 @@ declare global {
   }
 }
 
-interface ExtensionsManagerElement {
+export interface ExtensionsManagerElement {
   $: {
     viewManager: CrViewManagerElement,
+    'items-list': ExtensionsItemListElement,
   };
 }
 
-class ExtensionsManagerElement extends PolymerElement {
+export class ExtensionsManagerElement extends PolymerElement {
   static get is() {
     return 'extensions-manager';
   }

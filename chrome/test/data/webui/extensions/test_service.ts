@@ -34,7 +34,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'getFilteredExtensionActivityLog',
       'getProfileConfiguration',
       'inspectItemView',
+      'installDroppedFile',
       'loadUnpacked',
+      'loadUnpacked',
+      'notifyDragInstallInProgress',
       'openUrl',
       'packExtension',
       'recordUserAction',
@@ -89,7 +92,13 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   getProfileConfiguration() {
     this.methodCalled('getProfileConfiguration');
-    return Promise.resolve({inDeveloperMode: false});
+    return Promise.resolve({
+      canLoadUnpacked: false,
+      inDeveloperMode: false,
+      isDeveloperModeControlledByPolicy: false,
+      isIncognitoAvailable: false,
+      isChildAccount: false,
+    });
   }
 
   getItemStateChangedTarget() {
@@ -287,5 +296,18 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   recordUserAction(metricName: string) {
     this.methodCalled('recordUserAction', metricName);
+  }
+
+  notifyDragInstallInProgress() {
+    this.methodCalled('notifyDragInstallInProgress');
+  }
+
+  loadUnpackedFromDrag() {
+    this.methodCalled('loadUnpackedFromDrag');
+    return Promise.resolve(true);
+  }
+
+  installDroppedFile() {
+    this.methodCalled('installDroppedFile');
   }
 }

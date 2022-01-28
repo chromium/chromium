@@ -15,6 +15,8 @@ import {navigation, Page} from './navigation_helper.js';
 export interface ExtensionsSidebarElement {
   $: {
     sectionMenu: IronSelectorElement,
+    sectionsExtensions: HTMLElement,
+    sectionsShortcuts: HTMLElement,
   };
 }
 
