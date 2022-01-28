@@ -150,11 +150,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AutofillMeasurementTime">
-  <variant name="">
-    <obsolete>
-      Base histogram. Use suffixes of this histogram instead.
-    </obsolete>
-  </variant>
   <variant name=".AtFillTimeAfterSecurityPolicy"
       summary="Recorded at filling time after applying restrictions due to
                the cross-frame security policy."/>
@@ -164,24 +159,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".AtSubmissionTime"
       summary="Recorded at submission time. May be missed due to submission
                detection problems."/>
-</variants>
-
-<variants name="AutofillRealPanResultGroups">
-  <variant name=".Failure" summary="Failure">
-    <obsolete>
-      Removed as of 05/2021. Current autofill histograms will use variants.
-    </obsolete>
-  </variant>
-  <variant name=".NetworkError" summary="Network errors">
-    <obsolete>
-      Removed as of 05/2021. Current autofill histograms will use variants.
-    </obsolete>
-  </variant>
-  <variant name=".Success" summary="Success">
-    <obsolete>
-      Removed as of 05/2021. Current autofill histograms will use variants.
-    </obsolete>
-  </variant>
 </variants>
 
 <variants name="AutofillSaveCreditCardPromptDestination">
@@ -411,6 +388,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
+    expires_after="2022-08-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>autofill-auth-team@google.com</owner>
+  <summary>
+    Tracks the time it takes to fetch the full PAN of a credit card once user
+    successfully authenticates using WebAuthn.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.BetterAuth.CardUnmaskDuration.Fido.{CardType}.{Result}"
     units="ms" expires_after="2022-08-01">
@@ -423,22 +411,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="Result" variants="Autofill.PaymentsRpcResult"/>
-</histogram>
-
-<histogram
-    name="Autofill.BetterAuth.CardUnmaskDuration.Fido{AutofillRealPanResultGroups}"
-    units="ms" expires_after="2022-08-01">
-  <owner>jsaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>autofill-auth-team@google.com</owner>
-  <summary>
-    Tracks the time it takes to fetch the full PAN of a credit card once user
-    successfully authenticates using WebAuthn. {AutofillRealPanResultGroups}
-  </summary>
-  <token key="AutofillRealPanResultGroups"
-      variants="AutofillRealPanResultGroups">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightCalled"
@@ -3025,6 +2997,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
+    expires_after="2022-05-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <summary>
+    Duration of the GetRealPan API call. This API call is triggered by the
+    unmasking prompt when the user types information to verify their ownership
+    of the card being fetched.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration.{CardType}.{Result}"
     units="ms" expires_after="2022-05-01">
   <owner>siyua@chromium.org</owner>
@@ -3037,22 +3020,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="Result" variants="Autofill.PaymentsRpcResult"/>
-</histogram>
-
-<histogram
-    name="Autofill.UnmaskPrompt.GetRealPanDuration{AutofillRealPanResultGroups}"
-    units="ms" expires_after="2022-05-01">
-  <owner>jsaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <summary>
-    Duration of the GetRealPan API call. This API call is triggered by the
-    unmasking prompt when the user types information to verify their ownership
-    of the card being fetched. {AutofillRealPanResultGroups}
-  </summary>
-  <token key="AutofillRealPanResultGroups"
-      variants="AutofillRealPanResultGroups">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanResult"
@@ -3092,6 +3059,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.UnmaskPrompt.UnmaskingDuration" units="ms"
+    expires_after="2022-05-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <summary>
+    Duration between the user clicking the Verify button within the unmasking
+    prompt until we get a response back from the server. This prompt is
+    triggered when a user selects a masked card in an autofill dropdown.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.UnmaskPrompt.UnmaskingDuration.{CardType}.{Result}"
     units="ms" expires_after="2022-05-01">
   <owner>jsaul@google.com</owner>
@@ -3104,23 +3082,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="Result" variants="Autofill.PaymentsRpcResult"/>
-</histogram>
-
-<histogram
-    name="Autofill.UnmaskPrompt.UnmaskingDuration{AutofillRealPanResultGroups}"
-    units="ms" expires_after="2022-05-01">
-  <owner>jsaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <summary>
-    Duration between the user clicking the Verify button within the unmasking
-    prompt until we get a response back from the server. This prompt is
-    triggered when a user selects a masked card in an autofill dropdown.
-    {AutofillRealPanResultGroups}
-  </summary>
-  <token key="AutofillRealPanResultGroups"
-      variants="AutofillRealPanResultGroups">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.Upload.BackoffDelay" units="ms" expires_after="never">

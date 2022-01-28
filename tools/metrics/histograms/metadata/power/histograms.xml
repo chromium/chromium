@@ -1002,21 +1002,6 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.Mac.AppleSMCOpened" enum="BooleanSuccess"
-    expires_after="2022-07-03">
-  <obsolete>
-    Stopped reporting in M98, deprecated in M99
-  </obsolete>
-  <owner>lgrey@chromium.org</owner>
-  <summary>
-    When metrics collection started, records true if a handle to the System
-    Management Controller (SMC) was successfully opened to monitor power
-    consumption, false otherwise. If false, a system API might have changed in a
-    new version of macOS, or Chrome might be running in a nonstandard
-    environment (VM, hackintosh). Only recorded on macOS.
-  </summary>
-</histogram>
-
 <histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
     expires_after="2022-06-05">
   <owner>avi@chromium.org</owner>

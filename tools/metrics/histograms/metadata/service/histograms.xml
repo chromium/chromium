@@ -34,35 +34,10 @@ chromium-metrics-reviews@google.com.
   <variant name="FETCH_SHARED_WORKER"/>
   <variant name="FETCH_SUB_FRAME"/>
   <variant name="FETCH_SUB_RESOURCE"/>
-  <variant name="FOREIGN_FETCH">
-    <obsolete>
-      Has not been emitted since Foreign Fetch was removed ca. 2018.
-    </obsolete>
-  </variant>
-  <variant name="GEOFENCING">
-    <obsolete>
-      Deprecated as of 5/2016 because geofencing got removed.
-    </obsolete>
-  </variant>
   <variant name="INSTALL"/>
   <variant name="LONG_RUNNING_MESSAGE"/>
   <variant name="MESSAGE"/>
   <variant name="NAVIGATION_HINT"/>
-  <variant name="NAVIGATION_HINT_LINK_MOUSE_DOWN">
-    <obsolete>
-      This experiment was turned down, see https://crbug.com/616502.
-    </obsolete>
-  </variant>
-  <variant name="NAVIGATION_HINT_LINK_TAP_DOWN">
-    <obsolete>
-      This experiment was turned down, see https://crbug.com/616502.
-    </obsolete>
-  </variant>
-  <variant name="NAVIGATION_HINT_LINK_TAP_UNCONFIRMED">
-    <obsolete>
-      This experiment was turned down, see https://crbug.com/616502.
-    </obsolete>
-  </variant>
   <variant name="NOTIFICATION_CLICK"/>
   <variant name="NOTIFICATION_CLOSE"/>
   <variant name="PUSH"/>
