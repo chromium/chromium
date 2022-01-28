@@ -522,7 +522,7 @@ absl::optional<double> AudioProcessor::ProcessData(
 
   CHECK_GE(num_apm_output_channels, 1);
   const webrtc::StreamConfig apm_output_config = webrtc::StreamConfig(
-      output_format_.sample_rate(), num_apm_output_channels, false);
+      output_format_.sample_rate(), num_apm_output_channels);
 
   int err = ap->ProcessStream(process_ptrs, CreateStreamConfig(input_format_),
                               apm_output_config, output_ptrs);
