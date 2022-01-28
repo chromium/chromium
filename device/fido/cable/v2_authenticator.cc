@@ -628,7 +628,9 @@ class CTAP2Processor : public Transaction {
 
                       if (alg > std::numeric_limits<int32_t>::max() ||
                           alg < std::numeric_limits<int32_t>::min()) {
-                        return false;
+                        // This value cannot be represented in the `int32_t`
+                        // in the Mojo structure and thus is ignored.
+                        return true;
                       }
                       device::PublicKeyCredentialParams::CredentialInfo info;
                       info.algorithm = static_cast<int32_t>(alg);
