@@ -124,9 +124,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(FinishTestAndVerifyResult());
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // TODO(zijiehe): Figure out why this test crashes on Mac OSX. The suspicious
 // command is "SendFullscreenShortcutAndWait()". See, http://crbug.com/738949.
+// Flaky on multiple Linxu bots: https://crbug.com/1120315
 #define MAYBE_ShortcutsShouldTakeEffectInBrowserFullscreen \
   DISABLED_ShortcutsShouldTakeEffectInBrowserFullscreen
 #else
