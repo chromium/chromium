@@ -31,6 +31,7 @@ class DocumentTransitionPrepareOptions;
 class DocumentTransitionStartOptions;
 class Element;
 class ExceptionState;
+class LayoutObject;
 class PseudoElement;
 class ScriptPromise;
 class ScriptPromiseResolver;
@@ -66,14 +67,15 @@ class CORE_EXPORT DocumentTransition
   // This uses std::move semantics to take the request from this object.
   std::unique_ptr<DocumentTransitionRequest> TakePendingRequest();
 
-  // Returns true if the given element is active in this transition.
-  bool IsActiveElement(const Element*) const;
+  // Returns true if this object participates in an active transition (if there
+  // is one).
+  bool IsTransitionParticipant(const LayoutObject& object) const;
 
   // Populates |shared_element_id| and |resource_id| with identifiers for the
-  // shared element. Note that the element must be active (i.e.
-  // `IsActive(element)` must be true).
-  void PopulateSharedElementAndResourceId(
-      const Element*,
+  // shared element. Note that the function only modifies the ids if the object
+  // passed is a participant in the current document transition.
+  void PopulateSharedElementAndResourceIds(
+      const LayoutObject&,
       DocumentTransitionSharedElementId* shared_element_id,
       viz::SharedElementResourceId* resource_id) const;
 

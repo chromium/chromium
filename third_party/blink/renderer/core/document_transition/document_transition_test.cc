@@ -116,6 +116,14 @@ class DocumentTransitionTest : public testing::Test,
     transition->NotifyStartFinished(transition->last_start_sequence_id_);
   }
 
+  bool ShouldCompositeForDocumentTransition(Element* e) {
+    auto* layout_object = e->GetLayoutObject();
+    auto* transition =
+        DocumentTransitionSupplement::documentTransition(GetDocument());
+    return layout_object && transition &&
+           transition->IsTransitionParticipant(*layout_object);
+  }
+
   void ValidatePseudoElementTree(
       const Vector<WTF::AtomicString>& document_transition_tags,
       bool has_new_content) {
@@ -280,9 +288,9 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
-  EXPECT_FALSE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
   DocumentTransitionPrepareOptions options;
   // Set two of the elements to be shared.
@@ -292,9 +300,9 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   // Update the lifecycle while keeping the transition active.
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_TRUE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e3));
 
   EXPECT_TRUE(ElementIsComposited("e1"));
   EXPECT_FALSE(ElementIsComposited("e2"));
@@ -302,9 +310,9 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
-  EXPECT_FALSE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
   // We need to actually run the lifecycle in order to see the full effect of
   // finishing directives.
@@ -334,25 +342,25 @@ TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
-  EXPECT_FALSE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
   DocumentTransitionPrepareOptions options;
   options.setSharedElements({e1, e2, e3});
   transition->prepare(script_state, &options, exception_state);
 
-  EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_TRUE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_TRUE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e3));
 
   // Update the lifecycle while keeping the transition active.
   UpdateAllLifecyclePhasesForTest();
 
   // Since only the first element is contained, the rest should be cleared.
-  EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
   EXPECT_TRUE(ElementIsComposited("e1"));
   EXPECT_FALSE(ElementIsComposited("e2"));
@@ -392,9 +400,9 @@ TEST_P(DocumentTransitionTest, StartSharedElementCountMismatch) {
   transition->start(script_state, &start_options, exception_state);
   EXPECT_TRUE(exception_state.HadException());
 
-  EXPECT_FALSE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 }
 
 TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
@@ -420,9 +428,9 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   prepare_options.setSharedElements({e1, e3});
   transition->prepare(script_state, &prepare_options, exception_state);
 
-  EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_TRUE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e3));
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
@@ -431,15 +439,15 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   start_options.setSharedElements({e1, e2});
   transition->start(script_state, &start_options, exception_state);
 
-  EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_TRUE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
-  EXPECT_FALSE(e1->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
-  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e1));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 }
 
 TEST_P(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {

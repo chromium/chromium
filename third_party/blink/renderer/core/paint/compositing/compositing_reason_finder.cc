@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -231,9 +232,18 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
 
   reasons |= BackfaceInvisibility3DAncestorReason(*layer);
 
-  if (auto* element = DynamicTo<Element>(object.GetNode())) {
-    if (element->ShouldCompositeForDocumentTransition())
+  if (auto* supplement =
+          DocumentTransitionSupplement::FromIfExists(object.GetDocument())) {
+    // Note that `IsTransitionParticipant returns true for values that are in
+    // the non-transition-pseudo tree DOM. That is, things like layout view or
+    // the shared elements that we are transitioning. Independently of that, We
+    // also explicitly composite the ::transition pseudo.
+    // TODO(vmpstr): Clean up the notion of "shared" participant vs "pseudo
+    // tree" participant.
+    if (style.StyleType() == kPseudoIdTransition ||
+        supplement->GetTransition()->IsTransitionParticipant(object)) {
       reasons |= CompositingReason::kDocumentTransitionSharedElement;
+    }
   }
 
   return reasons;

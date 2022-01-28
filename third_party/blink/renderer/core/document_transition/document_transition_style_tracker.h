@@ -62,6 +62,9 @@ class DocumentTransitionStyleTracker
   // or Start).
   viz::SharedElementResourceId GetLiveSnapshotId(const Element* element) const;
 
+  // Returns the resource id for the root stacking context.
+  viz::SharedElementResourceId GetLiveRootSnapshotId() const;
+
   // Creates a PseudoElement for the corresponding |pseudo_id| and
   // |document_transition_tag|. The |pseudo_id| must be a ::transition* element.
   PseudoElement* CreatePseudoElement(
@@ -120,6 +123,8 @@ class DocumentTransitionStyleTracker
   State state_ = State::kIdle;
   Vector<AtomicString> pseudo_document_transition_tags_;
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
+  viz::SharedElementResourceId old_root_snapshot_id_;
+  viz::SharedElementResourceId new_root_snapshot_id_;
   absl::optional<String> ua_style_sheet_;
 };
 

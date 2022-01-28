@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
@@ -51,8 +53,10 @@
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -73,23 +77,15 @@ bool AreSubtreeUpdateReasonsIsolationPiercing(unsigned reasons) {
              SubtreePaintPropertyUpdateReason::kContainerChainMayChange));
 }
 
-void PopulateSharedElementAndResourceId(
+void PopulateSharedElementAndResourceIds(
     const LayoutObject& object,
     DocumentTransitionSharedElementId* shared_element_id,
     viz::SharedElementResourceId* resource_id) {
-  Element* element = DynamicTo<Element>(object.GetNode());
-  // If we're not compositing this element for document transition, then it has
-  // no shared element id.
-  if (!element || !element->ShouldCompositeForDocumentTransition())
-    return;
-
-  auto* document_transition_supplement =
-      DocumentTransitionSupplement::FromIfExists(element->GetDocument());
-  if (!document_transition_supplement)
-    return;
-  document_transition_supplement->GetTransition()
-      ->PopulateSharedElementAndResourceId(element, shared_element_id,
-                                           resource_id);
+  if (auto* supplement =
+          DocumentTransitionSupplement::FromIfExists(object.GetDocument())) {
+    supplement->GetTransition()->PopulateSharedElementAndResourceIds(
+        object, shared_element_id, resource_id);
+  }
 }
 
 }  // namespace
@@ -1299,7 +1295,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       state.has_active_backdrop_filter_animation =
           style.HasCurrentBackdropFilterAnimation();
 
-      PopulateSharedElementAndResourceId(
+      PopulateSharedElementAndResourceIds(
           object_, &state.document_transition_shared_element_id,
           &state.shared_element_resource_id);
 
@@ -1308,8 +1304,24 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           style.IsRunningOpacityAnimationOnCompositor();
       animation_state.is_running_backdrop_filter_animation_on_compositor =
           style.IsRunningBackdropFilterAnimationOnCompositor();
+
+      auto* parent_effect = context_.current_effect;
+      // The transition pseudo element doesn't draw into the LayoutView's
+      // effect, but rather as its sibling. So this re-parents the effect to
+      // whatever the grand-parent effect was. Note that it doesn't matter
+      // whether the grand-parent is the root stacking context or something
+      // intermediate, as long as it is a sibling of the LayoutView context.
+      // This makes it possible to capture the output of the LayoutView context
+      // into one of the transition contexts. We also want that capture to be
+      // without any additional effects, such as overscroll elasticity effects.
+      if (object_.GetNode() &&
+          object_.GetNode()->GetPseudoId() == kPseudoIdTransition) {
+        parent_effect = context_.current_effect->Parent();
+      }
+      DCHECK(parent_effect);
+
       auto effective_change_type = properties_->UpdateEffect(
-          *context_.current_effect, std::move(state), animation_state);
+          *parent_effect, std::move(state), animation_state);
       // If we have simple value change, which means opacity, we should try to
       // directly update it on the PaintArtifactCompositor in order to avoid
       // doing a full rebuild.

@@ -6639,13 +6639,6 @@ void Element::NotifyInlineStyleMutation() {
   }
 }
 
-bool Element::ShouldCompositeForDocumentTransition() const {
-  auto* document_transition_supplement =
-      DocumentTransitionSupplement::FromIfExists(GetDocument());
-  return document_transition_supplement &&
-         document_transition_supplement->GetTransition()->IsActiveElement(this);
-}
-
 inline void Element::SetInlineStyleFromString(
     const AtomicString& new_style_string) {
   DCHECK(IsStyledElement());
@@ -7061,8 +7054,8 @@ void Element::RecalcTransitionPseudoTreeStyle(
     const Vector<AtomicString>& document_transition_tags) {
   DCHECK_EQ(this, GetDocument().documentElement());
 
-  if (document_transition_tags.IsEmpty() &&
-      !GetPseudoElement(kPseudoIdTransition))
+  auto* old_transition_pseudo = GetPseudoElement(kPseudoIdTransition);
+  if (document_transition_tags.IsEmpty() && !old_transition_pseudo)
     return;
 
   const StyleRecalcChange style_recalc_change;
