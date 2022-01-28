@@ -1106,7 +1106,7 @@ void NGInlineCursor::MoveToLastNonPseudoLeaf() {
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
     if (cursor.Current()->IsBlockInInline()) {
       if (cursor.Current()->BlockInInline().NonPseudoNode())
-        *this = cursor;
+        last_leaf = cursor;
       continue;
     }
     if (!cursor.Current().GetLayoutObject()->NonPseudoNode())

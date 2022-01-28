@@ -178,6 +178,53 @@ INSTANTIATE_TEST_SUITE_P(
         HitTestConfig{true, mojom::EditingBehavior::kEditingAndroidBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingChromeOSBehavior}));
 
+// See editing/selection/click-after-nested-block.html
+TEST_P(LayoutViewHitTestTest, BlockInInlineBelowBottom) {
+  LoadAhem();
+  InsertStyleElement("body { margin: 0px; font: 10px/15px Ahem; }");
+  SetBodyInnerHTML(
+      "<div id=target>"
+      "<div id=line1>ab</div>"
+      "<div><span><div id=line2>cd</div></span></div>"
+      "</div>");
+  const auto& line2 = *GetElementById("line2");
+  const auto& cd = *To<Text>(line2.firstChild());
+  const auto& cd_0 = PositionWithAffinity(Position(cd, 0));
+  const auto& cd_1 = PositionWithAffinity(
+      Position(cd, 1),
+      LayoutNG() ? TextAffinity::kDownstream : TextAffinity::kUpstream);
+  const auto& cd_2 =
+      PositionWithAffinity(Position(cd, 2), TextAffinity::kUpstream);
+  const auto& kEndOfLine = PositionWithAffinity(
+      LayoutNG() ? Position::AfterNode(line2) : Position(cd, 2));
+
+  // hit test on line 2
+  EXPECT_EQ(cd_0, HitTest(0, 20));
+  EXPECT_EQ(cd_0, HitTest(5, 20));
+  EXPECT_EQ(cd_1, HitTest(10, 20));
+  EXPECT_EQ(cd_1, HitTest(15, 20));
+  EXPECT_EQ(cd_2, HitTest(20, 20));
+  EXPECT_EQ(cd_2, HitTest(25, 20));
+
+  // hit test below line 2
+  if (IsAndroidOrWindowsEditingBehavior()) {
+    EXPECT_EQ(cd_0, HitTest(0, 50));
+    EXPECT_EQ(cd_0, HitTest(5, 50));
+    EXPECT_EQ(cd_1, HitTest(10, 50));
+    EXPECT_EQ(cd_1, HitTest(15, 50));
+    EXPECT_EQ(cd_2, HitTest(20, 50));
+    EXPECT_EQ(cd_2, HitTest(25, 50));
+  } else {
+    // ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom behavior is
+    // in effect.
+    EXPECT_EQ(kEndOfLine, HitTest(0, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(5, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(10, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(15, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(25, 50));
+  }
+}
+
 // See editing/pasteboard/drag-drop-list.html
 TEST_P(LayoutViewHitTestTest, BlockInInlineWithListItem) {
   LoadAhem();
