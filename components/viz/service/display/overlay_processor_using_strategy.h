@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_USING_STRATEGY_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_USING_STRATEGY_H_
 
+#include <map>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -196,8 +197,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   raw_ptr<Strategy> last_successful_strategy_ = nullptr;
 
   gfx::Rect overlay_damage_rect_;
-  bool previous_is_underlay = false;
-  bool previous_has_mask_filter_ = false;
   gfx::Rect previous_frame_overlay_rect_;
 
   struct OverlayPrioritizationConfig {
@@ -215,17 +214,44 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   OverlayCandidateTemporalTracker::Config tracker_config_;
 
  private:
+  // Keeps track of overlay information needed to update damage correctly.
+  struct OverlayStatus;
+  using OverlayStatusMap = std::map<gfx::Rect, OverlayStatus>;
+
+  struct OverlayStatus {
+    OverlayStatus() = delete;
+    OverlayStatus(const OverlayCandidate& candidate,
+                  const gfx::Rect& key,
+                  const OverlayStatusMap& prev_overlays);
+    OverlayStatus(const OverlayStatus&);
+    OverlayStatus& operator=(const OverlayStatus&);
+    ~OverlayStatus();
+
+    gfx::Rect overlay_rect;
+    gfx::RectF damage_rect;
+    uint32_t damage_index;
+    int damage_area_estimate;
+    bool has_mask_filter;
+    int plane_z_order;
+    bool is_underlay;
+    bool is_opaque;
+    bool is_new;
+    bool prev_was_underlay;
+    bool prev_has_mask_filter;
+  };
+
   // The platform specific implementation to check overlay support that will be
   // called by `CheckOverlaySupport()`.
   virtual void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidate_list) = 0;
 
-  // Update |damage_rect| by removing damage caused by |candidates|.
-  void UpdateDamageRect(OverlayCandidateList* candidates,
-                        SurfaceDamageRectList* surface_damage_rect_list,
-                        const QuadList* quad_list,
-                        gfx::Rect* damage_rect);
+  // Update |damage_rect| by removing damage caused by overlays.
+  void UpdateDamageRect(const SurfaceDamageRectList& surface_damage_rect_list,
+                        gfx::Rect& damage_rect);
+  gfx::Rect ComputeDamageExcludingOverlays(
+      const SurfaceDamageRectList& surface_damage_rect_list,
+      const gfx::Rect& existing_damage);
 
   // Iterate through a list of strategies and attempt to overlay with each.
   // Returns true if one of the attempts is successful. Has to be called after
@@ -295,7 +321,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // heuristic designed to maximize the effectiveness of the limited number
   // of Hardware overlays. Effectiveness here is primarily about power and
   // secondarily about of performance.
-  void SortProposedOverlayCandidatesPrioritized(
+  virtual void SortProposedOverlayCandidatesPrioritized(
       Strategy::OverlayProposedCandidateList* proposed_candidates);
 
   // Used by Android pre-SurfaceControl to notify promotion hints.
@@ -312,6 +338,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // Logs the number of times CheckOverlaySupport was called this frame, and
   // resets the counter to 0.
   void LogCheckOverlaySupportMetrics();
+
+  // Moves `curr_overlays` into `prev_overlays`, and updates `curr_overlays` to
+  // reflect the overlays that will be promoted this frame in `candidates`.
+  void UpdateOverlayStatusMap(const OverlayCandidateList& candidates);
 
   struct ProposedCandidateKey {
     OverlayCandidate::TrackingId tracking_id =
@@ -352,6 +382,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // can downscale without failing.
   float min_working_scale_ = 1.0f;
   float max_failed_scale_ = 0.0f;
+
+  // These keep track of the status of promoted overlays from one frame to the
+  // next. These maps are updated by calling UpdateOverlayStatusMap(), and are
+  // used by UpdateDamageRect() to update damage properly.
+  OverlayStatusMap prev_overlays_;
+  OverlayStatusMap curr_overlays_;
 };
 
 }  // namespace viz
