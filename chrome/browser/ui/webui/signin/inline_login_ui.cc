@@ -167,6 +167,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"accountManagerDialogArcAccountPickerTitle",
      IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE},
     {"addAccountLabel", IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL},
+    {"accountUseInArcButtonLabel",
+     IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
     {"accountManagerErrorNoInternetTitle",
      IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
     {"accountManagerErrorNoInternetBody",

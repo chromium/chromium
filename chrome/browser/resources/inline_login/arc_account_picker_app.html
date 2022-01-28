@@ -1,9 +1,16 @@
 <style include="shared-css">
   :host {
-    --account-item-width: 250px;
-    --account-item-padding: 10px;
-    --account-icon-size: 40px;
-    --account-icon-margin: 10px;
+    --account-item-height: 44px;
+    --account-item-width: 366px;
+    --account-item-padding: 16px;
+    --account-item-margin: 12px;
+    --account-icon-size: 44px;
+    --account-icon-margin: 12px;
+  }
+
+  .main-container {
+    height: 100%;
+    overflow-y: scroll;
   }
 
   .google-full-logo {
@@ -16,20 +23,36 @@
   }
 
   .primary {
-    font-weight: 500;
-    margin-bottom: 4px;
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  .text-body {
+    margin-bottom: 32px;
   }
 
   .account-item {
     align-items: center;
     border: 1px solid var(--google-grey-300);
-    border-radius: 8px;
+    border-radius: 16px;
     display: flex;
     flex-direction: row;
-    height: 50px;
-    margin: 8px;
+    height: var(--account-item-height);
+    margin-bottom: var(--account-item-margin);
     padding: var(--account-item-padding);
     width: var(--account-item-width);
+  }
+
+  .account-item:hover {
+    background-color: rgba(var(--google-blue-500-rgb), .08);
+    border-color: rgba(var(--google-blue-600-rgb), .3);
+    cursor: pointer;
+  }
+
+  .account-item:focus {
+    border: 2px solid var(--google-blue-600);
+    height: calc(var(--account-item-height) - 2px);
+    width: calc(var(--account-item-width) - 2px);
   }
 
   .account-icon {
@@ -55,14 +78,14 @@
   }
 
   #addAccountButton > .account-icon {
-    background-color: var(--google-grey-200);
+    background-color: var(--google-grey-100);
   }
 
   #addAccountButton > .account-icon > .add-icon {
     -webkit-mask-image: url(chrome://resources/images/add.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--google-grey-600);
+    background-color: var(--google-grey-700);
     height: 80%;
     margin: 10%;
     width: 80%;
@@ -80,25 +103,34 @@
   </if>
 
   <h1>$i18n{accountManagerDialogArcAccountPickerTitle}</h1>
-  <p class="secondary">$i18nRaw{accountManagerDialogArcAccountPickerBody}</p>
+  <p class="secondary text-body"
+      >$i18nRaw{accountManagerDialogArcAccountPickerBody}</p>
 
   <template is="dom-repeat" id="accountsContainer" items="[[accounts]]">
-    <div class="account-item" on-click="makeAvailableInArc_">
-      <div class="account-icon"
-        style="background-image: [[getIconImageSet_(item.image)]]">
+    <div class="account-item" on-click="makeAvailableInArc_"
+        on-keypress="onAccountKeyPress_"
+        tabindex="0" role="button"
+        aria-labelledby$="fullName-[[index]] email-[[index]]">
+      <div class="account-icon" aria-hidden="true"
+          style="background-image: [[getIconImageSet_(item.image)]]">
       </div>
       <div class="account-name">
-        <span class="primary">[[item.fullName]]</span>
-        <span class="secondary">[[item.email]]</span>
+        <span class="primary" id="fullName-[[index]]"
+            aria-hidden="true">[[item.fullName]]</span>
+        <span class="secondary" id="email-[[index]]"
+            aria-hidden="true">[[item.email]]</span>
       </div>
     </div>
   </template>
 
-  <div class="account-item" id="addAccountButton" on-click="addAccount_">
-    <div class="account-icon">
+  <div class="account-item" id="addAccountButton" on-click="addAccount_"
+      on-keypress="onAddAccountKeyPress_" tabindex="0" role="button"
+      aria-label="$i18n{addAccountLabel}"
+      aria-description="$i18n{accountUseInArcButtonLabel}">
+    <div class="account-icon" aria-hidden="true">
       <div class="add-icon"></div>
     </div>
-    <div class="account-name">
+    <div class="account-name" aria-hidden="true">
       <span class="primary">$i18n{addAccountLabel}</span>
     </div>
   </div>

@@ -111,7 +111,7 @@
     </div>
 
     <cr-button class="next-button action-button"
-        aria-label="$i18n{ok}"
+        aria-label="[[getNextButtonLabel_(isArcAccountRestrictionsEnabled_)]]"
         on-tap="onOkButtonClick_"
         hidden$="[[!shouldShowOkButton_(currentView_)]]">
       [[getNextButtonLabel_(isArcAccountRestrictionsEnabled_)]]

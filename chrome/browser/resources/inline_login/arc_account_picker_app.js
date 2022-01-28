@@ -9,6 +9,9 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {Account} from './inline_login_browser_proxy.js';
 import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
+/** @typedef {{model: !{item: Account}, target: !Element}} */
+let EventModel;
+
 /** @polymer */
 class ArcAccountPickerAppElement extends PolymerElement {
   static get is() {
@@ -59,12 +62,35 @@ class ArcAccountPickerAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!{model: !{item: Account}, target: !Element}} event
+   * @param {!EventModel} event
    * @private
    */
   makeAvailableInArc_(event) {
     InlineLoginBrowserProxyImpl.getInstance().makeAvailableInArc(
         event.model.item);
+  }
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @private
+   */
+  onAddAccountKeyPress_(e) {
+    if (e.key === 'Space' || e.key === 'Enter') {
+      e.stopPropagation();
+      this.addAccount_();
+    }
+  }
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @private
+   */
+  onAccountKeyPress_(e) {
+    if (e.key === 'Space' || e.key === 'Enter') {
+      e.stopPropagation();
+      this.makeAvailableInArc_(
+          /** @type {!EventModel} */ (e));
+    }
   }
 }
 
