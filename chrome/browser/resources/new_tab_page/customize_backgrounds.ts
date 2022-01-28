@@ -12,14 +12,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CollectionImage, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-
-/** Event interface for dom-repeat. */
-interface RepeaterEvent<T> extends CustomEvent {
-  model: {
-    item: T,
-    index: number,
-  };
-}
+import {RepeaterEvent} from './utils_ts.js';
 
 /** Element that lets the user configure the background. */
 export class CustomizeBackgroundsElement extends I18nMixin

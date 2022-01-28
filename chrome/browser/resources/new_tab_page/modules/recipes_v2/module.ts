@@ -4,39 +4,35 @@
 
 import '../module_header.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 import {TaskModuleHandlerProxy} from '../task_module/task_module_handler_proxy.js';
 
-/**
- * @polymer
- * @extends {PolymerElement}
- */
-class RecipeModuleElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+class RecipeModuleElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-recipes-module-redesigned';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {!Array<!TaskItem>} */
       recipes: Array,
     };
+  }
+
+  recipes: TaskItem[];
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
 customElements.define(RecipeModuleElement.is, RecipeModuleElement);
 
-/** @return {!Promise<!HTMLElement>} */
-async function createModule() {
+async function createModule(): Promise<HTMLElement> {
   const {task} = await TaskModuleHandlerProxy.getHandler().getPrimaryTask(
       TaskModuleType.kRecipe);
   const element = new RecipeModuleElement();
@@ -44,8 +40,7 @@ async function createModule() {
   return element;
 }
 
-/** @type {!ModuleDescriptorV2} */
-export const recipeTasksDescriptor = new ModuleDescriptorV2(
+export const recipeTasksDescriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'recipe_tasks',
     /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
     /*height*/ ModuleHeight.TALL, createModule);

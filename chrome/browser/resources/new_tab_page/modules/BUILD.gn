@@ -37,11 +37,8 @@ js_library("module_descriptors") {
     ":module_descriptor",
     "..:i18n_setup",
     "cart:module",
-    "cart_v2:module",
     "drive:module",
-    "drive_v2:module",
     "photos:module",
-    "recipes_v2:module",
     "task_module:module",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -142,11 +139,11 @@ preprocess_if_expr("preprocess_gen") {
     "modules.js",
     "info_dialog.js",
     "task_module/module.js",
-    "recipes_v2/module.js",
+    "recipes_v2/module.ts",
     "cart/module.js",
-    "cart_v2/module.js",
+    "cart_v2/module.ts",
     "drive/module.js",
-    "drive_v2/module.js",
+    "drive_v2/module.ts",
     "photos/module.js",
   ]
   if (!is_official_build) {
