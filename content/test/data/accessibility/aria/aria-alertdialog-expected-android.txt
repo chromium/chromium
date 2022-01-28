@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View role_description='alert_dialog'
+++android.view.View role_description='alert dialog'

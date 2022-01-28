@@ -1812,8 +1812,7 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kRegion:
       return l10n_util::GetNSString(IDS_AX_ROLE_REGION);
     case ax::mojom::Role::kSpinButton:
-      // This control is similar to what VoiceOver calls a "stepper".
-      return l10n_util::GetNSString(IDS_AX_ROLE_STEPPER);
+      return l10n_util::GetNSString(IDS_AX_ROLE_SPIN_BUTTON);
     case ax::mojom::Role::kStatus:
       return l10n_util::GetNSString(IDS_AX_ROLE_STATUS);
     case ax::mojom::Role::kSearchBox:

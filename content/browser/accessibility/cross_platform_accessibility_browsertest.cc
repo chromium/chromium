@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   TestLocalizedRoleDescription(14, u"week picker");
   TestLocalizedRoleDescription(15, u"highlight");
   TestLocalizedRoleDescription(16, u"meter");
-  TestLocalizedRoleDescription(17, u"output");
+  TestLocalizedRoleDescription(17, u"status");
   TestLocalizedRoleDescription(18, u"time");
   TestLocalizedRoleDescription(19, u"content information");
 }

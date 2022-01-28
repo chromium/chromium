@@ -53,9 +53,11 @@
 #include "ui/accessibility/platform/ax_platform_relation_win.h"
 #include "ui/accessibility/platform/compute_attributes.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/strings/grit/ax_strings.h"
 
 //
 // Macros to use at the top of any AXPlatformNodeWin function that implements
@@ -4408,7 +4410,15 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
 
     case UIA_LocalizedControlTypePropertyId: {
-      std::u16string localized_control_type = GetRoleDescription();
+      // According to the HTML-AAM, UIA expects <output> to have a Localized
+      // Control Type of "output" whereas the Core-AAM states the Localized
+      // Control Type of the ARIA status role should be "status".
+      std::string html_tag =
+          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+      std::u16string localized_control_type =
+          html_tag == "output" ? l10n_util::GetStringUTF16(IDS_AX_ROLE_OUTPUT)
+                               : GetRoleDescription();
+
       if (!localized_control_type.empty()) {
         result->vt = VT_BSTR;
         result->bstrVal =
