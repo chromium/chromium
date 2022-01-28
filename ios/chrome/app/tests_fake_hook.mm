@@ -20,7 +20,7 @@ bool DisableDiscoverFeed() {
   return false;
 }
 bool DisableFirstRun() {
-  return true;
+  return false;
 }
 bool DisableGeolocation() {
   return false;
