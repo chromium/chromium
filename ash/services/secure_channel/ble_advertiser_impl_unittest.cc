@@ -9,16 +9,16 @@
 #include <vector>
 
 #include "ash/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
+#include "ash/services/secure_channel/fake_ble_advertiser.h"
+#include "ash/services/secure_channel/fake_ble_synchronizer.h"
+#include "ash/services/secure_channel/fake_bluetooth_helper.h"
+#include "ash/services/secure_channel/fake_error_tolerant_ble_advertisement.h"
+#include "ash/services/secure_channel/fake_one_shot_timer.h"
+#include "ash/services/secure_channel/fake_timer_factory.h"
 #include "base/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "chromeos/services/secure_channel/fake_ble_advertiser.h"
-#include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
-#include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
-#include "chromeos/services/secure_channel/fake_error_tolerant_ble_advertisement.h"
-#include "chromeos/services/secure_channel/fake_one_shot_timer.h"
-#include "chromeos/services/secure_channel/fake_timer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

@@ -10,8 +10,8 @@
 
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/error_tolerant_ble_advertisement.h"
+#include "ash/services/secure_channel/foreground_eid_generator.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/secure_channel/foreground_eid_generator.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
 namespace chromeos {

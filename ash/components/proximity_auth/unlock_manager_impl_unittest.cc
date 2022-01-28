@@ -14,6 +14,7 @@
 #include "ash/components/proximity_auth/proximity_monitor.h"
 #include "ash/components/proximity_auth/remote_device_life_cycle.h"
 #include "ash/components/proximity_auth/remote_status_update.h"
+#include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gmock_callback_support.h"

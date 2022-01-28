@@ -7,17 +7,17 @@
 #include <memory>
 
 #include "ash/services/secure_channel/connection_details.h"
+#include "ash/services/secure_channel/fake_active_connection_manager.h"
+#include "ash/services/secure_channel/fake_authenticated_channel.h"
+#include "ash/services/secure_channel/fake_client_connection_parameters.h"
+#include "ash/services/secure_channel/fake_multiplexed_channel.h"
+#include "ash/services/secure_channel/multiplexed_channel_impl.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/secure_channel/fake_active_connection_manager.h"
-#include "chromeos/services/secure_channel/fake_authenticated_channel.h"
-#include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
-#include "chromeos/services/secure_channel/fake_multiplexed_channel.h"
-#include "chromeos/services/secure_channel/multiplexed_channel_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

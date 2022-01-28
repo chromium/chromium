@@ -11,6 +11,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/fake_authenticated_channel.h"
+#include "ash/services/secure_channel/fake_connection.h"
+#include "ash/services/secure_channel/fake_secure_channel_connection.h"
+#include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
@@ -18,10 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/secure_channel/fake_authenticated_channel.h"
-#include "chromeos/services/secure_channel/fake_connection.h"
-#include "chromeos/services/secure_channel/fake_secure_channel_connection.h"
-#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

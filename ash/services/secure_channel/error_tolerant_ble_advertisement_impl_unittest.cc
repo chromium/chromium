@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "ash/services/secure_channel/ble_constants.h"
+#include "ash/services/secure_channel/fake_ble_synchronizer.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"

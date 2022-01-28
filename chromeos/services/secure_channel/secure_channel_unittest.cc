@@ -7,6 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/secure_channel/fake_authenticator.h"
+#include "ash/services/secure_channel/fake_connection.h"
+#include "ash/services/secure_channel/fake_secure_context.h"
+#include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -16,10 +20,6 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/services/secure_channel/fake_authenticator.h"
-#include "chromeos/services/secure_channel/fake_connection.h"
-#include "chromeos/services/secure_channel/fake_secure_context.h"
-#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

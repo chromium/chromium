@@ -4,9 +4,9 @@
 
 #include "ash/services/secure_channel/active_connection_manager_impl.h"
 
+#include "ash/services/secure_channel/multiplexed_channel_impl.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/multiplexed_channel_impl.h"
 
 namespace chromeos {
 

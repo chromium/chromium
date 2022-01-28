@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "ash/services/secure_channel/device_id_pair.h"
+#include "ash/services/secure_channel/fake_authenticated_channel.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

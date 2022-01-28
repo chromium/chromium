@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/services/secure_channel/connection_observer.h"
+#include "ash/services/secure_channel/fake_wire_message.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -22,7 +23,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/secure_channel/fake_wire_message.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

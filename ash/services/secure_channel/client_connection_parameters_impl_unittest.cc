@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/fake_channel.h"
+#include "ash/services/secure_channel/fake_client_connection_parameters.h"
+#include "ash/services/secure_channel/fake_connection_delegate.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/secure_channel/fake_channel.h"
-#include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
-#include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
