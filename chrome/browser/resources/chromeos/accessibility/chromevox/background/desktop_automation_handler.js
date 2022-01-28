@@ -512,7 +512,9 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
               .deepEquivalent);
 
       // Sync ChromeVox range with selection.
-      ChromeVoxState.instance.setCurrentRange(selectedRange);
+      if (!ChromeVoxState.isReadingContinuously) {
+        ChromeVoxState.instance.setCurrentRange(selectedRange);
+      }
     }
     this.textEditHandler_.onEvent(evt);
   }
