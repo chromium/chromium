@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
+import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputConnection;
@@ -165,14 +166,16 @@ public class ViewAndroidDelegate {
     }
 
     /**
-     * Drag the text out of current view.
-     * @param text The dragged text.
+     * Start {@link View#startDragAndDrop(ClipData, DragShadowBuilder, Object, int)} with
+     * {@link DropDataAndroid} from the web content.
+     *
      * @param shadowImage The shadow image for the dragged text.
+     * @param dropData The drop data presenting the drag target.
      */
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.N)
     @CalledByNative
-    private boolean startDragAndDrop(String text, Bitmap shadowImage) {
+    private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) return false;
 
         ViewGroup containerView = getContainerViewGroup();
@@ -181,7 +184,7 @@ public class ViewAndroidDelegate {
         ImageView imageView = new ImageView(containerView.getContext());
         imageView.setImageBitmap(shadowImage);
         imageView.layout(0, 0, shadowImage.getWidth(), shadowImage.getHeight());
-
+        String text = dropData.text;
         return ApiHelperForN.startDragAndDrop(containerView, ClipData.newPlainText(null, text),
                 new View.DragShadowBuilder(imageView), null, View.DRAG_FLAG_GLOBAL);
     }

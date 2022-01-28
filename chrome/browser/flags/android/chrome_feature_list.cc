@@ -225,7 +225,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDownloadProgressInfoBar,
     &kDownloadProgressMessage,
     &kDownloadRename,
-    &kDragAndDropAndroid,
     &kDuetTabStripIntegrationAndroid,
     &kDynamicColorAndroid,
     &kEnableDangerousDownloadDialog,
@@ -623,9 +622,6 @@ const base::Feature kDownloadNotificationBadge{
 
 const base::Feature kDownloadRename{"DownloadRename",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kDragAndDropAndroid{"DragAndDropAndroid",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kDuetTabStripIntegrationAndroid{
     "DuetTabStripIntegrationAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -284,6 +284,7 @@ CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
 CONTENT_EXPORT extern const base::Feature kBigLittleScheduling;
 CONTENT_EXPORT extern const base::Feature kBindingManagementWaiveCpu;
+CONTENT_EXPORT extern const base::Feature kDragAndDrop;
 CONTENT_EXPORT extern const base::Feature kOnDemandAccessibilityEvents;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteExceptions;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteGlobal;

@@ -152,8 +152,11 @@ class UI_ANDROID_EXPORT ViewAndroid {
   bool HasFocus();
   void RequestFocus();
 
-  bool StartDragAndDrop(const base::android::JavaRef<jstring>& jtext,
-                        const base::android::JavaRef<jobject>& jimage);
+  // Pass necessary |jdrop_data| to build Android ClipData for drag and drop.
+  // |jshadow_image| is a bitmap presentation of the shadow image to be used
+  // for dragging.
+  bool StartDragAndDrop(const base::android::JavaRef<jobject>& jshadow_image,
+                        const base::android::JavaRef<jobject>& jdrop_data);
 
   gfx::Size GetPhysicalBackingSize() const;
   gfx::Size GetSize() const;

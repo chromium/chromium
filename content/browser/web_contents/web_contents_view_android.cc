@@ -8,10 +8,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "cc/layers/layer.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/android/content_ui_event_handler.h"
+#include "content/browser/android/drop_data_android.h"
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/android/select_popup.h"
 #include "content/browser/android/selection/selection_popup_controller.h"
@@ -41,8 +43,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -57,6 +57,17 @@ bool ShouldRequestUnbufferedDispatch() {
           base::android::SDK_VERSION_LOLLIPOP &&
       !content::GetContentClient()->UsingSynchronousCompositing();
   return should_request_unbuffered_dispatch;
+}
+
+bool IsDragEnabledForDropData(const DropData& drop_data) {
+  // Cache the feature flag value so it isn't queried on every drag start.
+  static const bool drag_feature_enabled =
+      base::FeatureList::IsEnabled(features::kDragAndDrop);
+  if (!drag_feature_enabled) {
+    return drop_data.text.has_value();
+  }
+  return !drop_data.url.is_empty() || !drop_data.file_contents.empty() ||
+         drop_data.text.has_value();
 }
 }
 
@@ -304,7 +315,7 @@ void WebContentsViewAndroid::StartDragging(
     const gfx::Vector2d& image_offset,
     const blink::mojom::DragEventSourceInfo& event_info,
     RenderWidgetHostImpl* source_rwh) {
-  if (!drop_data.text) {
+  if (!IsDragEnabledForDropData(drop_data)) {
     // Need to clear drag and drop state in blink.
     OnSystemDragEnded();
     return;
@@ -330,12 +341,9 @@ void WebContentsViewAndroid::StartDragging(
     bitmap = &dummy_bitmap;
   }
 
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jtext =
-      ConvertUTF16ToJavaString(env, *drop_data.text);
-
-  if (!native_view->StartDragAndDrop(jtext,
-                                     gfx::ConvertToJavaBitmap(*bitmap))) {
+  ScopedJavaLocalRef<jobject> jdrop_data = ToJavaDropData(drop_data);
+  if (!native_view->StartDragAndDrop(gfx::ConvertToJavaBitmap(*bitmap),
+                                     jdrop_data)) {
     // Need to clear drag and drop state in blink.
     OnSystemDragEnded();
     return;

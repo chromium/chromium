@@ -1140,6 +1140,10 @@ const base::Feature kBindingManagementWaiveCpu{
 const base::Feature kOnDemandAccessibilityEvents{
     "OnDemandAccessibilityEvents", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable image and link drag from web content.
+const base::Feature kDragAndDrop{"DragAndDropAndroid",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Request Desktop Site per-site setting for Android.
 // Refer to the launch bug (https://crbug.com/1244979) for more information.
 const base::Feature kRequestDesktopSiteExceptions{

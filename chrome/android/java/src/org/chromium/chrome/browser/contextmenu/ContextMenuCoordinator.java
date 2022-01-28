@@ -27,9 +27,11 @@ import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.Pe
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -147,7 +149,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ? activity.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width)
                 : null;
         View webContentView = webContents.getViewAndroidDelegate() != null
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_AND_DROP_ANDROID)
+                        && ContentFeatureList.isEnabled(ContentFeatures.DRAG_AND_DROP)
                 ? webContents.getViewAndroidDelegate().getContainerView()
                 : null;
         mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,
