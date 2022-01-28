@@ -1,7 +1,7 @@
-Name: com.android.tools.layoutlib.layoutlib-api
+Name: Android Tools layoutlib-api
 Short Name: layoutlib-api
 URL: http://tools.android.com/
-Version: 30.0.0-alpha10
+Version: 30.2.0-beta01
 License: Apache Version 2.0
 License File: NOT_SHIPPED
 Security Critical: no

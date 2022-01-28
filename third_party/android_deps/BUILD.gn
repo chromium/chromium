@@ -132,7 +132,7 @@ java_annotation_processor("auto_service_processor") {
 # === Generated Code Start ===
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_android_tools_common_java") {
-  jar_path = "libs/com_android_tools_common/common-30.0.0-alpha10.jar"
+  jar_path = "libs/com_android_tools_common/common-30.2.0-beta01.jar"
   output_name = "com_android_tools_common"
   enable_bytecode_checks = false
 
@@ -144,7 +144,7 @@ java_prebuilt("com_android_tools_common_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_android_tools_layoutlib_layoutlib_api_java") {
-  jar_path = "libs/com_android_tools_layoutlib_layoutlib_api/layoutlib-api-30.0.0-alpha10.jar"
+  jar_path = "libs/com_android_tools_layoutlib_layoutlib_api/layoutlib-api-30.2.0-beta01.jar"
   output_name = "com_android_tools_layoutlib_layoutlib_api"
   enable_bytecode_checks = false
 
@@ -156,7 +156,7 @@ java_prebuilt("com_android_tools_layoutlib_layoutlib_api_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_android_tools_sdk_common_java") {
-  jar_path = "libs/com_android_tools_sdk_common/sdk-common-30.0.0-alpha10.jar"
+  jar_path = "libs/com_android_tools_sdk_common/sdk-common-30.2.0-beta01.jar"
   output_name = "com_android_tools_sdk_common"
   enable_bytecode_checks = false
 
@@ -787,9 +787,6 @@ if (!limit_android_deps) {
       ":android_arch_lifecycle_common_java",
       ":com_android_support_support_annotations_java",
     ]
-
-    # https://crbug.com/887942#c1
-    ignore_proguard_configs = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -797,9 +794,6 @@ if (!limit_android_deps) {
     aar_path = "libs/android_arch_lifecycle_viewmodel/viewmodel-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_viewmodel/android_arch_lifecycle_viewmodel.info"
     deps = [ ":com_android_support_support_annotations_java" ]
-
-    # https://crbug.com/887942#c1
-    ignore_proguard_configs = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

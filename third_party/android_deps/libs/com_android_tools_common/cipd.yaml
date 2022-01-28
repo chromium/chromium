@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@30.0.0-alpha10.cr0
+# cipd create --pkg-def cipd.yaml -tag version:2@30.2.0-beta01.cr0
 package: chromium/third_party/android_deps/libs/com_android_tools_common
 description: "com.android.tools.common"
 data:
-- file: common-30.0.0-alpha10.jar
+- file: common-30.2.0-beta01.jar
