@@ -5,6 +5,7 @@
 import SwiftUI
 
 /// A SwiftUI view for the overflow menu displaying a subsection of the actions list.
+@available(iOS 15, *)
 struct OverflowMenuActionSection: View {
 
   enum Dimensions {

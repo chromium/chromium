@@ -50,6 +50,14 @@ const char kJavaScriptReload[] =
 // or mobile mode.
 const NSTimeInterval kWaitForUserAgentChangeTimeout = 15.0;
 
+// Returns the correct matcher for the collection view containing the Request
+// Desktop/Mobile button given the current overflow menu.
+id<GREYMatcher> CollectionViewMatcher() {
+  return [ChromeEarlGrey isNewOverflowMenuEnabled]
+             ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+             : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+}
+
 // Select the button to request desktop site by scrolling the collection.
 // 200 is a reasonable scroll displacement that works for all UI elements, while
 // not being too slow.
@@ -59,8 +67,7 @@ GREYElementInteraction* RequestDesktopButton() {
                                               kToolsMenuRequestDesktopId),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(
-                               kPopupMenuToolsMenuTableViewId)];
+      onElementWithMatcher:CollectionViewMatcher()];
 }
 
 // Select the button to request mobile site by scrolling the collection.
@@ -72,8 +79,7 @@ GREYElementInteraction* RequestMobileButton() {
                                               kToolsMenuRequestMobileId),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(
-                               kPopupMenuToolsMenuTableViewId)];
+      onElementWithMatcher:CollectionViewMatcher()];
 }
 
 // A ResponseProvider that provides user agent for httpServer request.

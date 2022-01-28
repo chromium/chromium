@@ -211,7 +211,7 @@ class ScopedDisableTimerTracking {
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
          usingSearchAction:PageSheetScrollDown()
       onElementWithMatcher:grey_accessibilityID(
-                               @"kPopupMenuToolsMenuActionListId")]
+                               kPopupMenuToolsMenuActionListId)]
       performAction:grey_tap()];
 }
 

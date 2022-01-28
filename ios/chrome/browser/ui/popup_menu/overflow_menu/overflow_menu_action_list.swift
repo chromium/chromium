@@ -5,7 +5,14 @@
 import SwiftUI
 
 /// A view that displays a list of actions in the overflow menu.
+@available(iOS 15, *)
 struct OverflowMenuActionList: View {
+
+  enum Constants {
+    // The minimum row height for any row in the list.
+    static let minimumRowHeight: CGFloat = 48
+  }
+
   /// The list of action groups for this view.
   var actionGroups: [OverflowMenuActionGroup]
 
@@ -19,5 +26,6 @@ struct OverflowMenuActionList: View {
     .listStyle(InsetGroupedListStyle())
     // Allow sections to have very small headers controlling section spacing.
     .environment(\.defaultMinListHeaderHeight, 0)
+    .environment(\.defaultMinListRowHeight, Constants.minimumRowHeight)
   }
 }

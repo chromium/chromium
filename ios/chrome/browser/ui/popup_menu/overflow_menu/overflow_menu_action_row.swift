@@ -6,6 +6,7 @@ import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
 /// A view that displays an action in the overflow menu.
+@available(iOS 15, *)
 struct OverflowMenuActionRow: View {
   /// The action for this row.
   @ObservedObject var action: OverflowMenuAction
@@ -29,5 +30,6 @@ struct OverflowMenuActionRow: View {
     .accessibilityIdentifier(action.accessibilityIdentifier)
     .disabled(!action.enabled || action.enterpriseDisabled)
     .accentColor(.cr_textPrimaryColor)
+    .listRowSeparatorTint(.overflowMenuSeparatorColor)
   }
 }

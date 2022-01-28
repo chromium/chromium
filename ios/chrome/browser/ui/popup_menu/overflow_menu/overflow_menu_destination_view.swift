@@ -72,7 +72,7 @@ struct OverflowMenuDestinationButton: ButtonStyle {
 
   /// Background color for the icon.
   func backgroundColor(configuration: Configuration) -> Color {
-    return configuration.isPressed ? .cr_grey300 : .cr_groupedSecondaryBackground
+    return configuration.isPressed ? Color(.systemGray4) : .cr_groupedSecondaryBackground
   }
 
   /// View representing the background of the icon.

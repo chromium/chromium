@@ -31,13 +31,13 @@ struct OverflowMenuFooterRow: View {
         spacing: Dimensions.iconLineSpacing
       ) {
         Rectangle()
-          .foregroundColor(.cr_grey300)
+          .foregroundColor(.overflowMenuSeparatorColor)
           .frame(height: Dimensions.iconLineDividerHeight)
         footer.image
           .fixedSize()
-          .foregroundColor(.cr_grey300)
+          .foregroundColor(.cr_grey500)
         Rectangle()
-          .foregroundColor(.cr_grey300)
+          .foregroundColor(.overflowMenuSeparatorColor)
           .frame(height: Dimensions.iconLineDividerHeight)
       }
       .padding([.top], Dimensions.iconLineExtraVerticalSpacing)

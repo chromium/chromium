@@ -82,6 +82,7 @@ source_set("overflow_menu") {
 swift_source_set("overflow_menu_swift") {
   bridge_header = "overflow_menu_swift_bridge.h"
   sources = [
+    "Color+overflow_menu.swift",
     "overflow_menu_action.swift",
     "overflow_menu_action_group.swift",
     "overflow_menu_action_list.swift",
