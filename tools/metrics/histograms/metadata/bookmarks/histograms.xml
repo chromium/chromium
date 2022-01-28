@@ -1,0 +1,422 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Bookmarks histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="BookmarkManager.CommandExecuted" enum="BookmarkManagerCommand"
+    expires_after="never">
+<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
+
+  <owner>johntlee@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Logs when a user action triggers a command in the bookmark manager. Commands
+    can be triggered by keyboard shortcuts, menu items or other buttons in the
+    UI.
+
+    Revised in M-76 when the &quot;Open (double click/enter)&quot; bucket was
+    split into two separate buckets, one for bookmarks and one for folders.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="BookmarkManager.CommandMenuOpened"
+    enum="BookmarkManagerMenuSource" expires_after="2020-06-14">
+  <owner>johntlee@chromium.org</owner>
+  <summary>
+    Logs where the menu was opened from when a user action opens the command
+    menu in the bookmark manager.
+  </summary>
+</histogram>
+
+<histogram name="BookmarkManager.NumDragged" units="bookmarks"
+    expires_after="M85">
+  <owner>johntlee@chromium.org</owner>
+  <summary>
+    Logs the number of bookmarks that were dragged simultaneously by a user.
+  </summary>
+</histogram>
+
+<histogram name="BookmarkManager.ResultsRenderedTime" units="ms"
+    expires_after="2022-06-26">
+  <owner>johntlee@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <summary>
+    Records the time taken to load the bookmarks Web UI and render. This is
+    roughly equivalent to 'time to first meaningful paint' for the bookmark
+    manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
+    expires_after="2022-06-12">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records when a bookmark is added sliced on profile type.
+
+    This was not recorded for Android before M90. Reading list and partner
+    bookmarks aren't reported by it.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkAllTabsWithTabsCount.Incognito" units="tabs"
+    expires_after="2022-05-01">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records the count of tabs when a user bookmarks all open
+    tabs, in incognito mode.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkAllTabsWithTabsCount.Regular" units="tabs"
+    expires_after="2022-07-03">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records the count of tabs when a user bookmarks all open
+    tabs, in regular mode.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarksBarStatus.OnReadingListOpened"
+    enum="BookmarkBarPrefAndState" expires_after="2022-06-26">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This records the Boomarks bar pref state and status when the reading list is
+    opened. This will help determine how often the reading list is accessed from
+    the NTP where the bookmarks bar is always visible and the bookmark bar pref
+    state for those from the NTP. (Desktop only).
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarksInFolder" units="bookmarks"
+    expires_after="M85">
+  <owner>johntlee@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs the number of bookmark items inside a folder every time a folder is
+    opened inside the bookmark manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BottomSheet.DestinationFolder" enum="BookmarkType"
+    expires_after="2022-06-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs the destination directory chosen by the user when saving a bookmark via
+    bottom sheet on Android.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad" units="bookmarks"
+    expires_after="2022-06-05">
+  <owner>supertri@chromium.org</owner>
+  <owner>isherman@chromium.org</owner>
+  <owner>aidanday@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The total number of bookmarks a user has saved, excluding folders. Recorded
+    when a profile is opened - precisely, when bookmarks are loaded into storage
+    from disk. The count includes all bookmarks both in the &quot;Bookmarks
+    Bar&quot; and also under &quot;Other Bookmarks&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad.DuplicateUrl" units="bookmarks"
+    expires_after="2021-04-04">
+  <obsolete>
+    Replaced with Bookmarks.Count.OnProfileLoad.DuplicateUrl2 as of 11/2020 to
+    provide more granular buckets above 10K duplicates
+  </obsolete>
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The number of bookmarks a user has saved with a URL that is also present in
+    at least one other bookmark. This excludes folders (which don't have a URL).
+    Recorded when bookmarks are loaded into storage from disk if there is at
+    least one duplicate.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad.Duplicate{UniquenessCriterion}"
+    units="bookmarks" expires_after="2022-06-30">
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The number of bookmarks a user has saved with a {UniquenessCriterion} that
+    is also present in at least one other bookmark. This excludes not only
+    folders (which don't have a URL) but it also excludes one bookmark per
+    unique {UniquenessCriterion} (that is, all except one are considered
+    duplicates). Recorded when bookmarks are loaded into storage from disk if
+    there is at least one duplicate.
+  </summary>
+  <token key="UniquenessCriterion">
+    <variant name="Url2" summary="URL"/>
+    <variant name="UrlAndTitle" summary="URL-title pair"/>
+    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple"/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad.Unique{UniquenessCriterion}"
+    units="bookmarks" expires_after="2021-10-10">
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The number of unique {UniquenessCriterion}s among bookmarks saved by the
+    user. Recorded when bookmarks are loaded into storage from disk.
+  </summary>
+  <token key="UniquenessCriterion">
+    <variant name="Url" summary="URL"/>
+    <variant name="UrlAndTitle" summary="URL-title pair"/>
+    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple"/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.Count.OpenInIncognito" units="bookmarks"
+    expires_after="M82">
+  <owner>twellington@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the number of bookmarks which are opened using the &quot;Open in
+    incognito tab&quot; button from selection mode in the Android bookmark
+    manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OpenInNewTab" units="bookmarks"
+    expires_after="M82">
+  <owner>twellington@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the number of bookmarks which are opened using the &quot;Open in new
+    tab&quot; button from selection mode in the Android bookmark manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.CreateBookmarkIndexTime" units="ms"
+    expires_after="M88">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Time taken to build the bookmark index. Logged upon profile load when the
+    bookmarks JSON file is read.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.DecodeTime" units="ms" expires_after="M88">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Time taken to decode the bookmarks JSON file. Logged upon profile load when
+    the bookmarks JSON file is read.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.DuplicateAndEmptyTitleDetectionTime" units="ms"
+    expires_after="2019-09-24">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Time to compute values to be logged for UMA metrics
+    Bookmarks.Count.OnProfileLoad.*.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
+    expires_after="2022-06-05">
+  <owner>ianwen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>How users add a new bookmark.</summary>
+</histogram>
+
+<histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
+    expires_after="2022-06-12">
+  <owner>ianwen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>Logs a UI location from which a bookmark is launched.</summary>
+</histogram>
+
+<histogram name="Bookmarks.OnFaviconsChangedIconURL" enum="BooleanHit"
+    expires_after="M77">
+  <owner>pkotwicz@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs how frequently BookmarkModel::OnFaviconsChanged() is called with a
+    non-empty |icon_url| to determine whether BookmarkNodes should be cached
+    based on their favicon URLs (e.g. http://www.google.com/favicon.ico) in
+    addition to their page URLs (e.g. http://www.google.com). OnFaviconChanged()
+    is expected to be called less than 10 times per user per day with a
+    non-empty |icon_url|.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkManager.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-07-03">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This records the number of times the bookmark manager is opened from regular
+    or Incognito tab. This histogram only records the count from
+    ChromeTabbedActivity where we actually have the Bookmark manager UI.
+    Recorded when the bookmark menu item is clicked in Android.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}" units="ms"
+    expires_after="2022-02-15">
+  <obsolete>
+    Deprecated March 2021
+  </obsolete>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs the duration in milliseconds between bookmark creation time and
+    bookmark open time based on device local time. Recorded when {BookmarkType}
+    is opened. Bookmark folder is not considered. The creation and open can
+    happen on different runs of Chrome.
+  </summary>
+  <token key="BookmarkType">
+    <variant name="Normal" summary="a normal bookmark."/>
+    <variant name="Partner" summary="a partner bookmark."/>
+    <variant name="ReadingList" summary="a reading list article."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
+    expires_after="2022-02-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    A new version of Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}, to rule
+    out corrupted data introduced by a timestamp bug.
+  </summary>
+  <token key="BookmarkType">
+    <variant name="Normal" summary="a normal bookmark."/>
+    <variant name="Partner" summary="a partner bookmark."/>
+    <variant name="ReadingList" summary="a reading list article."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
+    expires_after="2022-06-12">
+  <owner>wychen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs whether the bookmark entry is a user bookmark or a partner bookmark
+    when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
+    expires_after="2022-06-12">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
+  <summary>
+    Logs the total number of reading list items shown in the reading list on the
+    Android Bookmarks page when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
+    expires_after="2022-06-12">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
+  <summary>
+    Logs the number of read items shown in the reading list on the Android
+    Bookmarks page when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.ReadingList.NumberOfUnreadItems" units="items"
+    expires_after="2022-06-26">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
+  <summary>
+    Logs the number of unread items shown in the reading list on the Android
+    Bookmarks page when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.StarEntryPoint.ClickedAction"
+    enum="StarEntryPointAction" expires_after="2022-06-26">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Recorded when an action in the Bookmark icon menu is clicked.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.UsageCountPerProfileType" enum="BrowserProfileType"
+    expires_after="2022-06-12">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The number of times bookmarks are used in each profile type. Recorded when a
+    bookmark is clicked.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
