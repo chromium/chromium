@@ -22,7 +22,7 @@
         localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
     </localized-link>
     <h2 id="deviceListTitle" aria-live="polite">
-      [[getDeviceListTitle_(devices.*, isBluetoothEnabled)]]
+      [[getDeviceListTitle_(devices.*, isBluetoothEnabled, devicePendingPairing.*)]]
     </h2>
     <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*,
         isBluetoothEnabled)]]" restamp>

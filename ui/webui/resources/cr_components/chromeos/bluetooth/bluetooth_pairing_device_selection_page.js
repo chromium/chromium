@@ -172,7 +172,20 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
       return this.i18n('bluetoothDisabled');
     }
 
-    if (this.shouldShowDeviceList_()) {
+    // Case where device list becomes empty (device is turned off)
+    // and then device pairing fails.
+    // Note: |devices| always updates before pairing result
+    // returns.
+    if (!this.devicePendingPairing && !this.shouldShowDeviceList_()) {
+      return this.i18n('bluetoothNoAvailableDevices');
+    }
+
+    // When pairing succeeds there is a brief moement where |devices| is empty
+    // (device is removed from discovered list) but because of b/216522777 we
+    // still want to show available devices header, we check for
+    // |devicePendingPairing| which will have a value since it is only reset
+    // after pairing fails.
+    if (this.shouldShowDeviceList_() || this.devicePendingPairing) {
       return this.i18n('bluetoothAvailableDevices');
     }
 

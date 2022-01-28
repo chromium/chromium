@@ -353,6 +353,14 @@ export class FakeBluetoothConfig {
   }
 
   /**
+   * Resets discovered devices list to an empty list.
+   */
+  resetDiscoveredDeviceList() {
+    this.discoveredDevices_ = [];
+    this.notifyDelegatesPropertiesUpdated_();
+  }
+
+  /**
    * Replaces device found in |systemProperties| with |device|.
    * @param {chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
    *     device

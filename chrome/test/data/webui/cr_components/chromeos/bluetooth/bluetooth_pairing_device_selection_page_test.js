@@ -124,6 +124,28 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     assertEquals(
         getDeviceListItems()[0].deviceItemState, DeviceItemState.PAIRING);
 
+    // Simulate device is pairing and is turned off.
+    // Also covers case where device pairing succeeds, device list would
+    // be empty but |devicePendingPairing| will still have a value.
+    // this is because |devicePendingPairing| is not reset when pairing
+    // succeeds.
+    bluetoothConfig.resetDiscoveredDeviceList();
+    deviceSelectionPage.devicePendingPairing = device.deviceProperties;
+    await flushAsync();
+    assertFalse(!!getDeviceList());
+    assertEquals(
+        deviceSelectionPage.i18n('bluetoothAvailableDevices'),
+        getDeviceListTitle().textContent.trim());
+
+    // since device is turned off device pairing fails and devicePendingPairing
+    // becomes null.
+    deviceSelectionPage.devicePendingPairing = null;
+    await flushAsync();
+    assertFalse(!!getDeviceList());
+    assertEquals(
+        deviceSelectionPage.i18n('bluetoothNoAvailableDevices'),
+        getDeviceListTitle().textContent.trim());
+
     // Disable Bluetooth.
     deviceSelectionPage.isBluetoothEnabled = false;
     await flushAsync();
