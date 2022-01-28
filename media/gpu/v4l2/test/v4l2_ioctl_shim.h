@@ -44,6 +44,9 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
   uint64_t reference_id() const { return reference_id_; }
   void set_reference_id(uint64_t reference_id) { reference_id_ = reference_id; }
 
+  uint32_t frame_number() const { return frame_number_; }
+  void set_frame_number(uint32_t frame_number) { frame_number_ = frame_number; }
+
  private:
   friend class base::RefCounted<MmapedBuffer>;
 
@@ -53,6 +56,11 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
   MmapedPlanes mmaped_planes_;
   const uint32_t num_planes_;
   uint64_t reference_id_;
+  // Indicates which frame in input bitstream corresponds to this MmapedBuffer
+  // in OUTPUT queue.
+  // TODO(stevecho): might need to consider |show_frame| flag in the frame
+  // header.
+  uint32_t frame_number_;
 };
 
 using MmapedBuffers = std::vector<scoped_refptr<MmapedBuffer>>;

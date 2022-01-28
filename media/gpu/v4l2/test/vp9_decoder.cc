@@ -388,7 +388,7 @@ bool Vp9Decoder::CopyFrameData(const Vp9FrameHeader& frame_hdr,
                 frame_hdr.data, frame_hdr.frame_size);
 }
 
-Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
+Vp9Decoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number) {
   gfx::Size size;
   Vp9FrameHeader frame_hdr{};
 
@@ -408,6 +408,12 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
 
   if (!CopyFrameData(frame_hdr, OUTPUT_queue_))
     LOG(FATAL) << "Failed to copy the frame data into the V4L2 buffer.";
+
+  LOG_ASSERT(OUTPUT_queue_->num_buffers() == 1)
+      << "Too many buffers in OUTPUT queue. It is currently designed to "
+         "support only 1 request at a time.";
+
+  OUTPUT_queue_->GetBuffer(0)->set_frame_number(frame_number);
 
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
     LOG(ERROR) << "VIDIOC_QBUF failed for OUTPUT queue.";

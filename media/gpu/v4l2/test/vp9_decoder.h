@@ -41,8 +41,8 @@ class Vp9Decoder {
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
   bool Initialize();
 
-  // Parses next frame from IVF stream and decodes the frame.
-  Vp9Decoder::Result DecodeNextFrame();
+  // Parses next frame from IVF stream and decodes the frame |frame_number|.
+  Vp9Decoder::Result DecodeNextFrame(const int frame_number);
 
  private:
   Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,

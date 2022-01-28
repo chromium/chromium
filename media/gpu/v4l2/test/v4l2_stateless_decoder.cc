@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 
   for (int i = 0; i < n_frames || n_frames == 0; i++) {
     LOG(INFO) << "Frame " << i << "...";
-    const Vp9Decoder::Result res = dec->DecodeNextFrame();
+    const Vp9Decoder::Result res = dec->DecodeNextFrame(i);
     if (res == Vp9Decoder::kEOStream) {
       LOG(INFO) << "End of stream.";
       break;
