@@ -199,20 +199,19 @@ TEST_F(ShortcutTest, CreateShortcutWithOnlySomeProperties) {
 }
 
 TEST_F(ShortcutTest, CreateShortcutVerifyProperties) {
+  // TODO(crbug.com/1264563) Flaky on Win 7.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          ShortcutOperation::kCreateAlways));
 
   ValidateShortcut(link_file_, link_properties_);
 }
 
-// TODO(crbug.com/1271993): Flaky on Win7 x86.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
-#define MAYBE_UpdateShortcutVerifyProperties \
-  DISABLED_UpdateShortcutVerifyProperties
-#else
-#define MAYBE_UpdateShortcutVerifyProperties UpdateShortcutVerifyProperties
-#endif
-TEST_F(ShortcutTest, MAYBE_UpdateShortcutVerifyProperties) {
+TEST_F(ShortcutTest, UpdateShortcutVerifyPropertiess) {
+  // TODO(crbug.com/1264563) Flaky on Win 7.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          ShortcutOperation::kCreateAlways));
 
