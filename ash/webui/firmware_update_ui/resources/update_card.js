@@ -86,14 +86,6 @@ export class UpdateCardElement extends UpdateCardElementBase {
   computeDeviceName_() {
     return mojoString16ToString(this.update.deviceName);
   }
-
-  /**
-   * @protected
-   * @return {string}
-   */
-  computeDeviceDescription_() {
-    return mojoString16ToString(this.update.deviceDescription);
-  }
 }
 
 customElements.define(UpdateCardElement.is, UpdateCardElement);

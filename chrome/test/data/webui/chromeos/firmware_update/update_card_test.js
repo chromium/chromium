@@ -55,9 +55,6 @@ export function updateCardTest() {
       assertEquals(
           `Version ${fakeFirmwareUpdate.deviceVersion}`,
           updateCardElement.$.version.innerText);
-      assertEquals(
-          mojoString16ToString(fakeFirmwareUpdate.deviceDescription),
-          updateCardElement.$.description.innerText);
       assertFalse(isVisible(getPriorityTextElement()));
     });
   });
