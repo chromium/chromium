@@ -837,13 +837,7 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
   const url::Origin& idp_origin = url::Origin::Create(provider_);
 
   resource_request->url = target_url;
-  // TODO(kenrb): credentials_mode should be kOmit, but for prototyping
-  // purposes it is useful to be able to run test IdPs on services that always
-  // require cookies. This needs to be changed back when a better solution is
-  // found or those test IdPs are no longer required.
-  // See https://crbug.com/1159177.
-  resource_request->credentials_mode =
-      network::mojom::CredentialsMode::kInclude;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kRequestBodyContentType);
   AddCsrfHeader(resource_request.get());
