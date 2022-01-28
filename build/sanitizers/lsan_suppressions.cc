@@ -51,6 +51,9 @@ char kLSanDefaultSuppressions[] =
     // Leak in glibc's gconv caused by fopen(..., "r,ccs=UNICODE")
     "leak:__gconv_lookup_cache\n"
 
+    // Leak in libnssutil. crbug.com/1290634
+    "leak:libnssutil3\n"
+
     // ================ Leaks in Chromium code ================
     // PLEASE DO NOT ADD SUPPRESSIONS FOR NEW LEAKS.
     // Instead, commits that introduce memory leaks should be reverted.
