@@ -102,7 +102,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
 
   std::unique_ptr<ObjectDelegate> object_;
   const std::string method_name_;
-  std::unique_ptr<base::ListValue> arguments_;
+  base::Value arguments_;
   ObjectRefs object_refs_;
   bool holds_primitive_result_;
   std::unique_ptr<base::ListValue> primitive_result_;

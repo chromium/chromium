@@ -379,9 +379,8 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
   result->Invoke();
   *error_code = result->GetInvocationError();
   if (result->HoldsPrimitiveResult()) {
-    std::unique_ptr<base::ListValue> result_copy(
-        result->GetPrimitiveResult().CreateDeepCopy());
-    wrapped_result->Swap(result_copy.get());
+    base::ListValue clone(result->GetPrimitiveResult().Clone().TakeList());
+    wrapped_result->Swap(&clone);
   } else if (!result->GetObjectResult().is_null()) {
     GinJavaBoundObject::ObjectID returned_object_id;
     if (FindObjectId(result->GetObjectResult(), &returned_object_id)) {
