@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
 group("extensions") {
@@ -18,7 +20,10 @@ group("extensions") {
 group("extension_tests") {
   testonly = true
   if (is_chromeos_ash) {
-    deps = [ "chromevoxclassic:chromevox_tests" ]
+    deps = [
+      ":colorenhancer_tests",
+      "chromevoxclassic:chromevox_tests",
+    ]
   }
 }
 
@@ -105,6 +110,7 @@ colorenhancer_files = [
   "colorenhancer/src/background.js",
   "colorenhancer/src/common.js",
   "colorenhancer/src/cvd.js",
+  "colorenhancer/src/matrix.js",
   "colorenhancer/src/popup.html",
   "colorenhancer/src/popup.js",
   "colorenhancer/src/storage.js",
@@ -119,6 +125,29 @@ colorenhancer_files = [
 copy("colorenhancer_copy") {
   sources = colorenhancer_files
   outputs = [ "$root_out_dir/{{source_target_relative}}" ]
+}
+
+test("colorenhancer_tests") {
+  sources = [
+    "//chrome/test/base/v8_unit_test.cc",
+    "//chrome/test/base/v8_unit_test.h",
+  ]
+
+  deps = [
+    ":colorenhancer_js_tests",
+    "//base",
+    "//chrome/test:test_support_unit",
+    "//testing/gtest",
+    "//v8",
+  ]
+
+  data = js2gtest_js_libraries
+}
+
+js2gtest("colorenhancer_js_tests") {
+  test_type = "unit"
+  sources = [ "colorenhancer/src/matrix_test.js" ]
+  extra_js_files = [ "colorenhancer/src/matrix.js" ]
 }
 
 #

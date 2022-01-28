@@ -44,140 +44,6 @@ html[cvd="1"] {
 </svg>
 `;
 
-  // ======= 3x3 matrix ops =======
-
-  /**
-   * The 3x3 identity matrix.
-   * @const {object}
-   */
-  const IDENTITY_MATRIX_3x3 = [
-    [1, 0, 0],
-    [0, 1, 0],
-    [0, 0, 1]
-  ];
-
-  /** @enum {number} */
-  const Index = {
-    ZERO: 0,
-    ONE: 1,
-    TWO: 2,
-  };
-
-  /** @typedef {!Array<!Array<number>>} */
-  let Matrix;
-
-  /**
-   * Creates a matrix with elements specified by the elementCalculator function.
-   * @param {!function(!Index, !Index): number} elementCalculator Given the i
-   *     and j indices of the element, calculates the value for the new matrix.
-   * @return {!Matrix}
-   */
-  function matrixMaker3x3(elementCalculator) {
-    const result = [];
-    for (const i of Object.values(Index)) {
-      result[i] = [];
-      for (const j of Object.values(Index)) {
-        result[i][j] = elementCalculator(i, j);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Adds two matrices.
-   * @param {!Matrix} m1 A 3x3 matrix.
-   * @param {!Matrix} m2 A 3x3 matrix.
-   * @return {!Matrix} The 3x3 matrix m1 + m2.
-   */
-  function add3x3(m1, m2) {
-    /** @type {!function(!Index, !Index): number} */
-    const adder = (i, j) => m1[i][j] + m2[i][j];
-    return matrixMaker3x3(adder);
-  }
-
-
-  /**
-   * Subtracts one matrix from another.
-   * @param {!Matrix} m1 A 3x3 matrix.
-   * @param {!Matrix} m2 A 3x3 matrix.
-   * @return {!Matrix} The 3x3 matrix m1 - m2.
-   */
-  function sub3x3(m1, m2) {
-    /** @type {!function(!Index, !Index): number} */
-    const subtracter = (i, j) => m1[i][j] - m2[i][j];
-    return matrixMaker3x3(subtracter);
-  }
-
-
-  /**
-   * Multiplies one matrix with another.
-   * @param {!Matrix} m1 A 3x3 matrix.
-   * @param {!Matrix} m2 A 3x3 matrix.
-   * @return {!Matrix} The 3x3 matrix m1 * m2.
-   */
-  function mul3x3(m1, m2) {
-    /** @type {!function(!Index, !Index): number} */
-    const multiplier = (i, j) => {
-      let sum = 0;
-      for (const k of Object.values(Index)) {
-        sum += m1[i][k] * m2[k][j];
-      }
-      return sum;
-    }
-
-    return matrixMaker3x3(multiplier);
-  }
-
-
-  /**
-   * Multiplies a matrix with a number.
-   * @param {!Matrix} m A 3x3 matrix.
-   * @param {!number} k A scalar multiplier.
-   * @return {!Matrix} The 3x3 matrix m * k.
-   */
-  function mul3x3Scalar(m, k) {
-    /** @type {!function(!Index, !Index): number} */
-    const scaler = (i, j) => k * m[i][j];
-    return matrixMaker3x3(scaler);
-  }
-
-
-  // ======= 3x3 matrix utils =======
-
-  /**
-   * Makes the SVG matrix string (of 20 values) for a given matrix.
-   * @param {!Matrix} m A 3x3 matrix.
-   * @return {!string} The SVG matrix string for m.
-   */
-  function svgMatrixStringFrom3x3(m) {
-    const outputRows = [];
-    for (let i = 0; i < 3; i++) {
-      outputRows.push(m[i].join(' ') + ' 0 0');
-    }
-    // Add the alpha row
-    outputRows.push('0 0 0 1 0');
-    return outputRows.join(' ');
-  }
-
-
-  /**
-   * Makes a human readable string for a given matrix.
-   * @param {!Matrix} m A 3x3 matrix.
-   * @return {!string} A human-readable string for m.
-   */
-  function humanReadbleStringFrom3x3(m) {
-      let result = '';
-      for (let i = 0; i < 3; i++) {
-          result += (i ? ', ' : '') + '[';
-          for (let j = 0; j < 3; j++) {
-              result += (j ? ', ' : '') + m[i][j].toFixed(2);
-          }
-          result += ']';
-      }
-      return result;
-  }
-
-
   // ======= CVD parameters =======
   /**
    * Parameters for simulating color vision deficiency.
@@ -228,40 +94,22 @@ html[cvd="1"] {
   // TODO(mustaq): This should be nuked, see getCvdCorrectionMatrix().
   const cvdCorrectionParams = {
     PROTANOMALY: {
-      addendum: [
-        [0.0, 0.0, 0.0],
-        [0.7, 1.0, 0.0],
-        [0.7, 0.0, 1.0]
-      ],
-      delta_factor: [
-        [0.0, 0.0, 0.0],
-        [0.3, 0.0, 0.0],
-        [-0.3, 0.0, 0.0]
-      ]
+      addendum: Matrix3x3.fromData(
+          [[0.0, 0.0, 0.0], [0.7, 1.0, 0.0], [0.7, 0.0, 1.0]]),
+      delta_factor: Matrix3x3.fromData(
+          [[0.0, 0.0, 0.0], [0.3, 0.0, 0.0], [-0.3, 0.0, 0.0]])
     },
     DEUTERANOMALY: {
-      addendum: [
-        [0.0, 0.0, 0.0],
-        [0.7, 1.0, 0.0],
-        [0.7, 0.0, 1.0]
-      ],
-      delta_factor: [
-        [0.0, 0.0, 0.0],
-        [0.3, 0.0, 0.0],
-        [-0.3, 0.0, 0.0]
-      ]
+      addendum: Matrix3x3.fromData(
+          [[0.0, 0.0, 0.0], [0.7, 1.0, 0.0], [0.7, 0.0, 1.0]]),
+      delta_factor: Matrix3x3.fromData(
+          [[0.0, 0.0, 0.0], [0.3, 0.0, 0.0], [-0.3, 0.0, 0.0]])
     },
     TRITANOMALY: {
-      addendum: [
-        [1.0, 0.0, 0.7],
-        [0.0, 1.0, 0.7],
-        [0.0, 0.0, 0.0]
-      ],
-      delta_factor: [
-        [0.0, 0.0, 0.3],
-        [0.0, 0.0, -0.3],
-        [0.0, 0.0, 0.0]
-      ]
+      addendum: Matrix3x3.fromData(
+          [[1.0, 0.0, 0.7], [0.0, 1.0, 0.7], [0.0, 0.0, 0.0]]),
+      delta_factor: Matrix3x3.fromData(
+          [[0.0, 0.0, 0.3], [0.0, 0.0, -0.3], [0.0, 0.0, 0.0]])
     }
   };
 
@@ -274,7 +122,7 @@ html[cvd="1"] {
    * @param {string} cvdType Type of CVD, either "PROTANOMALY" or
    *     "DEUTERANOMALY" or "TRITANOMALY".
    * @param {number} severity A real number in [0,1] denoting severity.
-   * @return {!Matrix}
+   * @return {!Matrix3x3}
    */
   function getCvdSimulationMatrix(cvdType, severity) {
     const cvdSimulationParam = cvdSimulationParams[cvdType];
@@ -285,8 +133,8 @@ html[cvd="1"] {
       return cvdSimulationParam[paramRow][0] * severity_squared
            + cvdSimulationParam[paramRow][1] * severity
            + cvdSimulationParam[paramRow][2];
-    }
-    return matrixMaker3x3(calculateElementValue);
+    };
+    return Matrix3x3.fromElementwiseConstruction(calculateElementValue);
   }
 
 
@@ -296,13 +144,13 @@ html[cvd="1"] {
    * @param {string} cvdType Type of CVD, either "PROTANOMALY" or
    *     "DEUTERANOMALY" or "TRITANOMALY".
    * @param {number} delta A real number in [0,1] denoting color adjustment.
-   * @return {!Matrix}
+   * @return {!Matrix3x3}
    */
   function getCvdCorrectionMatrix(cvdType, delta) {
     cvdCorrectionParam = cvdCorrectionParams[cvdType];
     // TODO(mustaq): Perhaps nuke full-matrix operations after experiment.
-    return add3x3(cvdCorrectionParam['addendum'],
-                  mul3x3Scalar(cvdCorrectionParam['delta_factor'], delta));
+    return cvdCorrectionParam['addendum'].add(
+        cvdCorrectionParam['delta_factor'].scale(delta));
   }
 
 
@@ -314,22 +162,22 @@ html[cvd="1"] {
    * @param {number} delta A real number in [0,1] denoting color adjustment.
    * @param {boolean} simulate Whether to simulate the CVD type.
    * @param {boolean} enable Whether to enable color filtering.
-   * @return {!Matrix}
+   * @return {!Matrix3x3}
    */
-  function getEffectiveCvdMatrix(cvdType, severity, delta, simulate, enable) {
+  function getEffectiveCvdMatrix(
+      cvdType, severity, delta, simulate, enable) {
     if (!enable) {
-      return IDENTITY_MATRIX_3x3;
+      return Matrix3x3.IDENTITY;
     }
 
     let effectiveMatrix = getCvdSimulationMatrix(cvdType, severity);
 
     if (!simulate) {
       const cvdCorrectionMatrix = getCvdCorrectionMatrix(cvdType, delta);
-      const tmpProduct = mul3x3(cvdCorrectionMatrix, effectiveMatrix);
+      const tmpProduct = cvdCorrectionMatrix.multiply(effectiveMatrix);
 
-      effectiveMatrix = sub3x3(
-          add3x3(IDENTITY_MATRIX_3x3, cvdCorrectionMatrix),
-          tmpProduct);
+      effectiveMatrix =
+          Matrix3x3.IDENTITY.add(cvdCorrectionMatrix).subtract(tmpProduct);
     }
 
     return effectiveMatrix;
@@ -366,17 +214,16 @@ html[cvd="1"] {
 
   /**
    * Updates the SVG filter based on the RGB correction/simulation matrix.
-   * @param {!Object} matrix  3x3 RGB transformation matrix.
+   * @param {!Matrix3x3} matrix  3x3 RGB transformation matrix.
    */
   function setFilter(matrix) {
     addElements();
     const next = 1 - curFilter;
 
-    debugPrint('update: matrix#' + next + '=' +
-        humanReadbleStringFrom3x3(matrix));
+    debugPrint('update: matrix#' + next + '=' + matrix.toString());
 
     const matrixElem = document.getElementById('cvd_matrix_' + next);
-    matrixElem.setAttribute('values', svgMatrixStringFrom3x3(matrix));
+    matrixElem.setAttribute('values', matrix.toSvgString());
 
     document.documentElement.setAttribute('cvd', next);
 
@@ -491,12 +338,12 @@ html[cvd="1"] {
    *     vision to 1 for dichromats.
    */
   exports.getDefaultCvdCorrectionFilter = function(type, severity) {
-      return getEffectiveCvdMatrix(type, severity, 0, false, true);
+    return getEffectiveCvdMatrix(type, severity, 0, false, true);
   };
 
   /**
    * Adds support for a color enhancement filter.
-   * @param {!Matrix} matrix 3x3 RGB transformation matrix.
+   * @param {!Matrix3x3} matrix 3x3 RGB transformation matrix.
    */
   exports.injectColorEnhancementFilter = function(matrix) {
     setFilter(matrix);

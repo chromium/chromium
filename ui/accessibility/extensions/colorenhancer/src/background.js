@@ -38,9 +38,9 @@ class Background {
    */
   injectContentScripts_() {
     this.forEachTab_(tab => chrome.scripting.executeScript({
-        target: {tabId: tab.id},
-        files: ['src/common.js', 'src/cvd.js'],
-      }));
+      target: {tabId: tab.id},
+      files: ['src/common.js', 'src/matrix.js', 'src/cvd.js'],
+    }));
   }
 
   /**
