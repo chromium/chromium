@@ -337,6 +337,14 @@ void ProcessMirrorHeader(
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // As per https://crbug.com/1286822 and internal b/215509741, the session
+    // may sometimes become invalid on the server without notice. When this
+    // happens, the user may try to fix it by signing-in again.
+    // Trigger a cookie jar update now to fix the session if needed.
+    signin::IdentityManager* const identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    identity_manager->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
+
     AccountProfileMapper* mapper =
         g_browser_process->profile_manager()->GetAccountProfileMapper();
     GetAccountsAvailableAsSecondary(
