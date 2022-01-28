@@ -451,8 +451,8 @@ using SafeBrowsingServiceInitializationTest = PlatformTest;
 TEST_F(SafeBrowsingServiceInitializationTest, GetURLLoaderFactory) {
   web::WebTaskEnvironment task_environment;
 
-  TestChromeBrowserState::Builder builder;
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

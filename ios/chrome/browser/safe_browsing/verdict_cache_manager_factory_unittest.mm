@@ -19,8 +19,8 @@ using VerdictCacheManagerFactoryTest = PlatformTest;
 TEST_F(VerdictCacheManagerFactoryTest, OffTheRecordUsesDifferentInstance) {
   web::WebTaskEnvironment task_environment;
 
-  TestChromeBrowserState::Builder builder;
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
 
   // There should be a non-null instance for an off-the-record browser state.
   EXPECT_TRUE(VerdictCacheManagerFactory::GetForBrowserState(

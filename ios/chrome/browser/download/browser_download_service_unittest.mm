@@ -93,25 +93,10 @@ class TestARQuickLookTabHelper : public ARQuickLookTabHelper {
 class BrowserDownloadServiceTest : public PlatformTest {
  protected:
   BrowserDownloadServiceTest()
-      : browser_state_(browser_state_builder_.Build()) {
+      : browser_state_(TestChromeBrowserState::Builder().Build()) {
     StubTabHelper<PassKitTabHelper>::CreateForWebState(&web_state_);
     TestARQuickLookTabHelper::CreateForWebState(&web_state_);
     StubTabHelper<DownloadManagerTabHelper>::CreateForWebState(&web_state_);
-
-    // BrowserDownloadServiceFactory sets its service as
-    // DownloadControllerDelegate. These test use separate
-    // BrowserDownloadService, not created by factory. So delegate
-    // is temporary removed for these tests to avoid DCHECKs.
-    previous_delegate_ = download_controller()->GetDelegate();
-    download_controller()->SetDelegate(nullptr);
-    service_ = std::make_unique<BrowserDownloadService>(download_controller());
-  }
-
-  ~BrowserDownloadServiceTest() override {
-    service_.reset();
-    // Return back the original delegate so service created by service factory
-    // can be destructed without DCHECKs.
-    download_controller()->SetDelegate(previous_delegate_);
   }
 
   web::DownloadController* download_controller() {
@@ -133,11 +118,8 @@ class BrowserDownloadServiceTest : public PlatformTest {
         DownloadManagerTabHelper::FromWebState(&web_state_));
   }
 
-  web::DownloadControllerDelegate* previous_delegate_;
   web::WebTaskEnvironment task_environment_;
-  TestChromeBrowserState::Builder browser_state_builder_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<BrowserDownloadService> service_;
   web::FakeWebState web_state_;
   base::HistogramTester histogram_tester_;
 };
