@@ -14,9 +14,9 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/cpu.h"
 #include "base/logging.h"
-#include "base/memory/tagging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -280,26 +280,28 @@ TEST(PartitionAllocPageAllocatorTest,
   buffer1 = __arm_mte_get_tag(buffer0);
   // Prove that the tag is different (if they're the same, the test won't work).
   ASSERT_NE(buffer0, buffer1);
-  memory::TagViolationReportingMode parent_tagging_mode =
-      memory::GetMemoryTaggingModeForCurrentThread();
+  ::partition_alloc::TagViolationReportingMode parent_tagging_mode =
+      ::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
   // Switch to synchronous mode.
 #if BUILDFLAG(IS_ANDROID)
-        memory::ChangeMemoryTaggingModeForAllThreadsPerProcess(
-            memory::TagViolationReportingMode::kSynchronous);
+        ::partition_alloc::internal::
+            ChangeMemoryTaggingModeForAllThreadsPerProcess(
+                ::partition_alloc::TagViolationReportingMode::kSynchronous);
 #else
-        memory::ChangeMemoryTaggingModeForCurrentThread(
-            memory::TagViolationReportingMode::kSynchronous);
+        ::partition_alloc::ChangeMemoryTaggingModeForCurrentThread(
+            ::partition_alloc::TagViolationReportingMode::kSynchronous);
 #endif  // BUILDFLAG(IS_ANDROID)
-        EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
-                  memory::TagViolationReportingMode::kSynchronous);
+        EXPECT_EQ(
+            ::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
+            ::partition_alloc::TagViolationReportingMode::kSynchronous);
         // Write to the buffer using its previous tag. A segmentation fault
         // should be delivered.
         *buffer0 = 42;
       },
       testing::KilledBySignal(SIGSEGV), "");
-  EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
+  EXPECT_EQ(::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
             parent_tagging_mode);
   FreePages(buffer, PageAllocationGranularity());
 #else
@@ -330,20 +332,22 @@ TEST(PartitionAllocPageAllocatorTest,
   __arm_mte_set_tag(__arm_mte_increment_tag(buffer0, 0x1));
   int* buffer1 = __arm_mte_get_tag(buffer0);
   EXPECT_NE(buffer0, buffer1);
-  memory::TagViolationReportingMode parent_tagging_mode =
-      memory::GetMemoryTaggingModeForCurrentThread();
+  ::partition_alloc::TagViolationReportingMode parent_tagging_mode =
+      ::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
   // Switch to asynchronous mode.
 #if BUILDFLAG(IS_ANDROID)
-        memory::ChangeMemoryTaggingModeForAllThreadsPerProcess(
-            memory::TagViolationReportingMode::kAsynchronous);
+        ::partition_alloc::internal::
+            ChangeMemoryTaggingModeForAllThreadsPerProcess(
+                ::partition_alloc::TagViolationReportingMode::kAsynchronous);
 #else
-        memory::ChangeMemoryTaggingModeForCurrentThread(
-            memory::TagViolationReportingMode::kAsynchronous);
+        ::partition_alloc::ChangeMemoryTaggingModeForCurrentThread(
+            ::partition_alloc::TagViolationReportingMode::kAsynchronous);
 #endif  // BUILDFLAG(IS_ANDROID)
-        EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
-                  memory::TagViolationReportingMode::kAsynchronous);
+        EXPECT_EQ(
+            ::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
+            ::partition_alloc::TagViolationReportingMode::kAsynchronous);
         // Write to the buffer using its previous tag. A fault should be
         // generated at this point but we may not notice straight away...
         *buffer0 = 42;
@@ -353,7 +357,7 @@ TEST(PartitionAllocPageAllocatorTest,
       },
       testing::KilledBySignal(SIGSEGV), "");
   FreePages(buffer, PageAllocationGranularity());
-  EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
+  EXPECT_EQ(::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
             parent_tagging_mode);
 #else
   PA_NOTREACHED();

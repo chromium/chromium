@@ -12,9 +12,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/cpu.h"
 #include "base/logging.h"
-#include "base/memory/tagging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,10 +25,16 @@ namespace base {
 // In the MTE world, the upper bits of a pointer can be decorated with a tag,
 // thus allowing many versions of the same pointer to exist. These macros take
 // that into account when comparing.
-#define PA_EXPECT_PTR_EQ(ptr1, ptr2) \
-  { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
-#define PA_EXPECT_PTR_NE(ptr1, ptr2) \
-  { EXPECT_NE(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
+#define PA_EXPECT_PTR_EQ(ptr1, ptr2)                         \
+  {                                                          \
+    EXPECT_EQ(::partition_alloc::internal::UnmaskPtr(ptr1),  \
+              ::partition_alloc::internal::UnmaskPtr(ptr2)); \
+  }
+#define PA_EXPECT_PTR_NE(ptr1, ptr2)                         \
+  {                                                          \
+    EXPECT_NE(::partition_alloc::internal::UnmaskPtr(ptr1),  \
+              ::partition_alloc::internal::UnmaskPtr(ptr2)); \
+  }
 
 namespace internal {
 
@@ -96,7 +102,8 @@ class PartitionAllocPCScanTestBase : public testing::Test {
   void FinishPCScanAsScanner() { PCScan::FinishScanForTesting(); }
 
   bool IsInQuarantine(void* ptr) const {
-    uintptr_t address = memory::UnmaskPtr(reinterpret_cast<uintptr_t>(ptr));
+    uintptr_t address = ::partition_alloc::internal::UnmaskPtr(
+        reinterpret_cast<uintptr_t>(ptr));
     return StateBitmapFromAddr(address)->IsQuarantined(address);
   }
 
@@ -165,7 +172,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
 }
 
 bool IsInFreeList(uintptr_t slot_start) {
-  slot_start = memory::RemaskPtr(slot_start);
+  slot_start = ::partition_alloc::internal::RemaskPtr(slot_start);
   auto* slot_span = SlotSpan::FromSlotStart(slot_start);
   for (auto* entry = slot_span->get_freelist_head(); entry;
        entry = entry->GetNext(slot_span->bucket->slot_size)) {
@@ -800,7 +807,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerOutsideUsablePart) {
   TestDanglingReference(*this, source, value);
 }
 
-#if HAS_MEMORY_TAGGING
+#if defined(PA_HAS_MEMORY_TAGGING)
 TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
   using ListType = List<64>;
 
@@ -814,9 +821,11 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
     // The test relies on unrandomized freelist! If the slot was not moved to
     // quarantine, assert that the obj2 is the same as obj1 and the tags are
     // different.
-    if (!HasOverflowTag(reinterpret_cast<uintptr_t>(memory::RemaskPtr(obj1)))) {
+    if (!HasOverflowTag(reinterpret_cast<uintptr_t>(
+            ::partition_alloc::internal::RemaskPtr(obj1)))) {
       // Assert that the pointer is the same.
-      ASSERT_EQ(memory::UnmaskPtr(obj1), memory::UnmaskPtr(obj2));
+      ASSERT_EQ(::partition_alloc::internal::UnmaskPtr(obj1),
+                ::partition_alloc::internal::UnmaskPtr(obj2));
       // Assert that the tag is different.
       ASSERT_NE(obj1, obj2);
     }
@@ -826,7 +835,7 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
     auto* obj = ListType::Create(root());
     ListType::Destroy(root(), obj);
     // Get the current tag of the slot.
-    obj = memory::RemaskPtr(obj);
+    obj = ::partition_alloc::internal::RemaskPtr(obj);
     // Check if the tag overflows. If so, the object must be in quarantine.
     if (HasOverflowTag(reinterpret_cast<uintptr_t>(obj))) {
       EXPECT_TRUE(IsInQuarantine(obj));
@@ -840,7 +849,7 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
 
   EXPECT_FALSE(true && "Should never be reached");
 }
-#endif  // HAS_MEMORY_TAGGING
+#endif  // defined(PA_HAS_MEMORY_TAGGING)
 
 }  // namespace internal
 }  // namespace base

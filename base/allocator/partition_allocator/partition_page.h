@@ -21,11 +21,11 @@
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/tagging.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -466,7 +466,7 @@ SlotSpanMetadata<thread_safe>::ToSuperPageExtent() const {
 // surely never contain user data.
 ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address,
                                             bool with_quarantine) {
-  address = memory::UnmaskPtr(address);
+  address = ::partition_alloc::internal::UnmaskPtr(address);
   // Quarantine can only be enabled for normal buckets in the current code.
   PA_DCHECK(!with_quarantine || IsManagedByNormalBuckets(address));
   uintptr_t super_page = address & kSuperPageBaseMask;
@@ -545,7 +545,7 @@ ALWAYS_INLINE uintptr_t SlotSpanMetadata<thread_safe>::ToSlotSpanStart(
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotInnerAddr(uintptr_t address) {
-  address = memory::UnmaskPtr(address);
+  address = ::partition_alloc::internal::UnmaskPtr(address);
   auto* page = PartitionPage<thread_safe>::FromAddr(address);
   PA_DCHECK(page->is_valid);
   // Partition pages in the same slot span share the same slot span metadata
@@ -573,9 +573,9 @@ SlotSpanMetadata<thread_safe>::FromSlotStart(uintptr_t slot_start) {
 #if DCHECK_IS_ON()
   // Checks that the pointer is a multiple of slot size.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
-  PA_DCHECK(
-      !((memory::UnmaskPtr(slot_start) - memory::UnmaskPtr(slot_span_start)) %
-        slot_span->bucket->slot_size));
+  PA_DCHECK(!((::partition_alloc::internal::UnmaskPtr(slot_start) -
+               ::partition_alloc::internal::UnmaskPtr(slot_span_start)) %
+              slot_span->bucket->slot_size));
 #endif  // DCHECK_IS_ON()
   return slot_span;
 }
@@ -592,10 +592,10 @@ SlotSpanMetadata<thread_safe>::FromObject(void* object) {
   // slot size.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
-  PA_DCHECK(
-      (memory::UnmaskPtr(object_addr) - memory::UnmaskPtr(slot_span_start)) %
-          slot_span->bucket->slot_size ==
-      root->extras_offset);
+  PA_DCHECK((::partition_alloc::internal::UnmaskPtr(object_addr) -
+             ::partition_alloc::internal::UnmaskPtr(slot_span_start)) %
+                slot_span->bucket->slot_size ==
+            root->extras_offset);
 #endif  // DCHECK_IS_ON()
   return slot_span;
 }
@@ -692,8 +692,8 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
     size_t number_of_entries = 0;
     for (auto* entry = head; entry;
          entry = entry->GetNext(bucket->slot_size), ++number_of_entries) {
-      uintptr_t unmasked_entry =
-          memory::UnmaskPtr(reinterpret_cast<uintptr_t>(entry));
+      uintptr_t unmasked_entry = ::partition_alloc::internal::UnmaskPtr(
+          reinterpret_cast<uintptr_t>(entry));
       // Check that all entries belong to this slot span.
       PA_DCHECK(ToSlotSpanStart(this) <= unmasked_entry);
       PA_DCHECK(unmasked_entry <

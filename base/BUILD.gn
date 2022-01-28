@@ -425,8 +425,6 @@ mixed_component("base") {
     "memory/shared_memory_tracker.cc",
     "memory/shared_memory_tracker.h",
     "memory/singleton.h",
-    "memory/tagging.cc",
-    "memory/tagging.h",
     "memory/unsafe_shared_memory_pool.cc",
     "memory/unsafe_shared_memory_pool.h",
     "memory/unsafe_shared_memory_region.cc",
@@ -2064,6 +2062,8 @@ mixed_component("base") {
         "allocator/partition_allocator/starscan/stats_reporter.h",
         "allocator/partition_allocator/starscan/write_protector.cc",
         "allocator/partition_allocator/starscan/write_protector.h",
+        "allocator/partition_allocator/tagging.cc",
+        "allocator/partition_allocator/tagging.h",
         "allocator/partition_allocator/thread_cache.cc",
         "allocator/partition_allocator/thread_cache.h",
         "allocator/partition_allocator/yield_processor.h",
@@ -3405,7 +3405,7 @@ test("base_unittests") {
   }
 
   if (!is_ios) {
-    sources += [ "memory/tagging_unittest.cc" ]
+    sources += [ "allocator/partition_allocator/tagging_unittest.cc" ]
   }
 
   public_deps = [ ":base_unittests_bundle_data" ]

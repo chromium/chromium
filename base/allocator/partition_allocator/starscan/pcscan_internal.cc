@@ -37,6 +37,7 @@
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
@@ -46,7 +47,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/tagging.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -101,8 +101,8 @@ struct DisableMTEScope final {
     // cause safepoint reentrancy. Avoid this by bailing out from safepoints in
     // case one is already running.
 #if 0
-    memory::ChangeMemoryTaggingModeForCurrentThread(
-        memory::TagViolationReportingMode::kDisabled);
+    ::partition_alloc::ChangeMemoryTaggingModeForCurrentThread(
+        ::partition_alloc::TagViolationReportingMode::kDisabled);
 #endif
   }
   ~DisableMTEScope() {
@@ -110,13 +110,14 @@ struct DisableMTEScope final {
     // cause safepoint reentrancy. Avoid this by bailing out from safepoints in
     // case one is already running.
 #if 0
-    memory::ChangeMemoryTaggingModeForCurrentThread(parent_tagging_mode);
+    ::partition_alloc::ChangeMemoryTaggingModeForCurrentThread(
+        parent_tagging_mode);
 #endif
   }
 
  private:
-  memory::TagViolationReportingMode parent_tagging_mode =
-      memory::GetMemoryTaggingModeForCurrentThread();
+  ::partition_alloc::TagViolationReportingMode parent_tagging_mode =
+      ::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread();
 };
 
 #if PA_STARSCAN_USE_CARD_TABLE
@@ -155,7 +156,7 @@ class QuarantineCardTable final {
   // slots. May return false positives for but should never return false
   // negatives, as otherwise this breaks security.
   ALWAYS_INLINE bool IsQuarantined(uintptr_t address) const {
-    address = memory::UnmaskPtr(address);
+    address = ::partition_alloc::internal::UnmaskPtr(address);
     const size_t byte = Byte(address);
     PA_SCAN_DCHECK(byte < bytes_.size());
     return bytes_[byte];
@@ -731,7 +732,8 @@ void PCScanTask::ClearQuarantinedSlotsAndPrepareCardTable() {
       // ScanPartitions.
       const size_t size = slot_span->GetUsableSize(root);
       if (clear_type == PCScan::ClearType::kLazy) {
-        void* object = memory::RemaskPtr(root->SlotStartToObject(slot_start));
+        void* object = ::partition_alloc::internal::RemaskPtr(
+            root->SlotStartToObject(slot_start));
         memset(object, 0, size);
       }
 #if PA_STARSCAN_USE_CARD_TABLE
@@ -783,8 +785,8 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
   PA_SCAN_INLINE void CheckPointer(uintptr_t maybe_ptr) {
-    quarantine_size_ +=
-        task_.TryMarkSlotInNormalBuckets(memory::UnmaskPtr(maybe_ptr));
+    quarantine_size_ += task_.TryMarkSlotInNormalBuckets(
+        ::partition_alloc::internal::UnmaskPtr(maybe_ptr));
   }
 
   const PCScanTask& task_;
@@ -945,7 +947,7 @@ void UnmarkInCardTable(uintptr_t slot_start,
     uintptr_t slot_start) {
   void* object = root->SlotStartToObject(slot_start);
   // TODO(bartekn): Move MTE masking into SlotStartToObject.
-  object = memory::RemaskPtr(object);
+  object = ::partition_alloc::internal::RemaskPtr(object);
   root->FreeNoHooksImmediate(object, slot_span, slot_start);
   UnmarkInCardTable(slot_start, slot_span);
   return slot_span->bucket->slot_size;
