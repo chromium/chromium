@@ -112,13 +112,9 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // Check to see if the given cast sink exists the sinks_.
   bool HasSink(const MediaSink::Id& sink_id);
 
-  // Function that handles complete removal of a cast sink from the media
-  // router. Deals with removing cast socket and any instances of the cast sink
-  // recorded throughout the router.
-  void RemoveCastSinkFromRouter(const MediaSinkInternal& sink);
-
-  // MediaSinkServiceBase overrides.
-  void RemoveSink(const MediaSinkInternal& sink) override;
+  // Closes the Cast Channel to the sink, and removes the sink from the sink
+  // service.
+  void DisconnectAndRemoveSink(const MediaSinkInternal& sink);
 
  private:
   friend class CastMediaSinkServiceImplTest;
@@ -180,7 +176,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            OpenChannelNewIPSameSink);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest, TestHasSink);
-  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest, TestRemoveSink);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
+                           TestDisconnectAndRemoveSink);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            TestAccessCodeSinkNotAddedToNetworkCache);
 
