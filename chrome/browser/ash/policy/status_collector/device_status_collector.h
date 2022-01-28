@@ -58,7 +58,7 @@ namespace policy {
 class EnterpriseActivityStorage;
 class DeviceStatusCollectorState;
 
-// Enum used to define which data the CrosHealthdDataFetcher should collect.
+// TODO(b/216131674): Remove this.
 enum class CrosHealthdCollectionMode { kFull, kBattery };
 
 // Sampled hardware measurement data for single time point.
@@ -113,9 +113,9 @@ class DeviceStatusCollector : public StatusCollector,
       chromeos::cros_healthd::mojom::TelemetryInfoPtr,
       const base::circular_deque<std::unique_ptr<SampledData>>&)>;
   // Gets the data from cros_healthd and passes it to CrosHealthdDataReceiver.
-  using CrosHealthdDataFetcher =
-      base::RepeatingCallback<void(CrosHealthdCollectionMode,
-                                   CrosHealthdDataReceiver)>;
+  using CrosHealthdDataFetcher = base::RepeatingCallback<void(
+      std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>,
+      CrosHealthdDataReceiver)>;
 
   // Asynchronously receives the graphics status.
   using GraphicsStatusReceiver =
@@ -264,6 +264,9 @@ class DeviceStatusCollector : public StatusCollector,
       enterprise_management::DeviceStatusReportRequest* status);
   bool GetRunningKioskApp(
       enterprise_management::DeviceStatusReportRequest* status);
+  bool GetDeviceBootMode(
+      enterprise_management::DeviceStatusReportRequest* status);
+  void GetStorageStatus(scoped_refptr<DeviceStatusCollectorState> state);
   void GetGraphicsStatus(scoped_refptr<DeviceStatusCollectorState>
                              state);  // Queues async queries!
   void GetCrashReportInfo(scoped_refptr<DeviceStatusCollectorState>
@@ -310,10 +313,12 @@ class DeviceStatusCollector : public StatusCollector,
                      SamplingCallback callback);
 
   // CrosHealthdDataReceiver interface implementation, fetches data from
-  // cros_healthd and passes it to |callback|. The data collected depends on the
-  // collection |mode|.
-  void FetchCrosHealthdData(CrosHealthdCollectionMode mode,
-                            CrosHealthdDataReceiver callback);
+  // cros_healthd and passes it to |callback|. The data collected depends on
+  // the categories in |categories_to_probe|.
+  void FetchCrosHealthdData(
+      std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>
+          categories_to_probe,
+      CrosHealthdDataReceiver callback);
 
   // Callback for CrosHealthd that performs final sampling and
   // actually invokes |callback|.
