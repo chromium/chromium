@@ -41,9 +41,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-// Temporary definitions until a new hwcap.h is pulled in.
+// Temporary definitions until a new hwcap.h is pulled in everywhere.
+// https://crbug.com/1265965
+#ifndef HWCAP2_MTE
 #define HWCAP2_MTE (1 << 18)
 #define HWCAP2_BTI (1 << 17)
+#endif
 
 struct ProcCpuInfo {
   std::string brand;
