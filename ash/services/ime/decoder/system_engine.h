@@ -40,15 +40,7 @@ class SystemEngine : public InputEngine {
   bool IsConnected() override;
 
  private:
-  // Try to load the decoding functions from some decoder shared library.
-  // Returns whether loading decoder is successful.
-  bool TryLoadDecoder();
-
-  // Returns whether the decoder shared library supports this ime_spec.
-  bool IsImeSupportedByDecoder(const std::string& ime_spec);
-
   ImeCrosPlatform* platform_ = nullptr;
-
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 };
 

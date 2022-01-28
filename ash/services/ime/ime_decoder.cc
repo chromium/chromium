@@ -51,12 +51,6 @@ void ImeLoggerBridge(int severity, const char* message) {
   }
 }
 
-// Check whether the crucial members of an EntryPoints are loaded.
-bool IsEntryPointsLoaded(ImeDecoder::EntryPoints entry) {
-  return (entry.init_once && entry.supports && entry.activate_ime &&
-          entry.process && entry.close);
-}
-
 }  // namespace
 
 ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
@@ -96,7 +90,10 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
       reinterpret_cast<IsInputMethodConnectedFn>(
           library.GetFunctionPointer(kIsInputMethodConnectedFnName));
 
-  if (!IsEntryPointsLoaded(entry_points_)) {
+  // Checking if entry_points_ are loaded.
+  if (!entry_points_.init_once || !entry_points_.supports ||
+      !entry_points_.activate_ime || !entry_points_.process ||
+      !entry_points_.close) {
     status_ = Status::kFunctionMissing;
     return;
   }

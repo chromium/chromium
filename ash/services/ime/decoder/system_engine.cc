@@ -14,23 +14,19 @@ namespace chromeos {
 namespace ime {
 
 SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
-  if (!TryLoadDecoder()) {
-    LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
+  auto* decoder = ImeDecoder::GetInstance();
+
+  if (decoder->GetStatus() != ImeDecoder::Status::kSuccess ||
+      !decoder->GetEntryPoints().is_ready) {
+    LOG(WARNING) << "SystemEngine INIT INCOMPLETE.";
+    return;
   }
+
+  decoder_entry_points_ = decoder->GetEntryPoints();
+  decoder_entry_points_->init_once(platform_);
 }
 
 SystemEngine::~SystemEngine() {}
-
-bool SystemEngine::TryLoadDecoder() {
-  auto* decoder = ImeDecoder::GetInstance();
-  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess &&
-      decoder->GetEntryPoints().is_ready) {
-    decoder_entry_points_ = decoder->GetEntryPoints();
-    decoder_entry_points_->init_once(platform_);
-    return true;
-  }
-  return false;
-}
 
 bool SystemEngine::BindRequest(
     const std::string& ime_spec,
