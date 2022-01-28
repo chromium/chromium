@@ -76,9 +76,6 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
        i++) {
     AutofillProfile* profile = profiles[i];
 
-    if (profile->ShouldSkipFillingOrSuggesting(type.GetStorableType()))
-      continue;
-
       // Don't offer to fill the exact same value again. If detailed suggestions
       // with different secondary data is available, it would appear to offer
       // refilling the whole form with something else. E.g. the same name with a

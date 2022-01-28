@@ -122,8 +122,6 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kFormatted);
   profile.set_language_code("en");
-  profile.SetClientValidityFromBitfieldValue(1984);
-  profile.set_is_client_validity_states_updated(true);
 
   return profile;
 }
@@ -256,8 +254,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
   specifics.set_address_home_language_code("en");
-  specifics.set_validity_state_bitfield(1984);
-  specifics.set_is_client_validity_states_updated(true);
 
   return specifics;
 }

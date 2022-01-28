@@ -60,7 +60,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile_key.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_profile_validator.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
@@ -171,8 +170,7 @@ std::unique_ptr<KeyedService> BuildWebDataService(
 std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
     content::BrowserContext* context) {
   return std::unique_ptr<KeyedService>(
-      autofill::PersonalDataManagerFactory::BuildPersonalDataManager(
-          autofill::TestAutofillProfileValidator::GetInstance(), context));
+      autofill::PersonalDataManagerFactory::BuildPersonalDataManager(context));
 }
 
 }  // namespace

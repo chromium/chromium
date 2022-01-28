@@ -39,7 +39,6 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
                                 /*pref_service=*/autofill_client_.GetPrefs(),
                                 /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
-                                /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
                                 /*strike_database=*/nullptr,
                                 /*image_fetcher=*/nullptr,

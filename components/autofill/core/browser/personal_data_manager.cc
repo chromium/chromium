@@ -277,7 +277,6 @@ void PersonalDataManager::Init(
     PrefService* pref_service,
     PrefService* local_state,
     signin::IdentityManager* identity_manager,
-    AutofillProfileValidator* client_profile_validator,
     history::HistoryService* history_service,
     StrikeDatabaseBase* strike_database,
     AutofillImageFetcher* image_fetcher,
@@ -289,10 +288,6 @@ void PersonalDataManager::Init(
 
   // Listen for the preference changes.
   pref_registrar_.Init(pref_service);
-  pref_registrar_.Add(
-      prefs::kAutofillProfileValidity,
-      base::BindRepeating(&PersonalDataManager::ResetProfileValidity,
-                          base::Unretained(this)));
 
   alternative_state_name_map_updater_ =
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
@@ -319,8 +314,6 @@ void PersonalDataManager::Init(
     AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
         IsAutofillCreditCardEnabled());
   }
-
-  client_profile_validator_ = client_profile_validator;
 
   if (strike_database) {
     profile_save_strike_database_ =
@@ -1074,69 +1067,6 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfiles() const {
   return result;
 }
 
-void PersonalDataManager::UpdateProfilesServerValidityMapsIfNeeded(
-    const std::vector<AutofillProfile*>& profiles) {
-  if (!profiles_server_validities_need_update_)
-    return;
-  profiles_server_validities_need_update_ = false;
-  for (auto* profile : profiles) {
-    profile->UpdateServerValidityMap(GetProfileValidityByGUID(profile->guid()));
-  }
-}
-
-void PersonalDataManager::UpdateClientValidityStates(
-    const std::vector<AutofillProfile*>& profiles) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillProfileClientValidation))
-    return;
-
-  if (!client_profile_validator_)
-    return;
-
-  // The profiles' validity states need to be updated for each major version, to
-  // keep up with the validation logic.
-  bool update_validation =
-      pref_service_->GetInteger(prefs::kAutofillLastVersionValidated) <
-      CHROME_VERSION_MAJOR;
-
-  DVLOG(1) << "Autofill profile client validation "
-           << (update_validation ? "needs to be" : "has already been")
-           << " performed for this version";
-
-  for (const auto* profile : profiles) {
-    if (!profile->is_client_validity_states_updated() || update_validation) {
-      profile->set_is_client_validity_states_updated(false);
-      ongoing_profile_changes_[profile->guid()].push_back(
-          AutofillProfileDeepChange(AutofillProfileChange::UPDATE, *profile));
-      ongoing_profile_changes_[profile->guid()].back().set_enforced();
-      client_profile_validator_->StartProfileValidation(
-          profile, base::BindOnce(&PersonalDataManager::OnValidated,
-                                  weak_factory_.GetWeakPtr()));
-    }
-  }
-
-  // Set the pref to the current major version if already not set.
-  if (update_validation)
-    pref_service_->SetInteger(prefs::kAutofillLastVersionValidated,
-                              CHROME_VERSION_MAJOR);
-}
-
-bool PersonalDataManager::UpdateClientValidityStates(
-    const AutofillProfile& profile) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillProfileClientValidation) ||
-      !client_profile_validator_ ||
-      profile.is_client_validity_states_updated()) {
-    OnValidated(&profile);
-    return false;
-  }
-
-  client_profile_validator_->StartProfileValidation(
-      &profile, base::BindOnce(&PersonalDataManager::OnValidated,
-                               weak_factory_.GetWeakPtr()));
-  return true;
-}
-
 std::vector<AutofillProfile*> PersonalDataManager::GetServerProfiles() const {
   std::vector<AutofillProfile*> result;
   if (!IsAutofillProfileEnabled())
@@ -1285,21 +1215,13 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
 
   std::vector<AutofillProfile*> profiles = GetProfiles();
 
-  bool use_server_validation = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillProfileServerValidation);
-  bool use_client_validation = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillProfileClientValidation);
-
-  // Rank the suggestions by frescocency (see AutofillDataModel for details).
-  // Frescocency is frecency + validity score.
+  // Rank the suggestions by frecency.
   const base::Time comparison_time = AutofillClock::Now();
-  std::sort(profiles.begin(), profiles.end(),
-            [comparison_time, use_client_validation, use_server_validation](
-                const AutofillProfile* a, const AutofillProfile* b) {
-              return a->HasGreaterFrescocencyThan(b, comparison_time,
-                                                  use_client_validation,
-                                                  use_server_validation);
-            });
+  std::sort(
+      profiles.begin(), profiles.end(),
+      [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
+        return a->HasGreaterFrecencyThan(b, comparison_time);
+      });
 
   return profiles;
 }
@@ -1315,11 +1237,6 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   const AutofillProfileComparator comparator(app_locale_);
   std::u16string field_contents_canon =
       comparator.NormalizeForComparison(field_contents);
-
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillProfileServerValidation)) {
-    UpdateProfilesServerValidityMapsIfNeeded(GetProfiles());
-  }
 
   // Get the profiles to suggest, which are already sorted.
   std::vector<AutofillProfile*> sorted_profiles = GetProfilesToSuggest();
@@ -1510,60 +1427,6 @@ void PersonalDataManager::SetPrefService(PrefService* pref_service) {
             &PersonalDataManager::EnableWalletIntegrationPrefChanged,
             base::Unretained(this)));
   }
-}
-
-void PersonalDataManager::OnValidated(const AutofillProfile* profile) {
-  if (!profile)
-    return;
-
-  if (!ProfileChangesAreOngoing(profile->guid()))
-    return;
-
-  // Set the validity states updated, only when the validation has occurred. If
-  // the rules were not loaded for any reason, don't set the flag.
-  bool validity_updated =
-      (profile->GetValidityState(ServerFieldType::ADDRESS_HOME_COUNTRY,
-                                 AutofillProfile::CLIENT) !=
-       AutofillProfile::UNVALIDATED);
-
-  // For every relevant profile change on the ongoing_profile_changes_, mark the
-  // change to show that the validation is done, and set the validity of the
-  // profile if the validity was updated.
-  for (const auto& change : ongoing_profile_changes_[profile->guid()]) {
-    if (!profile->EqualsForClientValidationPurpose(*(change.profile())))
-      continue;
-
-    change.validation_effort_made();
-
-    if (validity_updated) {
-      change.profile()->set_is_client_validity_states_updated(true);
-      change.profile()->SetClientValidityFromBitfieldValue(
-          profile->GetClientValidityBitfieldValue());
-    }
-  }
-
-  HandleNextProfileChange(profile->guid());
-}
-
-const ProfileValidityMap& PersonalDataManager::GetProfileValidityByGUID(
-    const std::string& guid) {
-  static const ProfileValidityMap& empty_validity_map = ProfileValidityMap();
-  if (!synced_profile_validity_) {
-    profiles_server_validities_need_update_ = true;
-    synced_profile_validity_ = std::make_unique<UserProfileValidityMap>();
-    if (!synced_profile_validity_->ParseFromString(
-            ::autofill::prefs::GetAllProfilesValidityMapsEncodedString(
-                pref_service_))) {
-      return empty_validity_map;
-    }
-  }
-
-  auto it = synced_profile_validity_->profile_validity().find(guid);
-  if (it != synced_profile_validity_->profile_validity().end()) {
-    return it->second;
-  }
-
-  return empty_validity_map;
 }
 
 void PersonalDataManager::FetchImagesForUrls(
@@ -2156,13 +2019,11 @@ void PersonalDataManager::OnAutofillProfileChanged(
   const bool profile_exists = (existing_profile != nullptr);
   switch (change_type) {
     case AutofillProfileChange::ADD:
-      profiles_server_validities_need_update_ = true;
       if (!profile_exists && !FindByContents(web_profiles_, profile)) {
         web_profiles_.push_back(std::make_unique<AutofillProfile>(profile));
       }
       break;
     case AutofillProfileChange::UPDATE:
-      profiles_server_validities_need_update_ = true;
       if (profile_exists &&
           (change.enforced() ||
            !existing_profile->EqualsForUpdatePurposes(profile))) {
@@ -2247,11 +2108,6 @@ void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
           app_locale_, GetAccountInfoForPaymentsServer().email);
 }
 
-void PersonalDataManager::ResetProfileValidity() {
-  synced_profile_validity_.reset();
-  profiles_server_validities_need_update_ = true;
-}
-
 void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile,
                                          bool enforced) {
   if (profile.IsEmpty(app_locale_)) {
@@ -2270,7 +2126,7 @@ void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile,
       AutofillProfileDeepChange(AutofillProfileChange::ADD, profile));
   if (enforced)
     ongoing_profile_changes_[profile.guid()].back().set_enforced();
-  UpdateClientValidityStates(profile);
+  HandleNextProfileChange(profile.guid());
 }
 
 void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile,
@@ -2290,7 +2146,7 @@ void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile,
       AutofillProfileDeepChange(AutofillProfileChange::UPDATE, profile));
   if (enforced)
     ongoing_profile_changes_[profile.guid()].back().set_enforced();
-  UpdateClientValidityStates(profile);
+  HandleNextProfileChange(profile.guid());
 }
 
 void PersonalDataManager::RemoveProfileFromDB(const std::string& guid) {
@@ -2335,9 +2191,6 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
     change.set_is_ongoing_on_background();
     return;
   }
-
-  if (!change.has_validation_effort_made())
-    return;
 
   if (change_type == AutofillProfileChange::ADD) {
     if (!change.enforced() &&

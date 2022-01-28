@@ -62,8 +62,6 @@ namespace test {
 
 namespace {
 
-const int kValidityStateBitfield = 1984;
-
 std::string GetRandomCardNumber() {
   const size_t length = 16;
   std::string value;
@@ -447,8 +445,6 @@ AutofillProfile GetServerProfile() {
   profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Santa Clara");
 
   profile.set_language_code("en");
-  profile.SetClientValidityFromBitfieldValue(kValidityStateBitfield);
-  profile.set_is_client_validity_states_updated(true);
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(54321));
 
@@ -469,8 +465,6 @@ AutofillProfile GetServerProfile2() {
   profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Santa Monica");
 
   profile.set_language_code("en");
-  profile.SetClientValidityFromBitfieldValue(kValidityStateBitfield);
-  profile.set_is_client_validity_states_updated(true);
   profile.set_use_count(14);
   profile.set_use_date(base::Time::FromTimeT(98765));
 

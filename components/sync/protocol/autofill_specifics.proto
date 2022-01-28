@@ -141,15 +141,6 @@ message AutofillProfileSpecifics {
   // Phone.
   repeated string phone_home_whole_number = 13;
 
-  // Validity bitfield.
-  // Each set of two bits represents the validity state of a specific part of
-  // the Autofill address. For more info please refer to autofill_profile.h.
-  optional int64 validity_state_bitfield = 24;
-
-  // Denotes whether the validity_state_bitfield is updated according to the
-  // changes in the autofill profile values.
-  optional bool is_client_validity_states_updated = 25;
-
   // The state indicates if the profile qualifies to get merged with a
   // profile observed in a form submission. If true, the profile can still be
   // updated silently, but it should not be considered for merges that need to
@@ -159,6 +150,11 @@ message AutofillProfileSpecifics {
   // Deprecated.
   optional string deprecated_label = 1 [deprecated = true];
   optional string phone_fax_whole_number = 14 [deprecated = true];
+  // The following validity-related fields have only been used in combination
+  // with an experimental features that are disabled for all clients and have
+  // been removed in M100.
+  optional int64 validity_state_bitfield = 24 [deprecated = true];
+  optional bool is_client_validity_states_updated = 25 [deprecated = true];
 }
 
 message AutofillSpecifics {

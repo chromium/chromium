@@ -991,11 +991,6 @@ bool FieldFiller::FillFormField(
         profile_or_credit_card));
     const AutofillProfile* profile =
         absl::get<const AutofillProfile*>(profile_or_credit_card);
-    if (profile->ShouldSkipFillingOrSuggesting(type.GetStorableType())) {
-      if (failure_to_fill)
-        *failure_to_fill += "ShouldSkipFillingOrSuggesting() returned true. ";
-      return false;
-    }
 
     value = GetValueForProfile(*profile, app_locale_, field, field_data,
                                failure_to_fill);

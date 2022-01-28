@@ -752,7 +752,6 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
   std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
-  personal_data_->UpdateProfilesServerValidityMapsIfNeeded(profiles);
   if (observed_submission && form_structure->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
         personal_data_->GetProfiles().size());
@@ -2182,10 +2181,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
 
     for (const AutofillProfile& profile : profiles) {
-      ServerFieldTypeValidityStateMap matching_types_validities;
-      profile.GetMatchingTypesAndValidities(value, app_locale, &matching_types,
-                                            &matching_types_validities);
-      field->add_possible_types_validities(matching_types_validities);
+      profile.GetMatchingTypes(value, app_locale, &matching_types);
     }
 
     // TODO(crbug/880531) set possible_types_validities for credit card too.

@@ -5208,16 +5208,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-    {"autofill-profile-client-validation",
-     flag_descriptions::kAutofillProfileClientValidationName,
-     flag_descriptions::kAutofillProfileClientValidationDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillProfileClientValidation)},
-
-    {"autofill-profile-server-validation",
-     flag_descriptions::kAutofillProfileServerValidationName,
-     flag_descriptions::kAutofillProfileServerValidationDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillProfileServerValidation)},
-
 #if BUILDFLAG(IS_WIN)
     {"enable-windows-gaming-input-data-fetcher",
      flag_descriptions::kEnableWindowsGamingInputDataFetcherName,

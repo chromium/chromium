@@ -878,10 +878,6 @@ TEST_F(AutofillTableTest,
 
   structured_name_profile.set_language_code("en");
 
-  structured_name_profile.SetClientValidityFromBitfieldValue(6);
-
-  structured_name_profile.set_is_client_validity_states_updated(true);
-
   // Add the profile to the table.
   EXPECT_TRUE(table_->AddAutofillProfile(structured_name_profile));
 
@@ -1286,8 +1282,6 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   home_profile.set_disallow_settings_visible_updates(true);
   home_profile.set_language_code("en");
-  home_profile.SetClientValidityFromBitfieldValue(6);
-  home_profile.set_is_client_validity_states_updated(true);
   Time pre_creation_time = AutofillClock::Now();
 
   // Add the profile to the table.
@@ -1380,8 +1374,6 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
   billing_profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"123456");
   billing_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   billing_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181230000");
-  billing_profile.SetClientValidityFromBitfieldValue(54);
-  billing_profile.set_is_client_validity_states_updated(true);
 
   Time pre_modification_time_2 = AutofillClock::Now();
   EXPECT_TRUE(table_->UpdateAutofillProfile(billing_profile));
@@ -1435,8 +1427,6 @@ TEST_F(AutofillTableTest, AutofillProfile) {
   home_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   home_profile.set_language_code("en");
-  home_profile.SetClientValidityFromBitfieldValue(6);
-  home_profile.set_is_client_validity_states_updated(true);
 
   Time pre_creation_time = AutofillClock::Now();
   EXPECT_TRUE(table_->AddAutofillProfile(home_profile));
@@ -1515,8 +1505,6 @@ TEST_F(AutofillTableTest, AutofillProfile) {
   billing_profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"123456");
   billing_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   billing_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181230000");
-  billing_profile.SetClientValidityFromBitfieldValue(54);
-  billing_profile.set_is_client_validity_states_updated(true);
 
   Time pre_modification_time_2 = AutofillClock::Now();
   EXPECT_TRUE(table_->UpdateAutofillProfile(billing_profile));
@@ -2369,75 +2357,6 @@ TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_TwoSame) {
                              CompareAutofillEntries);
 
   CompareAutofillEntrySets(entry_set, expected_entries);
-}
-
-TEST_F(AutofillTableTest, AutofillProfileValidityBitfield) {
-  // Add an autofill profile with a non default validity state. The value itself
-  // is insignificant for this test since only the serialization and
-  // deserialization are tested.
-  const int kValidityBitfieldValue = 1984;
-  AutofillProfile profile;
-  profile.set_origin(std::string());
-  profile.SetRawInfo(NAME_FIRST, u"John");
-  profile.SetRawInfo(NAME_LAST, u"Smith");
-  profile.SetClientValidityFromBitfieldValue(kValidityBitfieldValue);
-
-  // Add the profile to the table.
-  EXPECT_TRUE(table_->AddAutofillProfile(profile));
-
-  // Get the profile from the table and make sure the validity was set.
-  std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(profile.guid());
-  ASSERT_TRUE(db_profile);
-  EXPECT_EQ(kValidityBitfieldValue,
-            db_profile->GetClientValidityBitfieldValue());
-
-  // Modify the validity of the profile.
-  const int kOtherValidityBitfieldValue = 1999;
-  profile.SetClientValidityFromBitfieldValue(kOtherValidityBitfieldValue);
-
-  // Update the profile in the table.
-  EXPECT_TRUE(table_->UpdateAutofillProfile(profile));
-
-  // Get the profile from the table and make sure the validity was updated.
-  db_profile = table_->GetAutofillProfile(profile.guid());
-  ASSERT_TRUE(db_profile);
-  EXPECT_EQ(kOtherValidityBitfieldValue,
-            db_profile->GetClientValidityBitfieldValue());
-}
-
-TEST_F(AutofillTableTest, AutofillProfileIsClientValidityStatesUpdatedFlag) {
-  AutofillProfile profile;
-  profile.set_origin(std::string());
-  profile.SetRawInfo(NAME_FIRST, u"John");
-  profile.SetRawInfo(NAME_LAST, u"Smith");
-  profile.set_is_client_validity_states_updated(true);
-
-  // Add the profile to the table.
-  EXPECT_TRUE(table_->AddAutofillProfile(profile));
-  // Get the profile from the table and make sure the validity was set.
-  std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(profile.guid());
-  ASSERT_TRUE(db_profile);
-  EXPECT_TRUE(db_profile->is_client_validity_states_updated());
-
-  // Test if turning off the validity updated flag works.
-  profile.set_is_client_validity_states_updated(false);
-  // Update the profile in the table.
-  EXPECT_TRUE(table_->UpdateAutofillProfile(profile));
-  // Get the profile from the table and make sure the validity was updated.
-  db_profile = table_->GetAutofillProfile(profile.guid());
-  ASSERT_TRUE(db_profile);
-  EXPECT_FALSE(db_profile->is_client_validity_states_updated());
-
-  // Test if turning on the validity updated flag works.
-  profile.set_is_client_validity_states_updated(true);
-  // Update the profile in the table.
-  EXPECT_TRUE(table_->UpdateAutofillProfile(profile));
-  // Get the profile from the table and make sure the validity was updated.
-  db_profile = table_->GetAutofillProfile(profile.guid());
-  ASSERT_TRUE(db_profile);
-  EXPECT_TRUE(db_profile->is_client_validity_states_updated());
 }
 
 TEST_F(AutofillTableTest, SetGetServerCards) {

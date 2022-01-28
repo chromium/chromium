@@ -93,13 +93,6 @@ struct PaymentsCustomerData;
 //                      code starts with the postal code, but a JP address with
 //                      "ja-latn" language code starts with the recipient name.
 //                      Added in version 56.
-//   validity_bitfield  A bitfield representing the validity state of different
-//                      fields in the profile.
-//                      Added in version 75.
-//   is_client_validity_states_updated
-//                      A flag indicating whether the validity states of
-//                      different fields according to the client validity api is
-//                      updated or not. Added in version 80.
 //   disallow_settings_visible_updates
 //                      If true, a profile does not qualify to get merged with
 //                      a profile observed in a form submission.
@@ -715,6 +708,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion96AddAutofillProfileDisallowConfirmableMergesColumn();
   bool MigrateToVersion98RemoveStatusColumnMaskedCreditCards();
   bool MigrateToVersion99RemoveAutofillProfilesTrashTable();
+  bool MigrateToVersion100RemoveProfileValidityBitfieldColumn();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

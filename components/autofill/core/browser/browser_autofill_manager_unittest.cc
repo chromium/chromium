@@ -352,7 +352,6 @@ class BrowserAutofillManagerTest : public testing::Test {
                         /*pref_service=*/autofill_client_.GetPrefs(),
                         /*local_state=*/autofill_client_.GetPrefs(),
                         /*identity_manager=*/nullptr,
-                        /*client_profile_validator=*/nullptr,
                         /*history_service=*/nullptr,
                         /*strike_database=*/nullptr,
                         /*image_fetcher=*/nullptr,
@@ -6353,8 +6352,6 @@ class ProfileMatchingTypesTest
     : public BrowserAutofillManagerTest,
       public ::testing::WithParamInterface<
           std::tuple<ProfileMatchingTypesTestCase,
-                     int,      // AutofillDataModel::ValidityState
-                     bool,     // AutofillDataModel::ValidationSource
                      bool>> {  // kAutofillEnableSupportForMoreStructureInNames
  protected:
   void SetUp() override {
@@ -6374,7 +6371,7 @@ class ProfileMatchingTypesTest
 };
 
 void ProfileMatchingTypesTest::InitializeFeatures() {
-  structured_names_and_addresses_ = std::get<2>(GetParam());
+  structured_names_and_addresses_ = std::get<1>(GetParam());
 
   std::vector<base::Feature> features = {
       features::kAutofillEnableSupportForMoreStructureInAddresses,
@@ -6497,22 +6494,15 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
 };
 
 // Tests that DeterminePossibleFieldTypesForUpload finds accurate possible
-// types and validities.
+// types.
 TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   // Unpack the test parameters
   const auto& test_case = std::get<0>(GetParam());
-  auto validity_state =
-      static_cast<AutofillDataModel::ValidityState>(std::get<1>(GetParam()));
-  const auto& validation_source =
-      static_cast<AutofillDataModel::ValidationSource>(std::get<2>(GetParam()));
 
   SCOPED_TRACE(base::StringPrintf(
-      "Test: input_value='%s', field_type=%s, validity_state=%d, "
-      "validation_source=%d "
-      "structured_names=%s ",
+      "Test: input_value='%s', field_type=%s, structured_names=%s ",
       test_case.input_value,
       AutofillType(*test_case.field_types.begin()).ToString().c_str(),
-      validity_state, validation_source,
       StructuredNamesAndAddresses() ? "true" : "false"));
 
   // Take the field types depending on the state of the structured names
@@ -6520,9 +6510,6 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   const ServerFieldTypeSet& expected_possible_types =
       StructuredNamesAndAddresses() ? test_case.structured_field_types
                                     : test_case.field_types;
-
-  ASSERT_LE(AutofillDataModel::UNVALIDATED, validity_state);
-  ASSERT_LE(validity_state, AutofillDataModel::UNSUPPORTED);
 
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
@@ -6543,24 +6530,6 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
                        "Apt. 11", "Paris", "Île de France", "75008", "FR",
                        "+33 2 49 19 70 70");
   profiles[2].set_guid("00000000-0000-0000-0000-000000000001");
-
-  // Set the validity state for the matching field type.
-  for (auto type : expected_possible_types) {
-    if (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
-      for (auto& profile : profiles) {
-        ASSERT_GT(test_case.field_types.size(), 0U);
-        if (type == UNKNOWN_TYPE) {
-          // An UNKNOWN type is always UNVALIDATED
-          validity_state = AutofillDataModel::UNVALIDATED;
-        } else if (profile.IsAnInvalidPhoneNumber(type)) {
-          // A phone field is a compound field, and an invalid part makes
-          // the phone number invalid.
-          validity_state = AutofillDataModel::INVALID;
-        }
-        profile.SetValidityState(type, validity_state, validation_source);
-      }
-    }
-  }
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -6590,22 +6559,6 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   ServerFieldTypeSet possible_types = form_structure.field(0)->possible_types();
   EXPECT_EQ(possible_types, expected_possible_types);
-
-  for (auto type : expected_possible_types) {
-    // We don't add validity states for credit card fields.
-    if (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
-      ServerFieldTypeValidityStatesMap possible_types_validities =
-          form_structure.field(0)->possible_types_validities();
-      ASSERT_EQ(expected_possible_types.size(),
-                possible_types_validities.size());
-      EXPECT_NE(possible_types_validities.end(),
-                possible_types_validities.find(type));
-      EXPECT_EQ(possible_types_validities[type][0],
-                (validation_source == AutofillDataModel::SERVER)
-                    ? validity_state
-                    : AutofillDataModel::UNVALIDATED);
-    }
-  }
 }
 
 // Tests that DeterminePossibleFieldTypesForUpload is called when a form is
@@ -6658,115 +6611,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
   FormSubmitted(form);
-}
-
-// Test that the possible field types with multiple validities are determined
-// correctly.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DeterminePossibleFieldTypesWithMultipleValidities) {
-  // Set up the user's profiles.
-  std::vector<AutofillProfile> profiles;
-  {
-    AutofillProfile profile;
-    test::SetProfileInfo(&profile, "Elvis", "Aaron", "Presley",
-                         "theking@gmail.com", "RCA", "3734 Elvis Presley Blvd.",
-                         "", "Memphis", "Tennessee", "38116", "US",
-                         "(234) 567-8901");
-    profile.set_guid("00000000-0000-0000-0000-000000000001");
-    profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::VALID,
-                             AutofillDataModel::SERVER);
-    profiles.push_back(profile);
-  }
-  {
-    AutofillProfile profile;
-    test::SetProfileInfo(&profile, "Alice", "", "Munro", "munro@gmail.com", "",
-                         "1331 W Georgia", "", "Vancouver", "Tennessee",
-                         "V4D 4S4", "CA", "(778) 567-8901");
-    profile.set_guid("00000000-0000-0000-0000-000000000002");
-    profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::INVALID,
-                             AutofillDataModel::SERVER);
-    profiles.push_back(profile);
-  }
-
-  // Set up the test cases:
-  typedef struct {
-    std::u16string input_value;
-    ServerFieldType field_type;
-    std::vector<AutofillDataModel::ValidityState> expected_validity_states;
-  } TestFieldData;
-
-  std::vector<TestFieldData> test_cases[3];
-  // Tennessee appears in both of the user's profile as ADDRESS_HOME_STATE. In
-  // the first one, it's VALID, and for the other, it's INVALID. Therefore, the
-  // possible_field_types would only include the type ADDRESS_HOME_STATE, and
-  // the corresponding validity of that type would include both VALID and
-  // INVALID.
-  test_cases[0].push_back(
-      {u"Tennessee",
-       ADDRESS_HOME_STATE,
-       {AutofillDataModel::VALID, AutofillDataModel::INVALID}});
-  // Alice appears only in the second profile as a NAME_FIRST, and it's
-  // UNVALIDATED.
-  test_cases[1].push_back(
-      {u"Alice", NAME_FIRST, {AutofillDataModel::UNVALIDATED}});
-  // An UNKNOWN type is always UNVALIDATED.
-  test_cases[2].push_back({u"What a beautiful day!",
-                           UNKNOWN_TYPE,
-                           {AutofillDataModel::UNVALIDATED}});
-
-  for (const std::vector<TestFieldData>& test_fields : test_cases) {
-    FormData form;
-    form.name = u"MyForm";
-    form.url = GURL("https://myform.com/form.html");
-    form.action = GURL("https://myform.com/submit.html");
-
-    // Create the form fields specified in the test case.
-    FormFieldData field;
-    ServerFieldTypeSet possible_types;
-    ServerFieldTypeValidityStatesMap possible_types_validities;
-    for (const TestFieldData& test_field : test_fields) {
-      test::CreateTestFormField("", "1", "", "text", &field);
-      field.value = test_field.input_value;
-      form.fields.push_back(field);
-    }
-
-    // Assign the specified predicted type for each field in the test case.
-    FormStructure form_structure(form);
-    for (size_t i = 0; i < test_fields.size(); ++i) {
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-          prediction;
-      prediction.set_type(test_fields[i].field_type);
-      form_structure.field(i)->set_server_predictions({prediction});
-    }
-
-    BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-        profiles, {}, std::u16string(), "en-us", &form_structure);
-
-    ASSERT_EQ(test_fields.size(), form_structure.field_count());
-
-    for (size_t i = 0; i < test_fields.size(); ++i) {
-      possible_types = form_structure.field(i)->possible_types();
-      // For both cases we only expect one possible type.
-      EXPECT_EQ(1U, possible_types.size());
-      // Expect to see the field_type as the possible type.
-      EXPECT_NE(possible_types.end(),
-                possible_types.find(test_fields[i].field_type));
-
-      // Expect the same for possible_types_validities.
-      possible_types_validities =
-          form_structure.field(i)->possible_types_validities();
-      EXPECT_EQ(1U, possible_types_validities.size());
-      EXPECT_NE(possible_types_validities.end(),
-                possible_types_validities.find(test_fields[i].field_type));
-      // Check for the expected validity states for the possible type.
-      EXPECT_EQ(test_fields[i].expected_validity_states.size(),
-                possible_types_validities[test_fields[i].field_type].size());
-      for (size_t j = 0; j < test_fields[i].expected_validity_states.size();
-           ++j)
-        EXPECT_EQ(possible_types_validities[test_fields[i].field_type][j],
-                  test_fields[i].expected_validity_states[j]);
-    }
-  }
 }
 
 // Tests that DisambiguateUploadTypes makes the correct choices.
@@ -9969,12 +9813,8 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
 INSTANTIATE_TEST_SUITE_P(
     BrowserAutofillManagerTest,
     ProfileMatchingTypesTest,
-    testing::Combine(
-        testing::ValuesIn(kProfileMatchingTypesTestCases),
-        testing::Range(static_cast<int>(AutofillDataModel::UNVALIDATED),
-                       static_cast<int>(AutofillDataModel::UNSUPPORTED) + 1),
-        testing::Bool(),
-        testing::Bool()));
+    testing::Combine(testing::ValuesIn(kProfileMatchingTypesTestCases),
+                     testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(All, OnFocusOnFormFieldTest, testing::Bool());
 

@@ -70,7 +70,6 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
 PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
 
 KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
-    autofill::AutofillProfileValidator* autofill_validator,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   PersonalDataManager* service =
@@ -87,9 +86,8 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
 
   service->Init(local_storage, account_storage, profile->GetPrefs(),
                 g_browser_process->local_state(),
-                IdentityManagerFactory::GetForProfile(profile),
-                autofill_validator, history_service, strike_database,
-                image_fetcher, profile->IsOffTheRecord());
+                IdentityManagerFactory::GetForProfile(profile), history_service,
+                strike_database, image_fetcher, profile->IsOffTheRecord());
 
   if (!switches::IsSyncAllowedByFlag())
     service->OnSyncServiceInitialized(nullptr);
@@ -99,8 +97,7 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
 
 KeyedService* PersonalDataManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return BuildPersonalDataManager(
-      AutofillProfileValidatorFactory::GetInstance(), context);
+  return BuildPersonalDataManager(context);
 }
 
 content::BrowserContext* PersonalDataManagerFactory::GetBrowserContextToUse(

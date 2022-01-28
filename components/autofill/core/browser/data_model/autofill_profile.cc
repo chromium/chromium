@@ -209,36 +209,6 @@ void GetFieldsForDistinguishingProfiles(
   }
 }
 
-// Constants for the validity bitfield.
-const size_t kValidityBitsPerType = 2;
-// The order is important to ensure a consistent bitfield value. New values
-// should be added at the end NOT at the start or middle.
-const ServerFieldType kSupportedTypesByClientForValidation[] = {
-    ADDRESS_HOME_COUNTRY,
-    ADDRESS_HOME_STATE,
-    ADDRESS_HOME_ZIP,
-    ADDRESS_HOME_CITY,
-    ADDRESS_HOME_DEPENDENT_LOCALITY,
-    EMAIL_ADDRESS,
-    PHONE_HOME_WHOLE_NUMBER};
-
-const size_t kNumSupportedTypesForValidation =
-    sizeof(kSupportedTypesByClientForValidation) /
-    sizeof(kSupportedTypesByClientForValidation[0]);
-
-static_assert(kNumSupportedTypesForValidation * kValidityBitsPerType <= 64,
-              "Not enough bits to encode profile validity information!");
-
-// Some types are specializations of other types. Normalize these back to the
-// main stored type for used to mark field validity .
-ServerFieldType NormalizeTypeForValidityCheck(ServerFieldType type) {
-  auto field_type_group = AutofillType(type).group();
-  if (field_type_group == FieldTypeGroup::kPhoneHome ||
-      field_type_group == FieldTypeGroup::kPhoneBilling)
-    return PHONE_HOME_WHOLE_NUMBER;
-  return type;
-}
-
 }  // namespace
 
 AutofillProfile::AutofillProfile(const std::string& guid,
@@ -305,10 +275,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   server_id_ = profile.server_id();
   has_converted_ = profile.has_converted();
-  is_client_validity_states_updated_ =
-      profile.is_client_validity_states_updated();
-  SetClientValidityFromBitfieldValue(profile.GetClientValidityBitfieldValue());
-  server_validity_states_ = profile.GetServerValidityMap();
 
   return *this;
 }
@@ -351,31 +317,6 @@ void AutofillProfile::GetMatchingTypes(
   }
 }
 
-void AutofillProfile::GetMatchingTypesAndValidities(
-    const std::u16string& text,
-    const std::string& app_locale,
-    ServerFieldTypeSet* matching_types,
-    ServerFieldTypeValidityStateMap* matching_types_validities) const {
-  if (!matching_types && !matching_types_validities)
-    return;
-
-  ServerFieldTypeSet matching_types_in_this_profile;
-  for (const auto* form_group : FormGroups()) {
-    form_group->GetMatchingTypes(text, app_locale,
-                                 &matching_types_in_this_profile);
-  }
-
-  for (auto type : matching_types_in_this_profile) {
-    if (matching_types_validities) {
-      // TODO(crbug.com/879655): Set the client validities and look them up when
-      // the server validities are not available.
-      (*matching_types_validities)[type] = GetValidityState(type, SERVER);
-    }
-    if (matching_types)
-      matching_types->insert(type);
-  }
-}
-
 std::u16string AutofillProfile::GetRawInfo(ServerFieldType type) const {
   const FormGroup* form_group = FormGroupForType(AutofillType(type));
   if (!form_group)
@@ -390,8 +331,6 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
   if (form_group) {
-    is_client_validity_states_updated_ &=
-        !IsClientValidationSupportedForType(type);
     form_group->SetRawInfoWithVerificationStatus(type, value, status);
   }
 }
@@ -536,16 +475,6 @@ bool AutofillProfile::EqualsForUpdatePurposes(
          UseDateEqualsInSeconds(&new_profile) &&
          language_code() == new_profile.language_code() &&
          Compare(new_profile) == 0;
-}
-
-bool AutofillProfile::EqualsForClientValidationPurpose(
-    const AutofillProfile& profile) const {
-  for (ServerFieldType type : kSupportedTypesByClientForValidation) {
-    if (GetRawInfo(type).compare(profile.GetRawInfo(type))) {
-      return false;
-    }
-  }
-  return true;
 }
 
 bool AutofillProfile::EqualsIncludingUsageStatsForTesting(
@@ -794,8 +723,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
     modified = true;
   }
 
-  is_client_validity_states_updated_ &= !modified;
-
   return modified;
 }
 
@@ -994,198 +921,6 @@ void AutofillProfile::LogVerificationStatuses() {
   AutofillMetrics::LogVerificationStatusOfAddressTokensOnProfileUsage(*this);
 }
 
-bool AutofillProfile::HasGreaterFrescocencyThan(
-    const AutofillProfile* other,
-    base::Time comparison_time,
-    bool use_client_validation,
-    bool use_server_validation) const {
-  double score = GetFrecencyScore(comparison_time);
-  double other_score = other->GetFrecencyScore(comparison_time);
-
-  const double kEpsilon = 0.001;
-  if (std::fabs(score - other_score) > kEpsilon)
-    return score > other_score;
-
-  bool is_valid = (!use_client_validation || IsValidByClient()) &&
-                  (!use_server_validation || IsValidByServer());
-  bool other_is_valid = (!use_client_validation || other->IsValidByClient()) &&
-                        (!use_server_validation || other->IsValidByServer());
-
-  if (is_valid == other_is_valid) {
-    if (use_date() != other->use_date())
-      return use_date() > other->use_date();
-    return guid() > other->guid();
-  }
-
-  if (is_valid && !other_is_valid)
-    return true;
-  return false;
-}
-
-bool AutofillProfile::IsValidByClient() const {
-  for (auto const& it : client_validity_states_) {
-    if (it.second == INVALID)
-      return false;
-  }
-  return true;
-}
-
-bool AutofillProfile::IsValidByServer() const {
-  for (auto const& it : server_validity_states_) {
-    if (it.second == INVALID)
-      return false;
-  }
-  return true;
-}
-
-bool AutofillProfile::IsAnInvalidPhoneNumber(ServerFieldType type) const {
-  if (GetValidityState(type, SERVER) == VALID ||
-      (type != PHONE_HOME_WHOLE_NUMBER && type != PHONE_HOME_NUMBER &&
-       type != PHONE_BILLING_WHOLE_NUMBER && type != PHONE_BILLING_NUMBER))
-    return false;
-  if (GetValidityState(type, SERVER) == INVALID)
-    return true;
-
-  ServerFieldTypeSet types;
-  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPhoneHome) {
-    types = {PHONE_HOME_NUMBER, PHONE_HOME_CITY_CODE,
-             PHONE_HOME_CITY_AND_NUMBER};
-    if (type == PHONE_HOME_WHOLE_NUMBER) {
-      types.insert(PHONE_HOME_WHOLE_NUMBER);
-      types.insert(PHONE_HOME_COUNTRY_CODE);
-    }
-  } else if (GroupTypeOfServerFieldType(type) ==
-             FieldTypeGroup::kPhoneBilling) {
-    types = {PHONE_BILLING_NUMBER, PHONE_BILLING_CITY_CODE,
-             PHONE_BILLING_CITY_AND_NUMBER};
-    if (type == PHONE_BILLING_WHOLE_NUMBER) {
-      types.insert(PHONE_BILLING_WHOLE_NUMBER);
-      types.insert(PHONE_BILLING_COUNTRY_CODE);
-    }
-  }
-
-  for (auto cur_type : types) {
-    if (GetValidityState(cur_type, SERVER) == INVALID)
-      return true;
-  }
-  return false;
-}
-
-AutofillDataModel::ValidityState AutofillProfile::GetValidityState(
-    ServerFieldType type,
-    ValidationSource validation_source) const {
-  if (validation_source == CLIENT) {
-    type = NormalizeTypeForValidityCheck(type);
-    // Return UNSUPPORTED for types that autofill does not validate.
-    if (!IsClientValidationSupportedForType(type))
-      return UNSUPPORTED;
-
-    auto it = client_validity_states_.find(type);
-    return (it == client_validity_states_.end()) ? UNVALIDATED : it->second;
-  }
-  DCHECK_EQ(SERVER, validation_source);
-
-  auto it = server_validity_states_.find(type);
-  return (it == server_validity_states_.end()) ? UNVALIDATED : it->second;
-}
-
-void AutofillProfile::SetValidityState(
-    ServerFieldType type,
-    ValidityState validity,
-    ValidationSource validation_source) const {
-  if (validation_source == CLIENT) {
-    // Do not save validity of unsupported types.
-    if (!IsClientValidationSupportedForType(type))
-      return;
-    client_validity_states_[type] = validity;
-    return;
-  }
-  DCHECK_EQ(SERVER, validation_source);
-  server_validity_states_[type] = validity;
-}
-
-void AutofillProfile::UpdateServerValidityMap(
-    const ProfileValidityMap& validity_map) const {
-  server_validity_states_.clear();
-  const auto& field_validity_states = validity_map.field_validity_states();
-  for (const auto& current_pair : field_validity_states) {
-    const auto field_type =
-        ToSafeServerFieldType(current_pair.first, UNKNOWN_TYPE);
-    const auto field_validity = static_cast<ValidityState>(current_pair.second);
-    server_validity_states_[field_type] = field_validity;
-  }
-}
-
-// static
-bool AutofillProfile::IsClientValidationSupportedForType(ServerFieldType type) {
-  for (auto supported_type : kSupportedTypesByClientForValidation) {
-    if (type == supported_type)
-      return true;
-  }
-  return false;
-}
-
-int AutofillProfile::GetClientValidityBitfieldValue() const {
-  int validity_value = 0;
-  size_t field_type_shift = 0;
-  for (ServerFieldType supported_type : kSupportedTypesByClientForValidation) {
-    validity_value |= GetValidityState(supported_type, CLIENT)
-                      << field_type_shift;
-    field_type_shift += kValidityBitsPerType;
-  }
-
-  // Check the the shift is still in range.
-  DCHECK_LE(field_type_shift, 64U);
-
-  return validity_value;
-}
-
-void AutofillProfile::SetClientValidityFromBitfieldValue(
-    int bitfield_value) const {
-  // Compute the bitmask based on the number a bits per type. For example, this
-  // could be the two least significant bits (0b11).
-  const int kBitmask = (1 << kValidityBitsPerType) - 1;
-
-  for (ServerFieldType supported_type : kSupportedTypesByClientForValidation) {
-    // Apply the bitmask to the bitfield value to get the validity value of the
-    // current |supported_type|.
-    int validity_value = bitfield_value & kBitmask;
-    if (validity_value < 0 || validity_value >= UNSUPPORTED) {
-      NOTREACHED();
-      continue;
-    }
-
-    SetValidityState(supported_type, static_cast<ValidityState>(validity_value),
-                     CLIENT);
-
-    // Shift the bitfield value to access the validity of the next field type.
-    bitfield_value = bitfield_value >> kValidityBitsPerType;
-  }
-}
-
-bool AutofillProfile::ShouldSkipFillingOrSuggesting(
-    ServerFieldType type) const {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillProfileServerValidation) &&
-      GetValidityState(type, AutofillProfile::SERVER) ==
-          AutofillProfile::INVALID) {
-    return true;
-  }
-
-  // We are making an exception and skipping the validation check for address
-  // fields when the country is empty.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillProfileClientValidation) &&
-      GetValidityState(type, AutofillProfile::CLIENT) ==
-          AutofillProfile::INVALID &&
-      (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kAddressHome ||
-       !GetRawInfo(ADDRESS_HOME_COUNTRY).empty())) {
-    return true;
-  }
-
-  return false;
-}
-
 VerificationStatus AutofillProfile::GetVerificationStatusImpl(
     const ServerFieldType type) const {
   const FormGroup* form_group = FormGroupForType(AutofillType(type));
@@ -1224,9 +959,6 @@ bool AutofillProfile::SetInfoWithVerificationStatusImpl(
   FormGroup* form_group = MutableFormGroupForType(type);
   if (!form_group)
     return false;
-
-  is_client_validity_states_updated_ &=
-      !IsClientValidationSupportedForType(type.GetStorableType());
 
   std::u16string trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
@@ -1363,10 +1095,9 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
              : base::HexEncode(profile.server_id().data(),
                                profile.server_id().size()))
      << " " << profile.origin() << " "
-     << "label: " << profile.profile_label() << " "
-     << profile.GetClientValidityBitfieldValue() << " "
-     << profile.has_converted() << " " << profile.use_count() << " "
-     << profile.use_date() << " " << profile.language_code() << std::endl;
+     << "label: " << profile.profile_label() << " " << profile.has_converted()
+     << " " << profile.use_count() << " " << profile.use_date() << " "
+     << profile.language_code() << std::endl;
 
   // Lambda to print the value and verification status for |type|.
   auto print_values_lambda = [&os, &profile](ServerFieldType type) {

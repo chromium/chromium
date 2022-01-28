@@ -356,7 +356,6 @@ class FormDataImporterTestBase {
         /*pref_service=*/prefs_.get(),
         /*local_state=*/prefs_.get(),
         /*identity_manager=*/nullptr,
-        /*client_profile_validator=*/nullptr,
         /*history_service=*/nullptr,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr,

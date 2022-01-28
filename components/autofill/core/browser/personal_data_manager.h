@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/autofill_profile_update_strike_database.h"
-#include "components/autofill/core/browser/autofill_profile_validator.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -105,7 +104,6 @@ class PersonalDataManager : public KeyedService,
             PrefService* pref_service,
             PrefService* local_state,
             signin::IdentityManager* identity_manager,
-            AutofillProfileValidator* client_profile_validator,
             history::HistoryService* history_service,
             StrikeDatabaseBase* strike_database,
             AutofillImageFetcher* image_fetcher,
@@ -306,20 +304,6 @@ class PersonalDataManager : public KeyedService,
   raw_ptr<gfx::Image> GetCachedCardArtImageForUrl(
       const GURL& card_art_url) const;
 
-  // Updates the validity states of |profiles| according to server validity map.
-  void UpdateProfilesServerValidityMapsIfNeeded(
-      const std::vector<AutofillProfile*>& profiles);
-
-  // Requests an update for the validity states of the |profiles| according to
-  // client side validation API: |client_profile_validator_|.
-  void UpdateClientValidityStates(
-      const std::vector<AutofillProfile*>& profiles);
-
-  // Requests an update for the validity states of the |profile| according to
-  // the client side validation API: |client_profile_validator_|. Returns true
-  // if the validation was requested.
-  bool UpdateClientValidityStates(const AutofillProfile& profile);
-
   // Returns the profiles to suggest to the user, ordered by frecency.
   std::vector<AutofillProfile*> GetProfilesToSuggest() const;
 
@@ -447,11 +431,6 @@ class PersonalDataManager : public KeyedService,
   // Returns the value of the AutofillWalletImportEnabled pref.
   virtual bool IsAutofillWalletImportEnabled() const;
 
-  void set_client_profile_validator_for_test(
-      AutofillProfileValidator* validator) {
-    client_profile_validator_ = validator;
-  }
-
   // Returns true if the PDM is in the off-the-record mode.
   bool IsOffTheRecord() { return is_off_the_record_; }
 
@@ -568,10 +547,6 @@ class PersonalDataManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(
       PersonalDataManagerTest,
       GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           RequestProfileServerValidity);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetProfileSuggestions_Validity);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
 
   friend class autofill::AutofillInteractiveTest;
@@ -660,13 +635,6 @@ class PersonalDataManager : public KeyedService,
   // this class and must outlive |this|.
   void SetPrefService(PrefService* pref_service);
 
-  // Called when the |profile| is validated by the AutofillProfileValidator,
-  // updates the profiles on the |ongoing_profile_changes_| and the DB.
-  virtual void OnValidated(const AutofillProfile* profile);
-
-  // Get the profiles fields validity map by |guid|.
-  const ProfileValidityMap& GetProfileValidityByGUID(const std::string& guid);
-
   // Asks AutofillImageFetcher to fetch images.
   virtual void FetchImagesForUrls(const std::vector<GURL>& updated_urls) const;
 
@@ -726,9 +694,6 @@ class PersonalDataManager : public KeyedService,
   std::unique_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_;
 
-  // |profile_valditiies_need_update| whenever the profile validities are out of
-  bool profiles_server_validities_need_update_ = true;
-
  private:
   // Saves |imported_credit_card| to the WebDB if it exists. Returns the guid of
   // the new or updated card, or the empty string if no card was saved.
@@ -779,9 +744,6 @@ class PersonalDataManager : public KeyedService,
   // refreshing in the end.
   void RemoveAutofillProfileByGUIDAndBlankCreditCardReference(
       const std::string& guid);
-
-  // Resets |synced_profile_validity_|.
-  void ResetProfileValidity();
 
   // Add/Update/Remove |profile| on DB. |enforced| should be true when the
   // add/update should happen regardless of an existing/equal profile.
@@ -865,11 +827,6 @@ class PersonalDataManager : public KeyedService,
   // Pref registrar for managing the change observers.
   PrefChangeRegistrar pref_registrar_;
 
-  // Profiles validity read from the prefs. They are kept updated by
-  // observing changes in pref_services. We need to set the
-  // |profile_validities_need_update_| whenever this is changed.
-  std::unique_ptr<UserProfileValidityMap> synced_profile_validity_;
-
   // PersonalDataManagerCleaner is used to apply various address and credit
   // card fixes/cleanups one time at browser startup or when the sync starts.
   // PersonalDataManagerCleaner is declared as a friend class.
@@ -878,9 +835,6 @@ class PersonalDataManager : public KeyedService,
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<AutofillProfileDeepChange>>
       ongoing_profile_changes_;
-
-  // The client side profile validator.
-  raw_ptr<AutofillProfileValidator> client_profile_validator_ = nullptr;
 
   // The identity manager that this instance uses. Must outlive this instance.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

@@ -486,16 +486,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "autofill-profile-client-validation",
-    "owners": [ "parastoog" ],
-    "expiry_milestone": 79
-  },
-  {
-    "name": "autofill-profile-server-validation",
-    "owners": [ "parastoog" ],
-    "expiry_milestone": 79
-  },
-  {
     "name": "autofill-save-card-dismiss-on-navigation",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 82

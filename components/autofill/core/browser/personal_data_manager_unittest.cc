@@ -46,7 +46,6 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/test_autofill_profile_validator.h"
 #include "components/autofill/core/browser/test_inmemory_strike_database.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
@@ -112,11 +111,6 @@ class PersonalDataManagerMock : public PersonalDataManager {
       : PersonalDataManager(app_locale, variations_country_code) {}
   ~PersonalDataManagerMock() override = default;
 
-  MOCK_METHOD(void, OnValidated, (const AutofillProfile* profile), (override));
-  void OnValidatedPDM(const AutofillProfile* profile) {
-    PersonalDataManager::OnValidated(profile);
-  }
-
   MOCK_METHOD(void,
               FetchImagesForUrls,
               ((const std::vector<GURL>& updated_urls)),
@@ -179,8 +173,7 @@ class PersonalDataManagerTestBase {
   static std::vector<base::Feature> GetDefaultEnabledFeatures() {
     // Enable account storage by default, some tests will override this to be
     // false.
-    return {features::kAutofillEnableAccountWalletStorage,
-            features::kAutofillProfileClientValidation};
+    return {features::kAutofillEnableAccountWalletStorage};
   }
 
   PersonalDataManagerTestBase()
@@ -251,7 +244,6 @@ class PersonalDataManagerTestBase {
             ? scoped_refptr<AutofillWebDataService>(account_database_service_)
             : nullptr,
         prefs_.get(), prefs_.get(), identity_test_env_.identity_manager(),
-        TestAutofillProfileValidator::GetInstance(),
         /*history_service=*/nullptr, strike_database_.get(),
         /*image_fetcher=*/nullptr, is_incognito);
 
@@ -605,12 +597,8 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   void SetUp() override {
     SetUpTest();
     ResetPersonalDataManager(USER_MODE_NORMAL);
-    // Reset the deduping and profile validation prefs to their default value.
     personal_data_->pref_service_->SetInteger(
         prefs::kAutofillLastVersionDeduped, 0);
-    personal_data_->pref_service_->SetInteger(
-        prefs::kAutofillLastVersionValidated,
-        atoi(version_info::GetVersionNumber().c_str()));
   }
 
   void TearDown() override {
@@ -639,19 +627,8 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
         atoi(version_info::GetVersionNumber().c_str()));
   }
 
-  void ResetAutofillLastVersionValidated() {
-    ASSERT_TRUE(personal_data_);
-    personal_data_->pref_service_->SetInteger(
-        prefs::kAutofillLastVersionValidated, 0);
-  }
-
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
     base::RunLoop run_loop;
-
-    EXPECT_CALL(*personal_data_, OnValidated(testing::_)).Times(1);
-    ON_CALL(*personal_data_, OnValidated(testing::_))
-        .WillByDefault(testing::Invoke(
-            personal_data_.get(), &PersonalDataManagerMock::OnValidatedPDM));
 
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
         .WillOnce(QuitMessageLoop(&run_loop));
@@ -666,11 +643,6 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   void UpdateProfileOnPersonalDataManager(const AutofillProfile& profile) {
     base::RunLoop run_loop;
 
-    EXPECT_CALL(*personal_data_, OnValidated(testing::_)).Times(1);
-    ON_CALL(*personal_data_, OnValidated(testing::_))
-        .WillByDefault(testing::Invoke(
-            personal_data_.get(), &PersonalDataManagerMock::OnValidatedPDM));
-
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
         .WillOnce(QuitMessageLoop(&run_loop));
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
@@ -684,39 +656,6 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   void RemoveByGUIDFromPersonalDataManager(const std::string& guid) {
     PersonalDataManagerTestBase::RemoveByGUIDFromPersonalDataManager(
         guid, personal_data_.get());
-  }
-
-  void UpdateClientValidityStatesOnPersonalDataManager(
-      const std::vector<AutofillProfile*>& profiles) {
-    int num_updates = 0;
-    if (GetLastVersionValidatedUpdate() < CHROME_VERSION_MAJOR) {
-      num_updates = profiles.size();
-    } else {
-      for (auto* profile : profiles) {
-        if (!profile->is_client_validity_states_updated())
-          num_updates++;
-      }
-    }
-
-    base::RunLoop run_loop;
-
-    EXPECT_CALL(*personal_data_, OnValidated(testing::_)).Times(num_updates);
-    ON_CALL(*personal_data_, OnValidated(testing::_))
-        .WillByDefault(testing::Invoke(
-            personal_data_.get(), &PersonalDataManagerMock::OnValidatedPDM));
-
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillRepeatedly(QuitMessageLoop(&run_loop));
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-        .Times(testing::AnyNumber());
-    // Validate the profiles through the client validation API.
-    personal_data_->UpdateClientValidityStates(profiles);
-    run_loop.Run();
-  }
-
-  int GetLastVersionValidatedUpdate() {
-    return personal_data_->pref_service_->GetInteger(
-        prefs::kAutofillLastVersionValidated);
   }
 
   void AddOfferDataForTest(AutofillOfferData offer_data) {
@@ -824,29 +763,6 @@ TEST_F(PersonalDataManagerTest, AddRemoveUpdateProfileSequence) {
   profiles = personal_data_->GetProfiles();
   ASSERT_EQ(1U, profiles.size());
   EXPECT_EQ(profiles[0]->GetRawInfo(EMAIL_ADDRESS), u"newest@email.com");
-}
-
-// The changes should happen in the same order as requested. If the later change
-// is validated before an earlier one, still we should process the earlier one
-// first.
-TEST_F(PersonalDataManagerTest, InconsistentValidationSequence) {
-  auto profile = test::GetFullProfile();
-  // Slow validation.
-  personal_data_->set_client_profile_validator_for_test(
-      TestAutofillProfileValidator::GetDelayedInstance());
-  personal_data_->AddProfile(profile);
-
-  // No validator, zero delay for validation.
-  personal_data_->set_client_profile_validator_for_test(nullptr);
-  profile.SetRawInfo(EMAIL_ADDRESS, u"new@email.com");
-  personal_data_->UpdateProfile(profile);
-
-  WaitForOnPersonalDataChanged();
-
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-  EXPECT_EQ(profiles[0]->GetRawInfo(EMAIL_ADDRESS), u"new@email.com");
-  EXPECT_FALSE(profiles[0]->is_client_validity_states_updated());
 }
 
 // Test that a new profile has its basic information set.
@@ -2548,164 +2464,6 @@ TEST_F(PersonalDataManagerTest,
     EXPECT_EQ(1U, suggestions.size());
     EXPECT_EQ(u"456 Zoo St., Second Line, Third line, unit 5",
               suggestions[0].value);
-  }
-}
-
-// Tests that suggestions based on invalid data are handled correctly.
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
-  // Set up 2 different profiles: one valid and one invalid.
-  AutofillProfile valid_profile(test::GetFullValidProfileForCanada());
-  valid_profile.set_use_date(AutofillClock::Now() - base::Days(1));
-  valid_profile.set_use_count(1);
-  AddProfileToPersonalDataManager(valid_profile);
-
-  AutofillProfile invalid_profile(base::GenerateGUID(), test::kEmptyOrigin);
-  test::SetProfileInfo(&invalid_profile, "Marion1", "Mitchell", "Morrison",
-                       "invalid email", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "Invalid Phone");
-  invalid_profile.set_use_date(AutofillClock::Now() - base::Days(1));
-  invalid_profile.set_use_count(1);
-  AddProfileToPersonalDataManager(invalid_profile);
-
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(2U, profiles.size());
-
-  // Invalid based on client, and not invalid by server. Relying on both
-  // validity sources.
-  {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillProfileServerValidation,
-                              features::kAutofillProfileClientValidation},
-        /*disabled_features=*/{});
-    std::vector<Suggestion> email_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-
-    for (auto* profile : profiles) {
-      ASSERT_EQ(profile->guid() == valid_profile.guid(),
-                profile->IsValidByClient());
-      ASSERT_TRUE(profile->IsValidByServer());
-    }
-    ASSERT_EQ(1U, email_suggestions.size());
-    EXPECT_EQ(u"alice@wonderland.ca", email_suggestions[0].value);
-
-    std::vector<Suggestion> name_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-    ASSERT_EQ(2U, name_suggestions.size());
-    EXPECT_EQ(u"Alice", name_suggestions[0].value);
-    EXPECT_EQ(u"Marion1", name_suggestions[1].value);
-  }
-
-  // Set the validity state of ADDRESS_HOME_STATE to INVALID on the prefs.
-  {
-    ProfileValidityMap profile_validity_map;
-    UserProfileValidityMap user_profile_validity_map;
-    std::string autofill_profile_validity;
-    personal_data_->pref_service_->SetString(prefs::kAutofillProfileValidity,
-                                             autofill_profile_validity);
-    (*profile_validity_map
-          .mutable_field_validity_states())[static_cast<int>(EMAIL_ADDRESS)] =
-        static_cast<int>(AutofillProfile::INVALID);
-    (*user_profile_validity_map
-          .mutable_profile_validity())[invalid_profile.guid()] =
-        profile_validity_map;
-    ASSERT_TRUE(user_profile_validity_map.SerializeToString(
-        &autofill_profile_validity));
-    base::Base64Encode(autofill_profile_validity, &autofill_profile_validity);
-    personal_data_->pref_service_->SetString(prefs::kAutofillProfileValidity,
-                                             autofill_profile_validity);
-  }
-  // Invalid based on client, and server. Relying on both validity sources.
-  {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillProfileClientValidation,
-                              features::kAutofillProfileServerValidation},
-        /*disabled_features=*/{});
-
-    std::vector<Suggestion> email_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-
-    for (auto* profile : profiles) {
-      ASSERT_EQ(profile->guid() == valid_profile.guid(),
-                profile->IsValidByClient());
-      ASSERT_EQ(profile->guid() == valid_profile.guid(),
-                profile->IsValidByServer());
-    }
-    ASSERT_EQ(1U, email_suggestions.size());
-    EXPECT_EQ(u"alice@wonderland.ca", email_suggestions[0].value);
-
-    std::vector<Suggestion> name_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-    ASSERT_EQ(2U, name_suggestions.size());
-    EXPECT_EQ(u"Alice", name_suggestions[0].value);
-    EXPECT_EQ(u"Marion1", name_suggestions[1].value);
-  }
-  // Invalid based on client, and server. Relying only on the client source.
-  {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillProfileClientValidation},
-        /*disabled_features=*/{features::kAutofillProfileServerValidation});
-    std::vector<Suggestion> email_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-
-    for (auto* profile : profiles) {
-      ASSERT_EQ(profile->guid() == valid_profile.guid(),
-                profile->IsValidByClient());
-      ASSERT_EQ(profile->guid() == valid_profile.guid(),
-                profile->IsValidByServer());
-    }
-    ASSERT_EQ(1U, email_suggestions.size());
-    EXPECT_EQ(u"alice@wonderland.ca", email_suggestions[0].value);
-
-    std::vector<Suggestion> name_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-    ASSERT_EQ(2U, name_suggestions.size());
-    EXPECT_EQ(u"Alice", name_suggestions[0].value);
-    EXPECT_EQ(u"Marion1", name_suggestions[1].value);
-  }
-  // Invalid based on client, and server. Relying on server as a validity
-  // source.
-  {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillProfileServerValidation},
-        /*disabled_features=*/{features::kAutofillProfileClientValidation});
-    std::vector<Suggestion> email_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-
-    for (auto* profile : profiles) {
-      ASSERT_EQ(profile->guid() == valid_profile.guid(),
-                profile->IsValidByClient());
-      ASSERT_EQ(profile->guid() == valid_profile.guid(),
-                profile->IsValidByServer());
-    }
-    ASSERT_EQ(1U, email_suggestions.size());
-    EXPECT_EQ(u"alice@wonderland.ca", email_suggestions[0].value);
-
-    std::vector<Suggestion> name_suggestions =
-        personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              std::u16string(), false,
-                                              std::vector<ServerFieldType>());
-    ASSERT_EQ(2U, name_suggestions.size());
-    EXPECT_EQ(u"Alice", name_suggestions[0].value);
-    EXPECT_EQ(u"Marion1", name_suggestions[1].value);
   }
 }
 
@@ -6679,371 +6437,6 @@ TEST_F(PersonalDataManagerTest, UseCorrectStorageForDifferentCards) {
   profile_autofill_table_->GetAutofillProfiles(&profiles);
   EXPECT_EQ(1U, profiles.size());
   EXPECT_EQ(profile, *profiles[0]);
-}
-
-// Requests profiles fields validities according to the server: empty profiles,
-// non-existent profiles, and normal ones.
-TEST_F(PersonalDataManagerTest, RequestProfileServerValidity) {
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-
-  ProfileValidityMap profile_validity_map;
-  UserProfileValidityMap user_profile_validity_map;
-  std::string autofill_profile_validity;
-
-  // Empty validity map.
-  ASSERT_TRUE(
-      user_profile_validity_map.SerializeToString(&autofill_profile_validity));
-  base::Base64Encode(autofill_profile_validity, &autofill_profile_validity);
-  personal_data_->pref_service_->SetString(prefs::kAutofillProfileValidity,
-                                           autofill_profile_validity);
-
-  std::string guid = "00000000-0000-0000-0000-0000000000001";
-  EXPECT_TRUE(personal_data_->GetProfileValidityByGUID(guid)
-                  .field_validity_states()
-                  .empty());
-
-  // Non-empty validity map.
-  std::vector<ServerFieldType> types = {
-      ADDRESS_HOME_LINE1, ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
-      EMAIL_ADDRESS,      ADDRESS_HOME_ZIP,   NAME_FULL};
-  std::vector<AutofillDataModel::ValidityState> states = {
-      AutofillDataModel::UNSUPPORTED, AutofillDataModel::EMPTY,
-      AutofillDataModel::INVALID,     AutofillDataModel::VALID,
-      AutofillDataModel::UNVALIDATED, AutofillDataModel::INVALID};
-  ASSERT_EQ(types.size(), states.size());
-  for (uint64_t i = 0; i < types.size(); ++i) {
-    (*profile_validity_map
-          .mutable_field_validity_states())[static_cast<int>(types[i])] =
-        static_cast<int>(states[i]);
-  }
-  (*user_profile_validity_map.mutable_profile_validity())[guid] =
-      profile_validity_map;
-  ASSERT_TRUE(
-      user_profile_validity_map.SerializeToString(&autofill_profile_validity));
-  base::Base64Encode(autofill_profile_validity, &autofill_profile_validity);
-  personal_data_->pref_service_->SetString(prefs::kAutofillProfileValidity,
-                                           autofill_profile_validity);
-
-  // Add another non-empty valdity profile.
-  guid = "00000000-0000-0000-0000-0000000000002";
-  profile_validity_map.Clear();
-  autofill_profile_validity.clear();
-  (*profile_validity_map
-        .mutable_field_validity_states())[static_cast<int>(EMAIL_ADDRESS)] =
-      static_cast<int>(AutofillDataModel::VALID);
-  (*user_profile_validity_map.mutable_profile_validity())[guid] =
-      profile_validity_map;
-  ASSERT_TRUE(
-      user_profile_validity_map.SerializeToString(&autofill_profile_validity));
-  base::Base64Encode(autofill_profile_validity, &autofill_profile_validity);
-  personal_data_->pref_service_->SetString(prefs::kAutofillProfileValidity,
-                                           autofill_profile_validity);
-
-  // Profile not found.
-  guid = "00000000-0000-0000-0000-0000000000003";
-  EXPECT_TRUE(personal_data_->GetProfileValidityByGUID(guid)
-                  .field_validity_states()
-                  .empty());
-
-  // Existing Profiles.
-  guid = "00000000-0000-0000-0000-0000000000001";
-  auto validities =
-      personal_data_->GetProfileValidityByGUID(guid).field_validity_states();
-  ASSERT_EQ(validities.size(), types.size());
-  for (uint64_t i = 0; i < types.size(); ++i)
-    EXPECT_EQ(validities.at(types[i]), states[i]);
-
-  guid = "00000000-0000-0000-0000-0000000000002";
-  validities =
-      personal_data_->GetProfileValidityByGUID(guid).field_validity_states();
-  ASSERT_FALSE(validities.empty());
-  EXPECT_EQ(validities.at(EMAIL_ADDRESS), AutofillDataModel::VALID);
-}
-
-// Use the client side validation API to validate three PDM profiles. This one
-// doesn't test the upload process or saving to the database.
-TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates) {
-  AutofillProfile profile_invalid_province(base::GenerateGUID(),
-                                           test::kEmptyOrigin);
-  test::SetProfileInfo(&profile_invalid_province, "Alice", "", "Munro",
-                       "alice@munro.ca", "Fox", "123 Zoo St", "unit 5",
-                       "Montreal", "CA", "H3C 2A3", "CA", "15142343254");
-  AddProfileToPersonalDataManager(profile_invalid_province);
-
-  ASSERT_EQ(1U, personal_data_->GetProfiles().size());
-  auto profiles = personal_data_->GetProfiles();
-  profiles[0]->set_is_client_validity_states_updated(false);
-
-  UpdateClientValidityStatesOnPersonalDataManager(profiles);
-
-  profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-
-  EXPECT_TRUE(profiles[0]->is_client_validity_states_updated());
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profiles[0]->GetValidityState(ADDRESS_HOME_COUNTRY,
-                                          AutofillProfile::CLIENT));
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profiles[0]->GetValidityState(ADDRESS_HOME_STATE,
-                                          AutofillProfile::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profiles[0]->GetValidityState(ADDRESS_HOME_ZIP, AutofillProfile::CLIENT));
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profiles[0]->GetValidityState(ADDRESS_HOME_CITY,
-                                          AutofillProfile::CLIENT));
-  EXPECT_EQ(AutofillDataModel::EMPTY,
-            profiles[0]->GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                          AutofillProfile::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profiles[0]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profiles[0]->GetValidityState(PHONE_HOME_WHOLE_NUMBER,
-                                          AutofillProfile::CLIENT));
-}
-
-// Check the validity update status for AutofillProfiles.
-TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_UpdatedFlag) {
-  // Create two profiles and add them to personal_data_.
-  AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  AddProfileToPersonalDataManager(profile1);
-
-  AutofillProfile profile2(test::GetFullValidProfileForChina());
-  AddProfileToPersonalDataManager(profile2);
-
-  ASSERT_EQ(2U, personal_data_->GetProfiles().size());
-
-  // The validities were set when the profiles were added.
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
-  ASSERT_TRUE(profiles[1]->is_client_validity_states_updated());
-
-  *profiles[1] = *profiles[0];
-  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
-  ASSERT_TRUE(profiles[1]->is_client_validity_states_updated());
-
-  profiles[1]->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"");
-  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
-  ASSERT_FALSE(profiles[1]->is_client_validity_states_updated());
-
-  profiles[0]->SetRawInfo(NAME_FULL, u"Goli Boli");
-  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
-}
-
-// Check the validity update status for AutofillProfiles.
-TEST_F(PersonalDataManagerMockTest,
-       UpdateClientValidityStates_UpdatedFlag_Merge) {
-  // Set the pref to the current major version.
-  StopTheDedupeProcess();
-
-  AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  AddProfileToPersonalDataManager(profile1);
-
-  AutofillProfile profile2(test::GetFullValidProfileForCanada());
-  profile2.set_guid("00000000-0000-0000-0000-000000002019");
-  profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"");
-  profile2.FinalizeAfterImport();
-  AddProfileToPersonalDataManager(profile2);
-
-  // The validities were set when the profiles were added.
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(2U, profiles.size());
-
-  // In the legacy implementation of names, the merge operation populates the
-  // full name field. This results in a change of the name although the names
-  // are technically the same. For structured names, this is not true anymore,
-  // because a name is always in a finalized state. To enforce a non-noop merge
-  // for structured names, we lift the verification status of the full name.
-  // TODO(crbug.com/1103421): Make the test logic less implicit once structured
-  // names are fully launched and remove feature test.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
-    profiles[0]->SetRawInfoWithVerificationStatus(
-        NAME_FULL, profiles[1]->GetRawInfo(NAME_FULL),
-        structured_address::VerificationStatus::kUserVerified);
-  }
-  profiles[1]->MergeDataFrom(*profiles[0], "en");
-  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
-  ASSERT_FALSE(profiles[1]->is_client_validity_states_updated());
-}
-
-// Check that the validity states are not updated when the validity flags are up
-// to date.
-TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_AlreadyUpdated) {
-  // Create two profiles and add them to personal_data_.
-  AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  profile1.SetRawInfo(EMAIL_ADDRESS, u"invalid email!");
-  AddProfileToPersonalDataManager(profile1);
-
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-  // The validities were updated when the profile was added.
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profiles[0]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
-
-  // Change the email, the validity update would turn false.
-  profiles[0]->SetRawInfo(EMAIL_ADDRESS, u"alice@gmail.com");
-  EXPECT_FALSE(profiles[0]->is_client_validity_states_updated());
-  // Pretend that the validity states are updated.
-  profiles[0]->set_is_client_validity_states_updated(true);
-
-  // Validating the profiles through the client validation API should not change
-  // the validity states.
-  personal_data_->UpdateClientValidityStates(profiles);
-
-  profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profiles[0]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
-
-  // Try with the flag as not updated.
-  profiles[0]->set_is_client_validity_states_updated(false);
-
-  UpdateClientValidityStatesOnPersonalDataManager(profiles);
-
-  profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profiles[0]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
-}
-
-// Verify that the fields are validated according to the version.
-TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_Version) {
-  // Create two profiles and add them to personal_data_. Set the guids
-  // explicitly to preserve the order.
-  AutofillProfile profile2(test::GetFullValidProfileForChina());
-  profile2.SetRawInfo(ADDRESS_HOME_STATE, u"invalid state!");
-  profile2.set_guid("00000000-0000-0000-0000-000000000002");
-  profile2.set_use_date(AutofillClock::Now() - base::Days(200));
-  AddProfileToPersonalDataManager(profile2);
-
-  AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  profile1.SetRawInfo(EMAIL_ADDRESS, u"invalid email!");
-  profile1.set_use_date(AutofillClock::Now());
-  profile1.set_guid("00000000-0000-0000-0000-000000000001");
-  AddProfileToPersonalDataManager(profile1);
-
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(2U, profiles.size());
-
-  EXPECT_TRUE(profiles[0]->is_client_validity_states_updated());
-  EXPECT_TRUE(profiles[1]->is_client_validity_states_updated());
-  EXPECT_EQ(CHROME_VERSION_MAJOR, GetLastVersionValidatedUpdate());
-
-  // No validation as both validity update flags are true, and the validation
-  // version is set to this version.
-  base::RunLoop run_loop;
-  EXPECT_CALL(*personal_data_, OnValidated(testing::_)).Times(0);
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
-  personal_data_->UpdateClientValidityStates(profiles);
-
-  profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(2U, profiles.size());
-  ResetAutofillLastVersionValidated();
-
-  EXPECT_EQ(0, GetLastVersionValidatedUpdate());
-  EXPECT_TRUE(profiles[0]->is_client_validity_states_updated());
-  EXPECT_TRUE(profiles[1]->is_client_validity_states_updated());
-
-  // Should validate regardless of the validity update flag, because of the
-  // major version update.
-  EXPECT_CALL(*personal_data_, OnValidated(testing::_)).Times(2);
-  ON_CALL(*personal_data_, OnValidated(testing::_))
-      .WillByDefault(testing::Invoke(personal_data_.get(),
-                                     &PersonalDataManagerMock::OnValidatedPDM));
-
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillRepeatedly(QuitMessageLoop(&run_loop));
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(2);
-  // Validate the profiles through the client validation API.
-  personal_data_->UpdateClientValidityStates(profiles);
-  run_loop.Run();
-
-  profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(2U, profiles.size());
-  ASSERT_EQ(profiles[0]->guid(), profile1.guid());
-
-  // Verify that the version of the last update is set to this version.
-  EXPECT_EQ(CHROME_VERSION_MAJOR, GetLastVersionValidatedUpdate());
-
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profiles[0]->GetValidityState(ADDRESS_HOME_COUNTRY,
-                                          AutofillProfile::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profiles[0]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
-
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profiles[1]->GetValidityState(ADDRESS_HOME_COUNTRY,
-                                          AutofillProfile::CLIENT));
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profiles[1]->GetValidityState(ADDRESS_HOME_STATE,
-                                          AutofillProfile::CLIENT));
-}
-
-// Verifies that the profiles are validated when added, updated.
-TEST_F(PersonalDataManagerMockTest, UpdateProfilesValidityStates_AddUpdate) {
-  // Add
-  AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  AddProfileToPersonalDataManager(profile1);
-
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-  EXPECT_EQ(true, profiles[0]->is_client_validity_states_updated());
-
-  // Update
-  profile1.SetRawInfo(EMAIL_ADDRESS, u"email!");
-  UpdateProfileOnPersonalDataManager(profile1);
-
-  profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-  EXPECT_EQ(true, profiles[0]->is_client_validity_states_updated());
-}
-
-// Verify that slow delayed validation will still work.
-TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_Delayed) {
-  personal_data_->set_client_profile_validator_for_test(
-      TestAutofillProfileValidator::GetDelayedInstance());
-
-  AutofillProfile profile(test::GetFullProfile());
-  AddProfileToPersonalDataManager(profile);
-
-  auto profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-
-  profiles[0]->set_is_client_validity_states_updated(false);
-
-  UpdateClientValidityStatesOnPersonalDataManager(profiles);
-  profiles[0] =
-      nullptr;  // make sure the async task doesn't depend on the pointer.
-
-  profiles = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles.size());
-  EXPECT_TRUE(profiles[0]->is_client_validity_states_updated());
-}
-
-// The validation should not happen when the feature is disabled.
-TEST_F(PersonalDataManagerTest, UpdateClientValidityStates_Disabled) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(
-      features::kAutofillProfileClientValidation);
-
-  AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  AddProfileToPersonalDataManager(profile1);
-
-  auto profiles = personal_data_->GetProfiles();
-  EXPECT_FALSE(profiles[0]->is_client_validity_states_updated());
-
-  personal_data_->UpdateClientValidityStates(profiles);
-
-  EXPECT_FALSE(profiles[0]->is_client_validity_states_updated());
-  EXPECT_EQ(AutofillDataModel::UNVALIDATED,
-            profiles[0]->GetValidityState(ADDRESS_HOME_COUNTRY,
-                                          AutofillProfile::CLIENT));
 }
 
 // Tests that the least recently used profile of two existing profiles is

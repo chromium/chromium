@@ -11,8 +11,6 @@ source_set("autofill") {
     "autocomplete_history_manager_factory.mm",
     "autofill_log_router_factory.cc",
     "autofill_log_router_factory.h",
-    "autofill_profile_validator_factory.h",
-    "autofill_profile_validator_factory.mm",
     "form_input_suggestions_provider.h",
     "form_suggestion_controller.h",
     "form_suggestion_controller.mm",

@@ -123,11 +123,7 @@ extern const base::Feature kAutofillPreventOverridingPrefilledValues;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProbableFormSubmissionInBrowser;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillProfileClientValidation;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProfileImportFromUnfocusableFields;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillProfileServerValidation;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRetrieveOverallPredictionsFromCache;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillSaveAndFillVPA;

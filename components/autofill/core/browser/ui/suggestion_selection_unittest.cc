@@ -183,49 +183,6 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
                   Not(u"Marie"))));
 }
 
-TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_SkipInvalid) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillProfileServerValidation,
-                            features::kAutofillProfileClientValidation},
-      /*disabled_features=*/{});
-  const std::unique_ptr<AutofillProfile> profile_server_invalid =
-      CreateProfileUniquePtr("Marion");
-  const std::unique_ptr<AutofillProfile> profile_client_invalid =
-      CreateProfileUniquePtr("Bob");
-  const std::unique_ptr<AutofillProfile> profile_valid =
-      CreateProfileUniquePtr("Rose");
-  const std::unique_ptr<AutofillProfile> profile_client_invalid_country_empty =
-      CreateProfileUniquePtr("Lost");
-
-  profile_server_invalid->SetValidityState(
-      ADDRESS_HOME_STATE, AutofillProfile::INVALID, AutofillProfile::SERVER);
-  profile_client_invalid->SetValidityState(
-      ADDRESS_HOME_STATE, AutofillProfile::INVALID, AutofillProfile::CLIENT);
-  profile_client_invalid_country_empty->SetValidityState(
-      ADDRESS_HOME_STATE, AutofillProfile::INVALID, AutofillProfile::CLIENT);
-  profile_client_invalid_country_empty->SetRawInfo(ADDRESS_HOME_COUNTRY, u"");
-
-  const std::vector<AutofillProfile*> profiles_data = {
-      profile_server_invalid.get(), profile_client_invalid.get(),
-      profile_valid.get(), profile_client_invalid_country_empty.get()};
-
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
-      AutofillType(ADDRESS_HOME_STATE), u"C", GetCanonicalUtf16Content("C"),
-      comparator_, false, profiles_data, &matched_profiles);
-
-  ASSERT_EQ(2U, suggestions.size());
-  ASSERT_EQ(2U, matched_profiles.size());
-  EXPECT_THAT(suggestions, ElementsAre(Field(&Suggestion::value, u"CA"),
-                                       Field(&Suggestion::value, u"CA")));
-
-  std::vector<AutofillProfile*> expected_result;
-  expected_result.push_back(profile_valid.get());
-  expected_result.push_back(profile_client_invalid_country_empty.get());
-  ExpectSameElements(matched_profiles, expected_result);
-}
-
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
   // Give two suggestions with the same name, and no other field to compare.
   // Expect only one unique suggestion.

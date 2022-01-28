@@ -114,31 +114,6 @@ void TestFillingExpirationMonth(const std::vector<const char*>& values,
   EXPECT_EQ(u"Nov", field.options[content_index].content);
 }
 
-void TestFillingInvalidFields(const std::u16string& state,
-                              const std::u16string& city) {
-  AutofillProfile profile = test::GetFullProfile();
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillProfile::INVALID,
-                           AutofillProfile::SERVER);
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillProfile::INVALID,
-                           AutofillProfile::CLIENT);
-
-  AutofillField field_state;
-  field_state.set_heuristic_type(ADDRESS_HOME_STATE);
-  AutofillField field_city;
-  field_city.set_heuristic_type(ADDRESS_HOME_CITY);
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field_state, &profile, &field_state,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kFill);
-  EXPECT_EQ(state, field_state.value);
-
-  filler.FillFormField(field_city, &profile, &field_city,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kFill);
-  EXPECT_EQ(city, field_city.value);
-}
-
 struct CreditCardTestCase {
   std::u16string card_number_;
   size_t total_splits_;
@@ -512,84 +487,6 @@ TEST_F(AutofillFieldFillerTest, FillFormField_Preview_CreditCardField) {
   size_t num_digits =
       base::ranges::count_if(field.value, &base::IsAsciiDigit<char16_t>);
   EXPECT_EQ(4u, num_digits);
-}
-
-// Verify that when the relevant feature is enabled, the invalid fields don't
-// get filled.
-TEST_F(AutofillFieldFillerTest, FillFormField_Validity_ServerClient) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillProfileServerValidation,
-                            features::kAutofillProfileClientValidation},
-      /*disabled_features=*/{});
-  // State's validity is set by server and city's validity by client.
-  TestFillingInvalidFields(/*state=*/std::u16string(),
-                           /*city=*/std::u16string());
-}
-
-TEST_F(AutofillFieldFillerTest, FillFormField_Validity_OnlyServer) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillProfileServerValidation},
-      /*disabled_features=*/{features::kAutofillProfileClientValidation});
-  // State's validity is set by server and city's validity by client.
-  TestFillingInvalidFields(/*state=*/std::u16string(),
-                           /*city=*/u"Elysium");
-}
-
-TEST_F(AutofillFieldFillerTest, FillFormField_Validity_OnlyClient) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillProfileClientValidation},
-      /*disabled_features=*/{features::kAutofillProfileServerValidation});
-  // State's validity is set by server and city's validity by client.
-  TestFillingInvalidFields(/*state=*/u"CA",
-                           /*city=*/std::u16string());
-}
-
-TEST_F(AutofillFieldFillerTest, FillFormField_NoValidity) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillProfileServerValidation,
-                             features::kAutofillProfileClientValidation});
-  // State's validity is set by server and city's validity by client.
-  TestFillingInvalidFields(/*state=*/u"CA",
-                           /*city=*/u"Elysium");
-}
-
-// Tests that using only client side validation, if the country is empty, the
-// address fields will get filled regardless of their invalidity.
-TEST_F(AutofillFieldFillerTest, FillFormField_Validity_CountryEmpty) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillProfileClientValidation},
-      /*disabled_features=*/{features::kAutofillProfileServerValidation});
-  AutofillProfile profile = test::GetFullProfile();
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"");
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillProfile::INVALID,
-                           AutofillProfile::CLIENT);
-  profile.SetValidityState(EMAIL_ADDRESS, AutofillProfile::INVALID,
-                           AutofillProfile::CLIENT);
-
-  AutofillField field_state;
-  field_state.set_heuristic_type(ADDRESS_HOME_STATE);
-  AutofillField field_email;
-  field_email.set_heuristic_type(EMAIL_ADDRESS);
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  // State is filled, because it's an address field.
-  filler.FillFormField(field_state, &profile, &field_state,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kFill);
-  EXPECT_EQ(u"CA", field_state.value);
-
-  // Email is not filled, because it's not an address field, and it doesn't
-  // depend on the country.
-  filler.FillFormField(field_email, &profile, &field_email,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kFill);
-  EXPECT_EQ(u"", field_email.value);
 }
 
 struct AutofillFieldFillerTestCase {
