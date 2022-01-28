@@ -96,4 +96,20 @@ base::GUID AttributionStorageDelegateImpl::NewReportID() const {
   return base::GUID::GenerateRandomV4();
 }
 
+absl::optional<AttributionStorage::Delegate::OfflineReportDelayConfig>
+AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
+  if (debug_mode_)
+    return absl::nullopt;
+
+  // Add uniform random noise in the range of [0, 1 minutes] to the report time.
+  // TODO(https://crbug.com/1075600): This delay is very conservative. Consider
+  // increasing this delay once we can be sure reports are still sent at
+  // reasonable times, and not delayed for many browser sessions due to short
+  // session up-times.
+  return OfflineReportDelayConfig{
+      .min = base::Minutes(0),
+      .max = base::Minutes(1),
+  };
+}
+
 }  // namespace content

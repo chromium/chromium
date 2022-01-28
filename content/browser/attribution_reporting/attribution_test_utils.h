@@ -95,6 +95,8 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::GUID NewReportID() const override;
+  absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
+      const override;
 
   void set_max_attributions_per_source(int max) {
     max_attributions_per_source_ = max;
@@ -124,6 +126,11 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
     report_time_ms_ = report_time_ms;
   }
 
+  void set_offline_report_delay_config(
+      absl::optional<OfflineReportDelayConfig> config) {
+    offline_report_delay_config_ = config;
+  }
+
  private:
   int max_attributions_per_source_ = INT_MAX;
   int max_sources_per_origin_ = INT_MAX;
@@ -139,6 +146,8 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   base::TimeDelta delete_expired_rate_limits_frequency_;
 
   int report_time_ms_ = 0;
+
+  absl::optional<OfflineReportDelayConfig> offline_report_delay_config_;
 };
 
 // Test manager provider which can be used to inject a fake AttributionManager.

@@ -29,7 +29,7 @@ class CONTENT_EXPORT AttributionPolicy {
   AttributionPolicy& operator=(const AttributionPolicy& other) = delete;
   AttributionPolicy(AttributionPolicy&& other) = delete;
   AttributionPolicy& operator=(AttributionPolicy&& other) = delete;
-  virtual ~AttributionPolicy();
+  ~AttributionPolicy();
 
   uint64_t SanitizeTriggerData(uint64_t trigger_data,
                                CommonSourceInfo::SourceType source_type) const;
@@ -43,19 +43,6 @@ class CONTENT_EXPORT AttributionPolicy {
       const absl::optional<base::TimeDelta>& declared_expiry,
       base::Time impression_time,
       CommonSourceInfo::SourceType source_type) const;
-
-  // Both bounds are inclusive.
-  struct OfflineReportDelayConfig {
-    base::TimeDelta min;
-    base::TimeDelta max;
-  };
-
-  // Delays reports that missed their report time, such as the browser not being
-  // open, or internet being disconnected. This given them a noisy report time
-  // to help disassociate them from other reports. Returns null if no delay
-  // should be applied, e.g. because the policy is in debug mode.
-  virtual absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
-      const;
 
   // Gets the delay for a report that has failed to be sent
   // `failed_send_attempts` times.

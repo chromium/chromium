@@ -145,15 +145,12 @@ AttributionManagerImpl::AttributionManagerImpl(
     : AttributionManagerImpl(
           storage_partition,
           user_data_directory,
-          std::make_unique<AttributionPolicy>(
-              base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kConversionsDebugMode)),
-          std::move(special_storage_policy)) {}
+          std::move(special_storage_policy),
+          std::make_unique<AttributionNetworkSenderImpl>(storage_partition)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
     const base::FilePath& user_data_directory,
-    std::unique_ptr<AttributionPolicy> policy,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<NetworkSender> network_sender)
     : storage_partition_(storage_partition),
@@ -163,15 +160,12 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::make_unique<AttributionStorageDelegateImpl>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kConversionsDebugMode)))),
-      attribution_policy_(std::move(policy)),
+      attribution_policy_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kConversionsDebugMode)),
       special_storage_policy_(std::move(special_storage_policy)),
-      network_sender_(network_sender
-                          ? std::move(network_sender)
-                          : std::make_unique<AttributionNetworkSenderImpl>(
-                                storage_partition)),
+      network_sender_(std::move(network_sender)),
       weak_factory_(this) {
   DCHECK(storage_partition_);
-  DCHECK(attribution_policy_);
   DCHECK(network_sender_);
 
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
@@ -298,7 +292,7 @@ void AttributionManagerImpl::SendReportsForWebUI(
 }
 
 const AttributionPolicy& AttributionManagerImpl::GetAttributionPolicy() const {
-  return *attribution_policy_;
+  return attribution_policy_;
 }
 
 void AttributionManagerImpl::ClearData(
@@ -326,8 +320,7 @@ void AttributionManagerImpl::OnConnectionChanged(
     network::mojom::ConnectionType connection_type) {
   if (IsOffline()) {
     get_reports_to_send_timer_.Stop();
-  } else if (absl::optional<AttributionPolicy::OfflineReportDelayConfig> delay =
-                 attribution_policy_->GetOfflineReportDelayConfig()) {
+  } else {
     DCHECK(!get_reports_to_send_timer_.IsRunning());
 
     // Add delay to all reports that should have been sent while the browser was
@@ -336,7 +329,6 @@ void AttributionManagerImpl::OnConnectionChanged(
     // immediately issue async storage calls to modify their report times.
     attribution_storage_
         .AsyncCall(&AttributionStorage::AdjustOfflineReportTimes)
-        .WithArgs(delay->min, delay->max)
         .Then(
             base::BindOnce(&AttributionManagerImpl::UpdateGetReportsToSendTimer,
                            weak_factory_.GetWeakPtr()));
@@ -493,8 +485,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   if (info.status == SendResult::Status::kTransientFailure) {
     report.set_failed_send_attempts(report.failed_send_attempts() + 1);
     const absl::optional<base::TimeDelta> delay =
-        attribution_policy_->GetFailedReportDelay(
-            report.failed_send_attempts());
+        attribution_policy_.GetFailedReportDelay(report.failed_send_attempts());
     if (delay.has_value()) {
       should_retry = true;
       report.set_report_time(report.report_time() + *delay);

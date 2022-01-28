@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
@@ -54,11 +55,14 @@ using CreateReportStatus =
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Expectation;
 using ::testing::Field;
+using ::testing::Ge;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::Le;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -69,20 +73,6 @@ using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
-
-constexpr base::TimeDelta kExpiredReportOffset = base::Minutes(2);
-
-class ConstantOfflineReportDelayPolicy : public AttributionPolicy {
- public:
-  ConstantOfflineReportDelayPolicy() = default;
-  ~ConstantOfflineReportDelayPolicy() override = default;
-
-  absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
-      const override {
-    return OfflineReportDelayConfig{.min = kExpiredReportOffset,
-                                    .max = kExpiredReportOffset};
-  }
-};
 
 class MockAttributionManagerObserver : public AttributionManager::Observer {
  public:
@@ -178,8 +168,8 @@ class AttributionManagerImplTest : public testing::Test {
     attribution_manager_ = absl::WrapUnique(new AttributionManagerImpl(
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()),
-        dir_.GetPath(), std::make_unique<ConstantOfflineReportDelayPolicy>(),
-        mock_storage_policy_, absl::WrapUnique(network_sender_.get())));
+        dir_.GetPath(), mock_storage_policy_,
+        absl::WrapUnique(network_sender_.get())));
   }
 
   void ShutdownManager() {
@@ -545,8 +535,11 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   // Simulate startup and ensure the report is sent before being expired.
+  // Advance by the max offline report delay, per
+  // `AttributionStorageDelegateImpl::GetOfflineReportDelayConfig()`.
   CreateManager();
-  task_environment_.FastForwardBy(kExpiredReportOffset);
+  task_environment_.FastForwardBy(
+      AttributionStorageDelegateImpl().GetOfflineReportDelayConfig()->max);
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
 
@@ -810,8 +803,6 @@ TEST_F(AttributionManagerImplTest,
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
-  base::Time start_time = base::Time::Now();
-
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -825,12 +816,14 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
   CreateManager();
 
   // Ensure that the expired report is delayed based on the time the browser
-  // started.
-  EXPECT_THAT(
-      StoredReports(),
-      ElementsAre(Property(&AttributionReport::report_time,
-                           start_time + kFirstReportingWindow +
-                               base::Milliseconds(1) + kExpiredReportOffset)));
+  // started and the min and max offline report delays, per
+  // `AttributionStorageDelegateImpl::GetOfflineReportDelayConfig()`.
+  base::Time min_new_time = base::Time::Now();
+  auto delay = AttributionStorageDelegateImpl().GetOfflineReportDelayConfig();
+  EXPECT_THAT(StoredReports(),
+              ElementsAre(Property(&AttributionReport::report_time,
+                                   AllOf(Ge(min_new_time + delay->min),
+                                         Le(min_new_time + delay->max)))));
 
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 }
@@ -1187,11 +1180,13 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   SetOfflineAndWaitForObserversToBeNotified(false);
-  task_environment_.FastForwardBy(kExpiredReportOffset);
+
+  auto delay = AttributionStorageDelegateImpl().GetOfflineReportDelayConfig();
+  task_environment_.FastForwardBy(delay->max);
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 
   histograms.ExpectUniqueTimeSample("Conversions.ExtraReportDelay2",
-                                    base::Days(3) + kExpiredReportOffset, 1);
+                                    base::Days(3) + delay->min, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {

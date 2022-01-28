@@ -93,9 +93,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   bool UpdateReportForSendFailure(
       AttributionReport::EventLevelData::Id report_id,
       base::Time new_report_time) override;
-  absl::optional<base::Time> AdjustOfflineReportTimes(
-      base::TimeDelta min_delay,
-      base::TimeDelta max_delay) override;
+  absl::optional<base::Time> AdjustOfflineReportTimes() override;
   void ClearData(
       base::Time delete_begin,
       base::Time delete_end,

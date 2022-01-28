@@ -104,6 +104,11 @@ base::GUID ConfigurableStorageDelegate::NewReportID() const {
   return DefaultExternalReportID();
 }
 
+absl::optional<AttributionStorage::Delegate::OfflineReportDelayConfig>
+ConfigurableStorageDelegate::GetOfflineReportDelayConfig() const {
+  return offline_report_delay_config_;
+}
+
 AttributionManager* TestManagerProvider::GetManager(
     WebContents* web_contents) const {
   return manager_;

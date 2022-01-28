@@ -19,6 +19,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
@@ -127,9 +128,8 @@ class CONTENT_EXPORT AttributionManagerImpl
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
-      std::unique_ptr<AttributionPolicy> policy,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      std::unique_ptr<NetworkSender> network_sender = nullptr);
+      std::unique_ptr<NetworkSender> network_sender);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(
@@ -180,8 +180,8 @@ class CONTENT_EXPORT AttributionManagerImpl
   base::SequenceBound<AttributionStorage> attribution_storage_;
 
   // Policy used for controlling API configurations such as reporting and
-  // attribution models. Unique ptr so it can be overridden for testing.
-  std::unique_ptr<AttributionPolicy> attribution_policy_;
+  // attribution models.
+  AttributionPolicy attribution_policy_;
 
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

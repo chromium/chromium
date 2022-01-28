@@ -46,6 +46,17 @@ class AttributionStorage {
   // functionality like annotating reports.
   class Delegate {
    public:
+    struct RateLimitConfig {
+      base::TimeDelta time_window;
+      int64_t max_contributions_per_window;
+    };
+
+    // Both bounds are inclusive.
+    struct OfflineReportDelayConfig {
+      base::TimeDelta min;
+      base::TimeDelta max;
+    };
+
     virtual ~Delegate() = default;
 
     // Returns the time a report should be sent for a given trigger time and
@@ -82,11 +93,6 @@ class AttributionStorage {
     // reporting origin.
     virtual int GetMaxAttributionDestinationsPerEventSource() const = 0;
 
-    struct RateLimitConfig {
-      base::TimeDelta time_window;
-      int64_t max_contributions_per_window;
-    };
-
     // Returns the rate limits for capping contributions per window.
     virtual RateLimitConfig GetRateLimits(
         AttributionType attribution_type) const = 0;
@@ -101,6 +107,13 @@ class AttributionStorage {
 
     // Returns a new report ID.
     virtual base::GUID NewReportID() const = 0;
+
+    // Delays reports that missed their report time, such as the browser not
+    // being open, or internet being disconnected. This gives them a noisy
+    // report time to help disassociate them from other reports. Returns null if
+    // no delay should be applied, e.g. due to debug mode.
+    virtual absl::optional<OfflineReportDelayConfig>
+    GetOfflineReportDelayConfig() const = 0;
   };
 
   struct CONTENT_EXPORT DeactivatedSource {
@@ -237,11 +250,12 @@ class AttributionStorage {
       base::Time new_report_time) = 0;
 
   // Adjusts the report time of all reports that should have been sent while the
-  // browser was offline by a random value between `min_delay` and `max_delay`,
-  // both inclusive. Returns the new first report time in storage, if any.
-  virtual absl::optional<base::Time> AdjustOfflineReportTimes(
-      base::TimeDelta min_delay,
-      base::TimeDelta max_delay) = 0;
+  // browser was offline, according to
+  // `AttributionStorage::Delegate::GetOfflineReportDelayConfig()`. If that
+  // method returns null, no delay is applied. Otherwise, applies a random value
+  // between `min_delay` and `max_delay`, both inclusive. Returns the new first
+  // report time in storage, if any.
+  virtual absl::optional<base::Time> AdjustOfflineReportTimes() = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time. More specifically, this:

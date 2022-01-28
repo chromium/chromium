@@ -141,9 +141,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_TRUE(storage->DeleteReport(AttributionReport::EventLevelData::Id(0)));
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
-  EXPECT_EQ(
-      storage->AdjustOfflineReportTimes(base::TimeDelta(), base::TimeDelta()),
-      absl::nullopt);
+  EXPECT_EQ(storage->AdjustOfflineReportTimes(), absl::nullopt);
 }
 
 TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
@@ -1716,9 +1714,12 @@ TEST_F(AttributionStorageTest, ReportID_RoundTrips) {
 }
 
 TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
-  EXPECT_EQ(
-      storage()->AdjustOfflineReportTimes(base::TimeDelta(), base::TimeDelta()),
-      absl::nullopt);
+  EXPECT_EQ(storage()->AdjustOfflineReportTimes(), absl::nullopt);
+
+  delegate()->set_offline_report_delay_config(
+      AttributionStorage::Delegate::OfflineReportDelayConfig{
+          .min = base::Hours(1), .max = base::Hours(1)});
+  EXPECT_EQ(storage()->AdjustOfflineReportTimes(), absl::nullopt);
 
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(CreateReportStatus::kSuccess,
@@ -1733,9 +1734,7 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
-  EXPECT_EQ(storage()->AdjustOfflineReportTimes(/*min_delay=*/base::Hours(1),
-                                                /*max_delay=*/base::Hours(1)),
-            original_report_time);
+  EXPECT_EQ(storage()->AdjustOfflineReportTimes(), original_report_time);
 
   // The report time should not be changed as it is equal to now, not strictly
   // less than it.
@@ -1747,9 +1746,7 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
 
   const base::Time new_report_time = base::Time::Now() + base::Hours(1);
 
-  EXPECT_EQ(storage()->AdjustOfflineReportTimes(/*min_delay=*/base::Hours(1),
-                                                /*max_delay=*/base::Hours(1)),
-            new_report_time);
+  EXPECT_EQ(storage()->AdjustOfflineReportTimes(), new_report_time);
 
   // The report time should be changed as it is strictly less than now.
   EXPECT_THAT(
@@ -1758,6 +1755,10 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
 }
 
 TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
+  delegate()->set_offline_report_delay_config(
+      AttributionStorage::Delegate::OfflineReportDelayConfig{
+          .min = base::Hours(1), .max = base::Hours(3)});
+
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
@@ -1771,8 +1772,7 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime + 1));
 
-  storage()->AdjustOfflineReportTimes(/*min_delay=*/base::Hours(1),
-                                      /*max_delay=*/base::Hours(3));
+  storage()->AdjustOfflineReportTimes();
 
   EXPECT_THAT(
       storage()->GetAttributionsToReport(base::Time::Max()),

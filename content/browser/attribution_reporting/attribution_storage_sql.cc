@@ -1065,13 +1065,16 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
   return statement.Run() && db_->GetLastChangeCount() == 1;
 }
 
-absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes(
-    base::TimeDelta min_delay,
-    base::TimeDelta max_delay) {
+absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(min_delay, base::TimeDelta());
-  DCHECK_GE(max_delay, base::TimeDelta());
-  DCHECK_LE(min_delay, max_delay);
+
+  auto delay = delegate_->GetOfflineReportDelayConfig();
+  if (!delay.has_value())
+    return absl::nullopt;
+
+  DCHECK_GE(delay->min, base::TimeDelta());
+  DCHECK_GE(delay->max, base::TimeDelta());
+  DCHECK_LE(delay->min, delay->max);
 
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return absl::nullopt;
@@ -1079,21 +1082,21 @@ absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes(
   base::Time now = base::Time::Now();
 
   // Set the report time for all reports that should have been sent before now
-  // to now + a random number of microseconds between `min_delay` and
-  // `max_delay`, both inclusive. We use RANDOM, instead of a method on the
-  // delegate, to avoid having to pull all reports into memory and update them
-  // one by one. We use ABS because RANDOM may return a negative integer. We add
-  // 1 to the difference between `max_delay` and `min_delay` to ensure that the
-  // range of generated values is inclusive. If `max_delay == min_delay`, we
-  // take the remainder modulo 1, which is always 0.
+  // to now + a random number of microseconds between `min` and `max`, both
+  // inclusive. We use RANDOM, instead of a method on the delegate, to avoid
+  // having to pull all reports into memory and update them one by one. We use
+  // ABS because RANDOM may return a negative integer. We add 1 to the
+  // difference between `max` and `min` to ensure that the range of generated
+  // values is inclusive. If `max == min`, we take the remainder modulo 1, which
+  // is always 0.
   static constexpr char kSetReportTimeSql[] =
       "UPDATE conversions "
       "SET report_time=?+ABS(RANDOM()%?)"
       "WHERE report_time<?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSetReportTimeSql));
-  statement.BindTime(0, now + min_delay);
-  statement.BindInt64(1, 1 + (max_delay - min_delay).InMicroseconds());
+  statement.BindTime(0, now + delay->min);
+  statement.BindInt64(1, 1 + (delay->max - delay->min).InMicroseconds());
   statement.BindTime(2, now);
   if (!statement.Run())
     return absl::nullopt;

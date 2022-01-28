@@ -49,6 +49,8 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::GUID NewReportID() const override;
+  absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
+      const override;
 
  private:
   // Whether the API is running in debug mode, meaning that there should be
