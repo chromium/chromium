@@ -765,8 +765,14 @@ void AppListSyncableService::AddItem(
       MaybeAddOrUpdateCrostiniFolderSyncData();
 
     // Create a folder if `app_item`'s parent folder does not exist.
-    if (!folder_id.empty())
-      MaybeCreateFolderBeforeAddingItem(app_item.get(), folder_id);
+    if (!folder_id.empty()) {
+      const bool folder_exists =
+          MaybeCreateFolderBeforeAddingItem(app_item.get(), folder_id);
+      // If `MaybeCreateFolderBeforeAddingItem()` failed to create the folder,
+      // move the app to the root app item list.
+      if (!folder_exists)
+        folder_id.clear();
+    }
 
     model_updater_->AddAppItemToFolder(std::move(app_item), folder_id,
                                        is_item_new);
@@ -1858,7 +1864,7 @@ void AppListSyncableService::MaybeAddOrUpdateCrostiniFolderSyncData() {
     CreateSyncItemFromAppItem(&crostini_folder);
 }
 
-void AppListSyncableService::MaybeCreateFolderBeforeAddingItem(
+bool AppListSyncableService::MaybeCreateFolderBeforeAddingItem(
     ChromeAppListItem* app_item,
     const std::string& folder_id) {
   DCHECK(!folder_id.empty());
@@ -1868,7 +1874,7 @@ void AppListSyncableService::MaybeCreateFolderBeforeAddingItem(
     // TODO(https://crbug.com/1259459): delete this code block if the sync item
     // indexed by `folder_id` always exists.
     app_item->SetChromeFolderId("");
-    return;
+    return false;
   }
 
   ChromeAppListItem* folder_item = model_updater_->FindItem(folder_id);
@@ -1876,7 +1882,7 @@ void AppListSyncableService::MaybeCreateFolderBeforeAddingItem(
 
   // The folder item specified by `folder_id` already exists. Nothing to do.
   if (folder_item)
-    return;
+    return true;
 
   auto new_folder_item = std::make_unique<ChromeAppListItem>(
       profile_, folder_id, model_updater_.get());
@@ -1885,6 +1891,7 @@ void AppListSyncableService::MaybeCreateFolderBeforeAddingItem(
   if (IsSystemCreatedSyncFolder(*folder_sync_item))
     new_folder_item->SetIsPersistent(true);
   model_updater_->AddItem(std::move(new_folder_item));
+  return true;
 }
 
 }  // namespace app_list
