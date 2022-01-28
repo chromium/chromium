@@ -12,7 +12,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
 #include "base/compiler_specific.h"
-#include "base/memory/tagging.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64)

@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
@@ -246,7 +247,8 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
   }
 
   // TODO(bartekn): Remove MTE untagging, once its done in the caller.
-  uintptr_t unmasked_slot_start = memory::UnmaskPtr(slot_start);
+  uintptr_t unmasked_slot_start =
+      ::partition_alloc::internal::UnmaskPtr(slot_start);
   auto* state_bitmap = StateBitmapFromAddr(unmasked_slot_start);
 
   // Mark the state in the state bitmap as quarantined. Make sure to do it after

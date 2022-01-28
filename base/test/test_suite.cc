@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -23,7 +24,6 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/tagging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -448,8 +448,8 @@ int TestSuite::Run() {
   // There's no standard way to opt processes into MTE on Linux just yet,
   // so this call explicitly opts this test into synchronous MTE mode, where
   // pointer mismatches are detected immediately.
-  base::memory::ChangeMemoryTaggingModeForCurrentThread(
-      base::memory::TagViolationReportingMode::kSynchronous);
+  ::partition_alloc::ChangeMemoryTaggingModeForCurrentThread(
+      ::partition_alloc::TagViolationReportingMode::kSynchronous);
 #elif BUILDFLAG(IS_ANDROID)
     // On Android, the tests are opted into synchronous MTE mode by the
     // memtagMode attribute in an AndroidManifest.xml file or via an `am compat`

@@ -20,9 +20,9 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/bits.h"
 #include "base/memory/nonscannable_memory.h"
-#include "base/memory/tagging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -238,10 +238,10 @@ static size_t PartitionPurgeSlotSpan(
   // slots are not in use.
   for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
        /**/) {
-    size_t slot_index =
-        (base::memory::UnmaskPtr(reinterpret_cast<uintptr_t>(entry)) -
-         slot_span_start) /
-        slot_size;
+    size_t slot_index = (::partition_alloc::internal::UnmaskPtr(
+                             reinterpret_cast<uintptr_t>(entry)) -
+                         slot_span_start) /
+                        slot_size;
     PA_DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
 #if !BUILDFLAG(IS_WIN)
@@ -544,7 +544,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
     // Swaps out the active no-op tagging intrinsics with MTE-capable ones, if
     // running on the right hardware.
-    memory::InitializeMTESupportIfNeeded();
+    ::partition_alloc::internal::InitializeMTESupportIfNeeded();
 
 #if defined(PA_HAS_64_BITS_POINTERS)
     // Reserve address space for partition alloc.

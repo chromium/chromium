@@ -28,11 +28,11 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/bits.h"
 #include "base/cpu.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/memory/tagging.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -59,14 +59,26 @@
 // In the MTE world, the upper bits of a pointer can be decorated with a tag,
 // thus allowing many versions of the same pointer to exist. These macros take
 // that into account when comparing.
-#define PA_EXPECT_PTR_EQ(ptr1, ptr2) \
-  { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
-#define PA_EXPECT_PTR_NE(ptr1, ptr2) \
-  { EXPECT_NE(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
-#define PA_EXPECT_ADDR_EQ(addr1, addr2) \
-  { EXPECT_EQ(memory::UnmaskPtr(addr1), memory::UnmaskPtr(addr2)); }
-#define PA_EXPECT_ADDR_NE(addr1, addr2) \
-  { EXPECT_NE(memory::UnmaskPtr(addr1), memory::UnmaskPtr(addr2)); }
+#define PA_EXPECT_PTR_EQ(ptr1, ptr2)                         \
+  {                                                          \
+    EXPECT_EQ(::partition_alloc::internal::UnmaskPtr(ptr1),  \
+              ::partition_alloc::internal::UnmaskPtr(ptr2)); \
+  }
+#define PA_EXPECT_PTR_NE(ptr1, ptr2)                         \
+  {                                                          \
+    EXPECT_NE(::partition_alloc::internal::UnmaskPtr(ptr1),  \
+              ::partition_alloc::internal::UnmaskPtr(ptr2)); \
+  }
+#define PA_EXPECT_ADDR_EQ(addr1, addr2)                       \
+  {                                                           \
+    EXPECT_EQ(::partition_alloc::internal::UnmaskPtr(addr1),  \
+              ::partition_alloc::internal::UnmaskPtr(addr2)); \
+  }
+#define PA_EXPECT_ADDR_NE(addr1, addr2)                       \
+  {                                                           \
+    EXPECT_NE(::partition_alloc::internal::UnmaskPtr(addr1),  \
+              ::partition_alloc::internal::UnmaskPtr(addr2)); \
+  }
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
@@ -294,12 +306,15 @@ class PartitionAllocTest : public testing::Test {
       else if (i == num_slots - 1)
         last = allocator.root()->ObjectToSlotStart(ptr);
     }
-    EXPECT_EQ(SlotSpan::FromSlotStart(base::memory::UnmaskPtr(first)),
-              SlotSpan::FromSlotStart(base::memory::UnmaskPtr(last)));
+    EXPECT_EQ(
+        SlotSpan::FromSlotStart(::partition_alloc::internal::UnmaskPtr(first)),
+        SlotSpan::FromSlotStart(::partition_alloc::internal::UnmaskPtr(last)));
     if (bucket->num_system_pages_per_slot_span ==
         NumSystemPagesPerPartitionPage())
-      EXPECT_EQ(base::memory::UnmaskPtr(first) & PartitionPageBaseMask(),
-                base::memory::UnmaskPtr(last) & PartitionPageBaseMask());
+      EXPECT_EQ(::partition_alloc::internal::UnmaskPtr(first) &
+                    PartitionPageBaseMask(),
+                ::partition_alloc::internal::UnmaskPtr(last) &
+                    PartitionPageBaseMask());
     EXPECT_EQ(num_slots, bucket->active_slot_spans_head->num_allocated_slots);
     EXPECT_EQ(nullptr, bucket->active_slot_spans_head->get_freelist_head());
     EXPECT_TRUE(bucket->is_valid());
@@ -430,8 +445,8 @@ void FreeFullSlotSpan(PartitionRoot<base::internal::ThreadSafe>* root,
   size_t i;
   for (i = 0; i < num_slots; ++i) {
     // Remask is needed here because each slot can have a different tag.
-    root->Free(
-        reinterpret_cast<void*>(memory::RemaskPtr(address + kPointerOffset)));
+    root->Free(reinterpret_cast<void*>(
+        ::partition_alloc::internal::RemaskPtr(address + kPointerOffset)));
     address += size;
   }
   EXPECT_TRUE(slot_span->is_empty());
@@ -532,8 +547,9 @@ TEST_F(PartitionAllocTest, MultiAlloc) {
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr1);
   EXPECT_TRUE(ptr2);
-  ptrdiff_t diff = reinterpret_cast<char*>(base::memory::UnmaskPtr(ptr2)) -
-                   reinterpret_cast<char*>(base::memory::UnmaskPtr(ptr1));
+  ptrdiff_t diff =
+      reinterpret_cast<char*>(::partition_alloc::internal::UnmaskPtr(ptr2)) -
+      reinterpret_cast<char*>(::partition_alloc::internal::UnmaskPtr(ptr1));
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
 
   // Check that we re-use the just-freed slot.
@@ -541,19 +557,22 @@ TEST_F(PartitionAllocTest, MultiAlloc) {
   ptr2 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr2);
-  diff = base::memory::UnmaskPtr(ptr2) - base::memory::UnmaskPtr(ptr1);
+  diff = ::partition_alloc::internal::UnmaskPtr(ptr2) -
+         ::partition_alloc::internal::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
   allocator.root()->Free(ptr1);
   ptr1 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr1);
-  diff = base::memory::UnmaskPtr(ptr2) - base::memory::UnmaskPtr(ptr1);
+  diff = ::partition_alloc::internal::UnmaskPtr(ptr2) -
+         ::partition_alloc::internal::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
 
   char* ptr3 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr3);
-  diff = base::memory::UnmaskPtr(ptr3) - base::memory::UnmaskPtr(ptr1);
+  diff = ::partition_alloc::internal::UnmaskPtr(ptr3) -
+         ::partition_alloc::internal::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize * 2), diff);
 
   allocator.root()->Free(ptr1);
@@ -615,8 +634,8 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
   EXPECT_EQ(nullptr, slot_span2->next_slot_span);
 
   // Bounce slot_span1 back into the non-full list then fill it up again.
-  uintptr_t address =
-      memory::RemaskPtr(SlotSpan::ToSlotSpanStart(slot_span1) + kPointerOffset);
+  uintptr_t address = ::partition_alloc::internal::RemaskPtr(
+      SlotSpan::ToSlotSpanStart(slot_span1) + kPointerOffset);
   allocator.root()->Free(reinterpret_cast<void*>(address));
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
   std::ignore = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -632,8 +651,8 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
   EXPECT_EQ(nullptr, slot_span3->next_slot_span);
 
   // Work out a pointer into slot_span2 and free it.
-  address =
-      memory::RemaskPtr(SlotSpan::ToSlotSpanStart(slot_span2) + kPointerOffset);
+  address = ::partition_alloc::internal::RemaskPtr(
+      SlotSpan::ToSlotSpanStart(slot_span2) + kPointerOffset);
   allocator.root()->Free(reinterpret_cast<void*>(address));
   // Trying to allocate at this time should cause us to cycle around to
   // slot_span2 and find the recently freed slot.
@@ -644,8 +663,8 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
 
   // Work out a pointer into slot_span1 and free it. This should pull the slot
   // span back into the list of available slot spans.
-  address =
-      memory::RemaskPtr(SlotSpan::ToSlotSpanStart(slot_span1) + kPointerOffset);
+  address = ::partition_alloc::internal::RemaskPtr(
+      SlotSpan::ToSlotSpanStart(slot_span1) + kPointerOffset);
   allocator.root()->Free(reinterpret_cast<void*>(address));
   // This allocation should be satisfied by slot_span1.
   ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -3328,7 +3347,7 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
   allocator.root()->Free(ptr1);
   // The allocation shouldn't be reclaimed, and its contents should be zapped.
   // Remask ptr1 to get its correct MTE tag.
-  ptr1 = memory::RemaskPtr(ptr1);
+  ptr1 = ::partition_alloc::internal::RemaskPtr(ptr1);
   EXPECT_NE(*ptr1, kCookie);
   EXPECT_EQ(*ptr1, kQuarantined);
 
@@ -3341,7 +3360,7 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
   // When the last reference is released, the slot should become reusable.
   // Remask ref_count because PartitionAlloc retags ptr to enforce quarantine.
-  ref_count = memory::RemaskPtr(ref_count);
+  ref_count = ::partition_alloc::internal::RemaskPtr(ref_count);
   EXPECT_TRUE(ref_count->Release());
   PartitionAllocFreeForRefCounting(reinterpret_cast<uintptr_t>(ptr1) -
                                    kPointerOffset);
@@ -3368,13 +3387,14 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
 
   // PartitionAlloc may retag memory areas on realloc (even if they
   // do not move), so recover the true tag here.
-  ref_count1 = memory::RemaskPtr(ref_count1);
+  ref_count1 = ::partition_alloc::internal::RemaskPtr(ref_count1);
 
   // Re-query ref-count. It may have moved if Realloc changed the slot.
   auto* ref_count2 = PartitionRefCountPointer(
       reinterpret_cast<uintptr_t>(ptr2) - kPointerOffset);
 
-  if (memory::UnmaskPtr(ptr1) == memory::UnmaskPtr(ptr2)) {
+  if (::partition_alloc::internal::UnmaskPtr(ptr1) ==
+      ::partition_alloc::internal::UnmaskPtr(ptr2)) {
     // If the slot didn't change, ref-count should stay the same.
     EXPECT_EQ(ref_count1, ref_count2);
     EXPECT_FALSE(ref_count2->IsAliveWithNoKnownRefs());
@@ -3761,8 +3781,8 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
       const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
       allocations[i] = root->Alloc(size, nullptr);
       EXPECT_NE(nullptr, allocations[i]);
-      uintptr_t allocation_base =
-          memory::UnmaskPtr(reinterpret_cast<uintptr_t>(allocations[i]));
+      uintptr_t allocation_base = ::partition_alloc::internal::UnmaskPtr(
+          reinterpret_cast<uintptr_t>(allocations[i]));
       EXPECT_TRUE(allocation_base >= pool_base &&
                   allocation_base < pool_base + pool_size);
     }
@@ -3948,9 +3968,10 @@ TEST_F(PartitionAllocTest, SortFreelist) {
 
   // Check that it is sorted.
   for (size_t i = 1; i < allocations.size(); i++) {
-    EXPECT_LT(
-        reinterpret_cast<uintptr_t>(memory::UnmaskPtr(allocations[i - 1])),
-        reinterpret_cast<uintptr_t>(memory::UnmaskPtr(allocations[i])));
+    EXPECT_LT(reinterpret_cast<uintptr_t>(
+                  ::partition_alloc::internal::UnmaskPtr(allocations[i - 1])),
+              reinterpret_cast<uintptr_t>(
+                  ::partition_alloc::internal::UnmaskPtr(allocations[i])));
   }
 
   for (void* ptr : allocations) {

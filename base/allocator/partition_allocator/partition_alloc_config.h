@@ -162,6 +162,12 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_HAS_ALLOCATION_GUARD
 #endif
 
+#if defined(ARCH_CPU_ARM64) && defined(__clang__) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
+static_assert(sizeof(void*) == 8);
+#define PA_HAS_MEMORY_TAGGING
+#endif
+
 // Lazy commit should only be enabled on Windows, because commit charge is
 // only meaningful and limited on Windows. It affects performance on other
 // platforms and is simply not needed there due to OS supporting overcommit.
