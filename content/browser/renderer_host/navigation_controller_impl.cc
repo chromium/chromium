@@ -4304,9 +4304,16 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
   for (int i = entry_index + offset; i >= 0 && i < GetEntryCount();
        i += offset) {
     FrameNavigationEntry* frame_entry = GetEntryAtIndex(i)->GetFrameEntry(node);
-    if (!frame_entry || !frame_entry->committed_origin())
+    if (!frame_entry)
       break;
-    if (!pending_origin.IsSameOriginWith(*frame_entry->committed_origin()))
+    // An entry should only appear in appHistory entries if it is for the same
+    // origin as the document being committed. Check the committed origin, or if
+    // that is not available (during restore), check against the FNE's url.
+    url::Origin frame_entry_origin =
+        frame_entry->committed_origin().value_or(url::Origin::Resolve(
+            frame_entry->url(),
+            frame_entry->initiator_origin().value_or(url::Origin())));
+    if (!pending_origin.IsSameOriginWith(frame_entry_origin))
       break;
     if (previous_item_sequence_number == frame_entry->item_sequence_number())
       continue;

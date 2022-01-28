@@ -105,6 +105,8 @@ void ExpectEquality(const ExplodedFrameState& expected,
   EXPECT_EQ(expected.app_history_key, actual.app_history_key);
   EXPECT_EQ(expected.app_history_id, actual.app_history_id);
   EXPECT_EQ(expected.app_history_state, actual.app_history_state);
+  EXPECT_EQ(expected.protect_url_in_app_history,
+            actual.protect_url_in_app_history);
   ExpectEquality(expected.http_body, actual.http_body);
   ExpectEquality(expected.children, actual.children);
 }
@@ -143,6 +145,7 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->app_history_key = u"abcd";
     frame_state->app_history_id = u"wxyz";
     frame_state->app_history_state = absl::nullopt;
+    frame_state->protect_url_in_app_history = false;
   }
 
   void PopulateHttpBody(
@@ -215,6 +218,9 @@ class PageStateSerializationTest : public testing::Test {
     }
     if (version >= 30)
       frame_state->app_history_state = u"js_serialized_state";
+
+    if (version >= 31)
+      frame_state->protect_url_in_app_history = true;
 
     if (!is_child) {
       frame_state->http_body.http_content_type = u"foo/bar";
@@ -596,6 +602,10 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_v29) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_v30) {
   TestBackwardsCompat(30);
+}
+
+TEST_F(PageStateSerializationTest, BackwardsCompat_v31) {
+  TestBackwardsCompat(31);
 }
 
 // Add your new backwards compat test for future versions *above* this

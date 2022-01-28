@@ -57,6 +57,7 @@ struct BLINK_COMMON_EXPORT ExplodedFrameState {
   absl::optional<std::u16string> app_history_key;
   absl::optional<std::u16string> app_history_id;
   absl::optional<std::u16string> app_history_state;
+  bool protect_url_in_app_history = false;
   std::vector<ExplodedFrameState> children;
 
   ExplodedFrameState();

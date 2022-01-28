@@ -294,7 +294,6 @@ class CONTENT_EXPORT FrameNavigationEntry
   // If the document represented by this FNE hid its full url from appearing
   // in a referrer via a "no-referrer" or "origin" referrer policy, this URL
   // will be hidden from appHistory API entries as well.
-  // TODO(japhet): This should be persisted.
   bool protect_url_in_app_history_;
 };
 

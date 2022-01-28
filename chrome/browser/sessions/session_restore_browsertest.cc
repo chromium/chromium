@@ -95,6 +95,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -3820,4 +3821,89 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, InvokeTwoAppsThenRestore) {
 
   keep_alive.reset();
   profile_keep_alive.reset();
+}
+
+class SessionRestoreAppHistoryTest : public SessionRestoreTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreAppHistoryTest,
+                       ReferrerPolicyUrlCensored) {
+  // Tests start with one browser window; navigate it to url 1.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl1(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  EXPECT_EQ(GetUrl1(), contents->GetLastCommittedURL());
+
+  // Navigate the tab to url 2.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl2(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GetUrl2(), contents->GetLastCommittedURL());
+
+  // Apply a referrer policy of "no-referrer" for url 2.
+  const char kNoReferrerJS[] =
+      "let meta = document.createElement('meta');"
+      "meta.name = 'referrer';"
+      "meta.content = 'no-referrer';"
+      "document.head.appendChild(meta)";
+  EXPECT_TRUE(content::ExecuteScript(contents, kNoReferrerJS));
+
+  // Navigate the tab to url 3.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl3(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GetUrl3(), contents->GetLastCommittedURL());
+
+  // Ensure that url2 is censored in appHistory due to the no-referrer policy,
+  // but url1 isn't.
+  bool url1_is_censored = false;
+  bool url2_is_censored = false;
+  const char kCheckEntry1Js[] =
+      "window.domAutomationController.send("
+      "appHistory.entries()[0].url == null);";
+  const char kCheckEntry2Js[] =
+      "window.domAutomationController.send("
+      "appHistory.entries()[1].url == null);";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(contents, kCheckEntry1Js,
+                                                   &url1_is_censored));
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(contents, kCheckEntry2Js,
+                                                   &url2_is_censored));
+  EXPECT_FALSE(url1_is_censored);
+  EXPECT_TRUE(url2_is_censored);
+
+  // Simulate an exit by shutting down the session service. If we don't do this
+  // the first window close is treated as though the user closed the window
+  // and won't be restored.
+  SessionServiceFactory::ShutdownForProfile(browser()->profile());
+
+  // Then close all the browsers and "restart" Chromium.
+  QuitBrowserAndRestore(browser());
+
+  // url2 should still be censored in appHistory after restore, url1 should not.
+  ASSERT_EQ(1u, active_browser_list_->size());
+  content::WebContents* restored_contents =
+      active_browser_list_->get(0)->tab_strip_model()->GetWebContentsAt(0);
+  EXPECT_EQ(GetUrl3(), restored_contents->GetLastCommittedURL());
+  int entries_length = 0;
+  const char kCheckEntriesLength[] =
+      "window.domAutomationController.send("
+      "appHistory.entries().length);";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+      restored_contents, kCheckEntriesLength, &entries_length));
+  EXPECT_EQ(entries_length, 3);
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      restored_contents, kCheckEntry1Js, &url1_is_censored));
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      restored_contents, kCheckEntry2Js, &url2_is_censored));
+  EXPECT_FALSE(url1_is_censored);
+  EXPECT_TRUE(url2_is_censored);
 }
