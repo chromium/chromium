@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -15,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/i18n/time_formatting.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -106,6 +108,33 @@ constexpr net::NetworkTrafficAnnotationTag kGooglePhotosCountTrafficAnnotation =
           "a user's Google Photos library. The tile shows the library's number "
           "of photos, which this query fetches."
         trigger: "When the user opens the ChromeOS Wallpaper Picker app."
+        data: "OAuth credentials for the user's Google Photos account."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+        setting: "N/A"
+        policy_exception_justification:
+          "Not implemented, considered not necessary."
+      })");
+
+// The URL to download all visible photos in a user's Google Photos library.
+constexpr char kGooglePhotosPhotosUrl[] =
+    "https://photosfirstparty-pa.googleapis.com/v1/chromeos/userItems:read";
+
+constexpr net::NetworkTrafficAnnotationTag
+    kGooglePhotosPhotosTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("wallpaper_google_photos_photos",
+                                            R"(
+      semantics {
+        sender: "ChromeOS Wallpaper Picker"
+        description:
+          "Within the Google Photos tile, the ChromeOS Wallpaper Picker "
+          "shows the user all the visible photos in their Google Photos "
+          "library so that they can pick one as their wallpaper. This query "
+          "fetches those photos."
+        trigger: "When the user accesses the Google Photos tile within the "
+                 "ChromeOS Wallpaper Picker app."
         data: "OAuth credentials for the user's Google Photos account."
         destination: GOOGLE_OWNED_SERVICE
       }
@@ -641,6 +670,64 @@ int GooglePhotosCountFetcher::ParseResponse(
     return -1;
 
   return base::saturated_cast<int>(count);
+}
+
+GooglePhotosPhotosFetcher::GooglePhotosPhotosFetcher(Profile* profile)
+    : GooglePhotosFetcher(profile, kGooglePhotosPhotosTrafficAnnotation) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+GooglePhotosPhotosFetcher::~GooglePhotosPhotosFetcher() = default;
+
+void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
+    const absl::optional<std::string>& resume_token,
+    base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
+  std::string service_url =
+      resume_token.has_value()
+          ? base::StrCat({kGooglePhotosPhotosUrl,
+                          "?resume_token=", resume_token.value()})
+          : kGooglePhotosPhotosUrl;
+  GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
+                                                     std::move(callback));
+}
+
+GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
+    absl::optional<base::Value> response) {
+  auto parsed_response =
+      ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New();
+  if (!response.has_value())
+    return parsed_response;
+
+  const std::string* resume_token = response->FindStringPath("resumeToken");
+  if (resume_token && !resume_token->empty())
+    parsed_response->resume_token = *resume_token;
+
+  const base::Value* response_photos = response->FindListPath("item");
+  if (!response_photos)
+    return parsed_response;
+
+  parsed_response->photos =
+      std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr>();
+  for (const auto& response_photo : response_photos->GetList()) {
+    const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
+    const std::string* timestamp_seconds_string =
+        response_photo.FindStringPath("creationTimestamp.seconds");
+    const std::string* url = response_photo.FindStringPath("photo.servingUrl");
+
+    int64_t seconds_after_epoch;
+    if (!id || !timestamp_seconds_string ||
+        !base::StringToInt64(*timestamp_seconds_string, &seconds_after_epoch) ||
+        seconds_after_epoch < 0 || !url) {
+      continue;
+    }
+
+    std::u16string date = base::TimeFormatFriendlyDate(
+        base::Time::UnixEpoch() + base::Seconds(seconds_after_epoch));
+    parsed_response->photos->push_back(
+        ash::personalization_app::mojom::GooglePhotosPhoto::New(*id, date,
+                                                                GURL(*url)));
+  }
+  return parsed_response;
 }
 
 }  // namespace wallpaper_handlers

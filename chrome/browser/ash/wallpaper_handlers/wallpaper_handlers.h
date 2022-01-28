@@ -256,6 +256,30 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
   int ParseResponse(absl::optional<base::Value> response) override;
 };
 
+using GooglePhotosPhotosCbkArgs =
+    ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr;
+// Downloads the visible photos in a user's Google Photos library.
+class GooglePhotosPhotosFetcher
+    : public GooglePhotosFetcher<GooglePhotosPhotosCbkArgs> {
+ public:
+  explicit GooglePhotosPhotosFetcher(Profile* profile);
+
+  GooglePhotosPhotosFetcher(const GooglePhotosPhotosFetcher&) = delete;
+  GooglePhotosPhotosFetcher& operator=(const GooglePhotosPhotosFetcher&) =
+      delete;
+
+  ~GooglePhotosPhotosFetcher() override;
+
+  virtual void AddRequestAndStartIfNecessary(
+      const absl::optional<std::string>& resume_token,
+      base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback);
+
+ protected:
+  // GooglePhotosFetcher:
+  GooglePhotosPhotosCbkArgs ParseResponse(
+      absl::optional<base::Value> response) override;
+};
+
 }  // namespace wallpaper_handlers
 
 #endif  // CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_H_

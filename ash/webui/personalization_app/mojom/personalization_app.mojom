@@ -107,6 +107,31 @@ struct WallpaperImage {
     OnlineImageType type;
 };
 
+// Encapsulates metadata for a Google Photos photo, which can be displayed as a
+// tile in the wallpaper picker UI or chosen as the device wallpaper.
+struct GooglePhotosPhoto {
+    // Unique identifier for this photo.
+    string id;
+
+    // Human-readable string representation of the date the photo was
+    // taken, e.g., "Monday, March 6, 2008", translated into the user's current
+    // locale.
+    mojo_base.mojom.String16 date;
+
+    // URL of the image to be displayed in the UI.
+    url.mojom.Url url;
+};
+
+// Represents the server-provided response to a Google Photos photos request.
+struct FetchGooglePhotosPhotosResponse {
+    // List of photos from the user's Google Photos library (absent on error).
+    array<GooglePhotosPhoto>? photos;
+
+    // Token that allows the client to fetch more photos not returned in the
+    // current query (absent if the last of the photos was returned).
+    string? resume_token;
+};
+
 // Represents the currently selected wallpaper image.
 struct CurrentWallpaper {
   // URL of the currently selected wallpaper image in data scheme.
@@ -155,10 +180,10 @@ interface WallpaperProvider {
     FetchImagesForCollection(string collection_id) =>
         (array<WallpaperImage>? images);
 
-    // Fetch the number of albums the user has created in Google Photos. Albums
+    // Fetch the list of albums the user has created in Google Photos. Albums
     // with no photo assets will not be returned. On error, |response.albums|
-    // will be absent. |response.resume_token| will be absent unless there are
-    // more results to fetch; |resume_token| will be absent unless this is a
+    // will be absent. |response.resume_token| will be present when there are
+    // more results to fetch; |resume_token| will be present when this is a
     // follow-up query to one that indicated there were more results to fetch.
     FetchGooglePhotosAlbums(string? resume_token) =>
         (FetchGooglePhotosAlbumsResponse response);
@@ -166,6 +191,15 @@ interface WallpaperProvider {
     // Fetch the number of photos the user has stored in Google Photos. |count|
     // will be -1 on failure.
     FetchGooglePhotosCount() => (int32 count);
+
+    // Fetch the list of all photos the user has stored in their Google Photos
+    // library. Only visible photos will be returned. On error,
+    // |response.photos| will be absent. |response.resume_token| will be present
+    // when there are more results to fetch; |resume_token| will be present when
+    // this is a follow-up query to one that indicated there were more results
+    // to fetch.
+    FetchGooglePhotosPhotos(string? resume_token) =>
+        (FetchGooglePhotosPhotosResponse response);
 
     // Fetch a list of FilePath objects from the local file system. |images|
     // will be null on failure.

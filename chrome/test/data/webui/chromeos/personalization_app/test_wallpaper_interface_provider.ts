@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, GooglePhotosAlbum, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -18,6 +18,7 @@ export class TestWallpaperProvider extends
       'fetchImagesForCollection',
       'fetchGooglePhotosAlbums',
       'fetchGooglePhotosCount',
+      'fetchGooglePhotosPhotos',
       'getLocalImages',
       'getLocalImageThumbnail',
       'setWallpaperObserver',
@@ -149,6 +150,17 @@ export class TestWallpaperProvider extends
         this.googlePhotosCount_ :
         -1;
     return Promise.resolve({count});
+  }
+
+  fetchGooglePhotosPhotos() {
+    this.methodCalled('fetchGooglePhotosPhotos');
+    const response = new FetchGooglePhotosPhotosResponse();
+    // TODO(b/216528919): Wire up with mojo API.
+    response.photos =
+        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? [] :
+                                                                      undefined;
+    response.resumeToken = undefined;
+    return Promise.resolve({response});
   }
 
   getLocalImages() {

@@ -17,15 +17,15 @@ namespace wallpaper_handlers {
 
 MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
     : GooglePhotosAlbumsFetcher(profile) {
+  using ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse;
+  using ash::personalization_app::mojom::GooglePhotosAlbumPtr;
+
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
           [](const absl::optional<std::string>& resume_token,
              base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
-            std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr>
-                albums;
-            auto response = ash::personalization_app::mojom::
-                FetchGooglePhotosAlbumsResponse::New(std::move(albums),
-                                                     absl::nullopt);
+            auto response = FetchGooglePhotosAlbumsResponse::New(
+                std::vector<GooglePhotosAlbumPtr>(), absl::nullopt);
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback), std::move(response)));
@@ -54,5 +54,29 @@ MockGooglePhotosCountFetcher::MockGooglePhotosCountFetcher(Profile* profile)
 }
 
 MockGooglePhotosCountFetcher::~MockGooglePhotosCountFetcher() = default;
+
+MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
+    : GooglePhotosPhotosFetcher(profile) {
+  using ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse;
+  using ash::personalization_app::mojom::GooglePhotosPhotoPtr;
+
+  ON_CALL(*this, AddRequestAndStartIfNecessary)
+      .WillByDefault(
+          [](const absl::optional<std::string>& resume_token,
+             base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
+            auto response = FetchGooglePhotosPhotosResponse::New(
+                std::vector<GooglePhotosPhotoPtr>(), absl::nullopt);
+            base::SequencedTaskRunnerHandle::Get()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(response)));
+          });
+
+  ON_CALL(*this, ParseResponse)
+      .WillByDefault([this](absl::optional<base::Value> value) {
+        return GooglePhotosPhotosFetcher::ParseResponse(std::move(value));
+      });
+}
+
+MockGooglePhotosPhotosFetcher::~MockGooglePhotosPhotosFetcher() = default;
 
 }  // namespace wallpaper_handlers

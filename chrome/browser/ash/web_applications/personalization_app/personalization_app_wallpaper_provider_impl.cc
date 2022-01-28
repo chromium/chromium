@@ -207,6 +207,28 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosCount(
       std::move(callback));
 }
 
+void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
+    const absl::optional<std::string>& resume_token,
+    FetchGooglePhotosPhotosCallback callback) {
+  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+    mojo::ReportBadMessage(
+        "Cannot call `FetchGooglePhotosPhotos()` without Google Photos "
+        "Wallpaper integration enabled.");
+    std::move(callback).Run(
+        ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New(
+            absl::nullopt, absl::nullopt));
+    return;
+  }
+
+  if (!google_photos_photos_fetcher_) {
+    google_photos_photos_fetcher_ =
+        std::make_unique<wallpaper_handlers::GooglePhotosPhotosFetcher>(
+            profile_);
+  }
+  google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
+      resume_token, std::move(callback));
+}
+
 void PersonalizationAppWallpaperProviderImpl::GetLocalImages(
     GetLocalImagesCallback callback) {
   // TODO(b/190062481) also load images from android files.
@@ -451,6 +473,13 @@ PersonalizationAppWallpaperProviderImpl::SetGooglePhotosCountFetcherForTest(
     std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher> fetcher) {
   google_photos_count_fetcher_ = std::move(fetcher);
   return google_photos_count_fetcher_.get();
+}
+
+wallpaper_handlers::GooglePhotosPhotosFetcher*
+PersonalizationAppWallpaperProviderImpl::SetGooglePhotosPhotosFetcherForTest(
+    std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher> fetcher) {
+  google_photos_photos_fetcher_ = std::move(fetcher);
+  return google_photos_photos_fetcher_.get();
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnFetchCollections(

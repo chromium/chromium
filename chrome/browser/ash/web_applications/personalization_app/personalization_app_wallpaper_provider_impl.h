@@ -48,6 +48,7 @@ class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
 class GooglePhotosAlbumsFetcher;
 class GooglePhotosCountFetcher;
+class GooglePhotosPhotosFetcher;
 }  // namespace wallpaper_handlers
 
 class Profile;
@@ -92,6 +93,10 @@ class PersonalizationAppWallpaperProviderImpl
       FetchGooglePhotosAlbumsCallback callback) override;
 
   void FetchGooglePhotosCount(FetchGooglePhotosCountCallback callback) override;
+
+  void FetchGooglePhotosPhotos(
+      const absl::optional<std::string>& resume_token,
+      FetchGooglePhotosPhotosCallback callback) override;
 
   void GetLocalImages(GetLocalImagesCallback callback) override;
 
@@ -141,6 +146,10 @@ class PersonalizationAppWallpaperProviderImpl
   wallpaper_handlers::GooglePhotosCountFetcher*
   SetGooglePhotosCountFetcherForTest(
       std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher> fetcher);
+
+  wallpaper_handlers::GooglePhotosPhotosFetcher*
+  SetGooglePhotosPhotosFetcherForTest(
+      std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher> fetcher);
 
  private:
   friend class PersonalizationAppWallpaperProviderImplTest;
@@ -204,7 +213,7 @@ class PersonalizationAppWallpaperProviderImpl
   std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher>
       wallpaper_attribution_info_fetcher_;
 
-  // Fetches the Google Photos Albums the user has created. Constructed lazily
+  // Fetches the Google Photos albums the user has created. Constructed lazily
   // at the time of the first request and then persists for the rest of the
   // delegate's lifetime, unless preemptively or subsequently replaced by a mock
   // in a test.
@@ -217,6 +226,13 @@ class PersonalizationAppWallpaperProviderImpl
   // replaced by a mock in a test.
   std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher>
       google_photos_count_fetcher_;
+
+  // Fetches the visible photos in the user's Google Photos library. Constructed
+  // lazily at the time of the first request and then persists for the rest of
+  // the delegate's lifetime, unless preemptively or subsequently replaced by a
+  // mock in a test.
+  std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>
+      google_photos_photos_fetcher_;
 
   SelectWallpaperCallback pending_select_wallpaper_callback_;
 
