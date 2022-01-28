@@ -154,16 +154,6 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
     }
   }
 
-  // All buyer signals must be for listed buyers.
-  if (non_shared_params->per_buyer_signals) {
-    if (!non_shared_params->interest_group_buyers)
-      return false;
-    for (const auto& it : non_shared_params->per_buyer_signals.value()) {
-      if (!base::Contains(*non_shared_params->interest_group_buyers, it.first))
-        return false;
-    }
-  }
-
   return true;
 }
 
