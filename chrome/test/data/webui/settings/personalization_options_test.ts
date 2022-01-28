@@ -7,11 +7,12 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
+import {PrivacyPageVisibility} from 'chrome://settings/page_visibility.js';
 import {loadTimeData, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
 // <if expr="not chromeos and not lacros">
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+
 // </if>
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
@@ -22,6 +23,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 suite('PersonalizationOptionsTests_AllBuilds', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let syncBrowserProxy: TestSyncBrowserProxy;
+  let customPageVisibility: PrivacyPageVisibility;
   let testElement: SettingsPersonalizationOptionsElement;
 
   suiteSetup(function() {
@@ -43,6 +45,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
     };
+    testElement.pageVisibility = customPageVisibility;
     document.body.appendChild(testElement);
     flush();
   }
@@ -193,6 +196,33 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     loadTimeData.overrideValues({'signinAvailable': false});
     buildTestElement();  // Rebuild the element after modifying loadTimeData.
     assertFalse(isVisible(testElement.$.signinAllowedToggle));
+  });
+
+  test('searchSuggestToggleShownIfPageVisibilityUndefined', function() {
+    // This is the most common case, as in non-Guest profiles on Desktop
+    // platforms pageVisibility is undefined.
+    assertTrue(isVisible(
+        testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
+  });
+
+  test('searchSuggestToggleHiddenByPageVisibility', function() {
+    customPageVisibility = {
+      searchPrediction: false,
+      networkPrediction: false,
+    };
+    buildTestElement();
+    assertFalse(isVisible(
+        testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
+  });
+
+  test('searchSuggestToggleShownByPageVisibility', function() {
+    customPageVisibility = {
+      searchPrediction: true,
+      networkPrediction: false,
+    };
+    buildTestElement();
+    assertTrue(isVisible(
+        testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
   });
   // </if>
 });
