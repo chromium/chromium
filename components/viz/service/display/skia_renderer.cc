@@ -2233,7 +2233,13 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   UMA_HISTOGRAM_BOOLEAN(
       "Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly",
       translate_only);
-  if (builder.paint_op_buffer()) {
+  bool using_raw_draw = builder.paint_op_buffer();
+  if (is_using_raw_draw_) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw",
+        using_raw_draw);
+  }
+  if (using_raw_draw) {
     DCHECK(!rpdq_params);
     DrawPaintOpBuffer(builder.paint_op_buffer(), builder.clear_color(), quad,
                       params);

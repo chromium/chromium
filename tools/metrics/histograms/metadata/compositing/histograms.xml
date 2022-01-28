@@ -651,6 +651,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw"
+    units="boolean" expires_after="2023-02-01">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <summary>Records if the TileDrawQuad is rendered with RawDraw.</summary>
+</histogram>
+
 <histogram name="Compositing.SurfaceAggregator.AggregateUs"
     units="microseconds" expires_after="2022-08-19">
   <owner>weiliangc@chromium.org</owner>
