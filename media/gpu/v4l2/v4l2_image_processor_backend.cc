@@ -929,6 +929,7 @@ void V4L2ImageProcessorBackend::Dequeue() {
     }
 
     output_frame->set_timestamp(job_record->input_frame->timestamp());
+    output_frame->set_color_space(job_record->input_frame->ColorSpace());
 
     if (!job_record->legacy_ready_cb.is_null()) {
       std::move(job_record->legacy_ready_cb)

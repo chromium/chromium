@@ -359,6 +359,7 @@ void LibYUVImageProcessorBackend::Process(
     return;
   }
   output_frame->set_timestamp(input_frame->timestamp());
+  output_frame->set_color_space(input_frame->ColorSpace());
 
   std::move(cb).Run(std::move(output_frame));
 }

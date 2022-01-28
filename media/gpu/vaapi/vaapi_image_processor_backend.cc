@@ -271,6 +271,7 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
       // the compositor should not try to render the frame we output here
       // anyway.
       output_frame->set_timestamp(input_frame->timestamp());
+      output_frame->set_color_space(input_frame->ColorSpace());
       std::move(cb).Run(std::move(output_frame));
       return;
     }
@@ -280,6 +281,8 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   }
 
   output_frame->set_timestamp(input_frame->timestamp());
+  output_frame->set_color_space(input_frame->ColorSpace());
+
   std::move(cb).Run(std::move(output_frame));
 }
 
