@@ -346,12 +346,9 @@ void FindBuffer::CollectTextUntilBlockBoundary(
         node = FlatTreeTraversal::NextSkippingChildren(*node);
         break;
       }
-      // Move the node so we wouldn't encounter this node or its descendants
-      // later.
-      if (IsA<HTMLElement>(*node) &&
-          !IsA<HTMLWBRElement>(To<HTMLElement>(*node))) {
-        buffer_.push_back(kMaxCodepoint);
-      }
+      // Replace the node with char constants so we wouldn't encounter this node
+      // or its descendants later.
+      ReplaceNodeWithCharConstants(*node);
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;
     }
@@ -396,6 +393,21 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   }
   node_after_block_ = node;
   FoldQuoteMarksAndSoftHyphens(buffer_.data(), buffer_.size());
+}
+
+void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
+  if (!IsA<HTMLElement>(node))
+    return;
+
+  if (IsA<HTMLWBRElement>(To<HTMLElement>(node)))
+    return;
+
+  if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
+    buffer_.push_back(kNewlineCharacter);
+    return;
+  }
+
+  buffer_.push_back(kMaxCodepoint);
 }
 
 EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(

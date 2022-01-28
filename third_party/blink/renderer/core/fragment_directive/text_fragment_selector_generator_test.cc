@@ -1248,6 +1248,26 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeBeginsOnShadowHost) {
   VerifySelector(start, end, "the%20quick,-brown%20fox%20jumped");
 }
 
+// Checks selection in multiline paragraph.
+TEST_F(TextFragmentSelectorGeneratorTest, Multiline_paragraph) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <p id ='p'>
+  first paragraph line<br>second paragraph line
+  </p>
+  )HTML");
+  Node* p = GetDocument().getElementById("p");
+  const auto& start = Position(p->firstChild(), 0);
+  const auto& end = Position(p->lastChild(), 24);
+  ASSERT_EQ("first paragraph line\nsecond paragraph line",
+            PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end,
+                 "first%20paragraph%20line%0Asecond%20paragraph%20line");
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
