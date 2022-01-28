@@ -15,24 +15,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
-namespace base {
-class OneShotTimer;
-}
-
-namespace device {
-
-struct PlatformAuthenticatorInfo;
-struct CtapGetAssertionRequest;
-class FidoRequestHandlerBase;
-
-enum class FidoReturnCode : uint8_t;
-
-}  // namespace device
-
-namespace url {
-class Origin;
-}
-
 namespace content {
 
 class AuthenticatorCommon;

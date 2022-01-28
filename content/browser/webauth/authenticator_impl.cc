@@ -5,16 +5,11 @@
 #include "content/browser/webauth/authenticator_impl.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
-#include "base/timer/timer.h"
 #include "content/browser/webauth/authenticator_common.h"
 #include "content/public/browser/document_service.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "url/origin.h"
 
 namespace content {
 
