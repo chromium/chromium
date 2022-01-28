@@ -901,7 +901,20 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Records the time between each IOPMPowerSource event. Only recorded on MacOS.
+    Records the time between each IOPMPowerSource event. The recorded value is
+    clamped between 55 seconds and 65 seconds for maximum precision around the
+    expected value. Only recorded on MacOS.
+  </summary>
+</histogram>
+
+<histogram name="Power.IOPMPowerSource.SamplingEventDelta.MediumTimes"
+    units="ms" expires_after="2022-07-11">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the time between each IOPMPowerSource event. The recorded value is
+    not clamped and covers the range from zero seconds to 3 minutes. Only
+    recorded on MacOS.
   </summary>
 </histogram>
 
