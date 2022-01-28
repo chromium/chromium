@@ -717,8 +717,14 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
   EXPECT_EQ(popup_browser, chrome::FindLastActive());
 }
 
+// Times out Windows 7. https://crbug.com/1291800
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CtrlEnterKey DISABLED_CtrlEnterKey
+#else
+#define MAYBE_CtrlEnterKey CtrlEnterKey
+#endif
 // Tests that Ctrl+Enter/Cmd+Enter keys on a link open the background tab.
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_CtrlEnterKey) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL url(embedded_test_server()->GetURL(
