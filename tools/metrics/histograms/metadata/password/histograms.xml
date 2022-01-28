@@ -1208,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
     expires_after="2022-06-19">
   <owner>kolos@chromium.org</owner>
-  <owner>koerber@google.com</owner>
+  <owner>khamutov@google.com</owner>
   <summary>
     Measures whether a password vote had a field name collision, i.e. multiple
     fields that should have an Autofill type uploaded have the same name.
@@ -2051,7 +2051,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PrefilledUsernameFillOutcome"
     enum="PrefilledUsernameFillOutcome" expires_after="M86">
-  <owner>koerber@google.com</owner>
+  <owner>khamutov@google.com</owner>
+  <owner>kazinova@google.com</owner>
   <summary>
     Records successful fills of prefilled username values known as placeholders
     and unsuccessful fills that were blocked because the prefilled value was not
