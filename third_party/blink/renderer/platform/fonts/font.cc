@@ -136,8 +136,11 @@ bool Font::operator==(const Font& other) const {
   }
 
   FontSelector* first =
-      font_fallback_list_ ? font_fallback_list_->GetFontSelector() : nullptr;
-  FontSelector* second = other.font_fallback_list_
+      font_fallback_list_ && font_fallback_list_->HasFontFallbackMap()
+          ? font_fallback_list_->GetFontSelector()
+          : nullptr;
+  FontSelector* second = other.font_fallback_list_ &&
+                                 other.font_fallback_list_->HasFontFallbackMap()
                              ? other.font_fallback_list_->GetFontSelector()
                              : nullptr;
 
