@@ -297,10 +297,10 @@ void PaymentInstruments::OnRequestPermission(
       // Truncate the type to avoid passing too-large strings to Mojo (see
       // https://crbug.com/810792). We could additionally verify that the type
       // is a MIME type, but the browser side will do that anyway.
-      icon->type = image_object->type().Left(kMaxTypeLength);
+      icon->type = image_object->getTypeOr("").Left(kMaxTypeLength);
       icon->purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
       WebVector<gfx::Size> web_sizes =
-          WebIconSizesParser::ParseIconSizes(image_object->sizes());
+          WebIconSizesParser::ParseIconSizes(image_object->getSizesOr(""));
       for (const auto& web_size : web_sizes) {
         icon->sizes.push_back(web_size);
       }
