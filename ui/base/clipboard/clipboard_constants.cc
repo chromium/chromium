@@ -45,4 +45,7 @@ const char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";
 #if BUILDFLAG(IS_ANDROID)
 const char kMimeTypeImageURI[] = "image-uri";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+const int kMaxRegisteredClipboardFormats = 100;
+
 }  // namespace ui

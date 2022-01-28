@@ -89,6 +89,14 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeImageURI[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Max number of custom formats which can be registered per write operation.
+// Windows / X11 clipboards enter an unrecoverable state after registering
+// some amount of unique formats, and there's no way to un-register these
+// formats. For these clipboards, we use a conservative limit to avoid
+// registering too many formats.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern const int kMaxRegisteredClipboardFormats;
+
 }  // namespace ui
 
 #endif  // UI_BASE_CLIPBOARD_CLIPBOARD_CONSTANTS_H_

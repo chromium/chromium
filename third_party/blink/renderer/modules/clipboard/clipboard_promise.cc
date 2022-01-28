@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 // There are 2 clipboard permissions defined in the spec:
 // * clipboard-read
@@ -287,6 +288,14 @@ void ClipboardPromise::HandleWrite(
   ClipboardItem* clipboard_item = (*clipboard_items)[0];
   clipboard_item_data_with_promises_ = clipboard_item->GetItems();
   custom_format_items_ = clipboard_item->CustomFormats();
+
+  if (static_cast<int>(custom_format_items_.size()) >
+      ui::kMaxRegisteredClipboardFormats) {
+    script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "Number of custom formats exceeds the max limit which is set to 100."));
+    return;
+  }
   DCHECK(RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() ||
          custom_format_items_.IsEmpty());
 

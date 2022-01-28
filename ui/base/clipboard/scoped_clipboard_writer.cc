@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "net/base/escape.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/gfx/geometry/size.h"
@@ -203,8 +204,7 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
   // have a mapping of custom format MIME type to web custom format.
   // There can only be 100 custom format per write and it will be
   // registered when the web authors request for a custom format.
-  static constexpr int kMaxRegisteredFormats = 100;
-  if (counter_ >= kMaxRegisteredFormats)
+  if (counter_ >= ui::kMaxRegisteredClipboardFormats)
     return;
   std::string format_in_ascii = base::UTF16ToASCII(format);
   if (registered_formats_.find(format_in_ascii) == registered_formats_.end()) {
