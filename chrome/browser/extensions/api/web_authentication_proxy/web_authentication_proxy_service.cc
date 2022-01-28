@@ -87,10 +87,11 @@ bool WebAuthenticationProxyService::CompleteCreateRequest(
   CreateCallback callback = std::move(callback_it->second);
   pending_create_callbacks_.erase(callback_it);
 
-  if (details.error_name) {
-    auto error = blink::mojom::WebAuthnDOMExceptionDetails::New();
-    error->name = *details.error_name;
-    std::move(callback).Run(details.request_id, std::move(error), nullptr);
+  if (details.error) {
+    std::move(callback).Run(details.request_id,
+                            blink::mojom::WebAuthnDOMExceptionDetails::New(
+                                details.error->name, details.error->message),
+                            nullptr);
     return true;
   }
   if (!details.response_json) {

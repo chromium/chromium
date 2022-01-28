@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -25,8 +27,15 @@ constexpr char kTestCredentialId[] = "dGVzdA";
 // localhost. Must be from `net::EmbeddedTestServer::CERT_TEST_NAMES`.
 constexpr char kTestDomain[] = "a.test";
 
-MATCHER_P(IsDomError, name, "") {
-  return arg.error.find(name) != std::string::npos;
+constexpr char kJsErrorPrefix[] = "a JavaScript error: \"";
+
+MATCHER_P(IsJsError, name, "") {
+  return base::StartsWith(arg.error, base::StrCat({kJsErrorPrefix, name}));
+}
+
+MATCHER_P2(IsJsErrorWithMessage, name, message, "") {
+  return base::StrCat({kJsErrorPrefix, name, ": ", message, "\"\n"}) ==
+         arg.error;
 }
 
 class WebAuthenticationProxyApiTest : public ExtensionApiTest {
@@ -219,10 +228,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialError) {
   SetJsTestName("makeCredentialError");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener request_listener("nextRequest", false);
   ExtensionTestMessageListener error_listener("nextError", true);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
-  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   // The JS side listens for DOMError names to pass to completeCreateRequest().
   // The DOMError observed by the client-side JS that made the WebAuthn request
@@ -241,7 +249,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialError) {
     ASSERT_TRUE(error_listener.WaitUntilSatisfied());
     error_listener.Reply(error_name);
     error_listener.Reset();
-    EXPECT_THAT(NavigateAndCallMakeCredential(), IsDomError(error_name));
+    ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+    request_listener.Reset();
+    // `TEST_ERROR_MESSAGE` in `main/test.js`.
+    constexpr char kErrorMessage[] = "test error message";
+    EXPECT_THAT(NavigateAndCallMakeCredential(),
+                IsJsErrorWithMessage(error_name, kErrorMessage));
   }
 
   // Tell the JS side to stop expecting more errors and end the test.
@@ -261,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
 
   // Call makeCredential() and tell the extension that there is a result. The
   // extension never resolves the request but detaches itself.
-  EXPECT_THAT(NavigateAndCallMakeCredential(), IsDomError("AbortError"));
+  EXPECT_THAT(NavigateAndCallMakeCredential(), IsJsError("AbortError"));
   ready_listener.Reply("");
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }

@@ -21,12 +21,14 @@ const MAKE_CREDENTIAL_RESPONSE_JSON = `{
   }
 }`;
 
+const TEST_ERROR_MESSAGE = 'test error message';
+
 function completeCreateRequest(requestId, optErrorName) {
   let response = {
     requestId: requestId,
   };
   if (optErrorName) {
-    response.errorName = optErrorName;
+    response.error = {name: optErrorName, message: TEST_ERROR_MESSAGE};
   } else {
     response.responseJson = MAKE_CREDENTIAL_RESPONSE_JSON;
   }
@@ -123,12 +125,14 @@ let availableTests = [
           nextError = await chrome.test.sendMessage('nextError');
           if (!nextError) {
             chrome.test.succeed();
+          } else {
+            chrome.test.sendMessage('nextRequest');
           }
         });
     await chrome.webAuthenticationProxy.attach();
-    chrome.test.sendMessage('ready');
     // The C++ side passes error names to be used in completeCreateRequest().
     nextError = await chrome.test.sendMessage('nextError');
+    chrome.test.sendMessage('nextRequest');
   },
   async function makeCredentialResolvesOnDetach() {
     chrome.webAuthenticationProxy.onCreateRequest.addListener(

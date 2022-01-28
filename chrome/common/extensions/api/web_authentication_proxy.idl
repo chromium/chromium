@@ -53,13 +53,17 @@ namespace webAuthenticationProxy {
   callback ErrorCallback = void(optional DOMString error);
   callback VoidCallback = void();
 
+  dictionary DOMExceptionDetails {
+    DOMString name;
+    DOMString message;
+  };
+
   dictionary CreateResponseDetails {
     // The requestId of the `CreateRequest`.
     long requestId;
 
-    // The `name` property of the `DOMException`, if any, yielded by the remote
-    // request.
-    DOMString? errorName;
+    // The `DOMException`, if any, yielded by the remote request.
+    DOMExceptionDetails? error;
 
     // A JSON serialized representation of the `PublicKeyCredential`
     // (https://w3c.github.io/webauthn/#publickeycredential), if any, yielded
