@@ -1451,6 +1451,9 @@ void AXObject::SerializeOtherScreenReaderAttributes(
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kNone);
 
+  if (ui::IsPlatformDocument(node_data->role) && !IsLoaded())
+    node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);
+
   if (node_data->role == ax::mojom::blink::Role::kColorWell) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColorValue,
                                ColorValue());

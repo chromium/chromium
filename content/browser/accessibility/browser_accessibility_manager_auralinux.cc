@@ -221,10 +221,15 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       FireAriaCurrentChangedEvent(node);
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
+      DCHECK_EQ(node->GetRole(), ax::mojom::Role::kRootWebArea);
+      DCHECK(
+          !node->GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
       FireLoadingEvent(node, false);
       FireEvent(node, ax::mojom::Event::kLoadComplete);
       break;
     case ui::AXEventGenerator::Event::LOAD_START:
+      DCHECK_EQ(node->GetRole(), ax::mojom::Role::kRootWebArea);
+      DCHECK(node->GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
       FireLoadingEvent(node, true);
       break;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:

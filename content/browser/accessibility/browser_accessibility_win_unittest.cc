@@ -1004,8 +1004,6 @@ TEST_F(BrowserAccessibilityWinTest, TestGetUIADirectChildrenInRange) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
-  // Try creating an empty document with busy state. Readonly is
-  // set automatically.
   std::unique_ptr<BrowserAccessibilityManager> manager(
       new BrowserAccessibilityManagerWin(
           BrowserAccessibilityManagerWin::GetEmptyDocument(),
@@ -1016,7 +1014,6 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   EXPECT_EQ(1, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
-  EXPECT_EQ(true, root->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
 
   // Tree with a child textfield.
   ui::AXNodeData tree1_1;
@@ -1098,7 +1095,6 @@ TEST_F(BrowserAccessibilityWinTest, EmptyDocHasUniqueIdWin) {
   EXPECT_EQ(1, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
-  EXPECT_EQ(true, root->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
 
   BrowserAccessibilityWin* win_root = ToBrowserAccessibilityWin(root);
 

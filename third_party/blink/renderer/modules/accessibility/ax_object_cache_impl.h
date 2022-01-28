@@ -162,6 +162,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleUpdateActiveMenuOption(Node*) override;
   void DidShowMenuListPopup(LayoutObject*) override;
   void DidHideMenuListPopup(LayoutObject*) override;
+  void HandleLoadStart(Document*) override;
   void HandleLoadComplete(Document*) override;
   void HandleLayoutComplete(Document*) override;
   void HandleClicked(Node*) override;

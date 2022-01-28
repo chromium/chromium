@@ -7666,8 +7666,13 @@ int AXPlatformNodeWin::MSAAState() const {
   // Map the ax::mojom::State to MSAA state. Note that some of the states are
   // not currently handled.
 
-  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy))
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
+      GetRole() != ax::mojom::Role::kRootWebArea) {
+    // TODO(accessibility): https://crbug.com/1292018
+    // Exposing the busy state on the root web area means the NVDA user will end
+    // up without a virtualBuffer until the page fully loads.
     msaa_state |= STATE_SYSTEM_BUSY;
+  }
 
   if (HasState(ax::mojom::State::kCollapsed))
     msaa_state |= STATE_SYSTEM_COLLAPSED;

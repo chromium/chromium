@@ -952,16 +952,18 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_EQ(CHILDID_SELF, V_I4(focus.ptr()));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestBusyAccessibilityTree) {
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
+                       TestLoadingAccessibilityTree) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
-  // The initial accessible returned should have state STATE_SYSTEM_BUSY while
-  // the accessibility tree is being requested from the renderer.
+  // Exposing state STATE_SYSTEM_BUSY while the accessibility tree is being
+  // requested from the renderer can prevent NVDA from creating its virtual
+  // buffer. In order to ensure users can start navigating pages immediately,
+  // we don't expose that state.
   AccessibleChecker document1_checker(std::wstring(), ROLE_SYSTEM_DOCUMENT,
                                       std::wstring());
-  document1_checker.SetExpectedState(STATE_SYSTEM_READONLY |
-                                     STATE_SYSTEM_FOCUSABLE |
-                                     STATE_SYSTEM_FOCUSED | STATE_SYSTEM_BUSY);
+  document1_checker.SetExpectedState(
+      STATE_SYSTEM_READONLY | STATE_SYSTEM_FOCUSABLE | STATE_SYSTEM_FOCUSED);
   document1_checker.CheckAccessible(GetRendererAccessible());
 }
 

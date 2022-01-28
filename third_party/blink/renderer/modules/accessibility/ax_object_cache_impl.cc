@@ -3758,6 +3758,11 @@ void AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout(Node* menu_list) {
     ax_object->DidHidePopup();
 }
 
+void AXObjectCacheImpl::HandleLoadStart(Document* document) {
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*document);
+  MarkAXObjectDirty(Get(document));
+}
+
 void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*document);
 

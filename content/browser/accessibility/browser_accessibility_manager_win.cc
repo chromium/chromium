@@ -90,7 +90,6 @@ ui::AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {
   ui::AXNodeData empty_document;
   empty_document.id = 1;
   empty_document.role = ax::mojom::Role::kRootWebArea;
-  empty_document.AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, true);
   ui::AXTreeUpdate update;
   update.root_id = empty_document.id;
   update.nodes.push_back(empty_document);
