@@ -796,6 +796,7 @@ void RemoveFormsToBeDeleted(
   passwordProblemsItem.text = l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
   passwordProblemsItem.detailText =
       l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_DESCRIPTION);
+  passwordProblemsItem.accessibilityTraits = UIAccessibilityTraitHeader;
   return passwordProblemsItem;
 }
 
