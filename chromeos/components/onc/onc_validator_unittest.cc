@@ -66,23 +66,23 @@ class ONCValidatorTest : public ::testing::Test {
 
   void ExpectValid() {
     EXPECT_EQ(Validator::VALID, validation_result_);
-    EXPECT_TRUE(test_utils::Equals(&original_object_, repaired_object_.get()));
+    EXPECT_TRUE(test_utils::Equals(&original_object_, &repaired_object_));
   }
 
   void ExpectRepairWithWarnings(const base::Value& expected_repaired) {
     EXPECT_EQ(Validator::VALID_WITH_WARNINGS, validation_result_);
-    EXPECT_TRUE(test_utils::Equals(&expected_repaired, repaired_object_.get()));
+    EXPECT_TRUE(test_utils::Equals(&expected_repaired, &repaired_object_));
   }
 
   void ExpectInvalid() {
     EXPECT_EQ(Validator::INVALID, validation_result_);
-    EXPECT_EQ(NULL, repaired_object_.get());
+    EXPECT_TRUE(repaired_object_.is_none());
   }
 
  private:
   Validator::Result validation_result_;
   base::Value original_object_;
-  std::unique_ptr<const base::DictionaryValue> repaired_object_;
+  base::Value repaired_object_;
 };
 
 namespace {

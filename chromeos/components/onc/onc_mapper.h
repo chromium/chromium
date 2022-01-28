@@ -9,12 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 namespace chromeos {
 namespace onc {
@@ -47,27 +42,24 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
   // Calls |MapObject|, |MapArray| and |MapPrimitive| according to |onc_value|'s
   // type, which always return an object of the according type. Result of the
   // mapping is returned. Only on error sets |error| to true.
-  virtual std::unique_ptr<base::Value> MapValue(
-      const OncValueSignature& signature,
-      const base::Value& onc_value,
-      bool* error);
+  virtual base::Value MapValue(const OncValueSignature& signature,
+                               const base::Value& onc_value,
+                               bool* error);
 
   // Maps objects/dictionaries. By default calls |MapFields|, which recurses
   // into each field of |onc_object|, and drops unknown fields. Result of the
   // mapping is returned. Only on error sets |error| to true. In this
   // implementation only unknown fields are errors.
-  virtual std::unique_ptr<base::DictionaryValue> MapObject(
-      const OncValueSignature& signature,
-      const base::Value& onc_object,
-      bool* error);
+  virtual base::Value MapObject(const OncValueSignature& signature,
+                                const base::Value& onc_object,
+                                bool* error);
 
   // Maps primitive values like BinaryValue, StringValue, IntegerValue... (all
   // but dictionaries and lists). By default copies |onc_primitive|. Result of
   // the mapping is returned. Only on error sets |error| to true.
-  virtual std::unique_ptr<base::Value> MapPrimitive(
-      const OncValueSignature& signature,
-      const base::Value& onc_primitive,
-      bool* error);
+  virtual base::Value MapPrimitive(const OncValueSignature& signature,
+                                   const base::Value& onc_primitive,
+                                   bool* error);
 
   // Maps each field of the given |onc_object| according to |object_signature|.
   // Adds the mapping of each field to |result| using |MapField| and drops
@@ -78,36 +70,34 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
                          const base::Value& onc_object,
                          bool* found_unknown_field,
                          bool* nested_error,
-                         base::DictionaryValue* result);
+                         base::Value* result);
 
   // Maps the value |onc_value| of field |field_name| according to its field
   // signature in |object_signature| using |MapValue|. Sets
-  // |found_unknown_field| to true and returns NULL if |field_name| cannot be
-  // found in |object_signature|. Otherwise returns the mapping of |onc_value|.
-  virtual std::unique_ptr<base::Value> MapField(
-      const std::string& field_name,
-      const OncValueSignature& object_signature,
-      const base::Value& onc_value,
-      bool* found_unknown_field,
-      bool* error);
+  // |found_unknown_field| to true and returns a Value of type
+  // base::Value::Type::NONEif |field_name| cannot be found in
+  // |object_signature|. Otherwise returns the mapping of |onc_value|.
+  virtual base::Value MapField(const std::string& field_name,
+                               const OncValueSignature& object_signature,
+                               const base::Value& onc_value,
+                               bool* found_unknown_field,
+                               bool* error);
 
   // Maps the array |onc_array| according to |array_signature|, which defines
   // the type of the entries. Maps each entry by calling |MapValue|. If any of
   // the nested mappings failed, the flag |nested_error| is set to true and the
   // entry is dropped from the result. Otherwise |nested_error| isn't
   // modified. The resulting array is returned.
-  virtual std::unique_ptr<base::ListValue> MapArray(
-      const OncValueSignature& array_signature,
-      const base::ListValue& onc_array,
-      bool* nested_error);
+  virtual base::Value MapArray(const OncValueSignature& array_signature,
+                               const base::Value& onc_array,
+                               bool* nested_error);
 
   // Calls |MapValue| and returns its result. Called by |MapArray| for each
   // entry and its index in the enclosing array.
-  virtual std::unique_ptr<base::Value> MapEntry(
-      int index,
-      const OncValueSignature& signature,
-      const base::Value& onc_value,
-      bool* error);
+  virtual base::Value MapEntry(int index,
+                               const OncValueSignature& signature,
+                               const base::Value& onc_value,
+                               bool* error);
 };
 
 }  // namespace onc

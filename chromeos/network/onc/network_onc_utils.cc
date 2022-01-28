@@ -503,23 +503,16 @@ int ImportNetworksForUser(const user_manager::User* user,
 
   bool ethernet_not_found = false;
   int networks_created = 0;
-  for (const auto& entry : expanded_networks.GetList()) {
-    // TODO(crbug.com/1226202): Remove DictionaryValue conversion once
-    // onc::Normalizer is converted.
-    const base::DictionaryValue* network = nullptr;
-    entry.GetAsDictionary(&network);
-    DCHECK(network);
-
+  for (const auto& network : expanded_networks.GetList()) {
     // Remove irrelevant fields.
     onc::Normalizer normalizer(true /* remove recommended fields */);
-    std::unique_ptr<base::DictionaryValue> normalized_network =
-        normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
-                                   *network);
+    base::Value normalized_network = normalizer.NormalizeObject(
+        &onc::kNetworkConfigurationSignature, network);
 
     // TODO(pneubeck): Use ONC and ManagedNetworkConfigurationHandler instead.
     // crbug.com/457936
     base::Value shill_dict = onc::TranslateONCObjectToShill(
-        &onc::kNetworkConfigurationSignature, *normalized_network);
+        &onc::kNetworkConfigurationSignature, normalized_network);
 
     std::unique_ptr<NetworkUIData> ui_data(
         NetworkUIData::CreateFromONC(::onc::ONC_SOURCE_USER_IMPORT));

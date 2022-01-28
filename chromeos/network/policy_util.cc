@@ -271,10 +271,8 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
 
   // Remove irrelevant fields.
   onc::Normalizer normalizer(true /* remove recommended fields */);
-  std::unique_ptr<base::DictionaryValue> normalized_network =
-      normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
-                                 effective);
-  effective = std::move(*normalized_network);
+  effective = normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
+                                         effective);
 
   base::Value shill_dictionary = onc::TranslateONCObjectToShill(
       &onc::kNetworkConfigurationSignature, effective);

@@ -291,7 +291,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
                            true);  // Log warnings.
 
   onc::Validator::Result validation_result;
-  std::unique_ptr<base::DictionaryValue> maybe_validated_user_settings =
+  base::Value validated_user_settings =
       validator.ValidateAndRepairObject(&onc::kNetworkConfigurationSignature,
                                         user_settings_copy, &validation_result);
   if (validation_result == onc::Validator::INVALID) {
@@ -301,9 +301,8 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
   }
   if (validation_result == onc::Validator::VALID_WITH_WARNINGS)
     NET_LOG(USER) << "Validation of ONC user settings produced warnings.";
+  DCHECK(validated_user_settings.is_dict());
 
-  base::Value validated_user_settings =
-      base::Value::FromUniquePtrValue(std::move(maybe_validated_user_settings));
   // Don't allow AutoConnect=true for unmanaged wifi networks if
   // 'AllowOnlyPolicyNetworksToAutoconnect' policy is active.
   if (EnablesUnmanagedWifiAutoconnect(validated_user_settings) &&
@@ -385,20 +384,16 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
                            false);  // Don't log warnings.
 
   onc::Validator::Result validation_result;
-  std::unique_ptr<base::DictionaryValue> maybe_validated_properties =
-      validator.ValidateAndRepairObject(&onc::kNetworkConfigurationSignature,
-                                        properties, &validation_result);
-
+  base::Value validated_properties = validator.ValidateAndRepairObject(
+      &onc::kNetworkConfigurationSignature, properties, &validation_result);
   if (validation_result == onc::Validator::INVALID) {
     InvokeErrorCallback("", std::move(error_callback), kInvalidUserSettings);
     return;
   }
-
   if (validation_result == onc::Validator::VALID_WITH_WARNINGS)
     NET_LOG(DEBUG) << "Validation of ONC user settings produced warnings.";
+  DCHECK(validated_properties.is_dict());
 
-  base::Value validated_properties =
-      base::Value::FromUniquePtrValue(std::move(maybe_validated_properties));
   // Fill in HexSSID field from contents of SSID field if not set already - this
   // is required to properly match the configuration against existing policies.
   onc::FillInHexSSIDFieldsInOncObject(onc::kNetworkConfigurationSignature,

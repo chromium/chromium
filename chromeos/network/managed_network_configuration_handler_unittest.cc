@@ -281,16 +281,16 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
                              true);  // log_warnings
     validator.SetOncSource(onc_source);
     onc::Validator::Result validation_result;
-    std::unique_ptr<base::DictionaryValue> validated_policy =
-        validator.ValidateAndRepairObject(&onc::kToplevelConfigurationSignature,
-                                          policy, &validation_result);
+    base::Value validated_policy = validator.ValidateAndRepairObject(
+        &onc::kToplevelConfigurationSignature, policy, &validation_result);
     if (validation_result == onc::Validator::INVALID) {
       ADD_FAILURE() << "Network configuration invalid.";
       return;
     }
+    ASSERT_TRUE(validated_policy.is_dict());
 
     base::Value network_configs(base::Value::Type::LIST);
-    const base::Value* found_network_configs = validated_policy->FindListKey(
+    const base::Value* found_network_configs = validated_policy.FindListKey(
         ::onc::toplevel_config::kNetworkConfigurations);
     if (found_network_configs) {
       for (const auto& network_config : found_network_configs->GetList()) {
@@ -299,7 +299,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     }
 
     base::Value global_config(base::Value::Type::DICTIONARY);
-    const base::Value* found_global_config = validated_policy->FindDictKey(
+    const base::Value* found_global_config = validated_policy.FindDictKey(
         ::onc::toplevel_config::kGlobalNetworkConfiguration);
     if (found_global_config) {
       global_config = found_global_config->Clone();

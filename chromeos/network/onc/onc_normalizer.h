@@ -5,9 +5,8 @@
 #ifndef CHROMEOS_NETWORK_ONC_ONC_NORMALIZER_H_
 #define CHROMEOS_NETWORK_ONC_ONC_NORMALIZER_H_
 
-#include <memory>
-
 #include "base/component_export.h"
+#include "base/values.h"
 #include "chromeos/components/onc/onc_mapper.h"
 
 namespace chromeos {
@@ -33,27 +32,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
   // is set, but the field "HexSSID" is not, the contents of the "SSID" field is
   // converted to UTF-8 encoding, a hex representation of the byte sequence is
   // created and stored in the field "HexSSID".
-  std::unique_ptr<base::DictionaryValue> NormalizeObject(
-      const OncValueSignature* object_signature,
-      const base::Value& onc_object);
+  base::Value NormalizeObject(const OncValueSignature* object_signature,
+                              const base::Value& onc_object);
 
  private:
   // Dispatch to the right normalization function according to |signature|.
-  std::unique_ptr<base::DictionaryValue> MapObject(
-      const OncValueSignature& signature,
-      const base::Value& onc_object,
-      bool* error) override;
+  base::Value MapObject(const OncValueSignature& signature,
+                        const base::Value& onc_object,
+                        bool* error) override;
 
-  void NormalizeCertificate(base::DictionaryValue* cert);
-  void NormalizeEAP(base::DictionaryValue* eap);
-  void NormalizeEthernet(base::DictionaryValue* ethernet);
-  void NormalizeIPsec(base::DictionaryValue* ipsec);
-  void NormalizeNetworkConfiguration(base::DictionaryValue* network);
-  void NormalizeOpenVPN(base::DictionaryValue* openvpn);
-  void NormalizeProxySettings(base::DictionaryValue* proxy);
-  void NormalizeVPN(base::DictionaryValue* vpn);
-  void NormalizeWiFi(base::DictionaryValue* wifi);
-  void NormalizeStaticIPConfigForNetwork(base::DictionaryValue* network);
+  void NormalizeCertificate(base::Value* cert);
+  void NormalizeEAP(base::Value* eap);
+  void NormalizeEthernet(base::Value* ethernet);
+  void NormalizeIPsec(base::Value* ipsec);
+  void NormalizeNetworkConfiguration(base::Value* network);
+  void NormalizeOpenVPN(base::Value* openvpn);
+  void NormalizeProxySettings(base::Value* proxy);
+  void NormalizeVPN(base::Value* vpn);
+  void NormalizeWiFi(base::Value* wifi);
+  void NormalizeStaticIPConfigForNetwork(base::Value* network);
 
   const bool remove_recommended_fields_;
 };

@@ -4,8 +4,6 @@
 
 #include "chromeos/network/onc/onc_normalizer.h"
 
-#include <memory>
-
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
@@ -18,18 +16,17 @@ namespace onc {
 // if IPAddressConfigType is not 'Static'.
 TEST(ONCNormalizerTest, RemoveUnnecessaryAddressStaticIPConfigFields) {
   Normalizer normalizer(true);
-  std::unique_ptr<const base::DictionaryValue> data(
-      test_utils::ReadTestDictionary("settings_with_normalization.json"));
+  base::Value data =
+      test_utils::ReadTestDictionaryValue("settings_with_normalization.json");
 
-  const base::DictionaryValue* original = nullptr;
-  const base::DictionaryValue* expected_normalized = nullptr;
-  data->GetDictionary("unnecessary-address-staticipconfig", &original);
-  data->GetDictionary("unnecessary-address-staticipconfig-normalized",
-                      &expected_normalized);
+  const base::Value* original =
+      data.FindDictKey("unnecessary-address-staticipconfig");
+  const base::Value* expected_normalized =
+      data.FindDictKey("unnecessary-address-staticipconfig-normalized");
 
-  std::unique_ptr<base::DictionaryValue> actual_normalized =
+  base::Value actual_normalized =
       normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
-  EXPECT_TRUE(test_utils::Equals(expected_normalized, actual_normalized.get()));
+  EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
 // Validate that StaticIPConfig fields other than NameServers and IPAddress &
@@ -37,102 +34,94 @@ TEST(ONCNormalizerTest, RemoveUnnecessaryAddressStaticIPConfigFields) {
 // {NameServers,IPAddress}ConfigType.
 TEST(ONCNormalizerTest, RetainExtraStaticIPConfigFields) {
   Normalizer normalizer(true);
-  std::unique_ptr<const base::DictionaryValue> data(
-      test_utils::ReadTestDictionary("settings_with_normalization.json"));
+  base::Value data =
+      test_utils::ReadTestDictionaryValue("settings_with_normalization.json");
 
-  const base::DictionaryValue* original = nullptr;
-  const base::DictionaryValue* expected_normalized = nullptr;
-  data->GetDictionary("unnecessary-address-staticipconfig", &original);
-  data->GetDictionary("unnecessary-address-staticipconfig-normalized",
-                      &expected_normalized);
+  const base::Value* original =
+      data.FindDictKey("unnecessary-address-staticipconfig");
+  const base::Value* expected_normalized =
+      data.FindDictKey("unnecessary-address-staticipconfig-normalized");
 
-  std::unique_ptr<base::DictionaryValue> actual_normalized =
+  base::Value actual_normalized =
       normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
-  EXPECT_TRUE(test_utils::Equals(expected_normalized, actual_normalized.get()));
+  EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
 // Validate that irrelevant fields of the StaticIPConfig dictionary will be
 // removed.
 TEST(ONCNormalizerTest, RemoveStaticIPConfigFields) {
   Normalizer normalizer(true);
-  std::unique_ptr<const base::DictionaryValue> data(
-      test_utils::ReadTestDictionary("settings_with_normalization.json"));
+  base::Value data =
+      test_utils::ReadTestDictionaryValue("settings_with_normalization.json");
 
-  const base::DictionaryValue* original = nullptr;
-  const base::DictionaryValue* expected_normalized = nullptr;
-  data->GetDictionary("irrelevant-staticipconfig-fields", &original);
-  data->GetDictionary("irrelevant-staticipconfig-fields-normalized",
-                      &expected_normalized);
+  const base::Value* original =
+      data.FindDictKey("irrelevant-staticipconfig-fields");
+  const base::Value* expected_normalized =
+      data.FindDictKey("irrelevant-staticipconfig-fields-normalized");
 
-  std::unique_ptr<base::DictionaryValue> actual_normalized =
+  base::Value actual_normalized =
       normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
-  EXPECT_TRUE(test_utils::Equals(expected_normalized, actual_normalized.get()));
+  EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
 // Validate that StatticIPConfig.NameServers is removed when
 // NameServersConfigType is 'DHCP'.
 TEST(ONCNormalizerTest, RemoveNameServers) {
   Normalizer normalizer(true);
-  std::unique_ptr<const base::DictionaryValue> data(
-      test_utils::ReadTestDictionary("settings_with_normalization.json"));
+  base::Value data =
+      test_utils::ReadTestDictionaryValue("settings_with_normalization.json");
 
-  const base::DictionaryValue* original = nullptr;
-  const base::DictionaryValue* expected_normalized = nullptr;
-  data->GetDictionary("irrelevant-nameservers", &original);
-  data->GetDictionary("irrelevant-nameservers-normalized",
-                      &expected_normalized);
+  const base::Value* original = data.FindDictKey("irrelevant-nameservers");
+  const base::Value* expected_normalized =
+      data.FindDictKey("irrelevant-nameservers-normalized");
 
-  std::unique_ptr<base::DictionaryValue> actual_normalized =
+  base::Value actual_normalized =
       normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
-  EXPECT_TRUE(test_utils::Equals(expected_normalized, actual_normalized.get()));
+  EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
 // Validate that IPConfig related fields are removed when IPAddressConfigType
 // is 'Static', but some required fields are missing.
 TEST(ONCNormalizerTest, RemoveIPFieldsForIncompleteConfig) {
   Normalizer normalizer(true);
-  std::unique_ptr<const base::DictionaryValue> data(
-      test_utils::ReadTestDictionary("settings_with_normalization.json"));
+  base::Value data =
+      test_utils::ReadTestDictionaryValue("settings_with_normalization.json");
 
-  const base::DictionaryValue* original = nullptr;
-  const base::DictionaryValue* expected_normalized = nullptr;
-  data->GetDictionary("missing-ip-fields", &original);
-  data->GetDictionary("missing-ip-fields-normalized", &expected_normalized);
+  const base::Value* original = data.FindDictKey("missing-ip-fields");
+  const base::Value* expected_normalized =
+      data.FindDictKey("missing-ip-fields-normalized");
 
-  std::unique_ptr<base::DictionaryValue> actual_normalized =
+  base::Value actual_normalized =
       normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
-  EXPECT_TRUE(test_utils::Equals(expected_normalized, actual_normalized.get()));
+  EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 // This test case is about validating valid ONC objects.
 TEST(ONCNormalizerTest, NormalizeNetworkConfigurationEthernetAndVPN) {
   Normalizer normalizer(true);
-  std::unique_ptr<const base::DictionaryValue> data(
-      test_utils::ReadTestDictionary("settings_with_normalization.json"));
+  base::Value data =
+      test_utils::ReadTestDictionaryValue("settings_with_normalization.json");
 
-  const base::DictionaryValue* original = nullptr;
-  const base::DictionaryValue* expected_normalized = nullptr;
-  data->GetDictionary("ethernet-and-vpn", &original);
-  data->GetDictionary("ethernet-and-vpn-normalized", &expected_normalized);
+  const base::Value* original = data.FindDictKey("ethernet-and-vpn");
+  const base::Value* expected_normalized =
+      data.FindDictKey("ethernet-and-vpn-normalized");
 
-  std::unique_ptr<base::DictionaryValue> actual_normalized =
+  base::Value actual_normalized =
       normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
-  EXPECT_TRUE(test_utils::Equals(expected_normalized, actual_normalized.get()));
+  EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
 // This test case is about validating valid ONC objects.
 TEST(ONCNormalizerTest, NormalizeNetworkConfigurationWifi) {
   Normalizer normalizer(true);
-  std::unique_ptr<const base::DictionaryValue> data(
-      test_utils::ReadTestDictionary("settings_with_normalization.json"));
+  base::Value data =
+      test_utils::ReadTestDictionaryValue("settings_with_normalization.json");
 
-  const base::DictionaryValue* original = nullptr;
-  const base::DictionaryValue* expected_normalized = nullptr;
-  data->GetDictionary("wifi", &original);
-  data->GetDictionary("wifi-normalized", &expected_normalized);
+  const base::Value* original = data.FindDictKey("wifi");
+  const base::Value* expected_normalized = data.FindDictKey("wifi-normalized");
 
-  std::unique_ptr<base::DictionaryValue> actual_normalized =
+  base::Value actual_normalized =
       normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
-  EXPECT_TRUE(test_utils::Equals(expected_normalized, actual_normalized.get()));
+  EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
 }  // namespace onc

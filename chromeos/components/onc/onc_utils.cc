@@ -68,20 +68,20 @@ class OncMaskValues : public Mapper {
                           const base::Value& onc_object,
                           const std::string& mask) {
     OncMaskValues masker(mask);
-    bool unused_error;
-    return base::Value::FromUniquePtrValue(
-        masker.MapObject(signature, onc_object, &unused_error));
+    bool error = false;
+    base::Value result = masker.MapObject(signature, onc_object, &error);
+    DCHECK(!result.is_none());
+    return result;
   }
 
  protected:
   explicit OncMaskValues(const std::string& mask) : mask_(mask) {}
 
-  std::unique_ptr<base::Value> MapField(
-      const std::string& field_name,
-      const OncValueSignature& object_signature,
-      const base::Value& onc_value,
-      bool* found_unknown_field,
-      bool* error) override {
+  base::Value MapField(const std::string& field_name,
+                       const OncValueSignature& object_signature,
+                       const base::Value& onc_value,
+                       bool* found_unknown_field,
+                       bool* error) override {
     if (FieldIsCredential(object_signature, field_name)) {
       // If it's the password field and the substitution string is used, don't
       // mask it.
@@ -92,7 +92,7 @@ class OncMaskValues : public Mapper {
         return Mapper::MapField(field_name, object_signature, onc_value,
                                 found_unknown_field, error);
       }
-      return std::make_unique<base::Value>(mask_);
+      return base::Value(mask_);
     } else {
       return Mapper::MapField(field_name, object_signature, onc_value,
                               found_unknown_field, error);
@@ -635,10 +635,8 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   validator.SetOncSource(onc_source);
 
   Validator::Result validation_result;
-  // TODO(crbug.com/1226202): Use base::Value once onc::Validator is converted.
-  std::unique_ptr<base::DictionaryValue> validated_toplevel_onc =
-      validator.ValidateAndRepairObject(&kToplevelConfigurationSignature,
-                                        toplevel_onc, &validation_result);
+  base::Value validated_toplevel_onc = validator.ValidateAndRepairObject(
+      &kToplevelConfigurationSignature, toplevel_onc, &validation_result);
 
   if (from_policy) {
     UMA_HISTOGRAM_BOOLEAN("Enterprise.ONC.PolicyValidation",
@@ -651,14 +649,14 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
                    << GetSourceAsString(onc_source);
     success = false;
   } else if (validation_result == Validator::INVALID ||
-             !validated_toplevel_onc) {
+             validated_toplevel_onc.is_none()) {
     NET_LOG(ERROR) << "ONC is invalid and couldn't be repaired: "
                    << GetSourceAsString(onc_source);
     return false;
   }
 
   if (certificates) {
-    base::Value* validated_certs = validated_toplevel_onc->FindListKey(
+    base::Value* validated_certs = validated_toplevel_onc.FindListKey(
         ::onc::toplevel_config::kCertificates);
     if (validated_certs)
       *certificates = std::move(*validated_certs);
@@ -668,7 +666,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   // nullptr, because ResolveServerCertRefsInNetworks could affect the return
   // value of the function (which is supposed to aggregate validation issues in
   // all segments of the ONC blob).
-  base::Value* validated_networks_list = validated_toplevel_onc->FindListKey(
+  base::Value* validated_networks_list = validated_toplevel_onc.FindListKey(
       ::onc::toplevel_config::kNetworkConfigurations);
   if (validated_networks_list) {
     FillInHexSSIDFieldsInNetworks(validated_networks_list);
@@ -691,7 +689,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   }
 
   if (global_network_config) {
-    base::Value* validated_global_config = validated_toplevel_onc->FindDictKey(
+    base::Value* validated_global_config = validated_toplevel_onc.FindDictKey(
         ::onc::toplevel_config::kGlobalNetworkConfiguration);
     if (validated_global_config) {
       *global_network_config = std::move(*validated_global_config);
