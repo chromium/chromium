@@ -196,10 +196,9 @@ Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
 have this capability. The power to use Owners-Override should be restricted
 as follows:
 
-  * Active sheriffs can set Owners-Override only on sheriffing CLs (e.g.,
-    revert, reland, test fix).
-  * Release Program Managers can set Owners-Override only on sheriffing CLs and
-    CLs needed for releasing (e.g., cherry-pick).
+  * Active sheriffs and Release Program Managers can set Owners-Override only on
+    CLs needed for sheriffing and releasing (e.g., revert, reland, test fix,
+    cherry-pick).
   * Large Scale Change reviewers can set Owners-Override only on sheriffing CLs
     and CLs about the approved Large Scale Change.
   * Global approvers can set Owners-Override only on sheriffing CLs and
