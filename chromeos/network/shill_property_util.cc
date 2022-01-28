@@ -205,7 +205,7 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(
 }
 
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
-    const base::DictionaryValue& shill_dictionary) {
+    const base::Value& shill_dictionary) {
   const base::Value* ui_data_value =
       shill_dictionary.FindKey(shill::kUIDataProperty);
   if (!ui_data_value) {
@@ -219,7 +219,7 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
 }
 
 void SetRandomMACPolicy(::onc::ONCSource onc_source,
-                        base::DictionaryValue* shill_dictionary) {
+                        base::Value* shill_dictionary) {
   std::string* service_type =
       shill_dictionary->FindStringKey(shill::kTypeProperty);
   DCHECK(service_type);
@@ -258,7 +258,7 @@ void SetRandomMACPolicy(::onc::ONCSource onc_source,
 }
 
 void SetUIDataAndSource(const NetworkUIData& ui_data,
-                        base::DictionaryValue* shill_dictionary) {
+                        base::Value* shill_dictionary) {
   shill_dictionary->SetKey(shill::kUIDataProperty,
                            base::Value(ui_data.GetAsJson()));
   std::string source;
@@ -367,7 +367,7 @@ bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
           &new_identifying)) {
     return false;
   }
-  base::DictionaryValue old_identifying;
+  base::Value old_identifying(base::Value::Type::DICTIONARY);
   if (!CopyIdentifyingProperties(old_properties,
                                  true /* properties were read from Shill */,
                                  &old_identifying)) {

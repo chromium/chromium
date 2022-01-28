@@ -12,7 +12,6 @@
 #include "components/onc/onc_constants.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -54,19 +53,19 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(const base::Value& value);
 // |shill_dictionary|. If parsing fails or the field doesn't exist, returns
 // NULL.
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
-    const base::DictionaryValue& shill_dictionary);
+    const base::Value& shill_dictionary);
 
 // Sets the UIData property in |shill_dictionary| to the serialization of
 // |ui_data|. Sets the ONCSource property in |shill_dictionary|,
 // derived from |ui_data|.
 void SetUIDataAndSource(const NetworkUIData& ui_data,
-                        base::DictionaryValue* shill_dictionary);
+                        base::Value* shill_dictionary);
 
 // Sets the RandomMACPolicy property in |shill_dictionary|.
 // This is only a temporary logic, until UI is present.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetRandomMACPolicy(::onc::ONCSource onc_source,
-                        base::DictionaryValue* shill_dictionary);
+                        base::Value* shill_dictionary);
 
 // Copy configuration properties required by Shill to identify a network in the
 // format that Shill expects on writes.

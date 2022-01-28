@@ -1150,8 +1150,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
   }
 
   std::unique_ptr<NetworkUIData> ui_data =
-      shill_property_util::GetUIDataFromProperties(
-          base::Value::AsDictionaryValue(*shill_properties));
+      shill_property_util::GetUIDataFromProperties(*shill_properties);
 
   const base::Value* user_settings = nullptr;
 
