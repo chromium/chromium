@@ -265,6 +265,7 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
     case ui::mojom::CursorType::kCustom:
       return CreateCustomCursor(cursor_);
     case ui::mojom::CursorType::kNull:
+      return [NSCursor arrowCursor];
     case ui::mojom::CursorType::kDndNone:
     case ui::mojom::CursorType::kDndMove:
     case ui::mojom::CursorType::kDndCopy:
