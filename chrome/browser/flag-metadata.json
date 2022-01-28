@@ -3509,11 +3509,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "improve-accessibility-tree-using-local-ml",
-    "owners": [ "rhalavati", "dtseng"],
-    "expiry_milestone": 112
-  },
-  {
     "name": "improved-desks-keyboard-shortcuts",
     "owners": [ "zxdan", "janetmac"],
     "expiry_milestone": 101

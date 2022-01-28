@@ -7768,14 +7768,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kPervasiveSystemAccentColor)},
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    {"improve-accessibility-tree-using-local-ml",
-     flag_descriptions::kImproveAccessibilityTreeUsingLocalMLName,
-     flag_descriptions::kImproveAccessibilityTreeUsingLocalMLDescription,
-     kOsLinux | kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kImproveAccessibilityTreeUsingLocalML)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"use-multiple-overlays", flag_descriptions::kUseMultipleOverlaysName,
      flag_descriptions::kUseMultipleOverlaysDescription, kOsCrOS,

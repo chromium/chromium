@@ -5408,14 +5408,6 @@ const char kDesktopDetailedLanguageSettingsDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-const char kImproveAccessibilityTreeUsingLocalMLName[] =
-    "Enable improving accessibility tree using local machine learning library.";
-const char kImproveAccessibilityTreeUsingLocalMLDescription[] =
-    "Improves the accessibility tree by sending a screenshot of the current "
-    "webpage to a local machine learning library and getting annotations.";
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 const char kWebShareName[] = "Web Share";
 const char kWebShareDescription[] =
