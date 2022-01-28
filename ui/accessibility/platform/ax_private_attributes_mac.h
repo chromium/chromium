@@ -48,6 +48,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityDropEffectsAttribute =
     @"AXDropEffects";
 AX_EXPORT constexpr NSString* const NSAccessibilityElementBusyAttribute =
     @"AXElementBusy";
+AX_EXPORT constexpr NSString* const NSAccessibilityFocusableAncestorAttribute =
+    @"AXFocusableAncestor";
 AX_EXPORT constexpr NSString* const NSAccessibilityGrabbedAttribute =
     @"AXGrabbed";
 AX_EXPORT constexpr NSString* const NSAccessibilityHasPopupAttribute =

@@ -70,8 +70,6 @@ namespace {
 // Private WebKit accessibility attributes.
 NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
-NSString* const NSAccessibilityFocusableAncestorAttribute =
-    @"AXFocusableAncestor";
 NSString* const NSAccessibilityHighestEditableAncestorAttribute =
     @"AXHighestEditableAncestor";
 NSString* const NSAccessibilityIsMultiSelectableAttribute =
@@ -635,7 +633,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityEnabledAttribute, @"enabled"},
       {NSAccessibilityEndTextMarkerAttribute, @"endTextMarker"},
       {NSAccessibilityExpandedAttribute, @"expanded"},
-      {NSAccessibilityFocusableAncestorAttribute, @"focusableAncestor"},
       {NSAccessibilityFocusedAttribute, @"focused"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityHelpAttribute, @"help"},
@@ -969,22 +966,6 @@ bool content::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
   return @(GetState(_owner, ax::mojom::State::kExpanded));
-}
-
-- (id)focusableAncestor {
-  if (![self instanceActive])
-    return nil;
-
-  BrowserAccessibilityCocoa* focusableRoot = self;
-  while (![focusableRoot owner]->HasState(ax::mojom::State::kFocusable)) {
-    BrowserAccessibilityCocoa* parent = [focusableRoot parent];
-    if (!parent || ![parent isKindOfClass:[self class]] ||
-        ![parent instanceActive]) {
-      return nil;
-    }
-    focusableRoot = parent;
-  }
-  return focusableRoot;
 }
 
 - (NSNumber*)focused {
@@ -2918,7 +2899,6 @@ bool content::IsNSRange(id value) {
     if (!ui::IsPlatformDocument(_owner->GetRole())) {
       [ret addObjectsFromArray:@[
         NSAccessibilityEditableAncestorAttribute,
-        NSAccessibilityFocusableAncestorAttribute,
         NSAccessibilityHighestEditableAncestorAttribute
       ]];
     }
