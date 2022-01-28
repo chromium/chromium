@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/x/test/x11_property_change_waiter.h"
@@ -378,9 +379,17 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
   EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 500, 500));
 }
 
+// Flaky on Linux ASAN and ChromeOS. https://crbug.com/1291868
+#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
+    BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WindowManagerTogglesFullscreen \
+  DISABLED_WindowManagerTogglesFullscreen
+#else
+#define MAYBE_WindowManagerTogglesFullscreen WindowManagerTogglesFullscreen
+#endif
 // Test that the widget reacts on changes in fullscreen state initiated by the
 // window manager (e.g. via a window manager accelerator key).
-TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
+TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   if (!WmSupportsHint(x11::GetAtom("_NET_WM_STATE_FULLSCREEN")))
     return;
 
