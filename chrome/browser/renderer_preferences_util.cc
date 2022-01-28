@@ -37,10 +37,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "ui/base/cocoa/defaults_utils.h"
-#endif
-
 #if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -161,12 +157,6 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 
 #if defined(TOOLKIT_VIEWS)
   prefs->caret_blink_interval = views::Textfield::GetCaretBlinkInterval();
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  base::TimeDelta interval;
-  if (ui::TextInsertionCaretBlinkPeriod(&interval))
-    prefs->caret_blink_interval = interval;
 #endif
 
 #if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))

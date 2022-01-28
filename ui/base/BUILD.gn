@@ -918,6 +918,7 @@ test("ui_base_unittests") {
   ]
   if (is_mac) {
     sources += [
+      "cocoa/defaults_utils_unittest.mm",
       "cocoa/nsmenuitem_additions_unittest.mm",
       "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",

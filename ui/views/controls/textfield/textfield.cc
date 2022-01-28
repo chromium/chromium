@@ -201,9 +201,12 @@ base::TimeDelta Textfield::GetCaretBlinkInterval() {
                                       : base::Milliseconds(system_value);
   }
 #elif BUILDFLAG(IS_MAC)
-  base::TimeDelta system_value;
-  if (ui::TextInsertionCaretBlinkPeriod(&system_value))
-    return system_value;
+  // If there's insertion point flash rate info in NSUserDefaults, use the
+  // blink period derived from that.
+  absl::optional<base::TimeDelta> system_value(
+      ui::TextInsertionCaretBlinkPeriodFromDefaults());
+  if (system_value)
+    return *system_value;
 #endif
   return base::Milliseconds(500);
 }
