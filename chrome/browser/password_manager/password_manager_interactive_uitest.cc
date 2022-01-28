@@ -16,6 +16,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -100,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   // already autofilled username.
   FillElementWithValue("username_field", "orary", "temporary");
 
-  NavigationObserver navigation_observer(WebContents());
+  PasswordsNavigationObserver navigation_observer(WebContents());
   BubbleObserver prompt_observer(WebContents());
   std::string submit =
       "document.getElementById('input_submit_button').click();";
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // we try and save the password even though onsubmit hasn't been called.
   FillElementWithValue("username_field", "user");
   FillElementWithValue("password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -230,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_username_field", "user");
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -245,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("username_field", "user");
   FillElementWithValue("password_field", "1234");
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -270,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_username_field", "user");
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -552,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
                           base::Unretained(password_manager)));
 
   // Start the navigation.
-  NavigationObserver navigation_observer(WebContents());
+  PasswordsNavigationObserver navigation_observer(WebContents());
   content::ExecuteScriptAsync(
       WebContents(), "document.getElementById('input_submit_button').click()");
 

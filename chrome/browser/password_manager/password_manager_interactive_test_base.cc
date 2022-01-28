@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -106,7 +107,7 @@ void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
 
   NavigateToFile(filename);
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   const char kUsername[] = "user";
   const char kPassword[] = "123";
   if (!username_id.empty())

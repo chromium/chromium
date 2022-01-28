@@ -17,6 +17,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -297,7 +298,7 @@ class PasswordManagerSyncTest : public SyncTest {
   void FillAndSubmitPasswordForm(content::WebContents* web_contents,
                                  const std::string& username,
                                  const std::string& password) {
-    NavigationObserver observer(web_contents);
+    PasswordsNavigationObserver observer(web_contents);
     std::string fill_and_submit = base::StringPrintf(
         "document.getElementById('username_field').value = '%s';"
         "document.getElementById('password_field').value = '%s';"
@@ -313,7 +314,7 @@ class PasswordManagerSyncTest : public SyncTest {
   void NavigateToFileImpl(content::WebContents* web_contents, const GURL& url) {
     ASSERT_EQ(web_contents,
               GetBrowser(0)->tab_strip_model()->GetActiveWebContents());
-    NavigationObserver observer(web_contents);
+    PasswordsNavigationObserver observer(web_contents);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(0), url));
     observer.Wait();
     // After navigation, the password manager retrieves any matching credentials

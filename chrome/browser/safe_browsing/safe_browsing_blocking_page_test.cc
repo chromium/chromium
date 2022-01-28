@@ -30,6 +30,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -2630,7 +2631,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   observer1.Wait();
 
   // Submit a password.
-  NavigationObserver observer2(contents);
+  PasswordsNavigationObserver observer2(contents);
   std::unique_ptr<BubbleObserver> prompt_observer(new BubbleObserver(contents));
   std::string fill_and_submit =
       "document.getElementById('retry_password_field').value = 'pw';"

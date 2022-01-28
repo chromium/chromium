@@ -23,45 +23,6 @@ namespace password_manager {
 struct PasswordForm;
 }  // namespace password_manager
 
-class NavigationObserver : public content::WebContentsObserver {
- public:
-  explicit NavigationObserver(content::WebContents* web_contents);
-
-  NavigationObserver(const NavigationObserver&) = delete;
-  NavigationObserver& operator=(const NavigationObserver&) = delete;
-
-  ~NavigationObserver() override;
-
-  // Normally Wait() will not return until a main frame navigation occurs.
-  // If a path is set, Wait() will return after this path has been seen,
-  // regardless of the frame that navigated. Useful for multi-frame pages.
-  void SetPathToWaitFor(const std::string& path) { wait_for_path_ = path; }
-
-  // Normally Wait() will not return until a main frame navigation occurs.
-  // If quit_on_entry_committed is true Wait() will return on EntryCommited.
-  void set_quit_on_entry_committed(bool quit_on_entry_committed) {
-    quit_on_entry_committed_ = quit_on_entry_committed;
-  }
-
-  // Wait for navigation to succeed.
-  void Wait();
-
-  // Returns the RenderFrameHost that navigated.
-  content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
-
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-
- private:
-  std::string wait_for_path_;
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
-  bool quit_on_entry_committed_ = false;
-  base::RunLoop run_loop_;
-};
-
 // Checks the save password prompt for a specified WebContents and allows
 // accepting saving passwords through it.
 class BubbleObserver {
@@ -199,7 +160,7 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
  protected:
   // Wrapper around ui_test_utils::NavigateToURL that waits until
   // DidFinishLoad() fires. Normally this function returns after
-  // DidStopLoading(), which caused flakiness as the NavigationObserver
+  // DidStopLoading(), which caused flakiness as the PasswordsNavigationObserver
   // would sometimes see the DidFinishLoad event from a previous navigation and
   // return immediately.
   void NavigateToFile(const std::string& path);

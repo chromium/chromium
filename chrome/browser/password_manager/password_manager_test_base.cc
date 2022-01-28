@@ -18,6 +18,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -292,35 +293,6 @@ enum ReturnCodes {  // Possible results of the JavaScript code.
 
 }  // namespace
 
-NavigationObserver::NavigationObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
-NavigationObserver::~NavigationObserver() = default;
-
-void NavigationObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
-    return;
-
-  if (quit_on_entry_committed_)
-    run_loop_.Quit();
-}
-
-void NavigationObserver::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  render_frame_host_ = render_frame_host;
-  if (!wait_for_path_.empty()) {
-    if (validated_url.path() == wait_for_path_)
-      run_loop_.Quit();
-  } else if (!render_frame_host->GetParent()) {
-    run_loop_.Quit();
-  }
-}
-
-void NavigationObserver::Wait() {
-  run_loop_.Run();
-}
-
 BubbleObserver::BubbleObserver(content::WebContents* web_contents)
     : passwords_ui_controller_(
           ManagePasswordsUIController::FromWebContents(web_contents)) {}
@@ -547,7 +519,7 @@ content::RenderFrameHost* PasswordManagerBrowserTestBase::RenderFrameHost()
 void PasswordManagerBrowserTestBase::NavigateToFile(const std::string& path) {
   ASSERT_EQ(web_contents_,
             browser()->tab_strip_model()->GetActiveWebContents());
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   GURL url = embedded_test_server()->GetURL(path);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   observer.Wait();

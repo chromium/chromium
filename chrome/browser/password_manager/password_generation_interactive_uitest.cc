@@ -12,6 +12,7 @@
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
@@ -355,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                             false);
 
   // Submit form.
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   std::string submit_script =
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit_script));

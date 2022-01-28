@@ -10,6 +10,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
@@ -59,7 +60,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
   void NavigateToURL(const net::EmbeddedTestServer& test_server,
                      const std::string& hostname,
                      const std::string& relative_url) {
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     GURL url = test_server.GetURL(hostname, relative_url);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     observer.Wait();
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
           signin_form,
           password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user1', password: 'abcdef' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -382,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user2', password: '123456' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -454,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user1', password: 'ABCDEF' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -469,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user2', password: 'UVWXYZ' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -552,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user1', password: 'ABCDEF' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -567,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user2', password: 'UVWXYZ' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -629,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
           signin_form,
           password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -677,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       "  new PasswordCredential({ id: 'user', password: 'P4SSW0RD' }))"
       ".then(cred => window.location = '/password/done.html');"));
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -774,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       "navigator.credentials.get({password: true})"
       ".then(cred => window.location = '/password/done.html');"));
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -949,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   // Fill the new password and click the button to submit the page later. The
   // API should suppress the autofill password manager and overwrite the
   // password.
-  NavigationObserver form_submit_observer(WebContents());
+  PasswordsNavigationObserver form_submit_observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(
       WebContents(),
       "document.getElementById('username_field').value = 'user';"

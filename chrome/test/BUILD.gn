@@ -8024,6 +8024,8 @@ if (!is_android) {
       "../browser/interstitials/security_interstitial_idn_test.h",
       "../browser/password_manager/password_manager_test_base.cc",
       "../browser/password_manager/password_manager_test_base.h",
+      "../browser/password_manager/passwords_navigation_observer.cc",
+      "../browser/password_manager/passwords_navigation_observer.h",
       "../browser/ssl/cert_verifier_browser_test.cc",
       "../browser/ssl/cert_verifier_browser_test.h",
       "../browser/ssl/cert_verifier_platform_browser_test.cc",
@@ -9332,6 +9334,8 @@ if (!is_android && !is_fuchsia) {
       "../browser/password_manager/password_manager_captured_sites_interactive_uitest.cc",
       "../browser/password_manager/password_manager_test_base.cc",
       "../browser/password_manager/password_manager_test_base.h",
+      "../browser/password_manager/passwords_navigation_observer.cc",
+      "../browser/password_manager/passwords_navigation_observer.h",
       "base/interactive_ui_tests_main.cc",
     ]
 
