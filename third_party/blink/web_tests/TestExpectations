@@ -3176,6 +3176,8 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-content/quotes-030.html [ Failure ]
+crbug.com/626703 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-invalidation-001.https.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip Timeout ]
