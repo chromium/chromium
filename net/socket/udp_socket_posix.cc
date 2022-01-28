@@ -44,6 +44,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
+#include "net/socket/ios_cronet_buildflags.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
@@ -56,12 +57,12 @@
 #include "net/android/radio_activity_tracker.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 // This was needed to debug crbug.com/640281.
 // TODO(zhongyi): Remove once the bug is resolved.
 #include <dlfcn.h>
 #include <pthread.h>
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 namespace net {
 
@@ -74,7 +75,7 @@ const int kActivityMonitorBytesThreshold = 65535;
 const int kActivityMonitorMinimumSamplesForThroughputEstimate = 2;
 const base::TimeDelta kActivityMonitorMsThreshold = base::Milliseconds(100);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 // On OSX the file descriptor is guarded to detect the cause of
 // crbug.com/640281. guarded API is supported only on newer versions of OSX,
@@ -140,7 +141,7 @@ const unsigned int GUARD_DUP = 1u << 1;
 
 const guardid_t kSocketFdGuard = 0xD712BC0BC9A4EAD4;
 
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 int GetSocketFDHash(int fd) {
   return fd ^ 1595649551;
@@ -198,10 +199,10 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   socket_ = CreatePlatformSocket(addr_family_, SOCK_DGRAM, 0);
   if (socket_ == kInvalidSocket)
     return MapSystemError(errno);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   PCHECK(change_fdguard_np(socket_, nullptr, 0, &kSocketFdGuard,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   socket_hash_ = GetSocketFDHash(socket_);
   if (!base::SetNonBlocking(socket_)) {
     const int err = MapSystemError(errno);
@@ -286,7 +287,7 @@ void UDPSocketPosix::Close() {
   // Verify that |socket_| hasn't been corrupted. Needed to debug
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). See https://crbug.com/1151048.
   int value = 0;
@@ -304,7 +305,7 @@ void UDPSocketPosix::Close() {
   }
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
   socket_ = kInvalidSocket;
   addr_family_ = 0;

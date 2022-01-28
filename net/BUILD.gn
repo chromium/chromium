@@ -7,6 +7,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
+import("//build/config/ios/config.gni")
 import("//crypto/features.gni")
 import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -107,6 +108,12 @@ if (is_linux || is_chromeos) {
 source_set("constants") {
   sources = [ "base/trace_constants.h" ]
   deps = [ "//base" ]
+}
+
+buildflag_header("ios_cronet_buildflags") {
+  header = "ios_cronet_buildflags.h"
+  header_dir = "net/socket"
+  flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
 component("net") {
@@ -1072,6 +1079,7 @@ component("net") {
   }
 
   deps = [
+    ":ios_cronet_buildflags",
     ":net_deps",
     "//build:chromeos_buildflags",
     "//net/data/ssl/ev_roots:gen_ev_root_store_inc",
