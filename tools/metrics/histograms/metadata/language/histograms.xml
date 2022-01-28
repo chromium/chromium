@@ -358,8 +358,9 @@ chromium-metrics-reviews@google.com.
   <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    Records whether Chrome's UI language exists in the user's LanguageProfile,
-    and if so whether it was the top language.
+    Records whether Chrome's UI language exists in the user's ULP
+    LanguageProfile and if it is the top language. Also records if it is an
+    exact match (e.g. pt-BR != pt-PT) or only a base match (e.g. pt-BR = pt-PT).
 
     Recorded once at startup when ULP is initialized.
   </summary>
@@ -397,8 +398,9 @@ chromium-metrics-reviews@google.com.
   <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    Records whether the first accept language exists in the user's
-    LanguageProfile, and if so whether it was the top language.
+    Records whether the first accept language exists in the user's ULP
+    LanguageProfile and if it is the top language. Also records if it is an
+    exact match (e.g. pt-BR != pt-PT) or only a base match (e.g. pt-BR = pt-PT).
 
     Recorded once at startup when ULP is initialized.
   </summary>
@@ -410,7 +412,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-language@google.com</owner>
   <summary>
     Records whether the current translate target language exists in the user's
-    LanguageProfile, and if so whether it was the top language.
+    ULP LanguageProfile and if it is the top language. Also records if it is an
+    exact match (e.g. pt-BR != pt-PT) or only a base match (e.g. pt-BR = pt-PT).
 
     Recorded once at startup when ULP is initialized.
   </summary>
