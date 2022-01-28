@@ -5898,6 +5898,8 @@ static_library("browser") {
       "first_run/upgrade_util_fuchsia.cc",
       "fuchsia/chrome_browser_main_parts_fuchsia.cc",
       "fuchsia/chrome_browser_main_parts_fuchsia.h",
+      "fuchsia/switches.cc",
+      "fuchsia/switches.h",
       "fullscreen_fuchsia.cc",
       "icon_loader_fuchsia.cc",
       "importer/firefox_profile_lock_fuchsia.cc",

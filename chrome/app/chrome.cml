@@ -7,7 +7,6 @@
         runner: "elf",
         binary: "chrome",
         args: [
-            "--use-graphical-presenter",
             "--enable-features=Vulkan,CanvasOopRasterization"
         ],
         // Required to allow JIT in child processes such as renderers.

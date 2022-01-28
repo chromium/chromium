@@ -27,6 +27,7 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
+#include "chrome/browser/fuchsia/switches.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -603,9 +604,8 @@ int ChromeBrowserMainPartsFuchsia::PreEarlyInitialization() {
 }
 
 int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
-  const char kUseGraphicalPresenter[] = "use-graphical-presenter";
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kUseGraphicalPresenter)) {
+          switches::kEnableCFv2)) {
     // Configure Ozone to create top-level Views via GraphicalPresenter.
     use_graphical_presenter_ = std::make_unique<UseGraphicalPresenter>();
   } else {
