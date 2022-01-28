@@ -4384,10 +4384,11 @@
                       'limited_capacity_bot',
               'mac_retina_amd_gpu_experimental',
               ],
+# When the experimental OS version is identical to the stable version,
+# the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
+# should have the same test_suites as 'Mac FYI Retina Release (AMD)'.
               'test_suites': {
-                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
-                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-                      'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+                      'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
               },
       },
       'Mac FYI Experimental Retina Release (NVIDIA)': {
