@@ -41,10 +41,7 @@ java_library("junit") {
 android_library("javatests") {
   testonly = true
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsServiceFactoryUnitTest.java",
-    "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsServiceProxyUnitTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsServiceFactoryUnitTest.java" ]
 
   deps = [
     "//base:base_java",

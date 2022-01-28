@@ -5,8 +5,6 @@
 
 package org.chromium.chrome.browser.page_annotations;
 
-import static org.mockito.Mockito.spy;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -20,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -70,22 +67,5 @@ public class PageAnnotationsServiceFactoryUnitTest {
 
         Profile.setLastUsedProfileForTesting(mProfileTwo);
         Assert.assertEquals(regularProfileTwoService, factory.getForLastUsedProfile());
-    }
-
-    @UiThreadTest
-    @SmallTest
-    @Test
-    public void testServiceDestroyedWhenProfileIsDestroyed() {
-        Profile.setLastUsedProfileForTesting(null);
-        Profile profile = Profile.getLastUsedRegularProfile();
-        PageAnnotationsServiceFactory factory = new PageAnnotationsServiceFactory();
-        PageAnnotationsService service = factory.getForLastUsedProfile();
-        Assert.assertEquals(
-                1, PageAnnotationsServiceFactory.sProfileToPageAnnotationsService.size());
-        PageAnnotationsService spyService = spy(service);
-        PageAnnotationsServiceFactory.sProfileToPageAnnotationsService.put(profile, spyService);
-        ProfileManager.onProfileDestroyed(profile);
-
-        Assert.assertTrue(PageAnnotationsServiceFactory.sProfileToPageAnnotationsService.isEmpty());
     }
 }
