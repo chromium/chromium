@@ -76,11 +76,13 @@ typedef void (*ImeSequencedTask)(int task_id);
 // A logger function pointer from chrome.
 typedef void (*ChromeLoggerFunc)(int severity, const char* message);
 
-// This defines the `ImeCrosPlatform` interface, which is used throughout the
-// shared library to manage platform-specific data/operations.
-//
-// This class should be provided by the IME service before creating an
-// `ImeEngineMainEntry` and be always owned by the IME service.
+// ============================================================================
+// [Proto + Mojo modes] [IME shared lib --> IME service container]
+// ============================================================================
+// Used by the IME shared lib to access platform-specific data and operations.
+// Provided by the IME service container upon invoking ImeDecoderInitOnce "C"
+// API entry point of IME shared lib. Always owned by the IME service container.
+// ============================================================================
 class ImeCrosPlatform {
  protected:
   virtual ~ImeCrosPlatform() = default;
@@ -133,10 +135,13 @@ class ImeCrosPlatform {
   // TODO(https://crbug.com/837156): Provide Logger for main entry.
 };
 
-// The wrapper of Mojo InterfacePtr on an IME client.
-//
-// This is used to send messages to connected IME client from an IME engine.
-// IME service will create then pass it to the engine.
+// ============================================================================
+// [Proto mode only] [IME shared lib --> IME service container]
+// ============================================================================
+// Used to send messages to connected IME client from an IME engine. IME service
+// container will create an instance then pass it to the IME shared lib via
+// Proto-mode ImeDecoderActivateIme "C" API entry point.
+// ============================================================================
 class ImeClientDelegate {
  protected:
   virtual ~ImeClientDelegate() = default;
@@ -146,7 +151,7 @@ class ImeClientDelegate {
   // The IME specification will be invalidated by its `Destroy` method.
   virtual const char* ImeSpec() = 0;
 
-  // Process response data from the engine instance in its connected IME client.
+  // Process response data from the IME shared lib in the connected IME client.
   // The data will be invalidated by the engine soon after this call.
   virtual void Process(const uint8_t* data, size_t size) = 0;
 
@@ -155,50 +160,86 @@ class ImeClientDelegate {
   virtual void Destroy() = 0;
 };
 
-// For use when bridging logs logged in IME shared library to Chrome logging.
-typedef void (*ImeEngineLoggerSetterFn)(ChromeLoggerFunc);
-
-// Functions blow are exported by the IME decoder shared library that we expose
-// through a loader.
-
-// Initialize the IME decoder.
-//
-// Any user of IME decoder must make a call on this function before any others.
-//
-// The provided `ImeCrosPlatform` must remain valid during the whole life of
-// shared libraray
-typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform*);
-
-// Returns whether a specific IME is supported by this IME shared library.
-// The argument is the specfiation name of an IME, and the caller should
-// explicitly know the IME engine's naming rules.
-typedef bool (*ImeDecoderSupportsFn)(const char*);
-
-// Activate an IME instance in the shared library with an IME specfiation name
-// and a bound `ImeClientDelegate` which is a channel from the IME instance to
-// its client.
-//
-// The ownership of `ImeClientDelegate` will be passed to the IME instance.
-typedef bool (*ImeDecoderActivateImeFn)(const char*, ImeClientDelegate*);
-
-// Process IME events by the activated IME instance.
-// The data passed in  should be invalidated by the IME instance soon after it's
-// consumed.
-typedef void (*ImeDecoderProcessFn)(const uint8_t*, size_t);
-
-// Release resources used by the IME decoder.
-typedef void (*ImeDecoderCloseFn)();
-
-// Set up a direct connection with the shared library via Mojo.
-typedef bool (*ConnectToInputMethodFn)(const char*,
-                                       uint32_t,
-                                       uint32_t,
-                                       uint32_t);
-
-// Whether there's a direct connection with Mojo.
-typedef bool (*IsInputMethodConnectedFn)();
-
 }  // namespace ime
 }  // namespace chromeos
+
+// ============================================================================
+// [Proto + Mojo modes] [IME service container --> IME shared lib]
+// ============================================================================
+// "C" API exposed by the "CrOS 1P IME shared lib", to be dynamically looked up
+// and invoked via reflection by "CrOS IME Service container" in Chrome-on-CrOS
+// ============================================================================
+//
+// The IME shared lib should be in either "Proto mode" (default) or "Mojo mode".
+// Most "C" API entry points are associated with one particular mode each. When
+// such an entry point is invoked, the runtime should switch to its mode if not
+// already in that mode; the other mode's state is destroyed upon switching.
+//
+// - Proto mode: IME service container and IME shared lib talk to each other by
+// serialised protobufs sent via the "C" API specified here. Used for VK and
+// extension-based PK hosted in the VK+IME extension.
+//
+// - Mojo mode: IME service container bootstraps Mojo connection with IME shared
+// lib via the "C" API specified here. The connection is then used for CrOS IMF
+// to talk directly with IME shared lib. Used for non-extension System PK.
+//
+extern "C" {
+
+// ****************************************************************************
+// ************************** (mode agnostic) *********************************
+// ****************************************************************************
+
+// Initialises a global instance of the IME shared lib. This should be done
+// once. Client must call this function before any others. `platform` must
+// remain valid during the whole life of the IME shared lib.
+__attribute__((visibility("default"))) void ImeDecoderInitOnce(
+    chromeos::ime::ImeCrosPlatform* platform);
+
+// Closes the IME shared lib and releases resources used by it.
+__attribute__((visibility("default"))) void ImeDecoderClose();
+
+// Sets logger for the shared library. Releases the previous logger if there
+// was one. If the new logger is null, then no logger will be used.
+__attribute__((visibility("default"))) void SetImeEngineLogger(
+    chromeos::ime::ChromeLoggerFunc logger_func);
+
+// ****************************************************************************
+// ***************************** PROTO MODE ***********************************
+// ****************************************************************************
+
+// Returns whether an IME is supported by this IME shared lib. `ime_spec` is
+// the IME's specification name; caller should know its naming rules.
+__attribute__((visibility("default"))) bool ImeDecoderSupports(
+    const char* ime_spec);
+
+// Activates an IME in the IME shared lib, with a bound `delegate` for callback
+// to the client. Ownership of `delegate` is passed to the IME instance.
+// TODO(googleo): Remove this and pass `delegate` upon ImeDecoderInitOnce.
+__attribute__((visibility("default"))) bool ImeDecoderActivateIme(
+    const char* ime_spec,
+    chromeos::ime::ImeClientDelegate* delegate);
+
+// Processes IME events sent from client in serialised protobuf `data` which
+// should be invalidated by this IME shared lib soon after it's consumed.
+__attribute__((visibility("default"))) void ImeDecoderProcess(
+    const uint8_t* data,
+    size_t size);
+
+// ****************************************************************************
+// ***************************** MOJO MODE ************************************
+// ****************************************************************************
+
+// Bootstraps a direct Mojo connection with an input method in this IME shared
+// lib. Returns false if the connection attempt was unsuccessful.
+__attribute__((visibility("default"))) bool ConnectToInputMethod(
+    const char* ime_spec,
+    uint32_t receiver_input_method_handle,
+    uint32_t remote_input_method_host_handle,
+    uint32_t remote_input_method_host_version);
+
+// Returns whether there's a direct Mojo connection to an input method.
+__attribute__((visibility("default"))) bool IsInputMethodConnected();
+
+}  // extern "C"
 
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_SHARED_LIB_INTERFACES_H_
