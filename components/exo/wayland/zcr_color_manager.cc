@@ -66,6 +66,7 @@ constexpr auto kEotfMap =
          // This is ever so slightly inaccurate. The number ought to be
          // 2.19921875f, not 2.2
          gfx::ColorSpace::TransferID::GAMMA22},
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ, gfx::ColorSpace::TransferID::PQ},
     });
 
 // Wrapper around a |gfx::ColorSpace| that tracks additional data useful to the
@@ -144,12 +145,15 @@ class ColorManagerSurface final : public SurfaceObserver {
       return;
 
     const auto* wm_helper = WMHelperChromeOS::GetInstance();
-    const auto& old_display_info = wm_helper->GetDisplayInfo(old_display);
-    const auto& new_display_info = wm_helper->GetDisplayInfo(new_display);
 
-    if (old_display_info.display_color_spaces() ==
-        new_display_info.display_color_spaces())
-      return;
+    if (old_display != display::kInvalidDisplayId) {
+      const auto& old_display_info = wm_helper->GetDisplayInfo(old_display);
+      const auto& new_display_info = wm_helper->GetDisplayInfo(new_display);
+
+      if (old_display_info.display_color_spaces() ==
+          new_display_info.display_color_spaces())
+        return;
+    }
 
     zcr_color_management_surface_v1_send_preferred_color_space(
         color_manager_surface_resource_, display_resource);

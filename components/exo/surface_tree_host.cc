@@ -4,6 +4,7 @@
 
 #include "components/exo/surface_tree_host.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -16,9 +17,11 @@
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
@@ -34,6 +37,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -287,6 +292,13 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
     sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
   gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
   gles2->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
+
+  frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
+  for (auto& resource : frame.resource_list) {
+    frame.metadata.content_color_usage =
+        std::max(frame.metadata.content_color_usage,
+                 resource.color_space.GetContentColorUsage());
+  }
 
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
 }
