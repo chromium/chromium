@@ -414,10 +414,10 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   // Mock a fetcher for the albums query.
   auto* const google_photos_albums_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosAlbumsFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>*>(
       delegate()->SetGooglePhotosAlbumsFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosAlbumsFetcher>>(profile())));
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
@@ -439,10 +439,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchCount) {
   // Mock a fetcher for the photos count query.
   auto* const google_photos_count_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosCountFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosCountFetcher>*>(
       delegate()->SetGooglePhotosCountFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosCountFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosCountFetcher>>(profile())));
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
@@ -461,10 +461,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchCount) {
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   // Mock a fetcher for the photos query.
   auto* const google_photos_photos_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosPhotosFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosPhotosFetcher>*>(
       delegate()->SetGooglePhotosPhotosFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosPhotosFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosPhotosFetcher>>(profile())));
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
@@ -490,10 +490,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Mock a fetcher to parse constructed responses.
   auto* const google_photos_albums_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosAlbumsFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>*>(
       delegate()->SetGooglePhotosAlbumsFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosAlbumsFetcher>>(profile())));
 
   // Parse an absent response (simulating a fetching error).
   EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(),
@@ -517,10 +517,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Mock a fetcher to parse constructed responses.
   auto* const google_photos_albums_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosAlbumsFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>*>(
       delegate()->SetGooglePhotosAlbumsFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosAlbumsFetcher>>(profile())));
 
   // Parse one-album responses where one of the album's fields is missing.
   for (const auto* const path :
@@ -558,10 +558,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Mock a fetcher to parse constructed responses.
   auto* const google_photos_albums_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosAlbumsFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>*>(
       delegate()->SetGooglePhotosAlbumsFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosAlbumsFetcher>>(profile())));
 
   // Parse a response with a valid album and a resume token.
   auto valid_albums_vector = std::vector<GooglePhotosAlbumPtr>();
@@ -584,10 +584,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, ParseCount) {
   // Mock a fetcher to parse constructed responses.
   auto* const google_photos_count_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosCountFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosCountFetcher>*>(
       delegate()->SetGooglePhotosCountFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosCountFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosCountFetcher>>(profile())));
 
   // Parse an absent response (simulating a fetching error).
   EXPECT_EQ(-1, google_photos_count_fetcher->ParseResponse(absl::nullopt));
@@ -620,10 +620,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Mock a fetcher to parse constructed responses.
   auto* const google_photos_photos_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosPhotosFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosPhotosFetcher>*>(
       delegate()->SetGooglePhotosPhotosFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosPhotosFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosPhotosFetcher>>(profile())));
 
   // Parse an absent response (simulating a fetching error).
   EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(),
@@ -647,10 +647,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Mock a fetcher to parse constructed responses.
   auto* const google_photos_photos_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosPhotosFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosPhotosFetcher>*>(
       delegate()->SetGooglePhotosPhotosFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosPhotosFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosPhotosFetcher>>(profile())));
 
   // Parse one-photo responses where one of the photo's fields is missing.
   for (const auto* const path :
@@ -686,10 +686,10 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Mock a fetcher to parse constructed responses.
   auto* const google_photos_photos_fetcher = static_cast<
-      wallpaper_handlers::MockGooglePhotosPhotosFetcher*>(
+      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosPhotosFetcher>*>(
       delegate()->SetGooglePhotosPhotosFetcherForTest(
-          std::make_unique<wallpaper_handlers::MockGooglePhotosPhotosFetcher>(
-              profile())));
+          std::make_unique<::testing::NiceMock<
+              wallpaper_handlers::MockGooglePhotosPhotosFetcher>>(profile())));
 
   // Ensure that photo timestamps resolve to the same date on all testing
   // platforms.
