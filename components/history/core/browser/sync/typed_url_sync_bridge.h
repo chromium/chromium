@@ -240,7 +240,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Whether we're currently processing changes from the syncer. While this is
   // true, we ignore any local url changes, since we triggered them.
-  bool processing_syncer_changes_;
+  bool processing_syncer_changes_ = false;
 
   // A non-owning pointer to the database, which is for storing typed urls sync
   // metadata and state.
