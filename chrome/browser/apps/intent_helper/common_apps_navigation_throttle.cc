@@ -4,11 +4,14 @@
 
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
 
+#include <sstream>
 #include <string>
 #include <utility>
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/containers/contains.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -104,7 +107,8 @@ bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
 // one for SWAs, if applicable.
 GURL RedirectUrlIfSwa(Profile* profile,
                       const std::string& app_id,
-                      const GURL& url) {
+                      const GURL& url,
+                      const base::TickClock* clock) {
   if (!IsSystemWebApp(profile, app_id))
     return url;
 
@@ -116,7 +120,13 @@ GURL RedirectUrlIfSwa(Profile* profile,
     std::string override_url = ash::kChromeUITrustedProjectorAppUrl;
     if (url.path().length() > 1)
       override_url += url.path().substr(1);
-    GURL result(override_url);
+    std::stringstream ss;
+    // Since ChromeOS doesn't reload an app if the URL doesn't change, the line
+    // below appends a unique timestamp to the URL to force a reload.
+    // TODO(b/211787536): Remove the timestamp after we update the trusted URL
+    // to match the user's navigations through the post message api.
+    ss << override_url << "?timestamp=" << clock->NowTicks();
+    GURL result(ss.str());
     DCHECK(result.is_valid());
     return result;
   }
@@ -165,6 +175,16 @@ CommonAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
     return nullptr;
 
   return std::make_unique<CommonAppsNavigationThrottle>(handle);
+}
+
+// static
+const base::TickClock* CommonAppsNavigationThrottle::clock_ =
+    base::DefaultTickClock::GetInstance();
+
+// static
+void CommonAppsNavigationThrottle::SetClockForTesting(
+    const base::TickClock* tick_clock) {
+  clock_ = tick_clock;
 }
 
 CommonAppsNavigationThrottle::CommonAppsNavigationThrottle(
@@ -229,7 +249,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
                            ? apps::mojom::LaunchSource::kFromLink
                            : apps::mojom::LaunchSource::kFromOmnibox;
   GURL redirected_url =
-      RedirectUrlIfSwa(profile, preferred_app_id.value(), url);
+      RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
   proxy->LaunchAppWithUrl(
       preferred_app_id.value(),
       GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,

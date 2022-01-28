@@ -6,9 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -33,6 +37,8 @@ namespace {
 
 constexpr char kFilePath[] = "xyz";
 
+constexpr char kStartTime[] = "21 Jan 2022 10:00:00 GMT";
+
 }  // namespace
 
 // Summary of expected behavior on ChromeOS:
@@ -50,12 +56,22 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
     web_app::WebAppProvider::GetForTest(profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
+
+    base::Time start_time;
+    ASSERT_TRUE(base::Time::FromUTCString(kStartTime, &start_time));
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    base::TimeDelta forward_by = start_time - task_runner_->Now();
+    EXPECT_LT(base::TimeDelta(), forward_by);
+    task_runner_->AdvanceMockTickClock(forward_by);
+    apps::CommonAppsNavigationThrottle::SetClockForTesting(
+        task_runner_->GetMockTickClock());
   }
 
   ~ProjectorNavigationThrottleTest() override = default;
 
  protected:
   Profile* profile() { return browser()->profile(); }
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -121,6 +137,9 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
   // Construct the new redirected URL.
   std::string expected_url = kChromeUITrustedProjectorAppUrl;
   expected_url += kFilePath;
+  // The timestamp corresponds to 21 Jan 2022 10:00:00 GMT in microseconds since
+  // Unix epoch (Jan 1 1970).
+  expected_url += "?timestamp=1642759200000000%20bogo-microseconds";
   EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
 
   std::string histogram_name = navigate_from_link()
