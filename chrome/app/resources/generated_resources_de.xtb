@@ -506,6 +506,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1521442365706402292">Zertifikate verwalten</translation>
 <translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="152234381334907219">Nie speichern für...</translation>
+<translation id="1523279371236772909">Im letzten Monat angesehen</translation>
 <translation id="1523978563989812243">Sprachausgabe-Engines</translation>
 <translation id="1524430321211440688">Tastatur</translation>
 <translation id="1524563461097350801">Nein danke</translation>
@@ -1239,6 +1240,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2232876851878324699">Die Datei enthielt ein Zertifikat, das nicht importiert wurde:</translation>
 <translation id="2233502537820838181">&amp;Weitere Informationen</translation>
 <translation id="223356358902285214">Web- &amp; App-Aktivitäten</translation>
+<translation id="2234827758954819389">Sichtbarkeit meiner Daten</translation>
 <translation id="2234876718134438132">Synchronisierung und Google-Dienste</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2238379619048995541">Daten für aktiven Zustand</translation>
@@ -1688,6 +1690,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2684004000387153598">Um fortzufahren, klicken Sie auf Ok. Klicken Sie dann auf "Person hinzufügen", um ein neues Profil für Ihre E-Mail-Adresse zu erstellen.</translation>
 <translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
 <translation id="2687407218262674387">Nutzungsbedingungen von Google</translation>
+<translation id="2687621393791886981">Später fragen</translation>
 <translation id="2688196195245426394">Fehler bei der Registrierung des Geräts auf dem Server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Sprachoptionen anzeigen</translation>
 <translation id="2691385045260836588">Modell</translation>
@@ -1706,7 +1709,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2707024448553392710">Komponente wird heruntergeladen.</translation>
 <translation id="270921614578699633">Durchschnitt bilden</translation>
 <translation id="2709516037105925701">Automatisches Ausfüllen</translation>
-<translation id="2710014902399506864">Neues Telefon hinzufügen</translation>
 <translation id="2710101514844343743">Nutzungsdaten &amp; Fehlerberichte</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2712173769900027643">Berechtigung anfordern</translation>
@@ -2744,7 +2746,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kommunikation mit einem USB-Gerät}other{Kommunikation mit # USB-Geräten}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wird an <ph name="DEVICE_NAME" /> gesendet}other{<ph name="ATTACHMENTS" /> werden an <ph name="DEVICE_NAME" /> gesendet}}</translation>
 <translation id="3765246971671567135">Richtlinie für den Offlinedemomodus konnte nicht verarbeitet werden.</translation>
-<translation id="3766115177661377251">Auf ein neues Display streamen</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Eiscreme</translation>
 <translation id="3771290962915251154">Diese Einstellung ist deaktiviert, weil die Jugendschutzeinstellungen aktiviert sind</translation>
@@ -3092,6 +3093,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4095264805865317199">Benutzeroberfläche für Mobilfunkaktivierung öffnen</translation>
 <translation id="4095507791297118304">Hauptbildschirm</translation>
 <translation id="4096508467498758490">Erweiterungen im Entwicklermodus deaktivieren</translation>
+<translation id="4096797685681362305">In der letzten Woche angesehen</translation>
 <translation id="4097406557126260163">Apps und Erweiterungen</translation>
 <translation id="409742781329613461">Tipps für Chrome</translation>
 <translation id="4097560579602855702">Mit Google suchen</translation>
@@ -3648,6 +3650,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4699357559218762027">(wird automatisch gestartet)</translation>
 <translation id="4701025263201366865">Elternanmeldung</translation>
+<translation id="4701335814944566468">Gestern angesehen</translation>
 <translation id="4708794300267213770">Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> beenden</translation>
 <translation id="4711638718396952945">Einstellungen wiederherstellen</translation>
@@ -3715,6 +3718,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="479536056609751218">Webseite, nur HTML</translation>
 <translation id="4796142525425001238">Immer wiederherstellen</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth-Protokolle<ph name="END_LINK" /> anhängen (Google-intern)</translation>
+<translation id="479863874072008121">Geräte verwalten</translation>
 <translation id="4800839971935185386">Aktualisierungen für Name und Symbol prüfen</translation>
 <translation id="4801448226354548035">Konten ausblenden</translation>
 <translation id="4801512016965057443">Mobilfunk-Roaming zulassen</translation>
@@ -6441,6 +6445,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7659154729610375585">Inkognitomodus trotzdem beenden?</translation>
 <translation id="7659297516559011665">Nur Passwörter auf diesem Gerät</translation>
+<translation id="7659336857671800422">Datenschutzeinstellungen überprüfen</translation>
 <translation id="7659584679870740384">Sie sind nicht zur Verwendung dieses Geräts berechtigt. Bitten Sie den Administrator um eine Anmeldeberechtigung.</translation>
 <translation id="7661259717474717992">Speichern und Lesen von Cookiedaten zulassen</translation>
 <translation id="7661451191293163002">Es kann kein Anmeldezertifikat abgerufen werden.</translation>
@@ -7087,7 +7092,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8271268254812352141">Sie können Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem Sie Text gedrückt halten oder mit der rechten Maustaste darauf klicken. Unter <ph name="LINK_BEGIN" />Websitesprachen<ph name="LINK_END" /> können Sie die Sprachen für die Übersetzung anpassen.</translation>
 <translation id="8271379370373330993">Liebe Eltern, die nächsten Schritte müsst ihr ausführen. Du kannst das Gerät (<ph name="DEVICE_TYPE" />) nach der Kontoeinrichtung wieder deinem Kind geben.</translation>
 <translation id="8272443605911821513">Zum Verwalten Ihrer Erweiterungen klicken Sie im Menü "Mehr Tools" auf "Erweiterungen".</translation>
-<translation id="8272677921396592934">Kamera verwenden, um QR-Code zu scannen</translation>
 <translation id="8274332263553132018">Datei streamen</translation>
 <translation id="8274921654076766238">Lupe folgt Tastaturfokus</translation>
 <translation id="8274924778568117936">Schalten Sie Ihr <ph name="DEVICE_TYPE" /> nicht aus bzw. schließen Sie es nicht, bis das Update abgeschlossen ist. Nach Abschluss der Installation wird Ihr <ph name="DEVICE_TYPE" /> neu gestartet.</translation>
@@ -7199,6 +7203,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere zugelassen</translation>
 <translation id="8413385045638830869">Zuerst fragen (empfohlen)</translation>
+<translation id="8414249071344507766">Erinnerungen werden zwei Tage lang ausgeblendet</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (Case)</translation>
 <translation id="8417548266957501132">Elternpasswort</translation>
 <translation id="8418445294933751433">Al&amp;s Tab anzeigen</translation>
@@ -7962,6 +7967,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, finden Sie
 <translation id="9200339982498053969"><ph name="ORIGIN" /> kann Dateien in <ph name="FOLDERNAME" /> bearbeiten</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />-Suche</translation>
 <translation id="9201023452444595544">Alle Offlinedaten werden gelöscht</translation>
+<translation id="9201117361710210082">Zuvor angesehen</translation>
 <translation id="9201220332032049474">Optionen für die Displaysperre</translation>
 <translation id="9201842707396338580">Es gab ein Problem. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilerstellung aktiviert</translation>

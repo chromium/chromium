@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">Опцията е в горната част на екрана</translation>
 <translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последно посещение: днес</translation>
+<translation id="5264323282659631142">Премахване на „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Плъзнете пръст от горната част на екрана и докоснете бутона за връщане назад, за да излезете от режима на цял екран.</translation>
 <translation id="5300589172476337783">Показване</translation>
 <translation id="5301954838959518834">Добре, разбрах</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">Сайт използва микрофона ви</translation>
 <translation id="7561196759112975576">Винаги</translation>
 <translation id="757524316907819857">Блокиране на възможността на сайтовете да възпроизвеждат защитено съдържание</translation>
+<translation id="7577900504646297215">Управление на интересите</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7781829728241885113">Вчера</translation>

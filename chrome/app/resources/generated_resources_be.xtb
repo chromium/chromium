@@ -512,6 +512,7 @@
 <translation id="1521442365706402292">Кіраваць сертыфікатамі</translation>
 <translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
 <translation id="152234381334907219">Ніколі не захоўваліся</translation>
+<translation id="1523279371236772909">Прагледжана ў мінулым месяцы</translation>
 <translation id="1523978563989812243">Модулі сінтэзу маўлення</translation>
 <translation id="1524430321211440688">Клавіятура</translation>
 <translation id="1524563461097350801">Не, дзякуй</translation>
@@ -1245,6 +1246,7 @@
 <translation id="2232876851878324699">Адзін сертыфікат у файле не быў імпартаваны:</translation>
 <translation id="2233502537820838181">&amp;Дадатковая інфармацыя</translation>
 <translation id="223356358902285214">Дзеянні ў інтэрнэце і праграмах</translation>
+<translation id="2234827758954819389">Дапаможнік па прыватнасці</translation>
 <translation id="2234876718134438132">Сінхранізацыя і сэрвісы Google</translation>
 <translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
 <translation id="2238379619048995541">Даныя стану па частаце</translation>
@@ -1694,6 +1696,7 @@
 <translation id="2684004000387153598">Каб працягнуць, націсніце "OK", затым "Дадаць карыстальніка" – так вы створыце новы профіль для свайго адраса электроннай пошты.</translation>
 <translation id="2687403674020088961">Блакіраваць усе файлы cookie (не рэкамендуецца)</translation>
 <translation id="2687407218262674387">Умовы выкарыстання Google</translation>
+<translation id="2687621393791886981">Спытаць пазней</translation>
 <translation id="2688196195245426394">Пры рэгістрацыі прылады на серверы адбылася памылка: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Паказаць параметры маўлення</translation>
 <translation id="2691385045260836588">Мадэль</translation>
@@ -1712,7 +1715,6 @@
 <translation id="2707024448553392710">Кампанент спампоўваецца</translation>
 <translation id="270921614578699633">Сярэдняе па</translation>
 <translation id="2709516037105925701">Аўтазапаўненне</translation>
-<translation id="2710014902399506864">Дадаць новы тэлефон</translation>
 <translation id="2710101514844343743">Даныя пра выкарыстанне і дыягностыку</translation>
 <translation id="271033894570825754">Новае</translation>
 <translation id="2712173769900027643">Запытаць дазвол</translation>
@@ -2749,7 +2751,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Абмен данымі з прыладай USB}one{Абмен данымі з # прыладай USB}few{Абмен данымі з # прыладамі USB}many{Абмен данымі з # прыладамі USB}other{Абмен данымі з # прылады USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}one{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}few{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}many{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}other{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="3765246971671567135">Не ўдалося прачытаць пазасеткавую палітыку дэманстрацыйнага рэжыму.</translation>
-<translation id="3766115177661377251">Трансляцыя на новы дысплэй</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
 <translation id="377050016711188788">Марожанае</translation>
 <translation id="3771290962915251154">Гэта налада выключана, бо ўключаны бацькоўскі кантроль</translation>
@@ -3097,6 +3098,7 @@
 <translation id="4095264805865317199">Адкрыць інтэрфейс актывацыі ў мабільнай сетцы</translation>
 <translation id="4095507791297118304">Асноўны дысплэй</translation>
 <translation id="4096508467498758490">Выключыце пашырэнні, якія працуюць у рэжыме распрацоўшчыка</translation>
+<translation id="4096797685681362305">Прагледжана на мінулым тыдні</translation>
 <translation id="4097406557126260163">Праграмы і пашырэнні</translation>
 <translation id="409742781329613461">Парады па выкарыстанні Chrome</translation>
 <translation id="4097560579602855702">Пошук у Google</translation>
@@ -3653,6 +3655,7 @@
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
 <translation id="4699357559218762027">(аўтаматычны запуск)</translation>
 <translation id="4701025263201366865">Уваход для бацькоў</translation>
+<translation id="4701335814944566468">Прагледжана ўчора</translation>
 <translation id="4708794300267213770">Паказваць экран блакіроўкі пры абуджэнні ад сну</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Аднавіць налады</translation>
@@ -3720,6 +3723,7 @@
 <translation id="479536056609751218">Вэб-старонка, толькі HTML</translation>
 <translation id="4796142525425001238">Заўсёды аднаўляць</translation>
 <translation id="4798236378408895261">Далучыць <ph name="BEGIN_LINK" />журналы Bluetooth<ph name="END_LINK" /> (для ўнутранага выкарыстання ў Google)</translation>
+<translation id="479863874072008121">Кіраваць прыладамі</translation>
 <translation id="4800839971935185386">Праверце новы значок і імя</translation>
 <translation id="4801448226354548035">Схаваць уліковыя запісы</translation>
 <translation id="4801512016965057443">Дазволіць мабільную перадачу даных у роўмінгу</translation>
@@ -6446,6 +6450,7 @@
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7659154729610375585">Усё роўна выйсці з рэжыму інкогніта?</translation>
 <translation id="7659297516559011665">Паролі, захаваныя толькі на гэтай прыладзе</translation>
+<translation id="7659336857671800422">Азнаёмцеся з дапаможнікам па прыватнасці</translation>
 <translation id="7659584679870740384">Вы не аўтарызаваны для выкарыстання гэтай прылады. Звярніцеся да адміністратара з запытам на дазвол для ўваходу.</translation>
 <translation id="7661259717474717992">Дазволіць сайтам захоўваць і чытаць даныя файлаў cookie</translation>
 <translation id="7661451191293163002">Не ўдалося атрымаць сертыфікат рэгістрацыі.</translation>
@@ -7091,7 +7096,6 @@
 <translation id="8271268254812352141">Атрымлівайце азначэнні, пераклады або пераводзьце адзінкі вымярэння: для гэтага вам трэба дакрануцца да тэксту і ўтрымліваць палец або націснуць на тэкст правай кнопкай мышы. Наладзіць мовы перакладу можна ў раздзеле <ph name="LINK_BEGIN" />Мовы вэб-сайтаў<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Бацькі, наступныя некалькі крокаў павінны зрабіць вы. Вы зможаце вярнуць прыладу <ph name="DEVICE_TYPE" /> дзіцяці пасля наладжвання ўліковага запісу.</translation>
 <translation id="8272443605911821513">Каб кіраваць пашырэннямі, націсніце кнопку "Пашырэнні" ў меню "Іншыя інструменты".</translation>
-<translation id="8272677921396592934">Адсканіраваць QR-код з дапамогай камеры</translation>
 <translation id="8274332263553132018">Трансліраваць файл</translation>
 <translation id="8274921654076766238">Лупа перамяшчаецца за фокусам клавіятуры</translation>
 <translation id="8274924778568117936">Не выключайце і не закрывайце <ph name="DEVICE_TYPE" />, пакуль не скончыцца абнаўленне. <ph name="DEVICE_TYPE" /> перазапусціцца па заканчэнні ўсталявання.</translation>
@@ -7203,6 +7207,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дазволена: <ph name="PERMISSION" /> і яшчэ <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Спачатку запытваць (рэкамендуецца)</translation>
+<translation id="8414249071344507766">Успаміны схаваны на два дні</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (чахол)</translation>
 <translation id="8417548266957501132">Бацькоўскі пароль</translation>
 <translation id="8418445294933751433">&amp;Паказаць як укладку</translation>
@@ -7966,6 +7971,7 @@
 <translation id="9200339982498053969">Сайт <ph name="ORIGIN" /> зможа змяняць файлы ў папцы "<ph name="FOLDERNAME" />"</translation>
 <translation id="920045321358709304">Пошук у сэрвісе <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Усе пазасеткавыя даныя будуць выдалены</translation>
+<translation id="9201117361710210082">Прагледжана раней</translation>
 <translation id="9201220332032049474">Параметры блакіроўкі экрана</translation>
 <translation id="9201842707396338580">Нешта пайшло не так. Звярніцеся да адміністратара або ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Прафіліраванне ўключана</translation>

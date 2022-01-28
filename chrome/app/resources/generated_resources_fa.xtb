@@ -1723,7 +1723,6 @@
 <translation id="2707024448553392710">در حال بارگیری مؤلفه</translation>
 <translation id="270921614578699633">میانگین بالا</translation>
 <translation id="2709516037105925701">تکمیل خودکار</translation>
-<translation id="2710014902399506864">افزودن یک تلفن جدید</translation>
 <translation id="2710101514844343743">داده‌های استفاده و عیب‌یابی</translation>
 <translation id="271033894570825754">جدید</translation>
 <translation id="2712173769900027643">درخواست اجازه</translation>
@@ -2761,7 +2760,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏ارتباط با یک دستگاه USB}one{‏ارتباط با # دستگاه USB}other{‏ارتباط با # دستگاه USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{درحال ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" />}one{درحال ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" />}other{درحال ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">خط‌مشی آفلاین حالت نمایشی خوانده نشد.</translation>
-<translation id="3766115177661377251">ارسال محتوا به نمایشگر جدید</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> هرتز</translation>
 <translation id="377050016711188788">بستنی</translation>
 <translation id="3771290962915251154">این تنظیم غیرفعال است زیرا کنترل‌های والدین روشن است</translation>
@@ -7112,7 +7110,6 @@
 <translation id="8271268254812352141">وقتی روی نوشتار کلیک راست می‌کنید، یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل‌های واحد را دریافت می‌کنید. می‌توانید زبان‌های ترجمه را در <ph name="LINK_BEGIN" />زبان‌های وب‌سایت<ph name="LINK_END" /> سفارشی کنید.</translation>
 <translation id="8271379370373330993">والدین، چند مرحله بعدی مخصوص شما است. بعد از راه‌اندازی حساب، می‌توانید <ph name="DEVICE_TYPE" /> را دوباره به فرزندتان بدهید.</translation>
 <translation id="8272443605911821513">با کلیک کردن روی افزونه‌ها در منوی «ابزارهای بیشتر»، برنامه‌های افزودنی خود را مدیریت کنید.</translation>
-<translation id="8272677921396592934">استفاده از دوربین برای اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="8274332263553132018">ارسال محتوای فایل</translation>
 <translation id="8274921654076766238">کانونی کردن صفحه‌کلید پس‌از ذره‌بین</translation>
 <translation id="8274924778568117936">تا وقتی به‌روزرسانی به پایان نرسیده است، <ph name="DEVICE_TYPE" /> را خاموش نکنید یا نبندید. بعد از کامل شدن نصب، <ph name="DEVICE_TYPE" /> راه‌اندازی مجدد می‌شود.</translation>

@@ -1715,7 +1715,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2707024448553392710">Komponent yuklab olinmoqda</translation>
 <translation id="270921614578699633">O‘rtachasi</translation>
 <translation id="2709516037105925701">Avtoto‘ldirish</translation>
-<translation id="2710014902399506864">Yangi telefonni qoʻshish</translation>
 <translation id="2710101514844343743">Foydalanish va diagnostika axboroti</translation>
 <translation id="271033894570825754">Yangi</translation>
 <translation id="2712173769900027643">Ruxsat so‘rash</translation>
@@ -2753,7 +2752,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB qurilma mavjud}other{# ta USB qurilma mavjud}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasiga <ph name="ATTACHMENTS" /> yuborilmoqda}other{<ph name="DEVICE_NAME" /> qurilmasiga <ph name="ATTACHMENTS" /> yuborilmoqda}}</translation>
 <translation id="3765246971671567135">Demo rejim parametrini oflayn rejimda oʻqib boʻlmadi.</translation>
-<translation id="3766115177661377251">Yangi ekranga translatsiya qilish</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Muzqaymoq</translation>
 <translation id="3771290962915251154">Bu sozlama ota-ona nazorati tufayli yoqilmagan</translation>
@@ -3207,6 +3205,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> qurilmasida Google Play Marketdan ilova va oʻyinlarni yuklab oling <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos chiptasini moslash</translation>
 <translation id="4235965441080806197">Hisobga kirishni bekor qilish</translation>
+<translation id="4236163961381003811">Boshqa kengaytmalarni koʻrish</translation>
 <translation id="4241182343707213132">Tashkilot ilovalarini yangilash uchun qayta ishga tushiring</translation>
 <translation id="4242145785130247982">Bir nechta mijoz sertifikati mos emas</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
@@ -7107,7 +7106,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8271268254812352141">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing. Tillarni <ph name="LINK_BEGIN" />Sayt tillari<ph name="LINK_END" /> orqali moslash mumkin.</translation>
 <translation id="8271379370373330993">Ota-onalar, keyingi bosqichlar siz uchun. Hisobni sozlaganingizdan keyin <ph name="DEVICE_TYPE" /> qurilmasini farzandingizga berishingiz mumkin.</translation>
 <translation id="8272443605911821513">Kengaytmalarni “Qo‘shimcha asboblar” menyusidagi “Kengaytmalar” bo‘limidan boshqarish mumkin.</translation>
-<translation id="8272677921396592934">QR kodni kamera yordamida skanerlang</translation>
 <translation id="8274332263553132018">Faylni translatsiya qilish</translation>
 <translation id="8274921654076766238">Lupa yoqilganda klaviatura fokuslanadi</translation>
 <translation id="8274924778568117936">Yangilanish tugamasdan oldin <ph name="DEVICE_TYPE" /> qurilmasini o‘chirmang va yopmang. Yangilanish o‘rnatilishi bilan <ph name="DEVICE_TYPE" /> qayta ishga tushiriladi.</translation>

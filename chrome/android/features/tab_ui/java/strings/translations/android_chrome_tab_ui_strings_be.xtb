@@ -34,12 +34,14 @@
 <translation id="3882834874697329510">Каб атрымліваць абвесткі, калі цэны на прадукты на адкрытых укладках зніжаюцца, уключыце апавяшчэнні ў Наладах.</translation>
 <translation id="3940195383040445971">Адсочванне цэн на ўкладках</translation>
 <translation id="3996880007329611795">Атрымліваць абвесткі</translation>
+<translation id="4095555372828143870">Закрыць усе ўкладкі (усе незахаваныя даныя будуць страчаны)?</translation>
 <translation id="4133493477912226187">Здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="4212246570487010370">Бесперапынны прагляд</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
 <translation id="4648718555153979859">Укладкі згрупаваны тут</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> водгук)}one{(<ph name="REVIEWS_COUNT_MANY" /> водгук)}few{(<ph name="REVIEWS_COUNT_MANY" /> водгукі)}many{(<ph name="REVIEWS_COUNT_MANY" /> водгукаў)}other{(<ph name="REVIEWS_COUNT_MANY" /> водгуку)}}</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
+<translation id="4870911314065352661">Закрыць усе ўкладкі?</translation>
 <translation id="492284538114688557">Выяўлена зніжэнне цэн</translation>
 <translation id="5007392906805964215">Праглядзець</translation>
 <translation id="5073204694187207510">Схаваць поўнаэкранную сетку</translation>
@@ -68,6 +70,7 @@
 <translation id="7204204600596740190">Рэжым множнага выбару</translation>
 <translation id="7326879924029668159">Паглядзець палітыку вяртання і іншую інфармацыю</translation>
 <translation id="7352298686197644113">Даведайцеся, які тавар на адкрытых вамі ўкладках патаннеў</translation>
+<translation id="7475676397080516143">ПАПЯРЭДЖАННЕ. Гэта дзеянне немагчыма адрабіць. Закрыць усе ўкладкі (усе незахаваныя даныя будуць страчаны)?</translation>
 <translation id="753732157349120914">Пераключальнік укладак</translation>
 <translation id="7559245342362162951">Паказваць укладкі групы ў поўнаэкраннай сетцы</translation>
 <translation id="7792771145871471484">Праглядзець прапановы.</translation>

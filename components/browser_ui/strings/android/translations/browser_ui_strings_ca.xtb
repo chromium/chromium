@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">L'opció està disponible a prop de la part superior de la pantalla.</translation>
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Darrera visita: avui</translation>
+<translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrossegueu la pantalla des de la part superior i toqueu el botó Enrere per sortir de la pantalla completa.</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">D'acord</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">Un lloc web està utilitzant el micròfon</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="757524316907819857">Impedeix que els llocs web reprodueixin contingut protegit</translation>
+<translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7781829728241885113">Ahir</translation>

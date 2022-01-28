@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1387854245479784695">Isto é uma agregação de todos os núcleos.</translation>
+<translation id="1394661041439318933">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria na caixa.</translation>
 <translation id="1397738625398125236">É possível enviar ping ao gateway</translation>
 <translation id="1398634363027580500">Latência muito elevada de HTTPS</translation>
 <translation id="1413240736185167732">Falha – Falha no filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tenho um par de chaves</translation>
+<translation id="1451536289672181509">O dispositivo é um teclado.</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Alterar imagem de fundo diariamente</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1662989795263954667">Parada – Sem tinta</translation>
+<translation id="1668469839109562275">VPN incorporada</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
 <translation id="1715359911173058521">Existe um problema de comunicação com o scanner. Verifique a ligação USB ou de rede e tente novamente.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2104796393919810494">Reparação concluída</translation>
+<translation id="2105810540595158374">O dispositivo é um comando de jogos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Introduza o seu nome de utilizador e palavra-passe ou leia o código QR</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
+<translation id="3031560714565892478">O dispositivo é uma câmara de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Ponto final</translation>
 <translation id="3069085583900247081">O teste falhou</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">Falha – Parou</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">O dispositivo está ligado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pretende remover a página?}=1{Pretende remover a página {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Pretende remover a página {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dados móveis</translation>
 <translation id="3156846309055100599">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
 <translation id="3328783797891415197">A executar teste…</translation>
+<translation id="3340011300870565703">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular direito.</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380">A digitalizar a página <ph name="PAGE_NUM" />… <ph name="PERCENTAGE_VALUE" />% concluído.</translation>
 <translation id="3459509316159669723">Impressão</translation>
 <translation id="3462187165860821523">A atualizar o dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Enquanto o firmware está a ser atualizado, não desligue este dispositivo externo nem encerre o computador. Pode minimizar esta janela. Esta atualização pode demorar alguns minutos e o seu dispositivo externo pode não funcionar durante este período.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3527036260304016759">Falha – Erro desconhecido</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Nenhum dispositivo ligado</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3954678691475912818">O tipo de dispositivo é desconhecido.</translation>
 <translation id="3966286471246132217">Para obter resultados mais exatos, feche todas as apps até que o teste esteja concluído.</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="397105322502079400">A calcular...</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Escolha uma nova de imediato</translation>
 <translation id="4891842000192098784">Tensão</translation>
+<translation id="4897058166682006107">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular esquerdo.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Parada – Sem papel</translation>
 <translation id="4921665434385737356">Carregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
@@ -321,6 +331,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5346687412805619883">Rede local</translation>
 <translation id="5358174242040570474">Algo correu mal. Experimente escolher novamente uma imagem de fundo ou reabra a app.</translation>
 <translation id="5372659122375744710">A rede Wi-Fi não é segura.</translation>
+<translation id="5400907029458559844">O dispositivo está a ligar.</translation>
 <translation id="5401938042319910061">Executar todas as rotinas</translation>
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
@@ -382,6 +393,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
+<translation id="6319207335391420837">Atualizar firmware no <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Falhou</translation>
 <translation id="6340526405444716530">Personalização</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
@@ -414,6 +426,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6747215703636344499">Parada – Saída cheia</translation>
 <translation id="6749473226660745022">Fotos</translation>
+<translation id="6753452347192452143">O dispositivo é um computador.</translation>
 <translation id="6756731097889387912">Não foi possível cancelar a digitalização.</translation>
 <translation id="6766275201586212568">Resoluções de DNS com falhas</translation>
 <translation id="6768237774506518020">Taxa de falhas de resolução de DNS elevada</translation>
@@ -431,12 +444,14 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6992266763844448459">Selecione esta opção se a propriedade do dispositivo não for alterada. Por exemplo, o dispositivo está a ser transferido para uma pessoa diferente numa organização.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="7041549558901442110">O dispositivo não está ligado.</translation>
 <translation id="7058278511608979688">Terminar e guardar</translation>
 <translation id="7059230779847288458">A carregar, <ph name="TIME_VALUE" /> até ficar totalmente carregada</translation>
 <translation id="7068619307603204412">Prepare o dispositivo</translation>
 <translation id="708426984172631313">PARADO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Falha – A autorização falhou</translation>
+<translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> designado <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor(es) de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
@@ -471,6 +486,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7502658306369382406">Endereço IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
+<translation id="7551123448725492271">O dispositivo é um dispositivo de áudio.</translation>
 <translation id="7561454561030345039">Esta ação é gerida pelo seu administrador.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ecrã tátil USB</translation>
@@ -478,6 +494,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7620771111601174153">Saber mais no Centro de Ajuda</translation>
 <translation id="763165478673169849">Hora da última reposição</translation>
 <translation id="7648838807254605802">Latência elevada de HTTPS</translation>
+<translation id="7656388927906093505">O dispositivo é um rato.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
@@ -574,6 +591,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8855781559874488009">Não é possível estabelecer ligação através da firewall a Websites HTTP</translation>
 <translation id="8863888432376731307">Obtenha a intenção <ph name="INTENT" /> para a consulta "<ph name="QUERY" />" e muito mais</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">O dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste com êxito</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8910721771319628100">Rede predefinida acima do limite de latência.</translation>
@@ -584,11 +602,13 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8930622219860340959">Sem fios</translation>
 <translation id="8936793075252196307">Endereço IP do cliente</translation>
 <translation id="8945750210906526975">Touchpad interno</translation>
+<translation id="894617464444543719">O dispositivo é um telemóvel.</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">A instalar - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">A resolução de DNS tem uma latência elevada</translation>

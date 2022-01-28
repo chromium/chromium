@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">화면 상단에서 옵션을 선택할 수 있습니다</translation>
 <translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
+<translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ 삭제</translation>
 <translation id="528192093759286357">전체화면을 종료하려면 상단에서 드래그하여 뒤로 버튼을 터치하세요.</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5301954838959518834">확인</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">사이트에서 마이크를 사용 중입니다.</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="757524316907819857">사이트에서 보호된 콘텐츠를 재생하지 못하도록 차단</translation>
+<translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7781829728241885113">어제</translation>

@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">Δεξιά</translation>
 <translation id="1351937230027495976">Σύμπτυξη μενού</translation>
 <translation id="1364382257761975320">Για να ξεκλειδώσετε το Chromebook, χρησιμοποιήστε το δακτυλικό αποτύπωμά σας</translation>
+<translation id="1364618750746929654">Δεν είναι δυνατή η δημιουργία μεταγραφής.</translation>
 <translation id="1383597849754832576">Δεν είναι δυνατή η λήψη αρχείων ομιλίας. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1391102559483454063">Ενεργό</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
 <translation id="5465662442746197494">Χρειάζεστε βοήθεια;</translation>
 <translation id="547979256943495781">Ράφι στα δεξιά</translation>
+<translation id="5491186829646618080">Διαθέσιμες ενημερώσεις υλικολογισμικού</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ο διαχειριστής σας κατάργησε όλα τα προφίλ eSIM. Επικοινωνήστε με τον διαχειριστή σας για περισσότερες πληροφορίες.</translation>
 <translation id="5523434445161341166">Πραγματοποιείται σύνδεση της λειτουργίας <ph name="FEATURE_NAME" />.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="8876661425082386199">Ελέγξτε τη σύνδεσή σας</translation>
 <translation id="8877788021141246043">Ορισμός υπενθύμισης</translation>
 <translation id="8878886163241303700">Επέκταση οθόνης</translation>
+<translation id="888982883502837004">Διατίθενται ενημερώσεις υλικολογισμικού για τη συσκευή σας. Κάντε κλικ για έλεγχο και ενημέρωση.</translation>
 <translation id="8896630965521842259">Το <ph name="DESK_TEMPLATE_NAME" /> θα διαγραφεί οριστικά.</translation>
 <translation id="890616557918890486">Αλλαγή πηγής</translation>
 <translation id="8909138438987180327">Η μπαταρία βρίσκεται στο <ph name="PERCENTAGE" /> τοις εκατό.</translation>

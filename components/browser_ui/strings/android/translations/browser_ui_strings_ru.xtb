@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">Действие доступно вверху экрана</translation>
 <translation id="5197729504361054390">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> получит доступ к выбранным контактам.</translation>
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
+<translation id="5264323282659631142">Удалить элемент "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5301954838959518834">ОК</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">Сайт использует ваш микрофон</translation>
 <translation id="7561196759112975576">Всегда</translation>
 <translation id="757524316907819857">Запретить сайтам воспроизводить защищенный контент</translation>
+<translation id="7577900504646297215">Управление интересами</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7781829728241885113">Вчера</translation>

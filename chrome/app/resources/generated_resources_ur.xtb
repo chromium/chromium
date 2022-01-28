@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">‏USB-C آلہ (بایاں پورٹ)</translation>
 <translation id="1293556467332435079">فائلیں</translation>
 <translation id="1294807885394205587">اس کاروائی میں کچھ منٹ لگ سکتے ہیں۔ کنٹینر مینیجر شروع ہو رہا ہے۔</translation>
+<translation id="1296046226918222533">‏کچھ غلط ہو گیا ہے اور Linux کو اپ گریڈ کرنے کا عمل ناکام ہو گیا۔ ناکامی کے بارے میں مزید معلومات لاگز میں مل سکتی ہیں۔ لاگز کو <ph name="LOG_FILE" /> میں محفوظ رکھا گیا ہے</translation>
 <translation id="1296911687402551044">منتخب کردہ ٹیب کو پن کریں</translation>
 <translation id="1297175357211070620">منزل</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> کیلئے تاثرات بھیجیں</translation>
@@ -1712,7 +1713,6 @@
 <translation id="2707024448553392710">جزو ڈاؤن لوڈ ہو رہا ہے</translation>
 <translation id="270921614578699633">اوسط اوور</translation>
 <translation id="2709516037105925701">آٹو فل</translation>
-<translation id="2710014902399506864">ایک نیا فون شامل کریں</translation>
 <translation id="2710101514844343743">استعمال اور ڈائیگناسٹکس کا ڈیٹا</translation>
 <translation id="271033894570825754">نیا</translation>
 <translation id="2712173769900027643">اجازت طلب کریں</translation>
@@ -2749,7 +2749,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏USB آلہ کے ساتھ مواصلت کریں}other{‏‎# USB آلات کے ساتھ مواصلت کریں}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}other{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}}</translation>
 <translation id="3765246971671567135">آف لائن ڈیمو موڈ کی پالیسی کو پڑھا نہیں جا سکا۔</translation>
-<translation id="3766115177661377251">ایک نئے ڈسپلے پر کاسٹ کریں</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">آئس کریم</translation>
 <translation id="3771290962915251154">یہ ترتیب غیر فعال ہے کیونکہ پیرنٹل کنٹرولز آن ہیں</translation>
@@ -2789,6 +2788,7 @@
 <translation id="3799128412641261490">سوئچ رسائی کی ترتیبات</translation>
 <translation id="3800806661949714323">سبھی دکھائیں (تجویز کردہ)</translation>
 <translation id="3800828618615365228">‏Google Chrome اور ChromeOS کی اضافی شرائط</translation>
+<translation id="3802486193901166966">اس ایکسٹینشن کو کسی خاص اجازت کی ضرورت نہیں ہے اور اس کے پاس سائٹ تک کوئی اضافی رسائی نہیں ہے</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803345858388753269">ویڈیو کا معیار</translation>
 <translation id="380408572480438692">‏کارکردگی ڈیٹا کی جمع آوری کو فعال کرنے سے Google کو وقت وقت پر سسٹم کو بہتر بنانے میں مدد ملے گی۔ اس وقت تک کوئی ڈیٹا نہیں بھیجا جاتا ہے جب تک آپ ایک تاثرات رپورٹ نہ فائل کریں (Alt-Shift-I) اور کارکردگی کا ڈیٹا شامل نہ کریں۔ آپ کسی بھی وقت جمع آوری کو غیر فعال کرنے کیلئے اس اسکرین پر واپس آ سکتے ہیں۔</translation>
@@ -3818,6 +3818,7 @@
 <translation id="4883436287898674711">سبھی <ph name="WEBSITE_1" /> سائٹس</translation>
 <translation id="48838266408104654">&amp;ٹاسک مینیجر</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">اس ایکسٹینشن کو سائٹ تک اضافی رسائی حاصل نہیں ہے</translation>
 <translation id="4887424188275796356">سسٹم ویور کے ساتھ کھولیں</translation>
 <translation id="488785315393301722">تفصیلات دکھائیں</translation>
 <translation id="4890773143211625964">جدید ترین پرنٹر کے اختیارات دکھائیں</translation>
@@ -3992,6 +3993,7 @@
 <translation id="5075910247684008552">محفوظ سائٹس پر غیر محفوظ مواد بذریعہ ڈیفالٹ مسدود ہوتا ہے</translation>
 <translation id="5078638979202084724">سبھی ٹیبز کو بُک مارک کریں</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
+<translation id="5079010647467150187">‏پہلے سے موجود VPN کو شامل کریں...</translation>
 <translation id="5079950360618752063">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="508059534790499809">‏Kerberos ٹکٹ ریفریش کریں</translation>
 <translation id="5084230410268011727">سائٹس کو موشن اور لائٹ سینسرز استعمال کرنے کی اجازت دیں</translation>
@@ -5543,6 +5545,7 @@
 <translation id="6709133671862442373">خبریں</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> کا استعمال کر کے منسلک کریں</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
+<translation id="6710973041022512889">اپ گریڈ کا عمل کامیابی کے ساتھ مکمل ہو گیا ہے۔ اپ گریڈ سے متعلق تفصیلی معلومات کے لیے، لاگز کو <ph name="LOG_FILE" /> میں محفوظ رکھا گیا ہے</translation>
 <translation id="6711146141291425900">ڈاؤن لوڈز کیلئے <ph name="WEB_DRIVE" /> اکاؤنٹ لنک کریں</translation>
 <translation id="6712943853047024245">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے اس صارف نام کے ساتھ پاس ورڈ محفوظ کیا ہے</translation>
 <translation id="6713233729292711163">دفتری پروفائل شامل کریں</translation>
@@ -7097,7 +7100,6 @@
 <translation id="8271268254812352141">دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کرنے اور دبائے رکھنے پر تعریفیں، ترجمے یا یونٹ کی تبدیلیاں حاصل کریں۔ <ph name="LINK_BEGIN" />ویب سائٹ کی زبانوں<ph name="LINK_END" /> میں ترجمے کی زبانوں کو حسب ضرورت بنائیں۔</translation>
 <translation id="8271379370373330993">والدین، اگلے کچھ اقدامات آپ کے لئے ہیں۔ اکاؤنٹ سیٹ اپ کے بعد آپ <ph name="DEVICE_TYPE" /> بچے کو واپس دے سکتے ہیں۔</translation>
 <translation id="8272443605911821513">"مزید ٹولز" مینو میں ایکسٹینشنز پر کلک کر کے اپنے ایکسٹینشنز کا نظم کریں۔</translation>
-<translation id="8272677921396592934">‏QR کوڈ اسکین کرنے کیلئے کیمرا استعمال کریں</translation>
 <translation id="8274332263553132018">فائل کاسٹ کریں</translation>
 <translation id="8274921654076766238">میگنیفائر کی بورڈ فوکس کے مطابق ہوتا ہے</translation>
 <translation id="8274924778568117936">اپ ڈیٹ مکمل ہونے تک اپنے <ph name="DEVICE_TYPE" /> کو آف یا بند نہ کریں۔ انسٹالیشن مکمل ہونے کے بعد آپ کا <ph name="DEVICE_TYPE" /> دوبارہ شروع ہو جائے گا۔</translation>

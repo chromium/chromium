@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
 <translation id="1364382257761975320">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз.</translation>
+<translation id="1364618750746929654">Транскрипция жасалмайды.</translation>
 <translation id="1383597849754832576">Автоматты субтитр файлдары жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1391102559483454063">Қосулы</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">Басқарылады</translation>
 <translation id="5465662442746197494">Көмек керек пе?</translation>
 <translation id="547979256943495781">Оң жақтағы сөре</translation>
+<translation id="5491186829646618080">Микробағдарламаның жаңа нұсқасы қолжетімді</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Әкімшіңіз барлық eSIM профилін өшірген. Толығырақ ақпарат алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> қосылуда.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="8876661425082386199">Интернет байланысын тексеріңіз.</translation>
 <translation id="8877788021141246043">Еске салғыш орнату</translation>
 <translation id="8878886163241303700">Экранды кеңейту</translation>
+<translation id="888982883502837004">Құрылғыңыз үшін микробағдарламаның жаңа нұсқасы қолжетімді. Көру және жаңарту үшін басыңыз.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> біржола жойылады.</translation>
 <translation id="890616557918890486">Дереккөзді өзгерту</translation>
 <translation id="8909138438987180327">Батарея қуаты: <ph name="PERCENTAGE" />.</translation>

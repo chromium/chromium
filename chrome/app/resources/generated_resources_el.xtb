@@ -512,6 +512,7 @@
 <translation id="1521442365706402292">Διαχείριση πιστοποιητικών</translation>
 <translation id="1521774566618522728">Ενεργή σήμερα</translation>
 <translation id="152234381334907219">Δεν έγινε ποτέ αποθήκευση</translation>
+<translation id="1523279371236772909">Προβλήθηκε τον προηγούμενο μήνα</translation>
 <translation id="1523978563989812243">Μηχανές μετατροπής κειμένου σε ομιλία</translation>
 <translation id="1524430321211440688">Πληκτρολόγιο</translation>
 <translation id="1524563461097350801">Όχι, ευχαριστώ</translation>
@@ -1254,6 +1255,7 @@
 <translation id="2232876851878324699">Το αρχείο περιείχε ένα πιστοποιητικό, το οποίο δεν εισάχθηκε: </translation>
 <translation id="2233502537820838181">&amp;Περισσότερες πληροφορίες</translation>
 <translation id="223356358902285214">Δραστηριότητα ιστού και εφαρμογών</translation>
+<translation id="2234827758954819389">Οδηγός απορρήτου</translation>
 <translation id="2234876718134438132">Συγχρονισμός και υπηρ. Google</translation>
 <translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="2238379619048995541">Δεδομένα κατάστασης συχνότητας</translation>
@@ -1706,6 +1708,7 @@
 <translation id="2684004000387153598">Για να συνεχίσετε, κάντε κλικ στο κουμπί OK και, στη συνέχεια, κάντε κλικ στην επιλογή "Προσθήκη ατόμου" για να δημιουργήσετε ένα νέο προφίλ για τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας.</translation>
 <translation id="2687403674020088961">Αποκλεισμός όλων των cookie (δεν συνιστάται)</translation>
 <translation id="2687407218262674387">Όροι Παροχής Υπηρεσιών Google</translation>
+<translation id="2687621393791886981">Να ερωτηθώ αργότερα</translation>
 <translation id="2688196195245426394">Σφάλμα εγγραφής της συσκευής στο διακομιστή: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Εμφάνιση επιλογών γλώσσας</translation>
 <translation id="2691385045260836588">Μοντέλο</translation>
@@ -1724,7 +1727,6 @@
 <translation id="2707024448553392710">Λήψη στοιχείου</translation>
 <translation id="270921614578699633">Πάνω από το μέσο όρο</translation>
 <translation id="2709516037105925701">Αυτόματη συμπλήρωση</translation>
-<translation id="2710014902399506864">Προσθήκη νέου τηλεφώνου</translation>
 <translation id="2710101514844343743">Δεδομένα χρήσης και διαγνωστικών</translation>
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2712173769900027643">Να ζητηθεί άδεια</translation>
@@ -2762,7 +2764,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Επικοινωνία με μια συσκευή USB}other{Επικοινωνία με # συσκευές USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Αποστέλλεται <ph name="ATTACHMENTS" /> στη συσκευή <ph name="DEVICE_NAME" />}other{Αποστέλλονται <ph name="ATTACHMENTS" /> στη συσκευή <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Δεν ήταν δυνατή η ανάγνωση της πολιτικής λειτουργίας επίδειξης εκτός σύνδεσης.</translation>
-<translation id="3766115177661377251">Μετάδοση σε νέα οθόνη</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Παγωτό</translation>
 <translation id="3771290962915251154">Αυτή η ρύθμιση είναι απενεργοποιημένη επειδή είναι ενεργοποιημένοι οι γονικοί έλεγχοι.</translation>
@@ -3110,6 +3111,7 @@
 <translation id="4095264805865317199">Άνοιγμα διεπαφής χρήστη ενεργοποίησης δικτύου κινητής τηλεφωνίας</translation>
 <translation id="4095507791297118304">Κύρια οθόνη</translation>
 <translation id="4096508467498758490">Απενεργοποίηση επεκτάσεων λειτουργίας προγραμματιστή</translation>
+<translation id="4096797685681362305">Προβλήθηκε την προηγούμενη εβδομάδα</translation>
 <translation id="4097406557126260163">Εφαρμογές και επεκτάσεις</translation>
 <translation id="409742781329613461">Συμβουλές για το Chrome</translation>
 <translation id="4097560579602855702">Αναζήτηση στο Google</translation>
@@ -3667,6 +3669,7 @@
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4699357559218762027">(αυτόματη εκκίνηση)</translation>
 <translation id="4701025263201366865">Γονική σύνδεση</translation>
+<translation id="4701335814944566468">Προβλήθηκε χθες</translation>
 <translation id="4708794300267213770">Εμφάνιση κλειδώματος οθόνης κατά την αφύπνιση από την αδράνεια</translation>
 <translation id="4708849949179781599">Έξοδος από το <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Επαναφορά ρυθμίσεων</translation>
@@ -3734,6 +3737,7 @@
 <translation id="479536056609751218">Ιστοσελίδα, μόνο HTML</translation>
 <translation id="4796142525425001238">Να γίνεται πάντα επαναφορά</translation>
 <translation id="4798236378408895261">Επισυνάψτε <ph name="BEGIN_LINK" />αρχεία καταγραφής Bluetooth<ph name="END_LINK" /> (για εσωτερική χρήση από την Google)</translation>
+<translation id="479863874072008121">Διαχείριση συσκευών</translation>
 <translation id="4800839971935185386">Έλεγχος ενημερώσεων ονόματος και εικονιδίου</translation>
 <translation id="4801448226354548035">Απόκρυψη λογαριασμών</translation>
 <translation id="4801512016965057443">Να επιτρέπεται η περιαγωγή δεδομένων κινητών συσκευών</translation>
@@ -6463,6 +6467,7 @@
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7659154729610375585">Θέλετε να εξέλθετε από την κατάσταση ανώνυμης περιήγησης;</translation>
 <translation id="7659297516559011665">Κωδικοί πρόσβασης σε αυτήν τη συσκευή μόνο</translation>
+<translation id="7659336857671800422">Ακολουθήστε τον Οδηγό απορρήτου</translation>
 <translation id="7659584679870740384">Δεν έχετε εξουσιοδότηση για χρήση αυτής της συσκευής. Για να λάβετε άδεια σύνδεσης, επικοινωνήστε με το διαχειριστή της συσκευής.</translation>
 <translation id="7661259717474717992">Να επιτρέπεται η αποθήκευση και ανάγνωση δεδομένων cookie από ιστότοπους</translation>
 <translation id="7661451191293163002">Δεν ήταν δυνατή η ανάκτηση ενός πιστοποιητικού εγγραφής.</translation>
@@ -7110,7 +7115,6 @@
 <translation id="8271268254812352141">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο. Προσαρμόστε τις γλώσσες μετάφρασης στην ενότητα <ph name="LINK_BEGIN" />γλώσσες ιστοτόπου<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Τα επόμενα βήματα αφορούν εσάς, τους γονείς. Μπορείτε να επιστρέψετε τη συσκευή <ph name="DEVICE_TYPE" /> στο παιδί μετά τη ρύθμιση του λογαριασμού.</translation>
 <translation id="8272443605911821513">Διαχειριστείτε τις επεκτάσεις σας κάνοντας κλικ στο στοιχείο "Επεκτάσεις" στο μενού "Περισσότερα εργαλεία".</translation>
-<translation id="8272677921396592934">Χρησιμοποιήστε την κάμερα για τη σάρωση του κωδικού QR</translation>
 <translation id="8274332263553132018">Μετάδοση αρχείου</translation>
 <translation id="8274921654076766238">Ο μεγεθυντικός φακός ακολουθεί την εστίαση πληκτρολογίου.</translation>
 <translation id="8274924778568117936">Μην απενεργοποιήσετε ή κλείσετε τη συσκευή <ph name="DEVICE_TYPE" /> μέχρι να ολοκληρωθεί η ενημέρωση. Θα γίνει επανεκκίνηση της συσκευής <ph name="DEVICE_TYPE" /> μόλις ολοκληρωθεί η εγκατάσταση.</translation>
@@ -7222,6 +7226,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Επιτράπηκε η άδεια <ph name="PERMISSION" /> και <ph name="COUNT" /> ακόμη άδειες</translation>
 <translation id="8413385045638830869">Να γίνεται ερώτηση πρώτα (συνιστάται)</translation>
+<translation id="8414249071344507766">Έγινε απόκρυψη των αναμνήσεων για δύο ημέρες</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Θήκη)</translation>
 <translation id="8417548266957501132">Κωδικός πρόσβασης γονέα</translation>
 <translation id="8418445294933751433">&amp;Εμφάνιση ως καρτέλα</translation>
@@ -7983,6 +7988,7 @@
 <translation id="9200339982498053969">Το <ph name="ORIGIN" /> θα έχει δυνατότητα επεξεργασίας όλων των αρχείων στον φάκελο <ph name="FOLDERNAME" />.</translation>
 <translation id="920045321358709304">Αναζήτηση <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Όλα τα δεδομένα εκτός σύνδεσης θα διαγραφούν</translation>
+<translation id="9201117361710210082">Προβλήθηκε προηγουμένως</translation>
 <translation id="9201220332032049474">Επιλογές κλειδώματος οθόνης</translation>
 <translation id="9201842707396338580">Κάτι δεν πήγε καλά. Επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">Ενεργοποιημένη &amp;δυνατότητα δημιουργίας προφίλ</translation>

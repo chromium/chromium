@@ -511,6 +511,7 @@
 <translation id="1521442365706402292">Настроить сертификаты</translation>
 <translation id="1521774566618522728">Последние действия: сегодня</translation>
 <translation id="152234381334907219">Сайты, пароли для которых не сохраняются</translation>
+<translation id="1523279371236772909">Просмотрено в прошлом месяце</translation>
 <translation id="1523978563989812243">Синтезаторы речи</translation>
 <translation id="1524430321211440688">Клавиатура</translation>
 <translation id="1524563461097350801">Нет, спасибо</translation>
@@ -1244,6 +1245,7 @@
 <translation id="2232876851878324699">Файл содержит один сертификат, который не был импортирован:</translation>
 <translation id="2233502537820838181">&amp;Дополнительная информация</translation>
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
+<translation id="2234827758954819389">Руководство по конфиденциальности</translation>
 <translation id="2234876718134438132">Синхронизация сервисов Google</translation>
 <translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
 <translation id="2238379619048995541">Данные о работе процессора на разных ступенях частоты</translation>
@@ -1693,6 +1695,7 @@
 <translation id="2684004000387153598">Чтобы продолжить, нажмите "OK". Затем создайте другой профиль для своего адреса электронной почты, выбрав "Добавить пользователя".</translation>
 <translation id="2687403674020088961">Заблокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="2687407218262674387">Условия использования Google</translation>
+<translation id="2687621393791886981">Напомнить позже</translation>
 <translation id="2688196195245426394">Ошибка при регистрации устройства на сервере: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показать языковые настройки</translation>
 <translation id="2691385045260836588">Модель</translation>
@@ -1711,7 +1714,6 @@
 <translation id="2707024448553392710">Компонент скачивается</translation>
 <translation id="270921614578699633">Среднее</translation>
 <translation id="2709516037105925701">Автозаполнение</translation>
-<translation id="2710014902399506864">Добавить новый телефон</translation>
 <translation id="2710101514844343743">Данные о работе устройства</translation>
 <translation id="271033894570825754">Новый</translation>
 <translation id="2712173769900027643">Попросить разрешения</translation>
@@ -2748,7 +2750,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Доступно 1 USB-устройство}one{Доступно # USB-устройство}few{Доступно # USB-устройства}many{Доступно # USB-устройств}other{Доступно # USB-устройства}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}one{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}few{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}many{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}other{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
-<translation id="3766115177661377251">Трансляция на новый дисплей</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
 <translation id="377050016711188788">Мороженое</translation>
 <translation id="3771290962915251154">Эта настройка отключена, так как работает родительский контроль</translation>
@@ -3096,6 +3097,7 @@
 <translation id="4095264805865317199">Открыть интерфейс активации мобильной сети</translation>
 <translation id="4095507791297118304">Основной дисплей</translation>
 <translation id="4096508467498758490">Отключение расширений в режиме разработчика</translation>
+<translation id="4096797685681362305">Просмотрено на прошлой неделе</translation>
 <translation id="4097406557126260163">Приложения и расширения</translation>
 <translation id="409742781329613461">Советы по работе с браузером Chrome</translation>
 <translation id="4097560579602855702">Поиск в Google</translation>
@@ -3652,6 +3654,7 @@
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вход для родителя</translation>
+<translation id="4701335814944566468">Просмотрено вчера</translation>
 <translation id="4708794300267213770">Показывать заблокированный экран при выходе из спящего режима</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Восстановить исходные настройки</translation>
@@ -3719,6 +3722,7 @@
 <translation id="479536056609751218">Веб-страница, только HTML</translation>
 <translation id="4796142525425001238">Всегда</translation>
 <translation id="4798236378408895261">Прикрепить <ph name="BEGIN_LINK" />журналы Bluetooth<ph name="END_LINK" /> (доступно только сотрудникам Google)</translation>
+<translation id="479863874072008121">Управление устройствами</translation>
 <translation id="4800839971935185386">Проверьте новое название и значок</translation>
 <translation id="4801448226354548035">Скрыть аккаунты</translation>
 <translation id="4801512016965057443">Разрешить мобильный интернет-роуминг</translation>
@@ -6447,6 +6451,7 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7659154729610375585">Вы действительно хотите выйти из режима инкогнито?</translation>
 <translation id="7659297516559011665">Пароли только на этом устройстве</translation>
+<translation id="7659336857671800422">Изучите руководство</translation>
 <translation id="7659584679870740384">У вас нет доступа к этому устройству. Свяжитесь с его администратором.</translation>
 <translation id="7661259717474717992">Разрешить сайтам сохранять и просматривать данные файлов cookie</translation>
 <translation id="7661451191293163002">Невозможно получить сертификат регистрации.</translation>
@@ -7093,7 +7098,6 @@
 <translation id="8271268254812352141">Получайте определения слов, перевод или значение в других единицах измерения: просто нажмите на текст правой кнопкой мыши или коснитесь его и удерживайте. Вы можете настроить языки перевода на <ph name="LINK_BEGIN" />этой странице<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Следующие действия должны выполнить родители. После настройки вы можете передать устройство <ph name="DEVICE_TYPE" /> обратно ребенку.</translation>
 <translation id="8272443605911821513">Управляйте расширениями в соответствующем разделе в меню дополнительных инструментов.</translation>
-<translation id="8272677921396592934">Использовать камеру для сканирования QR-кода</translation>
 <translation id="8274332263553132018">Файл для трансляции</translation>
 <translation id="8274921654076766238">Перемещение лупы с помощью клавиатуры</translation>
 <translation id="8274924778568117936">Не выключайте и не закрывайте <ph name="DEVICE_TYPE" />, выполняется обновление. После завершения установки <ph name="DEVICE_TYPE" /> перезагрузится.</translation>
@@ -7205,6 +7209,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Предоставлено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Всегда спрашивать (рекомендуется)</translation>
+<translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>
 <translation id="8418445294933751433">&amp;Показать как вкладку</translation>
@@ -7971,6 +7976,7 @@
 <translation id="9200339982498053969">Сайт <ph name="ORIGIN" /> сможет изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="920045321358709304">Искать в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Все офлайн-данные будут удалены.</translation>
+<translation id="9201117361710210082">Просмотрено ранее</translation>
 <translation id="9201220332032049474">Параметры блокировки экрана</translation>
 <translation id="9201842707396338580">Произошла ошибка. Обратитесь к владельцу или администратору устройства. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Сбор данных включен</translation>

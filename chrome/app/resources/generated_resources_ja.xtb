@@ -509,6 +509,7 @@
 <translation id="1521442365706402292">証明書の管理</translation>
 <translation id="1521774566618522728">最終同期: 今日</translation>
 <translation id="152234381334907219">常に保存しない</translation>
+<translation id="1523279371236772909">過去 1 か月以内に表示</translation>
 <translation id="1523978563989812243">テキスト読み上げエンジン</translation>
 <translation id="1524430321211440688">キーボード</translation>
 <translation id="1524563461097350801">自動チェックアウトしない</translation>
@@ -1241,6 +1242,7 @@
 <translation id="2232876851878324699">ファイルに含まれる 1 件の証明書をインポートできませんでした:</translation>
 <translation id="2233502537820838181">詳細情報(&amp;M)</translation>
 <translation id="223356358902285214">ウェブとアプリのアクティビティ</translation>
+<translation id="2234827758954819389">プライバシー ガイド</translation>
 <translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
 <translation id="2238379619048995541">周波数状態データ</translation>
@@ -1688,6 +1690,7 @@
 <translation id="2684004000387153598">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、お使いのメールアドレス用の新しいプロフィールを作成してください。</translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2687407218262674387">Google 利用規約</translation>
+<translation id="2687621393791886981">後で確認</translation>
 <translation id="2688196195245426394">デバイスをサーバーに登録するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="2690024944919328218">言語オプションを表示</translation>
 <translation id="2691385045260836588">機種</translation>
@@ -1706,7 +1709,6 @@
 <translation id="2707024448553392710">コンポーネントのダウンロード中</translation>
 <translation id="270921614578699633">次の平均:</translation>
 <translation id="2709516037105925701">自動入力</translation>
-<translation id="2710014902399506864">新しいスマートフォンを追加</translation>
 <translation id="2710101514844343743">使用状況データと診断データ</translation>
 <translation id="271033894570825754">新しいファイル</translation>
 <translation id="2712173769900027643">許可をリクエスト</translation>
@@ -2744,7 +2746,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{1 台の USB デバイスと通信します}other{# 台の USB デバイスと通信します}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> に <ph name="ATTACHMENTS" />を送信しています}other{<ph name="DEVICE_NAME" /> に <ph name="ATTACHMENTS" />を送信しています}}</translation>
 <translation id="3765246971671567135">オフライン デモモード ポリシーを読み取ることができませんでした。</translation>
-<translation id="3766115177661377251">新しいディスプレイにキャスト</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">アイスクリーム</translation>
 <translation id="3771290962915251154">保護者による使用制限が有効なため、この設定は無効になっています</translation>
@@ -3090,6 +3091,7 @@
 <translation id="4095264805865317199">モバイル有効化 UI を開く</translation>
 <translation id="4095507791297118304">メイン ディスプレイ</translation>
 <translation id="4096508467498758490">デベロッパー モードの拡張機能を無効にする</translation>
+<translation id="4096797685681362305">過去 1 週間以内に表示</translation>
 <translation id="4097406557126260163">アプリと拡張機能</translation>
 <translation id="409742781329613461">Chrome のヒント</translation>
 <translation id="4097560579602855702">Google で検索</translation>
@@ -3644,6 +3646,7 @@
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4699357559218762027">（自動起動済み）</translation>
 <translation id="4701025263201366865">保護者のログイン</translation>
+<translation id="4701335814944566468">昨日表示</translation>
 <translation id="4708794300267213770">スリープから復帰するときにロック画面を表示する</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
 <translation id="4711638718396952945">設定を復元</translation>
@@ -3711,6 +3714,7 @@
 <translation id="479536056609751218">ウェブページ、HTML のみ</translation>
 <translation id="4796142525425001238">常に復元</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ログ<ph name="END_LINK" />を添付する（Google 内部）</translation>
+<translation id="479863874072008121">デバイスを管理</translation>
 <translation id="4800839971935185386">新しい名前とアイコンを確認</translation>
 <translation id="4801448226354548035">アカウントを非表示にする</translation>
 <translation id="4801512016965057443">モバイル データ ローミングを許可する</translation>
@@ -6430,6 +6434,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7659154729610375585">シークレット モードを終了してもよろしいですか？</translation>
 <translation id="7659297516559011665">このデバイスに保存されているパスワードのみ</translation>
+<translation id="7659336857671800422">プライバシー ガイドを開始</translation>
 <translation id="7659584679870740384">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
 <translation id="7661259717474717992">サイトに Cookie データの保存と読み取りを許可する</translation>
 <translation id="7661451191293163002">登録証明書を取得できませんでした。</translation>
@@ -7074,7 +7079,6 @@
 <translation id="8271268254812352141">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます。<ph name="LINK_BEGIN" />ウェブサイトの言語<ph name="LINK_END" />で翻訳言語をカスタマイズできます。</translation>
 <translation id="8271379370373330993">この後、保護者の方用の手順がいくつか続きます。お子様に <ph name="DEVICE_TYPE" /> を渡す前に、アカウント設定を終えてください。</translation>
 <translation id="8272443605911821513">拡張機能を管理するには、[その他のツール] メニューの [拡張機能] をクリックします。</translation>
-<translation id="8272677921396592934">カメラを使用して QR コードをスキャン</translation>
 <translation id="8274332263553132018">ファイルをキャスト</translation>
 <translation id="8274921654076766238">キーボード フォーカスに合わせた拡大鏡</translation>
 <translation id="8274924778568117936">アップデートが完了するまでは、<ph name="DEVICE_TYPE" /> の電源を切ったり蓋を閉じたりしないでください。インストールが完了すると、<ph name="DEVICE_TYPE" /> は再起動します。</translation>
@@ -7186,6 +7190,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件を許可しました</translation>
 <translation id="8413385045638830869">最初に確認する（推奨）</translation>
+<translation id="8414249071344507766">思い出を 2 日間非表示にします</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
 <translation id="8417548266957501132">保護者のパスワード</translation>
 <translation id="8418445294933751433">タブで表示(&amp;S)</translation>
@@ -7949,6 +7954,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> は <ph name="FOLDERNAME" /> 内のファイルを編集できるようになります</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> で検索</translation>
 <translation id="9201023452444595544">オフライン データも削除されます</translation>
+<translation id="9201117361710210082">過去に表示</translation>
 <translation id="9201220332032049474">画面ロックの種類</translation>
 <translation id="9201842707396338580">エラーが発生しました。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="9203398526606335860">プロファイル記録の開始(&amp;P)</translation>

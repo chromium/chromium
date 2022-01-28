@@ -506,6 +506,7 @@
 <translation id="1521442365706402292">管理证书</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="152234381334907219">一律不保存</translation>
+<translation id="1523279371236772909">过去一个月内看过</translation>
 <translation id="1523978563989812243">文字转语音引擎</translation>
 <translation id="1524430321211440688">键盘</translation>
 <translation id="1524563461097350801">不用了</translation>
@@ -1239,6 +1240,7 @@
 <translation id="2232876851878324699">该文件包含一个证书，但未导入：</translation>
 <translation id="2233502537820838181">详细信息(&amp;M)</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
+<translation id="2234827758954819389">隐私保护指南</translation>
 <translation id="2234876718134438132">同步功能和 Google 服务</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2238379619048995541">频率状态数据</translation>
@@ -1707,7 +1709,6 @@
 <translation id="2707024448553392710">正在下载组件</translation>
 <translation id="270921614578699633"> </translation>
 <translation id="2709516037105925701">自动填充</translation>
-<translation id="2710014902399506864">添加新手机</translation>
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
 <translation id="271033894570825754">新建</translation>
 <translation id="2712173769900027643">请求批准</translation>
@@ -2744,7 +2745,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{可与 1 部 USB 设备通信}other{可与 # 部 USB 设备通信}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="3765246971671567135">无法读取离线演示模式政策。</translation>
-<translation id="3766115177661377251">投射到新的显示屏</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> 赫兹</translation>
 <translation id="377050016711188788">冰淇淋</translation>
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
@@ -3091,6 +3091,7 @@
 <translation id="4095264805865317199">打开移动网络激活界面</translation>
 <translation id="4095507791297118304">主显示屏</translation>
 <translation id="4096508467498758490">请停用以开发者模式运行的扩展程序</translation>
+<translation id="4096797685681362305">过去一周内看过</translation>
 <translation id="4097406557126260163">应用和扩展程序</translation>
 <translation id="409742781329613461">Chrome 使用提示</translation>
 <translation id="4097560579602855702">在 Google 中搜索</translation>
@@ -3647,6 +3648,7 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4701025263201366865">家长登录</translation>
+<translation id="4701335814944566468">昨天看过</translation>
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
@@ -3714,6 +3716,7 @@
 <translation id="479536056609751218">网页，仅 HTML</translation>
 <translation id="4796142525425001238">一律恢复</translation>
 <translation id="4798236378408895261">附加<ph name="BEGIN_LINK" />蓝牙日志<ph name="END_LINK" />（Google 内部使用）</translation>
+<translation id="479863874072008121">管理设备</translation>
 <translation id="4800839971935185386">查看名称和图标的新变化</translation>
 <translation id="4801448226354548035">隐藏帐号</translation>
 <translation id="4801512016965057443">允许移动数据漫游</translation>
@@ -6442,6 +6445,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659154729610375585">仍要退出无痕模式？</translation>
 <translation id="7659297516559011665">仅在此设备上保存的密码</translation>
+<translation id="7659336857671800422">查看隐私保护指南</translation>
 <translation id="7659584679870740384">您无权使用此设备。请向管理员申请登录权限。</translation>
 <translation id="7661259717474717992">允许网站保存和读取 Cookie 数据</translation>
 <translation id="7661451191293163002">无法获取注册证书。</translation>
@@ -7088,7 +7092,6 @@
 <translation id="8271268254812352141">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果。您可在<ph name="LINK_BEGIN" />网站语言<ph name="LINK_END" />部分中自定义翻译语言。</translation>
 <translation id="8271379370373330993">接下来的几个步骤需由家长完成。家长可在设置好帐号后将 <ph name="DEVICE_TYPE" /> 交还给孩子。</translation>
 <translation id="8272443605911821513">点击“更多工具”菜单中的“扩展程序”，可以管理您的扩展程序。</translation>
-<translation id="8272677921396592934">使用摄像头扫描二维码</translation>
 <translation id="8274332263553132018">投射文件</translation>
 <translation id="8274921654076766238">放大镜跟随键盘焦点</translation>
 <translation id="8274924778568117936">在完成更新之前，请勿关闭您的 <ph name="DEVICE_TYPE" />。您的 <ph name="DEVICE_TYPE" /> 将会于安装完毕后重启。</translation>
@@ -7964,6 +7967,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
 <translation id="9201023452444595544">所有离线数据都会被清除</translation>
+<translation id="9201117361710210082">之前看过</translation>
 <translation id="9201220332032049474">屏幕锁定选项</translation>
 <translation id="9201842707396338580">出了点问题。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203398526606335860">分析已启用(&amp;P)</translation>

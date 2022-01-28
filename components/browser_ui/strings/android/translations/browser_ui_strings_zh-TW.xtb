@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">選項位於畫面頂端</translation>
 <translation id="5197729504361054390">系統會將你選取的聯絡人資訊提供給 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次造訪日期：今天</translation>
+<translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">從頂端拖曳並輕觸返回按鈕即可結束全螢幕模式。</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">有網站正在使用你的麥克風</translation>
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="757524316907819857">禁止網站播放受保護的內容</translation>
+<translation id="7577900504646297215">管理興趣喜好</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7781829728241885113">昨天</translation>

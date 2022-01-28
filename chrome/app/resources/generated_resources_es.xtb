@@ -509,6 +509,7 @@
 <translation id="1521442365706402292">Gestionar certificados</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="152234381334907219">Contraseñas que nunca se guardan</translation>
+<translation id="1523279371236772909">Visto el mes pasado</translation>
 <translation id="1523978563989812243">Motores de conversión de texto a voz</translation>
 <translation id="1524430321211440688">Teclado</translation>
 <translation id="1524563461097350801">No, gracias</translation>
@@ -1242,6 +1243,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2232876851878324699">El archivo contenía un certificado, que no se ha importado:</translation>
 <translation id="2233502537820838181">&amp;Más información</translation>
 <translation id="223356358902285214">Actividad en la Web y en Aplicaciones</translation>
+<translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
@@ -1692,6 +1694,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2684004000387153598">Para continuar, haz clic en Aceptar y, a continuación, en Añadir perfil para crear un perfil con tu dirección de correo electrónico.</translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="2687407218262674387">Términos del Servicio de Google</translation>
+<translation id="2687621393791886981">Preguntarme más tarde</translation>
 <translation id="2688196195245426394">Error al registrar el dispositivo en el servidor (<ph name="CLIENT_ERROR" />)</translation>
 <translation id="2690024944919328218">Mostrar opciones de idioma</translation>
 <translation id="2691385045260836588">Modelo</translation>
@@ -1710,7 +1713,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2707024448553392710">Descargando componente</translation>
 <translation id="270921614578699633">Por encima de la media</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
-<translation id="2710014902399506864">Añadir un teléfono nuevo</translation>
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2712173769900027643">Solicitar permiso</translation>
@@ -2747,7 +2749,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicarse con un dispositivo USB}other{Comunicarse con # dispositivos USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">No se ha podido leer la política del modo demo sin conexión.</translation>
-<translation id="3766115177661377251">Enviar a una pantalla nueva</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Helado</translation>
 <translation id="3771290962915251154">Este ajuste está inhabilitado porque el control parental está activado</translation>
@@ -3094,6 +3095,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4095264805865317199">Abrir la interfaz de usuario de la activación de datos móviles</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="4096508467498758490">Inhabilitar extensiones en modo de desarrollador</translation>
+<translation id="4096797685681362305">Visto la semana pasada</translation>
 <translation id="4097406557126260163">Aplicaciones y extensiones</translation>
 <translation id="409742781329613461">Consejos para usar Chrome</translation>
 <translation id="4097560579602855702">Buscar en Google</translation>
@@ -3650,6 +3652,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Inicio de sesión del padre o de la madre</translation>
+<translation id="4701335814944566468">Visto ayer</translation>
 <translation id="4708794300267213770">Mostrar la pantalla de bloqueo al activar el dispositivo</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
@@ -3717,6 +3720,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="479536056609751218">Página web (solo HTML)</translation>
 <translation id="4796142525425001238">Restaurar siempre</translation>
 <translation id="4798236378408895261">Adjuntar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (opción interna de Google)</translation>
+<translation id="479863874072008121">Gestionar dispositivos</translation>
 <translation id="4800839971935185386">Revisa las actualizaciones de los nombres y los iconos</translation>
 <translation id="4801448226354548035">Ocultar cuentas</translation>
 <translation id="4801512016965057443">Permitir roaming de datos móviles</translation>
@@ -6445,6 +6449,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659154729610375585">¿Salir del modo de incógnito de todas formas?</translation>
 <translation id="7659297516559011665">Solo contraseñas de este dispositivo</translation>
+<translation id="7659336857671800422">Consultar la guía de privacidad</translation>
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Ponte en contacto con el administrador para obtener permiso de inicio de sesión.</translation>
 <translation id="7661259717474717992">Permitir que los sitios guarden y consulten datos de cookies</translation>
 <translation id="7661451191293163002">No se ha podido obtener un certificado de registro.</translation>
@@ -7092,7 +7097,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8271268254812352141">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado. Personaliza los idiomas de traducción en <ph name="LINK_BEGIN" />Idiomas de sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Los pasos siguientes son para los padres. Puedes devolverle el <ph name="DEVICE_TYPE" /> al niño/a después de configurar la cuenta.</translation>
 <translation id="8272443605911821513">Para gestionar tus extensiones, haz clic en la opción Extensiones del menú Más herramientas.</translation>
-<translation id="8272677921396592934">Usar la cámara para escanear un código QR</translation>
 <translation id="8274332263553132018">Enviar archivo</translation>
 <translation id="8274921654076766238">La lupa sigue el foco del teclado</translation>
 <translation id="8274924778568117936">No apagues ni cierres tu <ph name="DEVICE_TYPE" /> hasta que termine de actualizarse. Tu <ph name="DEVICE_TYPE" /> se reiniciará cuando se complete la instalación.</translation>
@@ -7204,6 +7208,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Con permiso: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
 <translation id="8413385045638830869">Preguntar antes (recomendado)</translation>
+<translation id="8414249071344507766">Recuerdos ocultados durante 2 días</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (funda)</translation>
 <translation id="8417548266957501132">Contraseña parental</translation>
 <translation id="8418445294933751433">Mo&amp;strar como pestaña</translation>
@@ -7967,6 +7972,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9200339982498053969"><ph name="ORIGIN" /> podrá editar los archivos de <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Buscar con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Se borrarán todos los datos offline</translation>
+<translation id="9201117361710210082">Visto anteriormente</translation>
 <translation id="9201220332032049474">Opciones de bloqueo de pantalla</translation>
 <translation id="9201842707396338580">Se ha producido un error. Ponte en contacto con el propietario o el administrador del dispositivo Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Perfiles habilitados</translation>

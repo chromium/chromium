@@ -510,6 +510,7 @@
 <translation id="1521442365706402292">จัดการใบรับรอง</translation>
 <translation id="1521774566618522728">ใช้งานวันนี้</translation>
 <translation id="152234381334907219">ไม่เคยบันทึก</translation>
+<translation id="1523279371236772909">ดูในเดือนที่ผ่านมา</translation>
 <translation id="1523978563989812243">เครื่องมือการอ่านออกเสียงข้อความ</translation>
 <translation id="1524430321211440688">แป้นพิมพ์</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
@@ -1242,6 +1243,7 @@
 <translation id="2232876851878324699">ไฟล์นี้มีใบรับรองหนึ่งใบซึ่งไม่ได้นำเข้า:</translation>
 <translation id="2233502537820838181">&amp;ข้อมูลเพิ่มเติม</translation>
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
+<translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
 <translation id="2234876718134438132">การซิงค์และบริการของ Google</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2238379619048995541">ข้อมูลสถานะความถี่</translation>
@@ -1691,6 +1693,7 @@
 <translation id="2684004000387153598">หากต้องการดำเนินการต่อ ให้คลิก "ตกลง" จากนั้นคลิก "เพิ่มบุคคล" เพื่อสร้างโปรไฟล์ใหม่สำหรับที่อยู่อีเมล</translation>
 <translation id="2687403674020088961">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="2687407218262674387">ข้อกำหนดในการให้บริการ Google</translation>
+<translation id="2687621393791886981">ถามฉันทีหลัง</translation>
 <translation id="2688196195245426394">เกิดข้อผิดพลาดขณะลงทะเบียนอุปกรณ์กับเซิร์ฟเวอร์: <ph name="CLIENT_ERROR" /></translation>
 <translation id="2690024944919328218">แสดงตัวเลือกภาษา</translation>
 <translation id="2691385045260836588">รุ่น</translation>
@@ -1709,7 +1712,6 @@
 <translation id="2707024448553392710">คอมโพเนนต์กำลังดาวน์โหลด</translation>
 <translation id="270921614578699633">เฉลี่ยสูงกว่า</translation>
 <translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
-<translation id="2710014902399506864">เพิ่มโทรศัพท์เครื่องใหม่</translation>
 <translation id="2710101514844343743">ข้อมูลการใช้งานและการวินิจฉัย</translation>
 <translation id="271033894570825754">ใหม่</translation>
 <translation id="2712173769900027643">ขออนุญาต</translation>
@@ -2747,7 +2749,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{สื่อสารกับอุปกรณ์ USB 1 เครื่อง}other{สื่อสารกับอุปกรณ์ USB # เครื่อง}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{กำลังส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" />}other{กำลังส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">อ่านนโยบายโหมดสาธิตออฟไลน์ไม่ได้</translation>
-<translation id="3766115177661377251">แคสต์ไปยังจอแสดงผลใหม่</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">ไอศกรีม</translation>
 <translation id="3771290962915251154">การตั้งค่านี้ปิดใช้อยู่เนื่องจากการควบคุมโดยผู้ปกครองเปิดอยู่</translation>
@@ -3096,6 +3097,7 @@
 <translation id="4095264805865317199">เปิด UI การเปิดใช้งานเครือข่ายมือถือ</translation>
 <translation id="4095507791297118304">การแสดงผลหลัก</translation>
 <translation id="4096508467498758490">ปิดส่วนขยายโหมดนักพัฒนาซอฟต์แวร์</translation>
+<translation id="4096797685681362305">ดูในสัปดาห์ที่ผ่านมา</translation>
 <translation id="4097406557126260163">แอปและส่วนขยาย</translation>
 <translation id="409742781329613461">เคล็ดลับสำหรับ Chrome</translation>
 <translation id="4097560579602855702">ค้นหาใน Google</translation>
@@ -3652,6 +3654,7 @@
 <translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="4699357559218762027">(เรียกใช้อัตโนมัติ)</translation>
 <translation id="4701025263201366865">การลงชื่อเข้าใช้ของผู้ปกครอง</translation>
+<translation id="4701335814944566468">ดูเมื่อวานนี้</translation>
 <translation id="4708794300267213770">แสดงหน้าจอล็อกเมื่อปลุกให้ทำงานจากโหมดสลีป</translation>
 <translation id="4708849949179781599">ออกจาก <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">กู้คืนการตั้งค่า</translation>
@@ -3719,6 +3722,7 @@
 <translation id="479536056609751218">หน้าเว็บ HTML เท่านั้น</translation>
 <translation id="4796142525425001238">คืนค่าเสมอ</translation>
 <translation id="4798236378408895261">แนบ<ph name="BEGIN_LINK" />บันทึกบลูทูธ<ph name="END_LINK" /> (ใช้ภายใน Google)</translation>
+<translation id="479863874072008121">จัดการอุปกรณ์</translation>
 <translation id="4800839971935185386">ตรวจสอบการอัปเดตชื่อและไอคอน</translation>
 <translation id="4801448226354548035">ซ่อนบัญชี</translation>
 <translation id="4801512016965057443">อนุญาตการโรมมิ่งข้อมูลมือถือ</translation>
@@ -6449,6 +6453,7 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7659154729610375585">ต้องการออกจากโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="7659297516559011665">รหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="7659336857671800422">ดูคู่มือความเป็นส่วนตัว</translation>
 <translation id="7659584679870740384">คุณไม่ได้รับอนุญาตให้ใช้อุปกรณ์นี้ โปรดติดต่อผู้ดูแลระบบเพื่อขออนุญาตลงชื่อเข้าใช้</translation>
 <translation id="7661259717474717992">อนุญาตให้เว็บไซต์บันทึกและอ่านข้อมูลคุกกี้</translation>
 <translation id="7661451191293163002">ไม่สามารถรับใบรับรองการลงทะเบียน</translation>
@@ -7095,7 +7100,6 @@
 <translation id="8271268254812352141">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้ เปลี่ยนภาษาของคำแปลใน<ph name="LINK_BEGIN" />ภาษาของเว็บไซต์<ph name="LINK_END" /></translation>
 <translation id="8271379370373330993">ขั้นตอนต่อๆ ไปมีไว้สำหรับผู้ปกครอง คุณคืน <ph name="DEVICE_TYPE" /> ให้บุตรหลานได้หลังจากที่สร้างบัญชีแล้ว</translation>
 <translation id="8272443605911821513">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือเพิ่มเติม"</translation>
-<translation id="8272677921396592934">ใช้กล้องเพื่อสแกนคิวอาร์โค้ด</translation>
 <translation id="8274332263553132018">แคสต์ไฟล์</translation>
 <translation id="8274921654076766238">แว่นขยายตามโฟกัสของแป้นพิมพ์</translation>
 <translation id="8274924778568117936">อย่าปิดเครื่องหรือปิดฝา <ph name="DEVICE_TYPE" /> จนกว่าการอัปเดตจะเสร็จสิ้น <ph name="DEVICE_TYPE" /> จะรีสตาร์ทหลังติดตั้งเสร็จแล้ว</translation>
@@ -7207,6 +7211,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">อนุญาตให้เข้าถึง<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="8413385045638830869">ถามก่อน (แนะนำ)</translation>
+<translation id="8414249071344507766">ซ่อนความทรงจำเป็นเวลา 2 วัน</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
 <translation id="8417548266957501132">รหัสผ่านสำหรับผู้ปกครอง</translation>
 <translation id="8418445294933751433">แ&amp;สดงเป็นแถบ</translation>
@@ -7970,6 +7975,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> จะแก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="920045321358709304">ค้นหา <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">ระบบจะล้างข้อมูลออฟไลน์ทั้งหมด</translation>
+<translation id="9201117361710210082">ดูก่อนหน้านี้</translation>
 <translation id="9201220332032049474">ตัวเลือกการล็อกหน้าจอ</translation>
 <translation id="9201842707396338580">มีข้อผิดพลาดเกิดขึ้น โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="9203398526606335860">&amp;เปิดใช้งานการทำแฟ้มประวัติ</translation>

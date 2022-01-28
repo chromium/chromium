@@ -512,6 +512,7 @@
 <translation id="1521442365706402292">Hantera certifikat</translation>
 <translation id="1521774566618522728">Aktiv idag</translation>
 <translation id="152234381334907219">Aldrig sparat</translation>
+<translation id="1523279371236772909">Visades under den senaste månaden</translation>
 <translation id="1523978563989812243">Motorer för text till tal</translation>
 <translation id="1524430321211440688">Tangentbord</translation>
 <translation id="1524563461097350801">Nej tack</translation>
@@ -1254,6 +1255,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2232876851878324699">Filen innehöll ett certifikat och det importerades inte:</translation>
 <translation id="2233502537820838181">Mer information</translation>
 <translation id="223356358902285214">Webb- och appaktivitet</translation>
+<translation id="2234827758954819389">Integritetsguide</translation>
 <translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2235344399760031203">Cookies från tredje part har blockerats</translation>
 <translation id="2238379619048995541">Data för frekvenstillstånd</translation>
@@ -1706,6 +1708,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2684004000387153598">Fortsätt genom att klicka på OK. Skapa sedan en ny profil för din e-postadress genom att klicka på Lägg till person.</translation>
 <translation id="2687403674020088961">Blockera alla cookies (rekommenderas inte)</translation>
 <translation id="2687407218262674387">Googles användarvillkor</translation>
+<translation id="2687621393791886981">Fråga senare</translation>
 <translation id="2688196195245426394">Det uppstod ett fel när enheten registrerades med servern: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Visa språkalternativ</translation>
 <translation id="2691385045260836588">Modell</translation>
@@ -1724,7 +1727,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2707024448553392710">Komponenten laddas ned</translation>
 <translation id="270921614578699633">Medelvärde för</translation>
 <translation id="2709516037105925701">Autofyll</translation>
-<translation id="2710014902399506864">Lägg till en ny telefon</translation>
 <translation id="2710101514844343743">Diagnostik- och användningsdata</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2712173769900027643">Be om tillstånd</translation>
@@ -2762,7 +2764,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kommunicera med en USB-enhet}other{Kommunicera med # USB-enheter}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> skickas till <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> skickas till <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Det gick inte att läsa in offlinepolicyn för demoläge.</translation>
-<translation id="3766115177661377251">Casta till en ny skärm</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Glass</translation>
 <translation id="3771290962915251154">Inställningen är inaktiverad eftersom föräldrakontroller används</translation>
@@ -3110,6 +3111,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4095264805865317199">Öppna användargränssnittet för aktivering av mobilnätverk</translation>
 <translation id="4095507791297118304">Primär skärm</translation>
 <translation id="4096508467498758490">Inaktivera tillägg i utvecklarläge</translation>
+<translation id="4096797685681362305">Visades under den senaste veckan</translation>
 <translation id="4097406557126260163">Appar och tillägg</translation>
 <translation id="409742781329613461">Tips för Chrome</translation>
 <translation id="4097560579602855702">Sök på Google</translation>
@@ -3667,6 +3669,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
 <translation id="4699357559218762027">(startas automatiskt)</translation>
 <translation id="4701025263201366865">Föräldrainloggning</translation>
+<translation id="4701335814944566468">Visades i går</translation>
 <translation id="4708794300267213770">Visa låsskärm efter viloläge</translation>
 <translation id="4708849949179781599">Avsluta <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Återställ inställningarna</translation>
@@ -3734,6 +3737,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="479536056609751218">Webbsida, endast HTML</translation>
 <translation id="4796142525425001238">Återställ alltid</translation>
 <translation id="4798236378408895261">Bifoga <ph name="BEGIN_LINK" />Bluetooth-loggar<ph name="END_LINK" /> (internt för Google)</translation>
+<translation id="479863874072008121">Hantera enheter</translation>
 <translation id="4800839971935185386">Granska namn- och ikonuppdateringar</translation>
 <translation id="4801448226354548035">Dölj konton</translation>
 <translation id="4801512016965057443">Tillåt mobil dataroaming</translation>
@@ -6462,6 +6466,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659154729610375585">Vill du stänga inkognitoläget ändå?</translation>
 <translation id="7659297516559011665">Endast lösenord på den här enheten</translation>
+<translation id="7659336857671800422">Ta del av integritetsguiden</translation>
 <translation id="7659584679870740384">Du har inte behörighet att använda den här enheten. Kontakta administratören om du vill ha behörighet att logga in.</translation>
 <translation id="7661259717474717992">Tillåt att webbplatser sparar och läser data i cookies</translation>
 <translation id="7661451191293163002">Ett registreringscertifikat gick inte att erhålla.</translation>
@@ -7109,7 +7114,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8271268254812352141">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text. Anpassa språken för översättning via <ph name="LINK_BEGIN" />Språk på webbplatser<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Nästa steg är till för dig som är förälder. Du kan lämna tillbaka <ph name="DEVICE_TYPE" /> till barnet när konfigureringen av kontot är klar.</translation>
 <translation id="8272443605911821513">Hantera dina tillägg genom att klicka på Tillägg i menyn Fler verktyg.</translation>
-<translation id="8272677921396592934">Skanna QR-koden med kameran</translation>
 <translation id="8274332263553132018">Casta fil</translation>
 <translation id="8274921654076766238">Förstoringsglaset följer tangentbordsfokus</translation>
 <translation id="8274924778568117936">Stäng inte av eller stäng <ph name="DEVICE_TYPE" /> förrän uppdateringen har slutförts. <ph name="DEVICE_TYPE" /> startas om när installationen är slutförd.</translation>
@@ -7221,6 +7225,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Behörighet till <ph name="PERMISSION" /> och <ph name="COUNT" /> till har tillåtits</translation>
 <translation id="8413385045638830869">Fråga först (rekommenderas)</translation>
+<translation id="8414249071344507766">Minnen döljs i två dagar</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (fodral)</translation>
 <translation id="8417548266957501132">Förälderns lösenord</translation>
 <translation id="8418445294933751433">&amp;Visa som flik</translation>
@@ -7984,6 +7989,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9200339982498053969"><ph name="ORIGIN" /> får redigeringsbehörighet till filer i <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Sök på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">All offlinedata raderas</translation>
+<translation id="9201117361710210082">Har visats tidigare</translation>
 <translation id="9201220332032049474">Alternativ för skärmlås</translation>
 <translation id="9201842707396338580">Något gick fel. Kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilering aktiverad</translation>

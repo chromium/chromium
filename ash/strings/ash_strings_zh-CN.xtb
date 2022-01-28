@@ -79,6 +79,7 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1364382257761975320">若要解锁 Chromebook，请使用指纹</translation>
+<translation id="1364618750746929654">无法生成转录</translation>
 <translation id="1383597849754832576">无法下载实时字幕文件。请稍后再试。</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1391102559483454063">已开启</translation>
@@ -676,6 +677,7 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5465662442746197494">需要帮助？</translation>
 <translation id="547979256943495781">任务栏位于屏幕右侧</translation>
+<translation id="5491186829646618080">有可用的固件更新</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">您的管理员已移除所有 eSIM 卡配置文件。如需了解详情，请与您的管理员联系。</translation>
 <translation id="5523434445161341166">“<ph name="FEATURE_NAME" />”正在连接。</translation>
@@ -1173,6 +1175,7 @@
 <translation id="8876661425082386199">请检查您的网络连接状况</translation>
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8878886163241303700">正在扩展屏幕</translation>
+<translation id="888982883502837004">有适用于您设备的固件更新。点击即可查看并更新。</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />”会被永久删除</translation>
 <translation id="890616557918890486">更改来源</translation>
 <translation id="8909138438987180327">剩余的电池电量为 <ph name="PERCENTAGE" />%。</translation>

@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">Для цього натисніть відповідну кнопку вгорі екрана</translation>
 <translation id="5197729504361054390">Веб-сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> отримає доступ до вибраних контактів.</translation>
 <translation id="5216942107514965959">Останнє відвідування: сьогодні</translation>
+<translation id="5264323282659631142">Видалити запит "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Щоб вийти з повноекранного режиму, проведіть пальцем по екрану згори вниз і торкніться кнопки "Назад".</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">Сайт використовує мікрофон</translation>
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="757524316907819857">Заборонити сайтам відтворювати захищений вміст</translation>
+<translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7781829728241885113">Учора</translation>

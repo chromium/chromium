@@ -82,6 +82,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351937230027495976">Réduire le menu</translation>
 <translation id="1364382257761975320">Utilisez votre empreinte digitale pour déverrouiller votre Chromebook</translation>
+<translation id="1364618750746929654">Impossible de générer une transcription</translation>
 <translation id="1383597849754832576">Impossible de télécharger les fichiers de synthèse textuelle. Réessayez plus tard.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1391102559483454063">Activé</translation>
@@ -679,6 +680,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="54609108002486618">Géré</translation>
 <translation id="5465662442746197494">Besoin d'aide?</translation>
 <translation id="547979256943495781">Étagère à droite</translation>
+<translation id="5491186829646618080">Des mises à jour du micrologiciel sont disponibles</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Votre administrateur a retiré tous les profils eSIM. Pour en savoir plus, communiquez avec votre administrateur.</translation>
 <translation id="5523434445161341166">La fonctionnalité <ph name="FEATURE_NAME" /> en train de se connecter.</translation>
@@ -1177,6 +1179,7 @@ Nouvelle installation</translation>
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>
 <translation id="8877788021141246043">Créer un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
+<translation id="888982883502837004">Des mises à jour du micrologiciel sont disponibles pour votre appareil. Cliquez pour les passer en revue et lancer la mise à jour.</translation>
 <translation id="8896630965521842259">Le modèle <ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>
 <translation id="890616557918890486">Changer de source</translation>
 <translation id="8909138438987180327">Pile chargée à <ph name="PERCENTAGE" /> %.</translation>

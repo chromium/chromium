@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">స్కాన్ ఏరియాకు సెట్ చేయండి</translation>
 <translation id="1387854245479784695">ఇది అన్ని కోర్‌ల సముదాయం</translation>
+<translation id="1394661041439318933">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% కేస్ బ్యాటరీ ఉంది.</translation>
 <translation id="1397738625398125236">గేట్‌వేను పింగ్ చేయవచ్చు</translation>
 <translation id="1398634363027580500">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="1413240736185167732">విఫలమైంది - ఫిల్టర్ విఫలమైంది</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">నా దగ్గర కీపెయిర్ ఉంది</translation>
+<translation id="1451536289672181509">పరికర రకం కీబోర్డ్.</translation>
 <translation id="1468664791493211953">ఆఫర్‌లు</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />, ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, ఇంకా మీ యాక్టివిటీని మానిటర్ చేయగలదు.</translation>
 <translation id="1478594628797167447">స్కానర్</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2104796393919810494">రిపేర్ చేయడం పూర్తయింది</translation>
+<translation id="2105810540595158374">పరికర రకం గేమ్ కంట్రోలర్.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBలో <ph name="AVAILABLE_MEMORY" /> GB అందుబాటులో ఉంది</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
+<translation id="3031560714565892478">పరికర రకం వీడియో కెమెరా.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ముగింపుపాయింట్</translation>
 <translation id="3069085583900247081">పరీక్ష విఫలమైంది</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
 <translation id="3102119246920354026">కాష్</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">పరికరం కనెక్ట్ చేయబడింది.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{పేజీని తీసివేయాలా?}=1{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}other{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}}</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />వ పేజీని స్కాన్ చేస్తోంది...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
+<translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ చరిత్ర మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />వ పేజీని స్కాన్ చేస్తోంది. <ph name="PERCENTAGE_VALUE" />% పూర్తయింది.</translation>
 <translation id="3459509316159669723">ప్రింటింగ్</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> అప్‌డేట్ అవుతోంది</translation>
+<translation id="3484914941826596830">ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఈ అప్‌డేట్‌కు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చెయ్యబడింది</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
 <translation id="3941014780699102620">హోస్ట్‌ను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="3942420633017001071">నిర్ధారణలు</translation>
+<translation id="3954678691475912818">పరికరం రకం తెలియదు.</translation>
 <translation id="3966286471246132217">మరింత ఖచ్చితమైన ఫలితాల కోసం, టెస్ట్ పూర్తయ్యే వరకు అన్ని యాప్‌లను మూసివేయండి.</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="4891842000192098784">ఒత్తిడి</translation>
+<translation id="4897058166682006107">పరికరంలో ఎడమ వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
@@ -321,6 +330,7 @@
 <translation id="5346687412805619883">లోకల్ నెట్‌వర్క్</translation>
 <translation id="5358174242040570474">ఏదో తప్పు జరిగింది. వాల్‌పేపర్‌ను ఎంచుకోవడానికి మళ్లీ ట్రై చేయండి లేదా యాప్‌ను మళ్లీ తెరవండి.</translation>
 <translation id="5372659122375744710">WiFi నెట్‌వర్క్ సురక్షితంగా లేదు</translation>
+<translation id="5400907029458559844">పరికరం కనెక్ట్ అవుతోంది.</translation>
 <translation id="5401938042319910061">అన్ని కమాండ్ రొటీన్‌లను రన్ చేయండి</translation>
 <translation id="5423849171846380976">సక్రియం చెయ్యబడింది</translation>
 <translation id="5430931332414098647">తక్షణ టెథెరింగ్</translation>
@@ -382,6 +392,7 @@
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> టెస్ట్ రద్దు చేయబడింది</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" />‌లో ఫర్మ్‌వేర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="6340526405444716530">వ్యక్తిగతీకరణ</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
@@ -414,6 +425,7 @@
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>
 <translation id="6747215703636344499">ఆగిపోయింది - అవుట్‌పుట్ నిండిపోయింది</translation>
 <translation id="6749473226660745022">Photos</translation>
+<translation id="6753452347192452143">పరికర రకం కంప్యూటర్.</translation>
 <translation id="6756731097889387912">స్కానింగ్‌ను రద్దు చేయడం సాధ్యపడలేదు</translation>
 <translation id="6766275201586212568">విఫలమైన DNS రిజల్యూషన్‌లు</translation>
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
@@ -431,12 +443,14 @@
 <translation id="6992266763844448459">పరికర యాజమాన్య హక్కు మారకుండా ఉంటే, ఈ ఆప్షన్‌ను ఎంచుకోండి. ఉదాహరణకు, పరికరాన్ని ఒకే సంస్థకు చెందిన వేరే వ్యక్తికి బదిలీ చేయడం.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఈమెయిళ్లతో సహా యూజర్ యాక్టివిటీకి యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
 <translation id="7040230719604914234">ఆపరేటర్</translation>
+<translation id="7041549558901442110">పరికరం కనెక్ట్ కాలేదు.</translation>
 <translation id="7058278511608979688">ఆపివేసి, సేవ్ చేయండి</translation>
 <translation id="7059230779847288458">ఛార్జ్ అవుతోంది, పూర్తి కావడానికి <ph name="TIME_VALUE" /> సమయం పడుతుంది</translation>
 <translation id="7068619307603204412">మీ పరికరాన్ని సిద్ధం చేయండి</translation>
 <translation id="708426984172631313">ఆపివేయబడింది</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">విఫలమైంది - ప్రామాణీకరణ విఫలమైంది</translation>
+<translation id="7103252855940681301"><ph name="COUNT" />లో <ph name="INDEX" /> పరికరాలు <ph name="NAME" /> అనే పేరుతో ఉన్నాయి.</translation>
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
@@ -471,6 +485,7 @@
 <translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">సమస్య విశ్లేషణ రొటీన్‌లు</translation>
+<translation id="7551123448725492271">పరికరం రకం ఆడియో పరికరం.</translation>
 <translation id="7561454561030345039">ఈ చర్య మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB టచ్‌స్క్రీన్</translation>
@@ -478,6 +493,7 @@
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="763165478673169849">చివరిగా రీసెట్ చేసిన సమయం</translation>
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
+<translation id="7656388927906093505">పరికరం రకం మౌస్.</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
@@ -574,6 +590,7 @@
 <translation id="8855781559874488009">HTTP వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడదు</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />", అలాగే మరిన్నింటి కోసం <ph name="INTENT" />ను పొందండి</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">పరికర రకం టాబ్లెట్.</translation>
 <translation id="8881098542468797602">పరీక్ష విజయవంతమైంది</translation>
 <translation id="8898840733695078011">సిగ్నల్ సామర్థ్యం</translation>
 <translation id="8910721771319628100">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్ నెట్‌వర్క్</translation>
@@ -584,11 +601,13 @@
 <translation id="8930622219860340959">వైర్‌లెస్</translation>
 <translation id="8936793075252196307">క్లయింట్ IP అడ్రస్</translation>
 <translation id="8945750210906526975">అంతర్గత టచ్‌ప్యాడ్</translation>
+<translation id="894617464444543719">పరికర రకం ఫోన్.</translation>
 <translation id="8968751544471797276">ఛార్జింగ్ రేట్</translation>
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
 <translation id="8994273342647807496">ఇన్‌స్టాల్ అవుతోంది - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది.</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS రిజల్యూషన్ అధిక ప్రతిస్పందన సమయాన్ని కలిగి ఉంది</translation>

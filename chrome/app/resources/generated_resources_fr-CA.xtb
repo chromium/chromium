@@ -510,6 +510,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1521442365706402292">Gérer les certificats</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
 <translation id="152234381334907219">Jamais enregistrés</translation>
+<translation id="1523279371236772909">Consulté le mois dernier</translation>
 <translation id="1523978563989812243">Moteurs de synthèse vocale</translation>
 <translation id="1524430321211440688">Clavier</translation>
 <translation id="1524563461097350801">Non, merci</translation>
@@ -1241,6 +1242,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2232876851878324699">Le fichier contenait un certificat, qui n'a pas été importé :</translation>
 <translation id="2233502537820838181">Plus d'infor&amp;mation</translation>
 <translation id="223356358902285214">Activité sur le Web et dans les applications</translation>
+<translation id="2234827758954819389">Guide sur la confidentialité</translation>
 <translation id="2234876718134438132">Synchronisation et services Google</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2238379619048995541">Données sur l'état de la fréquence</translation>
@@ -1691,6 +1693,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2684004000387153598">Pour continuer, cliquez sur OK, puis sur Ajouter une personne pour créer un nouveau profil pour votre adresse de courriel.</translation>
 <translation id="2687403674020088961">Bloquer tous les témoins (non recommandé)</translation>
 <translation id="2687407218262674387">Conditions d'utilisation de Google</translation>
+<translation id="2687621393791886981">Me demander plus tard</translation>
 <translation id="2688196195245426394">Erreur lors de l'enregistrement de l'appareil avec le serveur : <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Afficher les options de langue</translation>
 <translation id="2691385045260836588">Modèle</translation>
@@ -1709,7 +1712,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2707024448553392710">Téléchargement de composants en cours…</translation>
 <translation id="270921614578699633">Moyenne de</translation>
 <translation id="2709516037105925701">Remplissage automatique</translation>
-<translation id="2710014902399506864">Ajouter un téléphone</translation>
 <translation id="2710101514844343743">Données d'utilisation et de diagnostics</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2712173769900027643">Demander l’autorisation</translation>
@@ -2746,7 +2748,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communique avec un appareil USB}one{Communique avec # appareil USB}other{Communique avec # appareils USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}one{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}other{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}}</translation>
 <translation id="3765246971671567135">Impossible de lire la politique du mode démo hors ligne.</translation>
-<translation id="3766115177661377251">Diffuser vers un nouvel écran</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Crème glacée</translation>
 <translation id="3771290962915251154">Ce paramètre est désactivé parce que les contrôles parentaux sont activés</translation>
@@ -3094,6 +3095,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4095264805865317199">Ouvrir l'IU d'activation cellulaire</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
 <translation id="4096508467498758490">Désactiver les extensions du mode développeur</translation>
+<translation id="4096797685681362305">Consulté la semaine dernière</translation>
 <translation id="4097406557126260163">Applications et extensions</translation>
 <translation id="409742781329613461">Astuces pour Chrome</translation>
 <translation id="4097560579602855702">Rechercher sur Google</translation>
@@ -3649,6 +3651,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4699172675775169585">Images et fichiers dans la mémoire cache</translation>
 <translation id="4699357559218762027">(lancement automatique)</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
+<translation id="4701335814944566468">Consulté hier</translation>
 <translation id="4708794300267213770">Afficher l'écran de verrouillage au réveil</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
@@ -3716,6 +3719,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="479536056609751218">Page Web, HTML uniquement</translation>
 <translation id="4796142525425001238">Toujours restaurer</translation>
 <translation id="4798236378408895261">Associer les <ph name="BEGIN_LINK" />journaux Bluetooth<ph name="END_LINK" /> (données internes de Google)</translation>
+<translation id="479863874072008121">Gérer les appareils</translation>
 <translation id="4800839971935185386">Examiner les mises à jour du nom et de l'icône</translation>
 <translation id="4801448226354548035">Masquer les comptes</translation>
 <translation id="4801512016965057443">Autoriser l'itinérance des données mobiles</translation>
@@ -6439,6 +6443,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659154729610375585">Quitter le mode de navigation privée quand même?</translation>
 <translation id="7659297516559011665">Les mots de passe sur cet appareil seulement</translation>
+<translation id="7659336857671800422">Passer en revue le guide sur la confidentialité</translation>
 <translation id="7659584679870740384">Vous n'êtes pas autorisé(e) à utiliser cet appareil. Pour obtenir l'autorisation de vous y connecter, veuillez communiquer avec l'administrateur.</translation>
 <translation id="7661259717474717992">Autoriser les sites à enregistrer et à lire les données des fichiers témoins</translation>
 <translation id="7661451191293163002">Impossible d'obtenir un certificat d'enregistrement.</translation>
@@ -7085,7 +7090,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8271268254812352141">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte. Personnalisez les langues de traduction dans la section <ph name="LINK_BEGIN" />Langues du site Web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Parents, les prochaines étapes sont pour vous. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à l'enfant une fois que son compte aura été configuré.</translation>
 <translation id="8272443605911821513">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Autres outils ».</translation>
-<translation id="8272677921396592934">Utiliser l'appareil photo pour numériser le code QR</translation>
 <translation id="8274332263553132018">Diffuser un fichier</translation>
 <translation id="8274921654076766238">La loupe suit les actions au clavier</translation>
 <translation id="8274924778568117936">N'éteignez pas votre <ph name="DEVICE_TYPE" /> et ne le fermez pas tant que la mise à jour n'est pas terminée. Votre <ph name="DEVICE_TYPE" /> redémarrera une fois l'installation terminée.</translation>
@@ -7197,6 +7201,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Autorisations accordées : <ph name="PERMISSION" /> et <ph name="COUNT" /> autres</translation>
 <translation id="8413385045638830869">Demander d'abord (recommandé)</translation>
+<translation id="8414249071344507766">Souvenirs masqués pour deux jours</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
 <translation id="8417548266957501132">Mot de passe du parent</translation>
 <translation id="8418445294933751433">Afficher dan&amp;s un onglet</translation>
@@ -7961,6 +7966,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9200339982498053969"><ph name="ORIGIN" /> pourra modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Rechercher <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Toutes les données hors ligne seront effacées</translation>
+<translation id="9201117361710210082">Consulté précédemment</translation>
 <translation id="9201220332032049474">Options de verrouillage de l'écran</translation>
 <translation id="9201842707396338580">Une erreur s'est produite. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilage activé</translation>

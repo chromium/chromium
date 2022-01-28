@@ -511,6 +511,7 @@
 <translation id="1521442365706402292">ניהול אישורים</translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="152234381334907219">פריטים שאף פעם לא נשמרו</translation>
+<translation id="1523279371236772909">נצפה בחודש האחרון</translation>
 <translation id="1523978563989812243">‏מנוע המרת טקסט לדיבור (TTS)</translation>
 <translation id="1524430321211440688">מקלדת</translation>
 <translation id="1524563461097350801">לא, תודה</translation>
@@ -1253,6 +1254,7 @@
 <translation id="2232876851878324699">הקובץ הכיל אישור אחד, שלא יובא:</translation>
 <translation id="2233502537820838181">&amp;מידע נוסף</translation>
 <translation id="223356358902285214">פעילות באינטרנט ובאפליקציות</translation>
+<translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
 <translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2238379619048995541">נתוני מצב תדירות</translation>
@@ -1705,6 +1707,7 @@
 <translation id="2684004000387153598">כדי להמשיך יש ללחוץ על 'אישור' ולאחר מכן ללחוץ על 'הוספת משתמש' כדי ליצור פרופיל חדש בשביל כתובת האימייל שלך.</translation>
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2687407218262674387">‏תנאים והגבלות של Google</translation>
+<translation id="2687621393791886981">אחליט מאוחר יותר</translation>
 <translation id="2688196195245426394">אירעה שגיאה בעת רישום המכשיר בשרת: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">הצגת אפשרויות שפה</translation>
 <translation id="2691385045260836588">דגם</translation>
@@ -1723,7 +1726,6 @@
 <translation id="2707024448553392710">הורדת הרכיב מתבצעת</translation>
 <translation id="270921614578699633">מעל לממוצע</translation>
 <translation id="2709516037105925701">מילוי אוטומטי</translation>
-<translation id="2710014902399506864">הוספת טלפון חדש</translation>
 <translation id="2710101514844343743">מידע על אופן השימוש בנתונים וניתוח הביצועים</translation>
 <translation id="271033894570825754">חדש</translation>
 <translation id="2712173769900027643">בקשת רשות</translation>
@@ -2762,7 +2764,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏תקשורת עם מכשיר USB אחד}two{‏תקשורת עם # מכשירי USB}many{‏תקשורת עם # מכשירי USB}other{‏תקשורת עם # מכשירי USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}two{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}many{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}other{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">לא ניתן לקרוא מדיניות של מצב הדגמה לא מקוון.</translation>
-<translation id="3766115177661377251">‏העברה (cast) למסך חדש</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> הרץ</translation>
 <translation id="377050016711188788">גלידה</translation>
 <translation id="3771290962915251154">ההגדרה הזו מושבתת מאחר שבקרת ההורים מופעלת</translation>
@@ -3110,6 +3111,7 @@
 <translation id="4095264805865317199">פתיחת ממשק המשתמש להפעלה סלולרית</translation>
 <translation id="4095507791297118304">צג ראשי</translation>
 <translation id="4096508467498758490">השבתת תוספים של מצב מפתח</translation>
+<translation id="4096797685681362305">נצפה בשבוע האחרון</translation>
 <translation id="4097406557126260163">אפליקציות ותוספים</translation>
 <translation id="409742781329613461">‏טיפים לשימוש ב-Chrome</translation>
 <translation id="4097560579602855702">‏חיפוש ב-Google</translation>
@@ -3667,6 +3669,7 @@
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>
 <translation id="4699357559218762027">(מופעלת אוטומטית)</translation>
 <translation id="4701025263201366865">כניסה של הורה</translation>
+<translation id="4701335814944566468">נצפה אתמול</translation>
 <translation id="4708794300267213770">הצגת מסך הנעילה ביציאה ממצב שינה</translation>
 <translation id="4708849949179781599">יציאה מ-<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">שחזור הגדרות</translation>
@@ -3734,6 +3737,7 @@
 <translation id="479536056609751218">‏דף אינטרנט, HTML בלבד</translation>
 <translation id="4796142525425001238">תמיד לשחזר</translation>
 <translation id="4798236378408895261">‏צירוף של <ph name="BEGIN_LINK" />יומני Bluetooth<ph name="END_LINK" /> (מידע פנימי של Google)</translation>
+<translation id="479863874072008121">ניהול מכשירים</translation>
 <translation id="4800839971935185386">בדיקה של עדכוני הסמל והשם</translation>
 <translation id="4801448226354548035">הסתרת חשבונות</translation>
 <translation id="4801512016965057443">אפשר נדידה</translation>
@@ -6462,6 +6466,7 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659154729610375585">לצאת מהמצב האנונימי בכל זאת?</translation>
 <translation id="7659297516559011665">רק סיסמאות במכשיר הזה</translation>
+<translation id="7659336857671800422">כניסה למדריך בנושא פרטיות</translation>
 <translation id="7659584679870740384">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם מנהל המערכת כדי לקבל הרשאה לכניסה.</translation>
 <translation id="7661259717474717992">‏לאפשר לאתרים לשמור ולקרוא נתונים של קובצי Cookie</translation>
 <translation id="7661451191293163002">לא ניתן להשיג אישור הרשמה.</translation>
@@ -7110,7 +7115,6 @@
 <translation id="8271268254812352141">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות. ב<ph name="LINK_BEGIN" />שפות לאתרים<ph name="LINK_END" /> אפשר להתאים אישית את השפות לתרגום.</translation>
 <translation id="8271379370373330993">עכשיו יש כמה שלבים שהורים צריכים להשלים. אפשר יהיה להחזיר את ה-<ph name="DEVICE_TYPE" /> לילד/ה לאחר הגדרת החשבון.</translation>
 <translation id="8272443605911821513">אפשר לנהל את התוספים על ידי לחיצה על 'תוספים' בתפריט 'כלים נוספים'.</translation>
-<translation id="8272677921396592934">‏סריקת קוד QR באמצעות המצלמה</translation>
 <translation id="8274332263553132018">העברת קובץ</translation>
 <translation id="8274921654076766238">מגדיר עוקב אחרי מיקוד המקלדת</translation>
 <translation id="8274924778568117936">אין לכבות או לסגור את ה-<ph name="DEVICE_TYPE" /> לפני סיום העדכון. ה-<ph name="DEVICE_TYPE" /> יופעל מחדש באופן אוטומטי בסיום ההתקנה.</translation>
@@ -7222,6 +7226,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">יש אישור להרשאות <ph name="PERMISSION" /> ועוד <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">יש לשאול קודם (מומלץ)</translation>
+<translation id="8414249071344507766">הפריטים של אוסף הזיכרון מוסתרים למשך יומיים</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (נרתיק)</translation>
 <translation id="8417548266957501132">סיסמת הורה</translation>
 <translation id="8418445294933751433">&amp;הצגה ככרטיסייה</translation>
@@ -7987,6 +7992,7 @@
 <translation id="9200339982498053969">ל-<ph name="ORIGIN" /> תהיה הרשאה לערוך את הקבצים בתיקייה <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">חיפוש ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">המערכת תמחק את כל הנתונים שנשמרו במצב אופליין</translation>
+<translation id="9201117361710210082">נצפה בעבר</translation>
 <translation id="9201220332032049474">אפשרויות נעילת מסך</translation>
 <translation id="9201842707396338580">משהו השתבש. יש לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;יצירת פרופילים מופעלת</translation>

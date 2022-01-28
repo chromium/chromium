@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
 <translation id="1364382257761975320">Chromebook을 잠금 해제하려면 지문을 사용하세요.</translation>
+<translation id="1364618750746929654">스크립트를 생성할 수 없음</translation>
 <translation id="1383597849754832576">음성 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1391102559483454063">사용</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">관리</translation>
 <translation id="5465662442746197494">도움이 필요하신가요?</translation>
 <translation id="547979256943495781">오른쪽에 실행기 표시</translation>
+<translation id="5491186829646618080">펌웨어 업데이트 사용 가능</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">관리자가 모든 eSIM 프로필을 삭제했습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" />이 연결을 시도하는 중입니다.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="8876661425082386199">연결 상태 확인</translation>
 <translation id="8877788021141246043">알림을 설정해 줘</translation>
 <translation id="8878886163241303700">화면 확대</translation>
+<translation id="888982883502837004">이용할 수 있는 기기 펌웨어 업데이트가 있습니다. 클릭하여 확인한 후 업데이트하세요.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 템플릿이 완전히 삭제됩니다.</translation>
 <translation id="890616557918890486">소스 변경</translation>
 <translation id="8909138438987180327">남은 배터리는 <ph name="PERCENTAGE" />%입니다.</translation>

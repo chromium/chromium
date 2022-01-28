@@ -82,6 +82,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351937230027495976">Palos menynë</translation>
 <translation id="1364382257761975320">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit</translation>
+<translation id="1364618750746929654">Transkriptimi nuk mund të gjenerohet</translation>
 <translation id="1383597849754832576">Skedarët e ligjërimit nuk mund të shkarkohen. Provo përsëri më vonë.</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1391102559483454063">Aktiv</translation>
@@ -679,6 +680,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
 <translation id="5465662442746197494">Ke nevojë për ndihmë?</translation>
 <translation id="547979256943495781">Rafti në të djathtë</translation>
+<translation id="5491186829646618080">Ofrohen përditësime të firmuerit</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratori yt ka hequr të gjitha profilet e kartës eSIM. Kontakto me administratorin për më shumë informacion.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> po lidhet.</translation>
@@ -1177,6 +1179,7 @@ Instalim i ri</translation>
 <translation id="8876661425082386199">Kontrollo lidhjen tënde</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
 <translation id="8878886163241303700">Ekran i zgjeruar</translation>
+<translation id="888982883502837004">Ofrohen përditësime firmueri për pajisjen tënde. Kliko për të shqyrtuar dhe përditësuar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> do të fshihet përgjithmonë</translation>
 <translation id="890616557918890486">Ndrysho burimin</translation>
 <translation id="8909138438987180327">Bateria është në <ph name="PERCENTAGE" /> për qind.</translation>

@@ -1710,7 +1710,6 @@
 <translation id="2707024448553392710">अवयव डाउनलोड गर्दै</translation>
 <translation id="270921614578699633">औसत ओभर</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
-<translation id="2710014902399506864">नयाँ फोन नम्बर हाल्नुहोस्</translation>
 <translation id="2710101514844343743">प्रयोग तथा निदानसम्बन्धी डेटा</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2712173769900027643">अनुमतिको लागि सोध्नुहोस्</translation>
@@ -2749,7 +2748,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ एउटा USB यन्त्रमार्फत संचार गर्नुहोस्}other{ # USB यन्त्रहरूमार्फत संचार गर्नुहोस्}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> मा <ph name="ATTACHMENTS" /> पठाइँदै}other{<ph name="DEVICE_NAME" /> मा <ph name="ATTACHMENTS" /> पठाइँदै}}</translation>
 <translation id="3765246971671567135">अफलाइन डेमो मोड नीति पढ्न सकिएन।</translation>
-<translation id="3766115177661377251">नयाँ डिस्प्लेमा कास्ट गर्नुहोस्</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> हर्ज</translation>
 <translation id="377050016711188788">आइसक्रिम</translation>
 <translation id="3771290962915251154">अभिभावकीय नियन्त्रणहरू सक्रिय गरिएका हुनाले यो सेटिङ असक्षम छ</translation>
@@ -7100,7 +7098,6 @@
 <translation id="8271268254812352141">तपाईंले कुनै पाठमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्। तपाईं <ph name="LINK_BEGIN" />वेबसाइटका भाषा<ph name="LINK_END" />मा गई अनुवाद सेवाका लागि आफूले चाहेअनुसारको भाषा चयन गर्न सक्नुहुन्छ।</translation>
 <translation id="8271379370373330993">अभिभावकहरूले पूरा गर्नु पर्ने आगामी केही चरणहरू यस प्रकार छन्। तपाईं खाता सेटअप गरेपछि बच्चालाई <ph name="DEVICE_TYPE" /> फिर्ता दिन सक्नुहुन्छ।</translation>
 <translation id="8272443605911821513">"थप उपकरण" मेनुमा एक्सटेन्सन क्लिक गरेर तपाईंको एक्सटेन्सनहरूको प्रबन्ध मिलाउनुहोस्।</translation>
-<translation id="8272677921396592934">QR कोड स्क्यान गर्न क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="8274332263553132018">फाइललाई Cast गर्नुहोस्</translation>
 <translation id="8274921654076766238">म्याग्निफायर किबोर्डको फोकससँगै सर्छ</translation>
 <translation id="8274924778568117936">अद्यावधिक पूरा नहुन्जेल आफ्नो <ph name="DEVICE_TYPE" /> लाई निष्क्रिय नपार्नुहोस् वा बन्द नगर्नुहोस्‌। स्थापना सम्पन्न भएपछि तपाईंको <ph name="DEVICE_TYPE" /> पुनः सुरु हुनेछ।</translation>

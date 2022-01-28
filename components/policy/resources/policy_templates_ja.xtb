@@ -736,6 +736,11 @@
 <translation id="1861206724856734193">データ漏洩防止ルールのリストを設定します。</translation>
 <translation id="1862267110714201519">ゴースト ウィンドウ機能を無効にする</translation>
 <translation id="1865417998205858223">キーの権限</translation>
+<translation id="1867025364110179456">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするウェブアプリのリストを指定します。ユーザーはこれらのウェブアプリをアンインストールすることもオフにすることもできません。
+
+      このポリシーで指定するリストの個々の項目は、必須の <ph name="URL_LABEL" />（インストールするウェブアプリの URL）と、5 つの省略可能な <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />（ウェブアプリを開く方法、デフォルトは新しいタブ）、<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />（<ph name="LINUX_OS_NAME" /> と <ph name="MS_WIN_NAME" /> のデスクトップ ショートカットを作成する場合は True）、<ph name="FALLBACK_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 90 以降では、プログレッシブ ウェブアプリ（PWA）以外のアプリ名をオーバーライドできます。また、PWA であってもインストールの完了に認証が必要な場合は、一時的にインストールされたアプリ名をオーバーライドできます。<ph name="CUSTOM_NAME_LABEL" /> と <ph name="FALLBACK_APP_NAME_LABEL" /> の両方が設定されている場合、後者は無視されます）、<ph name="OVERRIDE_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 99 以降では、すべてのウェブアプリと PWA のアプリ名を完全にオーバーライドできます。現在 <ph name="PRODUCT_OS_NAME" /> でのみサポートされています）、<ph name="CUSTOM_ICON_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン　99 以降では、インストールされたアプリのアプリアイコンをオーバーライドできます。アイコンは正方形でサイズを 1 MB 以内とし、jpeg、png、gif、webp、ico のいずれかの形式にする必要があります。ハッシュ値は SHA256 ハッシュのアイコン ファイルとします。現在 <ph name="PRODUCT_OS_NAME" /> でのみサポートされています）で構成されるオブジェクトとなります。
+
+      <ph name="PRODUCT_OS_NAME" /> のシェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> をご使用ください。</translation>
 <translation id="186719019195685253">AC 電源での実行時、アイドル時間に到達したときに行う操作</translation>
 <translation id="1881649377321404593">
       WebDriver が既存のポリシーのすべてに対応するようになったため、
@@ -1483,6 +1488,11 @@
 
       このポリシーを無効に設定すると、登録済みのデバイスはユーザーのリストを報告しません。</translation>
 <translation id="2730419309754848345">「PDF を画像として印刷する」のデフォルト</translation>
+<translation id="2731299561202635374">このポリシーでは、安全でない URL を検出するリアルタイムの URL チェックを管理します。
+
+      このポリシーを未設定のままにするか [無効] に設定した場合は、一般ユーザー向けのセーフ ブラウジング チェックが行われます。一般ユーザー向けのセーフ ブラウジングでも、[検索とブラウジングを改善する] の設定の値と UrlKeyedAnonymizedDataCollectionEnabled ポリシーの値に基づいて、リアルタイムのチェックが行われる可能性があります。このポリシーを [有効] に設定した場合、URL は企業の利用規約に基づき、リアルタイムのチェックを行うため送信されます。URL は Google Cloud または指定された第三者に送信され、リアルタイムのチェックが行われます。一般ユーザー向けのセーフ ブラウジングによるリアルタイムのチェックはオフになります。
+
+      このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="2731627323327011390">ARC アプリで <ph name="PRODUCT_OS_NAME" /> の証明書を使用できないようにする</translation>
 <translation id="2742843273354638707">[新しいタブ] ページと <ph name="PRODUCT_OS_NAME" /> のアプリ ランチャーで、Chrome ウェブストア アプリとフッターのリンクを非表示にします。
 
@@ -1642,6 +1652,11 @@
       このポリシーが未設定のままか、無効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> は、このポリシーをブラウザの切り替えを行うルールの参照元として使用しません。
 
       注: このポリシーは、<ph name="IE_PRODUCT_NAME" /> の <ph name="IEEM_SITELIST_POLICY" /> ポリシーと同じ形式の XML ファイルを指します。XML ファイルからルールを読み込みますが、それらのルールは <ph name="IE_PRODUCT_NAME" /> と共有されません。詳細については、<ph name="IE_PRODUCT_NAME" /> の <ph name="IEEM_SITELIST_POLICY" /> ポリシー（https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode）をご覧ください。</translation>
+<translation id="2940653651012844682"><ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise Connectors サービス設定のリストで、Chrome でセキュリティ イベントが発生した場合に呼び出されます。たとえば、Enterprise コネクタの分析により安全でないと判定された場合や、パスワードの再使用、安全でないページへの移動、その他セキュリティに関わるユーザー操作が検出された場合などです。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> では、この設定が対応しているレポート サービス プロバイダを指定します。<ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> では、そのプロバイダに対して有効にするイベントを指定します。
+
+      このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="2947111924404450461">このポリシーでは、企業プリンタを設定します。フォーマットは <ph name="NATIVE_PRINTERS_POLICY_NAME" /> ディクショナリと一致させ、許可リストまたは拒否リストに登録するプリンタごとに「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドを追加で指定する必要があります。ファイルのサイズは 5 MB 以下とし、JSON 形式にします。5 MB は、約 21,000 台のプリンタを指定してエンコードしたファイルに相当します。ダウンロードの整合性の確認には暗号化ハッシュが使用されます。このファイルはダウンロードされた後、キャッシュされ、URL またはハッシュに変更があった場合は再度ダウンロードされます。<ph name="PRODUCT_OS_NAME" /> ではプリンタ設定ファイルがダウンロードされ、<ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="BULK_PRINTERS_WHITELIST" />、<ph name="BULK_PRINTERS_BLACKLIST" /> に沿ってプリンタが利用可能になります。
 
       このポリシーでは、ユーザーが各自のデバイスでプリンタを設定できるかどうかは制御されません。このポリシーは、個々のユーザーのプリンタ設定を補完することを目的としたものです。
@@ -1831,6 +1846,23 @@
 <translation id="3144173889708944482"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="3146711617256415776">「選択して読み上げ」の使用時に Enhanced Network のテキスト読み上げ音声を許可しない</translation>
 <translation id="3152425128389603870">統合デスクトップを使用可能にし、デフォルトで有効にする</translation>
+<translation id="3157857846231611820"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise Connectors サービス設定のリストで、Chrome にファイルが添付されている場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページに添付されるファイルを分析のためコネクタが送信すべきかどうかと、そのファイルの分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、Chrome は分析サービスからの応答を待ってから、ページにファイルへのアクセスを許可します。その他の整数値を設定した場合、Chrome はページにファイルへのアクセスをただちに許可します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> フィールドでは、パスワードで保護されているファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> フィールドでは、分析可能なサイズより大きいファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由の入力は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。message フィールドでは、ユーザーに表示するテキストを半角 200 文字以内で指定します。learn_more_url フィールドでは、管理者が提供する URL を指定します。ユーザーはこの URL をクリックして、操作がブロックされた理由について、お客様から提供された情報を確認できます。language フィールドでは、メッセージの言語を指定します（省略可）。このフィールドを空白にするか、「default」の値を指定した場合、ユーザーの言語のメッセージがないときは、デフォルトのメッセージが使用されます。tag フィールドでは、メッセージを表示するスキャンの種類を指定します。custom_messages リストには、0 以上のエントリを指定できます。各エントリには、空白以外のメッセージと tag フィールドを含める必要があります。
+
+      このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="3159375329008977062">ユーザーは UI から Crostini コンテナを書き出しおよび読み込みできます</translation>
 <translation id="3164531087779621747">印刷の PostScript モード</translation>
 <translation id="3165468162820163252">このポリシーでは、ログイン画面の WebUI を常に起動時に読み込むか、表示の直前に読み込むかを制御します。このポリシーはログイン画面に適用されます。
@@ -4155,6 +4187,21 @@
 <translation id="6135398260575578389">セーフ ブラウジングを強化モードで有効にする。このモードではセキュリティが強化されますが、より多くの閲覧情報を Google に提供する必要があります。</translation>
 <translation id="6135552820180449830">Crosh（バージョン 99 以降でサポート）</translation>
 <translation id="6138636318340561140">URL のセーフ ブラウジング ステータスをリアルタイムでチェックする</translation>
+<translation id="6140635914906859015"><ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise Connectors サービス設定のリストで、Chrome でクリップボードからデータが入力された場合、またはウェブ コンテンツがドラッグ＆ドロップされた場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページに入力されたデータをコネクタで分析のため送信すべきかどうかと、そのデータの分析リクエストにどのタグを含めるかを判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、Chrome は分析サービスからの応答を待ってから、ページにデータへのアクセスを許可します。その他の整数値を設定した場合、Chrome はページにデータへのアクセスをただちに許可します。
+
+      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> フィールドは、Chrome に入力されたデータの最小サイズ（バイト数）がこの値以上でないとスキャンできないことを示します。このフィールドを未設定のままにした場合は、デフォルト値の 100 バイトが使用されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由の入力は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。message フィールドでは、ユーザーに表示するテキストを半角 200 文字以内で指定します。learn_more_url フィールドでは、管理者が提供する URL を指定します。ユーザーはこの URL をクリックして、操作がブロックされた理由について、お客様から提供された情報を確認できます。language フィールドでは、メッセージの言語を指定します（省略可）。このフィールドを空白にするか、「default」の値を指定した場合、ユーザーの言語のメッセージがないときは、デフォルトのメッセージが使用されます。tag フィールドでは、メッセージを表示するスキャンの種類を指定します。custom_messages リストには、0 以上のエントリを指定できます。各エントリには、空白以外のメッセージと tag フィールドを含める必要があります。
+
+      このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="6141402445226505817">常に IP のみに基づいてタイムゾーンを検出する</translation>
 <translation id="6142501278956229253">ラスタライズした PDF の印刷に使用する DPI</translation>
 <translation id="6144046700495610112">このポリシーを有効に設定した場合、初回実行時に以前の既定のブラウザから自動入力フォームのデータが読み込まれます。このポリシーを無効に設定するか未設定のままにした場合、初回実行時に自動入力フォームのデータは読み込まれません。
@@ -4544,6 +4591,21 @@
 <translation id="66265932317331474">CPU 情報を報告する</translation>
 <translation id="6628120204569232711">ストレージの状態を報告する</translation>
 <translation id="663685822663765995">カラー印刷モードを制限</translation>
+<translation id="6637946190026453735"><ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する <ph name="PRODUCT_NAME" /> Enterprise Connectors サービス設定のリストです。これは <ph name="PRODUCT_NAME" /> からページまたはファイルが印刷された場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページで印刷が呼び出されたときに、分析のためデータを送信すべきかどうかと、分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、<ph name="PRODUCT_NAME" /> は分析サービスからの応答を待ってから、印刷ページの印刷プレビュー ダイアログの表示を許可します。その他の整数値を設定した場合、<ph name="PRODUCT_NAME" /> は印刷プレビュー ダイアログをただちに表示します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> フィールドでは、<ph name="PRODUCT_NAME" /> で分析可能なサイズより大きいファイルまたはページをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由の入力は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。管理者は、200 文字以内でメッセージを設定できます。
+
+      このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="6640355849038068978">この設定が有効な場合、ユーザーはスマートフォン ハブの通知をクリックするなどして Eche アプリを起動できます。
 
       この設定が無効な場合、ユーザーは Eche アプリを起動できません。
@@ -5285,6 +5347,23 @@
 <translation id="7477149584454865826">プリンタの設定に IPP Everywhere を使用するかどうかを示すブール値のフラグです。</translation>
 <translation id="7477231245051133709">「モノラル音声」のユーザー補助機能を有効にする</translation>
 <translation id="7477239290070847560">Zeroconf（mDNS+DNS-SD）プロトコルの送信先</translation>
+<translation id="7480826412572122600"><ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise コネクタ サービス設定のリストで、Chrome でファイルがダウンロードされた場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページからダウンロードされるファイルを分析のためコネクタが送信すべきかどうかと、そのファイルの分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、Chrome は分析サービスからの応答を待ってから、ダウンロードされたファイルへのユーザーのアクセスを許可します。その他の整数値を設定した場合、Chrome はユーザーにファイルへのアクセスを直ちに許可します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> フィールドでは、パスワードで保護されているファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> フィールドでは、分析可能なサイズより大きいファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由の入力は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。message フィールドでは、ユーザーに表示するテキストを半角 200 文字以内で指定します。learn_more_url フィールドでは、管理者が提供する URL を指定します。ユーザーはこの URL をクリックして、操作がブロックされた理由について、お客様から提供された情報を確認できます。language フィールドでは、メッセージの言語を指定します（省略可）。このフィールドを空白にするか、「default」の値を指定した場合、ユーザーの言語のメッセージがないときは、デフォルトのメッセージが使用されます。tag フィールドでは、メッセージを表示するスキャンの種類を指定します。custom_messages リストには、0 以上のエントリを指定できます。各エントリには、空白以外のメッセージと tag フィールドを含める必要があります。
+
+      このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="7485481791539008776">デフォルト プリンタ選択ルール</translation>
 <translation id="7486205887492534734">ログイン画面で複数の証明書が一致した場合にメッセージを表示する</translation>
 <translation id="7491720878670299691">ネットワーク データをポーリングしてイベントの有無を確認する間隔です。指定できる最小値は 1 分です。

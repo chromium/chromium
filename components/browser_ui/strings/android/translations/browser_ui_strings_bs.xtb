@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">Opcije su dostupne pri vrhu ekrana</translation>
 <translation id="5197729504361054390">Kontakti koje odaberete će se podijeliti s web lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Posljednji put je posjećeno danas</translation>
+<translation id="5264323282659631142">Uklanjanje stavke "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Povucite s vrha i dodirnite dugme za nazad da napustite prikaz preko cijelog ekrana.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">Uredu, razumijem</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">Web lokacija koristi vaš mikrofon</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="757524316907819857">Blokirajte reproduciranje zaštićenog sadržaja na web lokacijama</translation>
+<translation id="7577900504646297215">Upravljajte interesovanjima</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7781829728241885113">Jučer</translation>

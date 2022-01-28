@@ -508,6 +508,7 @@
 <translation id="1521442365706402292">Xestionar certificados</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="152234381334907219">Contrasinais que non se gardan nunca</translation>
+<translation id="1523279371236772909">Consultouse no último mes</translation>
 <translation id="1523978563989812243">Motores de conversión de texto a voz</translation>
 <translation id="1524430321211440688">Teclado</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
@@ -1241,6 +1242,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2232876851878324699">O ficheiro contiña un certificado que non se importou:</translation>
 <translation id="2233502537820838181">&amp;Máis información</translation>
 <translation id="223356358902285214">Actividade web e das aplicacións</translation>
+<translation id="2234827758954819389">Guía de privacidade</translation>
 <translation id="2234876718134438132">Servizos de Google e sincronización</translation>
 <translation id="2235344399760031203">Bloqueáronse as cookies de terceiros</translation>
 <translation id="2238379619048995541">Datos do estado da frecuencia</translation>
@@ -1690,6 +1692,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2684004000387153598">Para continuar, fai clic en Aceptar e despois en Engadir persoa se queres crear un novo perfil para o teu enderezo de correo electrónico.</translation>
 <translation id="2687403674020088961">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="2687407218262674387">Condicións de servizo de Google</translation>
+<translation id="2687621393791886981">Preguntar máis tarde</translation>
 <translation id="2688196195245426394">Produciuse un erro ao rexistrar o dispositivo co servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Mostrar opcións de idioma</translation>
 <translation id="2691385045260836588">Modelo</translation>
@@ -1708,7 +1711,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2707024448553392710">Descargando compoñente</translation>
 <translation id="270921614578699633">Media superior a</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
-<translation id="2710014902399506864">Engadir teléfono novo</translation>
 <translation id="2710101514844343743">Datos de uso e diagnóstico</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712173769900027643">Solicitar permiso</translation>
@@ -2745,7 +2747,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicar cun dispositivo USB}other{Comunicar con # dispositivos USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a: <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Non se puido ler a política do modo de demostración sen conexión.</translation>
-<translation id="3766115177661377251">Emitir a unha pantalla nova</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Xeado</translation>
 <translation id="3771290962915251154">Esta opción de configuración está desactivada porque os controis parentais están activados</translation>
@@ -3093,6 +3094,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4095264805865317199">Abrir IU de activación móbil</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="4096508467498758490">Desactivar extensións do modo de programador</translation>
+<translation id="4096797685681362305">Consultouse na última semana</translation>
 <translation id="4097406557126260163">Aplicacións e extensións</translation>
 <translation id="409742781329613461">Consellos para Chrome</translation>
 <translation id="4097560579602855702">Buscar en Google</translation>
@@ -3649,6 +3651,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4699172675775169585">Imaxes e ficheiros almacenados na memoria caché</translation>
 <translation id="4699357559218762027">(iniciada automaticamente)</translation>
 <translation id="4701025263201366865">Inicio de sesión do pai ou da nai</translation>
+<translation id="4701335814944566468">Consultouse onte</translation>
 <translation id="4708794300267213770">Mostrar pantalla de bloqueo ao activarse despois da suspensión</translation>
 <translation id="4708849949179781599">Pechar <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
@@ -3716,6 +3719,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="479536056609751218">Páxina web, só HTML</translation>
 <translation id="4796142525425001238">Restaurar sempre</translation>
 <translation id="4798236378408895261">Achegar <ph name="BEGIN_LINK" />rexistros de Bluetooth<ph name="END_LINK" /> (uso interno de Google)</translation>
+<translation id="479863874072008121">Xestionar dispositivos</translation>
 <translation id="4800839971935185386">Revisa as modificacións do nome e da icona</translation>
 <translation id="4801448226354548035">Ocultar contas</translation>
 <translation id="4801512016965057443">Permitir a itinerancia de datos móbiles</translation>
@@ -6444,6 +6448,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659154729610375585">Queres saír do modo de incógnito de todas formas?</translation>
 <translation id="7659297516559011665">Contrasinais só deste dispositivo</translation>
+<translation id="7659336857671800422">Le a Guía de privacidade</translation>
 <translation id="7659584679870740384">Non estás autorizado a usar este dispositivo. Para obter permisos para iniciar sesión, ponte en contacto co administrador.</translation>
 <translation id="7661259717474717992">Permitir que os sitios garden e lean datos de cookies</translation>
 <translation id="7661451191293163002">Non se puido obter un certificado de rexistro.</translation>
@@ -7089,7 +7094,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8271268254812352141">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido. Personaliza os idiomas de tradución en <ph name="LINK_BEGIN" />Idiomas dos sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Se es pai ou nai, os seguintes pasos están pensados para ti. Podes devolverlle o dispositivo (<ph name="DEVICE_TYPE" />) ao neno ou nena despois de configurar a conta.</translation>
 <translation id="8272443605911821513">Fai clic en Extensións no menú Máis ferramentas para xestionar as túas extensións.</translation>
-<translation id="8272677921396592934">Utilizar cámara para escanear código QR</translation>
 <translation id="8274332263553132018">Emitir ficheiro</translation>
 <translation id="8274921654076766238">A lupa achega a zona da pantalla na que esteas escribindo</translation>
 <translation id="8274924778568117936">Non apagues nin peches o dispositivo <ph name="DEVICE_TYPE" /> ata que a actualización finalice. O <ph name="DEVICE_TYPE" /> reiniciarase tras finalizar a instalación.</translation>
@@ -7201,6 +7205,7 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permitíronse os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
 <translation id="8413385045638830869">Preguntar primeiro (recomendado)</translation>
+<translation id="8414249071344507766">Ocultáronse as lembranzas durante dous días</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (estoxo)</translation>
 <translation id="8417548266957501132">Contrasinal do pai ou nai</translation>
 <translation id="8418445294933751433">&amp;Mostrar como pestana</translation>
@@ -7964,6 +7969,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9200339982498053969"><ph name="ORIGIN" /> poderá editar os ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Realizar a busca en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Todos os datos sen conexión borraranse</translation>
+<translation id="9201117361710210082">Consultouse con anterioridade</translation>
 <translation id="9201220332032049474">Opcións de bloqueo da pantalla</translation>
 <translation id="9201842707396338580">Produciuse un erro. Ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">Creación de &amp;perfís activada</translation>

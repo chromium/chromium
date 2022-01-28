@@ -1697,6 +1697,7 @@
 <translation id="2684004000387153598">للمتابعة، انقر على "موافقة" ثم انقر على "إضافة شخص" لإنشاء ملف شخصي جديد لعنوان بريدك الإلكتروني.</translation>
 <translation id="2687403674020088961">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
 <translation id="2687407218262674387">‏بنود خدمة Google</translation>
+<translation id="2687621393791886981">اسألني لاحقًا</translation>
 <translation id="2688196195245426394">حدث خطأ عند تسجيل الجهاز مع الخادم: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">عرض خيارات اللغة</translation>
 <translation id="2691385045260836588">الطراز</translation>
@@ -1715,7 +1716,6 @@
 <translation id="2707024448553392710">تنزيل المُكوّن</translation>
 <translation id="270921614578699633">تم تجاوز المعدل</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
-<translation id="2710014902399506864">إضافة هاتف جديد</translation>
 <translation id="2710101514844343743">بيانات الاستخدام والتشخيص</translation>
 <translation id="271033894570825754">جديدة</translation>
 <translation id="2712173769900027643">طلب إذن</translation>
@@ -2755,7 +2755,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏الاتصال بجهاز USB}zero{‏الاتصال بـ # من أجهزة USB}two{‏الاتصال بجهازي USB (#)}few{‏الاتصال بـ # أجهزة USB}many{‏ الاتصال بـ # جهاز USB}other{‏ الاتصال بـ # من أجهزة USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}zero{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}two{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}few{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}many{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}other{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">تعذَّرت قراءة سياسة الوضع التجريبي بلا إنترنت.</translation>
-<translation id="3766115177661377251">البث إلى شاشة جديدة</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> هرتز</translation>
 <translation id="377050016711188788">المثلجات</translation>
 <translation id="3771290962915251154">لقد تم إيقاف هذا الإعداد بسبب تفعيل "أدوات الرقابة الأبوية".</translation>
@@ -7104,7 +7103,6 @@
 <translation id="8271268254812352141">يمكنك تعريف المصطلحات وترجمة النصوص وتحويل الوحدات من خلال النقر بزر الماوس الأيمن على نص أو النقر عليه مع الاستمرار، بالإضافة إلى تخصيص لغات الترجمة في <ph name="LINK_BEGIN" />لغات المواقع الإلكترونية<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">الخطوات التالية مخصَّصة للوالدَين. يمكنك إعادة جهاز <ph name="DEVICE_TYPE" /> للطفل بعد إعداد الحساب.</translation>
 <translation id="8272443605911821513">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "المزيد من الأدوات".</translation>
-<translation id="8272677921396592934">استخدام الكاميرا لمسح رمز الاستجابة السريعة ضوئيًا</translation>
 <translation id="8274332263553132018">إرسال الملف</translation>
 <translation id="8274921654076766238">المكبِّر يتبع تركيز لوحة المفاتيح.</translation>
 <translation id="8274924778568117936">لا توقف تشغيل جهاز <ph name="DEVICE_TYPE" /> أو تُغلقه لحين الانتهاء من التحديث. ستتم إعادة تشغيل جهاز <ph name="DEVICE_TYPE" /> بعد اكتمال التثبيت.</translation>
@@ -7216,6 +7214,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">تمت الموافقة على إذن <ph name="PERMISSION" /> و<ph name="COUNT" /> إذن آخر.</translation>
 <translation id="8413385045638830869">السؤال أولاً (موصى به)</translation>
+<translation id="8414249071344507766">ذكريات تم إخفاؤها لمدة يومين</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
 <translation id="8417548266957501132">كلمة مرور الوالدَين</translation>
 <translation id="8418445294933751433">&amp;العرض في علامة تبويب</translation>

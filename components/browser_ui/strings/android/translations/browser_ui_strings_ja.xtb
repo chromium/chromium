@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">設定は画面上部にあります</translation>
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
+<translation id="5264323282659631142"><ph name="CHIP_LABEL" /> を削除</translation>
 <translation id="528192093759286357">全画面表示を終了するには、上からドラッグして、戻るボタンをタップします。</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">サイトでマイクが使用されています</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="757524316907819857">サイトでの保護されたコンテンツの再生をブロックする</translation>
+<translation id="7577900504646297215">興味のあるトピックを管理</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7781829728241885113">昨日</translation>

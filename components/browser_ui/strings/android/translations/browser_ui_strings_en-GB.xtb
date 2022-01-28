@@ -159,6 +159,7 @@
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Last visited today</translation>
+<translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5301954838959518834">OK, got it</translation>
@@ -256,6 +257,7 @@
 <translation id="7554752735887601236">A site is using your microphone</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="757524316907819857">Block sites from playing protected content</translation>
+<translation id="7577900504646297215">Manage interests</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7781829728241885113">Yesterday</translation>

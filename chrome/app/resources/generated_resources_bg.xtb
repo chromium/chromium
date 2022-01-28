@@ -509,6 +509,7 @@
 <translation id="1521442365706402292">Управление на сертификати</translation>
 <translation id="1521774566618522728">Активно днес</translation>
 <translation id="152234381334907219">Незапазвани никога</translation>
+<translation id="1523279371236772909">Прегледано през миналия месец</translation>
 <translation id="1523978563989812243">Машини за синтезиран говор</translation>
 <translation id="1524430321211440688">Клавиатура</translation>
 <translation id="1524563461097350801">Не, благодаря</translation>
@@ -1250,6 +1251,7 @@
 <translation id="2232876851878324699">Файлът съдържаше един сертификат, който не бе импортиран:</translation>
 <translation id="2233502537820838181">&amp;Още информация</translation>
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
+<translation id="2234827758954819389">Ръководство за поверителност</translation>
 <translation id="2234876718134438132">Синхронизиране и услуги на Google</translation>
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
 <translation id="2238379619048995541">Данни за състоянието на активност</translation>
@@ -1702,6 +1704,7 @@
 <translation id="2684004000387153598">За да продължите, кликнете върху „OK“ и след това – върху „Добавяне на човек“, така че да създадете нов потребителски профил за имейл адреса си.</translation>
 <translation id="2687403674020088961">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
 <translation id="2687407218262674387">Общи условия на Google</translation>
+<translation id="2687621393791886981">Попитайте ме по-късно</translation>
 <translation id="2688196195245426394">Грешка при регистрирането на устройството в сървъра: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показване на езиковите опции</translation>
 <translation id="2691385045260836588">Модел</translation>
@@ -1720,7 +1723,6 @@
 <translation id="2707024448553392710">Компонентът се изтегля</translation>
 <translation id="270921614578699633">Осредняване</translation>
 <translation id="2709516037105925701">Автоматично попълване</translation>
-<translation id="2710014902399506864">Добавяне на нов телефон</translation>
 <translation id="2710101514844343743">Данни за употребата и диагностиката</translation>
 <translation id="271033894570825754">Създаване</translation>
 <translation id="2712173769900027643">Искане на разрешение</translation>
@@ -2758,7 +2760,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуникация с USB устройство}other{Комуникация с # USB устройства}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Изпращате <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}other{Изпращате <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Правилото за офлайн демонстрационен режим не можа да бъде прочетено.</translation>
-<translation id="3766115177661377251">Предаване към нов екран</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Хц</translation>
 <translation id="377050016711188788">Сладолед</translation>
 <translation id="3771290962915251154">Тази настройка е деактивирана, защото родителските контроли са включени</translation>
@@ -3107,6 +3108,7 @@
 <translation id="4095264805865317199">Отваряне на ПИ за активиране на мобилна мрежа</translation>
 <translation id="4095507791297118304">Основен екран</translation>
 <translation id="4096508467498758490">Деактивиране на разширенията в режим за програмисти</translation>
+<translation id="4096797685681362305">Прегледано през миналата седмица</translation>
 <translation id="4097406557126260163">Приложения и разширения</translation>
 <translation id="409742781329613461">Съвети за Chrome</translation>
 <translation id="4097560579602855702">Търсете с Google</translation>
@@ -3664,6 +3666,7 @@
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4699357559218762027">(автоматично стартирано)</translation>
 <translation id="4701025263201366865">Влизане в профила на родител</translation>
+<translation id="4701335814944566468">Прегледано вчера</translation>
 <translation id="4708794300267213770">Показване на заключения екран при излизане от спящ режим</translation>
 <translation id="4708849949179781599">Изход от <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Възстановяване на настройките</translation>
@@ -3731,6 +3734,7 @@
 <translation id="479536056609751218">Уеб страница, само HTML</translation>
 <translation id="4796142525425001238">Винаги</translation>
 <translation id="4798236378408895261">Прикачване на <ph name="BEGIN_LINK" />регистрационните файлове за Bluetooth<ph name="END_LINK" /> (вътрешно за Google)</translation>
+<translation id="479863874072008121">Управление на устройствата</translation>
 <translation id="4800839971935185386">Преглед на актуализациите на името и иконата</translation>
 <translation id="4801448226354548035">Скриване на профилите</translation>
 <translation id="4801512016965057443">Разрешаване на роуминг за данни</translation>
@@ -6460,6 +6464,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7659154729610375585">Да се излезе ли от режим „инкогнито“ въпреки това?</translation>
 <translation id="7659297516559011665">Пароли само на това устройство</translation>
+<translation id="7659336857671800422">Преглед на ръководството за поверителността</translation>
 <translation id="7659584679870740384">Не сте упълномощени да използвате това устройство. За разрешение за вход се свържете с администратора.</translation>
 <translation id="7661259717474717992">Разрешаване на сайтовете да запазват и четат данни в „бисквитки“</translation>
 <translation id="7661451191293163002">Не можа да бъде получен регистрационен сертификат.</translation>
@@ -7107,7 +7112,6 @@
 <translation id="8271268254812352141">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон. Персонализирайте езиците за превод в секцията <ph name="LINK_BEGIN" />Езици на уебсайтовете<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родители, следващите няколко стъпки са предназначени за вас. След настройването на профила можете да върнете устройството <ph name="DEVICE_TYPE" /> на детето.</translation>
 <translation id="8272443605911821513">Управлявайте разширенията си, като кликнете върху „Разширения“ в менюто „Още инструменти“.</translation>
-<translation id="8272677921396592934">Използване на камерата за сканиране на QR код</translation>
 <translation id="8274332263553132018">Предаване на файл</translation>
 <translation id="8274921654076766238">Увеличаване според фокуса на клавиатурата</translation>
 <translation id="8274924778568117936">Не изключвайте, нито затваряйте устройството си <ph name="DEVICE_TYPE" />, докато актуализирането не завърши. <ph name="DEVICE_TYPE" /> ще се рестартира след завършване на инсталирането.</translation>
@@ -7219,6 +7223,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Разрешени са „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Първо ще се извежда запитване (препоръчително)</translation>
+<translation id="8414249071344507766">Спомените ще бъдат скрити за два дни</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (калъф)</translation>
 <translation id="8417548266957501132">Парола на родител</translation>
 <translation id="8418445294933751433">&amp;Показване като раздел</translation>
@@ -7982,6 +7987,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ще може да редактира файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
 <translation id="920045321358709304">Търсене с/ъс <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Всички офлайн данни ще бъдат изчистени</translation>
+<translation id="9201117361710210082">Прегледано преди време</translation>
 <translation id="9201220332032049474">Опции за заключване на екрана</translation>
 <translation id="9201842707396338580">Нещо се обърка. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Профилирането е активирано</translation>

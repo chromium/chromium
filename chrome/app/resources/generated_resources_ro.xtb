@@ -1713,7 +1713,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2707024448553392710">Componenta se descarcă</translation>
 <translation id="270921614578699633">Medie peste</translation>
 <translation id="2709516037105925701">Completare automată</translation>
-<translation id="2710014902399506864">Adaugă un telefon nou</translation>
 <translation id="2710101514844343743">Date de utilizare și diagnosticare</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2712173769900027643">Solicită permisiunea</translation>
@@ -2751,7 +2750,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunică cu un dispozitiv USB}few{Comunică cu # dispozitive USB}other{Comunică cu # de dispozitive USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Se trimite <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}few{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}other{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Nu s-a putut citi politica offline privind modul demo.</translation>
-<translation id="3766115177661377251">Proiectează pe alt ecran</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Înghețată</translation>
 <translation id="3771290962915251154">Setarea este dezactivată, deoarece controlul parental este activat</translation>
@@ -7100,7 +7098,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8271268254812352141">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung textul. Personalizează limbile pentru traduceri în <ph name="LINK_BEGIN" />Limbi pentru site-uri<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Pașii următori sunt pentru părinți. Poți să îi înapoiezi copilului dispozitivul <ph name="DEVICE_TYPE" /> după crearea contului.</translation>
 <translation id="8272443605911821513">Gestionați extensiile dând clic pe Extensii în meniul „Mai multe instrumente”.</translation>
-<translation id="8272677921396592934">Folosește camera ca să scanezi codul QR</translation>
 <translation id="8274332263553132018">Proiectează fișierul</translation>
 <translation id="8274921654076766238">Lupa urmează după focalizarea de la tastatură</translation>
 <translation id="8274924778568117936">Nu închide și nu opri dispozitivul <ph name="DEVICE_TYPE" /> înainte să se finalizeze actualizarea. Dispozitivul <ph name="DEVICE_TYPE" /> va reporni după ce se finalizează instalarea.</translation>

@@ -1711,7 +1711,6 @@
 <translation id="2707024448553392710">正在下載元件</translation>
 <translation id="270921614578699633">平均取樣數：</translation>
 <translation id="2709516037105925701">自動填入</translation>
-<translation id="2710014902399506864">新增手機</translation>
 <translation id="2710101514844343743">使用狀況與診斷資料</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2712173769900027643">要求權限</translation>
@@ -2748,7 +2747,6 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}other{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}}</translation>
 <translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
-<translation id="3766115177661377251">投放到新螢幕</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">冰淇淋</translation>
 <translation id="3771290962915251154">已啟用家長監護功能，因此這項設定已停用</translation>
@@ -7096,7 +7094,6 @@
 <translation id="8271268254812352141">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果。你也可以前往<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />頁面自訂翻譯語言。</translation>
 <translation id="8271379370373330993">後續幾個步驟須由家長完成。你可以在完成帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給孩子。</translation>
 <translation id="8272443605911821513">如要管理擴充功能，只需按一下 [其他工具] 選單裡的 [擴充功能] 即可。</translation>
-<translation id="8272677921396592934">使用相機掃描 QR 圖碼</translation>
 <translation id="8274332263553132018">投放檔案</translation>
 <translation id="8274921654076766238">放大鏡追蹤鍵盤焦點</translation>
 <translation id="8274924778568117936">完成更新前，請勿將 <ph name="DEVICE_TYPE" /> 關機。<ph name="DEVICE_TYPE" /> 會在安裝完成後重新啟動。</translation>
