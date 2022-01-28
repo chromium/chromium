@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -138,6 +139,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
+    @FlakyTest(message = "crbug.com/1291515")
     public void testRefocusing() {
         for (int i = 0; i < 5; i++) {
             mOmnibox.requestFocus();
