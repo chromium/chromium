@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/grit/generated_resources.h"
@@ -209,8 +210,7 @@ void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
 
   // Request a thumbnail for all file types. For unsupported types, this will
   // just call OnThumbnailLoaded with an error.
-  const gfx::Size size =
-      ash::SharedAppListConfig::instance().search_list_thumbnail_size();
+  const gfx::Size size = gfx::Size(kThumbnailDimension, kThumbnailDimension);
   thumbnail_loader->Load({filepath_, size},
                          base::BindOnce(&FileResult::OnThumbnailLoaded,
                                         weak_factory_.GetWeakPtr()));
@@ -228,8 +228,7 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 
   DCHECK_EQ(error, base::File::Error::FILE_OK);
 
-  const int dimension =
-      ash::SharedAppListConfig::instance().search_list_thumbnail_dimension();
+  const int dimension = kThumbnailDimension;
   const auto image = gfx::ImageSkia::CreateFromBitmap(*bitmap, 1.0f);
 
   SetIcon(ChromeSearchResult::IconInfo(image, dimension,

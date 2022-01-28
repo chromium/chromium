@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -264,9 +264,7 @@ void OmniboxResult::UpdateIcon() {
         match_.destination_url, base::BindOnce(&OmniboxResult::OnFaviconFetched,
                                                weak_factory_.GetWeakPtr()));
     if (!icon.IsEmpty()) {
-      SetIcon(
-          IconInfo(icon.AsImageSkia(), ash::SharedAppListConfig::instance()
-                                           .search_list_favicon_dimension()));
+      SetIcon(IconInfo(icon.AsImageSkia(), kFaviconDimension));
       return;
     }
   }
@@ -276,19 +274,15 @@ void OmniboxResult::UpdateIcon() {
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
   if (bookmark_model && bookmark_model->IsBookmarked(match_.destination_url)) {
-    SetIcon(IconInfo(
-        gfx::CreateVectorIcon(
-            omnibox::kBookmarkIcon,
-            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-            kListIconColor),
-        ash::SharedAppListConfig::instance().search_list_icon_dimension()));
+    SetIcon(
+        IconInfo(gfx::CreateVectorIcon(omnibox::kBookmarkIcon,
+                                       kSystemIconDimension, kListIconColor),
+                 kSystemIconDimension));
   } else {
-    SetIcon(IconInfo(
-        gfx::CreateVectorIcon(
-            TypeToVectorIcon(match_.type),
-            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-            kListIconColor),
-        ash::SharedAppListConfig::instance().search_list_icon_dimension()));
+    SetIcon(
+        IconInfo(gfx::CreateVectorIcon(TypeToVectorIcon(match_.type),
+                                       kSystemIconDimension, kListIconColor),
+                 kSystemIconDimension));
   }
 }
 
@@ -361,8 +355,7 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
     return;
 
   IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
-  icon_info.dimension =
-      ash::SharedAppListConfig::instance().search_list_image_icon_dimension();
+  icon_info.dimension = GetImageIconDimension();
   icon_info.shape = IconShape::kRoundedRectangle;
   SetIcon(icon_info);
 }
@@ -370,9 +363,7 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
 void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.IsEmpty());
-  SetIcon(IconInfo(
-      icon.AsImageSkia(),
-      ash::SharedAppListConfig::instance().search_list_favicon_dimension()));
+  SetIcon(IconInfo(icon.AsImageSkia(), kFaviconDimension));
 }
 
 void OmniboxResult::InitializeButtonActions(
@@ -382,8 +373,7 @@ void OmniboxResult::InitializeButtonActions(
     gfx::ImageSkia button_image;
     std::u16string button_tooltip;
     bool visible_on_hover = false;
-    const int kImageButtonIconSize =
-        ash::SharedAppListConfig::instance().search_list_icon_dimension();
+    const int kImageButtonIconSize = kSystemIconDimension;
 
     switch (button_action) {
       case ash::SearchResultActionType::kRemove:

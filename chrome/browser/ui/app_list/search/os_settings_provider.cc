@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
@@ -206,15 +206,14 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     app_service_proxy_->LoadIcon(
         apps::ConvertMojomAppTypToAppType(app_type), web_app::kOsSettingsAppId,
-        apps::IconType::kStandard,
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+        apps::IconType::kStandard, GetAppIconDimension(),
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                        weak_factory_.GetWeakPtr()));
   } else {
     app_service_proxy_->LoadIcon(
         app_type, web_app::kOsSettingsAppId, apps::mojom::IconType::kStandard,
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+        GetAppIconDimension(),
         /*allow_placeholder_icon=*/false,
         apps::MojomIconValueToIconValueCallback(base::BindOnce(
             &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
@@ -331,15 +330,14 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
       app_service_proxy_->LoadIcon(
           apps::ConvertMojomAppTypToAppType(update.AppType()),
           web_app::kOsSettingsAppId, apps::IconType::kStandard,
-          ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+          GetAppIconDimension(),
           /*allow_placeholder_icon=*/false,
           base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                          weak_factory_.GetWeakPtr()));
     } else {
       app_service_proxy_->LoadIcon(
           update.AppType(), web_app::kOsSettingsAppId,
-          apps::mojom::IconType::kStandard,
-          ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+          apps::mojom::IconType::kStandard, GetAppIconDimension(),
           /*allow_placeholder_icon=*/false,
           apps::MojomIconValueToIconValueCallback(base::BindOnce(
               &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));

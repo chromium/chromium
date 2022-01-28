@@ -10,6 +10,7 @@ namespace app_list {
 // Result icon dimension constants.
 constexpr int kFaviconDimension = 18;
 constexpr int kThumbnailDimension = 28;
+constexpr int kSystemIconDimension = 20;
 
 // The following dimensions depend on whether the productivity launcher is
 // enabled or not.

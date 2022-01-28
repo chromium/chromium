@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/app_list/search/omnibox_answer_result.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,8 +38,7 @@ constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
 
 ChromeSearchResult::IconInfo CreateAnswerIconInfo(
     const gfx::VectorIcon& vector_icon) {
-  const int dimension =
-      ash::SharedAppListConfig::instance().search_list_answer_icon_dimension();
+  const int dimension = GetAnswerCardIconDimension();
   const auto icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       dimension / 2, gfx::kGoogleBlue600,
       gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE));
@@ -268,8 +267,7 @@ void OmniboxAnswerResult::OnFetchComplete(const GURL& url,
 
   IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
   DCHECK(IsWeatherResult());
-  icon_info.dimension =
-      ash::SharedAppListConfig::instance().search_list_answer_icon_dimension();
+  icon_info.dimension = GetAnswerCardIconDimension();
   SetIcon(icon_info);
 }
 
