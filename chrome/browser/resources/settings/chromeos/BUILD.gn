@@ -162,6 +162,7 @@ generate_grd("build_grd") {
     "images/icon_add_cellular.svg",
     "images/notification_access_connecting.svg",
     "images/notification_access_error.svg",
+    "images/notification_access_error_dark.svg",
     "images/notification_access_finished.svg",
     "images/notification_access_setup.svg",
     "images/keyboard_shortcut.svg",
