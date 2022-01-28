@@ -210,6 +210,10 @@
     // Anonymous iframe:
     // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
     [RuntimeEnabled=AnonymousIframe] readonly attribute boolean anonymous;
+
+    // Collection of fenced frame APIs
+    // https://github.com/shivanigithub/fenced-frame/issues/14
+    [RuntimeEnabled=FencedFrames] readonly attribute Fence? fence;
 };
 
 Window includes GlobalEventHandlers;

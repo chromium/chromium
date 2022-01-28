@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
@@ -2174,6 +2175,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(isolated_world_csp_map_);
   visitor->Trace(network_state_observer_);
   visitor->Trace(dedicated_workers_);
+  visitor->Trace(fence_);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
   Supplementable<LocalDOMWindow>::Trace(visitor);
@@ -2230,6 +2232,19 @@ void LocalDOMWindow::AddDedicatedWorker(DedicatedWorker* dedicated_worker) {
 
 void LocalDOMWindow::RemoveDedicatedWorker(DedicatedWorker* dedicated_worker) {
   dedicated_workers_.erase(dedicated_worker);
+}
+
+Fence* LocalDOMWindow::fence() {
+  // Return nullptr if we aren't in a fenced subtree.
+  if (!GetFrame() || !GetFrame()->IsInFencedFrameTree()) {
+    return nullptr;
+  }
+
+  if (!fence_) {
+    fence_ = MakeGarbageCollected<Fence>();
+  }
+
+  return fence_.Get();
 }
 
 }  // namespace blink

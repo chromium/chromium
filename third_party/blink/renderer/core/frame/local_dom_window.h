@@ -68,6 +68,7 @@ class DOMVisualViewport;
 class Element;
 class ExceptionState;
 class External;
+class Fence;
 class FrameConsole;
 class History;
 class IdleRequestOptions;
@@ -462,6 +463,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Whether the window is anonymous or not.
   bool anonymous() const { return anonymous_; }
 
+  Fence* fence();
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -590,6 +593,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Anonymous Iframe:
   // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
   const bool anonymous_;
+
+  // Collection of fenced frame APIs.
+  // https://github.com/shivanigithub/fenced-frame/issues/14
+  Member<Fence> fence_;
 };
 
 template <>
