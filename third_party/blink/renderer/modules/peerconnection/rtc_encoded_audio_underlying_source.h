@@ -51,6 +51,8 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   // Indicates if this source is for a receiver. Receiver sources
   // expose CSRCs.
   const bool is_receiver_;
+  // Count of frames dropped due to the queue being full, for logging.
+  int dropped_frames_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
