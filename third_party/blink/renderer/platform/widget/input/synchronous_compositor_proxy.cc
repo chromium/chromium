@@ -18,7 +18,7 @@
 namespace blink {
 
 SynchronousCompositorProxy::SynchronousCompositorProxy(
-    blink::SynchronousInputHandlerProxy* input_handler_proxy)
+    InputHandlerProxy* input_handler_proxy)
     : input_handler_proxy_(input_handler_proxy),
       animation_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(

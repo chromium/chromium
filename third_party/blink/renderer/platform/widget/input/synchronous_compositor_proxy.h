@@ -18,7 +18,8 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/synchronous_compositor.mojom-blink.h"
 #include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_layer_tree_frame_sink.h"
-#include "third_party/blink/renderer/platform/widget/input/synchronous_input_handler_proxy.h"
+#include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
+
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -36,8 +37,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
                                    public SynchronousLayerTreeFrameSinkClient,
                                    public mojom::blink::SynchronousCompositor {
  public:
-  SynchronousCompositorProxy(
-      blink::SynchronousInputHandlerProxy* input_handler_proxy);
+  SynchronousCompositorProxy(InputHandlerProxy* input_handler_proxy);
   SynchronousCompositorProxy(const SynchronousCompositorProxy&) = delete;
   SynchronousCompositorProxy& operator=(const SynchronousCompositorProxy&) =
       delete;
@@ -123,7 +123,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
 
   struct SharedMemoryWithSize;
 
-  blink::SynchronousInputHandlerProxy* const input_handler_proxy_;
+  InputHandlerProxy* const input_handler_proxy_;
   mojo::Remote<mojom::blink::SynchronousCompositorControlHost> control_host_;
   mojo::AssociatedRemote<mojom::blink::SynchronousCompositorHost> host_;
   mojo::AssociatedReceiver<mojom::blink::SynchronousCompositor> receiver_{this};

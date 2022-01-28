@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/widget/input/synchronous_input_handler_proxy.h"
 
 namespace base {
 class TickClock;
@@ -50,10 +49,22 @@ class CompositorThreadEventQueue;
 class EventWithCallback;
 class InputHandlerProxyClient;
 class ScrollPredictor;
-class SynchronousInputHandler;
-class SynchronousInputHandlerProxy;
 class MomentumScrollJankTracker;
 class CursorControlHandler;
+
+class SynchronousInputHandler {
+ public:
+  virtual ~SynchronousInputHandler() {}
+
+  // Informs the Android WebView embedder of the current root scroll and page
+  // scale state.
+  virtual void UpdateRootLayerState(const gfx::PointF& total_scroll_offset,
+                                    const gfx::PointF& max_scroll_offset,
+                                    const gfx::SizeF& scrollable_size,
+                                    float page_scale_factor,
+                                    float min_page_scale_factor,
+                                    float max_page_scale_factor) = 0;
+};
 
 // This class is a proxy between the blink web input events for a WebWidget and
 // the compositor's input handling logic. InputHandlerProxy instances live
@@ -61,8 +72,12 @@ class CursorControlHandler;
 // the main thread in web tests where only a single thread is used.
 // Each InputHandler instance handles input events intended for a specific
 // WebWidget.
+//
+// Android WebView requires synchronous scrolling from the WebView application.
+// This class provides support for that behaviour. The WebView embedder will
+// act as the InputHandler for controlling the timing of input (fling)
+// animations.
 class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
-                                          public SynchronousInputHandlerProxy,
                                           public cc::SnapFlingClient {
  public:
   InputHandlerProxy(cc::InputHandler& input_handler,
@@ -168,6 +183,24 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   blink::WebInputEventAttribution PerformEventAttribution(
       const blink::WebInputEvent& event);
 
+  // SynchronousInputHandler needs to be informed of root layer updates.
+  void SetSynchronousInputHandler(
+      SynchronousInputHandler* synchronous_input_handler);
+
+  // Called when the synchronous input handler wants to change the root scroll
+  // offset. Since it has the final say, this overrides values from compositor-
+  // controlled behaviour. After the offset is applied, the
+  // SynchronousInputHandler should be given back the result in case it differs
+  // from what was sent.
+  void SynchronouslySetRootScrollOffset(
+      const gfx::PointF& root_offset);
+
+  // Similar to SetRootScrollOffset above, to control the zoom level, ie scale
+  // factor. Note |magnify_delta| is an incremental rather than absolute value.
+  // SynchronousInputHandler should be given back the resulting absolute value.
+  void SynchronouslyZoomBy(float magnify_delta,
+                           const gfx::Point& anchor);
+
   // cc::InputHandlerClient implementation.
   void WillShutdown() override;
   void Animate(base::TimeTicks time) override;
@@ -182,14 +215,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       float max_page_scale_factor) override;
   void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) override;
   void DeliverInputForHighLatencyMode() override;
-
-  // SynchronousInputHandlerProxy implementation.
-  void SetSynchronousInputHandler(
-      SynchronousInputHandler* synchronous_input_handler) override;
-  void SynchronouslySetRootScrollOffset(
-      const gfx::PointF& root_offset) override;
-  void SynchronouslyZoomBy(float magnify_delta,
-                           const gfx::Point& anchor) override;
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
