@@ -5,13 +5,11 @@
 // Configuration that is passed to navigator.runAdAuction().
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
 
-typedef (USVString or sequence<USVString>) InterestGroupBuyers;
-
 dictionary AuctionAdConfig {
   required USVString seller;
   required USVString decisionLogicUrl;
   USVString trustedScoringSignalsUrl;
-  InterestGroupBuyers interestGroupBuyers;
+  sequence<USVString> interestGroupBuyers;
   any auctionSignals;
   any sellerSignals;
   record<USVString, any> perBuyerSignals;

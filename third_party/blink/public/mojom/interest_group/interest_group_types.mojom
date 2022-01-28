@@ -47,26 +47,13 @@ struct InterestGroup {
   array<InterestGroupAd>? ad_components;
 };
 
-// Represents all buyers, the "*" wildcard in JavaScript.
-// For use only with InterestGroupBuyers.
-struct AllBuyers {
-};
-
-// For use only with AuctionAdConfig.
-//
-// All origins must use https.
-union InterestGroupBuyers {
-  array<url.mojom.Origin> buyers;
-  AllBuyers all_buyers;
-};
-
 // Subset of AuctionAdConfig that is not shared by all auctions that are
 // using the same SellerWorklet object (so it's "not shared" between
 // AuctionConfigs that share the same SellerWorklet). Other AuctionAdConfig
 // parameters all must be the same for two auctions to share a Sellerworklet.
 struct AuctionAdConfigNonSharedParams {
   // Owners of interest groups allowed to participate in the auction.
-  blink.mojom.InterestGroupBuyers? interest_group_buyers;
+  array<url.mojom.Origin>? interest_group_buyers;
 
   // Opaque JSON data, passed as object to auction worklet.
   string? auction_signals;

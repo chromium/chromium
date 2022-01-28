@@ -179,16 +179,19 @@ void AuctionRunner::StartAuction(
     return;
   }
 
-  for (const auto& buyer : auction_config_->auction_ad_config_non_shared_params
-                               ->interest_group_buyers->get_buyers()) {
-    if (!is_interest_group_api_allowed_callback.Run(
-            ContentBrowserClient::InterestGroupApiOperation::kBuy, buyer)) {
-      continue;
+  const auto& buyers = auction_config_->auction_ad_config_non_shared_params
+                           ->interest_group_buyers;
+  if (buyers) {
+    for (const auto& buyer : *buyers) {
+      if (!is_interest_group_api_allowed_callback.Run(
+              ContentBrowserClient::InterestGroupApiOperation::kBuy, buyer)) {
+        continue;
+      }
+      interest_group_manager_->GetInterestGroupsForOwner(
+          buyer, base::BindOnce(&AuctionRunner::OnInterestGroupRead,
+                                weak_ptr_factory_.GetWeakPtr()));
+      ++num_pending_buyers_;
     }
-    interest_group_manager_->GetInterestGroupsForOwner(
-        buyer, base::BindOnce(&AuctionRunner::OnInterestGroupRead,
-                              weak_ptr_factory_.GetWeakPtr()));
-    ++num_pending_buyers_;
   }
 
   if (num_pending_buyers_ == 0)

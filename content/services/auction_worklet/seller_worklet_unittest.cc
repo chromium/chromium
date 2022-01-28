@@ -1233,9 +1233,9 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 
   // Everything filled in.
   decision_logic_url_ = GURL("https://example.com/auction.js");
-  auction_ad_config_non_shared_params_->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::NewAllBuyers(
-          blink::mojom::AllBuyers::New());
+  auction_ad_config_non_shared_params_->interest_group_buyers = {
+      url::Origin::Create(GURL("https://buyer1.com")),
+      url::Origin::Create(GURL("https://another-buyer.com"))};
   auction_ad_config_non_shared_params_->auction_signals =
       R"({"is_auction_signals": true})";
   auction_ad_config_non_shared_params_->seller_signals =
@@ -1251,31 +1251,13 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   const char kExpectedJson[] =
       R"({"seller":"https://example.com",)"
       R"("decisionLogicUrl":"https://example.com/auction.js",)"
-      R"("interestGroupBuyers":"*",)"
+      R"("interestGroupBuyers":["https://buyer1.com","https://another-buyer.com"],)"
       R"("auctionSignals":{"is_auction_signals":true},)"
       R"("sellerSignals":{"is_seller_signals":true},)"
       R"("perBuyerSignals":{"https://a.com":{"signals_a":"A"},)"
       R"("https://b.com":{"signals_b":"B"}}})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", std::string() /* extra_code */, kExpectedJson,
-      absl::nullopt /* expected_report_url */);
-
-  // Array option for interest_group_buyers. Everything else optional
-  // unpopulated.
-  std::vector<url::Origin> buyers;
-  buyers.push_back(url::Origin::Create(GURL("https://buyer1.com")));
-  buyers.push_back(url::Origin::Create(GURL("https://another-buyer.com")));
-  auction_ad_config_non_shared_params_ =
-      blink::mojom::AuctionAdConfigNonSharedParams::New();
-  decision_logic_url_ = GURL("https://example.com/auction.js");
-  auction_ad_config_non_shared_params_->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::NewBuyers(std::move(buyers));
-  const char kExpectedJson2[] =
-      R"({"seller":"https://example.com",)"
-      R"("decisionLogicUrl":"https://example.com/auction.js",)"
-      R"("interestGroupBuyers":["https://buyer1.com","https://another-buyer.com"]})";
-  RunReportResultCreatedScriptExpectingResult(
-      "auctionConfig", std::string() /* extra_code */, kExpectedJson2,
       absl::nullopt /* expected_report_url */);
 }
 

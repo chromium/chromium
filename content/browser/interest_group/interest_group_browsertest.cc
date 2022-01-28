@@ -1271,18 +1271,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionStarInterestGroupBuyers) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-
-  EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
-    seller: 'https://test.com',
-    decisionLogicUrl: 'https://test.com/decision_logic',
-    interestGroupBuyers: '*',
-  })"));
-  ExpectAccessObserved({});
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidOwner) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
@@ -1700,20 +1688,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "interestGroupBuyers 'not star' for AuctionAdConfig with seller "
-      "'https://test.com' must be \"*\" (wildcard) or a list of buyer "
-      "https origin strings.",
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'interestGroupBuyers' property from 'AuctionAdConfig': The "
+      "provided value cannot be converted to a sequence.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
       decisionLogicUrl: 'https://test.com',
-      interestGroupBuyers: 'not star',
+      interestGroupBuyers: 'not an array',
   })"));
   ExpectAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionNoInterestGroupBuyersField) {
+                       RunAdAuctionNoInterestGroupBuyers) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
@@ -1724,7 +1711,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionNoInterestGroupBuyers) {
+                       RunAdAuctionEmptyInterestGroupBuyers) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
@@ -3852,10 +3839,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_};
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Optional(Eq(ad_url_)));
 }
@@ -3873,10 +3858,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   ASSERT_TRUE(config->decision_logic_url.SchemeIs(url::kHttpScheme));
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_};
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3890,10 +3873,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_};
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3917,10 +3898,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_http});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_http};
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3945,10 +3924,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_, test_origin_a_http});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_, test_origin_a_http};
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3973,34 +3950,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_, test_origin_c});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_, test_origin_c};
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Optional(Eq(ad_url_)));
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
-                       InterestGroupWildcardStarNotSupported) {
-  GURL test_url_b = https_server_->GetURL("b.test", "/page_with_iframe.html");
-  ASSERT_TRUE(test_url_b.SchemeIs(url::kHttpsScheme));
-  url::Origin test_origin_b = url::Origin::Create(test_url_b);
-  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
-
-  auto config = blink::mojom::AuctionAdConfig::New();
-  config->seller = test_origin_b;
-  config->decision_logic_url =
-      https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->auction_ad_config_non_shared_params =
-      blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_all_buyers(blink::mojom::AllBuyers::New());
-
-  // All buyers isn't supported.
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
@@ -4018,10 +3971,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_};
   config->auction_ad_config_non_shared_params->per_buyer_signals.emplace();
   config->auction_ad_config_non_shared_params->per_buyer_signals
       .value()[test_origin_a_] = "{\"even\": \"more\", \"x\": 4.5}";
@@ -4044,10 +3995,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_};
   config->auction_ad_config_non_shared_params->per_buyer_signals.emplace();
   // `test_origin_b` isn't in `interest_group_buyers`.
   config->auction_ad_config_non_shared_params->per_buyer_signals
@@ -4071,10 +4020,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       "not-b.test", "/interest_group/trusted_scoring_signals.json");
   config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers =
-      blink::mojom::InterestGroupBuyers::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers
-      ->set_buyers({test_origin_a_});
+  config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      test_origin_a_};
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }

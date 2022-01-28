@@ -877,9 +877,7 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->auction_ad_config_non_shared_params =
         blink::mojom::AuctionAdConfigNonSharedParams::New();
     auction_config->auction_ad_config_non_shared_params->interest_group_buyers =
-        blink::mojom::InterestGroupBuyers::New();
-    auction_config->auction_ad_config_non_shared_params->interest_group_buyers
-        ->set_buyers(std::move(buyers));
+        std::move(buyers);
 
     auction_config->auction_ad_config_non_shared_params->seller_signals =
         base::StringPrintf(R"({"url": "%s"})",

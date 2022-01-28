@@ -71,22 +71,15 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
   }
 
   if (auction_ad_config_non_shared_params.interest_group_buyers) {
-    if (auction_ad_config_non_shared_params.interest_group_buyers
-            ->is_all_buyers()) {
-      if (!auction_config_dict.Set("interestGroupBuyers", std::string("*")))
+    std::vector<v8::Local<v8::Value>> interest_group_buyers;
+    for (const url::Origin& buyer :
+         *auction_ad_config_non_shared_params.interest_group_buyers) {
+      v8::Local<v8::String> v8_buyer;
+      if (!v8_helper->CreateUtf8String(buyer.Serialize()).ToLocal(&v8_buyer))
         return false;
-    } else {
-      std::vector<v8::Local<v8::Value>> interest_group_buyers;
-      for (const url::Origin& buyer :
-           auction_ad_config_non_shared_params.interest_group_buyers
-               ->get_buyers()) {
-        v8::Local<v8::String> v8_buyer;
-        if (!v8_helper->CreateUtf8String(buyer.Serialize()).ToLocal(&v8_buyer))
-          return false;
-        interest_group_buyers.push_back(v8_buyer);
-      }
-      auction_config_dict.Set("interestGroupBuyers", interest_group_buyers);
+      interest_group_buyers.push_back(v8_buyer);
     }
+    auction_config_dict.Set("interestGroupBuyers", interest_group_buyers);
   }
 
   if (auction_ad_config_non_shared_params.auction_signals.has_value() &&

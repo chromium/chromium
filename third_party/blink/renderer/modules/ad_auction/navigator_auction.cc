@@ -546,44 +546,24 @@ bool CopyInterestGroupBuyersFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
+  DCHECK(!output.auction_ad_config_non_shared_params->interest_group_buyers);
+
   if (!input.hasInterestGroupBuyers())
     return true;
-  output.auction_ad_config_non_shared_params->interest_group_buyers =
-      mojom::blink::InterestGroupBuyers::New();
-  switch (input.interestGroupBuyers()->GetContentType()) {
-    case V8UnionUSVStringOrUSVStringSequence::ContentType::kUSVString: {
-      const String& maybe_wildcard =
-          input.interestGroupBuyers()->GetAsUSVString();
-      if (maybe_wildcard != "*") {
-        exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-            input, "interestGroupBuyers", maybe_wildcard,
-            "must be \"*\" (wildcard) or a list of buyer https origin "
-            "strings."));
-        return false;
-      }
-      output.auction_ad_config_non_shared_params->interest_group_buyers
-          ->set_all_buyers(mojom::blink::AllBuyers::New());
-      break;
-    }
-    case V8UnionUSVStringOrUSVStringSequence::ContentType::kUSVStringSequence: {
-      Vector<scoped_refptr<const SecurityOrigin>> buyers;
-      for (const auto& buyer_str :
-           input.interestGroupBuyers()->GetAsUSVStringSequence()) {
-        scoped_refptr<const SecurityOrigin> buyer = ParseOrigin(buyer_str);
-        if (!buyer) {
-          exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-              input, "interestGroupBuyers buyer", buyer_str,
-              "must be a valid https origin."));
-          return false;
-        }
-        buyers.push_back(buyer);
-      }
-      output.auction_ad_config_non_shared_params->interest_group_buyers
-          ->set_buyers(std::move(buyers));
-      break;
-    }
-  }
 
+  Vector<scoped_refptr<const SecurityOrigin>> buyers;
+  for (const auto& buyer_str : input.interestGroupBuyers()) {
+    scoped_refptr<const SecurityOrigin> buyer = ParseOrigin(buyer_str);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "interestGroupBuyers buyer", buyer_str,
+          "must be a valid https origin."));
+      return false;
+    }
+    buyers.push_back(buyer);
+  }
+  output.auction_ad_config_non_shared_params->interest_group_buyers =
+      std::move(buyers);
   return true;
 }
 
