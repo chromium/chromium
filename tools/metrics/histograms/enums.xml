@@ -52463,6 +52463,7 @@ from previous Chrome versions.
       label="PolicyBlocklistThrottleRequiresPoliciesLoaded:disabled"/>
   <int value="-1060541241" label="ForcePreferredIntervalForVideo:enabled"/>
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
+  <int value="-1059478136" label="PreinstalledWebAppDuplicationFixer:enabled"/>
   <int value="-1057056167" label="VirtualKeyboardMultipaste:enabled"/>
   <int value="-1056860259"
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
@@ -55029,6 +55030,7 @@ from previous Chrome versions.
   <int value="813999334" label="HistoryManipulationIntervention:enabled"/>
   <int value="816369907" label="SharingHubDesktopAppMenu:disabled"/>
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
+  <int value="817080398" label="PreinstalledWebAppDuplicationFixer:disabled"/>
   <int value="817393533" label="GlobalMediaControlsModernUI:disabled"/>
   <int value="820650704" label="disable-ntp-popular-sites"/>
   <int value="821192723" label="show-fps-counter"/>

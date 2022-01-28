@@ -3836,6 +3836,11 @@ const FeatureEntry kFeatureEntries[] = {
          kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(web_app::kMigrateDefaultChromeAppToWebAppsNonGSuite)},
+    {"enable-preinstalled-web-app-duplication-fixer",
+     flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerName,
+     flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPreinstalledWebAppDuplicationFixer)},
 
     {"enable-openscreen-cast-streaming-session",
      flag_descriptions::kOpenscreenCastStreamingSessionName,

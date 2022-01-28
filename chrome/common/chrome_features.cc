@@ -255,6 +255,10 @@ const base::Feature kDMServerOAuthForChildUser{
 // Whether to allow installed-by-default web apps to be installed or not.
 const base::Feature kPreinstalledWebAppInstallation{
     "DefaultWebAppInstallation", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Whether to run the PreinstalledWebAppDuplicationFixer code during start up.
+const base::Feature kPreinstalledWebAppDuplicationFixer{
+    "PreinstalledWebAppDuplicationFixer", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

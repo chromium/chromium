@@ -895,6 +895,14 @@ const char kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription[] =
     "Enable the migration of default installed non-G Suite Chrome apps over to "
     "their corresponding web apps.";
 
+const char kEnablePreinstalledWebAppDuplicationFixerName[] =
+    "Enable the app deduplication fix for migrated preinstalled web apps";
+const char kEnablePreinstalledWebAppDuplicationFixerDescription[] =
+    "The preinstalled web app migration encountered app duplication issues "
+    "when it rolled out. This code path will attempt to re-migrate instances "
+    "of app duplication where the old app failed to stay removed. See "
+    "https://crbug.com/1290716.";
+
 const char kEnableSyncRequiresPoliciesLoadedName[] =
     "Sync waits for all policies to load before starting";
 const char kEnableSyncRequiresPoliciesLoadedDescription[] =
