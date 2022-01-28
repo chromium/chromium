@@ -114,11 +114,12 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
 
     assertTrue(!!getSecondaryLabel());
     assertEquals('', getSecondaryLabel().textContent.trim());
-    assertEquals(
-        getItemA11yLabel(),
+
+    const expectedA11yLabel =
         bluetoothPairingDeviceItem.i18n(
-            'bluetoothPairingDeviceItemA11YLabelMouse', itemIndex + 1, listSize,
-            deviceName));
+            'bluetoothA11yDeviceName', itemIndex + 1, listSize, deviceName) +
+        ' ' + bluetoothPairingDeviceItem.i18n('bluetoothA11yDeviceTypeMouse');
+    assertEquals(getItemA11yLabel(), expectedA11yLabel);
     assertEquals(getItemSecondaryA11yLabel(), '');
 
     bluetoothPairingDeviceItem.deviceItemState = DeviceItemState.PAIRING;

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -46,24 +47,22 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"bluetoothConfirmCodeMessage",
        IDS_BLUETOOTH_PAIRING_CONFIRM_CODE_MESSAGE},
       {"bluetoothPairingEnterKeys", IDS_BLUETOOTH_PAIRING_ENTER_KEYS},
-      {"bluetoothPairingDeviceItemA11YLabelUnknown",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_UNKNOWN},
-      {"bluetoothPairingDeviceItemA11YLabelComputer",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_COMPUTER},
-      {"bluetoothPairingDeviceItemA11YLabelPhone",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_PHONE},
-      {"bluetoothPairingDeviceItemA11YLabelHeadset",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_HEADSET},
-      {"bluetoothPairingDeviceItemA11YLabelVideoCamera",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_VIDEO_CAMERA},
-      {"bluetoothPairingDeviceItemA11YLabelGameContoller",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_GAME_CONTROLLER},
-      {"bluetoothPairingDeviceItemA11YLabelKeyboard",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_KEYBOARD},
-      {"bluetoothPairingDeviceItemA11YLabelMouse",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_MOUSE},
-      {"bluetoothPairingDeviceItemA11YLabelTablet",
-       IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_TABLET},
+      {"bluetoothA11yDeviceTypeUnknown",
+       IDS_BLUETOOTH_A11Y_DEVICE_TYPE_UNKNOWN},
+      {"bluetoothA11yDeviceTypeComputer",
+       IDS_BLUETOOTH_A11Y_DEVICE_TYPE_COMPUTER},
+      {"bluetoothA11yDeviceTypePhone", IDS_BLUETOOTH_A11Y_DEVICE_TYPE_PHONE},
+      {"bluetoothA11yDeviceTypeHeadset",
+       IDS_BLUETOOTH_A11Y_DEVICE_TYPE_HEADSET},
+      {"bluetoothA11yDeviceTypeVideoCamera",
+       IDS_BLUETOOTH_A11Y_DEVICE_TYPE_VIDEO_CAMERA},
+      {"bluetoothA11yDeviceTypeGameController",
+       IDS_BLUETOOTH_A11Y_DEVICE_TYPE_GAME_CONTROLLER},
+      {"bluetoothA11yDeviceTypeKeyboard",
+       IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD},
+      {"bluetoothA11yDeviceTypeMouse", IDS_BLUETOOTH_A11Y_DEVICE_TYPE_MOUSE},
+      {"bluetoothA11yDeviceTypeTablet", IDS_BLUETOOTH_A11Y_DEVICE_TYPE_TABLET},
+      {"bluetoothA11yDeviceName", IDS_BLUETOOTH_A11Y_DEVICE_NAME},
       {"bluetoothPairingDeviceItemSecondaryErrorA11YLabel",
        IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_ERROR_A11Y_LABEL},
       {"bluetoothPairingDeviceItemSecondaryPairingA11YLabel",

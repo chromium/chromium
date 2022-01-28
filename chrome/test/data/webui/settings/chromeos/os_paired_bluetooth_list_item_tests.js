@@ -83,11 +83,13 @@ suite('OsPairedBluetoothListItemTest', function() {
         assertEquals(getDeviceName().innerText, publicName);
         assertFalse(!!getBatteryInfo());
         assertTrue(!!getDeviceTypeIcon());
-        assertEquals(
-            getItemA11yLabel(),
-            pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemA11yLabelTypeUnknown', itemIndex + 1,
-                listSize, publicName));
+
+        let expectedA11yLabel = pairedBluetoothListItem.i18n(
+                                    'bluetoothA11yDeviceName', itemIndex + 1,
+                                    listSize, publicName) +
+            ' ' +
+            pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeUnknown');
+        assertEquals(getItemA11yLabel(), expectedA11yLabel);
 
         // Set device nickname, type and battery info.
         const nickname = 'nickname';
@@ -101,17 +103,58 @@ suite('OsPairedBluetoothListItemTest', function() {
         pairedBluetoothListItem.device = {...device};
         await flushAsync();
 
+        let expectedA11yBatteryLabel = pairedBluetoothListItem.i18n(
+            'bluetoothA11yDeviceBatteryInfo', batteryPercentage);
+
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, nickname);
         assertTrue(!!getBatteryInfo());
         assertEquals(
             getBatteryInfo().device,
             pairedBluetoothListItem.device.deviceProperties);
+
+        expectedA11yLabel =
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceName', itemIndex + 1, listSize, nickname) +
+            ' ' +
+            pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeComputer');
         assertEquals(
             getItemA11yLabel(),
+            expectedA11yLabel + ' ' + expectedA11yBatteryLabel);
+
+        // Add True Wireless battery information and make sure that it takes
+        // precedence over default battery information.
+        const leftBudBatteryPercentage = 19;
+        const caseBatteryPercentage = 29;
+        const rightBudBatteryPercentage = 39;
+        device.deviceProperties.batteryInfo.leftBudInfo = {
+          batteryPercentage: leftBudBatteryPercentage
+        };
+        device.deviceProperties.batteryInfo.caseInfo = {
+          batteryPercentage: caseBatteryPercentage
+        };
+        device.deviceProperties.batteryInfo.rightBudInfo = {
+          batteryPercentage: rightBudBatteryPercentage
+        };
+        pairedBluetoothListItem.device = {...device};
+        await flushAsync();
+
+        expectedA11yBatteryLabel =
             pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemA11yLabelTypeComputerWithBatteryInfo',
-                itemIndex + 1, listSize, nickname, batteryPercentage));
+                'bluetoothA11yDeviceNamedBatteryInfoLeftBud',
+                leftBudBatteryPercentage) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceNamedBatteryInfoCase',
+                caseBatteryPercentage) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceNamedBatteryInfoRightBud',
+                rightBudBatteryPercentage);
+
+        assertEquals(
+            getItemA11yLabel(),
+            expectedA11yLabel + ' ' + expectedA11yBatteryLabel);
       });
 
   test('Battery percentage out of bounds', async function() {
