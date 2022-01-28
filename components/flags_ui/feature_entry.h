@@ -217,6 +217,10 @@ struct FeatureEntry {
   // variation associated at |index|. Only applicable for types FEATURE_VALUE
   // and FEATURE_WITH_PARAMS_VALUE.
   const FeatureEntry::FeatureVariation* VariationForOption(int index) const;
+
+  // Returns true if the entry is considered as valid.
+  // See the implenetation for the details of what is valid.
+  bool IsValid() const;
 };
 
 namespace testing {

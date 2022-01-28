@@ -109,6 +109,12 @@ TEST(AboutFlagsTest, FlagsListedInAlphabeticalOrder) {
   flags_ui::testing::EnsureFlagsAreListedInAlphabeticalOrder();
 }
 
+TEST(AboutFlagsTest, EveryFlagIsValid) {
+  for (const auto& entry : testing::GetFeatureEntries()) {
+    EXPECT_TRUE(entry.IsValid()) << entry.internal_name;
+  }
+}
+
 TEST(AboutFlagsTest, RecentUnexpireFlagsArePresent) {
   flags_ui::testing::EnsureRecentUnexpireFlagsArePresent(
       testing::GetFeatureEntries(), CHROME_VERSION_MAJOR);

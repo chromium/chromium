@@ -65,38 +65,6 @@ void AddOsStrings(unsigned bitmask, base::Value* list) {
   }
 }
 
-// Confirms that an entry is valid, used in a DCHECK in
-// SanitizeList below.
-bool IsValidFeatureEntry(const FeatureEntry& e) {
-  switch (e.type) {
-    case FeatureEntry::SINGLE_VALUE:
-    case FeatureEntry::SINGLE_DISABLE_VALUE:
-    case FeatureEntry::ORIGIN_LIST_VALUE:
-      return true;
-    case FeatureEntry::MULTI_VALUE:
-      DCHECK_GT(e.choices.size(), 0u);
-      DCHECK(e.ChoiceForOption(0).command_line_switch);
-      DCHECK_EQ('\0', e.ChoiceForOption(0).command_line_switch[0]);
-      return true;
-    case FeatureEntry::ENABLE_DISABLE_VALUE:
-      DCHECK(e.switches.command_line_switch);
-      DCHECK(e.switches.command_line_value);
-      DCHECK(e.switches.disable_command_line_switch);
-      DCHECK(e.switches.disable_command_line_value);
-      return true;
-    case FeatureEntry::FEATURE_VALUE:
-      DCHECK(e.feature.feature);
-      return true;
-    case FeatureEntry::FEATURE_WITH_PARAMS_VALUE:
-      DCHECK(e.feature.feature);
-      DCHECK(e.feature.feature_variations.size());
-      DCHECK(e.feature.feature_trial_name);
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
 // Returns true if none of this entry's options have been enabled.
 bool IsDefaultValue(const FeatureEntry& entry,
                     const std::set<std::string>& enabled_entries) {
@@ -907,7 +875,7 @@ bool FlagsState::IsSupportedFeature(const FlagsStorage* storage,
                                     const std::string& name,
                                     int platform_mask) const {
   for (const auto& entry : feature_entries_) {
-    DCHECK(IsValidFeatureEntry(entry));
+    DCHECK(entry.IsValid());
     if (!(entry.supported_platforms & platform_mask))
       continue;
     if (!entry.InternalNameMatches(name))
