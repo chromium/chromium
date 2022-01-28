@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Flaky on Android https://crbug.com/1099365
+// Flaky on Android and Linux ASAN https://crbug.com/1099365.
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
 #define MAYBE_NetworkProcessCrashRecovery DISABLED_NetworkProcessCrashRecovery
 #else
 #define MAYBE_NetworkProcessCrashRecovery NetworkProcessCrashRecovery

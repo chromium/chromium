@@ -231,9 +231,17 @@ IN_PROC_BROWSER_TEST_F(
   RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificate(kKeygenAlgorithmRsa);
 }
 
+// TODO(https://crbug.com/1291255): Flaky on Linux ASAN.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateEcdsa \
+  DISABLED_RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateEcdsa
+#else
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateEcdsa \
+  RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateEcdsa
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcBrowserTest,
-    RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateEcdsa) {
+    MAYBE_RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateEcdsa) {
   RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificate(kKeygenAlgorithmEcdsa);
 }
 
