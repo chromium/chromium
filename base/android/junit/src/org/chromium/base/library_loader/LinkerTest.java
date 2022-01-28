@@ -45,6 +45,7 @@ public class LinkerTest {
 
     @Before
     public void setUp() {
+        ShadowRecordHistogram.reset();
         Linker.setNativesForTesting(mNativeMock);
         ModernLinker.setModernLinkerNativesForTesting(mModernLinkerNativeMock);
     }
@@ -72,7 +73,7 @@ public class LinkerTest {
                 /* asRelroProducer= */ false, PreferAddress.RESERVE_HINT, someAddress);
 
         // Verify.
-        Assert.assertEquals(false, linker.mRelroProducer);
+        Assert.assertFalse(linker.mRelroProducer);
         Mockito.verify(linker).keepMemoryReservationUntilLoad();
         Mockito.verify(mNativeMock).reserveMemoryForLibrary(anyLibInfo());
         Assert.assertNotEquals(null, linker.mLocalLibInfo);
@@ -92,7 +93,7 @@ public class LinkerTest {
                 /* asRelroProducer= */ false, PreferAddress.RESERVE_HINT, someAddress);
 
         // Verify.
-        Assert.assertEquals(false, linker.mRelroProducer);
+        Assert.assertFalse(linker.mRelroProducer);
         Mockito.verify(linker).keepMemoryReservationUntilLoad();
         Mockito.verify(mNativeMock, Mockito.never()).reserveMemoryForLibrary(anyLibInfo());
     }
@@ -108,7 +109,7 @@ public class LinkerTest {
         linker.ensureInitialized(/* asRelroProducer= */ true, PreferAddress.RESERVE_RANDOM, 0);
 
         // Verify.
-        Assert.assertEquals(true, linker.mRelroProducer);
+        Assert.assertTrue(linker.mRelroProducer);
         Mockito.verify(linker).keepMemoryReservationUntilLoad();
         Mockito.verify(mNativeMock)
                 .findMemoryRegionAtRandomAddress(anyLibInfo(), ArgumentMatchers.eq(true));
@@ -281,7 +282,7 @@ public class LinkerTest {
         // Verify.
         Assert.assertNotNull(linker.mWebviewReservationSearchResult);
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(
                         "ChromiumAndroidLinker.TimeToFindWebViewReservation.Found.Zygote"));
     }
 
