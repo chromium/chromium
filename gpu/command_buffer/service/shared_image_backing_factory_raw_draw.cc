@@ -110,6 +110,7 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
   class RepresentationSkia;
 
   void ResetPaintOpBuffer() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (!paint_op_buffer_) {
       DCHECK(!clear_color_);
       DCHECK(!paint_op_release_callback_);
@@ -125,7 +126,42 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
       std::move(paint_op_release_callback_).Run();
   }
 
+  bool CreateBackendTextureAndFlushPaintOps() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK(!backend_texture_.isValid());
+    DCHECK(!promise_texture_);
+
+    auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
+                                                      : GrMipMapped::kNo;
+    auto sk_color = viz::ResourceFormatToClosestSkColorType(
+        /*gpu_compositing=*/true, format());
+    backend_texture_ = context_state_->gr_context()->createBackendTexture(
+        size().width(), size().height(), sk_color, mipmap, GrRenderable::kYes,
+        GrProtected::kNo);
+    if (!backend_texture_.isValid()) {
+      DLOG(ERROR) << "createBackendTexture() failed with SkColorType:"
+                  << sk_color;
+      return false;
+    }
+    promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
+
+    auto surface = SkSurface::MakeFromBackendTexture(
+        context_state_->gr_context(), backend_texture_, surface_origin(),
+        final_msaa_count_, sk_color, color_space().ToSkColorSpace(),
+        &surface_props_);
+
+    if (clear_color_)
+      surface->getCanvas()->clear(*clear_color_);
+
+    if (paint_op_buffer_) {
+      cc::PlaybackParams playback_params(nullptr, SkM44());
+      paint_op_buffer_->Playback(surface->getCanvas(), playback_params);
+    }
+    return true;
+  }
+
   void DestroyBackendTexture() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (backend_texture_.isValid()) {
       DCHECK(context_state_);
       DeleteGrBackendTexture(context_state_.get(), &backend_texture_);
@@ -197,6 +233,16 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
     if (backend_texture_.isValid())
       return nullptr;
 
+    // If |paint_op_buffer_| contains SaveLayerOps, it usually means a SVG image
+    // is drawn. For some complex SVG re-rasterizing is expensive, it causes
+    // janky scrolling for some page which SVG images are heavily used.
+    // Workaround the problem by return nullptr here, and then SkiaRenderer will
+    // fallback to using |backing_texture_|.
+    // TODO(crbug.com/1292068): only cache raster results for the SaveLayerOp
+    // covered area.
+    if (paint_op_buffer_ && paint_op_buffer_->has_save_layer_ops())
+      return nullptr;
+
     read_count_++;
 
     if (!paint_op_buffer_) {
@@ -210,39 +256,10 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
   sk_sp<SkPromiseImageTexture> BeginSkiaReadAccess() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     AutoLock auto_lock(this);
-    if (backend_texture_.isValid()) {
-      DCHECK(promise_texture_);
-      read_count_++;
-      return promise_texture_;
-    }
-
-    auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
-                                                      : GrMipMapped::kNo;
-    auto sk_color = viz::ResourceFormatToClosestSkColorType(
-        /*gpu_compositing=*/true, format());
-    backend_texture_ = context_state_->gr_context()->createBackendTexture(
-        size().width(), size().height(), sk_color, mipmap, GrRenderable::kYes,
-        GrProtected::kNo);
-    if (!backend_texture_.isValid()) {
-      DLOG(ERROR) << "createBackendTexture() failed with SkColorType:"
-                  << sk_color;
+    if (!backend_texture_.isValid() && !CreateBackendTextureAndFlushPaintOps())
       return nullptr;
-    }
-    promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
 
-    auto surface = SkSurface::MakeFromBackendTexture(
-        context_state_->gr_context(), backend_texture_, surface_origin(),
-        final_msaa_count_, sk_color, color_space().ToSkColorSpace(),
-        &surface_props_);
-
-    if (clear_color_)
-      surface->getCanvas()->clear(*clear_color_);
-
-    if (paint_op_buffer_) {
-      cc::PlaybackParams playback_params(nullptr, SkM44());
-      paint_op_buffer_->Playback(surface->getCanvas(), playback_params);
-    }
-
+    DCHECK(promise_texture_);
     read_count_++;
     return promise_texture_;
   }
