@@ -348,7 +348,7 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
         handled = ProcessAnimateRendererDirective(directive, storage);
         break;
       case CompositorFrameTransitionDirective::Type::kRelease:
-        handled = ProcessReleaseDirective(directive, storage);
+        handled = ProcessReleaseDirective();
         break;
     }
 
@@ -365,6 +365,13 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
 bool SurfaceAnimationManager::ProcessSaveDirective(
     const CompositorFrameTransitionDirective& directive,
     StorageWithSurface& storage) {
+  // We can only have one saved frame. It is the job of the client to ensure the
+  // correct API usage. So if we are receiving a save directive while we already
+  // have a saved frame, release it first. That ensures that any subsequent
+  // animate directives which presumably rely on this save directive will
+  // succeed.
+  ProcessReleaseDirective();
+
   // We need to be in the idle state in order to save.
   if (state_ != State::kIdle)
     return false;
@@ -433,9 +440,7 @@ bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
   return true;
 }
 
-bool SurfaceAnimationManager::ProcessReleaseDirective(
-    const CompositorFrameTransitionDirective& directive,
-    StorageWithSurface& storage) {
+bool SurfaceAnimationManager::ProcessReleaseDirective() {
   if (state_ != State::kAnimatingRenderer)
     return false;
 

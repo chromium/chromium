@@ -116,9 +116,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   bool ProcessAnimateRendererDirective(
       const CompositorFrameTransitionDirective& directive,
       StorageWithSurface& storage);
-  bool ProcessReleaseDirective(
-      const CompositorFrameTransitionDirective& directive,
-      StorageWithSurface& storage);
+  bool ProcessReleaseDirective();
 
   // Finishes the animation and advance state to kLastFrame if it's time to do
   // so. This call is only valid if state is kAnimating.
