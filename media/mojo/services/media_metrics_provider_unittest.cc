@@ -55,6 +55,8 @@ class MediaMetricsProviderTest : public testing::Test {
         base::BindRepeating(
             &MediaMetricsProviderTest::GetRecordAggregateWatchTimeCallback,
             base::Unretained(this)),
+        base::BindRepeating(&MediaMetricsProviderTest::IsShuttingDown,
+                            base::Unretained(this)),
         provider_.BindNewPipeAndPassReceiver());
     provider_->Initialize(is_mse, scheme, media_stream_type);
   }
@@ -65,6 +67,8 @@ class MediaMetricsProviderTest : public testing::Test {
   GetRecordAggregateWatchTimeCallback() {
     return base::NullCallback();
   }
+
+  MOCK_METHOD(bool, IsShuttingDown, ());
 
   void ResetMetricRecorders() {
     // Ensure cleared global before attempting to create a new TestUkmReporter.

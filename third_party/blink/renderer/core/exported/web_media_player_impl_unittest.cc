@@ -407,6 +407,8 @@ class WebMediaPlayerImplTest
         base::BindRepeating(
             &WebMediaPlayerImplTest::GetRecordAggregateWatchTimeCallback,
             base::Unretained(this)),
+        base::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
+                            base::Unretained(this)),
         provider.BindNewPipeAndPassReceiver());
 
     // Initialize provider since none of the tests below actually go through the
@@ -477,6 +479,8 @@ class WebMediaPlayerImplTest
   GetRecordAggregateWatchTimeCallback() {
     return base::NullCallback();
   }
+
+  MOCK_METHOD(bool, IsShuttingDown, ());
 
   base::TimeDelta GetCurrentTimeInternal() {
     return wmpi_->GetCurrentTimeInternal();

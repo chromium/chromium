@@ -9467,6 +9467,9 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
                         ->GetSaveCallback();
   }
 
+  auto is_shutting_down_cb = base::BindRepeating(
+      []() { return GetContentClient()->browser()->IsShuttingDown(); });
+
   media::MediaMetricsProvider::Create(
       GetProcess()->GetBrowserContext()->IsOffTheRecord()
           ? media::MediaMetricsProvider::BrowsingMode::kIncognito
@@ -9492,7 +9495,7 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
       base::BindRepeating(
           &RenderFrameHostImpl::GetRecordAggregateWatchTimeCallback,
           base::Unretained(this)),
-      std::move(receiver));
+      std::move(is_shutting_down_cb), std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)

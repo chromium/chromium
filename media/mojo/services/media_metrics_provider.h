@@ -45,13 +45,16 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   using GetRecordAggregateWatchTimeCallback =
       base::RepeatingCallback<RecordAggregateWatchTimeCallback(void)>;
 
+  using IsShuttingDownCallback = base::RepeatingCallback<bool(void)>;
+
   MediaMetricsProvider(BrowsingMode is_incognito,
                        FrameStatus is_top_frame,
                        ukm::SourceId source_id,
                        learning::FeatureValue origin,
                        VideoDecodePerfHistory::SaveCallback save_cb,
                        GetLearningSessionCallback learning_session_cb,
-                       RecordAggregateWatchTimeCallback record_playback_cb);
+                       RecordAggregateWatchTimeCallback record_playback_cb,
+                       IsShuttingDownCallback is_shutting_down_cb);
 
   MediaMetricsProvider(const MediaMetricsProvider&) = delete;
   MediaMetricsProvider& operator=(const MediaMetricsProvider&) = delete;
@@ -80,6 +83,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       VideoDecodePerfHistory::SaveCallback save_cb,
       GetLearningSessionCallback learning_session_cb,
       GetRecordAggregateWatchTimeCallback get_record_playback_cb,
+      IsShuttingDownCallback is_shutting_down_cb,
       mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver);
 
  private:
@@ -149,6 +153,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   const VideoDecodePerfHistory::SaveCallback save_cb_;
   const GetLearningSessionCallback learning_session_cb_;
   const RecordAggregateWatchTimeCallback record_playback_cb_;
+  const IsShuttingDownCallback is_shutting_down_cb_;
 
   // UMA pipeline packaged data
   PipelineInfo uma_info_;
