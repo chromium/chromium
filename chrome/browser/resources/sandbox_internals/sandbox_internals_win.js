@@ -36,7 +36,7 @@ let RendererHostProcess;
  * This may have additional fields displayed in the JSON output.
  * See //sandbox/win/src/sandbox_constants.cc for keys in policy.
  * @typedef {{
- *   processId: number,
+ *   processIds: !Array<number>,
  *   lockdownLevel: string,
  *   desiredIntegrityLevel: string,
  *   platformMitigations: string,
@@ -511,7 +511,9 @@ function onGetSandboxDiagnostics(results) {
   /** @type {!Map<number,!PolicyDiagnostic>} */
   const policies = new Map();
   for (const policy of results.policies) {
-    policies.set(policy.processId, policy);
+    // At present only one process per TargetPolicy object.
+    const pid = policy.processIds[0];
+    policies.set(pid, policy);
   }
 
   // Titles.
