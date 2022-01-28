@@ -49,7 +49,6 @@ The JSON for the header fields looks like:
   "build_config": {
     "git_revision": "f49193cacf8ed34160a04ada4acf2ad6a1a030c8",
     "gn_args": [ ... ],
-    "linker_name": "lld_v1",
     "tool_prefix": "third_party/llvm-build/Release+Asserts/bin/llvm-"
   },
   "containers": [
