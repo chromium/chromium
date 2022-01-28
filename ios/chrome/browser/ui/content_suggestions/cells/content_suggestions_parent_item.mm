@@ -107,8 +107,6 @@
                   action:@selector(contentSuggestionsElementTapped:)];
       [view addGestureRecognizer:tapRecognizer];
       [self.mostVisitedTapRecognizers addObject:tapRecognizer];
-      // TODO(crbug.com/1285378): Add custom accsissibility actions and context
-      // menu configuration.
       [stackView addArrangedSubview:view];
     }
     [cell addUIElement:stackView
