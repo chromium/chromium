@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -152,10 +153,18 @@ void NavigationBodyLoader::StartLoadingBody(
     // started, so start it now.
     if (!code_cache_loader_)
       StartLoadingCodeCache(code_cache_host);
+
+    // TODO(crbug.com/1274867): See if this can be enabled for subframes too.
+    if (base::FeatureList::IsEnabled(features::kEarlyBodyLoad) &&
+        is_main_frame_) {
+      // Start loading the body in parallel with the code cache.
+      BindURLLoaderAndStartLoadingResponseBodyIfPossible();
+    }
     return;
   }
 
-  BindURLLoaderAndStartLoadingResponseBodyIfPossible();
+  code_cache_data_ = mojo_base::BigBuffer();
+  ContinueWithCodeCache(base::TimeTicks::Now(), response_head_response_time);
 }
 
 void NavigationBodyLoader::StartLoadingCodeCache(
@@ -180,20 +189,28 @@ void NavigationBodyLoader::CodeCacheReceived(base::Time response_time,
 void NavigationBodyLoader::ContinueWithCodeCache(
     base::TimeTicks start_time,
     base::Time response_head_response_time) {
-  base::UmaHistogramTimes(
-      base::StrCat({"Navigation.CodeCacheTime.",
-                    is_main_frame_ ? "MainFrame" : "Subframe"}),
-      base::TimeTicks::Now() - start_time);
+  if (code_cache_loader_) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Navigation.CodeCacheTime.",
+                      is_main_frame_ ? "MainFrame" : "Subframe"}),
+        base::TimeTicks::Now() - start_time);
+  }
 
   // Check that the times match to ensure that the code cache data is for this
   // response. See https://crbug.com/1099587.
-  if (response_head_response_time == code_cache_response_time_ && client_) {
-    base::WeakPtr<NavigationBodyLoader> weak_self = weak_factory_.GetWeakPtr();
+  if (response_head_response_time != code_cache_response_time_)
+    code_cache_data_ = mojo_base::BigBuffer();
+
+  auto weak_self = weak_factory_.GetWeakPtr();
+  if (client_) {
     client_->BodyCodeCacheReceived(std::move(*code_cache_data_));
     if (!weak_self)
       return;
   }
   code_cache_loader_.reset();
+  NotifyCompletionIfAppropriate();
+  if (!weak_self)
+    return;
 
   // TODO(dgozman): we should explore retrieveing code cache in parallel with
   // receiving response or reading the first data chunk.
@@ -282,7 +299,7 @@ void NavigationBodyLoader::ReadFromDataPipe() {
 }
 
 void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
-  if (!has_received_completion_ || !has_seen_end_of_data_)
+  if (!has_received_completion_ || !has_seen_end_of_data_ || code_cache_loader_)
     return;
 
   handle_watcher_.Cancel();
@@ -308,6 +325,10 @@ void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
 
 void NavigationBodyLoader::
     BindURLLoaderAndStartLoadingResponseBodyIfPossible() {
+  if (!response_body_) {
+    DCHECK(base::FeatureList::IsEnabled(features::kEarlyBodyLoad));
+    return;
+  }
   // Bind the mojo::URLLoaderClient interface in advance, because we will start
   // to read from the data pipe immediately which may potentially postpone the
   // method calls from the remote. That causes the flakiness of some layout

@@ -88,6 +88,12 @@ ResourceError ResourceError::Failure(const KURL& url) {
   return ResourceError(net::ERR_FAILED, url, absl::nullopt);
 }
 
+ResourceError ResourceError::HttpError(const KURL& url) {
+  ResourceError error = CancelledError(url);
+  error.is_cancelled_from_http_error_ = true;
+  return error;
+}
+
 ResourceError::ResourceError(
     int error_code,
     const KURL& url,

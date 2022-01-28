@@ -1150,7 +1150,7 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   if (response.HttpStatusCode() >= 400 &&
       !resource_->ShouldIgnoreHTTPStatusCodeErrors()) {
-    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
+    HandleError(ResourceError::HttpError(response.CurrentRequestUrl()));
     return;
   }
 }

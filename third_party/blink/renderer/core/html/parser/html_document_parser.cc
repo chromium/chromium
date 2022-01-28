@@ -1343,6 +1343,15 @@ void HTMLDocumentParser::Append(const String& input_source) {
     return;
   }
 
+  // If we are preloading, FinishAppend() will be called later in
+  // CommitPreloadedData().
+  if (IsPreloading())
+    return;
+
+  FinishAppend();
+}
+
+void HTMLDocumentParser::FinishAppend() {
   // Schedule a tokenizer pump to process this new data. We schedule to give
   // paint a chance to happen, and because devtools somehow depends on it
   // for js loads.
@@ -1353,6 +1362,15 @@ void HTMLDocumentParser::Append(const String& input_source) {
   } else {
     PumpTokenizerIfPossible();
   }
+}
+
+void HTMLDocumentParser::CommitPreloadedData() {
+  if (!IsPreloading())
+    return;
+
+  SetIsPreloading(false);
+  if (task_runner_state_->HaveSeenFirstByte() && !IsStopped())
+    FinishAppend();
 }
 
 void HTMLDocumentParser::end() {

@@ -2087,12 +2087,19 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/console_log.html'))
     logs = self._driver.GetLog('browser')
 
-    self.assertEqual('javascript', logs[0]['source'])
-    self.assertTrue('TypeError' in logs[0]['message'])
+    # The javascript and network logs can come in any order.
+    if logs[0]['source'] == 'javascript':
+        js_log = logs[0]
+        network_log = logs[1]
+    else:
+        network_log = logs[0]
+        js_log = logs[1]
+    self.assertEqual('javascript', js_log['source'])
+    self.assertTrue('TypeError' in js_log['message'])
 
-    self.assertEqual('network', logs[1]['source'])
-    self.assertTrue('nonexistent.png' in logs[1]['message'])
-    self.assertTrue('404' in logs[1]['message'])
+    self.assertEqual('network', network_log['source'])
+    self.assertTrue('nonexistent.png' in network_log['message'])
+    self.assertTrue('404' in network_log['message'])
 
     # Sometimes, we also get an error for a missing favicon.
     if len(logs) > 2:
