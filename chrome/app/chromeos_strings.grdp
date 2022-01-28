@@ -5530,11 +5530,10 @@
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL" desc="Toggle text for the Welcome screen in Chrome OS 'Add account' dialog. If user toggles it on, the account that will be added will be available in Android Apps. The default value for the toggle may be 'on' or 'off' depending on where the dialog is being opened from.">
     Use this account with Android apps. You can control permissions for Android apps in <ph name="LINK_BEGIN">&lt;a id="appsSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <!-- TODO(https://crbug.com/1260909): Make the strings translatable when they are finalized. -->
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE" desc="" translateable="false">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE" desc="Title for the Account picker screen in Chrome OS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
     Accounts available to use with Android apps
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY" desc="" translateable="false">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY" desc="Text body for the Account picker screen in Chrome OS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
     You can select an existing account to use with Android apps or add a new Google Account. Once you sign in to an Android app, your account can be used with other Android apps. You can change Android apps access in <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings > Accounts<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL" desc="Label of the Add account button on Account picker screen.">
