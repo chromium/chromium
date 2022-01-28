@@ -14,9 +14,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.os.Build;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,16 +26,10 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
@@ -50,9 +41,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
@@ -83,10 +72,9 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         private String mMockTab1OfferId;
         private String mMockTab2OfferId;
 
-        TestImplicitPriceDropSubscriptionsManager(TabModelSelector tabModelSelector,
-                ActivityLifecycleDispatcher activityLifecycleDispatcher,
-                SubscriptionsManagerImpl subscriptionsManager) {
-            super(tabModelSelector, activityLifecycleDispatcher, subscriptionsManager);
+        TestImplicitPriceDropSubscriptionsManager(
+                TabModelSelector tabModelSelector, SubscriptionsManagerImpl subscriptionsManager) {
+            super(tabModelSelector, subscriptionsManager);
         }
 
         @Override
@@ -114,8 +102,6 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Mock
     TabModelSelector mTabModelSelector;
     @Mock
-    ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock
     SubscriptionsManagerImpl mSubscriptionsManager;
     @Mock
     CriticalPersistedTabData mCriticalPersistedTabData1;
@@ -123,18 +109,12 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     CriticalPersistedTabData mCriticalPersistedTabData2;
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor
-    ArgumentCaptor<PauseResumeWithNativeObserver> mPauseResumeWithNativeObserverCaptor;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
     private CommerceSubscription mSubscription1;
     private CommerceSubscription mSubscription2;
     private TestImplicitPriceDropSubscriptionsManager mImplicitSubscriptionsManager;
-    private SharedPreferencesManager mSharedPreferencesManager;
-    private MockNotificationManagerProxy mMockNotificationManager;
-    private PriceDropNotificationManager mPriceDropNotificationManager;
-    private FeatureList.TestValues mTestValues;
 
     @Before
     public void setUp() {
@@ -155,64 +135,21 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        doNothing()
-                .when(mActivityLifecycleDispatcher)
-                .register(mPauseResumeWithNativeObserverCaptor.capture());
-        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
-        mSharedPreferencesManager.writeLong(
-                ImplicitPriceDropSubscriptionsManager.CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP,
-                System.currentTimeMillis()
-                        - TimeUnit.SECONDS.toMillis(
-                                CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds()));
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
-
-        mTestValues = new FeatureList.TestValues();
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "true");
-        FeatureList.setTestValues(mTestValues);
-
-        mMockNotificationManager = new MockNotificationManagerProxy();
-        mMockNotificationManager.setNotificationsEnabled(true);
-        PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
-        mPriceDropNotificationManager = new PriceDropNotificationManager();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mPriceDropNotificationManager.createNotificationChannel();
-        }
 
         mImplicitSubscriptionsManager = new TestImplicitPriceDropSubscriptionsManager(
-                mTabModelSelector, mActivityLifecycleDispatcher, mSubscriptionsManager);
+                mTabModelSelector, mSubscriptionsManager);
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, OFFER1_ID, OFFER2_ID);
-    }
-
-    @After
-    public void tearDown() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mPriceDropNotificationManager.deleteChannelForTesting();
-        }
-        PriceDropNotificationManager.setNotificationManagerForTesting(null);
     }
 
     @Test
     public void testInitialSetup() {
         verify(mTabModel).addObserver(any(TabModelObserver.class));
-        verify(mActivityLifecycleDispatcher).register(any(PauseResumeWithNativeObserver.class));
     }
 
     @Test
     public void testInitialSubscription_AllUnique() {
         initializeSubscriptionsAndVerify(true, true);
         verifyEligibleSubscriptionMetrics(2, 2);
-    }
-
-    @Test
-    public void testInitialSubscription_FeatureDisabled() {
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "false");
-        FeatureList.setTestValues(mTestValues);
-
-        initializeSubscriptionsAndVerify(false, false);
-        verifyEligibleSubscriptionMetrics(0, 0);
     }
 
     @Test
@@ -250,32 +187,6 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
         initializeSubscriptionsAndVerify(false, true);
         verifyEligibleSubscriptionMetrics(1, 2);
-    }
-
-    @Test
-    public void testInitialSubscription_TooFrequentSubscription() {
-        mSharedPreferencesManager.writeLong(
-                ImplicitPriceDropSubscriptionsManager.CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP,
-                System.currentTimeMillis());
-
-        initializeSubscriptionsAndVerify(false, false);
-        verifyEligibleSubscriptionMetrics(0, 0);
-    }
-
-    @Test
-    public void testInitialSubscription_NotificationDisabled() {
-        mMockNotificationManager.setNotificationsEnabled(false);
-
-        // We still subscribe for tabs when user turns off notifications.
-        initializeSubscriptionsAndVerify(true, true);
-        verifyEligibleSubscriptionMetrics(2, 2);
-    }
-
-    @Test
-    public void testInitialSubscription_OnResume() {
-        mPauseResumeWithNativeObserverCaptor.getValue().onResumeWithNative();
-        verify(mSubscriptionsManager, times(1)).subscribe(eq(mSubscription1), any(Callback.class));
-        verify(mSubscriptionsManager, times(1)).subscribe(eq(mSubscription2), any(Callback.class));
     }
 
     @Test
@@ -324,7 +235,6 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         mImplicitSubscriptionsManager.destroy();
 
         verify(mTabModel).removeObserver(any(TabModelObserver.class));
-        verify(mActivityLifecycleDispatcher).unregister(any(PauseResumeWithNativeObserver.class));
     }
 
     private TabImpl prepareTab(int id, String urlString, int position,
