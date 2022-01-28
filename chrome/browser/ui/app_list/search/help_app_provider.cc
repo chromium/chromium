@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
@@ -141,7 +142,7 @@ HelpAppResult::HelpAppResult(
   SetResultType(ResultType::kHelpApp);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::HELP_APP_DEFAULT);
-  SetIcon(IconInfo(icon));
+  SetIcon(IconInfo(icon, GetAppIconDimension()));
   SetDetails(result->main_category);
 }
 

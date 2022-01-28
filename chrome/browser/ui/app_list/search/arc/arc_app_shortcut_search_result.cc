@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -110,7 +111,7 @@ std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
 }
 
 void ArcAppShortcutSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
-  SetIcon(IconInfo(icon));
+  SetIcon(IconInfo(icon, GetAppIconDimension()));
 }
 
 }  // namespace app_list

@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/arc/arc_playstore_app_context_menu.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "components/crx_file/id_util.h"
 #include "ui/base/models/image_model.h"
@@ -162,7 +163,7 @@ AppContextMenu* ArcPlayStoreSearchResult::GetAppContextMenu() {
 }
 
 void ArcPlayStoreSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
-  SetIcon(IconInfo(icon));
+  SetIcon(IconInfo(icon, GetAppIconDimension()));
 }
 
 }  // namespace app_list

@@ -55,6 +55,7 @@ class AppServiceAppResult : public AppResult {
   ash::SearchResultType GetSearchResultType() const;
   void Launch(int event_flags, apps::mojom::LaunchSource launch_source);
 
+  int GetIconDimension(bool chip);
   void CallLoadIcon(bool chip, bool allow_placeholder_icon);
   void OnLoadIcon(bool chip, apps::IconValuePtr icon_value);
 
