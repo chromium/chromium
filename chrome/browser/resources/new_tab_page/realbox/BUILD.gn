@@ -2,78 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/webui_features.gni")
 
-js_library("realbox") {
-  deps = [
-    ":realbox_browser_proxy",
-    ":realbox_dropdown",
-    ":realbox_icon",
-    "..:i18n_setup",
-    "../:utils",
-    "//chrome/browser/ui/webui/realbox:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//url/mojom:url_mojom_gurl_webui_js",
-  ]
-}
-
-js_library("realbox_action") {
-  deps = [
-    "../:utils",
-    "//chrome/browser/ui/webui/realbox:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("realbox_browser_proxy") {
-  deps = [ "//chrome/browser/ui/webui/realbox:mojo_bindings_webui_js" ]
-}
-
-js_library("realbox_dropdown") {
-  deps = [
-    ":realbox_browser_proxy",
-    ":realbox_match",
-    "..:i18n_setup",
-    "../:utils",
-    "//chrome/browser/ui/webui/realbox:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
-    "//url/mojom:url_mojom_gurl_webui_js",
-  ]
-}
-
-js_library("realbox_icon") {
-  deps = [
-    "//chrome/browser/ui/webui/realbox:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("realbox_match") {
-  deps = [
-    ":realbox_action",
-    ":realbox_icon",
-    "..:i18n_setup",
-    "../:utils",
-    "//chrome/browser/ui/webui/realbox:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-  ]
-}
-
 html_to_js("web_components_local") {
   js_files = [
-    "realbox_dropdown.js",
-    "realbox_icon.js",
-    "realbox_match.js",
-    "realbox_action.js",
-    "realbox.js",
+    "realbox_dropdown.ts",
+    "realbox_icon.ts",
+    "realbox_match.ts",
+    "realbox_action.ts",
+    "realbox.ts",
   ]
 }
 
@@ -89,7 +28,7 @@ preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "realbox_browser_proxy.js" ]
+  in_files = [ "realbox_browser_proxy.ts" ]
 }
 
 preprocess_if_expr("preprocess_gen") {
@@ -97,11 +36,11 @@ preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "realbox_dropdown.js",
-    "realbox_icon.js",
-    "realbox_match.js",
-    "realbox_action.js",
-    "realbox.js",
+    "realbox_dropdown.ts",
+    "realbox_icon.ts",
+    "realbox_match.ts",
+    "realbox_action.ts",
+    "realbox.ts",
   ]
   deps = [ ":web_components" ]
 }

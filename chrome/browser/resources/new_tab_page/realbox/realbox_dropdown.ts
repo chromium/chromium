@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -18,15 +19,17 @@ import {decodeString16} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 
+export interface RealboxDropdownElement {
+  $: {
+    selector: IronSelectorElement,
+  };
+}
+
 // A dropdown element that contains autocomplete matches. Provides an API for
 // the embedder (i.e., <ntp-realbox>) to change the selection.
-class RealboxDropdownElement extends PolymerElement {
+export class RealboxDropdownElement extends PolymerElement {
   static get is() {
     return 'ntp-realbox-dropdown';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 
   static get properties() {
@@ -35,26 +38,17 @@ class RealboxDropdownElement extends PolymerElement {
       // Public properties
       //========================================================================
 
-      /**
-       * @type {!AutocompleteResult}
-       */
       result: {
         type: Object,
       },
 
-      /**
-       * Index of the selected match.
-       * @type {number}
-       */
+      /** Index of the selected match. */
       selectedMatchIndex: {
         type: Number,
         value: -1,
         notify: true,
       },
 
-      /**
-       * @type {!SearchBoxTheme}
-       */
       theme: {
         type: Object,
         observer: 'onThemeChange_',
@@ -64,31 +58,19 @@ class RealboxDropdownElement extends PolymerElement {
       // Private properties
       //========================================================================
 
-      /**
-       * The list of suggestion group IDs matches belong to.
-       * @type {!Array<number>}
-       * @private
-       */
+      /** The list of suggestion group IDs matches belong to. */
       groupIds_: {
         type: Array,
         computed: `computeGroupIds_(result)`,
       },
 
-      /**
-       * The list of suggestion group IDs whose matches should be hidden.
-       * @type {!Array<number>}
-       * @private
-       */
+      /** The list of suggestion group IDs whose matches should be hidden. */
       hiddenGroupIds_: {
         type: Array,
         computed: `computeHiddenGroupIds_(result)`,
       },
 
-      /**
-       * The list of selectable match elements.
-       * @type {!Array<!Element>}
-       * @private
-       */
+      /** The list of selectable match elements. */
       selectableMatchElements_: {
         type: Array,
         value: () => [],
@@ -96,17 +78,23 @@ class RealboxDropdownElement extends PolymerElement {
     };
   }
 
+  result: AutocompleteResult;
+  selectedMatchIndex: number;
+  theme: SearchBoxTheme;
+  private groupIds_: number[];
+  private hiddenGroupIds_: number[];
+  private selectableMatchElements_: Element[];
+
+  private callbackRouter_: PageCallbackRouter;
+  private pageHandler_: PageHandlerRemote;
+  private autocompleteMatchImageAvailableListenerId_: number|null = null;
+
   constructor() {
     super();
-    /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
-    /** @private {PageHandlerRemote} */
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
-    /** @private {?number} */
-    this.autocompleteMatchImageAvailableListenerId_ = null;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.autocompleteMatchImageAvailableListenerId_ =
@@ -114,45 +102,35 @@ class RealboxDropdownElement extends PolymerElement {
             this.onAutocompleteMatchImageAvailable_.bind(this));
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
-        assert(this.autocompleteMatchImageAvailableListenerId_));
+        this.autocompleteMatchImageAvailableListenerId_!);
   }
 
   //============================================================================
   // Public methods
   //============================================================================
 
-  /**
-   * Unselects the currently selected match, if any.
-   */
+  /** Unselects the currently selected match, if any. */
   unselect() {
     this.selectedMatchIndex = -1;
   }
 
-  /**
-   * Focuses the selected match, if any.
-   */
+  /** Focuses the selected match, if any. */
   focusSelected() {
     if (this.$.selector.selectedItem) {
-      this.$.selector.selectedItem.focus();
+      (this.$.selector.selectedItem as HTMLElement).focus();
     }
   }
 
-  /**
-   * Selects the first match.
-   */
+  /** Selects the first match. */
   selectFirst() {
     this.selectedMatchIndex = 0;
   }
 
-  /**
-   * Selects the match at the given index.
-   * @param {number} index
-   */
-  selectIndex(index) {
+  /** Selects the match at the given index. */
+  selectIndex(index: number) {
     this.selectedMatchIndex = index;
   }
 
@@ -166,9 +144,7 @@ class RealboxDropdownElement extends PolymerElement {
         this.selectableMatchElements_.length - 1;
   }
 
-  /**
-   * Selects the last match.
-   */
+  /** Selects the last match. */
   selectLast() {
     this.selectedMatchIndex = this.selectableMatchElements_.length - 1;
   }
@@ -189,13 +165,13 @@ class RealboxDropdownElement extends PolymerElement {
   //============================================================================
 
   /**
-   * @param {number} matchIndex match index
-   * @param {!Url} url match imageUrl or destinationUrl.
-   * @param {string} dataUrl match image or favicon content in in base64 encoded
-   *     Data URL format.
-   * @private
+   * @param matchIndex match index
+   * @param url match imageUrl or destinationUrl.
+   * @param dataUrl match image or favicon content in in base64 encoded Data URL
+   *     format.
    */
-  onAutocompleteMatchImageAvailable_(matchIndex, url, dataUrl) {
+  private onAutocompleteMatchImageAvailable_(
+      matchIndex: number, url: Url, dataUrl: string) {
     if (!this.result || !this.result.matches) {
       return;
     }
@@ -213,10 +189,7 @@ class RealboxDropdownElement extends PolymerElement {
     }
   }
 
-  /**
-   * @private
-   */
-  onResultRepaint_() {
+  private onResultRepaint_() {
     this.dispatchEvent(new CustomEvent('result-repaint', {
       bubbles: true,
       composed: true,
@@ -224,10 +197,7 @@ class RealboxDropdownElement extends PolymerElement {
     }));
   }
 
-  /**
-   * @private
-   */
-  onThemeChange_() {
+  private onThemeChange_() {
     if (!loadTimeData.getBoolean('realboxMatchOmniboxTheme')) {
       return;
     }
@@ -254,22 +224,16 @@ class RealboxDropdownElement extends PolymerElement {
   // Event handlers
   //============================================================================
 
-  /**
-   * @private
-   */
-  onHeaderFocusin_() {
+  private onHeaderFocusin_() {
     this.dispatchEvent(new CustomEvent('header-focusin', {
       bubbles: true,
       composed: true,
     }));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onHeaderClick_(e) {
-    const groupId = Number(e.currentTarget.dataset.id);
+  private onHeaderClick_(e: Event) {
+    const groupId =
+        Number.parseInt((e.currentTarget as HTMLElement).dataset['id']!, 10);
 
     // Tell the backend to toggle visibility of the given suggestion group ID.
     this.pageHandler_.toggleSuggestionGroupIdVisibility(groupId);
@@ -283,11 +247,7 @@ class RealboxDropdownElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onToggleButtonMouseDown_(e) {
+  private onToggleButtonMouseDown_(e: Event) {
     e.preventDefault();  // Prevents default browser action (focus).
   }
 
@@ -296,11 +256,10 @@ class RealboxDropdownElement extends PolymerElement {
   //============================================================================
 
   /**
-   * @returns {number} Index of the match in the autocomplete result. Passed to
-   *     the match so it knows abut its position in the list of matches.
-   * @private
+   * @returns Index of the match in the autocomplete result. Passed to the match
+   *     so it knows abut its position in the list of matches.
    */
-  matchIndex_(match) {
+  private matchIndex_(match: AutocompleteMatch): number {
     if (!this.result || !this.result.matches) {
       return -1;
     }
@@ -308,11 +267,7 @@ class RealboxDropdownElement extends PolymerElement {
     return this.result.matches.indexOf(match);
   }
 
-  /**
-   * @returns {!Array<number>}
-   * @private
-   */
-  computeGroupIds_() {
+  private computeGroupIds_(): number[] {
     if (!this.result || !this.result.matches) {
       return [];
     }
@@ -324,61 +279,46 @@ class RealboxDropdownElement extends PolymerElement {
         this.result.matches.map(match => match.suggestionGroupId))];
   }
 
-  /**
-   * @returns {!Array<number>}
-   * @private
-   */
-  computeHiddenGroupIds_() {
+  private computeHiddenGroupIds_(): number[] {
     if (!this.result) {
       return [];
     }
 
     return Object.keys(this.result.suggestionGroupsMap)
-        .map(groupId => Number(groupId))
-        .filter((groupId => {
-                  return this.result.suggestionGroupsMap[groupId].hidden;
-                }).bind(this));
+        .map(groupId => Number.parseInt(groupId, 10))
+        .filter(groupId => this.result.suggestionGroupsMap[groupId].hidden);
   }
 
   /**
-   * @param {number} groupId
-   * @returns {!function(!AutocompleteMatch):boolean} The filter
-   *     function to filter matches that belong to the given suggestion group
-   *     ID.
-   * @private
+   * @returns The filter function to filter matches that belong to the given
+   *     suggestion group ID.
    */
-  computeMatchBelongsToGroup_(groupId) {
+  private computeMatchBelongsToGroup_(groupId: number):
+      (match: AutocompleteMatch) => boolean {
     return (match) => {
       return match.suggestionGroupId === groupId;
     };
   }
 
   /**
-   * @param {number} groupId
-   * @returns {boolean} Whether the given suggestion group ID has a header.
-   * @private
+   * @returns Whether the given suggestion group ID has a header.
    */
-  groupHasHeader_(groupId) {
+  private groupHasHeader_(groupId: number): boolean {
     return !!this.headerForGroup_(groupId);
   }
 
   /**
-   * @param {number} groupId
-   * @returns {boolean} Whether matches with the given suggestion group ID
-   *     should be hidden.
-   * @private
+   * @returns Whether matches with the given suggestion group ID should be
+   *     hidden.
    */
-  groupIsHidden_(groupId) {
+  private groupIsHidden_(groupId: number): boolean {
     return this.hiddenGroupIds_.indexOf(groupId) !== -1;
   }
 
   /**
-   * @param {number} groupId
-   * @returns {string} The header for the given suggestion group ID.
-   * @private
-   * @suppress {checkTypes}
+   * @returns The header for the given suggestion group ID.
    */
-  headerForGroup_(groupId) {
+  private headerForGroup_(groupId: number): string {
     return (this.result && this.result.suggestionGroupsMap &&
             this.result.suggestionGroupsMap[groupId]) ?
         decodeString16(this.result.suggestionGroupsMap[groupId].header) :
@@ -386,11 +326,9 @@ class RealboxDropdownElement extends PolymerElement {
   }
 
   /**
-   * @param {number} groupId
-   * @returns {string} Tooltip for suggestion group show/hide toggle button.
-   * @private
+   * @returns Tooltip for suggestion group show/hide toggle button.
    */
-  toggleButtonTitleForGroup_(groupId) {
+  private toggleButtonTitleForGroup_(groupId: number): string {
     if (!this.groupHasHeader_(groupId)) {
       return '';
     }
@@ -399,11 +337,9 @@ class RealboxDropdownElement extends PolymerElement {
   }
 
   /**
-   * @param {number} groupId
-   * @returns {string} A11y label for suggestion group show/hide toggle button.
-   * @private
+   * @returns A11y label for suggestion group show/hide toggle button.
    */
-  toggleButtonA11yLabelForGroup_(groupId) {
+  private toggleButtonA11yLabelForGroup_(groupId: number): string {
     if (!this.groupHasHeader_(groupId)) {
       return '';
     }
@@ -412,6 +348,10 @@ class RealboxDropdownElement extends PolymerElement {
             this.result.suggestionGroupsMap[groupId].hideGroupA11yLabel) :
         decodeString16(
             this.result.suggestionGroupsMap[groupId].showGroupA11yLabel);
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

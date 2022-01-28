@@ -6,7 +6,10 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {AutocompleteMatch} from '../realbox.mojom-webui.js';
 
-const DOCUMENT_MATCH_TYPE = 'document';
+const DOCUMENT_MATCH_TYPE: string = 'document';
+
+export type AutocompleteMatchWithImageData =
+    AutocompleteMatch&{faviconDataUrl?: string, imageDataUrl?: string};
 
 // The LHS icon. Used on autocomplete matches as well as the realbox input to
 // render icons, favicons, and entity images.
@@ -15,20 +18,13 @@ class RealboxIconElement extends PolymerElement {
     return 'ntp-realbox-icon';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       //========================================================================
       // Public properties
       //========================================================================
 
-      /**
-       * Used as a background image on #icon if non-empty.
-       * @type {string}
-       */
+      /** Used as a background image on #icon if non-empty. */
       backgroundImage: {
         type: String,
         computed: `computeBackgroundImage_(match.faviconDataUrl, match)`,
@@ -38,7 +34,6 @@ class RealboxIconElement extends PolymerElement {
       /**
        * The default icon to show when no match is selected and/or for
        * non-navigation matches. Only set in the context of the realbox input.
-       * @type {string}
        */
       defaultIcon: {
         type: String,
@@ -49,7 +44,6 @@ class RealboxIconElement extends PolymerElement {
        * Whether icon is in searchbox or not. Used to prevent
        * the match icon of rich suggestions from showing in the context of the
        * realbox input.
-       * @type {boolean}
        */
       inSearchbox: {
         type: Boolean,
@@ -57,19 +51,13 @@ class RealboxIconElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /**
-       * Used as a mask image on #icon if |backgroundImage| is empty.
-       * @type {string}
-       */
+      /** Used as a mask image on #icon if |backgroundImage| is empty. */
       maskImage: {
         type: String,
         computed: `computeMaskImage_(match)`,
         reflectToAttribute: true,
       },
 
-      /**
-       * @type {!AutocompleteMatch}
-       */
       match: {
         type: Object,
       },
@@ -78,19 +66,11 @@ class RealboxIconElement extends PolymerElement {
       // Private properties
       //========================================================================
 
-      /**
-       * @type {string}
-       * @private
-       */
       iconStyle_: {
         type: String,
         computed: `computeIconStyle_(backgroundImage, maskImage)`,
       },
 
-      /**
-       * @type {string}
-       * @private
-       */
       imageSrc_: {
         type: String,
         computed: `computeImageSrc_(match.imageDataUrl, match)`,
@@ -98,16 +78,19 @@ class RealboxIconElement extends PolymerElement {
     };
   }
 
+  backgroundImage: string;
+  defaultIcon: string;
+  inSearchbox: boolean;
+  maskImage: string;
+  match: AutocompleteMatch;
+  private iconStyle_: string;
+  private imageSrc_: string;
+
   //============================================================================
   // Helpers
   //============================================================================
 
-  /**
-   * @returns {string}
-   * @private
-   * @suppress {checkTypes}
-   */
-  computeBackgroundImage_() {
+  private computeBackgroundImage_(): string {
     // If the match is a navigation one and has a favicon loaded, display that
     // as background image. Otherwise, display the colored SVG icon for
     // 'document' matches.
@@ -115,8 +98,8 @@ class RealboxIconElement extends PolymerElement {
     // there is no match or the match is not a navigation one. Otherwise, don't
     // use a background image (use a mask image instead).
     if (this.match && !this.match.isSearchType) {
-      if (this.match.faviconDataUrl) {
-        return this.match.faviconDataUrl;
+      if ((this.match as AutocompleteMatchWithImageData).faviconDataUrl) {
+        return (this.match as AutocompleteMatchWithImageData).faviconDataUrl!;
       } else if (this.match.type === DOCUMENT_MATCH_TYPE) {
         return this.match.iconUrl;
       } else {
@@ -129,11 +112,7 @@ class RealboxIconElement extends PolymerElement {
     }
   }
 
-  /**
-   * @returns {string}
-   * @private
-   */
-  computeMaskImage_() {
+  private computeMaskImage_(): string {
     if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
       return this.match.iconUrl;
     } else {
@@ -141,11 +120,7 @@ class RealboxIconElement extends PolymerElement {
     }
   }
 
-  /**
-   * @returns {string}
-   * @private
-   */
-  computeIconStyle_() {
+  private computeIconStyle_(): string {
     // Use a background image if applicabale. Otherwise use a mask image.
     if (this.backgroundImage) {
       return `background-image: url(${this.backgroundImage});` +
@@ -155,18 +130,13 @@ class RealboxIconElement extends PolymerElement {
     }
   }
 
-  /**
-   * @returns {string}
-   * @private
-   * @suppress {checkTypes}
-   */
-  computeImageSrc_() {
+  private computeImageSrc_(): string {
     if (!this.match) {
       return '';
     }
 
-    if (this.match.imageDataUrl) {
-      return this.match.imageDataUrl;
+    if ((this.match as AutocompleteMatchWithImageData).imageDataUrl) {
+      return (this.match as AutocompleteMatchWithImageData).imageDataUrl!;
     } else if (
         this.match.imageUrl && this.match.imageUrl.startsWith('data:image/')) {
       // zero-prefix matches come with the image content in |match.imageUrl|.
@@ -176,19 +146,18 @@ class RealboxIconElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {string} imageSrc
-   * @param {string} imageDominantColor
-   * @returns {string}
-   * @private
-   */
-  containerBgColor_(imageSrc, imageDominantColor) {
+  private containerBgColor_(imageSrc: string, imageDominantColor: string):
+      string {
     // If the match has an image dominant color, show that color in place of the
     // image until it loads. This helps the image appear to load more smoothly.
     return (!imageSrc && imageDominantColor) ?
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         `${imageDominantColor}40` :
         '';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

@@ -10,25 +10,22 @@ import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '../realbox.moj
  * realbox JS and the browser.
  */
 
-/** @type {RealboxBrowserProxy} */
-let instance = null;
+let instance: RealboxBrowserProxy|null = null;
 
 export class RealboxBrowserProxy {
-  /** @return {!RealboxBrowserProxy} */
-  static getInstance() {
+  static getInstance(): RealboxBrowserProxy {
     return instance || (instance = new RealboxBrowserProxy());
   }
 
-  /** @param {RealboxBrowserProxy} newInstance */
-  static setInstance(newInstance) {
+  static setInstance(newInstance: RealboxBrowserProxy) {
     instance = newInstance;
   }
 
-  constructor() {
-    /** @type {!PageHandlerRemote} */
-    this.handler = PageHandler.getRemote();
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
 
-    /** @type {!PageCallbackRouter} */
+  constructor() {
+    this.handler = PageHandler.getRemote();
     this.callbackRouter = new PageCallbackRouter();
 
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());

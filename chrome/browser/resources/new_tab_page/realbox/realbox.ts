@@ -9,39 +9,40 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from '../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../i18n_setup.js';
 import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerRemote, SearchBoxTheme} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
+import {RealboxDropdownElement} from './realbox_dropdown.js';
+import {AutocompleteMatchWithImageData} from './realbox_icon.js';
 
-/** @typedef {{text: string, inline: string,}} */
-let Input;
+type Input = {
+  text: string,
+  inline: string,
+};
 
-/**
- * @typedef {{
- *   text: (string|undefined),
- *   inline: (string|undefined),
- *   moveCursorToEnd: (boolean|undefined),
- * }}
- */
-let InputUpdate;
+type InputUpdate = {
+  text?: string,
+  inline?: string,
+  moveCursorToEnd?: boolean,
+};
 
-/**
- * A real search box that behaves just like the Omnibox.
- * @polymer
- * @extends {PolymerElement}
- */
-class RealboxElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+interface RealboxElement {
+  $: {
+    input: HTMLInputElement,
+    inputWrapper: HTMLElement,
+    matches: RealboxDropdownElement,
+  };
+}
+
+/** A real search box that behaves just like the Omnibox. */
+class RealboxElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-realbox';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 
   static get properties() {
@@ -50,19 +51,13 @@ class RealboxElement extends mixinBehaviors
       // Public properties
       //========================================================================
 
-      /**
-       * Whether matches are currently visible.
-       * @type {boolean}
-       */
+      /** Whether matches are currently visible. */
       matchesAreVisible: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
-      /**
-       * @type {!SearchBoxTheme}
-       */
       theme: {
         type: Object,
         observer: 'onThemeChange_',
@@ -75,8 +70,6 @@ class RealboxElement extends mixinBehaviors
       /**
        * The time of the first character insert operation that has not yet been
        * painted in milliseconds. Used to measure the realbox responsiveness.
-       * @type {number}
-       * @private
        */
       charTypedTime_: {
         type: Number,
@@ -86,8 +79,6 @@ class RealboxElement extends mixinBehaviors
       /**
        * Whether user is deleting text in the input. Used to prevent the default
        * match from offering inline autocompletion.
-       * @type {boolean}
-       * @private
        */
       isDeletingInput_: {
         type: Boolean,
@@ -97,8 +88,6 @@ class RealboxElement extends mixinBehaviors
       /**
        * The 'Enter' keydown event that was ignored due to matches being stale.
        * Used to navigate to the default match once up-to-date matches arrive.
-       * @type {?Event}
-       * @private
        */
       lastIgnoredEnterEvent_: {
         type: Object,
@@ -108,8 +97,6 @@ class RealboxElement extends mixinBehaviors
       /**
        * Last state of the input (text and inline autocompletion). Updated
        * by the user input or by the currently selected autocomplete match.
-       * @type {!Input}
-       * @private
        */
       lastInput_: {
         type: Object,
@@ -119,19 +106,13 @@ class RealboxElement extends mixinBehaviors
       /**
        * The time at which the input was last focused in milliseconds. Passed to
        * the browser when navigating to a match.
-       * @type {?number}
-       * @private
        */
       lastInputFocusTime_: {
         type: Number,
         value: null,
       },
 
-      /**
-       * The last queried input text.
-       * @type {?string}
-       * @private
-       */
+      /** The last queried input text. */
       lastQueriedInput_: {
         type: String,
         value: null,
@@ -140,36 +121,23 @@ class RealboxElement extends mixinBehaviors
       /**
        * True if user just pasted into the input. Used to prevent the default
        * match from offering inline autocompletion.
-       * @type {boolean}
-       * @private
        */
       pastedInInput_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * Realbox default icon (i.e., Google G icon or the search loupe).
-       * @private
-       */
+      /** Realbox default icon (i.e., Google G icon or the search loupe). */
       realboxIcon_: {
         type: String,
         value: () => loadTimeData.getString('realboxDefaultIcon'),
       },
 
-      /**
-       * @type {?AutocompleteResult}
-       * @private
-       */
       result_: {
         type: Object,
       },
 
-      /**
-       * The currently selected match, if any.
-       * @type {?AutocompleteMatch}
-       * @private
-       */
+      /** The currently selected match, if any. */
       selectedMatch_: {
         type: Object,
         computed: `computeSelectedMatch_(result_, selectedMatchIndex_)`,
@@ -178,19 +146,13 @@ class RealboxElement extends mixinBehaviors
       /**
        * Index of the currently selected match, if any.
        * Do not modify this. Use <ntp-realbox-dropdown> API to change selection.
-       * @type {number}
-       * @private
        */
       selectedMatchIndex_: {
         type: Number,
         value: -1,
       },
 
-      /**
-       * The value of the input element's 'aria-live' attribute.
-       * @type {string}
-       * @private
-       */
+      /** The value of the input element's 'aria-live' attribute. */
       inputAriaLive_: {
         type: String,
         computed: `computeInputAriaLive_(selectedMatch_)`,
@@ -198,46 +160,58 @@ class RealboxElement extends mixinBehaviors
     };
   }
 
-  computeInputAriaLive_() {
-    return this.selectedMatch_ ? 'off' : 'polite';
-  }
+  matchesAreVisible: boolean;
+  theme: SearchBoxTheme;
+  private charTypedTime_: number;
+  private isDeletingInput_: boolean;
+  private lastIgnoredEnterEvent_: KeyboardEvent|null;
+  private lastInput_: Input;
+  private lastInputFocusTime_: number|null;
+  private lastQueriedInput_: string|null;
+  private pastedInInput_: boolean;
+  private realboxIcon_: string;
+  private result_: AutocompleteResult|null;
+  private selectedMatch_: AutocompleteMatch|null;
+  private selectedMatchIndex_: number;
+  private inputAriaLive_: string;
 
+  private pageHandler_: PageHandlerRemote;
+  private callbackRouter_: PageCallbackRouter;
+  private autocompleteResultChangedListenerId_: number|null = null;
+  private autocompleteMatchImageAvailableListenerId_: number|null = null;
+
+  // Suppress TypeScript's error TS2376 to intentionally allow calling
+  // performance.mark() before calling super().
+  // @ts-ignore:next-line
   constructor() {
     performance.mark('realbox-creation-start');
     super();
-    /** @private {PageHandlerRemote} */
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
-    /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
-    /** @private {?number} */
-    this.autocompleteResultChangedListenerId_ = null;
-    /** @private {?number} */
-    this.autocompleteMatchImageAvailableListenerId_ = null;
   }
 
-  /** @override */
+  private computeInputAriaLive_(): string {
+    return this.selectedMatch_ ? 'off' : 'polite';
+  }
+
   connectedCallback() {
     super.connectedCallback();
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
-            (result) => this.onAutocompleteResultChanged_(result));
+            this.onAutocompleteResultChanged_.bind(this));
     this.autocompleteMatchImageAvailableListenerId_ =
         this.callbackRouter_.autocompleteMatchImageAvailable.addListener(
-            (matchIndex, url, dataUrl) =>
-                this.onAutocompleteMatchImageAvailable_(
-                    matchIndex, url, dataUrl));
+            this.onAutocompleteMatchImageAvailable_.bind(this));
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
-        assert(this.autocompleteResultChangedListenerId_));
+        assert(this.autocompleteResultChangedListenerId_!));
     this.callbackRouter_.removeListener(
-        assert(this.autocompleteMatchImageAvailableListenerId_));
+        assert(this.autocompleteMatchImageAvailableListenerId_!));
   }
 
-  /** @override */
   ready() {
     super.ready();
     performance.measure('realbox-creation', 'realbox-creation-start');
@@ -248,13 +222,13 @@ class RealboxElement extends mixinBehaviors
   //============================================================================
 
   /**
-   * @param {number} matchIndex match index
-   * @param {!Url} url match imageUrl or destinationUrl.
-   * @param {string} dataUrl match image or favicon content in in base64 encoded
-   *     Data URL format.
-   * @private
+   * @param matchIndex match index
+   * @param url match imageUrl or destinationUrl.
+   * @param dataUrl match image or favicon content in in base64 encoded Data URL
+   *     format.
    */
-  onAutocompleteMatchImageAvailable_(matchIndex, url, dataUrl) {
+  private onAutocompleteMatchImageAvailable_(
+      matchIndex: number, url: Url, dataUrl: string) {
     if (!this.result_ || !this.result_.matches) {
       return;
     }
@@ -266,17 +240,12 @@ class RealboxElement extends mixinBehaviors
 
     // Set favicon content of the selected match, if applicable.
     if (match.destinationUrl.url === url.url) {
-      /** @suppress {checkTypes} */
-      match.faviconDataUrl = dataUrl;
+      (match as AutocompleteMatchWithImageData).faviconDataUrl = dataUrl;
       this.notifyPath('selectedMatch_.faviconDataUrl');
     }
   }
 
-  /**
-   * @private
-   * @param {AutocompleteResult} result
-   */
-  onAutocompleteResultChanged_(result) {
+  private onAutocompleteResultChanged_(result: AutocompleteResult) {
     if (this.lastQueriedInput_ === null ||
         this.lastQueriedInput_.trimLeft() !== decodeString16(result.input)) {
       return;  // Stale result; ignore.
@@ -308,7 +277,7 @@ class RealboxElement extends mixinBehaviors
       // Restore the selection, if any.
       this.$.matches.selectIndex(this.selectedMatchIndex_);
       this.updateInput_({
-        text: decodeString16(this.selectedMatch_.fillIntoEdit),
+        text: decodeString16(this.selectedMatch_!.fillIntoEdit),
         inline: '',
         moveCursorToEnd: true
       });
@@ -320,10 +289,7 @@ class RealboxElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @private
-   */
-  onThemeChange_() {
+  private onThemeChange_() {
     if (!loadTimeData.getBoolean('realboxMatchOmniboxTheme')) {
       return;
     }
@@ -341,21 +307,14 @@ class RealboxElement extends mixinBehaviors
   // Event handlers
   //============================================================================
 
-  /**
-   * @private
-   */
-  onHeaderFocusin_() {
+  private onHeaderFocusin_() {
     // The header got focus. Unselect the selected match and clear the input.
     assert(this.lastQueriedInput_ === '');
     this.$.matches.unselect();
     this.updateInput_({text: '', inline: ''});
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onInputCutCopy_(e) {
+  private onInputCutCopy_(e: ClipboardEvent) {
     // Only handle cut/copy when input has content and it's all selected.
     if (!this.$.input.value || this.$.input.selectionStart !== 0 ||
         this.$.input.selectionEnd !== this.$.input.value.length ||
@@ -364,7 +323,7 @@ class RealboxElement extends mixinBehaviors
     }
 
     if (this.selectedMatch_ && !this.selectedMatch_.isSearchType) {
-      e.clipboardData.setData(
+      e.clipboardData!.setData(
           'text/plain', this.selectedMatch_.destinationUrl.url);
       e.preventDefault();
       if (e.type === 'cut') {
@@ -374,29 +333,17 @@ class RealboxElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {!FocusEvent} e
-   * @private
-   */
-  onInputFocus_(e) {
+  private onInputFocus_(e: Event) {
     this.lastInputFocusTime_ = window.performance.now();
-    e.target.placeholder = '';
+    (e.target as HTMLInputElement).placeholder = '';
   }
 
-  /**
-   * @param {!FocusEvent} e
-   * @private
-   */
-  onInputBlur_(e) {
-    e.target.placeholder = loadTimeData.getString('realboxHint');
+  private onInputBlur_(e: Event) {
+    (e.target as HTMLInputElement).placeholder =
+        loadTimeData.getString('realboxHint');
   }
 
-  /**
-   * @param {!InputEvent} e
-   * @suppress {missingProperties} 'isComposing' is not defined on InputEvent.
-   * @private
-   */
-  onInputInput_(e) {
+  private onInputInput_(e: InputEvent) {
     const inputValue = this.$.input.value;
     const lastInputValue = this.lastInput_.text + this.lastInput_.inline;
     if (lastInputValue === inputValue) {
@@ -425,11 +372,7 @@ class RealboxElement extends mixinBehaviors
     this.pastedInInput_ = false;
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onInputKeydown_(e) {
+  private onInputKeydown_(e: KeyboardEvent) {
     // Ignore this event if the input does not have any inline autocompletion.
     if (!this.lastInput_.inline) {
       return;
@@ -437,7 +380,7 @@ class RealboxElement extends mixinBehaviors
 
     const inputValue = this.$.input.value;
     const inputSelection = inputValue.substring(
-        this.$.input.selectionStart, this.$.input.selectionEnd);
+        this.$.input.selectionStart!, this.$.input.selectionEnd!);
     const lastInputValue = this.lastInput_.text + this.lastInput_.inline;
     // If the current input state (its value and selection) matches its last
     // state (text and inline autocompletion) and the user types the next
@@ -462,11 +405,7 @@ class RealboxElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onInputKeyup_(e) {
+  private onInputKeyup_(e: KeyboardEvent) {
     if (e.key !== 'Tab') {
       return;
     }
@@ -477,11 +416,7 @@ class RealboxElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onInputMouseDown_(e) {
+  private onInputMouseDown_(e: MouseEvent) {
     if (e.button !== 0) {
       // Only handle main (generally left) button presses.
       return;
@@ -491,23 +426,14 @@ class RealboxElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onInputPaste_(e) {
+  private onInputPaste_() {
     this.pastedInInput_ = true;
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onInputWrapperFocusout_(e) {
+  private onInputWrapperFocusout_(e: FocusEvent) {
     // Hide the matches and stop autocomplete only when the focus goes outside
     // of the realbox wrapper.
-    const relatedTarget = /** @type {Element} */ (e.relatedTarget);
-    if (!this.$.inputWrapper.contains(relatedTarget)) {
+    if (!this.$.inputWrapper.contains(e.relatedTarget as Element)) {
       if (this.lastQueriedInput_ === '') {
         // Clear the input as well as the matches if the input was empty when
         // the matches arrived.
@@ -526,11 +452,7 @@ class RealboxElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onInputWrapperKeydown_(e) {
+  private onInputWrapperKeydown_(e: KeyboardEvent) {
     const KEYDOWN_HANDLED_KEYS = [
       'ArrowDown',
       'ArrowUp',
@@ -582,7 +504,8 @@ class RealboxElement extends mixinBehaviors
     }
 
     if (e.key === 'Enter') {
-      if ([this.$.matches, this.$.input].includes(e.target)) {
+      const array: HTMLElement[] = [this.$.matches, this.$.input];
+      if (array.includes(e.target as HTMLElement)) {
         if (this.lastQueriedInput_ !== null &&
             this.lastQueriedInput_.trimLeft() ===
                 decodeString16(this.result_.input)) {
@@ -626,14 +549,14 @@ class RealboxElement extends mixinBehaviors
     e.preventDefault();
 
     // Focus the selected match if focus is currently in the matches.
-    if (this.shadowRoot.activeElement === this.$.matches) {
+    if (this.shadowRoot!.activeElement === this.$.matches) {
       this.$.matches.focusSelected();
     }
 
     // Update the input.
-    const newFill = decodeString16(this.selectedMatch_.fillIntoEdit);
-    const newInline = this.selectedMatch_.allowedToBeDefaultMatch ?
-        decodeString16(this.selectedMatch_.inlineAutocompletion) :
+    const newFill = decodeString16(this.selectedMatch_!.fillIntoEdit);
+    const newInline = this.selectedMatch_!.allowedToBeDefaultMatch ?
+        decodeString16(this.selectedMatch_!.inlineAutocompletion) :
         '';
     const newFillEnd = newFill.length - newInline.length;
     this.updateInput_({
@@ -644,45 +567,38 @@ class RealboxElement extends mixinBehaviors
   }
 
   /**
-   * @param {!CustomEvent<{index: number, event:!MouseEvent}>} e Event
-   *     containing index of the match that was clicked.
-   * @private
+   * @param e Event containing index of the match that was clicked.
    */
-  onMatchClick_(e) {
+  private onMatchClick_(e: CustomEvent<{index: number, event: MouseEvent}>) {
     this.navigateToMatch_(e.detail.index, e.detail.event);
   }
 
   /**
-   * @param {!CustomEvent<number>} e Event containing index of the match that
-   *     received focus.
-   * @private
+   * @param e Event containing index of the match that received focus.
    */
-  onMatchFocusin_(e) {
+  private onMatchFocusin_(e: CustomEvent<number>) {
     // Select the match that received focus.
     this.$.matches.selectIndex(e.detail);
     // Input selection (if any) likely drops due to focus change. Simply fill
     // the input with the match and move the cursor to the end.
     this.updateInput_({
-      text: decodeString16(this.selectedMatch_.fillIntoEdit),
+      text: decodeString16(this.selectedMatch_!.fillIntoEdit),
       inline: '',
       moveCursorToEnd: true
     });
   }
 
   /**
-   * @param {!CustomEvent<number>} e Event containing index of the match that
-   *     was removed.
-   * @private
+   * @param e Event containing index of the match that was removed.
    */
-  onMatchRemove_(e) {
+  private onMatchRemove_(e: CustomEvent<number>) {
     this.pageHandler_.deleteAutocompleteMatch(e.detail);
   }
 
   /**
-   * @param {!CustomEvent<number>} e Event containing the result repaint time.
-   * @private
+   * @param e Event containing the result repaint time.
    */
-  onResultRepaint_(e) {
+  private onResultRepaint_(e: CustomEvent<number>) {
     if (this.charTypedTime_) {
       this.pageHandler_.logCharTypedToRepaintLatency(
           mojoTimeDelta(e.detail - this.charTypedTime_));
@@ -690,8 +606,7 @@ class RealboxElement extends mixinBehaviors
     }
   }
 
-  /** @private */
-  onVoiceSearchClick_() {
+  private onVoiceSearchClick_() {
     this.dispatchEvent(new Event('open-voice-search'));
   }
 
@@ -699,11 +614,7 @@ class RealboxElement extends mixinBehaviors
   // Helpers
   //============================================================================
 
-  /**
-   * @return {?AutocompleteMatch}
-   * @private
-   */
-  computeSelectedMatch_() {
+  private computeSelectedMatch_(): AutocompleteMatch|null {
     if (!this.result_ || !this.result_.matches) {
       return null;
     }
@@ -712,9 +623,8 @@ class RealboxElement extends mixinBehaviors
 
   /**
    * Clears the autocomplete result on the page and on the autocomplete backend.
-   * @private
    */
-  clearAutocompleteMatches_() {
+  private clearAutocompleteMatches_() {
     this.matchesAreVisible = false;
     this.result_ = null;
     this.$.matches.unselect();
@@ -724,29 +634,21 @@ class RealboxElement extends mixinBehaviors
     this.lastQueriedInput_ = null;
   }
 
-  /**
-   * @param {number} matchIndex
-   * @param {!Event} e
-   * @private
-   */
-  navigateToMatch_(matchIndex, e) {
+  private navigateToMatch_(matchIndex: number, e: KeyboardEvent|MouseEvent) {
     assert(matchIndex >= 0);
-    const match = assert(this.result_.matches[matchIndex]);
+    const match = assert(this.result_!.matches[matchIndex]);
     assert(this.lastInputFocusTime_);
     const delta =
-        mojoTimeDelta(window.performance.now() - this.lastInputFocusTime_);
+        mojoTimeDelta(window.performance.now() - this.lastInputFocusTime_!);
     this.pageHandler_.openAutocompleteMatch(
         matchIndex, match.destinationUrl, this.matchesAreVisible, delta,
-        e.button || 0, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
+        (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
+        e.shiftKey);
     e.preventDefault();
   }
 
-  /**
-   * @param {string} input
-   * @param {boolean} preventInlineAutocomplete
-   * @private
-   */
-  queryAutocomplete_(input, preventInlineAutocomplete = false) {
+  private queryAutocomplete_(
+      input: string, preventInlineAutocomplete: boolean = false) {
     this.lastQueriedInput_ = input;
 
     const caretNotAtEnd = this.$.input.selectionStart !== input.length;
@@ -758,12 +660,9 @@ class RealboxElement extends mixinBehaviors
 
   /**
    * Updates the input state (text and inline autocompletion) with |update|.
-   * @param {!InputUpdate} update
-   * @private
    */
-  updateInput_(update) {
-    const newInput =
-        /** @type {!Input} */ (Object.assign({}, this.lastInput_, update));
+  private updateInput_(update: InputUpdate) {
+    const newInput = Object.assign({}, this.lastInput_, update);
     const newInputValue = newInput.text + newInput.inline;
     const lastInputValue = this.lastInput_.text + this.lastInput_.inline;
 
@@ -792,6 +691,10 @@ class RealboxElement extends mixinBehaviors
     this.isDeletingInput_ = lastInputValue.length > newInputValue.length &&
         lastInputValue.startsWith(newInputValue);
     this.lastInput_ = newInput;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

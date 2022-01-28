@@ -16,18 +16,11 @@ class RealboxActionElement extends PolymerElement {
     return 'ntp-realbox-action';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       //========================================================================
       // Public properties
       //========================================================================
-      /**
-       * @type {!Action}
-       */
       action: {
         type: Object,
       },
@@ -35,7 +28,6 @@ class RealboxActionElement extends PolymerElement {
       /**
        * Index of the match in the autocomplete result. Used to inform embedder
        * of events such as click, keyboard events etc.
-       * @type {number}
        */
       matchIndex: {
         type: Number,
@@ -45,20 +37,14 @@ class RealboxActionElement extends PolymerElement {
       //========================================================================
       // Private properties
       //========================================================================
-      /**
-       * Element's 'aria-label' attribute.
-       * @type {string}
-       */
+      /** Element's 'aria-label' attribute. */
       ariaLabel: {
         type: String,
         computed: `computeAriaLabel_(action)`,
         reflectToAttribute: true,
       },
 
-      /**
-       * Rendered hint from action.
-       * @private {string}
-       */
+      /** Rendered hint from action. */
       hintHtml_: {
         type: String,
         computed: `computeHintHtml_(action)`,
@@ -66,30 +52,31 @@ class RealboxActionElement extends PolymerElement {
     };
   }
 
+  action: Action;
+  matchIndex: number;
+  ariaLabel: string;
+  private hintHtml_: string;
+
   //============================================================================
   // Helpers
   //============================================================================
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeAriaLabel_() {
+  private computeAriaLabel_(): string {
     if (this.action.a11yLabel) {
       return decodeString16(this.action.a11yLabel);
     }
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeHintHtml_() {
+  private computeHintHtml_(): string {
     if (this.action.hint) {
       return decodeString16(this.action.hint);
     }
     return '';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

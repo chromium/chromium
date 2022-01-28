@@ -57,11 +57,6 @@ js_type_check("closure_compile") {
     "modules:module_registry",
     "modules:modules",
     "modules/dummy_v2:foo_proxy",
-    "realbox:realbox",
-    "realbox:realbox_browser_proxy",
-    "realbox:realbox_dropdown",
-    "realbox:realbox_icon",
-    "realbox:realbox_match",
   ]
 }
 
@@ -76,7 +71,6 @@ js_library("new_tab_page") {
     "modules:module_header",
     "modules:module_registry",
     "modules:modules",
-    "realbox:realbox_browser_proxy",
     "//ui/webui/resources/js/browser_command:browser_command_proxy",
   ]
 }
@@ -101,7 +95,6 @@ js_library("app") {
     ":new_tab_page_proxy",
     ":window_proxy",
     "modules:module_registry",
-    "realbox:realbox",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js",
     "//skia/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -414,12 +407,12 @@ ts_library("build_ts") {
                "modules/task_module/task_module_handler_proxy.js",
                "new_tab_page.js",
                "new_tab_page_proxy.js",
-               "realbox/realbox_action.js",
-               "realbox/realbox_browser_proxy.js",
-               "realbox/realbox_dropdown.js",
-               "realbox/realbox_icon.js",
-               "realbox/realbox.js",
-               "realbox/realbox_match.js",
+               "realbox/realbox_action.ts",
+               "realbox/realbox_browser_proxy.ts",
+               "realbox/realbox_dropdown.ts",
+               "realbox/realbox_icon.ts",
+               "realbox/realbox.ts",
+               "realbox/realbox_match.ts",
                "utils.js",
                "utils_ts.ts",
                "voice_search_overlay.ts",
