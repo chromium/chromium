@@ -96,7 +96,7 @@ class ContentSubresourceFilterThrottleManager
     : public base::SupportsUserData::Data,
       public mojom::SubresourceFilterHost {
  public:
-  static constexpr int kUserDataKey = 0;
+  static const int kUserDataKey = 0;
 
   // Binds a remote in the given RenderFrame to the correct
   // ContentSubresourceFilterThrottleManager in the browser.
