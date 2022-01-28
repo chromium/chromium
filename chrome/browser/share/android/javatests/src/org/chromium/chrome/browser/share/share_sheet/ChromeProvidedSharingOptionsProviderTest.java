@@ -401,20 +401,37 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
+    public void getPropertyModels_webnotes_filtersByDetailedContentType() {
+        setUpChromeProvidedSharingOptionsProviderTest(
+                /*printingEnabled=*/true, LinkGeneration.MAX);
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ImmutableSet.of(ContentType.IMAGE), DetailedContentType.WEB_NOTES,
+                        /*isMultiWindow=*/false);
+
+        List<String> expectedModels =
+                ImmutableList.<String>builder()
+                        .add(mActivity.getResources().getString(R.string.sharing_copy_image))
+                        .add(mActivity.getResources().getString(R.string.sharing_save_image))
+                        .build();
+
+        assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
+    }
+
+    @Test
+    @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
     public void getPropertyModels_lightweightReactions_filtersByDetailedContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.IMAGE_AND_LINK),
+                        ImmutableSet.of(ContentType.IMAGE),
                         DetailedContentType.LIGHTWEIGHT_REACTION,
                         /*isMultiWindow=*/false);
 
-        List<String> expectedModels = new ArrayList<>();
-        expectedModels.add(mActivity.getResources().getString(R.string.sharing_copy_image));
-
-        assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
+        assertCorrectModelsAreInTheRightOrder(propertyModels,
+                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_image)));
     }
 
     @Test
