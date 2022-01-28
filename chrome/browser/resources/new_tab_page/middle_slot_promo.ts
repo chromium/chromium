@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
@@ -16,9 +17,8 @@ import {WindowProxy} from './window_proxy.js';
  * If a promo exists with content and can be shown, an element containing
  * the rendered promo is returned with an id #container. Otherwise, null is
  * returned.
- * @return {!Promise<Element>}
  */
-export async function renderPromo() {
+export async function renderPromo(): Promise<Element|null> {
   const browserHandler = NewTabPageProxy.getInstance().handler;
   const promoBrowserCommandHandler = BrowserCommandProxy.getInstance().handler;
   const {promo} = await browserHandler.getPromo();
@@ -26,27 +26,27 @@ export async function renderPromo() {
     return null;
   }
 
-  const commandIds = [];
-  const createAnchor = target => {
+  const commandIds: Command[] = [];
+
+  function createAnchor(target: Url) {
     const commandIdMatch = /^command:(\d+)$/.exec(target.url);
     if (!commandIdMatch && !target.url.startsWith('https://')) {
       return null;
     }
-    const el = /** @type {!HTMLAnchorElement} */ (document.createElement('a'));
-    /** @type {?Command} */
-    let commandId = null;
+    const el = document.createElement('a');
+    let commandId: Command|null = null;
     if (!commandIdMatch) {
       el.href = target.url;
     } else {
-      commandId =
-          /** @type {Command} */ (+commandIdMatch[1]);
+      commandId = +commandIdMatch[1];
       // Make sure we don't send unsupported commands to the browser.
       if (!Object.values(Command).includes(commandId)) {
         commandId = Command.kUnknownCommand;
       }
       commandIds.push(commandId);
     }
-    const onClick = event => {
+
+    function onClick(event: MouseEvent) {
       if (commandId !== null) {
         promoBrowserCommandHandler.executeCommand(commandId, {
           middleButton: event.button === 1,
@@ -57,13 +57,14 @@ export async function renderPromo() {
         });
       }
       browserHandler.onPromoLinkClicked();
-    };
+    }
+
     // 'auxclick' handles the middle mouse button which does not trigger a
     // 'click' event.
     el.addEventListener('auxclick', onClick);
     el.addEventListener('click', onClick);
     return el;
-  };
+  }
 
   let hasContent = false;
   const container = document.createElement('div');
@@ -120,20 +121,19 @@ class MiddleSlotPromoElement extends PolymerElement {
     return 'ntp-middle-slot-promo';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
-  /** @override */
   ready() {
     super.ready();
     renderPromo().then(container => {
       if (container) {
-        this.shadowRoot.appendChild(container);
+        this.shadowRoot!.appendChild(container);
       }
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
     });
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

@@ -47,7 +47,6 @@ js_type_check("closure_compile") {
 
   deps = [
     ":app",
-    ":doodle_share_dialog",
     ":lazy_load",
     ":new_tab_page",
     ":new_tab_page_proxy",
@@ -83,10 +82,7 @@ js_library("new_tab_page") {
 }
 
 js_library("lazy_load") {
-  deps = [
-    ":middle_slot_promo",
-    "modules/dummy_v2:module",
-  ]
+  deps = [ "modules/dummy_v2:module" ]
 }
 
 js_library("window_proxy") {
@@ -117,15 +113,6 @@ js_library("app") {
   ]
 }
 
-js_library("middle_slot_promo") {
-  deps = [
-    ":new_tab_page_proxy",
-    ":window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js/browser_command:mojo_bindings_webui_js",
-  ]
-}
-
 js_library("customize_dialog_types") {
 }
 
@@ -135,18 +122,6 @@ js_library("utils") {
 js_library("metrics_utils") {
   deps = [ ":i18n_setup" ]
   externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
-}
-
-js_library("doodle_share_dialog") {
-  deps = [
-    ":i18n_setup",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//url/mojom:url_mojom_gurl_webui_js",
-  ]
 }
 
 js_library("background_manager") {
@@ -173,9 +148,9 @@ html_to_js("web_components_local") {
     "customize_backgrounds.ts",
     "customize_dialog.ts",
     "customize_shortcuts.ts",
-    "doodle_share_dialog.js",
+    "doodle_share_dialog.ts",
     "logo.ts",
-    "middle_slot_promo.js",
+    "middle_slot_promo.ts",
     "mini_page.ts",
     "iframe.ts",
     "voice_search_overlay.ts",
@@ -223,7 +198,7 @@ preprocess_if_expr("preprocess_gen") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
     "app.js",
-    "middle_slot_promo.js",
+    "middle_slot_promo.ts",
     "customize_dialog.ts",
     "voice_search_overlay.ts",
     "customize_backgrounds.ts",
@@ -232,7 +207,7 @@ preprocess_if_expr("preprocess_gen") {
     "iframe.ts",
     "mini_page.ts",
     "logo.ts",
-    "doodle_share_dialog.js",
+    "doodle_share_dialog.ts",
   ]
 }
 
@@ -411,13 +386,13 @@ ts_library("build_ts") {
                "customize_dialog_types.js",
                "customize_modules.ts",
                "customize_shortcuts.ts",
-               "doodle_share_dialog.js",
+               "doodle_share_dialog.ts",
                "i18n_setup.js",
                "iframe.ts",
                "lazy_load.js",
                "logo.ts",
                "metrics_utils.js",
-               "middle_slot_promo.js",
+               "middle_slot_promo.ts",
                "mini_page.ts",
                "modules/cart/chrome_cart_proxy.js",
                "modules/cart/module.js",
