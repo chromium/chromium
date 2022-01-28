@@ -105,62 +105,8 @@ bool ShouldFetchSignature() {
   return GetStatus() >= VerifyStatus::BOOTSTRAP;
 }
 
-enum InitResult {
-  INIT_NO_PREF = 0,
-  INIT_UNPARSEABLE_PREF,
-  INIT_INVALID_SIGNATURE,
-  INIT_VALID_SIGNATURE,
-
-  // This is used in histograms - do not remove or reorder entries above! Also
-  // the "MAX" item below should always be the last element.
-
-  INIT_RESULT_MAX
-};
-
-void LogInitResultHistogram(InitResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ExtensionInstallVerifier.InitResult",
-                            result, INIT_RESULT_MAX);
-}
-
 bool CanUseExtensionApis(const Extension& extension) {
   return extension.is_extension() || extension.is_legacy_packaged_app();
-}
-
-enum VerifyAllSuccess {
-  VERIFY_ALL_BOOTSTRAP_SUCCESS = 0,
-  VERIFY_ALL_BOOTSTRAP_FAILURE,
-  VERIFY_ALL_NON_BOOTSTRAP_SUCCESS,
-  VERIFY_ALL_NON_BOOTSTRAP_FAILURE,
-
-  // Used in histograms. Do not remove/reorder any entries above, and the below
-  // MAX entry should always come last.
-  VERIFY_ALL_SUCCESS_MAX
-};
-
-// Record the success or failure of verifying all extensions, and whether or
-// not it was a bootstrapping.
-void LogVerifyAllSuccessHistogram(bool bootstrap, bool success) {
-  VerifyAllSuccess result;
-  if (bootstrap && success)
-    result = VERIFY_ALL_BOOTSTRAP_SUCCESS;
-  else if (bootstrap && !success)
-    result = VERIFY_ALL_BOOTSTRAP_FAILURE;
-  else if (!bootstrap && success)
-    result = VERIFY_ALL_NON_BOOTSTRAP_SUCCESS;
-  else
-    result = VERIFY_ALL_NON_BOOTSTRAP_FAILURE;
-
-  // This used to be part of ExtensionService, but moved here. In order to keep
-  // our histograms accurate, the name is unchanged.
-  UMA_HISTOGRAM_ENUMERATION(
-      "ExtensionService.VerifyAllSuccess", result, VERIFY_ALL_SUCCESS_MAX);
-}
-
-// Record the success or failure of a single verification.
-void LogAddVerifiedSuccess(bool success) {
-  // This used to be part of ExtensionService, but moved here. In order to keep
-  // our histograms accurate, the name is unchanged.
-  UMA_HISTOGRAM_BOOLEAN("ExtensionService.AddVerified", success);
 }
 
 }  // namespace
@@ -203,20 +149,14 @@ void InstallVerifier::Init() {
   if (pref) {
     std::unique_ptr<InstallSignature> signature_from_prefs =
         InstallSignature::FromValue(*pref);
-    if (!signature_from_prefs.get()) {
-      LogInitResultHistogram(INIT_UNPARSEABLE_PREF);
-    } else if (!InstallSigner::VerifySignature(*signature_from_prefs)) {
-      LogInitResultHistogram(INIT_INVALID_SIGNATURE);
-      DVLOG(1) << "Init - ignoring invalid signature";
-    } else {
-      signature_ = std::move(signature_from_prefs);
-      LogInitResultHistogram(INIT_VALID_SIGNATURE);
-      UMA_HISTOGRAM_COUNTS_100("ExtensionInstallVerifier.InitSignatureCount",
-                               signature_->ids.size());
-      GarbageCollect();
+    if (signature_from_prefs.get()) {
+      if (!InstallSigner::VerifySignature(*signature_from_prefs)) {
+        DVLOG(1) << "Init - ignoring invalid signature";
+      } else {
+        signature_ = std::move(signature_from_prefs);
+        GarbageCollect();
+      }
     }
-  } else {
-    LogInitResultHistogram(INIT_NO_PREF);
   }
 
   ExtensionSystem::Get(context_)->ready().Post(
@@ -421,12 +361,8 @@ void InstallVerifier::MaybeBootstrapSelf() {
 
 void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
   switch (type) {
-    case ADD_SINGLE:
-      LogAddVerifiedSuccess(success);
-      break;
     case ADD_ALL:
     case ADD_ALL_BOOTSTRAP:
-      LogVerifyAllSuccessHistogram(type == ADD_ALL_BOOTSTRAP, success);
       bootstrap_check_complete_ = true;
       if (success) {
         // Iterate through the extensions and, if any are newly-verified and
@@ -450,9 +386,9 @@ void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
             ->CheckManagementPolicy();
       }
       break;
-    // We don't need to check disable reasons or report UMA stats for
-    // provisional adds or removals.
+    // We don't need to check disable reasons for provisional adds or removals.
     case ADD_PROVISIONAL:
+    case ADD_SINGLE:
     case REMOVE:
       break;
   }
@@ -535,48 +471,14 @@ void InstallVerifier::SaveToPrefs() {
   }
 }
 
-namespace {
-
-enum CallbackResult {
-  CALLBACK_NO_SIGNATURE = 0,
-  CALLBACK_INVALID_SIGNATURE,
-  CALLBACK_VALID_SIGNATURE,
-
-  // This is used in histograms - do not remove or reorder entries above! Also
-  // the "MAX" item below should always be the last element.
-
-  CALLBACK_RESULT_MAX
-};
-
-void GetSignatureResultHistogram(CallbackResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ExtensionInstallVerifier.GetSignatureResult",
-                            result, CALLBACK_RESULT_MAX);
-}
-
-}  // namespace
-
 void InstallVerifier::SignatureCallback(
     std::unique_ptr<InstallSignature> signature) {
   std::unique_ptr<PendingOperation> operation =
       std::move(operation_queue_.front());
   operation_queue_.pop();
 
-  bool success = false;
-  if (!signature.get()) {
-    GetSignatureResultHistogram(CALLBACK_NO_SIGNATURE);
-  } else if (!InstallSigner::VerifySignature(*signature)) {
-    GetSignatureResultHistogram(CALLBACK_INVALID_SIGNATURE);
-  } else {
-    GetSignatureResultHistogram(CALLBACK_VALID_SIGNATURE);
-    success = true;
-  }
-
-  if (!success) {
-    OnVerificationComplete(false, operation->type);
-
-    // TODO(asargent) - if this was something like a network error, we need to
-    // do retries with exponential back off.
-  } else {
+  bool success = signature.get() && InstallSigner::VerifySignature(*signature);
+  if (success) {
     signature_ = std::move(signature);
     SaveToPrefs();
 
@@ -585,10 +487,11 @@ void InstallVerifier::SignatureCallback(
       provisional_ = base::STLSetDifference<ExtensionIdSet>(
           provisional_, signature_->ids);
     }
-
-    OnVerificationComplete(success, operation->type);
   }
 
+  // TODO(asargent) - if this was something like a network error, we need to
+  // do retries with exponential back off.
+  OnVerificationComplete(success, operation->type);
   if (!operation_queue_.empty())
     BeginFetch();
 }

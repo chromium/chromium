@@ -16,7 +16,6 @@
 #include "base/guid.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -214,8 +213,6 @@ void PerformVerificationCheck(content::BrowserContext* context) {
     }
   }
 
-  UMA_HISTOGRAM_BOOLEAN("ExtensionSettings.ShouldDoVerificationCheck",
-                        should_do_verification_check);
   if (should_do_verification_check)
     InstallVerifier::Get(context)->VerifyAllExtensions();
 }

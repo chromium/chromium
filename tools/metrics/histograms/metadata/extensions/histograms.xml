@@ -37,6 +37,82 @@ chromium-metrics-reviews@google.com.
   <variant name=".Tab" summary="A port opened to a tab context."/>
 </variants>
 
+<histogram name="ExtensionBlacklist.BlacklistInstalled"
+    enum="ExtensionLocation" expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The number of extensions that were blocklisted when already installed,
+    grouped by Extension::Location. Logged when ExtensionService blockists and
+    unloads an installed extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
+    expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The number of extensions that have been blocked from installing grouped by
+    Extension::Location. Logged when ExtensionService refuses to install a
+    blocklisted extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBlacklist.SilentInstall" enum="ExtensionLocation"
+    expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The number of extensions that have been silently installed in a blocklisted
+    state, grouped by Extension::Location. Logged when ExtensionService installs
+    a blocklisted extension without blocking it (ExtensionBlacklist.BlockCRX
+    would be logged otherwise). Typically this will be when a user has a
+    blocklisted extension synced.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBlacklist.UnblacklistInstalled"
+    enum="ExtensionLocation" expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The number of extensions that were unblocklisted when installed, grouped by
+    Extension::Location. Logged when ExtensionService unblocklists and loads a
+    blocklisted extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionContentHashFetcher.CreateHashesTime" units="ms"
+    expires_after="never">
+<!-- expires-never: Used for monitoring extension content verification latency. -->
+
+  <owner>lazyboy@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The time taken to create the computed_hashes.json file for an extension.
+    This happens once for each extension after we get signed values of the
+    expected root node of a tree hashes for each file from the webstore; we then
+    compute the individual block level hashes of the actual files and cache them
+    in computed_hashes.json (assuming we don't detect any mismatches).
+  </summary>
+</histogram>
+
+<histogram name="ExtensionContentVerifyJob.TimeSpentUS" units="microseconds"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>
+    The time taken in computation (hashing actual bytes read and comparing
+    against expected computed hashes values) during an extension resource load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ActionSetIconFailureType"
     enum="ExtensionActionSetIconFailureType" expires_after="M88">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -3591,6 +3667,46 @@ chromium-metrics-reviews@google.com.
     <variant name="ManifestFetchRetry"
         summary="MANIFEST_DOWNLOAD_RETRY stage."/>
   </token>
+</histogram>
+
+<histogram name="ExtensionToolbarModel.BrowserActionsCount" units="actions"
+    expires_after="never">
+<!-- expires-never: Monitoring core user behavior with extensions. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The total number of extensions that have an icon in the extension toolbar,
+    including those that are unpinned and only show in the extensions menu.
+    Measured once per startup per (non-incognito) profile.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionUrlRequest.Latency" units="ms"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>The time taken to complete an extension url request.</summary>
+</histogram>
+
+<histogram name="ExtensionUrlRequest.SeekPosition" units="units"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>
+    When fetching a chrome-extension:// URL, this indicates the first byte
+    position we read from. This will be greater than 0 in cases such as XHR's
+    with a Range header, but will normally be 0 in the typical case of reading
+    the entire file. This helps identify how frequently partial file reads are
+    taking place.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionUrlRequest.TotalKbRead" units="KB"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>
+    The total number of bytes read for a chrome-extension:// URL, logged when
+    the job is finished (either successfully or not).
+  </summary>
 </histogram>
 
 </histograms>
