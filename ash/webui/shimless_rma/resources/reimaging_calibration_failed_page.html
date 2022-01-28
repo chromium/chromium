@@ -2,7 +2,7 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('calibrationFailedTitleText')]]</h1>
     <div class="instructions">
       [[i18n('calibrationFailedInstructionsText')]]
@@ -15,7 +15,7 @@
       </cr-button>
     </div>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <div>
       <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
         <calibration-component-chip id="[[component.id]]"

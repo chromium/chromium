@@ -2,13 +2,13 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('runCalibrationTitleText')]]</h1>
     <div id="calibration" class="instructions">
       <span>[[calibrationStatusMessage_]]</span>
     </div>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <paper-spinner-lite active hidden$="[[calibrationComplete_]]"
         class="large-spinner">
     </paper-spinner-lite>

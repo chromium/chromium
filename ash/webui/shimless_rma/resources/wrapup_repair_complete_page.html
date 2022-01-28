@@ -60,7 +60,7 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('repairCompletedTitleText')]]</h1>
     <div class="instructions">
       [[i18n('repairCompletedDescriptionText')]]
@@ -74,7 +74,7 @@
         [[i18n('repairCompleteRebootButtonText')]]
     </cr-button>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <cr-button id="diagnosticsButton" class="button-card"
       on-click="onDiagnosticsButtonClick_" disabled="[[allButtonsDisabled]]">
       <div id="diagnosticsIconDiv">

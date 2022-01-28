@@ -2,7 +2,7 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('provisioningPageTitleText')]]</h1>
     <div id="provisioningDeviceStatus" class="instructions">
       [[statusString_]]
@@ -16,7 +16,7 @@
       </cr-button>
     </div>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <paper-spinner-lite hidden$="[[!shouldShowSpinner_]]" active
         class="large-spinner">
     </paper-spinner-lite>

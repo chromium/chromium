@@ -6,13 +6,13 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('selectComponentsTitleText')]]</h1>
     <div class="instructions">
       <span inner-h-t-m-l="[[reworkFlowLinkText_]]"></span>
     </div>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <div>
       <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
         <repair-component-chip id="[[component.id]]"

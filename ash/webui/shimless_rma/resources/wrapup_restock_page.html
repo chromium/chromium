@@ -2,7 +2,7 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('restockTitleText')]]</h1>
     <div class="instructions">[[i18n('restockInstructionsText')]]</div>
     <cr-button id="continue" on-click="onRestockContinueButtonClicked_"
@@ -14,7 +14,7 @@
       [[i18n('restockShutdownButtonText')]]
     </cr-button>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <iron-icon icon="shimless:repair-start" class="large-icon">
     </iron-icon>
   </div>

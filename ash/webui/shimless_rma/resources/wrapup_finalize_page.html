@@ -2,7 +2,7 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('finalizePageTitleText')]]</h1>
     <div id="finalizationMessage" class="instructions">
       [[finalizationMessage_]]
@@ -16,7 +16,7 @@
       </cr-button>
     </div>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <paper-spinner-lite active hidden$="[[!shouldShowSpinner_]]"
         class="large-spinner">
     </paper-spinner-lite>

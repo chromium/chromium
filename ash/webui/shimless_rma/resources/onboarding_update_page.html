@@ -11,7 +11,7 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('osUpdateTitleText')]]</h1>
     <div hidden$="[[isCompliant_]]" class="instructions">
       <div inner-h-t-m-l="[[verificationFailedMessage_]]"></div>
@@ -42,7 +42,7 @@
       </iron-icon>
     </cr-button>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <iron-icon icon="shimless:update" class="large-icon"></iron-icon>
   </div>
 </base-page>

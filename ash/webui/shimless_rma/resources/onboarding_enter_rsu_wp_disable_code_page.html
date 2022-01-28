@@ -34,7 +34,7 @@
 </style>
 
 <base-page>
-  <div slot="header">
+  <div slot="left-pane">
     <h1>[[i18n('rsuCodePageTitleText')]]</h1>
     <div class="instructions">
       <span inner-h-t-m-l="[[rsuInstructionsText_]]"></span>
@@ -54,7 +54,7 @@
       </cr-input>
     </div>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
     </canvas>
   </div>

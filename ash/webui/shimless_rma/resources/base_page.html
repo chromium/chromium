@@ -9,20 +9,20 @@
     flex-direction: row;
   }
 
-  .header {
+  #leftPane {
     flex-grow: 1;
   }
 
-  .body {
+  #rightPane {
     flex-basis: 500px;
   }
 
 </style>
 <div class="page-wrapper">
-  <div class="header">
-    <slot name="header"></slot>
+  <div id="leftPane">
+    <slot name="left-pane"></slot>
   </div>
-  <div class="body">
-    <slot name="body"></slot>
+  <div id="rightPane">
+    <slot name="right-pane"></slot>
   </div>
 </div>
