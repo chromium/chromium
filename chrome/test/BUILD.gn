@@ -1587,6 +1587,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/federated_learning/floc_origin_trial_browsertest.cc",
       "../browser/file_system_access/chrome_file_system_access_permission_context_browsertest.cc",
       "../browser/file_system_access/file_system_access_tab_helper_browsertest.cc",
+      "../browser/first_party_sets/first_party_sets_policy_browsertest.cc",
       "../browser/first_run/first_run_browsertest.cc",
       "../browser/geolocation/geolocation_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",

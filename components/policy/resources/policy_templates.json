@@ -1323,6 +1323,16 @@
       ]
     },
     {
+      'name': 'FirstPartySets',
+      'owners': ['kaklilu@chromium.com', 'chrome-first-party-sets@chromium.org'],
+      'type': 'group',
+      'caption': '''First-Party Sets Settings''',
+      'desc': '''Controls policies for the First-Party Sets feature.''',
+      'policies': [
+        'FirstPartySetsEnabled',
+      ]
+    },
+    {
       'name': 'HomepageLocation',
       'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
@@ -29601,6 +29611,40 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
       If this policy is enabled alongside <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME">DownloadRestrictions</ph> and DownloadRestrictions is set to block dangerous file types, download blocks determined by DownloadRestrictions take precedence. For example, if this policy is set to enable "exe" extension downloads from "website1.com", and DownloadRestrictions is set to block malicious downloads and dangerous file types, then "exe" extension downloads will still be blocked in all domains. If DownloadRestrictions is not set to block dangerous file types, then file types specified in this policy will be exempted from file-type extension-based download warnings in the specified domains. Read more about DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).''',
     },
+    {
+      'name': 'FirstPartySetsEnabled',
+      'owners': ['kaklilu@chromium.com', 'chrome-first-party-sets@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'features' : {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable First-Party Sets for all affected users'
+        },
+        {
+          'value': False,
+          'caption': 'Disable First-Party Sets for all affected users'
+        }
+      ],
+      'default': True,
+      'future_on': ['chrome.*', 'chrome_os', 'android', 'webview_android'],
+      'example_value': False,
+      'tags': [],
+      'id': 948,
+      'caption': '''Enable First-Party Sets.''',
+      'desc': '''This policy is provided as a way to opt-out of the First-Party Sets feature.
+
+                  When this policy is unset or set to Enabled, the First-Party Sets feature is enabled.
+
+                  When this policy is set to Disabled, the First-Party Sets feature is disabled.
+
+                  The state of the First-Party Sets feature determines whether Chrome retrieves the list of First-Party Sets.
+                  It also controls whether Chrome supports First-Party Sets related features (e.g. the SameParty cookie attribute).''',
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -30579,6 +30623,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 947,
+  'highest_id_currently_used': 948,
   'highest_atomic_group_id_currently_used': 41
 }

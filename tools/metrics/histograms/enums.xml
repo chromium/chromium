@@ -28441,6 +28441,7 @@ Called by update_document_policy_enum.py.-->
   <int value="946" label="PasswordDismissCompromisedAlertEnabled"/>
   <int value="947"
       label="ExemptDomainFileTypePairsFromFileTypeDownloadWarnings"/>
+  <int value="948" label="FirstPartySetsEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

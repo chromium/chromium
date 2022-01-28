@@ -17939,5 +17939,42 @@
         }
       }
     ]
-  }
+  },
+    "FirstPartySetsEnabled": {
+      "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android"],
+      "policy_pref_mapping_tests": [
+        {
+          "note": "Check default values (no policies set)",
+          "prefs": {
+            "first_party_sets.enabled": {
+              "location": "local_state",
+              "default_value": true
+            }
+          }
+        },
+        {
+          "note": "Check value when FirstPartySetsEnabled policy is set to true",
+          "policies": {
+            "FirstPartySetsEnabled": true
+          },
+          "prefs": {
+            "first_party_sets.enabled": {
+              "location": "local_state",
+              "value": true
+            }
+          }
+        },
+        {
+          "note": "Check value when FirstPartySetsEnabled policy is set to false",
+          "policies": {
+            "FirstPartySetsEnabled": false
+          },
+          "prefs": {
+            "first_party_sets.enabled": {
+              "location": "local_state",
+              "value": false
+            }
+          }
+
+        }]}
 }

@@ -45,14 +45,25 @@ MATCHER_P(MatchesCookieAccessWithName, name, "") {
 // the result.
 MATCHER_P3(WhenKVSplit, pair_delim, kv_delim, inner_matcher, "") {
   std::vector<std::pair<std::string, std::string>> pairs;
-  // Ignore the return value of SplitStringIntoKeyValuePairs, to allow pairs
-  // with no associated value.
-  base::SplitStringIntoKeyValuePairs(arg, kv_delim, pair_delim, &pairs);
-  return testing::ExplainMatchResult(inner_matcher, pairs, result_listener);
+  // Return an empty vector when a cookie string (such as "None") cannot be
+  // split into 'name=value' pairs.
+  bool successful_split =
+      base::SplitStringIntoKeyValuePairs(arg, kv_delim, pair_delim, &pairs);
+  if (successful_split) {
+    return testing::ExplainMatchResult(inner_matcher, pairs, result_listener);
+  } else {
+    std::vector<std::pair<std::string, std::string>> empty_pairs;
+    return testing::ExplainMatchResult(inner_matcher, empty_pairs,
+                                       result_listener);
+  }
 }
 
-// Splits a ';'-delimited string of Cookie 'name=value' or 'name' pairs, and
-// executes the provided matcher on the result.
+// Executes the inner_matcher on the Cookie string arg after it's transformed
+// into a vector.
+// If the arg is a ';'-delimited string of Cookie 'name=value' or 'name' pairs,
+// then the matcher will execute on a vector of <name, value> pairs.
+// If the arg can't be split into these pairs then the inner_matcher will
+// execute on an empty vector.
 MATCHER_P(CookieStringIs, inner_matcher, "") {
   return testing::ExplainMatchResult(WhenKVSplit(';', '=', inner_matcher), arg,
                                      result_listener);
@@ -150,6 +161,20 @@ MATCHER_P3(MatchesCookieAndLineWithAccessResult,
          testing::ExplainMatchResult(
              access_result, cookie_and_line_with_access_result.access_result,
              result_listener);
+}
+
+MATCHER(NameIs, "") {
+  const std::pair<std::string, std::string>& actual = testing::get<0>(arg);
+  const std::string& expected_name = testing::get<1>(arg);
+  return testing::ExplainMatchResult(actual.first, expected_name,
+                                     result_listener);
+}
+
+MATCHER(CanonicalCookieNameIs, "") {
+  const net::CanonicalCookie& actual = testing::get<0>(arg);
+  const std::string& expected_name = testing::get<1>(arg);
+  return testing::ExplainMatchResult(actual.Name(), expected_name,
+                                     result_listener);
 }
 
 }  // namespace net
