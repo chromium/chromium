@@ -2350,17 +2350,15 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
     // specified, each layer should contain one plane.
     DCHECK_EQ(1u, descriptor.layers[layer].num_planes);
 
-    // Strictly speaking, we only have to dup() the fd for the planes after the
-    // first one since we already own the first one, but we dup() regardless for
-    // simplicity: |bo_fd| will be closed at the end of this method anyway.
-    base::ScopedFD plane_fd(HANDLE_EINTR(dup(bo_fd.get())));
+    auto plane_fd = base::ScopedFD(
+        layer == 0 ? bo_fd.release()
+                   : HANDLE_EINTR(dup(handle.planes[0].fd.get())));
     PCHECK(plane_fd.is_valid());
     constexpr uint64_t kZeroSizeToPreventMapping = 0u;
     handle.planes.emplace_back(
         base::checked_cast<int>(descriptor.layers[layer].pitch[0]),
         base::checked_cast<int>(descriptor.layers[layer].offset[0]),
-        kZeroSizeToPreventMapping,
-        base::ScopedFD(HANDLE_EINTR(dup(bo_fd.get()))));
+        kZeroSizeToPreventMapping, std::move(plane_fd));
   }
 
   if (descriptor.fourcc == VA_FOURCC_IMC3) {
