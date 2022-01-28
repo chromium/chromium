@@ -294,6 +294,26 @@ void PaymentRequestBrowserTestBase::InstallPaymentApp(
   // the method to return void.
 }
 
+// The default |InstallPaymentApp| uses a manifest file that contains an icon.
+// This path doesn't install an icon.
+void PaymentRequestBrowserTestBase::InstallPaymentAppWithoutIcon(
+    const std::string& hostname,
+    const std::string& service_worker_filename,
+    std::string* url_method_output) {
+  NavigateTo(hostname, "/payment_handler_installer_no_icon.html");
+  *url_method_output = https_server()->GetURL(hostname, "/").spec();
+  *url_method_output =
+      url_method_output->substr(0, url_method_output->length() - 1);
+  ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("install($1, [$2], false)",
+                                               service_worker_filename,
+                                               *url_method_output)));
+  // We can't output `url_method_output` by return because the ASSERTs require
+  // the method to return void.
+}
+
 void PaymentRequestBrowserTestBase::InvokePaymentRequestUI() {
   InvokePaymentRequestUIWithJs(
       "(function() { document.getElementById('buy').click(); })();");
