@@ -1,0 +1,4 @@
+busy.accessibilityAttributeValue(AXElementBusy)=1
+busy.accessibilityAttributeNames.has(AXElementBusy)='yes'
+default.accessibilityAttributeValue(AXElementBusy)=0
+default.accessibilityAttributeNames.has(AXElementBusy)='yes'

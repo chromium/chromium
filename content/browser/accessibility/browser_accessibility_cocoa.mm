@@ -70,7 +70,6 @@ namespace {
 // Private WebKit accessibility attributes.
 NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
-NSString* const NSAccessibilityElementBusyAttribute = @"AXElementBusy";
 NSString* const NSAccessibilityFocusableAncestorAttribute =
     @"AXFocusableAncestor";
 NSString* const NSAccessibilityHighestEditableAncestorAttribute =
@@ -633,7 +632,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
       {NSAccessibilityDisclosedRowsAttribute, @"disclosedRows"},
       {NSAccessibilityEditableAncestorAttribute, @"editableAncestor"},
-      {NSAccessibilityElementBusyAttribute, @"elementBusy"},
       {NSAccessibilityEnabledAttribute, @"enabled"},
       {NSAccessibilityEndTextMarkerAttribute, @"endTextMarker"},
       {NSAccessibilityExpandedAttribute, @"expanded"},
@@ -949,12 +947,6 @@ bool content::IsNSRange(id value) {
   if (text_field_ancestor)
     return ToBrowserAccessibilityCocoa(text_field_ancestor);
   return nil;
-}
-
-- (NSNumber*)elementBusy {
-  if (![self instanceActive])
-    return nil;
-  return @(_owner->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
 }
 
 - (NSNumber*)enabled {
@@ -2827,7 +2819,6 @@ bool content::IsNSRange(id value) {
       arrayWithObjects:NSAccessibilityChildrenAttribute,
                        NSAccessibilityIdentifierChromeAttribute,
                        NSAccessibilityDescriptionAttribute,
-                       NSAccessibilityElementBusyAttribute,
                        NSAccessibilityEnabledAttribute,
                        NSAccessibilityEndTextMarkerAttribute,
                        NSAccessibilityFocusedAttribute,
