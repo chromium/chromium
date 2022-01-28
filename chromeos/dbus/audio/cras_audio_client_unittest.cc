@@ -113,6 +113,9 @@ class MockObserver : public CrasAudioClient::Observer {
       void(const base::flat_map<std::string, uint32_t>& num_input_streams));
   MOCK_METHOD2(BluetoothBatteryChanged,
                void(const std::string& address, uint32_t level));
+  MOCK_METHOD1(SurveyTriggered,
+               void(const base::flat_map<std::string, std::string>&
+                        survey_specific_data));
 };
 
 // Expect the reader to be empty.
@@ -450,6 +453,13 @@ class CrasAudioClientTest : public testing::Test {
         .WillRepeatedly(
             Invoke(this, &CrasAudioClientTest::OnBluetoothBatteryChanged));
 
+    // Set an expectation so mock_cras_proxy's monitoring
+    // SurveyTrigger ConnectToSignal will use
+    // OnSurveyTriggered() to run the callback.
+    EXPECT_CALL(*mock_cras_proxy_.get(),
+                DoConnectToSignal(interface_name_, cras::kSurveyTrigger, _, _))
+        .WillRepeatedly(Invoke(this, &CrasAudioClientTest::OnSurveyTriggered));
+
     // Set an expectation so mock_bus's GetObjectProxy() for the given
     // service name and the object path will return mock_cras_proxy_.
     EXPECT_CALL(*mock_bus_.get(),
@@ -548,6 +558,12 @@ class CrasAudioClientTest : public testing::Test {
     bluetooth_battery_changed_handler_.Run(signal);
   }
 
+  // Send survey-trigger signal to the tested client.
+  void SendSurveyTriggerSignal(dbus::Signal* signal) {
+    ASSERT_FALSE(survey_trigger_handler_.is_null());
+    survey_trigger_handler_.Run(signal);
+  }
+
   CrasAudioClient* client() { return CrasAudioClient::Get(); }
 
   // The interface name.
@@ -581,6 +597,8 @@ class CrasAudioClientTest : public testing::Test {
       number_of_input_streams_with_permission_changed_handler_;
   // The BluetoothBatteryChanged signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback bluetooth_battery_changed_handler_;
+  // The SurveyTrigger signal handler given by the tested client.
+  dbus::ObjectProxy::SignalCallback survey_trigger_handler_;
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock cras proxy returns.
@@ -597,7 +615,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     output_mute_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -611,7 +629,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     input_mute_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -625,7 +643,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     nodes_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -639,7 +657,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     active_output_node_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -653,7 +671,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     active_input_node_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -667,7 +685,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     output_node_volume_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -681,7 +699,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     hotword_triggered_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -695,7 +713,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     number_of_active_streams_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -707,7 +725,7 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     number_of_input_streams_with_permission_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -721,7 +739,21 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     bluetooth_battery_changed_handler_ = signal_callback;
-    const bool success = true;
+    constexpr bool success = true;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+                                  interface_name, signal_name, success));
+  }
+
+  // Checks the requested interface name and signal name.
+  // Used to implement the mock cras proxy.
+  void OnSurveyTriggered(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      const dbus::ObjectProxy::SignalCallback& signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    survey_trigger_handler_ = signal_callback;
+    constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
                                   interface_name, signal_name, success));
@@ -920,6 +952,42 @@ TEST_F(CrasAudioClientTest, BluetoothBatteryChanged) {
 
   // Run the signal callback again and make sure the observer isn't called.
   SendBluetoothBatteryChangedSignal(&signal);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, SurveyTrigger) {
+  dbus::Signal signal(cras::kCrasControlInterface, cras::kSurveyTrigger);
+  dbus::MessageWriter writer(&signal);
+  dbus::MessageWriter sub_writer(nullptr);
+  base::flat_map<std::string, std::string> survey_specific_data = {
+      {"StreamType", "CRAS_STREAM_TYPE_DEFAULT"},
+      {"ClientType", "CRAS_CLIENT_TYPE_CHROME"},
+      {"NodeType", "USB_INTERNAL_SPEAKER"}};
+
+  writer.OpenArray("{sv}", &sub_writer);
+  for (auto& it : survey_specific_data) {
+    dbus::MessageWriter entry_writer(nullptr);
+    sub_writer.OpenDictEntry(&entry_writer);
+    entry_writer.AppendString(it.first);
+    entry_writer.AppendVariantOfString(it.second);
+    sub_writer.CloseContainer(&entry_writer);
+  }
+  writer.CloseContainer(&sub_writer);
+
+  MockObserver observer;
+  EXPECT_CALL(observer, SurveyTriggered(survey_specific_data)).Times(1);
+
+  client()->AddObserver(&observer);
+
+  SendSurveyTriggerSignal(&signal);
+
+  client()->RemoveObserver(&observer);
+
+  EXPECT_CALL(observer, SurveyTriggered(survey_specific_data)).Times(0);
+
+  // Run the signal callback again and make sure the observer isn't called.
+  SendSurveyTriggerSignal(&signal);
 
   base::RunLoop().RunUntilIdle();
 }

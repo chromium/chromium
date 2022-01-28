@@ -115,6 +115,9 @@ void CrasAudioHandler::AudioObserver::OnOutputStarted() {}
 
 void CrasAudioHandler::AudioObserver::OnOutputStopped() {}
 
+void CrasAudioHandler::AudioObserver::OnSurveyTriggered(
+    const AudioSurveyData& /*survey_specific_data */) {}
+
 // static
 void CrasAudioHandler::Initialize(
     mojo::PendingRemote<media_session::mojom::MediaControllerManager>
@@ -945,6 +948,12 @@ void CrasAudioHandler::NumberOfInputStreamsWithPermissionChanged(
   HandleGetNumberOfInputStreamsWithPermission(num_input_streams);
   for (auto& observer : observers_)
     observer.OnNumberOfInputStreamsWithPermissionChanged();
+}
+
+void CrasAudioHandler::SurveyTriggered(
+    const base::flat_map<std::string, std::string>& survey_specific_data) {
+  for (auto& observer : observers_)
+    observer.OnSurveyTriggered(survey_specific_data);
 }
 
 void CrasAudioHandler::ResendBluetoothBattery() {

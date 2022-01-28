@@ -62,6 +62,14 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
       priority_queue<AudioDevice, std::vector<AudioDevice>, AudioDeviceCompare>
           AudioDevicePriorityQueue;
   typedef std::vector<uint64_t> NodeIdList;
+
+  // Key-value mapping type for audio survey specific data.
+  // For audio satisfaction survey, it contains
+  //  - StreamType: Usage of the stream, e.g., multimedia.
+  //  - ClientType: Client of the stream, e.g., Chrome or ARC++.
+  //  - NodeType: Pair of the active input/output device types, e.g., USB_USB.
+  // The content can be extended when other types of survey is added.
+  typedef base::flat_map<std::string, std::string> AudioSurveyData;
   static constexpr int32_t kSystemAecGroupIdNotAvailable = -1;
 
   class AudioObserver {
@@ -117,6 +125,17 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
     // Called when the last output stream is closed.
     virtual void OnOutputStopped();
+
+    // Called when the audio survey like to trigger an audio survey.
+    // CRAS owns the trigger to send out an audio survey as opposed to trigger
+    // from any Chrome/UI elements as CRAS has the most context to determine
+    // when to sent out audio survey, for example when an input stream living
+    // for >= 30 seconds is closed.
+    // CRAS also has full control on what data to send to Chrome. These survey
+    // specific data will be attached with each survey response for analysis.
+    // Currently this only supports one general audio satisfaction survey and
+    // should be modified and extended when other types of survey is added.
+    virtual void OnSurveyTriggered(const AudioSurveyData& survey_specific_data);
 
    protected:
     AudioObserver();
@@ -422,6 +441,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void NumberOfInputStreamsWithPermissionChanged(
       const base::flat_map<std::string, uint32_t>& num_input_streams) override;
   void NumberOfActiveStreamsChanged() override;
+  void SurveyTriggered(const base::flat_map<std::string, std::string>&
+                           survey_specific_data) override;
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;

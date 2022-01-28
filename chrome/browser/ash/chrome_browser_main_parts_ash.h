@@ -60,6 +60,7 @@ class LockToSingleUserManager;
 
 namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
+class AudioSurveyHandler;
 class ArcKioskAppManager;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
@@ -259,6 +260,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<quick_pair::QuickPairBrowserDelegateImpl>
       quick_pair_delegate_;
+
+  std::unique_ptr<AudioSurveyHandler> audio_survey_handler_;
 
   // Only temporarily owned, will be null after PostCreateMainMessageLoop().
   // The Accessor is constructed before initialization of FeatureList and should

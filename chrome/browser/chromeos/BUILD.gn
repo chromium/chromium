@@ -1077,6 +1077,8 @@ source_set("chromeos") {
     "../ash/attestation/tpm_challenge_key_subtle.h",
     "../ash/attestation/tpm_challenge_key_with_timeout.cc",
     "../ash/attestation/tpm_challenge_key_with_timeout.h",
+    "../ash/audio/audio_survey_handler.cc",
+    "../ash/audio/audio_survey_handler.h",
     "../ash/authpolicy/authpolicy_credentials_manager.cc",
     "../ash/authpolicy/authpolicy_credentials_manager.h",
     "../ash/authpolicy/authpolicy_helper.cc",
