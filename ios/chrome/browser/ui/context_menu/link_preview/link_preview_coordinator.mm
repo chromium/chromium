@@ -102,9 +102,17 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   ChromeBrowserState* browserState =
       ChromeBrowserState::FromBrowserState(currentWebState->GetBrowserState());
+
+  // Use web::WebState::CreateWithStorageSession to clone the
+  // currentWebState navigation history. This may create an
+  // unrealized WebState, however, LinkPreview needs a realized
+  // one, so force the realization.
+  // TODO(crbug.com/1291626): remove when there is a way to
+  // clone a WebState navigation history.
   web::WebState::CreateParams createParams(browserState);
   _previewWebState = web::WebState::CreateWithStorageSession(
       createParams, currentWebState->BuildSessionStorage());
+  _previewWebState->ForceRealized();
 
   // Attach tab helpers to use _previewWebState as a browser tab. It ensures
   // _previewWebState has all the expected tab helpers, including the
