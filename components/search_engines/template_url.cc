@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -28,6 +29,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
@@ -1129,7 +1131,8 @@ std::string TemplateURLRef::HandleReplacements(
 
       case GOOGLE_PAGE_CLASSIFICATION:
         if (search_terms_args.page_classification !=
-            metrics::OmniboxEventProto::INVALID_SPEC) {
+                metrics::OmniboxEventProto::INVALID_SPEC &&
+            !base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
           HandleReplacement(
               "pgcl",
               base::NumberToString(search_terms_args.page_classification),
