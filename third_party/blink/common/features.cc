@@ -922,11 +922,6 @@ const base::Feature kEnablePenetratingImageSelection{
 const base::Feature kDocumentTransition{"DocumentTransition",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, uses the code-path to drive shared/root element transitions
-// from the renderer process.
-const base::Feature kDocumentTransitionRenderer{
-    "DocumentTransitionRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Used to configure a per-origin allowlist of performance.mark events that are
 // permitted to be included in slow reports traces. See crbug.com/1181774.
 const base::Feature kBackgroundTracingPerformanceMark{

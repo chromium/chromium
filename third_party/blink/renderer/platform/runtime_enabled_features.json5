@@ -948,12 +948,13 @@
       // Document transitions, including shared element transitions.
       // See https://github.com/WICG/shared-element-transitions
       name: "DocumentTransition",
-      implied_by: ["DocumentTransitionRenderer"],
     },
     {
       // Document transitions, including shared element transitions.
       // See https://github.com/WICG/shared-element-transitions
-      name: "DocumentTransitionRenderer",
+      // Note that this uses a viz animation implementation.
+      name: "DocumentTransitionViz",
+      depends_on: ["DocumentTransition"]
     },
     {
       name: "DocumentWrite",

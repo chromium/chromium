@@ -210,7 +210,7 @@ ScriptPromise DocumentTransition::prepare(
   }
 
   // The root snapshot is handled as a shared element by the compositing stack.
-  if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled())
+  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled())
     shared_elements_config.emplace_back();
 
   if (options->hasAbortSignal()) {
@@ -242,7 +242,7 @@ ScriptPromise DocumentTransition::prepare(
           &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
 
-  if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
+  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
     style_tracker_ =
         MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_);
     style_tracker_->Prepare(active_shared_elements_);
@@ -290,7 +290,7 @@ ScriptPromise DocumentTransition::start(
     // TODO(khushalsagar) : Viz keeps copy results cached for 5 seconds at this
     // point. We should send an early release. See crbug.com/1266500.
     SetActiveSharedElements({});
-    if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
+    if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
       style_tracker_->Abort();
       style_tracker_ = nullptr;
     }
@@ -301,16 +301,16 @@ ScriptPromise DocumentTransition::start(
   state_ = State::kStarted;
   start_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
-    pending_request_ =
-        DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
-    style_tracker_->Start(active_shared_elements_);
-  } else {
+  if (RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
     pending_request_ = DocumentTransitionRequest::CreateStart(
         document_tag_, prepare_shared_element_count_,
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             &DocumentTransition::NotifyStartFinished,
             WrapCrossThreadWeakPersistent(this), last_start_sequence_id_)));
+  } else {
+    pending_request_ =
+        DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
+    style_tracker_->Start(active_shared_elements_);
   }
 
   NotifyHasChangesToCommit();
@@ -374,7 +374,7 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   state_ = State::kIdle;
   SetActiveSharedElements({});
 
-  if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
+  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
     style_tracker_->StartFinished();
     style_tracker_ = nullptr;
     pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
@@ -394,7 +394,7 @@ bool DocumentTransition::IsTransitionParticipant(
 
   // The layout view is always a participant if there is a transition.
   if (auto* layout_view = DynamicTo<LayoutView>(object)) {
-    return RuntimeEnabledFeatures::DocumentTransitionRendererEnabled() &&
+    return !RuntimeEnabledFeatures::DocumentTransitionVizEnabled() &&
            state_ != State::kIdle;
   }
   // Otherwise check if the layout object has an active shared element.
@@ -415,7 +415,7 @@ void DocumentTransition::PopulateSharedElementAndResourceIds(
   if (!element) {
     // The only non-element participant is the layout view.
     DCHECK(object.IsLayoutView());
-    DCHECK(RuntimeEnabledFeatures::DocumentTransitionRendererEnabled());
+    DCHECK(!RuntimeEnabledFeatures::DocumentTransitionVizEnabled());
     // This matches one past the size of the shared element configs generated in
     // ::prepare().
     shared_element_id->AddIndex(active_shared_elements_.size());
@@ -432,7 +432,7 @@ void DocumentTransition::PopulateSharedElementAndResourceIds(
     // This tags the shared element's content with the resource id used by the
     // first pseudo element. This is okay since in the eventual API we should
     // have a 1:1 mapping between shared elements and pseudo elements.
-    if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
+    if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
       if (!resource_id->IsValid()) {
         *resource_id = style_tracker_->GetLiveSnapshotId(element);
       }

@@ -959,7 +959,7 @@
   {
     "prefix": "document-transition",
     "bases": ["wpt_internal/document-transition", "document-transition"],
-    "args": ["--enable-features=DocumentTransition,DocumentTransitionRenderer",
+    "args": ["--enable-features=DocumentTransition",
              "--enable-threaded-compositing",
              "--enable-gpu-rasterization"]
   },

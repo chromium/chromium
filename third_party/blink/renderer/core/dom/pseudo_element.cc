@@ -142,7 +142,7 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
     case kPseudoIdTransitionContainer:
     case kPseudoIdTransitionNewContent:
     case kPseudoIdTransitionOldContent:
-      return RuntimeEnabledFeatures::DocumentTransitionRendererEnabled();
+      return RuntimeEnabledFeatures::DocumentTransitionEnabled();
     default:
       return true;
   }

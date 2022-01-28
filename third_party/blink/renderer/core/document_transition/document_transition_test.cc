@@ -34,12 +34,9 @@ namespace blink {
 
 class DocumentTransitionTest : public testing::Test,
                                public PaintTestConfigurations,
-                               private ScopedDocumentTransitionForTest,
-                               private ScopedDocumentTransitionRendererForTest {
+                               private ScopedDocumentTransitionForTest {
  public:
-  DocumentTransitionTest()
-      : ScopedDocumentTransitionForTest(true),
-        ScopedDocumentTransitionRendererForTest(true) {}
+  DocumentTransitionTest() : ScopedDocumentTransitionForTest(true) {}
 
   static void ConfigureCompositingWebView(WebSettings* settings) {
     settings->SetPreferCompositingToLCDTextEnabled(true);
