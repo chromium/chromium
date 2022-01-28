@@ -113,7 +113,7 @@ public class NativeViewListRendererTest {
         mRenderer.unbind();
         assertNull(view.getAdapter());
         assertNull(view.getLayoutManager());
-        verify(mRenderer, times(1)).notifyItemRangeRemoved(0, 3);
+        verify(mRenderer, times(1)).onItemRangeRemoved(0, 3);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class NativeViewListRendererTest {
                 Arrays.asList(new NtpListContentManager.FeedContent[] {
                         createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
-        verify(mRenderer, times(1)).notifyItemRangeInserted(0, 3);
+        verify(mRenderer, times(1)).onItemRangeInserted(0, 3);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class NativeViewListRendererTest {
         mManager.addContents(0,
                 Arrays.asList(new NtpListContentManager.FeedContent[] {
                         createContent("1"), createContent("2"), createContent("3")}));
-        verify(mRenderer, times(1)).notifyItemRangeInserted(0, 3);
+        verify(mRenderer, times(1)).onItemRangeInserted(0, 3);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class NativeViewListRendererTest {
         mRenderer.bind(mManager);
 
         mManager.removeContents(1, 2);
-        verify(mRenderer, times(1)).notifyItemRangeRemoved(1, 2);
+        verify(mRenderer, times(1)).onItemRangeRemoved(1, 2);
     }
 
     @Test
@@ -153,7 +153,7 @@ public class NativeViewListRendererTest {
         mRenderer.bind(mManager);
 
         mRenderer.unbind();
-        verify(mRenderer, times(1)).notifyItemRangeRemoved(0, 3);
+        verify(mRenderer, times(1)).onItemRangeRemoved(0, 3);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class NativeViewListRendererTest {
         mManager.updateContents(1,
                 Arrays.asList(new NtpListContentManager.FeedContent[] {
                         createContent("a"), createContent("b")}));
-        verify(mRenderer, times(1)).notifyItemRangeChanged(1, 2);
+        verify(mRenderer, times(1)).onItemRangeChanged(1, 2);
     }
 
     @Test
@@ -177,7 +177,7 @@ public class NativeViewListRendererTest {
         mRenderer.bind(mManager);
 
         mManager.moveContent(2, 1);
-        verify(mRenderer, times(1)).notifyItemMoved(2, 1);
+        verify(mRenderer, times(1)).onItemMoved(2, 1);
     }
 
     private NtpListContentManager.FeedContent createContent(String text) {
