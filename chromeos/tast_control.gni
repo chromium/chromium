@@ -137,6 +137,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1260046
   "wmp.WindowCycle",
+
+  # https://crbug.com/1291890
+  "graphics.VAAPIUnittest.common",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
