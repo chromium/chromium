@@ -12,9 +12,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/reauth_util.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_reauth_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -114,7 +114,7 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
 
   signin_metrics::ReauthAccessPoint access_point =
-      signin::GetReauthAccessPointForReauthConfirmationURL(
+      GetReauthAccessPointForReauthConfirmationURL(
           web_ui->GetWebContents()->GetVisibleURL());
 
   AddStringResource(source, "signinReauthTitle",

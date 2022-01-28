@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
@@ -12,9 +14,13 @@
 
 namespace {
 
+// Query parameter names of the sync confirmtaion URL.
 const char kIsModalParamKey[] = "is_modal";
 const char kDesignParamKey[] = "design";
 const char kProfileColorParamKey[] = "profile_color";
+
+// Query parameter names of the reauth confirmation URL.
+const char kAccessPointParamKey[] = "access_point";
 
 bool StringToDesignVersion(base::StringPiece input,
                            SyncConfirmationUI::DesignVersion* output) {
@@ -83,4 +89,30 @@ GURL AppendSyncConfirmationQueryParams(
                                   base::NumberToString(*params.profile_color));
   }
   return url_with_params;
+}
+
+signin_metrics::ReauthAccessPoint GetReauthAccessPointForReauthConfirmationURL(
+    const GURL& url) {
+  std::string value;
+  if (!net::GetValueForKeyInQuery(url, kAccessPointParamKey, &value))
+    return signin_metrics::ReauthAccessPoint::kUnknown;
+
+  int access_point = -1;
+  base::StringToInt(value, &access_point);
+  if (access_point <=
+          static_cast<int>(signin_metrics::ReauthAccessPoint::kUnknown) ||
+      access_point >
+          static_cast<int>(signin_metrics::ReauthAccessPoint::kMaxValue)) {
+    return signin_metrics::ReauthAccessPoint::kUnknown;
+  }
+
+  return static_cast<signin_metrics::ReauthAccessPoint>(access_point);
+}
+
+GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point) {
+  GURL url = GURL(chrome::kChromeUISigninReauthURL);
+  url = net::AppendQueryParameter(
+      url, kAccessPointParamKey,
+      base::NumberToString(static_cast<int>(access_point)));
+  return url;
 }

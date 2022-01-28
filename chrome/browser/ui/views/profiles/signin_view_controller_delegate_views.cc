@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/reauth_result.h"
-#include "chrome/browser/signin/reauth_util.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -90,8 +90,7 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
     Browser* browser,
     signin_metrics::ReauthAccessPoint access_point) {
-  return CreateDialogWebView(browser,
-                             signin::GetReauthConfirmationURL(access_point),
+  return CreateDialogWebView(browser, GetReauthConfirmationURL(access_point),
                              kReauthDialogHeight, kReauthDialogWidth,
                              InitializeSigninWebDialogUI(false));
 }

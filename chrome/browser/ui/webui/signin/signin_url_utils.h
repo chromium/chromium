@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_URL_UTILS_H_
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -27,7 +28,13 @@ SyncConfirmationURLParams GetParamsFromSyncConfirmationURL(const GURL& url);
 GURL AppendSyncConfirmationQueryParams(const GURL& url,
                                        const SyncConfirmationURLParams& params);
 
-// TODO(https://crbug.com/1290473): move contents of
-// chrome/browser/signin/reauth_util.h here.
+// Returns `ReauthAccessPoint` encoded in the query of the reauth confirmation
+// URL.
+signin_metrics::ReauthAccessPoint GetReauthAccessPointForReauthConfirmationURL(
+    const GURL& url);
+
+// Returns a URL to display in the reauth confirmation dialog. The dialog was
+// triggered by |access_point|.
+GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_URL_UTILS_H_
