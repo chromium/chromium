@@ -299,6 +299,10 @@ extern const char kBigLittleSchedulingRenderMainBigParam[];
 extern const char kBigLittleSchedulingNetworkMainBigParam[];
 extern const char kBigLittleSchedulingGpuMainBigParam[];
 
+CONTENT_EXPORT extern const base::Feature kOptimizeEarlyNavigation;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kCompositorLockTimeout;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

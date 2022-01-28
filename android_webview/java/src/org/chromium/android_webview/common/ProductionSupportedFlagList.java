@@ -249,5 +249,15 @@ public final class ProductionSupportedFlagList {
                     "Enables creation of initial NavigationEntries on WebContents creation."),
             Flag.baseFeature(BlinkFeatures.CANVAS2D_STAYS_GPU_ON_READBACK,
                     "Accelerated canvases that a read back from remain accelerated."),
+            Flag.baseFeature(BlinkFeatures.EARLY_BODY_LOAD,
+                    "Enables loading the response body earlier in navigation."),
+            Flag.baseFeature(BlinkFeatures.DEFAULT_STYLE_SHEETS_EARLY_INIT,
+                    "Initialize CSSDefaultStyleSheets early in renderer startup."),
+            Flag.baseFeature(ContentFeatures.THREADING_OPTIMIZATIONS_ON_IO,
+                    "Moves navigation threading optimizations to the IO thread."),
+            Flag.baseFeature(ContentFeatures.EARLY_ESTABLISH_GPU_CHANNEL,
+                    "Enable establishing the GPU channel early in renderer startup."),
+            Flag.baseFeature(ContentFeatures.OPTIMIZE_EARLY_NAVIGATION,
+                    "Temporarily pauses the compositor early in navigation."),
     };
 }

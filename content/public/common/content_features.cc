@@ -1180,6 +1180,13 @@ const char kBigLittleSchedulingNetworkMainBigParam[] =
 const char kBigLittleSchedulingGpuMainBigParam[] =
     "BigLittleSchedulingGpuMainBigParam";
 
+// Temporarily pauses the compositor early in navigation.
+const base::Feature kOptimizeEarlyNavigation{"OptimizeEarlyNavigation",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<base::TimeDelta> kCompositorLockTimeout{
+    &kOptimizeEarlyNavigation, "compositor_lock_timeout",
+    base::Milliseconds(150)};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

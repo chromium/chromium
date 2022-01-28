@@ -2727,6 +2727,7 @@
             "platforms": [
                 "android",
                 "android_weblayer",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -4156,7 +4157,9 @@
     "OptimizeEarlyNavigation": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_weblayer",
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -5958,6 +5961,7 @@
             "platforms": [
                 "android",
                 "android_weblayer",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",

@@ -1551,15 +1551,9 @@ NavigationRequest::NavigationRequest(
   begin_params_->headers = headers.ToString();
 
 #if BUILDFLAG(IS_ANDROID)
-  static constexpr base::Feature kOptimizeEarlyNavigation{
-      "OptimizeEarlyNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
-  static constexpr base::FeatureParam<base::TimeDelta> kCompositorLockTimeout{
-      &kOptimizeEarlyNavigation, "compositor_lock_timeout",
-      base::Milliseconds(150)};
-
   RenderWidgetHostImpl* host = RenderWidgetHostImpl::From(
       frame_tree_node_->current_frame_host()->GetRenderWidgetHost());
-  if (base::FeatureList::IsEnabled(kOptimizeEarlyNavigation) &&
+  if (base::FeatureList::IsEnabled(features::kOptimizeEarlyNavigation) &&
       NeedsUrlLoader() && frame_tree_node_->IsMainFrame() && host &&
       !host->is_hidden() && host->GetView() &&
       host->GetView()->GetNativeView() &&
@@ -1570,7 +1564,7 @@ NavigationRequest::NavigationRequest(
         host->GetView()->GetNativeView()->GetWindowAndroid()->GetCompositor();
     if (compositor) {
       compositor_lock_ =
-          compositor->GetCompositorLock(kCompositorLockTimeout.Get());
+          compositor->GetCompositorLock(features::kCompositorLockTimeout.Get());
     }
   }
 #endif
