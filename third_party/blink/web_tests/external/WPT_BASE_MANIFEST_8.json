@@ -1285,6 +1285,13 @@
        {}
       ]
      ],
+     "nested-balanced-very-tall-content-crash.html": [
+      "00b1bf2c42f8dd3f1f7a0d52b32ce6e70e283d4f",
+      [
+       null,
+       {}
+      ]
+     ],
      "nested-floated-multicol-with-monolithic-child-crash.html": [
       "f48ae9ff73faf1df5f9ff7247c64391f0c97d006",
       [
@@ -316848,7 +316855,7 @@
       []
      ],
      "urltestdata.json": [
-      "fa619fb8930fa0296e417bdc6d663b000c5e39fe",
+      "3cf106965b1ffd1e694eda7108df98d131ad1145",
       []
      ]
     },
@@ -316857,11 +316864,11 @@
      []
     ],
     "url-setters-stripping.any-expected.txt": [
-     "2de2e3ab764a667bc34416614f4e1622dc535040",
+     "54b95c92698fb2673cf55a03866de37f11588a6b",
      []
     ],
     "url-setters-stripping.any.worker-expected.txt": [
-     "2de2e3ab764a667bc34416614f4e1622dc535040",
+     "54b95c92698fb2673cf55a03866de37f11588a6b",
      []
     ]
    },
@@ -369429,6 +369436,13 @@
        {}
       ]
      ],
+     "multicol-fill-balance-020.html": [
+      "86d229fdde876918680c121990c558b599d903d4",
+      [
+       null,
+       {}
+      ]
+     ],
      "multicol-gap-animation-001.html": [
       "6a3a8d33780fe048528e1e3cd6a26707f2df4b70",
       [
@@ -390340,7 +390354,7 @@
       ]
      ],
      "Node-insertBefore.html": [
-      "ce8b3d8a57bc975182b568192c115b05773a5345",
+      "ecb4d183141ea63cf0f6680f78e8046d40430a6a",
       [
        null,
        {}
@@ -516172,7 +516186,7 @@
      ]
     ],
     "url-setters-stripping.any.js": [
-     "3413c6cd5ad21d1913c00269ae054fdc2c7750d9",
+     "ac90cc17e0bfd5d26adb329ce1a506d14cbb3698",
      [
       "url/url-setters-stripping.any.html",
       {}

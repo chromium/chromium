@@ -4778,394 +4778,142 @@
   {
     "input": "http://a\u0001b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0001b",
-    "hostname": "a\u0001b",
-    "href":"http://a\u0001b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0002b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0002b",
-    "hostname": "a\u0002b",
-    "href":"http://a\u0002b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0003b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0003b",
-    "hostname": "a\u0003b",
-    "href":"http://a\u0003b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0004b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0004b",
-    "hostname": "a\u0004b",
-    "href":"http://a\u0004b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0005b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0005b",
-    "hostname": "a\u0005b",
-    "href":"http://a\u0005b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0006b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0006b",
-    "hostname": "a\u0006b",
-    "href":"http://a\u0006b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0007b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0007b",
-    "hostname": "a\u0007b",
-    "href":"http://a\u0007b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0008b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0008b",
-    "hostname": "a\u0008b",
-    "href":"http://a\u0008b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u000Bb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u000Bb",
-    "hostname": "a\u000Bb",
-    "href":"http://a\u000Bb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u000Cb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u000Cb",
-    "hostname": "a\u000Cb",
-    "href":"http://a\u000Cb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u000Eb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u000Eb",
-    "hostname": "a\u000Eb",
-    "href":"http://a\u000Eb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u000Fb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u000Fb",
-    "hostname": "a\u000Fb",
-    "href":"http://a\u000Fb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0010b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0010b",
-    "hostname": "a\u0010b",
-    "href":"http://a\u0010b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0011b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0011b",
-    "hostname": "a\u0011b",
-    "href":"http://a\u0011b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0012b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0012b",
-    "hostname": "a\u0012b",
-    "href":"http://a\u0012b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0013b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0013b",
-    "hostname": "a\u0013b",
-    "href":"http://a\u0013b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0014b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0014b",
-    "hostname": "a\u0014b",
-    "href":"http://a\u0014b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0015b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0015b",
-    "hostname": "a\u0015b",
-    "href":"http://a\u0015b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0016b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0016b",
-    "hostname": "a\u0016b",
-    "href":"http://a\u0016b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0017b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0017b",
-    "hostname": "a\u0017b",
-    "href":"http://a\u0017b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0018b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0018b",
-    "hostname": "a\u0018b",
-    "href":"http://a\u0018b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u0019b/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u0019b",
-    "hostname": "a\u0019b",
-    "href":"http://a\u0019b/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u001Ab/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u001Ab",
-    "hostname": "a\u001Ab",
-    "href":"http://a\u001Ab/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u001Bb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u001Bb",
-    "hostname": "a\u001Bb",
-    "href":"http://a\u001Bb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u001Cb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u001Cb",
-    "hostname": "a\u001Cb",
-    "href":"http://a\u001Cb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u001Db/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u001Db",
-    "hostname": "a\u001Db",
-    "href":"http://a\u001Db/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u001Eb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u001Eb",
-    "hostname": "a\u001Eb",
-    "href":"http://a\u001Eb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a\u001Fb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u001Fb",
-    "hostname": "a\u001Fb",
-    "href":"http://a\u001Fb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://a b/",
@@ -5210,16 +4958,7 @@
   {
     "input": "http://a\u007Fb/",
     "base": "about:blank",
-    "hash": "",
-    "host": "a\u007Fb",
-    "hostname": "a\u007Fb",
-    "href":"http://a\u007Fb/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   "Forbidden domain codepoints: tabs and newlines are removed during preprocessing",
   {
@@ -5273,114 +5012,42 @@
   {
     "input": "http://ho%01st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0001st",
-    "hostname": "ho\u0001st",
-    "href":"http://ho\u0001st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%02st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0002st",
-    "hostname": "ho\u0002st",
-    "href":"http://ho\u0002st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%03st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0003st",
-    "hostname": "ho\u0003st",
-    "href":"http://ho\u0003st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%04st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0004st",
-    "hostname": "ho\u0004st",
-    "href":"http://ho\u0004st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%05st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0005st",
-    "hostname": "ho\u0005st",
-    "href":"http://ho\u0005st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%06st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0006st",
-    "hostname": "ho\u0006st",
-    "href":"http://ho\u0006st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%07st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0007st",
-    "hostname": "ho\u0007st",
-    "href":"http://ho\u0007st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%08st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0008st",
-    "hostname": "ho\u0008st",
-    "href":"http://ho\u0008st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%09st/",
@@ -5395,30 +5062,12 @@
   {
     "input": "http://ho%0Bst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u000Bst",
-    "hostname": "ho\u000Bst",
-    "href":"http://ho\u000Bst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%0Cst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u000Cst",
-    "hostname": "ho\u000Cst",
-    "href":"http://ho\u000Cst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%0Dst/",
@@ -5428,254 +5077,92 @@
   {
     "input": "http://ho%0Est/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u000Est",
-    "hostname": "ho\u000Est",
-    "href":"http://ho\u000Est/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%0Fst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u000Fst",
-    "hostname": "ho\u000Fst",
-    "href":"http://ho\u000Fst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%10st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0010st",
-    "hostname": "ho\u0010st",
-    "href":"http://ho\u0010st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%11st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0011st",
-    "hostname": "ho\u0011st",
-    "href":"http://ho\u0011st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%12st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0012st",
-    "hostname": "ho\u0012st",
-    "href":"http://ho\u0012st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%13st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0013st",
-    "hostname": "ho\u0013st",
-    "href":"http://ho\u0013st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%14st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0014st",
-    "hostname": "ho\u0014st",
-    "href":"http://ho\u0014st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%15st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0015st",
-    "hostname": "ho\u0015st",
-    "href":"http://ho\u0015st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%16st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0016st",
-    "hostname": "ho\u0016st",
-    "href":"http://ho\u0016st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%17st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0017st",
-    "hostname": "ho\u0017st",
-    "href":"http://ho\u0017st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%18st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0018st",
-    "hostname": "ho\u0018st",
-    "href":"http://ho\u0018st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%19st/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u0019st",
-    "hostname": "ho\u0019st",
-    "href":"http://ho\u0019st/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%1Ast/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u001Ast",
-    "hostname": "ho\u001Ast",
-    "href":"http://ho\u001Ast/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%1Bst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u001Bst",
-    "hostname": "ho\u001Bst",
-    "href":"http://ho\u001Bst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%1Cst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u001Cst",
-    "hostname": "ho\u001Cst",
-    "href":"http://ho\u001Cst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%1Dst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u001Dst",
-    "hostname": "ho\u001Dst",
-    "href":"http://ho\u001Dst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%1Est/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u001Est",
-    "hostname": "ho\u001Est",
-    "href":"http://ho\u001Est/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%1Fst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u001Fst",
-    "hostname": "ho\u001Fst",
-    "href":"http://ho\u001Fst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   {
     "input": "http://ho%20st/",
@@ -5745,28 +5232,19 @@
   {
     "input": "http://ho%7Fst/",
     "base": "about:blank",
-    "hash": "",
-    "host": "ho\u007Fst",
-    "hostname": "ho\u007Fst",
-    "href":"http://ho\u007Fst/",
-    "password": "",
-    "pathname": "/",
-    "port":"",
-    "protocol": "http:",
-    "search": "",
-    "username": ""
+    "failure": true
   },
   "Allowed host/domain code points",
   {
-    "input": "http://\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000B\u000C\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F\u007F!\"$&'()*+,-.;=_`{}~/",
+    "input": "http://!\"$&'()*+,-.;=_`{}~/",
     "base": "about:blank",
-    "href": "http://\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000B\u000C\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F\u007F!\"$&'()*+,-.;=_`{}~/",
-    "origin": "http://\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000B\u000C\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F\u007F!\"$&'()*+,-.;=_`{}~",
+    "href": "http://!\"$&'()*+,-.;=_`{}~/",
+    "origin": "http://!\"$&'()*+,-.;=_`{}~",
     "protocol": "http:",
     "username": "",
     "password": "",
-    "host": "\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000B\u000C\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F\u007F!\"$&'()*+,-.;=_`{}~",
-    "hostname": "\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000B\u000C\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F\u007F!\"$&'()*+,-.;=_`{}~",
+    "host": "!\"$&'()*+,-.;=_`{}~",
+    "hostname": "!\"$&'()*+,-.;=_`{}~",
     "port": "",
     "pathname": "/",
     "search": "",
