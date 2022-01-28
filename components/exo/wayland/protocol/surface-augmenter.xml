@@ -73,7 +73,9 @@
            summary="the surface"/>
     </request>
 
-    <request name="get_augmented_subsurface">
+    <!-- Version 2 additions -->
+
+    <request name="get_augmented_subsurface" since="2">
       <description summary="extend sub surface interface for delegation">
 	Instantiate an interface extension for the given wl_subsurface to
 	extend composition of its content. If the given wl_subsurface already has
@@ -130,7 +132,7 @@
       </description>
       <arg name="width" type="fixed" summary="width of the surface"/>
       <arg name="height" type="fixed" summary="height of the surface"/>
-    </request>\
+    </request>
 
     <request name="set_rounded_clip_bounds" since="2">
     <!-- Note that this might be moved to a different protocol if there is
