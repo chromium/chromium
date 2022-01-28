@@ -78,9 +78,9 @@ std::u16string GetInnerText(const AXNode* node) {
     return node->GetString16Attribute(ax::mojom::StringAttribute::kName);
   }
   std::u16string text;
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
-    text += GetInnerText(child);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    text += GetInnerText(iter.get());
   }
   return text;
 }
@@ -160,9 +160,9 @@ std::u16string GetText(const AXNode* node) {
   }
 
   if (text.empty() && IsLeaf(node)) {
-    for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-      AXNode* child = node->GetUnignoredChildAtIndex(i);
-      text += GetText(child);
+    for (auto iter = node->UnignoredChildrenBegin();
+         iter != node->UnignoredChildrenEnd(); ++iter) {
+      text += GetInnerText(iter.get());
     }
   }
 
@@ -306,11 +306,11 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   if (!class_name.empty())
     result->html_attributes.push_back({"class", class_name});
 
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
     auto* n = AddChild(assistant_tree);
     result->children_indices.push_back(assistant_tree->nodes.size() - 1);
-    WalkAXTreeDepthFirst(child, absolute_rect, update, tree, config,
+    WalkAXTreeDepthFirst(iter.get(), absolute_rect, update, tree, config,
                          assistant_tree, n);
   }
 }

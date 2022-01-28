@@ -55,8 +55,10 @@ void DumpRolesAndNamesAsText(const ui::AXNode* node,
     *dst += " '" + node->GetStringAttribute(ax::mojom::StringAttribute::kName) +
             "'";
   *dst += "\n";
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i)
-    DumpRolesAndNamesAsText(node->GetUnignoredChildAtIndex(i), indent + 1, dst);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    DumpRolesAndNamesAsText(iter.get(), indent + 1, dst);
+  }
 }
 
 }  // namespace

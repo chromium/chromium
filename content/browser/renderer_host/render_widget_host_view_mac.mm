@@ -854,8 +854,10 @@ void AddTextNodesToVector(const ui::AXNode* node,
     return;
   }
 
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i)
-    AddTextNodesToVector(node->GetUnignoredChildAtIndex(i), strings);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    AddTextNodesToVector(iter.get(), strings);
+  }
 }
 
 using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;

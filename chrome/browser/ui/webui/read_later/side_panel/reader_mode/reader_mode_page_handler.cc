@@ -47,8 +47,10 @@ const ui::AXNode* GetArticleNode(const ui::AXNode* node) {
     queue.pop();
     if (popped->data().role == ax::mojom::Role::kArticle)
       return popped;
-    for (size_t i = 0; i < popped->GetUnignoredChildCount(); ++i)
-      queue.push(popped->GetUnignoredChildAtIndex(i));
+    for (auto iter = popped->UnignoredChildrenBegin();
+         iter != popped->UnignoredChildrenEnd(); ++iter) {
+      queue.push(iter.get());
+    }
   }
 
   return nullptr;
@@ -70,8 +72,10 @@ void AddTextNodesToVector(const ui::AXNode* node,
     if (role == node_data.role)
       return;
   }
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i)
-    AddTextNodesToVector(node->GetUnignoredChildAtIndex(i), strings);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    AddTextNodesToVector(iter.get(), strings);
+  }
 }
 
 }  // namespace
