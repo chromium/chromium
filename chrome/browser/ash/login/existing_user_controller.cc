@@ -93,6 +93,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/hibernate/buildflags.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
@@ -127,6 +128,10 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_HIBERNATE)
+#include "chromeos/dbus/hiberman/hiberman_client.h" // nogncheck
+#endif
 
 namespace ash {
 namespace {
@@ -908,6 +913,67 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
+  if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE) {
+    base::UmaHistogramCounts100("Login.OfflineSuccess.Attempts",
+                                num_login_attempts_);
+  }
+
+  // If the hibernate service is supported, call it to initiate resume.
+#if BUILDFLAG(ENABLE_HIBERNATE)
+  HibermanClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&ExistingUserController::OnHibernateServiceAvailable,
+                     weak_factory_.GetWeakPtr(),
+                     user_context));
+
+#else
+  // The hibernate service is not supported, just continue directly.
+  ContinueAuthSuccessAfterResumeAttempt(user_context, true);
+#endif
+
+  return;
+}
+
+#if BUILDFLAG(ENABLE_HIBERNATE)
+void ExistingUserController::OnHibernateServiceAvailable(
+    const UserContext& user_context,
+    bool service_is_available) {
+  if (!service_is_available) {
+    LOG(ERROR) << "Hibernate service is unavailable";
+    ContinueAuthSuccessAfterResumeAttempt(user_context, false);
+  } else {
+    // In a successful resume case, this function never returns, as execution
+    // continues in the resumed hibernation image.
+    HibermanClient::Get()->ResumeFromHibernate(
+        user_context.GetAccountId().GetUserEmail(),
+        base::BindOnce(&ExistingUserController::ContinueAuthSuccessAfterResumeAttempt,
+                      weak_factory_.GetWeakPtr(), user_context));
+  }
+}
+#endif
+
+void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
+    const UserContext& user_context,
+    bool resume_call_success) {
+
+  // There are three cases that may have led to execution here, and one that
+  // won't:
+  // 1) The ENABLE_HIBERNATE buildflag is not enabled, so this function was
+  //    simply called directly by OnAuthSuccess. Pretend the call out was a
+  //    success by passing true for resume_call_success.
+  // 2) There was a hibernation image primed for resume, and we resumed to it.
+  //    In that case execution never gets here, as the resumed image will have
+  //    replaced this world.
+  // 3) There was no hibernation image primed for resume, the resume was
+  //    cancelled, or the resume was aborted. In that case this will be running
+  //    with resume_call_success == true, indicating the hibernate daemon was
+  //    called, but opted to return control.
+  // 4) Chrome failed to make contact with the hiberman daemon at all, in which
+  //    case resume_call_success is false. Print an error here, as it represents
+  //    a broken link in the chain.
+  if (!resume_call_success) {
+    LOG(ERROR) << "Failed to call ResumeFromHibernate, continuing with login";
+  }
+
   // Truth table of `has_auth_cookies`:
   //                          Regular        SAML
   //  /ServiceLogin              T            T
@@ -921,11 +987,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   // LoginPerformer instance will delete itself in case of successful auth.
   login_performer_->set_delegate(nullptr);
   std::ignore = login_performer_.release();
-
-  if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE) {
-    base::UmaHistogramCounts100("Login.OfflineSuccess.Attempts",
-                                num_login_attempts_);
-  }
 
   const bool is_enterprise_managed = g_browser_process->platform_part()
                                          ->browser_policy_connector_ash()

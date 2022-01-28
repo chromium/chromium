@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
+import("//chromeos/components/hibernate/buildflags.gni")
 import("//chromeos/components/sensors/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -212,6 +213,7 @@ source_set("chromeos") {
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/chromebox_for_meetings/buildflags",
     "//chromeos/components/feature_usage",
+    "//chromeos/components/hibernate:buildflags",
     "//chromeos/components/local_search_service/public/cpp:cpp",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/multidevice",
@@ -3617,6 +3619,12 @@ source_set("chromeos") {
       "//components/reporting/client:report_queue_provider",
       "//components/reporting/proto:record_constants",
       "//components/variations/field_trial_config",
+    ]
+  }
+
+  if (enable_hibernate) {
+    deps += [
+      "//chromeos/dbus/hiberman",
     ]
   }
 }

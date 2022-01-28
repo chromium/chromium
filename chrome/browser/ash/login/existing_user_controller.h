@@ -176,6 +176,22 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
 
+  // Callback called in response to calling WaitForServiceToBeAvailable() on the
+  // hibernate service. This is initiated in the OnAuthSuccess() flow to make a
+  // blocking call to resume from hibernate before releasing other usual login
+  // activities.
+  void OnHibernateServiceAvailable(
+    const UserContext& user_context,
+    bool service_is_available);
+
+  // Handles the continuation of successful login after an attempt has been made
+  // to divert to a hibernate resume flow. The execution of this method means
+  // that the diversion to a resume flow did not occur, indicating either no
+  // hibernation image was present, the resume was cancelled/aborted, or
+  // hibernate is simply not supported.
+  void ContinueAuthSuccessAfterResumeAttempt(const UserContext& user_context,
+                                             bool resume_call_success);
+
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
 

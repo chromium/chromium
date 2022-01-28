@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
+#include "chromeos/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/dbus/arc/arc_camera_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
@@ -68,6 +69,10 @@
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #endif
 
+#if BUILDFLAG(ENABLE_HIBERNATE)
+#include "chromeos/dbus/hiberman/hiberman_client.h" // nogncheck
+#endif
+
 namespace ash {
 
 namespace {
@@ -119,6 +124,9 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<chromeos::FederatedClient>(bus);
   chromeos::hermes_clients::Initialize(bus);
+#if BUILDFLAG(ENABLE_HIBERNATE)
+  InitializeDBusClient<chromeos::HibermanClient>(bus);
+#endif
   InitializeDBusClient<chromeos::InstallAttributesClient>(bus);
   InitializeDBusClient<chromeos::IpPeripheralServiceClient>(bus);
   InitializeDBusClient<chromeos::KerberosClient>(bus);
@@ -216,6 +224,9 @@ void ShutdownDBus() {
   chromeos::KerberosClient::Shutdown();
   chromeos::IpPeripheralServiceClient::Shutdown();
   chromeos::InstallAttributesClient::Shutdown();
+#if BUILDFLAG(ENABLE_HIBERNATE)
+  chromeos::HibermanClient::Shutdown();
+#endif
   chromeos::hermes_clients::Shutdown();
   chromeos::FederatedClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();
