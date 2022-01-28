@@ -31,14 +31,14 @@ namespace {
 // should be enough to trigger the watchdog kill. However, it can cause test
 // flakiness when the time is too short.
 
-constexpr auto kGpuWatchdogTimeoutForTesting = base::Milliseconds(240);
-constexpr auto kExtraGPUJobTimeForTesting = base::Milliseconds(1000);
+constexpr auto kGpuWatchdogTimeoutForTesting = base::Milliseconds(120);
+constexpr auto kExtraGPUJobTimeForTesting = base::Milliseconds(500);
 
-// For slow machines like Win 7 and Mac 10.xx.
+// For slow machines like Win 7, Mac 10.xx and Android L/M/N.
 [[maybe_unused]] constexpr auto kGpuWatchdogTimeoutForTestingSlow =
-    base::Milliseconds(500);
+    base::Milliseconds(240);
 [[maybe_unused]] constexpr auto kExtraGPUJobTimeForTestingSlow =
-    base::Milliseconds(2000);
+    base::Milliseconds(1000);
 
 // On Windows, the gpu watchdog check if the main thread has used the full
 // thread time. We want to detect the case in which the main thread is swapped
@@ -116,8 +116,8 @@ void GpuWatchdogTest::SetUp() {
   full_thread_time_on_windows_ = timeout_ * kMaxCountOfMoreGpuThreadTimeAllowed;
 #elif BUILDFLAG(IS_MAC)
   int os_version = base::mac::internal::MacOSVersion();
-  // For Mac version <= 11.00
-  if (os_version <= 1100) {
+  // Use slow timeout for all Mac versions for now.
+  if (os_version <= 1300) {
     timeout_ = kGpuWatchdogTimeoutForTestingSlow;
     extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
   }
@@ -200,7 +200,7 @@ void GpuWatchdogPowerTest::LongTaskOnResume(
 
 // Normal GPU Initialization.
 TEST_F(GpuWatchdogTest, GpuInitializationComplete) {
-  // Assume GPU initialization takes quarter of WatchdogTimeout time.
+  // Assume GPU initialization takes a quarter of WatchdogTimeout.
   auto normal_task_time = timeout_ / 4;
 
   SimpleTask(normal_task_time, /*extra_time=*/base::TimeDelta());
