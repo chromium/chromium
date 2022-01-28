@@ -114,7 +114,7 @@ source_set("features") {
 
   deps = [
     "//base",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -170,7 +170,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings:components_strings_grit",

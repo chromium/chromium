@@ -6,8 +6,6 @@ static_library("common") {
   sources = [
     "credential_manager_types.cc",
     "credential_manager_types.h",
-    "password_manager_features.cc",
-    "password_manager_features.h",
     "password_manager_pref_names.cc",
     "password_manager_pref_names.h",
     "password_manager_ui.h",
@@ -26,6 +24,17 @@ static_library("common") {
     "//sql",
     "//url",
   ]
+
+  public_deps = [ ":features" ]
+}
+
+source_set("features") {
+  sources = [
+    "password_manager_features.cc",
+    "password_manager_features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 if (is_ios) {

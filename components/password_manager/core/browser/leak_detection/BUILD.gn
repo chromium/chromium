@@ -51,7 +51,7 @@ source_set("leak_detection") {
   deps = [
     ":proto",
     "//base",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
     "//components/version_info:channel",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
@@ -93,7 +93,7 @@ source_set("unit_tests") {
     ":proto",
     ":test_support",
     "//base/test:test_support",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager:test_support",
     "//components/version_info:channel",
     "//services/network:test_support",

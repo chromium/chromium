@@ -40,6 +40,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:affiliation",
       "//components/password_manager/core/common",
+      "//components/password_manager/core/common:features",
       "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
       "//ios/chrome/browser/browser_state",

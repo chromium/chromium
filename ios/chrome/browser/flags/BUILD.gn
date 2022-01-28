@@ -29,7 +29,7 @@ source_set("flags") {
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/optimization_guide/core",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/payments/core",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",

@@ -39,6 +39,7 @@ source_set("google_services") {
     "//components/google/core/common",
     "//components/metrics",
     "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

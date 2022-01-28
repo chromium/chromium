@@ -217,7 +217,7 @@ source_set("web_internal") {
     "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/google/core/common",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/password_manager/ios:password_manager_feature",
     "//components/payments/core",
     "//components/prefs",
