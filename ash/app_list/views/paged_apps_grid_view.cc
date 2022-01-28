@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -485,6 +486,11 @@ void PagedAppsGridView::Layout() {
     MaskContainerToBackgroundBounds();
   }
   views::ViewModelUtils::SetViewBoundsToIdealBounds(pulsing_blocks_model());
+}
+
+void PagedAppsGridView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
+  AppsGridView::GetAccessibleNodeData(node_data);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

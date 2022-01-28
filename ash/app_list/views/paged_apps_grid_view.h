@@ -103,6 +103,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // views::View:
   void Layout() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // AppsGridView:
   gfx::Size GetTileViewSize() const override;
