@@ -60,7 +60,6 @@ using testing::InSequence;
 using testing::IsNull;
 using testing::Mock;
 using testing::Pointee;
-using testing::Property;
 using testing::Return;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
@@ -119,8 +118,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
 
 TEST_F(AttributionHostTest, ValidConversionInSubframe_NoBadMessage) {
   EXPECT_CALL(mock_manager_,
-              HandleTrigger(Property(
-                  &StorableTrigger::conversion_destination,
+              HandleTrigger(TriggerConversionDestinationIs(
                   net::SchemefulSite(GURL("https://www.example.com")))));
 
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
@@ -150,8 +148,7 @@ TEST_F(AttributionHostTest, ValidConversionInSubframe_NoBadMessage) {
 TEST_F(AttributionHostTest,
        ConversionInSubframe_ConversionDestinationMatchesMainFrame) {
   EXPECT_CALL(mock_manager_,
-              HandleTrigger(Property(
-                  &StorableTrigger::conversion_destination,
+              HandleTrigger(TriggerConversionDestinationIs(
                   net::SchemefulSite(GURL("https://www.example.com")))));
 
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
@@ -359,8 +356,7 @@ TEST_F(AttributionHostTest, Conversion_AssociatedWithConversionSite) {
   // Verify that we use the domain of the page where the conversion occurred
   // instead of the origin.
   EXPECT_CALL(mock_manager_,
-              HandleTrigger(Property(
-                  &StorableTrigger::conversion_destination,
+              HandleTrigger(TriggerConversionDestinationIs(
                   net::SchemefulSite(GURL("https://conversion.com")))));
 
   // Create a page with a secure origin.
@@ -701,12 +697,9 @@ TEST_F(AttributionHostTest,
 
 TEST_F(AttributionHostTest,
        ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin) {
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(Property(
-          &StorableSource::common_info,
-          Property(&CommonSourceInfo::impression_origin,
-                   url::Origin::Create(GURL("https://www.example.com"))))));
+  EXPECT_CALL(mock_manager_,
+              HandleSource(ImpressionOriginIs(
+                  url::Origin::Create(GURL("https://www.example.com")))));
 
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
@@ -733,12 +726,10 @@ TEST_F(AttributionHostTest,
 }
 
 TEST_F(AttributionHostTest, ValidImpression_NoBadMessage) {
-  EXPECT_CALL(mock_manager_,
-              HandleSource(
-                  Property(&StorableSource::common_info,
-                           AllOf(Property(&CommonSourceInfo::source_type,
-                                          CommonSourceInfo::SourceType::kEvent),
-                                 Property(&CommonSourceInfo::priority, 10)))));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(AllOf(SourceTypeIs(CommonSourceInfo::SourceType::kEvent),
+                         SourcePriorityIs(10))));
 
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));

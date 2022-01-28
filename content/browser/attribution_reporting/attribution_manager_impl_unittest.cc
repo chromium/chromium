@@ -66,11 +66,9 @@ using ::testing::Le;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
-using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
-using ::testing::VariantWith;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
@@ -233,8 +231,8 @@ TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
                         .Build();
   attribution_manager_->HandleSource(impression);
 
-  EXPECT_THAT(StoredSources(), ElementsAre(Property(&StoredSource::common_info,
-                                                    impression.common_info())));
+  EXPECT_THAT(StoredSources(),
+              ElementsAre(CommonSourceInfoIs(impression.common_info())));
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
@@ -567,27 +565,9 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
       observation(&observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(
-      observer,
-      OnReportSent(
-          Property(&AttributionReport::source,
-                   Property(&StoredSource::common_info,
-                            Property(&CommonSourceInfo::source_event_id, 1u))),
-          _));
-  EXPECT_CALL(
-      observer,
-      OnReportSent(
-          Property(&AttributionReport::source,
-                   Property(&StoredSource::common_info,
-                            Property(&CommonSourceInfo::source_event_id, 2u))),
-          _));
-  EXPECT_CALL(
-      observer,
-      OnReportSent(
-          Property(&AttributionReport::source,
-                   Property(&StoredSource::common_info,
-                            Property(&CommonSourceInfo::source_event_id, 3u))),
-          _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(1u)), _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(2u)), _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(3u)), _));
 
   attribution_manager_->HandleSource(
       SourceBuilder().SetSourceEventId(1).SetExpiry(kImpressionExpiry).Build());
@@ -641,53 +621,32 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
     EXPECT_CALL(
         observer,
         OnReportDropped(AllOf(
-            Property(
-                &CreateReportResult::dropped_report,
-                Optional(Property(
-                    &AttributionReport::data,
-                    VariantWith<AttributionReport::EventLevelData>(Field(
-                        &AttributionReport::EventLevelData::priority, 1))))),
-            Property(&CreateReportResult::status,
-                     CreateReportStatus::kSuccessDroppedLowerPriority))));
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(1)))),
+            CreateReportStatusIs(
+                CreateReportStatus::kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(
         observer,
         OnReportDropped(AllOf(
-            Property(
-                &CreateReportResult::dropped_report,
-                Optional(Property(
-                    &AttributionReport::data,
-                    VariantWith<AttributionReport::EventLevelData>(Field(
-                        &AttributionReport::EventLevelData::priority, -5))))),
-            Property(&CreateReportResult::status,
-                     CreateReportStatus::kPriorityTooLow))));
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(-5)))),
+            CreateReportStatusIs(CreateReportStatus::kPriorityTooLow))));
 
     EXPECT_CALL(checkpoint, Call(3));
 
     EXPECT_CALL(
         observer,
         OnReportDropped(AllOf(
-            Property(
-                &CreateReportResult::dropped_report,
-                Optional(Property(
-                    &AttributionReport::data,
-                    VariantWith<AttributionReport::EventLevelData>(Field(
-                        &AttributionReport::EventLevelData::priority, 2))))),
-            Property(&CreateReportResult::status,
-                     CreateReportStatus::kSuccessDroppedLowerPriority))));
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(2)))),
+            CreateReportStatusIs(
+                CreateReportStatus::kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
         OnReportDropped(AllOf(
-            Property(
-                &CreateReportResult::dropped_report,
-                Optional(Property(
-                    &AttributionReport::data,
-                    VariantWith<AttributionReport::EventLevelData>(Field(
-                        &AttributionReport::EventLevelData::priority, 3))))),
-            Property(&CreateReportResult::status,
-                     CreateReportStatus::kSuccessDroppedLowerPriority))));
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(3)))),
+            CreateReportStatusIs(
+                CreateReportStatus::kSuccessDroppedLowerPriority))));
   }
 
   attribution_manager_->HandleSource(
@@ -821,9 +780,8 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
   base::Time min_new_time = base::Time::Now();
   auto delay = AttributionStorageDelegateImpl().GetOfflineReportDelayConfig();
   EXPECT_THAT(StoredReports(),
-              ElementsAre(Property(&AttributionReport::report_time,
-                                   AllOf(Ge(min_new_time + delay->min),
-                                         Le(min_new_time + delay->max)))));
+              ElementsAre(ReportTimeIs(AllOf(Ge(min_new_time + delay->min),
+                                             Le(min_new_time + delay->max)))));
 
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 }
@@ -847,8 +805,7 @@ TEST_F(AttributionManagerImplTest,
 
   // Ensure that this report does not receive additional delay.
   EXPECT_THAT(StoredReports(),
-              ElementsAre(Property(&AttributionReport::report_time,
-                                   start_time + kFirstReportingWindow)));
+              ElementsAre(ReportTimeIs(start_time + kFirstReportingWindow)));
 
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 }

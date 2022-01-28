@@ -45,14 +45,13 @@ using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
-using ::testing::Field;
 using ::testing::Ge;
 using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Le;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::SizeIs;
-using ::testing::VariantWith;
 
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
@@ -148,8 +147,7 @@ TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   auto impression = SourceBuilder().Build();
   storage()->StoreSource(impression);
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(Property(&StoredSource::common_info,
-                                   impression.common_info())));
+              ElementsAre(CommonSourceInfoIs(impression.common_info())));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -165,8 +163,7 @@ TEST_F(AttributionStorageTest,
 
   // Verify that each field was stored as expected.
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(Property(&StoredSource::common_info,
-                                   impression.common_info())));
+              ElementsAre(CommonSourceInfoIs(impression.common_info())));
 }
 #endif
 
@@ -218,12 +215,8 @@ TEST_F(AttributionStorageTest, EventSourceImpressionsForConversion_Converts) {
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
-  EXPECT_THAT(
-      storage()->GetAttributionsToReport(base::Time::Now()),
-      ElementsAre(Property(
-          &AttributionReport::data,
-          VariantWith<AttributionReport::EventLevelData>(
-              Field(&AttributionReport::EventLevelData::trigger_data, 456u)))));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(456u))));
 }
 
 TEST_F(AttributionStorageTest, ImpressionExpired_NoConversionsStored) {
@@ -260,12 +253,10 @@ TEST_F(AttributionStorageTest,
   }
 
   // No additional conversion reports should be created.
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
-              AllOf(Property(&CreateReportResult::status,
-                             CreateReportStatus::kPriorityTooLow),
-                    Property(&CreateReportResult::dropped_report, IsTrue()),
-                    Property(&CreateReportResult::GetDeactivatedSource,
-                             absl::nullopt)));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+      AllOf(CreateReportStatusIs(CreateReportStatus::kPriorityTooLow),
+            DroppedReportIs(IsTrue()), DeactivatedSourceIs(absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -506,12 +497,8 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
   storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
 
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 3u)),
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 5u))));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u)));
 }
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
@@ -532,14 +519,9 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
                              .SetSourceEventId(7)
                              .Build());
 
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 3u)),
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 5u)),
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 7u))));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u),
+                          SourceEventIdIs(7u)));
 
   // This impression shouldn't be stored, because its origin has already hit the
   // limit of 2.
@@ -556,16 +538,9 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
                              .SetSourceEventId(11)
                              .Build());
 
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 3u)),
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 5u)),
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 7u)),
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 11u))));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u),
+                          SourceEventIdIs(7u), SourceEventIdIs(11u)));
 }
 
 TEST_F(AttributionStorageTest, MaxConversionsPerOrigin) {
@@ -801,9 +776,8 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(conversion));
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion),
-              AllOf(Property(&CreateReportResult::status,
-                             CreateReportStatus::kRateLimited),
-                    Property(&CreateReportResult::dropped_report, IsTrue())));
+              AllOf(CreateReportStatusIs(CreateReportStatus::kRateLimited),
+                    DroppedReportIs(IsTrue())));
 
   const AttributionReport expected_report =
       GetExpectedReport(SourceBuilder().BuildStored(), conversion);
@@ -884,16 +858,9 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
-  EXPECT_THAT(
-      storage()->GetAttributionsToReport(base::Time::Now()),
-      ElementsAre(AllOf(
-          Property(&AttributionReport::source,
-                   Property(&StoredSource::common_info,
-                            Property(&CommonSourceInfo::source_event_id, 5u))),
-          Property(
-              &AttributionReport::data,
-              VariantWith<AttributionReport::EventLevelData>(Field(
-                  &AttributionReport::EventLevelData::trigger_data, 7u))))));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
+              ElementsAre(AllOf(ReportSourceIs(SourceEventIdIs(5u)),
+                                EventLevelDataIs(TriggerDataIs(7u)))));
 }
 
 TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
@@ -1048,16 +1015,11 @@ TEST_F(
     task_environment_.FastForwardBy(base::Milliseconds(1));
   }
 
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::impression_origin,
-                                    url::Origin::Create(
-                                        GURL("https://ghi.test.example")))),
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::impression_origin,
-                                    url::Origin::Create(
-                                        GURL("https://qrs.test.example"))))));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(ImpressionOriginIs(url::Origin::Create(
+                              GURL("https://ghi.test.example"))),
+                          ImpressionOriginIs(url::Origin::Create(
+                              GURL("https://qrs.test.example")))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -1101,10 +1063,8 @@ TEST_F(AttributionStorageTest,
   // The earliest active impression should be deleted to make room for this new
   // one.
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(Property(
-                  &StoredSource::common_info,
-                  Property(&CommonSourceInfo::conversion_origin,
-                           url::Origin::Create(GURL("https://b.example"))))));
+              ElementsAre(ConversionOriginIs(
+                  url::Origin::Create(GURL("https://b.example")))));
 
   // Both the inactive impression and the new one for b.example should be
   // retained; a.example is the only one that should have been deleted. The
@@ -1131,10 +1091,7 @@ TEST_F(AttributionStorageTest,
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
-              ElementsAre(Property(
-                  &AttributionReport::source,
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 5u)))));
+              ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -1157,10 +1114,7 @@ TEST_F(AttributionStorageTest,
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
-              ElementsAre(Property(
-                  &AttributionReport::source,
-                  Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 5u)))));
+              ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
 }
 
 TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
@@ -1176,10 +1130,7 @@ TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
   // Because the impression with data 5 has the highest priority, it is selected
   // for attribution. The unselected impression with data 3 should be
   // deactivated, but the one with data 5 should remain active.
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 5u))));
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
 }
 
 TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
@@ -1224,25 +1175,19 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
   storage()->StoreSource(
       SourceBuilder().SetSourceEventId(5).SetPriority(1).Build());
 
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(
-          TriggerBuilder().SetPriority(0).SetTriggerData(20).Build()),
-      AllOf(Property(&CreateReportResult::status, CreateReportStatus::kSuccess),
-            Property(&CreateReportResult::dropped_report, absl::nullopt)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  TriggerBuilder().SetPriority(0).SetTriggerData(20).Build()),
+              AllOf(CreateReportStatusIs(CreateReportStatus::kSuccess),
+                    DroppedReportIs(absl::nullopt)));
 
   // This conversion should replace the one above because it has a higher
   // priority.
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(
           TriggerBuilder().SetPriority(2).SetTriggerData(21).Build()),
-      AllOf(Property(&CreateReportResult::status,
-                     CreateReportStatus::kSuccessDroppedLowerPriority),
-            Property(&CreateReportResult::dropped_report,
-                     Optional(Property(
-                         &AttributionReport::data,
-                         VariantWith<AttributionReport::EventLevelData>(Field(
-                             &AttributionReport::EventLevelData::trigger_data,
-                             20u)))))));
+      AllOf(CreateReportStatusIs(
+                CreateReportStatus::kSuccessDroppedLowerPriority),
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerDataIs(20u))))));
 
   storage()->StoreSource(
       SourceBuilder().SetSourceEventId(7).SetPriority(2).Build());
@@ -1255,36 +1200,16 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(
           TriggerBuilder().SetPriority(0).SetTriggerData(23).Build()),
-      AllOf(Property(&CreateReportResult::status,
-                     CreateReportStatus::kPriorityTooLow),
-            Property(&CreateReportResult::dropped_report,
-                     Optional(Property(
-                         &AttributionReport::data,
-                         VariantWith<AttributionReport::EventLevelData>(Field(
-                             &AttributionReport::EventLevelData::trigger_data,
-                             23u)))))));
+      AllOf(CreateReportStatusIs(CreateReportStatus::kPriorityTooLow),
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerDataIs(23u))))));
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
-  EXPECT_THAT(
-      storage()->GetAttributionsToReport(base::Time::Now()),
-      ElementsAre(
-          AllOf(Property(
-                    &AttributionReport::source,
-                    Property(&StoredSource::common_info,
-                             Property(&CommonSourceInfo::source_event_id, 5u))),
-                Property(&AttributionReport::data,
-                         VariantWith<AttributionReport::EventLevelData>(Field(
-                             &AttributionReport::EventLevelData::trigger_data,
-                             21u)))),
-          AllOf(Property(
-                    &AttributionReport::source,
-                    Property(&StoredSource::common_info,
-                             Property(&CommonSourceInfo::source_event_id, 7u))),
-                Property(&AttributionReport::data,
-                         VariantWith<AttributionReport::EventLevelData>(Field(
-                             &AttributionReport::EventLevelData::trigger_data,
-                             22u))))));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
+              ElementsAre(AllOf(ReportSourceIs(SourceEventIdIs(5u)),
+                                EventLevelDataIs(TriggerDataIs(21u))),
+                          AllOf(ReportSourceIs(SourceEventIdIs(7u)),
+                                EventLevelDataIs(TriggerDataIs(22u)))));
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
@@ -1307,10 +1232,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
-              ElementsAre(Property(
-                  &AttributionReport::data,
-                  VariantWith<AttributionReport::EventLevelData>(Field(
-                      &AttributionReport::EventLevelData::trigger_data, 9u)))));
+              ElementsAre(EventLevelDataIs(TriggerDataIs(9u))));
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
@@ -1341,16 +1263,9 @@ TEST_F(AttributionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
             MaybeCreateAndStoreReport(
                 TriggerBuilder().SetPriority(2).SetTriggerData(5).Build()));
 
-  EXPECT_THAT(
-      storage()->GetAttributionsToReport(base::Time::Max()),
-      ElementsAre(
-          Property(&AttributionReport::data,
-                   VariantWith<AttributionReport::EventLevelData>(Field(
-                       &AttributionReport::EventLevelData::trigger_data, 3u))),
-          Property(
-              &AttributionReport::data,
-              VariantWith<AttributionReport::EventLevelData>(Field(
-                  &AttributionReport::EventLevelData::trigger_data, 5u)))));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(3u)),
+                          EventLevelDataIs(TriggerDataIs(5u))));
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
@@ -1368,10 +1283,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
   // Because the impression with data 5 has the highest priority, it is selected
   // for attribution. The unselected impression with data 3 should be
   // deactivated, but the one with data 5 should remain active.
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(Property(&StoredSource::common_info,
-                           Property(&CommonSourceInfo::source_event_id, 5u))));
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
 
   // Ensure that the next report is in a different window.
   delegate()->set_report_time_ms(kReportTime + 1);
@@ -1397,8 +1309,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
           .Build());
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(Property(&StoredSource::dedup_keys, IsEmpty()),
-                          Property(&StoredSource::dedup_keys, IsEmpty())));
+              ElementsAre(DedupKeysAre(IsEmpty()), DedupKeysAre(IsEmpty())));
 
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(
@@ -1452,24 +1363,14 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
                     .Build()));
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
-  EXPECT_THAT(
-      storage()->GetAttributionsToReport(base::Time::Now()),
-      ElementsAre(
-          Property(&AttributionReport::data,
-                   VariantWith<AttributionReport::EventLevelData>(Field(
-                       &AttributionReport::EventLevelData::trigger_data, 71u))),
-          Property(&AttributionReport::data,
-                   VariantWith<AttributionReport::EventLevelData>(Field(
-                       &AttributionReport::EventLevelData::trigger_data, 72u))),
-          Property(
-              &AttributionReport::data,
-              VariantWith<AttributionReport::EventLevelData>(Field(
-                  &AttributionReport::EventLevelData::trigger_data, 73u)))));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(71u)),
+                          EventLevelDataIs(TriggerDataIs(72u)),
+                          EventLevelDataIs(TriggerDataIs(73u))));
 
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(Property(&StoredSource::dedup_keys, ElementsAre(11, 12)),
-                  Property(&StoredSource::dedup_keys, ElementsAre(12))));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(DedupKeysAre(ElementsAre(11, 12)),
+                          DedupKeysAre(ElementsAre(12))));
 }
 
 TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
@@ -1495,11 +1396,7 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
 
   std::vector<AttributionReport> actual_reports =
       storage()->GetAttributionsToReport(base::Time::Now());
-  EXPECT_THAT(actual_reports,
-              ElementsAre(Property(
-                  &AttributionReport::data,
-                  VariantWith<AttributionReport::EventLevelData>(Field(
-                      &AttributionReport::EventLevelData::trigger_data, 3u)))));
+  EXPECT_THAT(actual_reports, ElementsAre(EventLevelDataIs(TriggerDataIs(3u))));
 
   // Simulate the report being sent and deleted from storage.
   DeleteReports(actual_reports);
@@ -1530,10 +1427,7 @@ TEST_F(AttributionStorageTest, GetAttributionsToReport_SetsPriority) {
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
-              ElementsAre(Property(
-                  &AttributionReport::data,
-                  VariantWith<AttributionReport::EventLevelData>(Field(
-                      &AttributionReport::EventLevelData::priority, 13)))));
+              ElementsAre(EventLevelDataIs(TriggerPriorityIs(13))));
 }
 
 TEST_F(AttributionStorageTest, NoIDReuse_Impression) {
@@ -1585,9 +1479,7 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
 
   std::vector<AttributionReport> actual_reports =
       storage()->GetAttributionsToReport(base::Time::Now());
-  EXPECT_THAT(
-      actual_reports,
-      ElementsAre(Property(&AttributionReport::failed_send_attempts, 0)));
+  EXPECT_THAT(actual_reports, ElementsAre(FailedSendAttemptsIs(0)));
 
   const base::TimeDelta delay = base::Days(2);
   const base::Time new_report_time = actual_reports[0].report_time() + delay;
@@ -1599,9 +1491,8 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
   task_environment_.FastForwardBy(delay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
-              ElementsAre(AllOf(
-                  Property(&AttributionReport::failed_send_attempts, 1),
-                  Property(&AttributionReport::report_time, new_report_time))));
+              ElementsAre(AllOf(FailedSendAttemptsIs(1),
+                                ReportTimeIs(new_report_time))));
 }
 
 TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
@@ -1688,16 +1579,11 @@ TEST_F(AttributionStorageTest,
   // conversions per source.
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
-      AllOf(
-          Property(&CreateReportResult::status,
-                   CreateReportStatus::kPriorityTooLow),
-          Property(&CreateReportResult::dropped_report,
-                   Optional(Property(&AttributionReport::source,
-                                     builder.BuildStored()))),
-          Property(&CreateReportResult::GetDeactivatedSource,
-                   DeactivatedSource(
-                       builder.BuildStored(),
-                       DeactivatedSource::Reason::kReachedAttributionLimit))));
+      AllOf(CreateReportStatusIs(CreateReportStatus::kPriorityTooLow),
+            DroppedReportIs(Optional(ReportSourceIs(builder.BuildStored()))),
+            DeactivatedSourceIs(DeactivatedSource(
+                builder.BuildStored(),
+                DeactivatedSource::Reason::kReachedAttributionLimit))));
 }
 
 TEST_F(AttributionStorageTest, ReportID_RoundTrips) {
@@ -1729,8 +1615,7 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
       base::Time::Now() + base::Milliseconds(kReportTime);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
-              ElementsAre(Property(&AttributionReport::report_time,
-                                   original_report_time)));
+              ElementsAre(ReportTimeIs(original_report_time)));
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
@@ -1739,8 +1624,7 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
   // The report time should not be changed as it is equal to now, not strictly
   // less than it.
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
-              ElementsAre(Property(&AttributionReport::report_time,
-                                   original_report_time)));
+              ElementsAre(ReportTimeIs(original_report_time)));
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -1749,9 +1633,8 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
   EXPECT_EQ(storage()->AdjustOfflineReportTimes(), new_report_time);
 
   // The report time should be changed as it is strictly less than now.
-  EXPECT_THAT(
-      storage()->GetAttributionsToReport(base::Time::Max()),
-      ElementsAre(Property(&AttributionReport::report_time, new_report_time)));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(ReportTimeIs(new_report_time)));
 }
 
 TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
@@ -1767,8 +1650,7 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
       base::Time::Now() + base::Milliseconds(kReportTime);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
-              ElementsAre(Property(&AttributionReport::report_time,
-                                   original_report_time)));
+              ElementsAre(ReportTimeIs(original_report_time)));
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime + 1));
 
@@ -1776,9 +1658,8 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
 
   EXPECT_THAT(
       storage()->GetAttributionsToReport(base::Time::Max()),
-      ElementsAre(Property(&AttributionReport::report_time,
-                           AllOf(Ge(base::Time::Now() + base::Hours(1)),
-                                 Le(base::Time::Now() + base::Hours(3))))));
+      ElementsAre(ReportTimeIs(AllOf(Ge(base::Time::Now() + base::Hours(1)),
+                                     Le(base::Time::Now() + base::Hours(3))))));
 }
 
 TEST_F(AttributionStorageTest, GetNextReportTime) {

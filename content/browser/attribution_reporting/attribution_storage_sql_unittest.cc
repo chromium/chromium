@@ -33,11 +33,8 @@ using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 
 using ::testing::ElementsAre;
-using ::testing::Field;
 using ::testing::IsEmpty;
-using ::testing::Property;
 using ::testing::SizeIs;
-using ::testing::VariantWith;
 
 class AttributionStorageSqlTest : public testing::Test {
  public:
@@ -535,8 +532,7 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
   const auto impression = SourceBuilder().SetSourceEventId(kMaxUint64).Build();
   storage()->StoreSource(impression);
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(Property(&StoredSource::common_info,
-                                   impression.common_info())));
+              ElementsAre(CommonSourceInfoIs(impression.common_info())));
 
   EXPECT_EQ(
       CreateReportStatus::kSuccess,
@@ -548,12 +544,8 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
               .SetReportingOrigin(impression.common_info().reporting_origin())
               .Build()));
 
-  EXPECT_THAT(
-      storage()->GetAttributionsToReport(base::Time::Now()),
-      ElementsAre(Property(
-          &AttributionReport::data,
-          VariantWith<AttributionReport::EventLevelData>(Field(
-              &AttributionReport::EventLevelData::trigger_data, kMaxUint64)))));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(kMaxUint64))));
 }
 
 TEST_F(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
