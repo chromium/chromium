@@ -24,6 +24,10 @@ class ArcIntentHelperMojoAsh : public ArcIntentHelperMojoDelegate {
   ~ArcIntentHelperMojoAsh() override;
 
   // ArcIntentHelperMojoDelegate:
+  // Returns true if ARC is available.
+  bool IsArcAvailable() override;
+  bool IsRequestUrlHandlerListAvailable() override;
+
   bool RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;
   bool RequestTextSelectionActions(
@@ -32,6 +36,9 @@ class ArcIntentHelperMojoAsh : public ArcIntentHelperMojoDelegate {
       RequestTextSelectionActionsCallback callback) override;
   bool HandleUrl(const std::string& url,
                  const std::string& package_name) override;
+  bool HandleIntent(const IntentInfo& intent,
+                    const ActivityName& activity) override;
+  bool AddPreferredPackage(const std::string& package_name) override;
 
  private:
   // Convert vector of mojom::IntentHandlerInfoPtr to vector of

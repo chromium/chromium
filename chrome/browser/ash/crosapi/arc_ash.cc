@@ -317,6 +317,46 @@ void ArcAsh::HandleUrl(const std::string& url,
   instance->HandleUrl(url, package_name);
 }
 
+void ArcAsh::HandleIntent(mojom::IntentInfoPtr intent,
+                          mojom::ActivityNamePtr activity) {
+  auto* intent_helper_holder = GetIntentHelperHolder();
+  if (!intent_helper_holder)
+    return;
+
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, HandleIntent);
+  if (!instance) {
+    LOG(WARNING) << "HandleIntent is not supported.";
+    return;
+  }
+
+  arc::mojom::IntentInfoPtr converted_intent = arc::mojom::IntentInfo::New();
+  converted_intent->action = intent->action;
+  converted_intent->categories = intent->categories;
+  converted_intent->data = intent->data;
+  converted_intent->type = intent->type;
+  converted_intent->ui_bypassed = intent->ui_bypassed;
+  converted_intent->extras = intent->extras;
+  instance->HandleIntent(std::move(converted_intent),
+                         arc::mojom::ActivityName::New(
+                             activity->package_name, activity->activity_name));
+}
+
+void ArcAsh::AddPreferredPackage(const std::string& package_name) {
+  auto* intent_helper_holder = GetIntentHelperHolder();
+  if (!intent_helper_holder)
+    return;
+
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, AddPreferredPackage);
+  if (!instance) {
+    LOG(WARNING) << "AddPreferredPackage is not supported.";
+    return;
+  }
+
+  instance->AddPreferredPackage(package_name);
+}
+
 void ArcAsh::OnIconInvalidated(const std::string& package_name) {
   for (auto& observer : observers_)
     observer->OnIconInvalidated(package_name);

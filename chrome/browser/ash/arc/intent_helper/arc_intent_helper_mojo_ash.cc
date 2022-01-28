@@ -27,6 +27,25 @@ constexpr size_t kMaxIconSizeInPx = 200;
 ArcIntentHelperMojoAsh::ArcIntentHelperMojoAsh() = default;
 ArcIntentHelperMojoAsh::~ArcIntentHelperMojoAsh() = default;
 
+bool ArcIntentHelperMojoAsh::IsArcAvailable() {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  return arc_service_manager && !arc_service_manager->arc_bridge_service()
+                                     ->intent_helper()
+                                     ->IsConnected();
+}
+
+bool ArcIntentHelperMojoAsh::IsRequestUrlHandlerListAvailable() {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        RequestUrlHandlerList);
+  }
+  return instance;
+}
+
 bool ArcIntentHelperMojoAsh::RequestUrlHandlerList(
     const std::string& url,
     RequestUrlHandlerListCallback callback) {
@@ -56,7 +75,8 @@ void ArcIntentHelperMojoAsh::OnRequestUrlHandlerList(
   std::vector<IntentHandlerInfo> converted_handlers;
   for (auto const& handler : handlers) {
     converted_handlers.push_back(IntentHandlerInfo(
-        handler->name, handler->package_name, handler->activity_name));
+        handler->name, handler->package_name, handler->activity_name,
+        handler->is_preferred, handler->fallback_url));
   }
   std::move(callback).Run(std::move(converted_handlers));
 }
@@ -176,6 +196,53 @@ bool ArcIntentHelperMojoAsh::HandleUrl(const std::string& url,
   }
 
   instance->HandleUrl(url, package_name);
+  return true;
+}
+
+bool ArcIntentHelperMojoAsh::HandleIntent(const IntentInfo& intent,
+                                          const ActivityName& activity) {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        HandleIntent);
+  }
+  if (!instance) {
+    LOG(ERROR) << "Failed to get instance for HandleIntent().";
+    return false;
+  }
+
+  mojom::IntentInfoPtr converted_intent = mojom::IntentInfo::New();
+  converted_intent->action = intent.action;
+  converted_intent->categories = intent.categories;
+  converted_intent->data = intent.data;
+  converted_intent->type = intent.type;
+  converted_intent->ui_bypassed = intent.ui_bypassed;
+  converted_intent->extras = intent.extras;
+  instance->HandleIntent(
+      std::move(converted_intent),
+      mojom::ActivityName::New(activity.package_name, activity.activity_name));
+  return true;
+}
+
+bool ArcIntentHelperMojoAsh::AddPreferredPackage(
+    const std::string& package_name) {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        AddPreferredPackage);
+  }
+  if (!instance) {
+    LOG(ERROR) << "Failed to get instance for AddPreferedPackage().";
+    return false;
+  }
+
+  instance->AddPreferredPackage(package_name);
   return true;
 }
 

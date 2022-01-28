@@ -46,10 +46,14 @@ ArcIntentHelperMojoDelegate::TextSelectionAction::~TextSelectionAction() =
 ArcIntentHelperMojoDelegate::IntentHandlerInfo::IntentHandlerInfo(
     std::string name,
     std::string package_name,
-    std::string activity_name)
+    std::string activity_name,
+    bool is_preferred,
+    absl::optional<std::string> fallback_url)
     : name(std::move(name)),
       package_name(std::move(package_name)),
-      activity_name(std::move(activity_name)) {}
+      activity_name(std::move(activity_name)),
+      is_preferred(is_preferred),
+      fallback_url(std::move(fallback_url)) {}
 
 ArcIntentHelperMojoDelegate::IntentHandlerInfo::IntentHandlerInfo(
     const IntentHandlerInfo& other) = default;

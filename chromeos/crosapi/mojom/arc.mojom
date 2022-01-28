@@ -89,11 +89,14 @@ struct ActivityIcon {
 // Describes a package that can handle an intent.
 // Removed unnecessary perameters for Lacros from IntentHandlerInfo declared in
 // components/arc/mojom/intent_helper.mojom.
+// Next version: 2
 [Stable]
 struct IntentHandlerInfo {
   string name@0;
   string package_name@1;
   string activity_name@2;  // A hint for retrieving the package's icon.
+  [MinVersion=1] bool is_preferred@3;
+  [MinVersion=1] string? fallback_url@4;
 };
 
 // Describes an action that can handle an intent.
@@ -149,8 +152,8 @@ interface ArcObserver {
 };
 
 // Interacts with ARC.
-// Next version: 3
-// Next method id: 5
+// Next version: 4
+// Next method id: 7
 [Stable, Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
 interface Arc {
   // Registers ArcObserver in Lacros-chrome to Ash-chrome
@@ -189,4 +192,13 @@ interface Arc {
   // Handles the URL by sending an ACTION_VIEW intent to the package. The
   // most suitable activity for the URL within the package will be started.
   [MinVersion=1] HandleUrl@3(string url, string package_name);
+
+  // Passes an intent to an activity and launch app.
+  [MinVersion=3] HandleIntent@5(IntentInfo intent, ActivityName activity);
+
+  // Sets the given package as a preferred package. The next time an ACTION_VIEW
+  // intent is sent with a URL that requires disambiguation, instead of opening
+  // the ResolverActivity, this package will be picked if it is on the list.
+  // When multiple packages are set as preferred, the most recent setting wins.
+  [MinVersion=3] AddPreferredPackage@6(string package_name);
 };

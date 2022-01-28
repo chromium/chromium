@@ -14,16 +14,32 @@ namespace arc {
 ArcIntentHelperMojoLacros::ArcIntentHelperMojoLacros() = default;
 ArcIntentHelperMojoLacros::~ArcIntentHelperMojoLacros() = default;
 
-bool ArcIntentHelperMojoLacros::RequestUrlHandlerList(
-    const std::string& url,
-    RequestUrlHandlerListCallback callback) {
+bool ArcIntentHelperMojoLacros::IsArcAvailable() {
   auto* service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<crosapi::mojom::Arc>()) {
     LOG(WARNING) << "ARC is not supported in Lacros.";
+    return false;
+  }
+  return true;
+}
+
+bool ArcIntentHelperMojoLacros::IsRequestUrlHandlerListAvailable() {
+  auto* service = chromeos::LacrosService::Get();
+  return service && service->IsAvailable<crosapi::mojom::Arc>() &&
+         service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) >=
+             int{crosapi::mojom::Arc::MethodMinVersions::
+                     kRequestUrlHandlerListMinVersion};
+}
+
+bool ArcIntentHelperMojoLacros::RequestUrlHandlerList(
+    const std::string& url,
+    RequestUrlHandlerListCallback callback) {
+  if (!IsArcAvailable()) {
     std::move(callback).Run(std::vector<IntentHandlerInfo>());
     return false;
   }
 
+  auto* service = chromeos::LacrosService::Get();
   if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
       int{crosapi::mojom::Arc::MethodMinVersions::
               kRequestUrlHandlerListMinVersion}) {
@@ -49,8 +65,9 @@ void ArcIntentHelperMojoLacros::OnRequestUrlHandlerList(
 
   std::vector<IntentHandlerInfo> converted_handlers;
   for (auto const& handler : handlers) {
-    converted_handlers.emplace_back(handler->name, handler->package_name,
-                                    handler->activity_name);
+    converted_handlers.emplace_back(
+        handler->name, handler->package_name, handler->activity_name,
+        handler->is_preferred, handler->fallback_url);
   }
   std::move(callback).Run(std::move(converted_handlers));
 }
@@ -59,13 +76,12 @@ bool ArcIntentHelperMojoLacros::RequestTextSelectionActions(
     const std::string& text,
     ui::ResourceScaleFactor scale_factor,
     RequestTextSelectionActionsCallback callback) {
-  auto* service = chromeos::LacrosService::Get();
-  if (!service || !service->IsAvailable<crosapi::mojom::Arc>()) {
-    LOG(WARNING) << "ARC is not supported in Lacros.";
+  if (!IsArcAvailable()) {
     std::move(callback).Run(std::vector<TextSelectionAction>());
     return false;
   }
 
+  auto* service = chromeos::LacrosService::Get();
   if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
       int{crosapi::mojom::Arc::MethodMinVersions::
               kRequestTextSelectionActionsMinVersion}) {
@@ -111,12 +127,10 @@ void ArcIntentHelperMojoLacros::OnRequestTextSelectionActions(
 
 bool ArcIntentHelperMojoLacros::HandleUrl(const std::string& url,
                                           const std::string& package_name) {
-  auto* service = chromeos::LacrosService::Get();
-  if (!service || !service->IsAvailable<crosapi::mojom::Arc>()) {
-    LOG(WARNING) << "ARC is not supported in Lacros.";
+  if (!IsArcAvailable())
     return false;
-  }
 
+  auto* service = chromeos::LacrosService::Get();
   if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
       int{crosapi::mojom::Arc::MethodMinVersions::kHandleUrlMinVersion}) {
     LOG(WARNING) << "HandleUrl is not supported in Lacros.";
@@ -124,6 +138,50 @@ bool ArcIntentHelperMojoLacros::HandleUrl(const std::string& url,
   }
 
   service->GetRemote<crosapi::mojom::Arc>()->HandleUrl(url, package_name);
+  return true;
+}
+
+bool ArcIntentHelperMojoLacros::HandleIntent(const IntentInfo& intent,
+                                             const ActivityName& activity) {
+  if (!IsArcAvailable())
+    return false;
+
+  auto* service = chromeos::LacrosService::Get();
+  if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
+      int{crosapi::mojom::Arc::MethodMinVersions::kHandleIntentMinVersion}) {
+    LOG(WARNING) << "HandleIntent is not supported in Lacros.";
+    return false;
+  }
+
+  crosapi::mojom::IntentInfoPtr converted_intent =
+      crosapi::mojom::IntentInfo::New();
+  converted_intent->action = intent.action;
+  converted_intent->categories = intent.categories;
+  converted_intent->data = intent.data;
+  converted_intent->type = intent.type;
+  converted_intent->ui_bypassed = intent.ui_bypassed;
+  converted_intent->extras = intent.extras;
+  service->GetRemote<crosapi::mojom::Arc>()->HandleIntent(
+      std::move(converted_intent),
+      crosapi::mojom::ActivityName::New(activity.package_name,
+                                        activity.activity_name));
+  return true;
+}
+
+bool ArcIntentHelperMojoLacros::AddPreferredPackage(
+    const std::string& package_name) {
+  if (!IsArcAvailable())
+    return false;
+
+  auto* service = chromeos::LacrosService::Get();
+  if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
+      int{crosapi::mojom::Arc::MethodMinVersions::
+              kAddPreferredPackageMinVersion}) {
+    LOG(WARNING) << "AddPreferredPackage is not supported in Lacros.";
+    return false;
+  }
+
+  service->GetRemote<crosapi::mojom::Arc>()->AddPreferredPackage(package_name);
   return true;
 }
 

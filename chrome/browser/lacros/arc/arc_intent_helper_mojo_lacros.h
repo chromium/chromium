@@ -24,6 +24,10 @@ class ArcIntentHelperMojoLacros : public ArcIntentHelperMojoDelegate {
   ~ArcIntentHelperMojoLacros() override;
 
   // arc::ArcIntentHelperMojoDelegate:
+  // Returns true if ARC is available.
+  bool IsArcAvailable() override;
+  bool IsRequestUrlHandlerListAvailable() override;
+
   // Calls RequestUrlHandlerList mojo API.
   bool RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;
@@ -35,6 +39,9 @@ class ArcIntentHelperMojoLacros : public ArcIntentHelperMojoDelegate {
   // Calls HandleUrl mojo API.
   bool HandleUrl(const std::string& url,
                  const std::string& package_name) override;
+  bool HandleIntent(const IntentInfo& intent,
+                    const ActivityName& activity) override;
+  bool AddPreferredPackage(const std::string& package_name) override;
 
  private:
   // Convert vector of crosapi::mojom::IntentHandlerInfoPtr to vector of

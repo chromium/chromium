@@ -87,7 +87,9 @@ class ArcIntentHelperMojoDelegate {
   struct IntentHandlerInfo {
     IntentHandlerInfo(std::string name,
                       std::string package_name,
-                      std::string activity_name);
+                      std::string activity_name,
+                      bool is_preferred,
+                      absl::optional<std::string> fallback_url);
     IntentHandlerInfo(const IntentHandlerInfo& other);
     IntentHandlerInfo& operator=(const IntentHandlerInfo&) = delete;
     ~IntentHandlerInfo();
@@ -98,6 +100,11 @@ class ArcIntentHelperMojoDelegate {
     std::string package_name;
     // A hint for retrieving the package's icon.
     std::string activity_name;
+    // Set to true if the package is set as a preferred package.
+    bool is_preferred;
+    // RequestUrlHandlerList may fill |fallback_url| when it is called with an
+    // intent: URL.
+    absl::optional<std::string> fallback_url;
   };
 
   using RequestUrlHandlerListCallback =
@@ -105,6 +112,12 @@ class ArcIntentHelperMojoDelegate {
 
   using RequestTextSelectionActionsCallback =
       base::OnceCallback<void(std::vector<TextSelectionAction>)>;
+
+  // Returns true if ARC is available.
+  virtual bool IsArcAvailable() = 0;
+
+  // Returns true if RequestUrlHandlerList is available.
+  virtual bool IsRequestUrlHandlerListAvailable() = 0;
 
   // Calls RequestUrlHandlerList mojo API.
   virtual bool RequestUrlHandlerList(
@@ -120,6 +133,13 @@ class ArcIntentHelperMojoDelegate {
   // Calls HandleUrl mojo API.
   virtual bool HandleUrl(const std::string& url,
                          const std::string& package_name) = 0;
+
+  // Calls HandleIntent mojo API.
+  virtual bool HandleIntent(const IntentInfo& intent,
+                            const ActivityName& activity) = 0;
+
+  // Calls AddPreferredPackage mojo API.
+  virtual bool AddPreferredPackage(const std::string& package_name) = 0;
 };
 
 }  // namespace arc
