@@ -43,29 +43,48 @@ void StartPrefetch(content::WebContents* web_contents) {
 
 ZeroSuggestPrefetchTabHelper::ZeroSuggestPrefetchTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsUserData<ZeroSuggestPrefetchTabHelper>(
-          *web_contents) {
-  auto* browser = chrome::FindBrowserWithProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  if (browser) {
-    browser->tab_strip_model()->AddObserver(this);
-  }
-}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ZeroSuggestPrefetchTabHelper>(
+          *web_contents) {}
 
 ZeroSuggestPrefetchTabHelper::~ZeroSuggestPrefetchTabHelper() = default;
+
+void ZeroSuggestPrefetchTabHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->GetURL() != GURL(chrome::kChromeUINewTabPageURL)) {
+    return;
+  }
+
+  // Make sure to observe the TabStripModel, if not already, in order to get
+  // notified when a New Tab Page is switched to.
+  // Note that this is done here, i.e., after the New Tab Page is navigated to,
+  // as opposed to the tab helper constructor which would have allowed us to get
+  // notified when a new tab is opened in the foreground in the same
+  // TabStripModelObserver callback. We are however not interested to start
+  // prefetching that early since the AutocompleteController machinery gets
+  // started and stopped multiple times since a new tab is opened and until the
+  // New Tab Page is navigated to; invalidating prefetch requests prematurely.
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (browser && !TabStripModelObserver::IsObservingAny(this)) {
+    browser->tab_strip_model()->AddObserver(this);
+  }
+
+  StartPrefetch(web_contents());
+}
 
 void ZeroSuggestPrefetchTabHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (!selection.active_tab_changed() ||
-      &GetWebContents() != selection.new_contents ||
-      GetWebContents().GetVisibleURL() != GURL(chrome::kChromeUINewTabURL)) {
+      web_contents() != selection.new_contents ||
+      web_contents()->GetVisibleURL() != GURL(chrome::kChromeUINewTabURL)) {
     return;
   }
 
-  // We get here when a New Tab Page is opened in foreground or is switched to.
-  StartPrefetch(&GetWebContents());
+  // We get here when a New Tab Page is brought to foreground (aka switched to).
+  StartPrefetch(web_contents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ZeroSuggestPrefetchTabHelper);
