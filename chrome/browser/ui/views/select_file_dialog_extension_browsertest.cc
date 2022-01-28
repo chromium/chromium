@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -204,12 +205,9 @@ class BaseSelectFileDialogExtensionBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitWithFeatures(
-          {chromeos::features::kFilesSWA, chromeos::features::kDarkLightMode},
-          {});
+      feature_list_.InitWithFeatures({chromeos::features::kFilesSWA}, {});
     } else {
-      feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
-                                     {chromeos::features::kFilesSWA});
+      feature_list_.InitWithFeatures({}, {chromeos::features::kFilesSWA});
     }
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
@@ -653,6 +651,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
   auto* color_provider = ash::ColorProvider::Get();
+  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
   EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
             color_provider->GetActiveDialogTitleBarColor());
   EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
@@ -661,7 +660,30 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
 
-IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, ColorModeChange) {
+INSTANTIATE_TEST_SUITE_P(Legacy,
+                         SelectFileDialogExtensionFlagTest,
+                         TestMode::LegacyValues());
+INSTANTIATE_TEST_SUITE_P(SystemWebApp,
+                         SelectFileDialogExtensionFlagTest,
+                         TestMode::SystemWebAppValues());
+
+class SelectFileDialogExtensionDarkLightModeEnabledTest
+    : public BaseSelectFileDialogExtensionBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
+      feature_list_.InitWithFeatures(
+          {chromeos::features::kFilesSWA, chromeos::features::kDarkLightMode},
+          {});
+    } else {
+      feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
+                                     {chromeos::features::kFilesSWA});
+    }
+    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
+                       ColorModeChange) {
   gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
   ASSERT_NE(nullptr, owning_window);
 
@@ -693,8 +715,8 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, ColorModeChange) {
 }
 
 INSTANTIATE_TEST_SUITE_P(Legacy,
-                         SelectFileDialogExtensionFlagTest,
+                         SelectFileDialogExtensionDarkLightModeEnabledTest,
                          TestMode::LegacyValues());
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,
-                         SelectFileDialogExtensionFlagTest,
+                         SelectFileDialogExtensionDarkLightModeEnabledTest,
                          TestMode::SystemWebAppValues());
