@@ -560,6 +560,140 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   }
 }
 
+// Similar to LoadDataWithBaseURLThenRendererInitiatedSameDocument but tests
+// back navigation after doing some renderer-initiated same-document
+// navigations.
+IN_PROC_BROWSER_TEST_P(
+    LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
+    HistoryNavigationWhenLoadDataWithBaseURLWithSameDocumentNavigation) {
+#if !BUILDFLAG(IS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting())
+    return;
+  // Renderer-initiated navigations to data: URL on a main frame will be
+  // blocked. If the base URL is empty, the renderer will use the data: URL as
+  // the base & document URL, and same-document navigations initiated by the
+  // renderer will try to do a main frame navigation to a data: URL, which will
+  // be blocked. So, return early instead.
+  if (base_url_empty())
+    return;
+
+  const std::string data_header = "data:text/html;charset=utf-8,";
+  const std::string title = "foo";
+  const std::string data = base::StringPrintf(
+      "<html><head><title>%s</title></head><body>foo</body></html>",
+      title.c_str());
+  const GURL data_url = GURL(data_header + data);
+  // `base_url_for_data_url` in LoadURLParams.
+  const GURL supplied_base_url =
+      base_url_empty() ? GURL() : GURL("http://baseurl");
+  // `history_url_for_data_url` in LoadURLParams.
+  const GURL supplied_history_url =
+      history_url_empty() ? GURL() : GURL("http://historyurl");
+  // `url` in LoadURLParams.
+  const GURL commit_url =
+      use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  LoadDataWithBaseURL(supplied_base_url, data, supplied_history_url, title,
+                      use_load_data_as_string_with_base_url());
+
+  URLsForLoadDataWithBaseURL urls = GetURLsForLoadDataWithBaseURL(
+      commit_url, supplied_base_url, supplied_history_url);
+
+  CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+      controller.GetLastCommittedEntry(),
+      static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  // 2) Do a same-document navigation via pushState. The URLs will stay the
+  // same (actually the base/document URL should have changed, but the browser
+  // has no way of knowing that).
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(shell(), "history.pushState({},'foo1', '#bar1')"));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+        entry, static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()),
+        urls, true /* is_renderer_initiated_same_document_navigation */);
+    scoped_refptr<FrameNavigationEntry> frame_entry =
+        entry->root_node()->frame_entry.get();
+    if (entry->GetBaseURLForDataURL().is_empty()) {
+      // when the base URL is empty, the navigation is treated like a normal
+      // data: URL navigation, so the origin is opaque.
+      EXPECT_TRUE(frame_entry->committed_origin()->opaque());
+    } else {
+      // loadDataWithBaseURL() navigations uses the base URL's origin.
+      EXPECT_EQ(url::Origin::Create(supplied_base_url),
+                frame_entry->committed_origin());
+    }
+  }
+
+  // 3) Do a same-document navigation via pushState. The URLs will stay the
+  // same (actually the base/document URL should have changed, but the browser
+  // has no way of knowing that).
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(shell(), "history.pushState({},'foo2', '#bar2')"));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+        entry, static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()),
+        urls, true /* is_renderer_initiated_same_document_navigation */);
+    scoped_refptr<FrameNavigationEntry> frame_entry =
+        entry->root_node()->frame_entry.get();
+    if (entry->GetBaseURLForDataURL().is_empty()) {
+      // when the base URL is empty, the navigation is treated like a normal
+      // data: URL navigation, so the origin is opaque.
+      EXPECT_TRUE(frame_entry->committed_origin()->opaque());
+    } else {
+      // loadDataWithBaseURL() navigations uses the base URL's origin.
+      EXPECT_EQ(url::Origin::Create(supplied_base_url),
+                frame_entry->committed_origin());
+    }
+  }
+
+  // 4) Do a history navigation via GoBack. GoBack needs to be successful.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    controller.GoBack();
+    capturer.Wait();
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+    scoped_refptr<FrameNavigationEntry> frame_entry =
+        entry->root_node()->frame_entry.get();
+    if (entry->GetBaseURLForDataURL().is_empty()) {
+      // when the base URL is empty, the navigation is treated like a normal
+      // data: URL navigation, so the origin is opaque.
+      EXPECT_TRUE(frame_entry->committed_origin()->opaque());
+    } else {
+      // loadDataWithBaseURL() navigations uses the base URL's origin.
+      EXPECT_EQ(url::Origin::Create(supplied_base_url),
+                frame_entry->committed_origin());
+    }
+  }
+}
+
 // Similar to LoadDataWithBaseURLThenReload but tests renderer-initiated
 // same-document navigations after LoadDataWithBaseURL instead.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
@@ -786,6 +920,125 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
     CheckURLsMatchExpectationsForLoadDataWithBaseURL(
         controller.GetLastCommittedEntry(),
         static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+  }
+}
+
+// Test history navigations on an iframe within a document loaded with
+// loadDataWithBaseURL.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithBaseURLThenHistoryNavigationInSubframe) {
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
+  GURL subframe_url_1(embedded_test_server()->GetURL(
+      "a.com", "/navigation_controller/simple_page.html"));
+  GURL subframe_url_2(embedded_test_server()->GetURL(
+      "b.com", "/navigation_controller/simple_page_1.html"));
+  const std::string data =
+      base::StringPrintf("<html><body><iframe src=\"%s\"/></body></html>",
+                         subframe_url_1.spec().c_str());
+
+  // `base_url_for_data_url` in LoadURLParams.
+  const GURL base_url = GURL("http://baseurl");
+  // `history_url_for_data_url` in LoadURLParams.
+  const GURL history_url = GURL("http://historyurl");
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    shell()->LoadDataWithBaseURL(history_url, data, base_url);
+    same_tab_observer.Wait();
+
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    scoped_refptr<FrameNavigationEntry> subframe_entry =
+        entry->root_node()->children[0]->frame_entry.get();
+    // The subframe's origin is based on the iframe's URL, unlike the main frame
+    // which uses the base URL's origin in some cases.
+    EXPECT_EQ(url::Origin::Create(subframe_url_1),
+              subframe_entry->committed_origin());
+    EXPECT_EQ(subframe_url_1, subframe_entry->url());
+  }
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  // 1) Do a same-document navigation via pushState in iframe.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    std::string script = "history.pushState({}, 'page 1', '#bar1')";
+    EXPECT_TRUE(ExecJs(root->child_at(0), script));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    scoped_refptr<FrameNavigationEntry> main_frame_entry =
+        entry->root_node()->frame_entry.get();
+    // loadDataWithBaseURL() navigations uses the base URL's origin.
+    EXPECT_EQ(url::Origin::Create(base_url),
+              main_frame_entry->committed_origin());
+
+    scoped_refptr<FrameNavigationEntry> subframe_entry =
+        entry->root_node()->children[0]->frame_entry.get();
+    // The subframe's origin is based on the iframe's URL, unlike the main frame
+    // which uses the base URL's origin in some cases.
+    EXPECT_EQ(url::Origin::Create(subframe_url_1),
+              subframe_entry->committed_origin());
+    EXPECT_EQ(subframe_url_1.spec() + "#bar1", subframe_entry->url());
+  }
+
+  // 2) Do a cross-document navigation on iframe.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), subframe_url_2));
+    capturer.Wait();
+    EXPECT_FALSE(capturer.is_same_document());
+
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    scoped_refptr<FrameNavigationEntry> main_frame_entry =
+        entry->root_node()->frame_entry.get();
+    // loadDataWithBaseURL() navigations uses the base URL's origin.
+    EXPECT_EQ(url::Origin::Create(base_url),
+              main_frame_entry->committed_origin());
+
+    scoped_refptr<FrameNavigationEntry> subframe_entry =
+        entry->root_node()->children[0]->frame_entry.get();
+    // The subframe's origin is based on the iframe's URL, unlike the main frame
+    // which uses the base URL's origin in some cases.
+    EXPECT_EQ(url::Origin::Create(subframe_url_2),
+              subframe_entry->committed_origin());
+    EXPECT_EQ(subframe_url_2, subframe_entry->url());
+  }
+
+  // 3) Do a history navigation via GoBack. GoBack needs to be successful.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    std::string script = "history.back()";
+    EXPECT_TRUE(ExecJs(root->child_at(0), script));
+    capturer.Wait();
+    EXPECT_FALSE(capturer.is_same_document());
+    EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    scoped_refptr<FrameNavigationEntry> main_frame_entry =
+        entry->root_node()->frame_entry.get();
+    // loadDataWithBaseURL() navigations uses the base URL's origin.
+    EXPECT_EQ(url::Origin::Create(base_url),
+              main_frame_entry->committed_origin());
+
+    // Check the subframe origin is restored correctly.
+    scoped_refptr<FrameNavigationEntry> subframe_entry =
+        entry->root_node()->children[0]->frame_entry.get();
+    EXPECT_EQ(url::Origin::Create(subframe_url_1),
+              subframe_entry->committed_origin());
+    EXPECT_EQ(subframe_url_1.spec() + "#bar1", subframe_entry->url());
   }
 }
 

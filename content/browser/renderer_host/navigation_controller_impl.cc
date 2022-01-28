@@ -241,26 +241,36 @@ bool ShouldTreatNavigationAsReload(FrameTreeNode* node,
 }
 
 bool DoesURLMatchOriginForNavigation(
-    const GURL& url,
+    const GURL& destination_url,
     const absl::optional<url::Origin>& origin,
-    SubresourceWebBundleNavigationInfo*
-        subresource_web_bundle_navigation_info) {
+    SubresourceWebBundleNavigationInfo* subresource_web_bundle_navigation_info,
+    NavigationEntry* entry,
+    bool is_main_frame) {
   // If there is no origin supplied there is nothing to match. This can happen
   // for navigations to a pending entry and therefore it should be allowed.
   if (!origin)
     return true;
 
+  // For a history navigation to a document loaded with loadDataWithBaseURL,
+  // compare the origin to the entry's base URL instead of the data: URL used to
+  // commit.
+  const GURL& base_url_for_data_url = entry->GetBaseURLForDataURL();
+  bool check_origin_against_base_url =
+      is_main_frame && !base_url_for_data_url.is_empty();
+
+  const GURL& url_for_origin =
+      check_origin_against_base_url ? base_url_for_data_url : destination_url;
   // Urn: and uuid-in-package: subframe from WebBundle has an opaque origin
   // derived from the Bundle's origin.
   // TODO(https://crbug.com/1257045): Remove urn: scheme support.
-  if ((url.SchemeIs(url::kUrnScheme) ||
-       url.SchemeIs(url::kUuidInPackageScheme)) &&
+  if ((url_for_origin.SchemeIs(url::kUrnScheme) ||
+       url_for_origin.SchemeIs(url::kUuidInPackageScheme)) &&
       subresource_web_bundle_navigation_info) {
     return origin->CanBeDerivedFrom(
         subresource_web_bundle_navigation_info->bundle_url());
   }
 
-  return origin->CanBeDerivedFrom(url);
+  return origin->CanBeDerivedFrom(url_for_origin);
 }
 
 absl::optional<url::Origin> GetCommittedOriginForFrameEntry(
@@ -271,16 +281,6 @@ absl::optional<url::Origin> GetCommittedOriginForFrameEntry(
   // should commit in the correct origin, setting the opaque origin on the
   // FrameNavigationEntry will be incorrect.
   if (request && request->DidEncounterError())
-    return absl::nullopt;
-
-  // We also currently don't save committed origins for loadDataWithBaseURL
-  // navigations (probably accidentally). Without this check, navigations to
-  // the FrameNavigationEntry might fail the DoesURLMatchOriginForNavigation()
-  // check since the origin will be based on the base URL instead of the data:
-  // URL used for the navigation.
-  // TODO(https://crbug.com/1198406): Save committed origin in
-  // FrameNavigationEntry for this case too.
-  if (request && request->IsLoadDataWithBaseURL())
     return absl::nullopt;
 
   return absl::make_optional(params.origin);
@@ -3601,7 +3601,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   if (!DoesURLMatchOriginForNavigation(
           url_to_load, origin_to_commit,
-          frame_entry->subresource_web_bundle_navigation_info())) {
+          frame_entry->subresource_web_bundle_navigation_info(), entry,
+          node->IsMainFrame())) {
     DCHECK(false) << " url:" << url_to_load
                   << " origin:" << origin_to_commit.value();
     return nullptr;
@@ -3777,8 +3778,10 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 
   if (!DoesURLMatchOriginForNavigation(
           dest_url, origin_to_commit,
-          frame_entry->subresource_web_bundle_navigation_info())) {
+          frame_entry->subresource_web_bundle_navigation_info(), entry,
+          frame_tree_node->IsMainFrame())) {
     DCHECK(false) << " url:" << dest_url
+                  << " base_url_for_data_url: " << entry->GetBaseURLForDataURL()
                   << " origin:" << origin_to_commit.value();
     return nullptr;
   }
