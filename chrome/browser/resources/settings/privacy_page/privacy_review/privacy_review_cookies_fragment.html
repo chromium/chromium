@@ -13,7 +13,9 @@
     selectable-elements="settings-collapse-radio-button">
   <settings-collapse-radio-button pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
-      label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoSubheader}">
+      label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoSubheader}"
+      expand-aria-label=
+          "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}">
     <div slot="collapse" class="description-wrapper-radio two-column">
       <div class="description-column description-column-first">
         <div class=description-header>
@@ -45,7 +47,8 @@
   </settings-collapse-radio-button>
   <settings-collapse-radio-button pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
-      label="$i18n{privacyReviewCookiesCardBlockTpcSubheader}">
+      label="$i18n{privacyReviewCookiesCardBlockTpcSubheader}"
+      expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">
     <div slot="collapse" class="description-wrapper-radio two-column">
       <div class="description-column description-column-first">
         <div class=description-header>
