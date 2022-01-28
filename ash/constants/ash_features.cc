@@ -958,6 +958,10 @@ const base::Feature kOobeConsolidatedConsent{"OobeConsolidatedConsent",
 const base::Feature kOobeQuickStart{"OobeQuickStart",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the new recommend apps screen is shown.
+const base::Feature kOobeNewRecommendApps{"OobeNewRecommendApps",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the feedback tool new UX on Chrome OS.
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
@@ -1734,6 +1738,10 @@ bool IsOobeConsolidatedConsentEnabled() {
 
 bool IsOobeQuickStartEnabled() {
   return base::FeatureList::IsEnabled(kOobeQuickStart);
+}
+
+bool IsOobeNewRecommendAppsEnabled() {
+  return base::FeatureList::IsEnabled(kOobeNewRecommendApps);
 }
 
 bool IsPcieBillboardNotificationEnabled() {
