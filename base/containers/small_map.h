@@ -49,7 +49,7 @@ namespace base {
 //
 // We define default overrides for the common map types to avoid this
 // double-compare, but you should be aware of this if you use your own operator<
-// for your map and supply yor own version of == to the small_map. You can use
+// for your map and supply your own version of == to the small_map. You can use
 // regular operator== by just doing:
 //
 //   base::small_map<std::map<MyKey, MyValue>, 4, std::equal_to<KyKey>>
