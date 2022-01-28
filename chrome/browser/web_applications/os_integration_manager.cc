@@ -486,9 +486,8 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
       app_id, std::move(callback));
 }
 
-void OsIntegrationManager::RegisterRunOnOsLogin(
-    const AppId& app_id,
-    RegisterRunOnOsLoginCallback callback) {
+void OsIntegrationManager::RegisterRunOnOsLogin(const AppId& app_id,
+                                                ResultCallback callback) {
   GetShortcutInfoForApp(
       app_id,
       base::BindOnce(
@@ -528,7 +527,7 @@ void OsIntegrationManager::UnregisterRunOnOsLogin(
     const AppId& app_id,
     const base::FilePath& profile_path,
     const std::u16string& shortcut_title,
-    UnregisterRunOnOsLoginCallback callback) {
+    ResultCallback callback) {
   ScheduleUnregisterRunOnOsLogin(app_id, profile_path, shortcut_title,
                                  std::move(callback));
 }
@@ -827,7 +826,7 @@ void OsIntegrationManager::OnShortcutsDeleted(const AppId& app_id,
 }
 
 void OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin(
-    RegisterRunOnOsLoginCallback callback,
+    ResultCallback callback,
     std::unique_ptr<ShortcutInfo> info) {
   ScheduleRegisterRunOnOsLogin(std::move(info), std::move(callback));
 }

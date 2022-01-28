@@ -19,7 +19,7 @@ namespace web_app {
 
 namespace {
 
-void RegisterRunOnOsLoginAndPostCallback(RegisterRunOnOsLoginCallback callback,
+void RegisterRunOnOsLoginAndPostCallback(ResultCallback callback,
                                          const ShortcutInfo& shortcut_info) {
   bool run_on_os_login_registered =
       internals::RegisterRunOnOsLogin(shortcut_info);
@@ -32,7 +32,7 @@ void RegisterRunOnOsLoginAndPostCallback(RegisterRunOnOsLoginCallback callback,
 }  // namespace
 
 void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
-                                  RegisterRunOnOsLoginCallback callback) {
+                                  ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   internals::PostShortcutIOTask(
@@ -43,7 +43,7 @@ void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
 void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
                                     const base::FilePath& profile_path,
                                     const std::u16string& shortcut_title,
-                                    UnregisterRunOnOsLoginCallback callback) {
+                                    ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(

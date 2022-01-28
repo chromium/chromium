@@ -59,7 +59,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
 
   MOCK_METHOD(void,
               RegisterRunOnOsLogin,
-              (const AppId& app_id, RegisterRunOnOsLoginCallback callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -85,7 +85,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (const AppId& app_id,
                const base::FilePath& profile_path,
                const std::u16string& shortcut_title,
-               UnregisterRunOnOsLoginCallback callback),
+               ResultCallback callback),
               (override));
   MOCK_METHOD(void,
               DeleteShortcuts,

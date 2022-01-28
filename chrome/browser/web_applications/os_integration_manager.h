@@ -250,7 +250,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
       const AppId& app_id,
       ResultCallback callback);
   virtual void RegisterRunOnOsLogin(const AppId& app_id,
-                                    RegisterRunOnOsLoginCallback callback);
+                                    ResultCallback callback);
   virtual void MacAppShimOnAppInstalledForProfile(const AppId& app_id);
   virtual void AddAppToQuickLaunchBar(const AppId& app_id);
   virtual void RegisterWebAppOsUninstallation(const AppId& app_id,
@@ -261,7 +261,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   virtual void UnregisterRunOnOsLogin(const AppId& app_id,
                                       const base::FilePath& profile_path,
                                       const std::u16string& shortcut_title,
-                                      UnregisterRunOnOsLoginCallback callback);
+                                      ResultCallback callback);
   virtual void DeleteShortcuts(const AppId& app_id,
                                const base::FilePath& shortcuts_data_dir,
                                std::unique_ptr<ShortcutInfo> shortcut_info,
@@ -294,7 +294,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
                           Result result);
 
   void OnShortcutInfoRetrievedRegisterRunOnOsLogin(
-      RegisterRunOnOsLoginCallback callback,
+      ResultCallback callback,
       std::unique_ptr<ShortcutInfo> info);
 
   // Called after the shortcuts for an app are updated in response

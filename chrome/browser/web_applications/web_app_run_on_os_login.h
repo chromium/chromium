@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 
@@ -20,15 +21,6 @@ namespace web_app {
 
 enum class Result;
 struct ShortcutInfo;
-
-// Callback made when RegisterRunOnOsLogin has finished trying to register the
-// app to the OS Startup indicating whether or not it was successfully
-// registered.
-using RegisterRunOnOsLoginCallback = base::OnceCallback<void(Result result)>;
-
-// Callback made when UnregisterRunOnOslogin has finished indicating whether or
-// not it was successfully unregistered.
-using UnregisterRunOnOsLoginCallback = base::OnceCallback<void(Result result)>;
 
 namespace internals {
 
@@ -50,7 +42,7 @@ Result UnregisterRunOnOsLogin(const std::string& app_id,
 // invokes |callback| when complete. This function must be called from the UI
 // thread.
 void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
-                                  RegisterRunOnOsLoginCallback callback);
+                                  ResultCallback callback);
 
 // Schedules a call to |UnregisterRunOnOsLogin| on the Shortcut IO thread and
 // invokes |callback| when complete. This function must be called from the UI
@@ -58,7 +50,7 @@ void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
 void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
                                     const base::FilePath& profile_path,
                                     const std::u16string& shortcut_title,
-                                    UnregisterRunOnOsLoginCallback callback);
+                                    ResultCallback callback);
 
 }  // namespace web_app
 
