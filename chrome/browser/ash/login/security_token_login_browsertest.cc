@@ -28,9 +28,13 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/saml/security_token_saml_test.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
+#include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -566,8 +570,7 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
 
   Profile* profile() const { return profile_; }
 
-  TestCertificateProviderExtension* user_certificate_provider_extension()
-      const {
+  TestCertificateProviderExtension* user_certificate_provider_extension() {
     return user_certificate_provider_extension_.get();
   }
 
@@ -642,6 +645,71 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
 
   // After the notification expires, the device gets locked.
   chrome_session_observer.WaitForSessionLocked();
+}
+
+// Tests the SecurityTokenSessionBehavior policy in the initial user session
+// after that user has been created.
+class SecurityTokenSessionBehaviorSamlTest : public SecurityTokenSamlTest {
+ protected:
+  SecurityTokenSessionBehaviorSamlTest() = default;
+  SecurityTokenSessionBehaviorSamlTest(
+      const SecurityTokenSessionBehaviorSamlTest&) = delete;
+  SecurityTokenSessionBehaviorSamlTest& operator=(
+      const SecurityTokenSessionBehaviorSamlTest&) = delete;
+  ~SecurityTokenSessionBehaviorSamlTest() override = default;
+
+  // Configures and installs the user session certificate provider extension.
+  void PrepareUserCertificateProviderExtension(Profile* profile) {
+    user_certificate_provider_extension_ =
+        std::make_unique<TestCertificateProviderExtension>(profile);
+    user_extension_mixin_.InitWithMockPolicyProvider(profile,
+                                                     policy_provider());
+    EXPECT_TRUE(user_extension_mixin_.ForceInstallFromSourceDir(
+        TestCertificateProviderExtension::GetExtensionSourcePath(),
+        TestCertificateProviderExtension::GetExtensionPemPath(),
+        ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
+  }
+
+  // Makes the user session extension call certificateProvider.setCertificates()
+  // without providing any certificates, thus simulating the removal of a
+  // security token.
+  void SimulateSecurityTokenRemoval() {
+    ASSERT_TRUE(user_certificate_provider_extension_);
+    user_certificate_provider_extension()->set_should_provide_certificates(
+        false);
+    user_certificate_provider_extension()->TriggerSetCertificates();
+  }
+
+  TestCertificateProviderExtension* user_certificate_provider_extension() {
+    return user_certificate_provider_extension_.get();
+  }
+
+ private:
+  ExtensionForceInstallMixin user_extension_mixin_{&mixin_host_};
+  std::unique_ptr<TestCertificateProviderExtension>
+      user_certificate_provider_extension_;
+};
+
+// Tests the SecurityTokenSessionBehavior policy with value "LOGOUT".
+IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorSamlTest, Logout) {
+  // Login
+  StartSignIn();
+  WaitForPinDialog();
+  InputPinByClickingKeypad(GetCorrectPin());
+  test::OobeJS().ClickOnPath({"gaia-signin", "pinDialog", "submit"});
+  test::WaitForPrimaryUserSessionStart();
+
+  // Setup extension and pref.
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(
+      user_manager::UserManager::Get()->GetActiveUser());
+  PrepareUserCertificateProviderExtension(profile);
+  profile->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
+                                 "LOGOUT");
+
+  // Removal of the certificate should lead to the end of the current session.
+  ChromeSessionObserver chrome_session_observer;
+  SimulateSecurityTokenRemoval();
+  chrome_session_observer.WaitForChromeTerminating();
 }
 
 }  // namespace ash
