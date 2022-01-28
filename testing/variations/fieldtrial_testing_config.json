@@ -2360,6 +2360,23 @@
             ]
         }
     ],
+    "DestroySystemProfiles": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "DestroySystemProfiles",
+                    "enable_features": [
+                        "DestroySystemProfiles"
+                    ]
+                }
+            ]
+        }
+    ],
     "DetectFormSubmissionOnFormClearIOS": [
         {
             "platforms": [
