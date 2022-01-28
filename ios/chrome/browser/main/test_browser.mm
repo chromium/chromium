@@ -19,9 +19,10 @@ TestBrowser::TestBrowser(
     ChromeBrowserState* browser_state,
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate)
     : browser_state_(browser_state),
+      web_state_list_delegate_(std::move(web_state_list_delegate)),
       command_dispatcher_([[CommandDispatcher alloc] init]) {
-  DCHECK(web_state_list_delegate);
-  web_state_list_delegate_ = std::move(web_state_list_delegate);
+  DCHECK(browser_state_);
+  DCHECK(web_state_list_delegate_);
   web_state_list_ =
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
 }

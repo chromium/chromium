@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -51,7 +53,8 @@ namespace {
 class IncognitoReauthSceneAgentTest : public PlatformTest {
  public:
   IncognitoReauthSceneAgentTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]),
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        scene_state_([[SceneState alloc] initWithAppState:nil]),
         scene_state_mock_(OCMPartialMock(scene_state_)),
         stub_reauth_module_([[StubReauthenticationModule alloc] init]),
         agent_([[IncognitoReauthSceneAgent alloc]
@@ -65,7 +68,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     // 1. sceneState.interfaceProvider.incognitoInterface
     //            .browser->GetWebStateList()->count()
     // 2. sceneState.interfaceProvider.hasIncognitoInterface
-    test_browser_ = std::make_unique<TestBrowser>(/*BrowserState=*/nullptr);
+    test_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     for (int i = 0; i < tab_count; ++i) {
       test_browser_->GetWebStateList()->InsertWebState(
           i, std::make_unique<web::FakeWebState>(),
@@ -91,6 +94,9 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     stub_reauth_module_.canAttemptReauth = YES;
     stub_reauth_module_.returnedResult = ReauthenticationResult::kSuccess;
   }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   // The scene state that the agent works with.
   SceneState* scene_state_;
