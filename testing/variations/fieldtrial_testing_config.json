@@ -1711,6 +1711,21 @@
             ]
         }
     ],
+    "ClankStartupOptimizations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "NoPreload_1",
+                    "enable_features": [
+                        "ElideTabPreloadAtStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "CombinedNavigationOptimizations": [
         {
             "platforms": [
