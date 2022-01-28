@@ -1136,6 +1136,15 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
                   ->desks_templates_grid_widget()
                   ->IsVisible());
 
+  // Tests that the templates button is in expanded state when the grid is
+  // showing, even with one desk.
+  auto* zero_state = GetDesksTemplatesButtonForRoot(root_window,
+                                                    /*zero_state=*/true);
+  auto* expanded_state = GetDesksTemplatesButtonForRoot(root_window,
+                                                        /*zero_state=*/false);
+  ASSERT_FALSE(zero_state->GetVisible());
+  ASSERT_TRUE(expanded_state->GetVisible());
+
   // Tests that after transitioning, we remain in overview mode and the grid is
   // hidden.
   EnterTabletMode();
@@ -1144,6 +1153,11 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
                    ->GetGridWithRootWindow(root_window)
                    ->desks_templates_grid_widget()
                    ->IsVisible());
+
+  // Tests that the templates button is also hidden in tablet mode. Regression
+  // test for https://crbug.com/1291777.
+  EXPECT_FALSE(zero_state->GetVisible());
+  EXPECT_FALSE(expanded_state->GetVisible());
 }
 
 // In certain cases there are activation issues when we enter tablet mode,

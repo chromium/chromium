@@ -102,7 +102,6 @@ void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
       // When deleting, it is possible to delete the last template. In this
       // case, close the template grid and go back to overview.
       overview_grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
-      continue;
     }
 
     if (DesksBarView* desks_bar_view =
