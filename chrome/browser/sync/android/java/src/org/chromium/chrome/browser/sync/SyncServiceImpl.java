@@ -234,16 +234,6 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public boolean isSyncAllowedByPlatform() {
-        return SyncServiceImplJni.get().isSyncAllowedByPlatform(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public void setSyncAllowedByPlatform(boolean allowed) {
-        SyncServiceImplJni.get().setSyncAllowedByPlatform(mSyncServiceAndroidBridge, allowed);
-    }
-
-    @Override
     public @PassphraseType int getPassphraseType() {
         assert isEngineInitialized();
         int passphraseType = SyncServiceImplJni.get().getPassphraseType(mSyncServiceAndroidBridge);
@@ -404,8 +394,6 @@ public class SyncServiceImpl extends SyncService {
         boolean isSyncRequested(long nativeSyncServiceAndroidBridge);
         void setSyncRequested(long nativeSyncServiceAndroidBridge, boolean requested);
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
-        boolean isSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge);
-        void setSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge, boolean allowed);
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureActive(long nativeSyncServiceAndroidBridge);
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);

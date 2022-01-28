@@ -201,8 +201,6 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
 
 void TestSyncService::StopAndClear() {}
 
-void TestSyncService::SetSyncAllowedByPlatform(bool allowed) {}
-
 void TestSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}
 
 void TestSyncService::TriggerRefresh(const ModelTypeSet& types) {}

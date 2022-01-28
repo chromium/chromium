@@ -174,8 +174,7 @@ public class BookmarkTest {
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
 
-            // Stub SyncService state to make sure promos aren't suppressed.
-            when(mSyncService.isSyncAllowedByPlatform()).thenReturn(true);
+            // Emulate sync disabled so promos are shown.
             when(mSyncService.isSyncRequested()).thenReturn(false);
             SyncService.overrideForTests(mSyncService);
         });

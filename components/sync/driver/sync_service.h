@@ -116,20 +116,19 @@ class SyncService : public KeyedService {
   // Sync-the-transport might still start up even in the presence of (some)
   // disable reasons. Meant to be used as a enum set.
   enum DisableReason {
-    // Sync is disabled via platform-level override (e.g. Android's "MasterSync"
-    // toggle).
-    DISABLE_REASON_PLATFORM_OVERRIDE,
-    DISABLE_REASON_FIRST = DISABLE_REASON_PLATFORM_OVERRIDE,
     // Sync is disabled by enterprise policy, either browser policy (through
     // prefs) or account policy received from the Sync server.
     DISABLE_REASON_ENTERPRISE_POLICY,
+    DISABLE_REASON_FIRST = DISABLE_REASON_ENTERPRISE_POLICY,
     // Sync can't start because there is no authenticated user.
     DISABLE_REASON_NOT_SIGNED_IN,
-    // Sync is suppressed by user choice, either via the feature toggle in
-    // Chrome settings (which exists on Android and iOS), a platform-level
-    // toggle (e.g. Android's "ChromeSync" toggle), or a “Reset Sync” operation
-    // from the dashboard. This is also set if there's simply no signed-in user
-    // (in addition to DISABLE_REASON_NOT_SIGNED_IN).
+    // Sync is suppressed by user choice, either by disabling all the data
+    // type toggles (*), or a “Reset Sync” operation from the dashboard. This is
+    // also set if there's simply no signed-in user (in addition to
+    // DISABLE_REASON_NOT_SIGNED_IN).
+    //
+    // (*) As of 01/2022, this is only true on mobile, where the logic was
+    // introduced as part of a migration (see crbug.com/1291946).
     DISABLE_REASON_USER_CHOICE,
     // Sync has encountered an unrecoverable error. It won't attempt to start
     // again until either the browser is restarted, or the user fully signs out
@@ -321,10 +320,6 @@ class SyncService : public KeyedService {
   // Stops and disables Sync-the-feature and clears all local data.
   // Sync-the-transport may remain active after calling this.
   virtual void StopAndClear() = 0;
-
-  // Controls whether sync is allowed at the platform level. If set to false
-  // sync will be disabled with DISABLE_REASON_PLATFORM_OVERRIDE.
-  virtual void SetSyncAllowedByPlatform(bool allowed) = 0;
 
   // Called when a datatype (SyncableService) has a need for sync to start
   // ASAP, presumably because a local change event has occurred but we're

@@ -173,10 +173,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
             return SyncPromoState.NO_PROMO;
         }
 
-        if (!mSyncService.isSyncAllowedByPlatform()) {
-            return SyncPromoState.NO_PROMO;
-        }
-
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!shouldShowBookmarkSigninPromo()) {
                 return SyncPromoState.NO_PROMO;

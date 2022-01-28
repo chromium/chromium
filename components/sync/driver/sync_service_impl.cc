@@ -390,12 +390,9 @@ void SyncServiceImpl::CredentialsChanged() {
 }
 
 bool SyncServiceImpl::IsEngineAllowedToRun() const {
-  // USER_CHOICE (i.e. the Sync feature toggle) and PLATFORM_OVERRIDE (i.e.
-  // Android's "MasterSync" toggle) do not prevent starting up the Sync
-  // transport.
+  // USER_CHOICE does not prevent starting up the Sync transport.
   DisableReasonSet disable_reasons = GetDisableReasons();
-  disable_reasons.RemoveAll(SyncService::DisableReasonSet(
-      DISABLE_REASON_USER_CHOICE, DISABLE_REASON_PLATFORM_OVERRIDE));
+  disable_reasons.Remove(DISABLE_REASON_USER_CHOICE);
   return disable_reasons.Empty() && !auth_manager_->IsSyncPaused();
 }
 
@@ -611,9 +608,6 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
   // shouldn't even be instantiated.
   DCHECK(switches::IsSyncAllowedByFlag());
   DisableReasonSet result;
-  if (!sync_allowed_by_platform_) {
-    result.Put(DISABLE_REASON_PLATFORM_OVERRIDE);
-  }
 
   // If local sync is enabled, most disable reasons don't apply.
   if (!IsLocalSyncEnabled()) {
@@ -1701,22 +1695,6 @@ void SyncServiceImpl::StopAndClear() {
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).
   NotifyObservers();
-}
-
-void SyncServiceImpl::SetSyncAllowedByPlatform(bool allowed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (allowed == sync_allowed_by_platform_) {
-    return;
-  }
-
-  sync_allowed_by_platform_ = allowed;
-  if (!sync_allowed_by_platform_) {
-    // TODO(crbug.com/856179): Evaluate whether we can get away without a full
-    // restart (i.e. just reconfigure). See also similar comment in
-    // OnSyncRequestedPrefChange().
-    ResetEngine(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
-                ResetEngineReason::kSetSyncAllowedByPlatform);
-  }
 }
 
 void SyncServiceImpl::ReconfigureDatatypeManager(

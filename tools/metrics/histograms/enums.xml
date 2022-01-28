@@ -86174,7 +86174,11 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Disabled account"/>
   <int value="3" label="Requested pref change"/>
   <int value="4" label="Stop and clear"/>
-  <int value="5" label="Set sync allowed by platform"/>
+  <int value="5" label="(deprecated) Set sync allowed by platform">
+    <obsolete>
+      Removed 01/2022.
+    </obsolete>
+  </int>
   <int value="6" label="Credentials updated"/>
   <int value="7" label="Reset local Sync data"/>
 </enum>

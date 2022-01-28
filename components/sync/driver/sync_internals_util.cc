@@ -201,8 +201,6 @@ std::string GetDisableReasonsString(
     return "None";
   }
   std::vector<std::string> reason_strings;
-  if (disable_reasons.Has(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE))
-    reason_strings.push_back("Platform override");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_ENTERPRISE_POLICY))
     reason_strings.push_back("Enterprise policy");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN))

@@ -1701,9 +1701,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
 
       <!-- Sync strings in account management dialog -->
-      <message name="IDS_SYNC_ANDROID_SYSTEM_SYNC_DISABLED" desc="Message to show when Android system-level sync flag is disabled">
-        Android system sync disabled
-      </message>
       <message name="IDS_SYNC_ON" desc="The text is displayed as a gray subtitle of a settings item titled 'Sync' and indicates that sync is on.">
         On
       </message>
@@ -1805,9 +1802,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_RECENT_TABS_SYNC_PROMO_ENABLE_CHROME_SYNC" desc="Text that displayed in a textview encouraging the user to enable sync.">
         To get your tabs from your other devices, turn on sync.
-      </message>
-      <message name="IDS_RECENT_TABS_SYNC_PROMO_ENABLE_ANDROID_SYNC" desc="Text that displayed in a textview encouraging the user to enable sync in the android settings.">
-        To get your tabs from your other devices, turn on “Auto-sync data” in Android account settings.
       </message>
       <message name="IDS_NTP_RECENT_TABS_SYNC_PROMO_INSTRUCTIONS" desc="Information about sync displayed on the NTP when the user has signed in on mobile but not on desktop">
         Tabs that you've opened in Chrome on your other devices will appear here.
@@ -1931,9 +1925,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SYNC_NEEDS_VERIFICATION_TITLE" desc="Title of the error message shown when sync needs to verify the user.">
         Sync needs to verify it's you
       </message>
-      <message name="IDS_HINT_ANDROID_SYNC_DISABLED" desc="Hint message to resolve Android system sync is disabled error.">
-        Open Android settings and re-enable Android system sync to start Chrome sync
-      </message>
       <message name="IDS_HINT_SYNC_AUTH_ERROR" desc="Hint message to resolve sync auth error.">
         Sign in again to start sync
       </message>
@@ -1963,9 +1954,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Sync error card button strings -->
-      <message name="IDS_ANDROID_SYNC_DISABLED_ERROR_CARD_BUTTON" desc="Button text for android sync disabled error in sync error cards.">
-        Enable Android system sync
-      </message>
       <message name="IDS_CLIENT_OUT_OF_DATE_ERROR_CARD_BUTTON" desc="Button text for client out of date error in sync error cards.">
           Update <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph>
       </message>

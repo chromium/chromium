@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.sync.settings;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -670,10 +669,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         assert primaryAccountInfo != null;
 
         switch (syncError) {
-            case SyncError.ANDROID_SYNC_DISABLED:
-                IntentUtils.safeStartActivity(
-                        getActivity(), new Intent(Settings.ACTION_SYNC_SETTINGS));
-                return;
             case SyncError.AUTH_ERROR:
                 AccountManagerFacadeProvider.getInstance().updateCredentials(
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), getActivity(),

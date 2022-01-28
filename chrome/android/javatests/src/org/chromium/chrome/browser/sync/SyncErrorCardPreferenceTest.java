@@ -102,25 +102,6 @@ public class SyncErrorCardPreferenceTest {
     @LargeTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForAndroidSyncDisabled(boolean nightModeEnabled) throws Exception {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFakeSyncServiceImpl.setSyncAllowedByPlatform(false);
-
-            Assert.assertEquals("ANDROID_SYNC_DISABLED SyncError should be set",
-                    SyncSettingsUtils.SyncError.ANDROID_SYNC_DISABLED,
-                    SyncSettingsUtils.getSyncError());
-        });
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_android_sync_disabled");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForAuthError(boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);

@@ -65,8 +65,6 @@ bool FakeSyncService::HasObserver(const SyncServiceObserver* observer) const {
 
 void FakeSyncService::StopAndClear() {}
 
-void FakeSyncService::SetSyncAllowedByPlatform(bool allowed) {}
-
 void FakeSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}
 
 ModelTypeSet FakeSyncService::GetPreferredDataTypes() const {

@@ -214,10 +214,6 @@ public abstract class SyncService {
 
     public abstract void removeSyncStateChangedListener(SyncStateChangedListener listener);
 
-    public abstract boolean isSyncAllowedByPlatform();
-
-    public abstract void setSyncAllowedByPlatform(boolean allowed);
-
     /**
      * Returns the actual passphrase type being used for encryption. The sync engine must be
      * running (isEngineInitialized() returns true) before calling this function.

@@ -463,25 +463,6 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
             service()->GetTransportState());
 }
 
-TEST_F(SyncServiceImplTest,
-       ShouldDisableSyncFeatureWhenSyncDisallowedByPlatform) {
-  SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
-  InitializeForNthSync();
-
-  ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-
-  service()->SetSyncAllowedByPlatform(false);
-  EXPECT_FALSE(service()->IsSyncFeatureEnabled());
-  EXPECT_FALSE(service()->IsSyncFeatureActive());
-  // Sync-the-transport should become active again.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-}
-
 // Exercises the SyncServiceImpl's code paths related to getting shut down
 // before the backend initialize call returns.
 TEST_F(SyncServiceImplTest, AbortedByShutdown) {
