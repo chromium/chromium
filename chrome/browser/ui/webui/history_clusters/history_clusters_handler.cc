@@ -119,10 +119,6 @@ absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
   return search_query_mojom;
 }
 
-// Chosen fairly arbitrarily. In practice this fills many vertical viewports
-// adequately. The WebUI automatically queries for more for tall monitor cases.
-constexpr size_t kMaxClustersCount = 10;
-
 }  // namespace
 
 // Creates a `mojom::QueryResultPtr` using the original `query`, if the query
@@ -246,7 +242,7 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   history_clusters_service->QueryClusters(
-      query, /*begin_time=*/base::Time(), end_time, kMaxClustersCount,
+      query, /*begin_time=*/base::Time(), end_time,
       base::BindOnce(&QueryClustersResultToMojom, profile_, query,
                      query_params->end_time.has_value())
           .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
@@ -343,7 +339,6 @@ void HistoryClustersHandler::OnClustersQueryResult(
         HistoryClustersServiceFactory::GetForBrowserContext(profile_);
     history_clusters_service->QueryClusters(
         query_result->query, /*begin_time=*/base::Time(), continuation_end_time,
-        kMaxClustersCount,
         base::BindOnce(&QueryClustersResultToMojom, profile_,
                        query_result->query, query_result->is_continuation)
             .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,

@@ -236,9 +236,6 @@ std::string GetDebugJSONForKeywordSet(
   return debug_string;
 }
 
-// TODO(tommycli): Explicitly link this number to what's in WebUI.
-constexpr int kMaxCountForKeywordCacheBatch = 10;
-
 }  // namespace
 
 VisitDeletionObserver::VisitDeletionObserver(
@@ -348,14 +345,12 @@ void HistoryClustersService::QueryClusters(
     const std::string& query,
     base::Time begin_time,
     base::Time end_time,
-    const size_t max_count,
     QueryClustersCallback callback,
     base::CancelableTaskTracker* task_tracker) {
   NotifyDebugMessage("HistoryClustersService::QueryClusters()");
   NotifyDebugMessage("  end_time = " + (end_time.is_null()
                                             ? "null"
                                             : base::TimeToISO8601(end_time)));
-  NotifyDebugMessage("  max_count = " + base::NumberToString(max_count));
 
   if (!backend_) {
     NotifyDebugMessage(
@@ -367,25 +362,16 @@ void HistoryClustersService::QueryClusters(
 
   DCHECK(history_service_);
 
-  size_t max_visit_count = kMaxVisitsToCluster.Get();
-  if (max_count > 0) {
-    // As a primitive heuristic, fetch 3x the amount of visits as requested
-    // clusters. We don't know in advance how big the clusters will be.
-    max_visit_count = max_count * 3;
-  }
-
   NotifyDebugMessage("Starting History Query:");
   NotifyDebugMessage("  end_time = " + (end_time.is_null()
                                             ? "null"
                                             : base::TimeToISO8601(end_time)));
-  NotifyDebugMessage(base::StringPrintf("  max_count = %zu", max_count));
 
   // TODO(crbug/1243049) : Add timing metrics for the history service DB query.
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
           incomplete_visit_context_annotations_, begin_time, end_time,
-          max_visit_count,
           base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
                          weak_ptr_factory_.GetWeakPtr(), query,
                          std::move(callback))),
@@ -432,7 +418,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     NotifyDebugMessage("Starting all_keywords_cache_ generation.");
     QueryClusters(
         /*query=*/"", begin_time, /*end_time=*/
-        base::Time(), kMaxCountForKeywordCacheBatch,
+        base::Time(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), begin_time,
                        std::make_unique<std::vector<std::u16string>>(),
@@ -457,7 +443,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     QueryClusters(
         /*query=*/"",
         /*begin_time=*/all_keywords_cache_timestamp_, /*end_time=*/
-        base::Time(), kMaxCountForKeywordCacheBatch,
+        base::Time(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(),
                        all_keywords_cache_timestamp_,
@@ -526,7 +512,6 @@ void HistoryClustersService::PopulateClusterKeywordCache(
        keyword_accumulator->size() < max_keyword_phrases)) {
     QueryClusters(
         /*query=*/"", begin_time, *result.continuation_end_time,
-        kMaxCountForKeywordCacheBatch,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), begin_time,
                        // Pass on the accumulator set to the next callback.

@@ -41,14 +41,12 @@ GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
     HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
     base::Time begin_time,
     base::Time end_time,
-    size_t max_count,
     Callback callback)
     : incomplete_visit_map_(incomplete_visit_map),
       begin_time_limit_(
           std::max(begin_time, base::Time::Now() - base::Days(90))),
       original_end_time_(end_time),
       continuation_end_time_(end_time),
-      visit_soft_cap_(max_count),
       callback_(std::move(callback)) {}
 
 GetAnnotatedVisitsToCluster::~GetAnnotatedVisitsToCluster() = default;

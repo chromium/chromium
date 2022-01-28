@@ -288,7 +288,6 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
 
   history_clusters_service_->QueryClusters(
       /*query=*/"", /*begin_time=*/base::Time(), /*end_time=*/base::Time::Now(),
-      /* max_count=*/0,
       base::DoNothing(),  // Only need to verify the correct request is sent.
       &task_tracker_);
 
@@ -320,7 +319,6 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
 
   history_clusters_service_->QueryClusters(
       /*query=*/"", /*begin_time=*/base::Time(), /*end_time=*/base::Time::Now(),
-      /* max_count=*/0,
       base::DoNothing(),  // Only need to verify the correct request is sent.
       &task_tracker_);
 
@@ -382,7 +380,6 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     history_clusters_service_->QueryClusters(
         test_data[i].query, /*begin_time=*/base::Time(),
         /*end_time=*/base::Time(),
-        /* max_count=*/0,
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
         base::BindLambdaForTesting([&](QueryClustersResult result) {
