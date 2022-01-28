@@ -190,7 +190,7 @@ See [related bug](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=808181).
 
 #### ccache
 
-You can use [ccache](https://ccache.samba.org) to speed up local builds (again,
+You can use [ccache](https://ccache.dev) to speed up local builds (again,
 this is not useful if you're using Goma).
 
 Increase your ccache hit rate by setting `CCACHE_BASEDIR` to a parent directory
@@ -199,7 +199,7 @@ that the working directories all have in common (e.g.,
 `CCACHE_SLOPPINESS=include_file_mtime` (since if you are using multiple working
 directories, header times in svn sync'ed portions of your trees will be
 different - see
-[the ccache troubleshooting section](http://ccache.samba.org/manual.html#_troubleshooting)
+[the ccache troubleshooting section](https://ccache.dev/manual/latest.html#_troubleshooting)
 for additional information). If you use symbolic links from your home directory
 to get to the local physical disk directory where you keep those working
 development directories, consider putting
