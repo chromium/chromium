@@ -38,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
@@ -60,6 +61,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #import "ios/chrome/browser/signin/signin_util.h"
+#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -332,6 +334,9 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
           language::prefs::kAcceptLanguages));
   language::LanguageUsageMetrics::RecordApplicationLanguage(
       application_context_->GetApplicationLocale());
+  translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
+      ChromeIOSTranslateClient::CreateTranslatePrefs(
+          last_used_browser_state->GetPrefs()));
 
   // Request new variations seed information from server.
   variations::VariationsService* variations_service =
