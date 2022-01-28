@@ -7,7 +7,11 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"');
+GEN('#include "chrome/browser/profiles/profile.h"');
+GEN('#include "chrome/browser/ui/browser.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
+GEN('#include "components/prefs/pref_service.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for Polymer AccessCodeCast elements. */
@@ -25,6 +29,14 @@ const AccessCodeCastBrowserTest = class extends PolymerTest {
   /** @override */
   get featureList() {
     return {enabled: ['features::kAccessCodeCastUI']};
+  }
+
+  /** @override */
+  get testGenPreamble() {
+    return () => {
+      GEN('browser()->profile()->GetPrefs()->SetBoolean(');
+      GEN('   media_router::prefs::kAccessCodeCastEnabled, true);');
+    };
   }
 };
 

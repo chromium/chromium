@@ -119,6 +119,7 @@
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
@@ -798,9 +799,14 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncFileSystemInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISystemInfoHost)
     return &NewWebUI<SystemInfoUI>;
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
-    if (url.host_piece() == chrome::kChromeUIAccessCodeCastHost)
-      return &NewWebUI<AccessCodeCastUI>;
+  if (url.host_piece() == chrome::kChromeUIAccessCodeCastHost) {
+    if (!base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
+      return nullptr;
+    }
+    if (!media_router::GetAccessCodeCastEnabledPref(profile->GetPrefs())) {
+      return nullptr;
+    }
+    return &NewWebUI<AccessCodeCastUI>;
   }
   if (base::FeatureList::IsEnabled(features::kSupportTool) &&
       url.host_piece() == chrome::kChromeUISupportToolHost)
