@@ -415,6 +415,11 @@ bool Http2Connection::OnDataForStream(StreamId stream_id,
   return true;
 }
 
+bool Http2Connection::OnDataPaddingLength(StreamId stream_id,
+                                          size_t padding_length) {
+  return true;
+}
+
 bool Http2Connection::OnGoAway(StreamId last_accepted_stream_id,
                                http2::adapter::Http2ErrorCode error_code,
                                absl::string_view opaque_data) {
