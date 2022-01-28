@@ -142,11 +142,14 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       scoped_refptr<VASurface>* input_surface,
       scoped_refptr<VASurface>* reconstructed_surface);
 
-  // Creates |num_frames_in_flight_|+1 ScopedVASurfaces using |vaapi_wrapper_|
-  // whose sizes are |encode_size|. Returns false if the surfaces fail to be
-  // created successfully. The created surfaces are filled into
-  // |available_encode_surfaces_[encode_size]|.
-  bool CreateEncodeSurfacesIfNeeded(const gfx::Size& encode_size);
+  // Creates one |encode_size| VASurface using |vaapi_wrapper_|.
+  // It returns a reference of an exiting available surface. If there is no
+  // available surface and the number of previously allocated surfaces is less
+  // than threshold, then it returns a reference to the newly created
+  // surface, that is also added to |available_encode_surfaces_[encode_size]|.
+  // Returns nullptr if too many surfaces have already been allocated, or if
+  // creation fails.
+  scoped_refptr<VASurface> CreateEncodeSurface(const gfx::Size& encode_size);
 
   // Creates VASurface using |vaapi_wrapper| whose sizes are |encode_size|
   // with |surface_usage_hints|. Returns nullptr if the surfaces fail to be
@@ -187,11 +190,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces,
       std::unique_ptr<ScopedVASurface> va_surface,
       VASurfaceID va_surface_id);
-
-  // Gets available VASurface from |va_surfaces| and returns it as
-  // scoped_refptr<VASurface>.
-  scoped_refptr<VASurface> GetAvailableVASurfaceAsRefCounted(
-      std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces);
 
   // Returns pending bitstream buffers to the client if we have both pending
   // encoded data to be completed and bitstream buffers available to download
