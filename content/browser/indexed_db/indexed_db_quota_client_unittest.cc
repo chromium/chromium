@@ -253,4 +253,26 @@ TEST_F(IndexedDBQuotaClientTest, DeleteStorageKey) {
   EXPECT_EQ(50, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 }
 
+TEST_F(IndexedDBQuotaClientTest, IncognitoQuota) {
+  auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
+      /*in_memory=*/true, base::FilePath(), base::ThreadTaskRunnerHandle::Get(),
+      nullptr);
+  auto incognito_idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
+      base::FilePath(), quota_manager->proxy(),
+      base::DefaultClock::GetInstance(),
+      /*blob_storage_context=*/mojo::NullRemote(),
+      /*file_system_access_context=*/mojo::NullRemote(),
+      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunnerHandle::Get());
+  base::RunLoop().RunUntilIdle();
+
+  IndexedDBQuotaClient client(*incognito_idb_context.get());
+
+  // No FakeIndexDB is added.
+  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
+  EXPECT_TRUE(GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host())
+                  .empty());
+  EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
+}
+
 }  // namespace content
