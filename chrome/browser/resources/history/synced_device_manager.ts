@@ -24,6 +24,7 @@ import {BrowserService} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSession, ForeignSessionTab} from './externs.js';
 import {HistorySyncedDeviceCardElement} from './synced_device_card.js';
+import {getTemplate} from './synced_device_manager.html.js';
 
 type ForeignDeviceInternal = {
   device: string,
@@ -51,6 +52,10 @@ export interface HistorySyncedDeviceManagerElement {
 export class HistorySyncedDeviceManagerElement extends PolymerElement {
   static get is() {
     return 'history-synced-device-manager';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -335,10 +340,6 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   searchTermChanged() {
     this.clearDisplayedSyncedDevices_();
     this.updateSyncedDevices(this.sessionList);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

@@ -9,9 +9,10 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {URLVisit} from './history_clusters.mojom-webui.js';
+import {getTemplate} from './top_visit.html.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a top visit
@@ -31,7 +32,7 @@ class TopVisitElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

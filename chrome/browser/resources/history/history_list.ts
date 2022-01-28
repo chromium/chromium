@@ -19,12 +19,13 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {BROWSING_GAP_TIME, UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import {HistoryItemElement, searchResultsTitle} from './history_item.js';
+import {getTemplate} from './history_list.html.js';
 
 type OpenMenuEvent = CustomEvent<{
   index: number,
@@ -67,6 +68,10 @@ const HistoryListElementBase = WebUIListenerMixin(I18nMixin(PolymerElement));
 export class HistoryListElement extends HistoryListElementBase {
   static get is() {
     return 'history-list';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -601,10 +606,6 @@ export class HistoryListElement extends HistoryListElementBase {
    */
   private onHistoryDataChanged_() {
     this.$['infinite-list'].fire('iron-resize');
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

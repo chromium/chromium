@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QueryState} from './externs.js';
+import {getTemplate} from './router.html.js';
 
 // All valid pages.
 export enum Page {
@@ -25,7 +26,7 @@ export class HistoryRouterElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

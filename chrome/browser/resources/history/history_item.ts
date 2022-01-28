@@ -22,6 +22,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 import {BrowserService} from './browser_service.js';
 import {UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 import {HistoryEntry} from './externs.js';
+import {getTemplate} from './history_item.html.js';
 
 export interface HistoryItemElement {
   $: {
@@ -40,6 +41,10 @@ const HistoryItemElementBase =
 export class HistoryItemElement extends HistoryItemElementBase {
   static get is() {
     return 'history-item';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -355,10 +360,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
   getCustomEquivalent(sampleElement: Element): Element|null {
     return sampleElement.getAttribute('focus-type') === 'star' ? this.$.link :
                                                                  null;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

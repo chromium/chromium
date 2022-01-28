@@ -26,8 +26,9 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import {BrowserService} from './browser_service.js';
 import {HistoryPageViewHistogram} from './constants.js';
 import {ForeignSession, QueryResult, QueryState} from './externs.js';
@@ -137,6 +138,10 @@ const HistoryAppElementBase =
 export class HistoryAppElement extends HistoryAppElementBase {
   static get is() {
     return 'history-app';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -560,10 +565,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   // Override FindShortcutMixin methods.
   searchInputHasFocus(): boolean {
     return this.$.toolbar.searchField.isSearchFocused();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 
