@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -1016,6 +1017,9 @@ TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
 }
 
 TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
+  base::HistogramTester histogram_tester;
+  const char kOnLoginsChangedMetric[] =
+      "PasswordManager.PasswordStore.OnLoginsChanged";
   const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
@@ -1035,6 +1039,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
               OnLoginsChanged(store.get(), ElementsAre(EqRemoval(kTestForm))));
   store->RemoveLogin(kTestForm);
   WaitForPasswordStore();
+  histogram_tester.ExpectTotalCount(kOnLoginsChangedMetric, 1);
 
   store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();

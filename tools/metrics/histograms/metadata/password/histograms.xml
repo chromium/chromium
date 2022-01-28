@@ -1802,6 +1802,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStore.OnLoginsChanged" enum="Boolean"
+    expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Recorded whenever PasswordStore notifies consumers about changes to logins.
+    Changes can be made locally (in settings, in bubbles etc.) or remotely (via
+    sync). Records only true.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
     units="count" expires_after="2022-06-30">
