@@ -163,7 +163,10 @@ bool IsSortedAndContiguous(base::span<const int> sequence) {
 
 }  // namespace
 
-TabStripPageHandler::~TabStripPageHandler() = default;
+TabStripPageHandler::~TabStripPageHandler() {
+  ThemeServiceFactory::GetForProfile(browser_->profile())->RemoveObserver(this);
+  theme_observation_.Reset();
+}
 
 TabStripPageHandler::TabStripPageHandler(
     mojo::PendingReceiver<tab_strip::mojom::PageHandler> receiver,

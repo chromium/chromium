@@ -130,6 +130,7 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
   }
   void TearDown() override {
     web_contents_.reset();
+    handler_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -187,10 +188,6 @@ TEST_F(TabStripPageHandlerTest, GroupStateChangedEvents) {
                          extensions::ExtensionTabUtil::GetTabId(
                              browser()->tab_strip_model()->GetWebContentsAt(1)),
                          1, absl::optional<std::string>()));
-  EXPECT_CALL(page_, TabGroupStateChanged(
-                         extensions::ExtensionTabUtil::GetTabId(
-                             browser()->tab_strip_model()->GetWebContentsAt(0)),
-                         0, absl::optional<std::string>()));
 }
 
 TEST_F(TabStripPageHandlerTest, GetGroupVisualData) {
