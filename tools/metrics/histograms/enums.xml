@@ -16530,10 +16530,21 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="CookieSameSite">
+  <obsolete>
+    Deprecated 1/2022 in favor of CookieSameSite2, which starts at 0 and so
+    supports non-sparse histograms.
+  </obsolete>
   <int value="-1" label="No SameSite attribute is specified."/>
   <int value="0" label="SameSite=None"/>
   <int value="1" label="SameSite=Lax"/>
   <int value="2" label="SameSite=Strict"/>
+</enum>
+
+<enum name="CookieSameSite2">
+  <int value="0" label="No SameSite attribute is specified."/>
+  <int value="1" label="SameSite=None"/>
+  <int value="2" label="SameSite=Lax"/>
+  <int value="3" label="SameSite=Strict"/>
 </enum>
 
 <enum name="CookieSameSiteString">
