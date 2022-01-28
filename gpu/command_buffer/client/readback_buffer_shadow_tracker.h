@@ -22,7 +22,9 @@ class ReadbackBufferShadowTracker {
  public:
   class Buffer : public base::SupportsWeakPtr<Buffer> {
    public:
-    explicit Buffer(GLuint buffer_id, ReadbackBufferShadowTracker* tracker);
+    explicit Buffer(GLuint buffer_id,
+                    MappedMemoryManager* mapped_memory,
+                    GLES2CmdHelper* helper);
 
     Buffer(const Buffer&) = delete;
     Buffer& operator=(const Buffer&) = delete;
@@ -46,7 +48,8 @@ class ReadbackBufferShadowTracker {
     friend class ReadbackBufferShadowTracker;
 
     GLuint buffer_id_ = 0;
-    raw_ptr<ReadbackBufferShadowTracker> tracker_;
+    raw_ptr<MappedMemoryManager> mapped_memory_;
+    raw_ptr<GLES2CmdHelper> helper_;
     int32_t shm_id_ = 0;
     uint32_t shm_offset_ = 0;
     raw_ptr<void> readback_shm_address_ = nullptr;
