@@ -416,8 +416,8 @@ const newTreeElement = (() => {
 
   // Process response of an initial load / upload.
   function processLoadTreeResponse(message) {
-    const {diffMode, beforeBlobUrl, loadBlobUrl, isMultiContainer, root} =
-        message.loadResults;
+    const {diffMode} = message;
+    const {beforeBlobUrl, loadBlobUrl, isMultiContainer} = message.loadResults;
     console.log(
         '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
         'font-weight:bold;color:red;', '')
@@ -426,8 +426,6 @@ const newTreeElement = (() => {
 
     state.set('diff_mode', diffMode ? 'on' : null);
     document.body.classList.toggle('diff', Boolean(diffMode));
-    const noSymbols = Object.keys(root.childStats).length === 0;
-    toggleNoSymbolsMessage(noSymbols);
 
     const groupByEl = document.getElementById('group-by-container');
     groupByEl.toggleAttribute('disabled', !isMultiContainer);
@@ -446,9 +444,8 @@ const newTreeElement = (() => {
     const {root} = message;
     _progress.setValue(1);
 
-    if (Object.keys(root.childStats).length === 0) {
-      displayNoSymbolsMessage();
-    }
+    const noSymbols = (Object.keys(root.childStats).length === 0);
+    toggleNoSymbolsMessage(noSymbols);
 
     /** @type {DocumentFragment | null} */
     let rootElement = null;
@@ -495,9 +492,9 @@ const newTreeElement = (() => {
    * @param {boolean} show
    */
   function toggleNoSymbolsMessage(show) {
-      const errorModal = document.getElementById('error-modal');
-      errorModal.querySelector('div').style.alignItems = 'center';
-      errorModal.style.display = show ? '' : 'none';
+    const errorModal = document.getElementById('error-modal');
+    errorModal.querySelector('div').style.alignItems = 'center';
+    errorModal.style.display = show ? '' : 'none';
   }
 
   async function performInitialLoad() {
