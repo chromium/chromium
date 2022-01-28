@@ -1223,6 +1223,18 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
         base::BindOnce(&NetworkProfileBubble::CheckNetworkProfile,
                        profile->GetPath()));
   }
+
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // Create the spellcheck service. This will asynchronously retrieve the
+  // Windows platform spellcheck dictionary language tags used to populate the
+  // context menu for editable content.
+  if (spellcheck::UseBrowserSpellChecker() &&
+      profile->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
+      !base::FeatureList::IsEnabled(
+          spellcheck::kWinDelaySpellcheckServiceInit)) {
+    SpellcheckServiceFactory::GetForContext(profile);
+  }
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1555,19 +1567,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   Profile* profile = profile_info.profile;
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  // Create the spellcheck service. This will asynchronously retrieve the
-  // Windows platform spellcheck dictionary language tags used to populate the
-  // context menu for editable content.
-  if (profile_info.mode == StartupProfileMode::kBrowserWindow &&
-      spellcheck::UseBrowserSpellChecker() &&
-      profile->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
-      !base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
-    SpellcheckServiceFactory::GetForContext(profile);
-  }
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 #if !BUILDFLAG(IS_ANDROID)
   // The first run sentinel must be created after the process singleton was
