@@ -137,6 +137,8 @@ Output = class {
      * @private {!WeakSet<!AutomationNode>}
      */
     this.formattedAncestors_ = new WeakSet();
+    /** @private {!Object<string, string>} */
+    this.replacements_ = {};
   }
 
   /**
@@ -401,6 +403,15 @@ Output = class {
   }
 
   /**
+   * Causes any speech output to apply the replacement.
+   * @param {string} text The text to be replaced.
+   * @param {string} replace What to replace |text| with.
+   */
+  withSpeechTextReplacement(text, replace) {
+    this.replacements_[text] = replace;
+  }
+
+  /**
    * Suppresses processing of a token for subsequent formatting commands.
    * @param {string} token
    * @return {!Output}
@@ -547,8 +558,11 @@ Output = class {
       if (i === this.speechBuffer_.length - 1) {
         speechProps['endCallback'] = this.speechEndCallback_;
       }
-
-      ChromeVox.tts.speak(buff.toString(), queueMode, speechProps);
+      let finalSpeech = buff.toString();
+      for (const text in this.replacements_) {
+        finalSpeech = finalSpeech.replace(text, this.replacements_[text]);
+      }
+      ChromeVox.tts.speak(finalSpeech, queueMode, speechProps);
 
       // Skip resetting |queueMode| if the |text| is empty. If we don't do this,
       // and the tts engine doesn't generate a callback, we might not properly

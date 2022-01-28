@@ -2259,11 +2259,12 @@ TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', function() {
         .call(this.press(KeyCode.RIGHT))
         .call(this.press(KeyCode.RIGHT))
         .call(this.press(KeyCode.RIGHT))
+        // This first cell is on a new line.
+        .expectSpeech('\n', 'row 1 column 1')
+        .call(this.press(KeyCode.RIGHT))
         // Non-breaking spaces (\u00a0) get preprocessed later by TtsBackground
         // to ' '. This comes as part of speak line output in
         // AutomationRichEditableText.
-        .expectSpeech('\u00a0', 'row 1 column 1')
-        .call(this.press(KeyCode.RIGHT))
         .expectSpeech('\u00a0')
         .call(this.press(KeyCode.RIGHT))
         .expectSpeech('\u00a0', 'row 1 column 2')
@@ -2275,6 +2276,78 @@ TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', function() {
         .expectSpeech('\u00a0')
         .call(this.press(KeyCode.RIGHT))
         .expectSpeech('\u00a0', 'row 2 column 2')
+
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxEditingTest', 'NonbreakingSpaceNewLineOrSpace', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable="true" role="textbox">
+      <p>first line</p>
+      <div><span>&nbsp;</span></div>
+      <div><span>&nbsp;</span></div>
+      <div><span>&nbsp;</span></div>
+      <p>last line</p>
+    </div>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    await this.focusFirstTextField(root);
+
+    const textField = root.find({role: RoleType.TEXT_FIELD});
+    mockFeedback.expectSpeech('Text area')
+        .call(this.press(KeyCode.HOME, {ctrl: true}))
+        .call(this.press(KeyCode.DOWN))
+        .expectSpeech('\n')
+        .call(this.press(KeyCode.DOWN))
+        .expectSpeech('\n')
+        .call(this.press(KeyCode.DOWN))
+        .expectSpeech('\n')
+        .call(this.press(KeyCode.DOWN))
+        .expectSpeech('last line')
+
+        .call(this.press(KeyCode.UP))
+        .expectSpeech('\n')
+        .call(this.press(KeyCode.UP))
+        .expectSpeech('\n')
+        .call(this.press(KeyCode.UP))
+        .expectSpeech('\n')
+        .call(this.press(KeyCode.UP))
+        .expectSpeech('first line')
+
+        .call(this.press(KeyCode.DOWN))
+        .expectSpeech('\n')
+
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('l')
+
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('\n')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('e')
 
         .replay();
   });
