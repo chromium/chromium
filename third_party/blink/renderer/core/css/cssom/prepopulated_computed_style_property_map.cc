@@ -19,8 +19,7 @@ PrepopulatedComputedStylePropertyMap::PrepopulatedComputedStylePropertyMap(
     const Document& document,
     const ComputedStyle& style,
     const Vector<CSSPropertyID>& native_properties,
-    const Vector<AtomicString>& custom_properties)
-    : StylePropertyMapReadOnlyMainThread() {
+    const Vector<AtomicString>& custom_properties) {
   // NOTE: This may over-reserve as shorthand properties will get dropped from
   // being in the map.
   native_values_.ReserveCapacityForSize(native_properties.size());
@@ -62,8 +61,8 @@ void PrepopulatedComputedStylePropertyMap::UpdateNativeProperty(
     CSSPropertyID property_id) {
   native_values_.Set(property_id, CSSProperty::Get(property_id)
                                       .CSSValueFromComputedStyle(
-                                          style, /* layout_object */ nullptr,
-                                          /* allow_visited_style */ false));
+                                          style, /*layout_object=*/nullptr,
+                                          /*allow_visited_style=*/false));
 }
 
 void PrepopulatedComputedStylePropertyMap::UpdateCustomProperty(
@@ -72,8 +71,8 @@ void PrepopulatedComputedStylePropertyMap::UpdateCustomProperty(
     const AtomicString& property_name) {
   CSSPropertyRef ref(property_name, document);
   const CSSValue* value = ref.GetProperty().CSSValueFromComputedStyle(
-      style, /* layout_object */ nullptr,
-      /* allow_visited_style */ false);
+      style, /*layout_object=*/nullptr,
+      /*allow_visited_style=*/false);
   if (!value)
     value = CSSUnparsedValue::Create()->ToCSSValue();
 
@@ -82,7 +81,8 @@ void PrepopulatedComputedStylePropertyMap::UpdateCustomProperty(
 
 const CSSValue* PrepopulatedComputedStylePropertyMap::GetProperty(
     CSSPropertyID property_id) const {
-  return native_values_.at(property_id);
+  auto it = native_values_.find(property_id);
+  return it != native_values_.end() ? it->value : nullptr;
 }
 
 const CSSValue* PrepopulatedComputedStylePropertyMap::GetCustomProperty(
