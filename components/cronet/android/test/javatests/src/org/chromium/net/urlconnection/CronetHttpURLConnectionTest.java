@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -229,9 +228,6 @@ public class CronetHttpURLConnectionTest {
         connection.disconnect();
     }
 
-    /**
-     * Tests that using reflection to find {@code fixedContentLengthLong} works.
-     */
     @Test
     @SmallTest
     @Feature({"Cronet"})
@@ -244,9 +240,27 @@ public class CronetHttpURLConnectionTest {
         connection.setRequestMethod("POST");
         String dataString = "some very important data";
         byte[] data = dataString.getBytes();
-        Class<?> c = connection.getClass();
-        Method method = c.getMethod("setFixedLengthStreamingMode", new Class[] {long.class});
-        method.invoke(connection, (long) data.length);
+        connection.setFixedLengthStreamingMode((long) data.length);
+        OutputStream out = connection.getOutputStream();
+        out.write(data);
+        assertEquals(200, connection.getResponseCode());
+        assertEquals("OK", connection.getResponseMessage());
+        assertEquals(dataString, TestUtil.getResponseAsString(connection));
+        connection.disconnect();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunCronetHttpURLConnection
+    public void testSetFixedLengthStreamingModeInt() throws Exception {
+        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        String dataString = "some very important data";
+        byte[] data = dataString.getBytes();
+        connection.setFixedLengthStreamingMode((int) data.length);
         OutputStream out = connection.getOutputStream();
         out.write(data);
         assertEquals(200, connection.getResponseCode());
