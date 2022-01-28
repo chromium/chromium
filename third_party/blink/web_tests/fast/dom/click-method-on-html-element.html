@@ -1,39 +1,24 @@
-<html>
-<head>
-<script src="../../resources/js-test.js"></script>
-</head>
-<body>
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/element_names.js"></script>
+
 <p>The support of click() method on HTMLElement.</p>
-<div id="console"></div>
+
 <script>
-var success;
-function clickHandler(event) {
-    success = true;
-}
-
-function runTests(tagName) {
-    success = false;
-    var element = document.createElement(tagName);
-    element.addEventListener('click', clickHandler, false);
-
+function runTest(tagName) {
+  test(t => {
+    const element = document.createElement(tagName);
+    let success = false;
+    element.addEventListener('click', () => {success=true;}, false);
     element.click();
-    if (success)
-        debug("Pass: Click event handler called for: " + tagName);
-    else
-        debug("Pass: Click event handler wasn't called for: " + tagName);
+    assert_true(success,'Click handler was not called');
+  },tagName);
 }
 
-var tagNames = ["a","abbr","acronym","address","applet","area","article","aside","audio","b","base","basefont","bdo","bgsound","big","blockquote",
-    "body","br","button","canvas","caption","center","cite","code","col","colgroup","command","datalist","dd","del","details","dfn","dir","div","dl","dt",
-    "em","embed","fieldset","figcaption","figure","font","footer","form","frame","frameset","h1","h2","h3","h4","h5","h6","head","header","hgroup","hr","html",
-    "i","iframe","img","input","ins","isindex","kbd","keygen","label","layer","legend","li","link","listing","main","map","mark","marquee","menu","meta","meter","nav",
-    "nobr","noembed","noframes","nolayer","noscript","object","ol","optgroup","option","output","p","param","plaintext","pre","progress","q","rp","rt","ruby","s",
-    "samp","script","section","select","small","source","span","strike","strong","style","sub","summary","sup","table","tbody","td","textarea","tfoot","th","thead",
-    "title","tr","track","tt","u","ul","var","video","wbr","xmp"];
-
+// This list used to also contain 'layer', 'listing', and 'nolayer'.
+const tagNames = [...HTML5_ELEMENTS, ...HTML5_DEPRECATED_ELEMENTS];
 for (var i =0 ; i < tagNames.length; i++)
-    runTests(tagNames[i]);
+    runTest(tagNames[i]);
 
 </script>
-</body>
-</html>

@@ -1,11 +1,29 @@
 <html>
+<script src="../../resources/element_names.js"></script>
 <body>
 </body>
 <script>
 if (window.testRunner)
     testRunner.dumpAsText();
 
-var tags = ['a', 'abbr', 'acronym', 'address', 'applet', 'area', 'article', 'aside', 'audio', 'b', 'base', 'basefont', 'bdo', 'bgsound', 'big', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'command', 'datagrid', 'datalist', 'dcell', 'dcol', 'drow', 'dd', 'del', 'details', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'frame', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'child', 'image', 'img', 'input', 'ins', 'isindex', 'kbd', 'keygen', 'label', 'layer', 'legend', 'li', 'link', 'listing', 'main', 'map', 'mark', 'marquee', 'menu', 'meta', 'meter', 'nav', 'nobr', 'noembed', 'noframes', 'nolayer', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'plaintext', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'title', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr', 'xmp', 'noscript', 'noscript', 'math', 'mfrac', 'mfenced', 'msubsup', 'mrow', 'mover', 'munder', 'munderover', 'msqrt', 'mroot', 'mi', 'mn', 'mo', 'mtext', 'msub', 'msup', 'ms', 'mglyph', 'malignmark', 'annotation-xml', 'a', 'access', 'anchor', 'br', 'card', 'do', 'fieldset', 'go', 'head', 'img', 'input', 'insertedLegend', 'meta', 'noop', 'onevent', 'optgroup', 'option', 'p', 'postfield', 'prev', 'refresh', 'select', 'setvar', 'table', 'td', 'template', 'timer', 'tr', 'a', 'altGlyph', 'altGlyphDef', 'altGlyphItem', 'animate', 'animateColor', 'animateMotion', 'animateTransform', 'set', 'circle', 'clipPath', 'color_profile', 'cursor', 'defs', 'desc', 'ellipse', 'feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence', 'filter', 'font', 'font_face', 'font_face_format', 'font_face_name', 'font_face_src', 'font_face_uri', 'foreignObject', 'g', 'glyph', 'glyphRef', 'hkern', 'image', 'line', 'linearGradient', 'marker', 'mask', 'metadata', 'missing_glyph', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'script', 'stop', 'style', 'svg', 'switch', 'symbol', 'text', 'textPath', 'title', 'tref', 'tspan', 'use', 'view', 'vkern']
+const other_tags = [
+  'datagrid', 'dcell', 'dcol', 'drow', 'child', 'layer', 'listing', 'nolayer',
+  'math', 'mfrac', 'mfenced', 'msubsup', 'mrow', 'mover', 'munder', 'munderover',
+  'msqrt', 'mroot', 'mi', 'mn', 'mo', 'mtext', 'msub', 'msup', 'ms', 'mglyph',
+  'malignmark', 'annotation-xml', 'access', 'anchor', 'card', 'do', 'go',
+  'insertedLegend', 'noop', 'onevent', 'postfield', 'prev', 'refresh', 'setvar', 'timer',
+  'altGlyph', 'altGlyphDef', 'altGlyphItem', 'animate', 'animateColor', 'animateMotion',
+  'animateTransform', 'set', 'circle', 'color_profile', 'cursor', 'defs', 'desc',
+  'ellipse', 'feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite',
+  'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight',
+  'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage',
+  'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting',
+  'feSpotLight', 'feTile', 'feTurbulence', 'filter', 'font_face',
+  'font_face_format', 'font_face_name', 'font_face_src', 'font_face_uri', 'foreignObject', 'g', 'glyph',
+  'glyphRef', 'hkern', 'line', 'linearGradient', 'marker', 'mask', 'metadata', 'missing_glyph', 'mpath',
+  'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'stop', 'svg', 'switch', 'symbol',
+  'text', 'textPath', 'tref', 'tspan', 'use', 'view', 'vkern'];
+const tags = [...HTML5_ELEMENTS, ...HTML5_DEPRECATED_ELEMENTS, ...other_tags];
 
 for (i = 0; i < tags.length; i++)
 {
