@@ -166,7 +166,6 @@ template("mixed_target") {
       if (!defined(configs)) {
         configs = []
       }
-      configs += [ "//build/rust:rust_enabled" ]
       if (defined(invoker.rs_cxx_bindings)) {
         deps += [
           # Generate the C++ side of any Rust bindings.

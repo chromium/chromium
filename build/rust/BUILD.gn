@@ -14,10 +14,6 @@ config("edition_2015") {
   rustflags = [ "--edition=2015" ]
 }
 
-config("rust_enabled") {
-  defines = [ "RUST_ENABLED" ]
-}
-
 # The required config for cxx-generated bindings because Chromium C++ is built
 # with -fno-exceptions.
 config("cxx_cppconfig") {
