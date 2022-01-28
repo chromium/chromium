@@ -93,14 +93,13 @@ class PrintBackendServiceManager {
 
   // Overrides the print backend service for testing.  Caller retains ownership
   // of `remote`.
-  void SetServiceForTesting(
-      mojo::Remote<printing::mojom::PrintBackendService>* remote);
+  void SetServiceForTesting(mojo::Remote<mojom::PrintBackendService>* remote);
 
   // Overrides the print backend service for testing when an alternate service
   // is required for fallback processing after an access denied error.  Caller
   // retains ownership of `remote`.
   void SetServiceForFallbackTesting(
-      mojo::Remote<printing::mojom::PrintBackendService>* remote);
+      mojo::Remote<mojom::PrintBackendService>* remote);
 
   // There is to be at most one instance of this at a time.
   static PrintBackendServiceManager& GetInstance();
@@ -150,8 +149,7 @@ class PrintBackendServiceManager {
 #endif
 
   using RemotesMap =
-      base::flat_map<std::string,
-                     mojo::Remote<printing::mojom::PrintBackendService>>;
+      base::flat_map<std::string, mojo::Remote<mojom::PrintBackendService>>;
 
   // PrintBackendServiceManager needs to be able to run a callback either after
   // a successful return from the service or after the remote was disconnected.
@@ -178,13 +176,13 @@ class PrintBackendServiceManager {
   // Acquires a remote handle to the Print Backend Service instance, launching a
   // process to host the service if necessary. `is_sandboxed` is set to indicate
   // if the service was launched within a sandbox.
-  const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
+  const mojo::Remote<mojom::PrintBackendService>& GetService(
       const std::string& printer_name,
       bool* is_sandboxed);
 
   // Help function to reset idle timeout duration to a short value.
   void UpdateServiceToShortIdleTimeout(
-      mojo::Remote<printing::mojom::PrintBackendService>& service,
+      mojo::Remote<mojom::PrintBackendService>& service,
       bool sandboxed,
       const std::string& remote_id);
 
@@ -218,9 +216,9 @@ class PrintBackendServiceManager {
 
   // Helper function to get the service and initialize a `context` for a given
   // `printer_name`.
-  const mojo::Remote<printing::mojom::PrintBackendService>&
-  GetServiceAndCallbackContext(const std::string& printer_name,
-                               CallbackContext& context);
+  const mojo::Remote<mojom::PrintBackendService>& GetServiceAndCallbackContext(
+      const std::string& printer_name,
+      CallbackContext& context);
 
   // Helper function to save outstanding callbacks.
   template <class T, class X>
@@ -274,9 +272,8 @@ class PrintBackendServiceManager {
   RemotesMap unsandboxed_remotes_;
 
   // Keeps remotes for wrapping service hosts alive until they disconnect.
-  mojo::RemoteSet<printing::mojom::SandboxedPrintBackendHost> sandboxed_hosts_;
-  mojo::RemoteSet<printing::mojom::UnsandboxedPrintBackendHost>
-      unsandboxed_hosts_;
+  mojo::RemoteSet<mojom::SandboxedPrintBackendHost> sandboxed_hosts_;
+  mojo::RemoteSet<mojom::UnsandboxedPrintBackendHost> unsandboxed_hosts_;
 
   // Set of IDs for clients actively engaged in printing.  This could include
   // tabs in print preview as well as an active system print.  Retention of a
@@ -327,9 +324,9 @@ class PrintBackendServiceManager {
   std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_keys_;
 
   // Override of service to use for testing.
-  raw_ptr<mojo::Remote<printing::mojom::PrintBackendService>>
+  raw_ptr<mojo::Remote<mojom::PrintBackendService>>
       sandboxed_service_remote_for_test_ = nullptr;
-  raw_ptr<mojo::Remote<printing::mojom::PrintBackendService>>
+  raw_ptr<mojo::Remote<mojom::PrintBackendService>>
       unsandboxed_service_remote_for_test_ = nullptr;
 };
 

@@ -123,7 +123,7 @@ uint32_t PrintBackendServiceManager::RegisterClient() {
     // which never goes away.
     DVLOG(1) << "Updating to long idle timeout for print backend service id `"
              << remote_id << "`";
-    mojo::Remote<printing::mojom::PrintBackendService>& service = iter->second;
+    mojo::Remote<mojom::PrintBackendService>& service = iter->second;
     service.set_idle_handler(
         kClientsRegisteredResetOnIdleTimeout,
         base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
@@ -156,12 +156,12 @@ void PrintBackendServiceManager::UnregisterClient(uint32_t id) {
   // them immediately here, in case a user immediately reopens a Print Preview.
   for (auto& iter : sandboxed_remotes_) {
     const std::string& remote_id = iter.first;
-    mojo::Remote<printing::mojom::PrintBackendService>& service = iter.second;
+    mojo::Remote<mojom::PrintBackendService>& service = iter.second;
     UpdateServiceToShortIdleTimeout(service, /*sandboxed=*/true, remote_id);
   }
   for (auto& iter : unsandboxed_remotes_) {
     const std::string& remote_id = iter.first;
-    mojo::Remote<printing::mojom::PrintBackendService>& service = iter.second;
+    mojo::Remote<mojom::PrintBackendService>& service = iter.second;
     UpdateServiceToShortIdleTimeout(service, /*sandboxed=*/false, remote_id);
   }
 }
@@ -329,7 +329,7 @@ void PrintBackendServiceManager::SetPrinterDriverRequiresElevatedPrivilege(
 }
 
 void PrintBackendServiceManager::SetServiceForTesting(
-    mojo::Remote<printing::mojom::PrintBackendService>* remote) {
+    mojo::Remote<mojom::PrintBackendService>* remote) {
   sandboxed_service_remote_for_test_ = remote;
   sandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
       &PrintBackendServiceManager::OnRemoteDisconnected, base::Unretained(this),
@@ -337,7 +337,7 @@ void PrintBackendServiceManager::SetServiceForTesting(
 }
 
 void PrintBackendServiceManager::SetServiceForFallbackTesting(
-    mojo::Remote<printing::mojom::PrintBackendService>* remote) {
+    mojo::Remote<mojom::PrintBackendService>* remote) {
   unsandboxed_service_remote_for_test_ = remote;
   unsandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
       &PrintBackendServiceManager::OnRemoteDisconnected, base::Unretained(this),
@@ -378,7 +378,7 @@ std::string PrintBackendServiceManager::GetRemoteIdForPrinterName(
 #endif
 }
 
-const mojo::Remote<printing::mojom::PrintBackendService>&
+const mojo::Remote<mojom::PrintBackendService>&
 PrintBackendServiceManager::GetService(const std::string& printer_name,
                                        bool* is_sandboxed) {
   bool should_sandbox = !PrinterDriverRequiresElevatedPrivilege(printer_name);
@@ -414,18 +414,18 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
   auto iter = remote.find(remote_id);
   if (iter == remote.end()) {
     // First time for this `remote_id`.
-    auto result = remote.emplace(
-        printer_name, mojo::Remote<printing::mojom::PrintBackendService>());
+    auto result = remote.emplace(printer_name,
+                                 mojo::Remote<mojom::PrintBackendService>());
     iter = result.first;
   }
 
-  mojo::Remote<printing::mojom::PrintBackendService>& service = iter->second;
+  mojo::Remote<mojom::PrintBackendService>& service = iter->second;
   if (!service) {
     VLOG(1) << "Launching print backend "
             << (should_sandbox ? "sandboxed" : "unsandboxed") << " for '"
             << remote_id << "'";
     if (should_sandbox) {
-      mojo::Remote<printing::mojom::SandboxedPrintBackendHost> sandboxed;
+      mojo::Remote<mojom::SandboxedPrintBackendHost> sandboxed;
       content::ServiceProcessHost::Launch(
           sandboxed.BindNewPipeAndPassReceiver(),
           content::ServiceProcessHost::Options()
@@ -434,7 +434,7 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
       sandboxed->BindBackend(service.BindNewPipeAndPassReceiver());
       sandboxed_hosts_.Add(std::move(sandboxed));
     } else {
-      mojo::Remote<printing::mojom::UnsandboxedPrintBackendHost> unsandboxed;
+      mojo::Remote<mojom::UnsandboxedPrintBackendHost> unsandboxed;
       content::ServiceProcessHost::Launch(
           unsandboxed.BindNewPipeAndPassReceiver(),
           content::ServiceProcessHost::Options()
@@ -472,7 +472,7 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
 }
 
 void PrintBackendServiceManager::UpdateServiceToShortIdleTimeout(
-    mojo::Remote<printing::mojom::PrintBackendService>& service,
+    mojo::Remote<mojom::PrintBackendService>& service,
     bool sandboxed,
     const std::string& remote_id) {
   DVLOG(1) << "Updating to short idle timeout for "
@@ -593,7 +593,7 @@ PrintBackendServiceManager::GetRemoteSavedRenderPrintedPageCallbacks(
 }
 #endif
 
-const mojo::Remote<printing::mojom::PrintBackendService>&
+const mojo::Remote<mojom::PrintBackendService>&
 PrintBackendServiceManager::GetServiceAndCallbackContext(
     const std::string& printer_name,
     CallbackContext& context) {
