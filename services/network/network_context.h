@@ -631,7 +631,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CanUploadDomainReliability(const GURL& origin,
                                   base::OnceCallback<void(bool)> callback);
 
-  void OnVerifyCertForSignedExchangeComplete(int cert_verify_id, int result);
+  void OnVerifyCertForSignedExchangeComplete(uint64_t cert_verify_id,
+                                             int result);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void TrustAnchorUsed();
@@ -787,7 +788,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   raw_ptr<NetworkServiceProxyDelegate> proxy_delegate_ = nullptr;
 
   // Used for Signed Exchange certificate verification.
-  int next_cert_verify_id_ = 0;
+  uint64_t next_cert_verify_id_ = 0;
   struct PendingCertVerify {
     PendingCertVerify();
     ~PendingCertVerify();
@@ -803,7 +804,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     std::string ocsp_result;
     std::string sct_list;
   };
-  std::map<int, std::unique_ptr<PendingCertVerify>> cert_verifier_requests_;
+  std::map<uint64_t, std::unique_ptr<PendingCertVerify>>
+      cert_verifier_requests_;
 
   // Manages allowed origin access lists.
   cors::OriginAccessList cors_origin_access_list_;

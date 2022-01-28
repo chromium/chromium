@@ -1661,7 +1661,8 @@ void NetworkContext::VerifyCertForSignedExchange(
   if (require_network_isolation_key_)
     DCHECK(!network_isolation_key.IsEmpty());
 
-  int cert_verify_id = ++next_cert_verify_id_;
+  uint64_t cert_verify_id = ++next_cert_verify_id_;
+  CHECK_NE(0u, next_cert_verify_id_);  // The request ID should not wrap around.
   auto pending_cert_verify = std::make_unique<PendingCertVerify>();
   pending_cert_verify->callback = std::move(callback);
   pending_cert_verify->result = std::make_unique<net::CertVerifyResult>();
@@ -2668,8 +2669,9 @@ void NetworkContext::CanUploadDomainReliability(
                      std::move(callback)));
 }
 
-void NetworkContext::OnVerifyCertForSignedExchangeComplete(int cert_verify_id,
-                                                           int result) {
+void NetworkContext::OnVerifyCertForSignedExchangeComplete(
+    uint64_t cert_verify_id,
+    int result) {
   auto iter = cert_verifier_requests_.find(cert_verify_id);
   DCHECK(iter != cert_verifier_requests_.end());
 
