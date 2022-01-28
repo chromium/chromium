@@ -1091,8 +1091,9 @@ void ChromeMainDelegate::PreSandboxStartup() {
       locale = ash::startup_settings_cache::ReadAppLocale();
     }
 
-    ui::ResourceBundle::SetParseLottieAsStillImage(
-        &lottie::ParseLottieAsStillImage);
+    ui::ResourceBundle::SetLottieParsingFunctions(
+        &lottie::ParseLottieAsStillImage,
+        &lottie::ParseLottieAsThemedStillImage);
 #endif
 #if BUILDFLAG(IS_ANDROID)
     // The renderer sandbox prevents us from accessing our .pak files directly.

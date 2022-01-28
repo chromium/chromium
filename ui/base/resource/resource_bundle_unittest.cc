@@ -65,12 +65,13 @@ constexpr char kLottieData[] = "LOTTIEtest";
 
 // Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
 // properly stripped of the "LOTTIE" prefix.
-gfx::ImageSkiaRep ParseLottieAsStillImageForTesting(
+gfx::ImageSkia ParseLottieAsStillImageForTesting(
     const std::string& bytes_string) {
   CHECK_EQ("test", bytes_string);
 
   constexpr int kDimension = 16;
-  return gfx::ImageSkiaRep(gfx::Size(kDimension, kDimension), 0.f);
+  return gfx::ImageSkia(
+      gfx::ImageSkiaRep(gfx::Size(kDimension, kDimension), 0.f));
 }
 #endif
 
@@ -688,8 +689,9 @@ TEST_F(ResourceBundleImageTest, FallbackToNone) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ResourceBundleImageTest, Lottie) {
-  ui::ResourceBundle::SetParseLottieAsStillImage(
-      &ParseLottieAsStillImageForTesting);
+  ui::ResourceBundle::SetLottieParsingFunctions(
+      &ParseLottieAsStillImageForTesting,
+      /*parse_lottie_as_themed_still_image=*/nullptr);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       {k100Percent, k200Percent});
   base::FilePath data_unscaled_path = dir_path().AppendASCII("sample.pak");

@@ -8,16 +8,29 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "build/chromeos_buildflags.h"
 
 namespace gfx {
-class ImageSkiaRep;
+class ImageSkia;
+}
+
+namespace ui {
+class ImageModel;
 }
 
 namespace lottie {
 
 // Used for loading a Lottie asset intended as a still image (not animated).
 COMPONENT_EXPORT(UI_LOTTIE)
-gfx::ImageSkiaRep ParseLottieAsStillImage(const std::string& bytes_string);
+gfx::ImageSkia ParseLottieAsStillImage(const std::string& bytes_string);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Used for loading a Lottie asset intended as a still image (not animated),
+// with support for using different colors in light mode, dark mode, and
+// "elevated" dark mode (see |views::Widget::InitParams::background_elevation|).
+COMPONENT_EXPORT(UI_LOTTIE)
+ui::ImageModel ParseLottieAsThemedStillImage(const std::string& bytes_string);
+#endif
 
 }  // namespace lottie
 

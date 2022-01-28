@@ -41,8 +41,8 @@ void AshComponentsTestSuite::Initialize() {
   // it'll pass regardless of the system language.
   base::i18n::SetICUDefaultLocale("en_US");
 
-  ui::ResourceBundle::SetParseLottieAsStillImage(
-      &lottie::ParseLottieAsStillImage);
+  ui::ResourceBundle::SetLottieParsingFunctions(
+      &lottie::ParseLottieAsStillImage, &lottie::ParseLottieAsThemedStillImage);
 
   LoadTestResources();
 

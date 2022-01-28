@@ -89,8 +89,8 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::ResourceBundle::SetParseLottieAsStillImage(
-      &lottie::ParseLottieAsStillImage);
+  ui::ResourceBundle::SetLottieParsingFunctions(
+      &lottie::ParseLottieAsStillImage, &lottie::ParseLottieAsThemedStillImage);
 #endif
 
   TRACE_EVENT0("startup",
