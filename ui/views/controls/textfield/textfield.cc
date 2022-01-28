@@ -305,7 +305,6 @@ void Textfield::SetTextInputType(ui::TextInputType type) {
   text_input_type_ = type;
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
-  UpdateCursorViewPosition();
   OnCaretBoundsChanged();
   OnPropertyChanged(&text_input_type_, kPropertyEffectsPaint);
 }
@@ -1457,6 +1456,10 @@ bool Textfield::CanComposeInline() const {
   return true;
 }
 
+// TODO(mbid): GetCaretBounds is const but calls
+// RenderText::GetUpdatedCursorBounds, which is not const and in fact mutates
+// internal state. (Is it at least logically const?) Violation of const
+// correctness?
 gfx::Rect Textfield::GetCaretBounds() const {
   gfx::Rect rect = GetRenderText()->GetUpdatedCursorBounds();
   ConvertRectToScreen(this, &rect);
@@ -2401,13 +2404,17 @@ void Textfield::UpdateCursorVisibility() {
     StopBlinkingCursor();
 }
 
-void Textfield::UpdateCursorViewPosition() {
+gfx::Rect Textfield::CalculateCursorViewBounds() const {
   gfx::Rect location(GetRenderText()->GetUpdatedCursorBounds());
   location.set_x(GetMirroredXForRect(location));
   location.set_height(
       std::min(location.height(),
                GetLocalBounds().height() - location.y() - location.y()));
-  cursor_view_->SetBoundsRect(location);
+  return location;
+}
+
+void Textfield::UpdateCursorViewPosition() {
+  cursor_view_->SetBoundsRect(CalculateCursorViewBounds());
 }
 
 int Textfield::GetTextStyle() const {
@@ -2465,6 +2472,8 @@ void Textfield::OnCaretBoundsChanged() {
   // Screen reader users don't expect notifications about unfocused textfields.
   if (HasFocus())
     NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+
+  UpdateCursorViewPosition();
 }
 
 void Textfield::OnBeforeUserAction() {
@@ -2613,7 +2622,7 @@ void Textfield::StopBlinkingCursor() {
 
 void Textfield::OnCursorBlinkTimerFired() {
   DCHECK(ShouldBlinkCursor());
-  UpdateCursorViewPosition();
+  DCHECK_EQ(CalculateCursorViewBounds(), cursor_view_->bounds());
   cursor_view_->SetVisible(!cursor_view_->GetVisible());
 }
 

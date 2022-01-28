@@ -593,6 +593,9 @@ class VIEWS_EXPORT Textfield : public View,
   // Helper function to call MoveCursorTo on the TextfieldModel.
   void MoveCursorTo(const gfx::Point& point, bool select);
 
+  // Recalculates cursor view bounds based on model_.
+  gfx::Rect CalculateCursorViewBounds() const;
+
   // Convenience method to notify the InputMethod and TouchSelectionController.
   void OnCaretBoundsChanged();
 
