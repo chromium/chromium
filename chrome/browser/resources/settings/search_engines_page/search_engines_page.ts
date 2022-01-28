@@ -141,11 +141,6 @@ export class SettingsSearchEnginesPageElement extends
         value: false,
       },
 
-      showKeywordTriggerSetting_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showKeywordTriggerSetting'),
-      },
-
       isActiveSearchEnginesFlagEnabled_: {
         type: Boolean,
         value: () =>
@@ -174,7 +169,6 @@ export class SettingsSearchEnginesPageElement extends
   private dialogAnchorElement_: HTMLElement|null;
   private showEditDialog_: boolean;
   private showDeleteConfirmationDialog_: boolean;
-  private showKeywordTriggerSetting_: boolean;
   private isActiveSearchEnginesFlagEnabled_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();

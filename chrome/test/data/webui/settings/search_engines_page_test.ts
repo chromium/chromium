@@ -446,7 +446,6 @@ suite('SearchEnginePageTests', function() {
       others: searchEnginesInfo.others.slice(),
       extensions: searchEnginesInfo.extensions.slice(),
     });
-    loadTimeData.overrideValues({'showKeywordTriggerSetting': true});
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-search-engines-page');

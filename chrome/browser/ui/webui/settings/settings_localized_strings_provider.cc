@@ -1857,9 +1857,6 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean(
-      "showKeywordTriggerSetting",
-      base::FeatureList::IsEnabled(omnibox::kKeywordSpaceTriggeringSetting));
-  html_source->AddBoolean(
       "isActiveSearchEnginesFlagEnabled",
       base::FeatureList::IsEnabled(omnibox::kActiveSearchEngines));
 }

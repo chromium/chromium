@@ -981,9 +981,6 @@ extern const char kOmniboxDisableCGIParamMatchingDescription[];
 extern const char kOmniboxDocumentProviderAsoName[];
 extern const char kOmniboxDocumentProviderAsoDescription[];
 
-extern const char kOmniboxKeywordSpaceTriggeringSettingName[];
-extern const char kOmniboxKeywordSpaceTriggeringSettingDescription[];
-
 extern const char kOmniboxExperimentalSuggestScoringName[];
 extern const char kOmniboxExperimentalSuggestScoringDescription[];
 

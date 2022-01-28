@@ -2166,9 +2166,11 @@ PrefService* OmniboxEditModel::GetPrefService() const {
 }
 
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
-  return !base::FeatureList::IsEnabled(
-             omnibox::kKeywordSpaceTriggeringSetting) ||
-         GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  return GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
+#else
+  return true;
+#endif
 }
 
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(

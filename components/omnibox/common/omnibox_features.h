@@ -93,7 +93,6 @@ extern const base::Feature kBlurWithEscape;
 
 // Settings Page - these affect the appearance of the Search Engines settings
 // page
-extern const base::Feature kKeywordSpaceTriggeringSetting;
 extern const base::Feature kActiveSearchEngines;
 extern const base::Feature kSiteSearchStarterPack;
 
