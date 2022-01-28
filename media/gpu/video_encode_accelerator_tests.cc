@@ -767,7 +767,7 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
       [](VideoBitrateAllocation bitrate_allocation,
          size_t deactivate_sid) -> VideoBitrateAllocation {
     for (size_t i = 0; i < VideoBitrateAllocation::kMaxTemporalLayers; ++i)
-      bitrate_allocation.SetBitrate(deactivate_sid, i, 0);
+      bitrate_allocation.SetBitrate(deactivate_sid, i, 0u);
     return bitrate_allocation;
   };
 

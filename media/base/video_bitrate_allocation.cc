@@ -17,16 +17,13 @@ namespace media {
 constexpr size_t VideoBitrateAllocation::kMaxSpatialLayers;
 constexpr size_t VideoBitrateAllocation::kMaxTemporalLayers;
 
-VideoBitrateAllocation::VideoBitrateAllocation() : sum_(0), bitrates_{} {}
-
 bool VideoBitrateAllocation::SetBitrate(size_t spatial_index,
                                         size_t temporal_index,
-                                        int bitrate_bps) {
+                                        uint32_t bitrate_bps) {
   CHECK_LT(spatial_index, kMaxSpatialLayers);
   CHECK_LT(temporal_index, kMaxTemporalLayers);
-  CHECK_GE(bitrate_bps, 0);
 
-  base::CheckedNumeric<int> checked_sum = sum_;
+  base::CheckedNumeric<uint32_t> checked_sum = sum_;
   checked_sum -= bitrates_[spatial_index][temporal_index];
   checked_sum += bitrate_bps;
   if (!checked_sum.IsValid()) {
@@ -38,14 +35,14 @@ bool VideoBitrateAllocation::SetBitrate(size_t spatial_index,
   return true;
 }
 
-int VideoBitrateAllocation::GetBitrateBps(size_t spatial_index,
-                                          size_t temporal_index) const {
+uint32_t VideoBitrateAllocation::GetBitrateBps(size_t spatial_index,
+                                               size_t temporal_index) const {
   CHECK_LT(spatial_index, kMaxSpatialLayers);
   CHECK_LT(temporal_index, kMaxTemporalLayers);
   return bitrates_[spatial_index][temporal_index];
 }
 
-int VideoBitrateAllocation::GetSumBps() const {
+uint32_t VideoBitrateAllocation::GetSumBps() const {
   return sum_;
 }
 

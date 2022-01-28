@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace media {
 namespace {
@@ -85,7 +86,7 @@ VideoBitrateAllocation AllocateBitrateForDefaultEncodingWithBitrates(
                                             [temporal_id];
       bitrate_allocation.SetBitrate(
           spatial_id, temporal_id,
-          base::checked_cast<int>(bitrate_bps * factor));
+          base::saturated_cast<uint32_t>(bitrate_bps * factor));
     }
   }
 

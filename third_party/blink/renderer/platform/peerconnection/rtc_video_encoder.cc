@@ -824,8 +824,8 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
   // This is a workaround to zero being temporarily provided, as part of the
   // initial setup, by WebRTC.
   media::VideoBitrateAllocation allocation;
-  if (parameters.bitrate.get_sum_bps() == 0) {
-    allocation.SetBitrate(0, 0, 1);
+  if (parameters.bitrate.get_sum_bps() == 0u) {
+    allocation.SetBitrate(0, 0, 1u);
   }
   uint32_t framerate =
       std::max(1u, static_cast<uint32_t>(parameters.framerate_fps + 0.5));
@@ -848,8 +848,7 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
       }
     }
   }
-  DCHECK_EQ(allocation.GetSumBps(),
-            static_cast<int>(parameters.bitrate.get_sum_bps()));
+  DCHECK_EQ(allocation.GetSumBps(), parameters.bitrate.get_sum_bps());
   video_encoder_->RequestEncodingParametersChange(allocation, framerate);
 }
 

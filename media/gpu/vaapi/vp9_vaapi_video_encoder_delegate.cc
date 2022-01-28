@@ -397,7 +397,7 @@ bool VP9VaapiVideoEncoderDelegate::UpdateRates(
     uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (bitrate_allocation.GetSumBps() == 0 || framerate == 0)
+  if (bitrate_allocation.GetSumBps() == 0u || framerate == 0)
     return false;
 
   pending_update_rates_ = std::make_pair(bitrate_allocation, framerate);

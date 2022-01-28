@@ -58,7 +58,7 @@ interface VideoEncodeAcceleratorProvider {
 // Class that describes how video bitrate, in bps, is allocated across temporal
 // and spatial layers. See media::VideoBitrateAllocation for more details.
 struct VideoBitrateAllocation {
-  array<int32> bitrates;
+  array<uint32> bitrates;
 };
 
 // This defines a mojo transport format for

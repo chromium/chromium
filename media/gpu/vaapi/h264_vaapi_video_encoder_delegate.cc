@@ -550,6 +550,11 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.cpb_cnt_minus1 = 0;
   current_sps_.bit_rate_scale = kBitRateScale;
   current_sps_.cpb_size_scale = kCPBSizeScale;
+  // This implicitly converts from an unsigned rhs integer to a signed integer
+  // lhs (|bit_rate_value_minus1|). This is safe because
+  // |H264SPS::kBitRateScaleConstantTerm| is 6, so the bitshift is equivalent to
+  // dividing by 2^6. Therefore the resulting value is guaranteed to be in the
+  // range of a signed 32-bit integer.
   current_sps_.bit_rate_value_minus1[0] =
       (curr_params_.bitrate_allocation.GetSumBps() >>
        (kBitRateScale + H264SPS::kBitRateScaleConstantTerm)) -

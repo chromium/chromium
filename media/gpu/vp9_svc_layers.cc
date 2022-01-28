@@ -176,7 +176,7 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
   for (size_t sid = 0; sid < spatial_layer_resolutions_.size(); ++sid) {
     size_t sum = 0;
     for (size_t tid = 0; tid < num_temporal_layers_; ++tid) {
-      const int tl_bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
+      const uint32_t tl_bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
       // A bitrate of a temporal layer must be zero if the bitrates of lower
       // temporal layers are zero, e.g. {0, 0, 100}.
       if (tid > 0 && tl_bitrate > 0 && sum == 0)
@@ -192,7 +192,7 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
     // Check if the temporal layers larger than |num_temporal_layers_| are zero.
     for (size_t tid = num_temporal_layers_;
          tid < VideoBitrateAllocation::kMaxTemporalLayers; ++tid) {
-      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0)
+      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0u)
         return false;
     }
 
@@ -215,7 +215,7 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
        sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
     for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
          ++tid) {
-      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0)
+      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0u)
         return false;
     }
   }
@@ -231,9 +231,9 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
   if (begin_active_layer > 0) {
     for (size_t sid = begin_active_layer; sid < end_active_layer; ++sid) {
       for (size_t tid = 0; tid < num_temporal_layers_; ++tid) {
-        int bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
+        uint32_t bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
         bitrate_allocation->SetBitrate(sid - begin_active_layer, tid, bitrate);
-        bitrate_allocation->SetBitrate(sid, tid, 0);
+        bitrate_allocation->SetBitrate(sid, tid, 0u);
       }
     }
   }

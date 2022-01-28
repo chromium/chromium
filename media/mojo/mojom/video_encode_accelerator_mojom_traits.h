@@ -67,7 +67,7 @@ template <>
 class StructTraits<media::mojom::VideoBitrateAllocationDataView,
                    media::VideoBitrateAllocation> {
  public:
-  static std::vector<int32_t> bitrates(
+  static std::vector<uint32_t> bitrates(
       const media::VideoBitrateAllocation& bitrate_allocation);
 
   static bool Read(media::mojom::VideoBitrateAllocationDataView data,
