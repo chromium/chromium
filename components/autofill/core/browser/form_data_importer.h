@@ -121,17 +121,12 @@ class FormDataImporter {
   };
 
   // Scans the given |form| for importable Autofill data. If the form includes
-  // sufficient address data for a new profile, it is immediately imported. If
-  // the form includes sufficient credit card data for a new credit card and
-  // |credit_card_autofill_enabled| is set to |true|, it is stored into
-  // |imported_credit_card| so that we can prompt the user whether to save this
-  // data. If the form contains credit card data already present in a local
-  // credit card entry *and* |should_return_local_card| is true, the data is
-  // stored into |imported_credit_card| so that we can prompt the user whether
-  // to upload it. If the form contains UPI data and
-  // |credit_card_autofill_enabled| is true, the UPI ID will be stored into
-  // |imported_upi_id|. Returns |true| if sufficient address or credit card data
-  // was found. Exposed for testing.
+  // sufficient address data for a new profile, it is immediately imported and
+  // this function returns true. This function also returns true in cases where
+  // FormDataImporter::ImportCreditCard() returns true, please refer to the
+  // comment above that function for more details. If the form contains UPI data
+  // and |credit_card_autofill_enabled| is true, the UPI ID will be stored into
+  // |imported_upi_id| and this function will also return true.
   bool ImportFormData(const FormStructure& form,
                       bool profile_autofill_enabled,
                       bool credit_card_autofill_enabled,
@@ -160,10 +155,20 @@ class FormDataImporter {
       LogBuffer* import_log_buffer);
 
   // Go through the |form| fields and attempt to extract a new credit card in
-  // |imported_credit_card|, or update an existing card.
-  // |should_return_local_card| will indicate whether |imported_credit_card| is
-  // filled even if an existing card was updated. Success is defined as having
-  // a new card to import, or having merged with an existing card.
+  // |imported_credit_card|, or update an existing card. If we can find a local
+  // card or server card that matches the card in the form, then it will always
+  // be set in |imported_credit_card| and |imported_credit_card_record_type_|
+  // will be set to the corresponding credit card record type (for example,
+  // LOCAL_CARD). If we cannot find a local card or server card that matches the
+  // card in the form, we will set |imported_credit_card| to the extracted card
+  // from the form and |imported_credit_card_record_type_| will be set to
+  // NEW_CARD. In cases where we have both a server card and local card entry
+  // for |imported_credit_card|, we will update the local card entry but set
+  // |imported_credit_card| to the server card data as that is the source of
+  // truth, and |imported_credit_card_record_type_| will be SERVER_CARD. This
+  // function returns true if the extracted card is saveable (such as if it is a
+  // new card or a local card with upload enabled) or if it resulted in updating
+  // the data of a local card.
   bool ImportCreditCard(const FormStructure& form,
                         bool should_return_local_card,
                         std::unique_ptr<CreditCard>* imported_credit_card);
@@ -197,6 +202,17 @@ class FormDataImporter {
   // Go through the |form| fields and find a UPI ID to import. The return value
   // will be empty if no UPI ID was found.
   absl::optional<std::string> ImportUpiId(const FormStructure& form);
+
+  // |imported_credit_card| is the card from a form if it is valid (and it might
+  // be set to a copy of a LOCAL_CARD or SERVER_CARD we have saved if we were
+  // able to find a matching copy). |is_credit_card_upstream_enabled| denotes
+  // whether the user has credit card upload enabled. This function is used to
+  // prevent offering upload card save or local card save in situations where it
+  // would be invalid to offer them. For example, we should not offer to upload
+  // card if it is already a server card.
+  bool ShouldOfferUploadCardOrLocalCardSave(
+      std::unique_ptr<CreditCard>* imported_credit_card,
+      bool is_credit_card_upload_enabled);
 
   // Whether a dynamic change form is imported.
   bool from_dynamic_change_form_ = false;
@@ -252,8 +268,16 @@ class FormDataImporter {
   FRIEND_TEST_ALL_PREFIXES(AutofillMergeTest, MergeProfiles);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
                            AllowDuplicateMaskedServerCardIfFlagEnabled);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, DontDuplicateFullServerCard);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, DontDuplicateMaskedServerCard);
+  FRIEND_TEST_ALL_PREFIXES(
+      FormDataImporterTest,
+      DuplicateFullServerCardWhileContainingLocalCardCopies);
+  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, DuplicateMaskedServerCard);
+  FRIEND_TEST_ALL_PREFIXES(
+      FormDataImporterTest,
+      ImportCreditCard_DuplicateServerCards_ExtractFullCard);
+  FRIEND_TEST_ALL_PREFIXES(
+      FormDataImporterTest,
+      ImportCreditCard_DuplicateServerCards_ExtractMaskedCard);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
                            ImportFormData_AddressesDisabledOneCreditCard);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
