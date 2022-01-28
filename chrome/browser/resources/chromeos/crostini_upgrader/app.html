@@ -106,12 +106,12 @@
 
     <!-- Prompt message.  Has Learn More link.-->
     <div id="prompt-message" hidden="[[!isState_(state_, State.PROMPT)]]">
-      <span>[[getProgressMessage_(state_)]] </span>
+      <span>[[getProgressMessage_(state_, precheckStatus_)]] </span>
       <a href="$i18n{learnMoreUrl}" target="_blank">$i18n{learnMore}</a>
     </div>
     <!-- Progress message. -->
     <div id="progress-message" hidden="[[isProgressMessageHidden_(state_)]]">
-      <span>[[getProgressMessage_(state_)]]</span>
+      <span>[[getProgressMessage_(state_, precheckStatus_)]]</span>
       <!-- Progress submessage. -->
       <div id = "progress-submessage"
           hidden="[[!isState_(state_, State.UPGRADING)]]">

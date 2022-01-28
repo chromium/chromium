@@ -106,6 +106,12 @@ Polymer({
       value: '',
     },
 
+    /** @private */
+    precheckStatus_: {
+      type: Number,
+      value: chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK,
+    },
+
     /**
      * Enable the html template to use State.
      * @private
@@ -494,7 +500,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getProgressMessage_(state) {
+  getProgressMessage_(state, precheckStatus) {
     let messageId = null;
     switch (state) {
       case State.PROMPT:
@@ -507,7 +513,7 @@ Polymer({
         messageId = 'backupSucceededMessage';
         break;
       case State.PRECHECKS_FAILED:
-        switch (this.precheckStatus_) {
+        switch (precheckStatus) {
           case chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus
               .NETWORK_FAILURE:
             messageId = 'precheckNoNetwork';
