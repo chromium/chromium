@@ -471,18 +471,6 @@ void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
                                     ui::AXNodeData* node_data) {
   DCHECK(node_data);
   std::vector<int32_t> ids;
-  for (const auto& obj : objects)
-    ids.push_back(obj->AXObjectID());
-  if (!ids.empty())
-    node_data->AddIntListAttribute(attr, ids);
-}
-
-void AddIntListAttributeFromObjectsExcludingIgnored(
-    ax::mojom::blink::IntListAttribute attr,
-    const AXObject::AXObjectVector& objects,
-    ui::AXNodeData* node_data) {
-  DCHECK(node_data);
-  std::vector<int32_t> ids;
   for (const auto& obj : objects) {
     if (!obj->AccessibilityIsIgnored())
       ids.push_back(obj->AXObjectID());
@@ -1426,7 +1414,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kName, name, max_length);
     node_data->SetNameFrom(name_from);
-    AddIntListAttributeFromObjectsExcludingIgnored(
+    AddIntListAttributeFromObjects(
         ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
         node_data);
   }
@@ -1441,7 +1429,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
         node_data, ax::mojom::blink::StringAttribute::kDescription,
         description);
     node_data->SetDescriptionFrom(description_from);
-    AddIntListAttributeFromObjectsExcludingIgnored(
+    AddIntListAttributeFromObjects(
         ax::mojom::blink::IntListAttribute::kDescribedbyIds,
         description_objects, node_data);
   }
