@@ -12,6 +12,7 @@ import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
@@ -27,21 +28,24 @@ public class InternalAuthenticator {
     private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;
 
-    private InternalAuthenticator(
-            long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
+    private InternalAuthenticator(long nativeInternalAuthenticatorAndroid,
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
-        mAuthenticator = new AuthenticatorImpl(renderFrameHost);
+        mAuthenticator = new AuthenticatorImpl(
+                intentSender, renderFrameHost, WebAuthenticationDelegate.Support.BROWSER);
     }
 
     @VisibleForTesting
-    public static InternalAuthenticator createForTesting(RenderFrameHost renderFrameHost) {
-        return new InternalAuthenticator(-1, renderFrameHost);
+    public static InternalAuthenticator createForTesting(
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost) {
+        return new InternalAuthenticator(-1, intentSender, renderFrameHost);
     }
 
     @CalledByNative
     public static InternalAuthenticator create(
             long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
-        return new InternalAuthenticator(nativeInternalAuthenticatorAndroid, renderFrameHost);
+        return new InternalAuthenticator(
+                nativeInternalAuthenticatorAndroid, /* intentSender= */ null, renderFrameHost);
     }
 
     @CalledByNative

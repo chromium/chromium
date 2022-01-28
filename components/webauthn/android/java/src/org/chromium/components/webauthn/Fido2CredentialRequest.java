@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.Task;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -30,10 +31,10 @@ import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
+import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.net.GURLUtils;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
 import java.security.MessageDigest;
@@ -43,7 +44,7 @@ import java.security.NoSuchAlgorithmException;
  * Uses the Google Play Services Fido2 APIs.
  * Holds the logic of each request.
  */
-public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
+public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private static final String TAG = "Fido2Request";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
@@ -54,17 +55,33 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
 
+    private final WebAuthenticationDelegate.IntentSender mIntentSender;
+    private final @WebAuthenticationDelegate.Support int mSupportLevel;
     private GetAssertionResponseCallback mGetAssertionCallback;
     private MakeCredentialResponseCallback mMakeCredentialCallback;
     private FidoErrorResponseCallback mErrorCallback;
     private WebContents mWebContents;
-    private WindowAndroid mWindow;
     private boolean mAppIdExtensionUsed;
     private long mStartTimeMs;
 
     // Not null when the GMSCore-created ClientDataJson needs to be overridden.
     @Nullable
     private String mClientDataJson;
+
+    /**
+     * Constructs the object.
+     *
+     * @param intentSender Interface for starting {@link Intent}s from Play Services.
+     * @param supportLevel Whether this code should use the privileged or non-privileged Play
+     *         Services API. (Note that a value of `NONE` is not allowed.)
+     */
+    public Fido2CredentialRequest(WebAuthenticationDelegate.IntentSender intentSender,
+            @WebAuthenticationDelegate.Support int supportLevel) {
+        assert supportLevel != WebAuthenticationDelegate.Support.NONE;
+
+        mIntentSender = intentSender;
+        mSupportLevel = supportLevel;
+    }
 
     private void returnErrorAndResetCallback(int error) {
         assert mErrorCallback != null;
@@ -99,8 +116,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             return;
         }
 
-        Fido2ApiCall call =
-                new Fido2ApiCall(ContextUtils.getApplicationContext(), /* appMode= */ false);
+        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), mSupportLevel);
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
         args.writeStrongBinder(result);
@@ -182,8 +198,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             }
         }
 
-        Fido2ApiCall call =
-                new Fido2ApiCall(ContextUtils.getApplicationContext(), /* appMode= */ false);
+        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), mSupportLevel);
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
         args.writeStrongBinder(result);
@@ -211,8 +226,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             return;
         }
 
-        Fido2ApiCall call =
-                new Fido2ApiCall(ContextUtils.getApplicationContext(), /* appMode= */ false);
+        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), mSupportLevel);
         Fido2ApiCall.BooleanResult result = new Fido2ApiCall.BooleanResult();
         Parcel args = call.start();
         args.writeStrongBinder(result);
@@ -238,39 +252,23 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             return;
         }
 
-        if (mWindow == null) {
-            mWindow = mWebContents.getTopLevelNativeWindow();
-            if (mWindow == null) {
-                Log.e(TAG, "Couldn't get ActivityWindowAndroid.");
-                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                return;
-            }
-        }
-
-        final Activity activity = mWindow.getActivity().get();
-        if (activity == null) {
-            Log.e(TAG, "Null activity.");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-            return;
-        }
-
         // Record starting time that will be used to establish a timeout that will
         // be activated when we receive a response that cannot be returned to the
         // relying party prior to timeout.
         mStartTimeMs = SystemClock.elapsedRealtime();
-        int requestCode = mWindow.showCancelableIntent(pendingIntent, this, null);
 
-        if (requestCode == WindowAndroid.START_INTENT_FAILURE) {
-            Log.e(TAG, "Failed to send Fido2 request to Google Play Services.");
+        if (!mIntentSender.showIntent(pendingIntent, this)) {
+            Log.e(TAG, "Failed to send intent to FIDO API");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-        } else {
-            Log.e(TAG, "Sent a Fido2 request to Google Play Services.");
+            return;
         }
     }
 
     // Handles the result.
     @Override
-    public void onIntentCompleted(int resultCode, Intent data) {
+    public void onResult(Pair<Integer, Intent> result) {
+        final int resultCode = result.first;
+        final Intent data = result.second;
         int errorCode = AuthenticatorStatus.UNKNOWN_ERROR;
         Object response = null;
 
@@ -392,11 +390,6 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
         // Wrapping with GURLUtils.getOrigin() in order to trim default ports.
         return GURLUtils.getOrigin(
                 origin.getScheme() + "://" + origin.getHost() + ":" + origin.getPort());
-    }
-
-    @VisibleForTesting
-    public void setWindowForTesting(WindowAndroid window) {
-        mWindow = window;
     }
 
     @VisibleForTesting

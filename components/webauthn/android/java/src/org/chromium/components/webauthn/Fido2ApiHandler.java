@@ -13,6 +13,7 @@ import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.url.Origin;
 
 /**
@@ -48,22 +49,27 @@ public class Fido2ApiHandler {
     }
 
     protected void makeCredential(PublicKeyCredentialCreationOptions options,
-            RenderFrameHost frameHost, Origin origin, MakeCredentialResponseCallback callback,
-            FidoErrorResponseCallback errorCallback) {
-        new Fido2CredentialRequest().handleMakeCredentialRequest(
-                options, frameHost, origin, callback, errorCallback);
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost frameHost,
+            Origin origin, @WebAuthenticationDelegate.Support int supportLevel,
+            MakeCredentialResponseCallback callback, FidoErrorResponseCallback errorCallback) {
+        new Fido2CredentialRequest(intentSender, supportLevel)
+                .handleMakeCredentialRequest(options, frameHost, origin, callback, errorCallback);
     }
 
     protected void getAssertion(PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost, Origin origin, PaymentOptions payment,
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost frameHost,
+            Origin origin, PaymentOptions payment,
+            @WebAuthenticationDelegate.Support int supportLevel,
             GetAssertionResponseCallback callback, FidoErrorResponseCallback errorCallback) {
-        new Fido2CredentialRequest().handleGetAssertionRequest(
-                options, frameHost, origin, payment, callback, errorCallback);
+        new Fido2CredentialRequest(intentSender, supportLevel)
+                .handleGetAssertionRequest(
+                        options, frameHost, origin, payment, callback, errorCallback);
     }
 
     protected void isUserVerifyingPlatformAuthenticatorAvailable(
-            RenderFrameHost frameHost, IsUvpaaResponseCallback callback) {
-        new Fido2CredentialRequest().handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                frameHost, callback);
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost frameHost,
+            @WebAuthenticationDelegate.Support int supportLevel, IsUvpaaResponseCallback callback) {
+        new Fido2CredentialRequest(intentSender, supportLevel)
+                .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(frameHost, callback);
     }
 }

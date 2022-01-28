@@ -27,6 +27,8 @@ import com.google.android.gms.common.internal.GmsClient;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 
+import org.chromium.content_public.browser.WebAuthenticationDelegate;
+
 /**
  * Fido2ApiCall handles making Binder calls to Play Services' FIDO API.
  * <p>
@@ -110,13 +112,16 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * Construct an instance.
      *
      * @param context the Android {@link Context} for the current process.
-     * @param appMode true if the app (i.e. non-browser) API should be invoked. See comment on the
-     *         class.
+     * @param supportLevel Whether this code should use the privileged or non-privileged Play
+     *         Services API. (Note that a value of `NONE` is not allowed.)
      */
-    public Fido2ApiCall(Context context, boolean appMode) {
-        super(context, appMode ? APP_API : BROWSER_API, ApiOptions.NO_OPTIONS,
-                new ApiExceptionMapper());
-        mAppMode = appMode;
+    public Fido2ApiCall(Context context, @WebAuthenticationDelegate.Support int supportLevel) {
+        super(context,
+                supportLevel == WebAuthenticationDelegate.Support.APP ? APP_API : BROWSER_API,
+                ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
+
+        assert supportLevel != WebAuthenticationDelegate.Support.NONE;
+        mAppMode = supportLevel == WebAuthenticationDelegate.Support.APP;
     }
 
     public Parcel start() {
