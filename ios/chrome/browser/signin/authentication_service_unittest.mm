@@ -125,8 +125,8 @@ class AuthenticationServiceTest : public PlatformTest {
     authentication_service()->OnAccessTokenRefreshFailed(identity, user_info);
   }
 
-  void FireIdentityListChanged(bool keychain_reload) {
-    authentication_service()->OnIdentityListChanged(keychain_reload);
+  void FireIdentityListChanged(bool notify_user) {
+    authentication_service()->OnIdentityListChanged(notify_user);
   }
 
   void SetCachedMDMInfo(ChromeIdentity* identity, NSDictionary* user_info) {
@@ -336,7 +336,7 @@ TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_AddedByUser) {
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/false);
+  FireIdentityListChanged(/*notify_user=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(authentication_service()->IsAccountListApprovedByUser());
 }
@@ -348,7 +348,7 @@ TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_ChangedByKeychain) {
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
@@ -361,14 +361,14 @@ TEST_F(AuthenticationServiceTest,
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 
   // Simulate a switching to background, changing the accounts while in
   // background.
   identity_service()->AddIdentities(@[ @"foo4" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
@@ -380,7 +380,7 @@ TEST_F(AuthenticationServiceTest,
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 

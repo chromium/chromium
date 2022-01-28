@@ -105,10 +105,10 @@ class ChromeIdentityService {
     virtual ~Observer() {}
 
     // Handles identity list changed events.
-    // |keychainReload| is true if the identity list is updated by reloading the
-    // keychain. This means that a first party Google app had added or removed
-    // identities.
-    virtual void OnIdentityListChanged(bool keychainReload) {}
+    // |notify_user| is true if the identity list is updated by an external
+    // source than Chrome. This means that a first party Google app had added or
+    // removed identities, or the identity token is invalid.
+    virtual void OnIdentityListChanged(bool notify_user) {}
 
     // Handles access token refresh failed events.
     // |identity| is the the identity for which the access token refresh failed.
@@ -268,10 +268,10 @@ class ChromeIdentityService {
       ChromeIdentity* identity,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion);
   // Fires |OnIdentityListChanged| on all observers.
-  // |keychainReload| is true if the identity list is updated by reloading the
-  // keychain. This means that a first party Google app had added or removed
-  // identities.
-  void FireIdentityListChanged(bool keychainReload);
+  // |notify_user| is true if the identity list is updated by an external source
+  // than Chrome. This means that a first party Google app had added or removed
+  // identities, or the identity token is invalid.
+  void FireIdentityListChanged(bool notify_user);
 
   // Fires |OnAccessTokenRefreshFailed| on all observers, with the corresponding
   // identity and user info.

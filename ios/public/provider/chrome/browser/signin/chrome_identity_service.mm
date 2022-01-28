@@ -210,9 +210,9 @@ void ChromeIdentityService::FetchCapabilities(
   // Implementation provided by subclass.
 }
 
-void ChromeIdentityService::FireIdentityListChanged(bool keychainReload) {
+void ChromeIdentityService::FireIdentityListChanged(bool notify_user) {
   for (auto& observer : observer_list_)
-    observer.OnIdentityListChanged(keychainReload);
+    observer.OnIdentityListChanged(notify_user);
 }
 
 void ChromeIdentityService::FireAccessTokenRefreshFailed(
