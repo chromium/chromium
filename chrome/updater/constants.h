@@ -134,6 +134,12 @@ extern const char kAppVersionSwitch[];
 // to Omaha 4.
 extern const char kHealthCheckSwitch[];
 
+// Specifies the handoff request argument. On Windows, the request may
+// be from legacy updaters which pass the argument in the format of
+// `/handoff <install-args-details>`. Manual argument parsing is needed for that
+// scenario.
+extern const char kHandoffSwitch[];
+
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo

@@ -53,6 +53,8 @@ const char kInstallFromOutDir[] = "install-from-out-dir";
 
 const char kHealthCheckSwitch[] = "healthcheck";
 
+const char kHandoffSwitch[] = "handoff";
+
 // Path names.
 const char kAppsDir[] = "apps";
 const char kUninstallScript[] = "uninstall.cmd";

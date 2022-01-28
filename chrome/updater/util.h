@@ -165,6 +165,14 @@ std::wstring GetTaskNamePrefix(UpdaterScope scope);
 // For instance: "ChromiumUpdater Task System 92.0.0.1".
 std::wstring GetTaskDisplayName(UpdaterScope scope);
 
+// Returns the value associated with the given switch when they are specified in
+// the legacy updater command line format. Example:
+//   program.exe /switch1 value1 /switch2 /switch3 value3
+// The equivalent Chromium format is:
+//   program.exe --switch1=value1 --switch2 --switch3=value3
+std::string GetSwitchValueInLegacyFormat(const std::wstring& command_line,
+                                         const std::wstring& switch_name);
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace updater

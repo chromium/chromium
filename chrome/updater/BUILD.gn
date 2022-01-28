@@ -608,6 +608,7 @@ if (is_win || is_mac || is_linux) {
         "activity_impl_win_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
+        "util_win_unittest.cc",
         "win/installer_api_unittest.cc",
         "win/net/network_unittest.cc",
         "win/setup/setup_util_unittest.cc",

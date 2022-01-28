@@ -159,7 +159,8 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 #endif  // BUILDFLAG(IS_WIN)
 
   if (command_line->HasSwitch(kInstallSwitch) ||
-      command_line->HasSwitch(kTagSwitch)) {
+      command_line->HasSwitch(kTagSwitch) ||
+      command_line->HasSwitch(kHandoffSwitch)) {
     return MakeAppInstall()->Run();
   }
 
@@ -195,6 +196,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kUpdateSwitch,
       kWakeSwitch,
       kHealthCheckSwitch,
+      kHandoffSwitch,
   };
   const char** it = std::find_if(
       std::begin(commands), std::end(commands),

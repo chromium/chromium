@@ -8,6 +8,10 @@
 #include <cctype>
 #include <string>
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -159,7 +163,14 @@ absl::optional<tagging::TagArgs> GetTagArgs() {
   static const absl::optional<tagging::TagArgs> tag_args =
       []() -> absl::optional<tagging::TagArgs> {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    const std::string tag = command_line->GetSwitchValueASCII(kTagSwitch);
+    std::string tag = command_line->HasSwitch(kTagSwitch)
+                          ? command_line->GetSwitchValueASCII(kTagSwitch)
+                          : command_line->GetSwitchValueASCII(kHandoffSwitch);
+#if BUILDFLAG(IS_WIN)
+    if (tag.empty())
+      tag = GetSwitchValueInLegacyFormat(::GetCommandLineW(),
+                                         base::ASCIIToWide(kHandoffSwitch));
+#endif
     if (tag.empty())
       return absl::nullopt;
     tagging::TagArgs tag_args;
