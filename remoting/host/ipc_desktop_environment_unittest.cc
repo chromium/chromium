@@ -378,6 +378,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
       .Times(AnyNumber())
       .WillRepeatedly(InvokeWithoutArgs(
           this, &IpcDesktopEnvironmentTest::QuitSetupRunLoop));
+  EXPECT_CALL(client_session_events_, OnDesktopDetached()).Times(AnyNumber());
 
   // Create a desktop environment instance.
   desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
@@ -841,7 +842,7 @@ TEST_F(IpcDesktopEnvironmentTest, SetScreenResolution) {
       webrtc::DesktopVector(96, 96)));
 }
 
-TEST_F(IpcDesktopEnvironmentTest, DISABLED_CheckUrlForwarderState) {
+TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {
   EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
       .WillOnce(RunOnceCallback<0>(true));
   base::MockCallback<UrlForwarderConfigurator::IsUrlForwarderSetUpCallback>
@@ -854,16 +855,16 @@ TEST_F(IpcDesktopEnvironmentTest, DISABLED_CheckUrlForwarderState) {
       .WillOnce(InvokeWithoutArgs(
           this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
 
-  url_forwarder_configurator_->IsUrlForwarderSetUp(callback.Get());
-
   // Run the message loop until the desktop is attached.
   setup_run_loop_->Run();
+
+  url_forwarder_configurator_->IsUrlForwarderSetUp(callback.Get());
 
   // Run now rather than in TearDown() so that we can verify |callback|.
   RunMainLoopUntilDone();
 }
 
-TEST_F(IpcDesktopEnvironmentTest, DISABLED_SetUpUrlForwarderHappyPath) {
+TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderHappyPath) {
   EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
       .WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(*remote_url_forwarder_configurator_, SetUpUrlForwarder(_))
@@ -900,16 +901,16 @@ TEST_F(IpcDesktopEnvironmentTest, DISABLED_SetUpUrlForwarderHappyPath) {
             this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
   }
 
-  url_forwarder_configurator_->IsUrlForwarderSetUp(is_set_up_callback.Get());
-
   // Run the message loop until the desktop is attached.
   setup_run_loop_->Run();
+
+  url_forwarder_configurator_->IsUrlForwarderSetUp(is_set_up_callback.Get());
 
   // Run now rather than in TearDown() so that we can verify |callback|.
   RunMainLoopUntilDone();
 }
 
-TEST_F(IpcDesktopEnvironmentTest, DISABLED_SetUpUrlForwarderFailed) {
+TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderFailed) {
   EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
       .WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(*remote_url_forwarder_configurator_, SetUpUrlForwarder(_))
@@ -940,10 +941,10 @@ TEST_F(IpcDesktopEnvironmentTest, DISABLED_SetUpUrlForwarderFailed) {
             this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
   }
 
-  url_forwarder_configurator_->IsUrlForwarderSetUp(is_set_up_callback.Get());
-
   // Run the message loop until the desktop is attached.
   setup_run_loop_->Run();
+
+  url_forwarder_configurator_->IsUrlForwarderSetUp(is_set_up_callback.Get());
 
   // Run now rather than in TearDown() so that we can verify |callback|.
   RunMainLoopUntilDone();
