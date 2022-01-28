@@ -807,6 +807,10 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 
   // Requests a Discover feed here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeFetched]) {
+    ios::GetChromeBrowserProvider()
+        .GetDiscoverFeedProvider()
+        ->CreateFeedModels();
+
     if (IsWebChannelsEnabled()) {
       // TODO(crbug.com/1277504): Use unique property for Following feed.
       switch (self.selectedFeed) {
