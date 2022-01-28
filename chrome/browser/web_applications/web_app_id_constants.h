@@ -23,6 +23,7 @@ extern const char kGoogleDriveAppId[];
 extern const char kGoogleKeepAppId[];
 extern const char kGoogleMapsAppId[];
 extern const char kGoogleMeetAppId[];
+extern const char kGoogleMoviesAppId[];
 extern const char kGoogleNewsAppId[];
 extern const char kGoogleSheetsAppId[];
 extern const char kGoogleSlidesAppId[];

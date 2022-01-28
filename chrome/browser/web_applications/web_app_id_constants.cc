@@ -69,6 +69,10 @@ const char kGoogleMapsAppId[] = "mnhkaebcjjhencmpkapnbdaogjamfbcj";
 const char kGoogleMeetAppId[] = "kjgfgldnnfoeklkmfkjfagphfepbbdan";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "https://play.google.com/store/movies?usp=installed_webapp"))
+const char kGoogleMoviesAppId[] = "aiihaadhfoadjgjcegeomiajkajbjlcn";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://news.google.com/?lfhs=2"))
 const char kGoogleNewsAppId[] = "kfgapjallbhpciobgmlhlhokknljkgho";
 

@@ -78,7 +78,8 @@ bool ExternalInstallOptions::operator==(
         options.system_app_type,
         options.oem_installed,
         options.disable_if_touchscreen_with_stylus_not_supported,
-        options.handles_file_open_intents
+        options.handles_file_open_intents,
+        options.expected_app_id
         // clang-format on
     );
   };
@@ -117,6 +118,7 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   root.SetBoolKey("disable_if_touchscreen_with_stylus_not_supported",
                   disable_if_touchscreen_with_stylus_not_supported);
+  root.SetKey("expected_app_id", ConvertOptional(expected_app_id));
   root.SetBoolKey("handles_file_open_intents", handles_file_open_intents);
   root.SetKey("fallback_app_name", ConvertOptional(fallback_app_name));
   root.SetBoolKey("force_reinstall", force_reinstall);

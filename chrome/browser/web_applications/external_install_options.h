@@ -196,6 +196,12 @@ struct ExternalInstallOptions {
 
   // Whether the app should show up in file-open intent and picking surfaces.
   bool handles_file_open_intents = false;
+
+  // The app id that's expected to be installed from `install_url`.
+  // Does not block installation if the actual app id doesn't match the
+  // expectation.
+  // Intended to be used for post-install activities like metrics and migration.
+  absl::optional<AppId> expected_app_id;
 };
 
 WebAppInstallParams ConvertExternalInstallOptionsToParams(

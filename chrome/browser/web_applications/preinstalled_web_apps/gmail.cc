@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
 
@@ -42,6 +43,7 @@ ExternalInstallOptions GetConfigForGmail() {
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GMAIL_ICON_192_PNG});
     return info;
   });
+  options.expected_app_id = kGmailAppId;
 
   return options;
 }
