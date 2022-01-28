@@ -22,6 +22,8 @@
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager_utilities.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -180,6 +182,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
                             base::SPLIT_WANT_NONEMPTY);
   Display::Rotation rotation(Display::ROTATE_0);
   bool has_overscan = false;
+  bool has_hdr = false;
   if (!parts.empty()) {
     main_spec = parts[0];
     if (parts.size() >= 2) {
@@ -189,6 +192,9 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
         switch (c) {
           case 'o':
             has_overscan = true;
+            break;
+          case 'h':
+            has_hdr = true;
             break;
           case 'r':  // rotate 90 degrees to 'right'.
             rotation = Display::ROTATE_90;
@@ -273,6 +279,12 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
     int height = bounds_in_native.height() / device_scale_factor / 40;
     display_info.SetOverscanInsets(gfx::Insets(height, width, height, width));
     display_info.UpdateDisplaySize();
+  }
+
+  if (has_hdr) {
+    gfx::DisplayColorSpaces display_color_spaces{
+        gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::BGRA_1010102};
+    display_info.set_display_color_spaces(display_color_spaces);
   }
 
   DVLOG(1) << "DisplayInfoFromSpec info=" << display_info.ToString()

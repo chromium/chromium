@@ -790,6 +790,14 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   GetRootWindowSettings(non_primary_window)->display_id =
       old_primary_display.id();
 
+  // Ensure that color spaces for the root windows reflect those of their new
+  // displays. If these go out of sync, we can lose the ability to composite HDR
+  // content.
+  primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
+      new_primary_display.color_spaces());
+  non_primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
+      old_primary_display.color_spaces());
+
   std::u16string old_primary_title = primary_window->GetTitle();
   primary_window->SetTitle(non_primary_window->GetTitle());
   non_primary_window->SetTitle(old_primary_title);

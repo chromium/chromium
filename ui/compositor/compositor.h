@@ -229,6 +229,10 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
 
+  const gfx::DisplayColorSpaces& display_color_spaces() const {
+    return display_color_spaces_;
+  }
+
   // Set the transform/rotation info for the display output surface.
   void SetDisplayTransformHint(gfx::OverlayTransform hint);
   gfx::OverlayTransform display_transform_hint() const {

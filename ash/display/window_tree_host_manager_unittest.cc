@@ -733,7 +733,7 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
-  UpdateDisplay("300x200,400x300");
+  UpdateDisplay("300x200,400x300/h");
   const int shelf_inset_first = 200 - ShelfConfig::Get()->shelf_size();
   const int shelf_inset_second = 300 - ShelfConfig::Get()->shelf_size();
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
@@ -809,6 +809,22 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
   EXPECT_EQ(gfx::Rect(-300, -50, 300, 200), swapped_secondary.bounds());
   EXPECT_EQ(gfx::Rect(-300, -50, 300, shelf_inset_first),
             swapped_secondary.work_area());
+
+  // Test that the color spaces are correctly swapped.
+  auto* swapped_primary_compositor =
+      window_tree_host_manager->GetRootWindowForDisplayId(swapped_primary.id())
+          ->GetHost()
+          ->compositor();
+  auto* swapped_secondary_compositor =
+      window_tree_host_manager
+          ->GetRootWindowForDisplayId(swapped_secondary.id())
+          ->GetHost()
+          ->compositor();
+
+  EXPECT_EQ(swapped_primary.color_spaces(),
+            swapped_primary_compositor->display_color_spaces());
+  EXPECT_EQ(swapped_secondary.color_spaces(),
+            swapped_secondary_compositor->display_color_spaces());
 
   // Calling the same ID don't do anything.
   window_tree_host_manager->SetPrimaryDisplayId(secondary_display.id());
