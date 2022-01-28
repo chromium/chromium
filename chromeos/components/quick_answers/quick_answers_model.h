@@ -152,8 +152,8 @@ struct IntentInfo {
   IntentInfo(const IntentInfo& other);
   IntentInfo(const std::string& intent_text,
              IntentType intent_type,
-             const std::string& source_language = std::string(),
-             const std::string& target_language = std::string());
+             const std::string& device_language = std::string(),
+             const std::string& source_language = std::string());
   ~IntentInfo();
 
   // The text extracted from the selected_text associated with the intent.
@@ -162,10 +162,12 @@ struct IntentInfo {
   // Predicted intent.
   IntentType intent_type = IntentType::kUnknown;
 
-  // Source and target language for translation query.
-  // These fields should only be used for translation intents.
+  // Device language code.
+  std::string device_language;
+
+  // Source language for translation query, should only be used for translation
+  // intents.
   std::string source_language;
-  std::string target_language;
 };
 
 // Extract information generated from |QuickAnswersRequest|.

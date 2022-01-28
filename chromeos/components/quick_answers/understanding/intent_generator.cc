@@ -152,7 +152,8 @@ void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
     // Generate dictionary intent if the selected text is a single word.
     if (iter.IsWord() && iter.prev() == 0 && iter.pos() == u16_text.length()) {
       std::move(complete_callback_)
-          .Run(IntentInfo(request.selected_text, IntentType::kDictionary));
+          .Run(IntentInfo(request.selected_text, IntentType::kDictionary,
+                          request.context.device_properties.language));
       return;
     }
   }
@@ -233,8 +234,10 @@ void IntentGenerator::AnnotationCallback(
         return;
       }
       std::move(complete_callback_)
-          .Run(IntentInfo(entity_str, RewriteIntent(request.selected_text,
-                                                    entity_str, it->second)));
+          .Run(IntentInfo(
+              entity_str,
+              RewriteIntent(request.selected_text, entity_str, it->second),
+              request.context.device_properties.language));
       return;
     }
   }
@@ -285,8 +288,8 @@ void IntentGenerator::LanguageDetectorCallback(
           request.context.device_properties.preferred_languages)) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kTranslation,
-                        detected_language.value(),
-                        request.context.device_properties.language));
+                        request.context.device_properties.language,
+                        detected_language.value()));
     return;
   }
 

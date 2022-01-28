@@ -106,8 +106,8 @@ TEST_F(IntentGeneratorTest, TranslationIntent) {
   // Should generate translation intent.
   EXPECT_EQ(IntentType::kTranslation, intent_info_.intent_type);
   EXPECT_EQ("quick answers", intent_info_.intent_text);
+  EXPECT_EQ("es", intent_info_.device_language);
   EXPECT_EQ("en", intent_info_.source_language);
-  EXPECT_EQ("es", intent_info_.target_language);
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {

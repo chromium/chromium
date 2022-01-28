@@ -62,7 +62,7 @@ std::string BuildKpEntityTitleText(const std::string& average_score,
 
 std::string BuildTranslationTitleText(const IntentInfo& intent_info) {
   auto locale_name = l10n_util::GetDisplayNameForLocale(
-      intent_info.source_language, intent_info.target_language, true);
+      intent_info.source_language, intent_info.device_language, true);
   return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
                                    base::UTF8ToUTF16(intent_info.intent_text),
                                    locale_name);

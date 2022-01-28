@@ -42,7 +42,7 @@ constexpr char kTestTranslationTitle[] = "test · inglés";
 constexpr char kTestTranslationResult[] = "prueba";
 
 const auto kTestTranslationIntent =
-    IntentInfo("test", IntentType::kTranslation, "en", "es");
+    IntentInfo("test", IntentType::kTranslation, "es", "en");
 
 }  // namespace
 
