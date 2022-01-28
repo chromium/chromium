@@ -401,13 +401,13 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
     bool has_updates) {
   DCHECK(IsMainThread());
   DCHECK(!commit_completion_event_);
-  commit_completion_event_ = std::move(completion);
   std::unique_ptr<CommitState> result;
   if (has_updates)
     result = ActivateCommitState();
   swap_promise_manager_.WillCommit();
   client_->WillCommit(has_updates ? *result : *pending_commit_state());
   pending_commit_state()->source_frame_number++;
+  commit_completion_event_ = std::move(completion);
   return result;
 }
 
