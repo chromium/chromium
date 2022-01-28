@@ -1299,7 +1299,9 @@ interface NetworkContext {
                               NetworkIsolationKey network_isolation_key,
                               string ocsp_response,
                               string sct_list) => (int32 error_code,
-                                                   CertVerifyResult cv_result);
+                                                   CertVerifyResult cv_result,
+                                                   bool pkp_bypassed,
+                                                   string pinning_failure_log);
 
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.
