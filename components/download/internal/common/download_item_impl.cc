@@ -1694,8 +1694,11 @@ void DownloadItemImpl::Start(
   DCHECK(download_file_);
   DCHECK(job_);
 
-  if (state_ == RESUMING_INTERNAL)
+  if (state_ == RESUMING_INTERNAL) {
+    if (total_bytes_ == 0 && new_create_info.total_bytes > 0)
+      total_bytes_ = new_create_info.total_bytes;
     UpdateValidatorsOnResumption(new_create_info);
+  }
 
   // If the download is not parallel, clear the |received_slices_|.
   if (!received_slices_.empty() && !job_->IsParallelizable()) {
