@@ -332,7 +332,6 @@
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.mediator.selectedIdentity
-                                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
                                  postSignInAction:POST_SIGNIN_ACTION_NONE
                          presentingViewController:self.viewController];
   __weak __typeof(self) weakSelf = self;

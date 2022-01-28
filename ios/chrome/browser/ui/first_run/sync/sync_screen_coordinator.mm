@@ -293,7 +293,6 @@
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:identity
-                                  shouldClearData:SHOULD_CLEAR_DATA_MERGE_DATA
                                  postSignInAction:postSignInAction
                          presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(

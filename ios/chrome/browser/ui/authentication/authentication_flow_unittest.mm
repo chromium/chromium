@@ -94,14 +94,12 @@ class AuthenticationFlowTest : public PlatformTest {
 
   // Creates a new AuthenticationFlow with default values for fields that are
   // not directly useful.
-  void CreateAuthenticationFlow(ShouldClearData shouldClearData,
-                                PostSignInAction postSignInAction,
+  void CreateAuthenticationFlow(PostSignInAction postSignInAction,
                                 ChromeIdentity* identity) {
     view_controller_ = [OCMockObject niceMockForClass:[UIViewController class]];
     authentication_flow_ =
         [[AuthenticationFlow alloc] initWithBrowser:browser_.get()
                                            identity:identity
-                                    shouldClearData:shouldClearData
                                    postSignInAction:postSignInAction
                            presentingViewController:view_controller_];
     performer_ =
@@ -140,11 +138,10 @@ class AuthenticationFlowTest : public PlatformTest {
   bool signed_in_success_;
 };
 
-// Tests a Sign In of a normal account on the same profile, merging user data
-// and showing the sync settings.
+// Tests a Sign In of a normal account on the same profile with Sync
+// consent granted.
 TEST_F(AuthenticationFlowTest, TestSignInSimple) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_MERGE_DATA,
-                           POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -174,8 +171,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
 // Tests that starting sync while the user is already signed in only.
 TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_MERGE_DATA,
-                           POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -208,8 +204,7 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
 // already signed in account, and asking the user whether data should be cleared
 // or merged.
 TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_USER_CHOICE,
-                           POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -255,8 +250,7 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
 
 // Tests the cancelling of a Sign In.
 TEST_F(AuthenticationFlowTest, TestCancel) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_USER_CHOICE,
-                           POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -284,8 +278,7 @@ TEST_F(AuthenticationFlowTest, TestCancel) {
 
 // Tests the fetch managed status failure case.
 TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_MERGE_DATA,
-                           POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
 
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
   [[[performer_ expect] andDo:^(NSInvocation*) {
@@ -312,8 +305,7 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
 // Tests the managed sign in confirmation dialog is shown when signing in to
 // a managed identity.
 TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_CLEAR_DATA,
-                           POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -328,10 +320,6 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didClearData];
-  }] clearDataFromBrowser:browser_.get() commandHandler:nil];
 
   [[performer_ expect] signInIdentity:managed_identity_
                      withHostedDomain:@"foo.com"
@@ -353,8 +341,7 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
 // Tests sign-in only with a managed account. The managed account confirmation
 // dialog should not be shown.
 TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_USER_CHOICE,
-                           POST_SIGNIN_ACTION_NONE, managed_identity_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_NONE, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -380,8 +367,7 @@ TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
 // Tests sign-in only with a managed account, and then starts sync. The managed
 // account confirmation dialog should be shown only in sync.
 TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
-  CreateAuthenticationFlow(SHOULD_CLEAR_DATA_USER_CHOICE,
-                           POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
+  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];

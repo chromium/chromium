@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
@@ -53,6 +54,14 @@ enum AuthenticationState {
 // Whether this flow is curently handling an error.
 @property(nonatomic, assign) BOOL handlingError;
 
+// Indicates how to handle existing data when the signed in account is being
+// switched. Possible values:
+//   * User choice: present an alert view asking the user whether the data
+//     should be cleared or merged.
+//   * Clear data: data is removed before signing in with |identity|.
+//   * Merge data: data is not removed before signing in with |identity|.
+@property(nonatomic, assign) ShouldClearData localDataClearingStrategy;
+
 // Checks which sign-in steps to perform and updates member variables
 // accordingly.
 - (void)checkSigninSteps;
@@ -73,7 +82,6 @@ enum AuthenticationState {
 @end
 
 @implementation AuthenticationFlow {
-  ShouldClearData _shouldClearData;
   PostSignInAction _postSignInAction;
   UIViewController* _presentingViewController;
   CompletionCallback _signInCompletion;
@@ -106,7 +114,6 @@ enum AuthenticationState {
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(ChromeIdentity*)identity
-                shouldClearData:(ShouldClearData)shouldClearData
                postSignInAction:(PostSignInAction)postSignInAction
        presentingViewController:(UIViewController*)presentingViewController {
   if ((self = [super init])) {
@@ -115,7 +122,7 @@ enum AuthenticationState {
     DCHECK(identity);
     _browser = browser;
     _identityToSignIn = identity;
-    _shouldClearData = shouldClearData;
+    _localDataClearingStrategy = SHOULD_CLEAR_DATA_USER_CHOICE;
     _postSignInAction = postSignInAction;
     _presentingViewController = presentingViewController;
     _state = BEGIN;
@@ -201,7 +208,7 @@ enum AuthenticationState {
         return SHOW_MANAGED_CONFIRMATION;
       else if (_shouldSignOut)
         return SIGN_OUT_IF_NEEDED;
-      else if (_shouldClearData == SHOULD_CLEAR_DATA_CLEAR_DATA)
+      else if (self.localDataClearingStrategy == SHOULD_CLEAR_DATA_CLEAR_DATA)
         return CLEAR_DATA;
       else if (_shouldSignIn)
         return SIGN_IN;
@@ -210,15 +217,16 @@ enum AuthenticationState {
     case SHOW_MANAGED_CONFIRMATION:
       if (_shouldSignOut)
         return SIGN_OUT_IF_NEEDED;
-      else if (_shouldClearData == SHOULD_CLEAR_DATA_CLEAR_DATA)
+      else if (self.localDataClearingStrategy == SHOULD_CLEAR_DATA_CLEAR_DATA)
         return CLEAR_DATA;
       else if (_shouldSignIn)
         return SIGN_IN;
       else
         return COMPLETE_WITH_SUCCESS;
     case SIGN_OUT_IF_NEEDED:
-      return _shouldClearData == SHOULD_CLEAR_DATA_CLEAR_DATA ? CLEAR_DATA
-                                                              : SIGN_IN;
+      return self.localDataClearingStrategy == SHOULD_CLEAR_DATA_CLEAR_DATA
+                 ? CLEAR_DATA
+                 : SIGN_IN;
     case CLEAR_DATA:
       return SIGN_IN;
     case SIGN_IN:
@@ -261,9 +269,9 @@ enum AuthenticationState {
       return;
 
     case CHECK_MERGE_CASE:
+      DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
       if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
                                            browserState:browserState]) &&
-          (_shouldClearData == SHOULD_CLEAR_DATA_USER_CHOICE) &&
           (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)) {
         [_performer promptMergeCaseForIdentity:_identityToSignIn
                                        browser:_browser
@@ -424,7 +432,7 @@ enum AuthenticationState {
 - (void)didChooseClearDataPolicy:(ShouldClearData)shouldClearData {
   DCHECK_NE(SHOULD_CLEAR_DATA_USER_CHOICE, shouldClearData);
   _shouldSignOut = YES;
-  _shouldClearData = shouldClearData;
+  self.localDataClearingStrategy = shouldClearData;
 
   [self continueSignin];
 }

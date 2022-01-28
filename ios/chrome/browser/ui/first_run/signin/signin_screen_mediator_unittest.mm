@@ -270,7 +270,6 @@ TEST_F(SigninScreenMediatorTest, TestSignIn) {
   AuthenticationFlow* authentication_flow = [[AuthenticationFlow alloc]
                initWithBrowser:browser.get()
                       identity:identity_
-               shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
               postSignInAction:POST_SIGNIN_ACTION_NONE
       presentingViewController:presenting_view_controller_mock];
   [authentication_flow setPerformerForTesting:performer_mock];
