@@ -7,8 +7,8 @@ module drivefs.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
-// This file tracks platform/drivefs/mojom/drivefs.mojom. Changes should be made
-// there first and then replicated here.
+// This file tracks apps/drive/fs/chromeos/mojom/drivefs.mojom. Changes
+// should be made there first and then replicated here.
 
 // Implemented by DriveFS, used from Chrome.
 interface DriveFsBootstrap {
