@@ -1731,10 +1731,7 @@ const char kStabilitySystemUncleanShutdownCount[] =
 // The keys below are used for the dictionaries in the
 // kStabilityPluginStats list.
 const char kStabilityPluginName[] = "name";
-const char kStabilityPluginLaunches[] = "launches";
-const char kStabilityPluginInstances[] = "instances";
 const char kStabilityPluginCrashes[] = "crashes";
-const char kStabilityPluginLoadingErrors[] = "loading_errors";
 
 // String containing the version of Chrome for which Chrome will not prompt the
 // user about setting Chrome as the default browser.

@@ -93,10 +93,7 @@ TEST_F(PluginMetricsProviderTest, Plugins) {
   // Now set some plugin stability stats for p2 and verify they're recorded.
   base::Value plugin_dict(base::Value::Type::DICTIONARY);
   plugin_dict.SetStringKey(prefs::kStabilityPluginName, "p2");
-  plugin_dict.SetIntKey(prefs::kStabilityPluginLaunches, 1);
   plugin_dict.SetIntKey(prefs::kStabilityPluginCrashes, 2);
-  plugin_dict.SetIntKey(prefs::kStabilityPluginInstances, 3);
-  plugin_dict.SetIntKey(prefs::kStabilityPluginLoadingErrors, 4);
   {
     ListPrefUpdate update(prefs(), prefs::kStabilityPluginStats);
     update.Get()->Append(std::move(plugin_dict));
@@ -111,10 +108,7 @@ TEST_F(PluginMetricsProviderTest, Plugins) {
   EXPECT_EQ("p2.plugin", stability.plugin_stability(0).plugin().filename());
   EXPECT_EQ("2.0", stability.plugin_stability(0).plugin().version());
   EXPECT_TRUE(stability.plugin_stability(0).plugin().is_pepper());
-  EXPECT_EQ(1, stability.plugin_stability(0).launch_count());
   EXPECT_EQ(2, stability.plugin_stability(0).crash_count());
-  EXPECT_EQ(3, stability.plugin_stability(0).instance_count());
-  EXPECT_EQ(4, stability.plugin_stability(0).loading_error_count());
 }
 
 TEST_F(PluginMetricsProviderTest, RecordCurrentStateWithDelay) {
@@ -207,11 +201,9 @@ TEST_F(PluginMetricsProviderTest, ProvideStabilityMetricsWhenPendingTask) {
   for (int i = 0; i < 2; i++) {
     std::string name = stability.plugin_stability(i).plugin().name();
     if (name == "p1") {
-      EXPECT_EQ(2, stability.plugin_stability(i).launch_count());
       EXPECT_EQ(1, stability.plugin_stability(i).crash_count());
       found++;
     } else if (name == "p2") {
-      EXPECT_EQ(2, stability.plugin_stability(i).launch_count());
       EXPECT_EQ(2, stability.plugin_stability(i).crash_count());
       found++;
     } else {
