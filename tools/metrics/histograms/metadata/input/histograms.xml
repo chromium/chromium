@@ -362,18 +362,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.CharactersPerSession" units="characters"
-    expires_after="2022-06-30">
+<histogram name="InputMethod.CharactersPerSession{InputModality}"
+    units="characters" expires_after="2022-06-30">
   <owner>keithlee@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Number of characters entered in a single user session on ChromeOS. A user
     session consists of a user typing 10+ characters for 1+ seconds where there
-    is no period of time where the user is inactive for more than 3 seconds.
-    This gets recorded when we detect user input and it has been more than 3
-    seconds since the last input by the user and also when a change in the
-    Engine or Text field selected is detected.
+    is no period of time where the user is inactive for more than 3 seconds for
+    the input type. This gets recorded when we detect user input and it has been
+    more than 3 seconds since the last input by the user and also when a change
+    in the Engine or Text field selected is detected.
   </summary>
+  <token key="InputModality">
+    <variant name="" summary="aggregate"/>
+    <variant name=".hwt" summary="handwriting"/>
+    <variant name=".voice" summary="voice"/>
+  </token>
 </histogram>
 
 <histogram name="InputMethod.Commit.Index" units="units"
@@ -812,7 +817,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.CharactersPerMinute"
+<histogram
+    name="InputMethod.VirtualKeyboard.CharactersPerMinute{InputModality}"
     units="charactersPerMinute" expires_after="2022-06-30">
   <owner>keithlee@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -824,9 +830,15 @@ chromium-metrics-reviews@google.com.
     more than 3 seconds since the last input by the user and also when a change
     in the Engine or Text field selected is detected.
   </summary>
+  <token key="InputModality">
+    <variant name="" summary="aggregate"/>
+    <variant name=".hwt" summary="handwriting"/>
+    <variant name=".voice" summary="voice"/>
+  </token>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.CharactersPerSession"
+<histogram
+    name="InputMethod.VirtualKeyboard.CharactersPerSession{InputModality}"
     units="characters" expires_after="2022-06-30">
   <owner>keithlee@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -838,6 +850,11 @@ chromium-metrics-reviews@google.com.
     input and it has been more than 3 seconds since the last input by the user
     and also when a change in the Engine or Text field selected is detected.
   </summary>
+  <token key="InputModality">
+    <variant name="" summary="aggregate"/>
+    <variant name=".hwt" summary="handwriting"/>
+    <variant name=".voice" summary="voice"/>
+  </token>
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ContainerBehavior"
