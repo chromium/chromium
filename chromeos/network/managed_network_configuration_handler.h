@@ -55,9 +55,6 @@ class NetworkStateHandler;
 // user consumption.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
  public:
-  using GuidToPolicyMap =
-      std::map<std::string, std::unique_ptr<base::DictionaryValue>>;
-
   ManagedNetworkConfigurationHandler& operator=(
       const ManagedNetworkConfigurationHandler&) = delete;
 
@@ -151,8 +148,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       const std::string& guid,
       ::onc::ONCSource* onc_source) const = 0;
 
-  virtual const GuidToPolicyMap* GetNetworkConfigsFromPolicy(
-      const std::string& userhash) const = 0;
+  // Returns true if the user policy for |userhash| or device policy if
+  // |userhash| is empty has any policy-configured network.
+  // Returns false if |userhash| does not map to any known network profile.
+  virtual bool HasAnyPolicyNetwork(const std::string& userhash) const = 0;
 
   // Returns the global configuration of the policy of user |userhash| or device
   // policy if |userhash| is empty.

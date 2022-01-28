@@ -51,7 +51,10 @@ namespace chromeos {
 
 namespace {
 
-using GuidToPolicyMap = ManagedNetworkConfigurationHandler::GuidToPolicyMap;
+// Maps network policy guid to the actual ONC policy NetworkConfiguration for
+// that network.
+using GuidToPolicyMap =
+    std::map<std::string, std::unique_ptr<base::DictionaryValue>>;
 
 const char kEmptyServicePath[] = "/";
 
@@ -754,14 +757,13 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
   return nullptr;
 }
 
-const GuidToPolicyMap*
-ManagedNetworkConfigurationHandlerImpl::GetNetworkConfigsFromPolicy(
+bool ManagedNetworkConfigurationHandlerImpl::HasAnyPolicyNetwork(
     const std::string& userhash) const {
   const Policies* policies = GetPoliciesForUser(userhash);
   if (!policies)
-    return nullptr;
+    return false;
 
-  return &policies->per_network_config;
+  return !policies->per_network_config.empty();
 }
 
 const base::DictionaryValue*

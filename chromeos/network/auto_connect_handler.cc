@@ -211,10 +211,7 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
 
   // Request to connect to the best network only if there is at least one
   // managed network. Otherwise only process existing requests.
-  const ManagedNetworkConfigurationHandler::GuidToPolicyMap* managed_networks =
-      managed_configuration_handler_->GetNetworkConfigsFromPolicy(userhash);
-  DCHECK(managed_networks);
-  if (!managed_networks->empty()) {
+  if (managed_configuration_handler_->HasAnyPolicyNetwork(userhash)) {
     RequestBestConnection(
         AutoConnectReason::AUTO_CONNECT_REASON_POLICY_APPLIED);
   } else {

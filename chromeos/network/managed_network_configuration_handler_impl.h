@@ -93,8 +93,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const std::string& guid,
       ::onc::ONCSource* onc_source) const override;
 
-  const GuidToPolicyMap* GetNetworkConfigsFromPolicy(
-      const std::string& userhash) const override;
+  bool HasAnyPolicyNetwork(const std::string& userhash) const override;
 
   const base::DictionaryValue* GetGlobalConfigFromPolicy(
       const std::string& userhash) const override;
