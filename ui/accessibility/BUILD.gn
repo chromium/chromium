@@ -153,6 +153,8 @@ component("accessibility") {
     "ax_tree_source_observer.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
+    "test_ax_tree_manager.cc",
+    "test_ax_tree_manager.h",
   ]
 
   deps = [
@@ -215,8 +217,6 @@ static_library("test_support") {
   sources = [
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
-    "test_ax_tree_manager.cc",
-    "test_ax_tree_manager.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
