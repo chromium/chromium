@@ -5,6 +5,7 @@
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 
 #include <cmath>
+#include <limits>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -68,7 +69,12 @@ constexpr base::FeatureParam<int> kCollectionIntervalMinutes{
 base::TimeDelta RandomInterval(base::TimeDelta mean) {
   // Time intervals between profile collections form a Poisson stream with
   // given mean interval.
-  return -std::log(base::RandDouble()) * mean;
+  double rnd = base::RandDouble();
+  if (rnd == 0) {
+    // log(0) is an error.
+    rnd = std::numeric_limits<double>::min();
+  }
+  return -std::log(rnd) * mean;
 }
 
 bool DecideIfCollectionIsEnabled(version_info::Channel channel) {
