@@ -47,10 +47,6 @@ class TestMenuDelegate : public MenuDelegate {
                        ui::MenuSourceType source_type) override;
   void ExecuteCommand(int id) override;
   void OnMenuClosed(MenuItemView* menu) override;
-  ui::mojom::DragOperation OnPerformDrop(
-      MenuItemView* menu,
-      DropPosition position,
-      const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       MenuItemView* menu,
       DropPosition position,

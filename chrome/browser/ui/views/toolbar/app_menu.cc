@@ -914,16 +914,6 @@ ui::mojom::DragOperation AppMenu::GetDropOperation(
              : ui::mojom::DragOperation::kNone;
 }
 
-ui::mojom::DragOperation AppMenu::OnPerformDrop(
-    MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(menu, position, event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback AppMenu::GetDropCallback(
     views::MenuItemView* menu,
     DropPosition position,

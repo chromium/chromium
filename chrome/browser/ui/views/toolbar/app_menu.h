@@ -72,10 +72,6 @@ class AppMenu : public views::MenuDelegate,
   ui::mojom::DragOperation GetDropOperation(views::MenuItemView* item,
                                             const ui::DropTargetEvent& event,
                                             DropPosition* position) override;
-  ui::mojom::DragOperation OnPerformDrop(
-      views::MenuItemView* menu,
-      DropPosition position,
-      const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       views::MenuItemView* menu,
       DropPosition position,

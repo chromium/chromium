@@ -200,9 +200,6 @@ class MenuViewDragAndDropTest : public MenuTestBase,
   DragOperation GetDropOperation(views::MenuItemView* item,
                                  const ui::DropTargetEvent& event,
                                  DropPosition* position) override;
-  DragOperation OnPerformDrop(views::MenuItemView* menu,
-                              DropPosition position,
-                              const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       views::MenuItemView* menu,
       DropPosition position,
@@ -300,16 +297,6 @@ DragOperation MenuViewDragAndDropTest::GetDropOperation(
     const ui::DropTargetEvent& event,
     DropPosition* position) {
   return DragOperation::kMove;
-}
-
-DragOperation MenuViewDragAndDropTest::OnPerformDrop(
-    views::MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(menu, position, event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
 }
 
 views::View::DropCallback MenuViewDragAndDropTest::GetDropCallback(

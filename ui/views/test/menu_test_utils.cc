@@ -41,16 +41,6 @@ void TestMenuDelegate::OnMenuClosed(MenuItemView* menu) {
   on_menu_closed_menu_ = menu;
 }
 
-ui::mojom::DragOperation TestMenuDelegate::OnPerformDrop(
-    MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(menu, position, event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback TestMenuDelegate::GetDropCallback(
     MenuItemView* menu,
     DropPosition position,
