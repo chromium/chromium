@@ -161,7 +161,8 @@
 
 // Tests executeJavaScript:error: in chrome_earl_grey.h
 - (void)testExecuteJavaScript {
-  id actualResult = [ChromeEarlGrey executeJavaScript:@"0"];
+  auto result = [ChromeEarlGrey evaluateJavaScript:@"0"];
+  NSNumber* actualResult = [NSNumber numberWithInt:result.GetDouble()];
   GREYAssertEqualObjects(@0, actualResult,
                          @"Actual JavaScript execution result: %@",
                          actualResult);

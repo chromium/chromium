@@ -680,8 +680,10 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   GREYAssertFalse(self.serverServedRedImage,
                   @"Offline page accessed online resource.");
 
-  id checkImage = [ChromeEarlGrey executeJavaScript:kCheckImagesJS];
-  GREYAssert([checkImage isEqual:@YES], @"Incorrect image loading.");
+  auto checkImage = [ChromeEarlGrey evaluateJavaScript:kCheckImagesJS];
+
+  GREYAssertTrue(checkImage.is_bool(), @"CheckImage is not a boolean.");
+  GREYAssert(checkImage.GetBool(), @"Incorrect image loading.");
 
   // Verify that the webState's title is correct.
   GREYAssertEqualObjects([ChromeEarlGreyAppInterface currentTabTitle],

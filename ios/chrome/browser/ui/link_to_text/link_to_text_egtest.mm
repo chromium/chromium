@@ -97,7 +97,18 @@ NSArray<NSString*>* GetMarkedText() {
                   "  }"
                   "  return markedText;"
                   "})();";
-  return [ChromeEarlGrey executeJavaScript:js];
+  auto result = [ChromeEarlGrey evaluateJavaScript:js];
+  GREYAssertTrue(result.is_list(), @"Result is not iterable.");
+
+  NSMutableArray<NSString*>* marked_texts = [NSMutableArray array];
+  for (const auto& element : result.GetList()) {
+    if (element.is_string()) {
+      NSString* ns_element = base::SysUTF8ToNSString(element.GetString());
+      [marked_texts addObject:ns_element];
+    }
+  }
+
+  return [marked_texts copy];
 }
 
 NSString* GetFirstVisibleMarkedText() {
@@ -114,7 +125,9 @@ NSString* GetFirstVisibleMarkedText() {
        "    rect.right <= window.innerWidth;"
        "  return isVisible ? firstMark.innerText : '';"
        "})();";
-  return [ChromeEarlGrey executeJavaScript:js];
+  auto result = [ChromeEarlGrey evaluateJavaScript:js];
+  GREYAssertTrue(result.is_string(), @"Result is not a string.");
+  return base::SysUTF8ToNSString(result.GetString());
 }
 
 std::unique_ptr<net::test_server::HttpResponse> LoadHtml(

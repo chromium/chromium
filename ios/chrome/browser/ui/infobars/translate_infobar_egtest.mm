@@ -353,11 +353,12 @@ void TestResponseProvider::GetLanguageResponse(
   [TranslateAppInterface resetLanguageDetectionTabHelperObserver];
   // Change the text of the page.
   [ChromeEarlGrey
-      evaluateJavaScript:[NSString stringWithFormat:@"document.write('%s');",
-                                                    kEnglishText]];
+      evaluateJavaScriptForSideEffect:
+          [NSString stringWithFormat:@"document.write('%s');", kEnglishText]];
 
   // Trigger a new detection with pushState.
-  [ChromeEarlGrey evaluateJavaScript:@"history.pushState(null, null, null);"];
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"history.pushState(null, null, null);"];
   // Check that the new language has been detected.
   [self assertContentLanguage:@"" htmlRootLanguage:@"" adoptedLanguage:@"en"];
 }

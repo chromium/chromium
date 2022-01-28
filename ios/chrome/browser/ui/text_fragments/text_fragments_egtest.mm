@@ -51,7 +51,7 @@ void ClickMarkAndWaitForMenu() {
   ElementSelector* selector = [ElementSelector selectorWithCSSSelector:"mark"];
   [ChromeEarlGrey waitForWebStateContainingElement:selector];
   [ChromeEarlGrey
-      executeJavaScript:
+      evaluateJavaScriptForSideEffect:
           @"document.getElementById('target').children[0].click();"];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:GetMenuTitleMatcher()];

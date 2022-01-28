@@ -121,7 +121,7 @@ class ScopedBlockPopupsException {
 
   // Request popup (execute script without using a user gesture) and make sure
   // the popup opened in a new tab.
-  [ChromeEarlGrey executeJavaScript:kOpenPopupScript];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:kOpenPopupScript];
   [ChromeEarlGrey waitForMainTabCount:2];
 
   // No infobar should be displayed.
@@ -151,7 +151,7 @@ class ScopedBlockPopupsException {
   // Request popup (execute script without using a user gesture), then make sure
   // it was blocked and an infobar was displayed. The window.open() call is run
   // via async JS, so the infobar may not open immediately.
-  [ChromeEarlGrey executeJavaScript:kOpenPopupScript];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:kOpenPopupScript];
 
   BOOL infobarVisible = [[GREYCondition
       conditionWithName:@"Wait for blocked popups infobar to show"

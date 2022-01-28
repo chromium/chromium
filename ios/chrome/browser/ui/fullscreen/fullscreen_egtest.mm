@@ -173,7 +173,7 @@ void WaitforPDFExtensionView() {
                       "document.body.innerHTML += \"<meta name='viewport' "
                       "content='width=10'>\""
                       "})()";
-  [ChromeEarlGrey executeJavaScript:script];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
 
   // Scroll up to be sure the toolbar can be dismissed by scrolling down.
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]

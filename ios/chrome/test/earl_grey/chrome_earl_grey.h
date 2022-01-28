@@ -590,7 +590,12 @@ UIWindow* GetAnyKeyWindow();
 // induced.
 - (id)executeJavaScript:(NSString*)javaScript;
 
-- (std::unique_ptr<base::Value>)evaluateJavaScript:(NSString*)javaScript;
+- (base::Value)evaluateJavaScript:(NSString*)javaScript [[nodiscard]];
+
+// Executes JavaScript on current WebState. This function should be used in
+// place -evaluateJavaScript when the executed JavaScript's return value will
+// not be used.
+- (void)evaluateJavaScriptForSideEffect:(NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
 - (NSString*)mobileUserAgentString;
