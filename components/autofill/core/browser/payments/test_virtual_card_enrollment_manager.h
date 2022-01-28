@@ -30,7 +30,8 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
 
   void SetResetCalled(bool reset_called) { reset_called_ = reset_called; }
 
-  VirtualCardEnrollmentProcessState* GetVirtualCardEnrollmentProcessState() {
+  raw_ptr<VirtualCardEnrollmentProcessState>
+  GetVirtualCardEnrollmentProcessState() {
     return &state_;
   }
 
