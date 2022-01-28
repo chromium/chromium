@@ -512,7 +512,7 @@ const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
+      ->LaunchAppWithParamsForTesting(std::move(params));
   app_loaded_observer.Wait();
 
   return app;

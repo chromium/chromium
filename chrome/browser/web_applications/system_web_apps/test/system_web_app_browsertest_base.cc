@@ -83,7 +83,7 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
 
   if (wait_for_load) {
     navigation_observer.Wait();

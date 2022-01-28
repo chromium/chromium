@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, CannotLaunchAfterUninstall) {
   content::WebContents* const web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   EXPECT_EQ(web_contents, nullptr);
 }
 

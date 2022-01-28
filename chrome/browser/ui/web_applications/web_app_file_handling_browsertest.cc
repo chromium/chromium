@@ -198,11 +198,10 @@ content::WebContents* LaunchApplication(
 
   content::TestNavigationObserver navigation_observer(expected_launch_url);
   navigation_observer.StartWatchingNewWebContents();
-
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
 
   navigation_observer.Wait();
   AttachTestConsumer(web_contents);

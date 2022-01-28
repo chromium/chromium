@@ -1541,19 +1541,23 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kWeb);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebWindow);
 
-  proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
-      "w2", apps::mojom::LaunchContainer::kLaunchContainerTab,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::LaunchSource::kFromTest));
+  // TODO(crbug.com/1253250): Register non-mojom apps and use
+  // AppServiceProxy::LaunchAppWithParams to test launching.
+  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
+      apps::AppLaunchParams("w2",
+                            apps::mojom::LaunchContainer::kLaunchContainerTab,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            apps::mojom::LaunchSource::kFromTest));
   VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
                       apps::mojom::LaunchSource::kFromTest);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
 
-  proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
-      "s", apps::mojom::LaunchContainer::kLaunchContainerTab,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::LaunchSource::kFromTest));
+  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
+      apps::AppLaunchParams("s",
+                            apps::mojom::LaunchContainer::kLaunchContainerTab,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            apps::mojom::LaunchSource::kFromTest));
   VerifyAppsLaunchUkm("app://s", AppTypeName::kSystemWeb,
                       apps::mojom::LaunchSource::kFromTest);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);

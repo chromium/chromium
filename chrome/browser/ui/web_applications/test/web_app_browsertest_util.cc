@@ -170,7 +170,7 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::CURRENT_TAB,
               apps::mojom::LaunchSource::kFromTest));
@@ -194,7 +194,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::mojom::LaunchContainer::kLaunchContainerTab,
               WindowOpenDisposition::NEW_FOREGROUND_TAB,
               apps::mojom::LaunchSource::kFromTest));

@@ -32,7 +32,7 @@
 
 namespace {
 content::WebContents* LaunchAppWithParamsImpl(
-    apps::AppLaunchParams&& params,
+    apps::AppLaunchParams params,
     Profile* profile,
     web_app::WebAppLaunchManager* web_app_launch_manager) {
   const extensions::Extension* extension =
@@ -125,7 +125,13 @@ BrowserAppLauncher::~BrowserAppLauncher() = default;
 // TODO(crbug.com/1244506): Make this interface only work for non-ChromeOS
 // platform after the clean up.
 content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
-    AppLaunchParams&& params) {
+    AppLaunchParams params) {
+  return LaunchAppWithParamsImpl(std::move(params), profile_,
+                                 &web_app_launch_manager_);
+}
+
+content::WebContents* BrowserAppLauncher::LaunchAppWithParamsForTesting(
+    AppLaunchParams params) {
   return LaunchAppWithParamsImpl(std::move(params), profile_,
                                  &web_app_launch_manager_);
 }

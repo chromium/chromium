@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL), contents->GetVisibleURL());
 }
 

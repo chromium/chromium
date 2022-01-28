@@ -200,9 +200,8 @@ web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
       settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   params.restore_id = kSettingsWindowId;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+      std::move(params));
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
   return settings_app_id;
 }

@@ -275,7 +275,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params));
+        ->LaunchAppWithParamsForTesting(std::move(params));
 
     if (!catcher.GetNextResult()) {
       message_ = catcher.message();
@@ -947,7 +947,7 @@ void PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
         content::NotificationService::AllSources());
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(apps::AppLaunchParams(
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
             extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));
@@ -1096,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   ExtensionTestMessageListener launched_listener("Launched", false);
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   ExtensionTestMessageListener launched_listener("Launched", false);
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
@@ -1162,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
   ExtensionTestMessageListener launched_listener("Launched", false);
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
     ExtensionTestMessageListener launched_listener("Launched", false);
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(apps::AppLaunchParams(
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
             extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));

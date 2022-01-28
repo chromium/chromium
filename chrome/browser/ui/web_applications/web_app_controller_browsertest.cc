@@ -165,7 +165,7 @@ content::WebContents* WebAppControllerBrowserTest::OpenApplication(
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   url_observer.Wait();
   return contents;
 }

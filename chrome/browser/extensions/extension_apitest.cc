@@ -154,7 +154,7 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params));
+        ->LaunchAppWithParamsForTesting(std::move(params));
   }
 
   if (!catcher.GetNextResult()) {

@@ -110,7 +110,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
     content::WebContents* const web_contents =
         GetAppServiceProxy(profile())
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(params));
+            ->LaunchAppWithParamsForTesting(std::move(params));
     DCHECK(web_contents);
     url_observer.Wait();
     EXPECT_EQ(expected_url, web_contents->GetVisibleURL());

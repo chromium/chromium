@@ -44,7 +44,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -1698,18 +1697,14 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   size_t tabs = BrowserShortcutMenuItemCount(true);
 
   // Create a second browser.
-  //
-  // TODO(crbug.com/1061843): Replace OpenApplication with AppService's launch
-  // interfaces.
   const Extension* extension = extension_registry()->GetExtensionById(
       last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
   EXPECT_TRUE(extension);
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerTab,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::LaunchSource::kFromTest));
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
+      apps::AppLaunchParams(extension->id(),
+                            apps::mojom::LaunchContainer::kLaunchContainerTab,
+                            WindowOpenDisposition::NEW_WINDOW,
+                            apps::mojom::LaunchSource::kFromTest));
 
   EXPECT_EQ(++browsers, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(++tabs, BrowserShortcutMenuItemCount(true));

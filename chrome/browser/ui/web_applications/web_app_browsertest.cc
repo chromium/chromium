@@ -1734,7 +1734,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
       apps::AppServiceProxyFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   EXPECT_EQ(web_contents, nullptr);
 }
 

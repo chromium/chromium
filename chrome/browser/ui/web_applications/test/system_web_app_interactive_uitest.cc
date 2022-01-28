@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     content::WebContents* web_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile2)
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(launch_params));
+            ->LaunchAppWithParamsForTesting(std::move(launch_params));
     EXPECT_EQ(web_contents, nullptr);
   }
 
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     content::WebContents* web_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile1)
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(launch_params));
+            ->LaunchAppWithParamsForTesting(std::move(launch_params));
     EXPECT_NE(web_contents, nullptr);
   }
 }
