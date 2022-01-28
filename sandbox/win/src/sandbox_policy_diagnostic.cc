@@ -45,19 +45,11 @@ const char kLockdownLevel[] = "lockdownLevel";
 const char kLowboxSid[] = "lowboxSid";
 const char kPlatformMitigations[] = "platformMitigations";
 const char kPolicyRules[] = "policyRules";
-const char kProcessIds[] = "processIds";
+const char kProcessId[] = "processId";
 
 // Values in snapshots of Policies.
 const char kDisabled[] = "disabled";
 const char kEnabled[] = "enabled";
-
-base::Value ProcessIdList(std::vector<uint32_t> process_ids) {
-  base::Value results(base::Value::Type::LIST);
-  for (const auto pid : process_ids) {
-    results.Append(base::strict_cast<double>(pid));
-  }
-  return results;
-}
 
 std::string GetTokenLevelInEnglish(TokenLevel token) {
   switch (token) {
@@ -379,8 +371,7 @@ base::Value GetHandlesToClose(const HandleMap& handle_map) {
 PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   DCHECK(policy);
   // TODO(crbug/997273) Add more fields once webui plumbing is complete.
-  process_ids_.push_back(
-      base::strict_cast<uint32_t>(policy->target_->ProcessId()));
+  process_id_ = base::strict_cast<uint32_t>(policy->target_->ProcessId());
   lockdown_level_ = policy->lockdown_level_;
   job_level_ = policy->job_level_;
 
@@ -435,7 +426,7 @@ const char* PolicyDiagnostic::JsonString() {
     return json_string_->c_str();
 
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(kProcessIds, ProcessIdList(process_ids_));
+  value.SetKey(kProcessId, base::Value(base::strict_cast<double>(process_id_)));
   value.SetKey(kLockdownLevel,
                base::Value(GetTokenLevelInEnglish(lockdown_level_)));
   value.SetKey(kJobLevel, base::Value(GetJobLevelInEnglish(job_level_)));

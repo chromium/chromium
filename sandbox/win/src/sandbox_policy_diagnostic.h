@@ -41,7 +41,7 @@ class PolicyDiagnostic final : public PolicyInfo {
  private:
   // |json_string_| is lazily constructed.
   std::unique_ptr<std::string> json_string_;
-  std::vector<uint32_t> process_ids_;
+  uint32_t process_id_;
   TokenLevel lockdown_level_ = USER_LAST;
   JobLevel job_level_ = JOB_NONE;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
