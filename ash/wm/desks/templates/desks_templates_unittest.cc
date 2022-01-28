@@ -2303,4 +2303,21 @@ TEST_F(DesksTemplatesTest, NoAnimationWhenRemovingDesk) {
   EXPECT_EQ(0.f, test_window->layer()->opacity());
 }
 
+// Tests that the desks templates name view can accept touch events and get
+// focused. Regression test for https://crbug.com/1291769.
+TEST_F(DesksTemplatesTest, TouchForNameView) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+  ASSERT_FALSE(name_view->HasFocus());
+
+  // The name view should receive focus after getting a gesture tap.
+  GetEventGenerator()->GestureTapAt(
+      name_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(name_view->HasFocus());
+}
+
 }  // namespace ash

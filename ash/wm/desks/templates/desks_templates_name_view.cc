@@ -74,6 +74,13 @@ gfx::Size DesksTemplatesNameView::CalculatePreferredSize() const {
   return gfx::Size(preferred_width, kTemplateNameViewHeight);
 }
 
+void DesksTemplatesNameView::OnGestureEvent(ui::GestureEvent* event) {
+  DesksTextfield::OnGestureEvent(event);
+  // Stop propagating this event so that the parent of `this`, which is a button
+  // does not get the event.
+  event->StopPropagation();
+}
+
 int DesksTemplatesNameView::GetAvailableWidth() const {
   auto* parent_view = static_cast<const views::BoxLayoutView*>(parent());
   int available_width = parent_view->width() -

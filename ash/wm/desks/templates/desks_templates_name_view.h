@@ -34,6 +34,7 @@ class DesksTemplatesNameView : public DesksTextfield {
 
   // DesksTextfield:
   gfx::Size CalculatePreferredSize() const override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
   // Gets the available width for `this`. It is the largest width `this` can be
