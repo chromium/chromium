@@ -13,6 +13,7 @@ class WebState;
 }
 
 class Browser;
+class GURL;
 
 // Object creating the configuration (action items...) for the context menu.
 @interface ContextMenuConfigurationProvider : NSObject
@@ -27,6 +28,10 @@ class Browser;
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params;
+
+// The URL to be loaded when the user taps on the preview. Empty URL if there is
+// nothing to load.
+@property(nonatomic, assign, readonly) GURL URLToLoad;
 
 @end
 
