@@ -261,7 +261,7 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename)
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
@@ -296,7 +296,7 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename)
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
     self.assertEqual(
         removed_urls,
         set(['crbug.com/1234', 'crbug.com/3456', 'crbug.com/4567']))
@@ -306,34 +306,49 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
   def testNestedBlockComments(self):
     """Tests that nested disable block comments throw exceptions."""
     contents = self.header + """
-# finder:disable
-# finder:disable
+# finder:disable-general
+# finder:disable-general
 crbug.com/1234 [ win ] foo/test [ Failure ]
-# finder:enable
-# finder:enable
+# finder:enable-general
+# finder:enable-general
 """
     with open(self.filename, 'w') as f:
       f.write(contents)
     with self.assertRaises(RuntimeError):
-      self.instance.RemoveExpectationsFromFile([], self.filename)
+      self.instance.RemoveExpectationsFromFile([], self.filename,
+                                               expectations.RemovalType.STALE)
 
     contents = self.header + """
-# finder:enable
+# finder:disable-general
+# finder:disable-stale
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:enable-stale
+# finder:enable-genearl
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    with self.assertRaises(RuntimeError):
+      self.instance.RemoveExpectationsFromFile([], self.filename,
+                                               expectations.RemovalType.STALE)
+
+    contents = self.header + """
+# finder:enable-general
 crbug.com/1234 [ win ] foo/test [ Failure ]
 """
     with open(self.filename, 'w') as f:
       f.write(contents)
     with self.assertRaises(RuntimeError):
-      self.instance.RemoveExpectationsFromFile([], self.filename)
+      self.instance.RemoveExpectationsFromFile([], self.filename,
+                                               expectations.RemovalType.STALE)
 
-  def testBlockComments(self):
+  def testGeneralBlockComments(self):
     """Tests that expectations in a disable block comment are not removed."""
     contents = self.header + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
-# finder:disable
+# finder:disable-general
 crbug.com/2345 [ win ] foo/test [ Failure ]
 crbug.com/3456 [ win ] foo/test [ Failure ]
-# finder:enable
+# finder:enable-general
 crbug.com/4567 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
@@ -347,24 +362,143 @@ crbug.com/4567 [ win ] foo/test [ Failure ]
                                'crbug.com/4567'),
     ]
     expected_contents = self.header + """
-# finder:disable
+# finder:disable-general
 crbug.com/2345 [ win ] foo/test [ Failure ]
 crbug.com/3456 [ win ] foo/test [ Failure ]
-# finder:enable
+# finder:enable-general
+"""
+    for removal_type in (expectations.RemovalType.STALE,
+                         expectations.RemovalType.UNUSED):
+      with open(self.filename, 'w') as f:
+        f.write(contents)
+      removed_urls = self.instance.RemoveExpectationsFromFile(
+          stale_expectations, self.filename, removal_type)
+      self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/4567']))
+      with open(self.filename) as f:
+        self.assertEqual(f.read(), expected_contents)
+
+  def testStaleBlockComments(self):
+    """Tests that stale expectations in a stale disable block are not removed"""
+    contents = self.header + """
+crbug.com/1234 [ win ] not_stale [ Failure ]
+crbug.com/1234 [ win ] before_block [ Failure ]
+# finder:disable-stale
+crbug.com/2345 [ win ] in_block [ Failure ]
+# finder:enable-stale
+crbug.com/3456 [ win ] after_block [ Failure ]
+"""
+    stale_expectations = [
+        data_types.Expectation('before_block', ['win'], 'Failure',
+                               'crbug.com/1234'),
+        data_types.Expectation('in_block', ['win'], 'Failure',
+                               'crbug.com/2345'),
+        data_types.Expectation('after_block', ['win'], 'Failure',
+                               'crbug.com/3456'),
+    ]
+    expected_contents = self.header + """
+crbug.com/1234 [ win ] not_stale [ Failure ]
+# finder:disable-stale
+crbug.com/2345 [ win ] in_block [ Failure ]
+# finder:enable-stale
 """
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename)
-    self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/4567']))
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-  def testInlineComments(self):
+  def testUnusedBlockComments(self):
+    """Tests that stale expectations in unused disable blocks are not removed"""
+    contents = self.header + """
+crbug.com/1234 [ win ] not_unused [ Failure ]
+crbug.com/1234 [ win ] before_block [ Failure ]
+# finder:disable-unused
+crbug.com/2345 [ win ] in_block [ Failure ]
+# finder:enable-unused
+crbug.com/3456 [ win ] after_block [ Failure ]
+"""
+    unused_expectations = [
+        data_types.Expectation('before_block', ['win'], 'Failure',
+                               'crbug.com/1234'),
+        data_types.Expectation('in_block', ['win'], 'Failure',
+                               'crbug.com/2345'),
+        data_types.Expectation('after_block', ['win'], 'Failure',
+                               'crbug.com/3456'),
+    ]
+    expected_contents = self.header + """
+crbug.com/1234 [ win ] not_unused [ Failure ]
+# finder:disable-unused
+crbug.com/2345 [ win ] in_block [ Failure ]
+# finder:enable-unused
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        unused_expectations, self.filename, expectations.RemovalType.UNUSED)
+    self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testMismatchedBlockComments(self):
+    """Tests that block comments for the wrong removal type do nothing."""
+    contents = self.header + """
+crbug.com/1234 [ win ] do_not_remove [ Failure ]
+# finder:disable-stale
+crbug.com/2345 [ win ] disabled_stale [ Failure ]
+# finder:enable-stale
+# finder:disable-unused
+crbug.com/3456 [ win ] disabled_unused [ Failure ]
+# finder:enable-unused
+crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
+"""
+    expectations_to_remove = [
+        data_types.Expectation('disabled_stale', ['win'], 'Failure',
+                               'crbug.com/2345'),
+        data_types.Expectation('disabled_unused', ['win'], 'Failure',
+                               'crbug.com/3456'),
+    ]
+
+    expected_contents = self.header + """
+crbug.com/1234 [ win ] do_not_remove [ Failure ]
+# finder:disable-stale
+crbug.com/2345 [ win ] disabled_stale [ Failure ]
+# finder:enable-stale
+# finder:disable-unused
+# finder:enable-unused
+crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        expectations_to_remove, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set(['crbug.com/3456']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+    expected_contents = self.header + """
+crbug.com/1234 [ win ] do_not_remove [ Failure ]
+# finder:disable-stale
+# finder:enable-stale
+# finder:disable-unused
+crbug.com/3456 [ win ] disabled_unused [ Failure ]
+# finder:enable-unused
+crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        expectations_to_remove, self.filename, expectations.RemovalType.UNUSED)
+    self.assertEqual(removed_urls, set(['crbug.com/2345']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testInlineGeneralComments(self):
     """Tests that expectations with inline disable comments are not removed."""
     contents = self.header + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
-crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable
+crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable-general
 crbug.com/3456 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
@@ -376,25 +510,79 @@ crbug.com/3456 [ win ] foo/test [ Failure ]
                                'crbug.com/3456'),
     ]
     expected_contents = self.header + """
-crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable
+crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable-general
+"""
+    for removal_type in (expectations.RemovalType.STALE,
+                         expectations.RemovalType.UNUSED):
+      with open(self.filename, 'w') as f:
+        f.write(contents)
+      removed_urls = self.instance.RemoveExpectationsFromFile(
+          stale_expectations, self.filename, removal_type)
+      self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
+      with open(self.filename) as f:
+        self.assertEqual(f.read(), expected_contents)
+
+  def testInlineStaleComments(self):
+    """Tests that expectations with inline stale disable comments not removed"""
+    contents = self.header + """
+crbug.com/1234 [ win ] not_disabled [ Failure ]
+crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
+crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
+"""
+    stale_expectations = [
+        data_types.Expectation('not_disabled', ['win'], 'Failure',
+                               'crbug.com/1234'),
+        data_types.Expectation('stale_disabled', ['win'], 'Failure',
+                               'crbug.com/2345'),
+        data_types.Expectation('unused_disabled', ['win'], 'Failure',
+                               'crbug.com/3456')
+    ]
+    expected_contents = self.header + """
+crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
 """
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename)
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
     self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testInlineUnusedComments(self):
+    """Tests that expectations with inline unused comments not removed"""
+    contents = self.header + """
+crbug.com/1234 [ win ] not_disabled [ Failure ]
+crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
+crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
+"""
+    stale_expectations = [
+        data_types.Expectation('not_disabled', ['win'], 'Failure',
+                               'crbug.com/1234'),
+        data_types.Expectation('stale_disabled', ['win'], 'Failure',
+                               'crbug.com/2345'),
+        data_types.Expectation('unused_disabled', ['win'], 'Failure',
+                               'crbug.com/3456')
+    ]
+    expected_contents = self.header + """
+crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.UNUSED)
+    self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/2345']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testGetDisableReasonFromComment(self):
     """Tests that the disable reason can be pulled from a line."""
     self.assertEqual(
-        expectations._GetDisableReasonFromComment('# finder:disable foo'),
-        'foo')
+        expectations._GetDisableReasonFromComment(
+            '# finder:disable-general foo'), 'foo')
     self.assertEqual(
         expectations._GetDisableReasonFromComment(
-            'crbug.com/1234 [ win ] bar/test [ Failure ]  # finder:disable foo'
-        ), 'foo')
+            'crbug.com/1234 [ win ] bar/test [ Failure ]  '
+            '# finder:disable-general foo'), 'foo')
 
 
 class GetExpectationLineUnittest(unittest.TestCase):

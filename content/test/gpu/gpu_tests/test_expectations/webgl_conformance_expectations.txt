@@ -299,7 +299,7 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-comp
 
 # Failing on most platforms. Only runs with passthrough.
 crbug.com/1175371 [ android ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ chromeos ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]  # finder:disable May still be relevant once WebGL is run with passthrough on ChromeOS
+crbug.com/1175371 [ chromeos ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]  # finder:disable-unused May still be relevant once WebGL is run with passthrough on ChromeOS
 crbug.com/1175371 [ linux ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ mac ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -547,7 +547,7 @@ crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-appl
 ####################
 
 # Linux / Vulkan / Passthrough command decoder
-crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_depth_texture [ Failure ]  # finder:disable Not tested in Chromium, but tested by Intel.
+crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_depth_texture [ Failure ]  # finder:disable-unused Not tested in Chromium, but tested by Intel.
 
 # Linux AMD RX 5500 XT
 crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
@@ -683,10 +683,10 @@ crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ 
 crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/conversions.html [ Failure ]
 crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/swizzles.html [ Failure ]
 
-# finder:disable Reported by Intel but not currently testable in Chromium
+# finder:disable-unused Reported by Intel but not currently testable in Chromium
 crbug.com/1237319 [ chromeos chromeos-board-eve passthrough intel ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1237319 [ chromeos angle-opengles passthrough intel ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-# finder:enable
+# finder:enable-unused
 
 # Arm-based issues.
 crbug.com/1080400 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_color_buffer_half_float [ Failure ]

@@ -27,6 +27,11 @@ and removed (e.g. due to a very low flake rate that doesn't get caught
 consistently by the script), expectations can be omitted from automatic removal
 using an inline `# finder:disable` comment for a single expectation or a pair of
 `# finder:disable`/`# finder:enable` comments for a block of expectations.
+General disables can be handled via `finder:disable-general` and
+`finder:enable-general`. Disabling removal only if the expectation is found to
+be unused can be handled via `finder:disable-unused` and `finder:enable-unused`.
+Disabling removal only if the expectation is found to be stale can be handled
+via `finder:disable-stale` and `finder:enable-stale`.
 """
 
 import argparse
@@ -39,6 +44,7 @@ from unexpected_passes import gpu_expectations
 from unexpected_passes import gpu_queries
 from unexpected_passes_common import argument_parsing
 from unexpected_passes_common import builders
+from unexpected_passes_common import expectations
 from unexpected_passes_common import result_output
 
 SUITE_TO_EXPECTATIONS_MAP = {
@@ -146,13 +152,14 @@ def main():
   if args.remove_stale_expectations:
     for expectation_file, expectation_map in stale.items():
       affected_urls |= expectations_instance.RemoveExpectationsFromFile(
-          expectation_map.keys(), expectation_file)
+          expectation_map.keys(), expectation_file,
+          expectations.RemovalType.STALE)
       stale_message += ('Stale expectations removed from %s. Stale comments, '
                         'etc. may still need to be removed.\n' %
                         expectation_file)
     for expectation_file, unused_list in unused_expectations.items():
       affected_urls |= expectations_instance.RemoveExpectationsFromFile(
-          unused_list, expectation_file)
+          unused_list, expectation_file, expectations.RemovalType.UNUSED)
       stale_message += ('Unused expectations removed from %s. Stale comments, '
                         'etc. may still need to be removed.\n' %
                         expectation_file)

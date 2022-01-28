@@ -420,7 +420,7 @@ crbug.com/1240440 [ chromeos ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
 crbug.com/1240440 [ chromeos ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
 
 # Flakes on Mac dual-GPU
-crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]  # finder:disable Very low flake rate (1 in 1k+ builds)
+crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]  # finder:disable-stale Very low flake rate (1 in 1k+ builds)
 
 # Failures on Mac FYI arm64 Release (Apple DTK)
 crbug.com/1175753 [ mac release apple-apple-m1 ] Pixel_Video_BackdropFilter [ Failure ]

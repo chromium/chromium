@@ -14,6 +14,7 @@ from blinkpy.web_tests.stale_expectation_removal import queries
 from unexpected_passes_common import argument_parsing
 from unexpected_passes_common import builders as common_builders
 from unexpected_passes_common import data_types as common_data_types
+from unexpected_passes_common import expectations as common_expectations
 from unexpected_passes_common import result_output
 
 
@@ -69,14 +70,16 @@ def main():
     if args.remove_stale_expectations:
         for expectation_file, expectation_map in stale.items():
             affected_urls |= expectations_instance.RemoveExpectationsFromFile(
-                expectation_map.keys(), expectation_file)
+                expectation_map.keys(), expectation_file,
+                common_expectations.RemovalType.STALE)
             stale_message += (
                 'Stale expectations removed from %s. Stale '
                 'comments, etc. may still need to be removed.\n' %
                 expectation_file)
         for expectation_file, unused_list in unused_expectations.items():
             affected_urls |= expectations_instance.RemoveExpectationsFromFile(
-                unused_list, expectation_file)
+                unused_list, expectation_file,
+                common_expectations.RemovalType.UNUSED)
             stale_message += (
                 'Unused expectations removed from %s. Stale comments, etc. '
                 'may still need to be removed.\n' % expectation_file)

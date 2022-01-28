@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import collections
 import datetime
 import logging
 import os
@@ -18,14 +19,54 @@ from typ import expectations_parser
 from unexpected_passes_common import data_types
 from unexpected_passes_common import result_output
 
+FINDER_DISABLE_COMMENT_BASE = 'finder:disable'
+FINDER_ENABLE_COMMENT_BASE = 'finder:enable'
+FINDER_COMMENT_SUFFIX_GENERAL = '-general'
+FINDER_COMMENT_SUFFIX_STALE = '-stale'
+FINDER_COMMENT_SUFFIX_UNUSED = '-unused'
 
-FINDER_DISABLE_COMMENT = 'finder:disable'
-FINDER_ENABLE_COMMENT = 'finder:enable'
+ALL_FINDER_SUFFIXES = frozenset([
+    FINDER_COMMENT_SUFFIX_GENERAL,
+    FINDER_COMMENT_SUFFIX_STALE,
+    FINDER_COMMENT_SUFFIX_UNUSED,
+])
+
+FINDER_DISABLE_COMMENT_GENERAL = (FINDER_DISABLE_COMMENT_BASE +
+                                  FINDER_COMMENT_SUFFIX_GENERAL)
+FINDER_DISABLE_COMMENT_STALE = (FINDER_DISABLE_COMMENT_BASE +
+                                FINDER_COMMENT_SUFFIX_STALE)
+FINDER_DISABLE_COMMENT_UNUSED = (FINDER_DISABLE_COMMENT_BASE +
+                                 FINDER_COMMENT_SUFFIX_UNUSED)
+FINDER_ENABLE_COMMENT_GENERAL = (FINDER_ENABLE_COMMENT_BASE +
+                                 FINDER_COMMENT_SUFFIX_GENERAL)
+FINDER_ENABLE_COMMENT_STALE = (FINDER_ENABLE_COMMENT_BASE +
+                               FINDER_COMMENT_SUFFIX_STALE)
+FINDER_ENABLE_COMMENT_UNUSED = (FINDER_ENABLE_COMMENT_BASE +
+                                FINDER_COMMENT_SUFFIX_UNUSED)
+
+FINDER_DISABLE_COMMENTS = frozenset([
+    FINDER_DISABLE_COMMENT_GENERAL, FINDER_DISABLE_COMMENT_STALE,
+    FINDER_DISABLE_COMMENT_UNUSED
+])
+
+FINDER_ENABLE_COMMENTS = frozenset([
+    FINDER_ENABLE_COMMENT_GENERAL,
+    FINDER_ENABLE_COMMENT_STALE,
+    FINDER_ENABLE_COMMENT_UNUSED,
+])
+
+ALL_FINDER_COMMENTS = frozenset(FINDER_DISABLE_COMMENTS
+                                | FINDER_ENABLE_COMMENTS)
 
 GIT_BLAME_REGEX = re.compile(
     r'^[\w\s]+\(.+(?P<date>\d\d\d\d-\d\d-\d\d)[^\)]+\)(?P<content>.*)$',
     re.DOTALL)
 EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
+
+
+class RemovalType(object):
+  STALE = FINDER_COMMENT_SUFFIX_STALE
+  UNUSED = FINDER_COMMENT_SUFFIX_UNUSED
 
 
 class Expectations(object):
@@ -138,7 +179,8 @@ class Expectations(object):
         content += line_content
     return content
 
-  def RemoveExpectationsFromFile(self, expectations, expectation_file):
+  def RemoveExpectationsFromFile(self, expectations, expectation_file,
+                                 removal_type):
     """Removes lines corresponding to |expectations| from |expectation_file|.
 
     Ignores any lines that match but are within a disable block or have an
@@ -148,6 +190,8 @@ class Expectations(object):
       expectations: A list of data_types.Expectations to remove.
       expectation_file: A filepath pointing to an expectation file to remove
           lines from.
+      removal_type: A RemovalType enum corresponding to the type of expectations
+          being removed.
 
     Returns:
       A set of strings containing URLs of bugs associated with the removed
@@ -160,16 +204,17 @@ class Expectations(object):
     output_contents = ''
     in_disable_block = False
     disable_block_reason = ''
+    disable_block_suffix = ''
     removed_urls = set()
     for line in input_contents.splitlines(True):
       # Auto-add any comments or empty lines
       stripped_line = line.strip()
       if _IsCommentOrBlankLine(stripped_line):
         output_contents += line
-        assert not (FINDER_DISABLE_COMMENT in line
-                    and FINDER_ENABLE_COMMENT in line)
+        # Only allow one enable/disable per line.
+        assert len([c for c in ALL_FINDER_COMMENTS if c in line]) <= 1
         # Handle disable/enable block comments.
-        if FINDER_DISABLE_COMMENT in line:
+        if _LineContainsDisableComment(line):
           if in_disable_block:
             raise RuntimeError(
                 'Invalid expectation file %s - contains a disable comment "%s" '
@@ -177,7 +222,8 @@ class Expectations(object):
                 (expectation_file, stripped_line))
           in_disable_block = True
           disable_block_reason = _GetDisableReasonFromComment(line)
-        if FINDER_ENABLE_COMMENT in line:
+          disable_block_suffix = _GetFinderCommentSuffix(line)
+        if _LineContainsEnableComment(line):
           if not in_disable_block:
             raise RuntimeError(
                 'Invalid expectation file %s - contains an enable comment "%s" '
@@ -194,12 +240,13 @@ class Expectations(object):
       if any([e for e in expectations if e == current_expectation]):
         # Skip any expectations that match if we're in a disable block or there
         # is an inline disable comment.
-        if in_disable_block:
+        if in_disable_block and _DisableSuffixIsRelevant(
+            disable_block_suffix, removal_type):
           output_contents += line
           logging.info(
               'Would have removed expectation %s, but inside a disable block '
               'with reason %s', stripped_line, disable_block_reason)
-        elif FINDER_DISABLE_COMMENT in line:
+        elif _LineContainsRelevantDisableComment(line, removal_type):
           output_contents += line
           logging.info(
               'Would have removed expectation %s, but it has an inline disable '
@@ -316,7 +363,8 @@ class Expectations(object):
           _WaitForAnyUserInput()
 
       modified_urls |= self.RemoveExpectationsFromFile(expectations_to_remove,
-                                                       expectation_file)
+                                                       expectation_file,
+                                                       RemovalType.STALE)
     for e in expectations_to_modify:
       modified_urls |= set(e.bug.split())
     return modified_urls
@@ -417,8 +465,75 @@ def _WaitForUserInputOnModification():
   return response
 
 
+def _LineContainsDisableComment(line):
+  return FINDER_DISABLE_COMMENT_BASE in line
+
+
+def _LineContainsEnableComment(line):
+  return FINDER_ENABLE_COMMENT_BASE in line
+
+
+def _GetFinderCommentSuffix(line):
+  """Gets the suffix of the finder comment on the given line.
+
+  Examples:
+    'foo  # finder:disable' -> ''
+    'foo  # finder:disable-stale some_reason' -> '-stale'
+  """
+  target_str = None
+  if _LineContainsDisableComment(line):
+    target_str = FINDER_DISABLE_COMMENT_BASE
+  elif _LineContainsEnableComment(line):
+    target_str = FINDER_ENABLE_COMMENT_BASE
+  else:
+    raise RuntimeError('Given line %s did not have a finder comment.' % line)
+  line = line[line.find(target_str):]
+  line = line.split()[0]
+  suffix = line.replace(target_str, '')
+  assert suffix in ALL_FINDER_SUFFIXES
+  return suffix
+
+
+def _LineContainsRelevantDisableComment(line, removal_type):
+  """Returns whether the given line contains a relevant disable comment.
+
+  Args:
+    line: A string containing the line to check.
+    removal_type: A RemovalType enum corresponding to the type of expectations
+        being removed.
+
+  Returns:
+    A bool denoting whether |line| contains a relevant disable comment given
+    |removal_type|.
+  """
+  if FINDER_DISABLE_COMMENT_GENERAL in line:
+    return True
+  if FINDER_DISABLE_COMMENT_BASE + removal_type in line:
+    return True
+  return False
+
+
+def _DisableSuffixIsRelevant(suffix, removal_type):
+  """Returns whether the given suffix is relevant given the removal type.
+
+  Args:
+    suffix: A string containing a disable comment suffix.
+    removal_type: A RemovalType enum corresponding to the type of expectations
+        being removed.
+
+  Returns:
+    True if suffix is relevant and its disable request should be honored.
+  """
+  if suffix == FINDER_COMMENT_SUFFIX_GENERAL:
+    return True
+  if suffix == removal_type:
+    return True
+  return False
+
+
 def _GetDisableReasonFromComment(line):
-  return line.split(FINDER_DISABLE_COMMENT, 1)[1].strip()
+  suffix = _GetFinderCommentSuffix(line)
+  return line.split(FINDER_DISABLE_COMMENT_BASE + suffix, 1)[1].strip()
 
 
 def _IsCommentOrBlankLine(line):
