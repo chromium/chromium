@@ -80,6 +80,10 @@ CloseButton::CloseButton(PressedCallback callback,
                          bool use_light_colors)
     : ImageButton(std::move(callback)),
       type_(type),
+      icon_((type == CloseButton::Type::kSmall ||
+             type == CloseButton::Type::kSmallFloating)
+                ? &kSmallCloseButtonIcon
+                : &kMediumOrLargeCloseButtonIcon),
       use_light_colors_(use_light_colors) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -120,26 +124,19 @@ void CloseButton::ResetListener() {
   SetCallback(views::Button::PressedCallback());
 }
 
+void CloseButton::SetVectorIcon(const gfx::VectorIcon& icon) {
+  icon_ = &icon;
+  UpdateVectorIcon();
+}
+
 void CloseButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
   if (!IsFloatingCloseButton(type_)) {
     background()->SetNativeControlColor(
         GetCloseButtonBackgroundColor(use_light_colors_));
   }
-  auto* color_provider = AshColorProvider::Get();
-  SkColor enabled_icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  if (use_light_colors_) {
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    enabled_icon_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-  }
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon((type_ == CloseButton::Type::kSmall ||
-                                  type_ == CloseButton::Type::kSmallFloating)
-                                     ? kSmallCloseButtonIcon
-                                     : kMediumOrLargeCloseButtonIcon,
-                                 GetIconSize(type_), enabled_icon_color));
+
+  UpdateVectorIcon();
 
   // TODO(minch): Add background blur as per spec. Background blur is quite
   // heavy, and we may have many close buttons showing at a time. They'll be
@@ -164,6 +161,22 @@ bool CloseButton::DoesIntersectRect(const views::View* target,
   if (!views::UsePointBasedTargeting(rect))
     button_bounds.Inset(gfx::Insets(-button_size / 2, -button_size / 2));
   return button_bounds.Intersects(rect);
+}
+
+void CloseButton::UpdateVectorIcon() {
+  DCHECK(icon_);
+
+  auto* color_provider = AshColorProvider::Get();
+  SkColor enabled_icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  if (use_light_colors_) {
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    enabled_icon_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+  }
+  SetImage(
+      views::Button::STATE_NORMAL,
+      gfx::CreateVectorIcon(*icon_, GetIconSize(type_), enabled_icon_color));
 }
 
 BEGIN_METADATA(CloseButton, views::ImageButton)

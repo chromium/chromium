@@ -9,6 +9,10 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_targeter_delegate.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace ash {
 
 // A circular ImageButton with kCloseButtonIcon inside. It has small, medium and
@@ -43,6 +47,12 @@ class CloseButton : public views::ImageButton,
   // Resets the listener so that the listener can go out of scope.
   void ResetListener();
 
+  // Sets the vector icon of the button. Note, doing this only when the button
+  // wants to have different icons as the default close icon. E.g, the delete
+  // button inside desks template wants to have trash icon instead of close
+  // icon.
+  void SetVectorIcon(const gfx::VectorIcon& icon);
+
  private:
   // views::ImageButton:
   void OnThemeChanged() override;
@@ -52,7 +62,10 @@ class CloseButton : public views::ImageButton,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
+  void UpdateVectorIcon();
+
   const Type type_;
+  const gfx::VectorIcon* icon_;
 
   // True if the button wants to use light colors when the D/L mode feature is
   // not enabled. Note, can be removed when D/L mode feature is fully launched.
