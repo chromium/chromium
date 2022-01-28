@@ -2858,14 +2858,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
                        {ObservedUiEvents::kSuggestionShown});
 }
 
-// Flaky on ChromeOS http://crbug.com/1175735
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DeletingFrameUnderSuggestion DISABLED_DeletingFrameUnderSuggestion
-#else
-#define MAYBE_DeletingFrameUnderSuggestion DeletingFrameUnderSuggestion
-#endif
+// Flaky on multiple platforms http://crbug.com/1175735
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
-                       MAYBE_DeletingFrameUnderSuggestion) {
+                       DISABLED_DeletingFrameUnderSuggestion) {
   // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
   // and becomes smaller because of that.  Investigate this and remove the line
   // below if possible.
