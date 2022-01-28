@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/script/module_pending_script.h"
 
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 
 namespace blink {
