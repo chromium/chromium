@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
@@ -45,10 +46,10 @@ void FlatlandConnection::Present() {
 void FlatlandConnection::Present(
     fuchsia::ui::composition::PresentArgs present_args,
     OnFramePresentedCallback callback) {
-  // TODO(crbug.com/1230150): Consider making a more advanced present loop where
-  // Presents are accumulated until OnNextFrameBegin().
   if (present_credits_ == 0) {
-    present_after_receiving_credits_ = true;
+    pending_presents_.emplace(std::move(present_args), std::move(callback));
+    DCHECK_LE(pending_presents_.size(), 3u)
+        << "Renderer is queueing up more frames than expected.";
     return;
   }
   --present_credits_;
@@ -71,9 +72,14 @@ void FlatlandConnection::OnError(
 void FlatlandConnection::OnNextFrameBegin(
     fuchsia::ui::composition::OnNextFrameBeginValues values) {
   present_credits_ += values.additional_present_credits();
-  if (present_credits_ && present_after_receiving_credits_) {
-    Present();
-    present_after_receiving_credits_ = false;
+  if (present_credits_ && !pending_presents_.empty()) {
+    // Only iterate over the elements once, because they may be added back to
+    // the queue.
+    while (present_credits_ && !pending_presents_.empty()) {
+      PendingPresent present = std::move(pending_presents_.front());
+      pending_presents_.pop();
+      Present(std::move(present.present_args), std::move(present.callback));
+    }
   }
 }
 
@@ -84,5 +90,16 @@ void FlatlandConnection::OnFramePresented(
     presented_callbacks_.pop();
   }
 }
+
+FlatlandConnection::PendingPresent::PendingPresent(
+    fuchsia::ui::composition::PresentArgs present_args,
+    OnFramePresentedCallback callback)
+    : present_args(std::move(present_args)), callback(std::move(callback)) {}
+FlatlandConnection::PendingPresent::~PendingPresent() = default;
+
+FlatlandConnection::PendingPresent::PendingPresent(PendingPresent&& other) =
+    default;
+FlatlandConnection::PendingPresent&
+FlatlandConnection::PendingPresent::operator=(PendingPresent&&) = default;
 
 }  // namespace ui

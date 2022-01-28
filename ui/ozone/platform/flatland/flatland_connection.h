@@ -7,6 +7,8 @@
 
 #include <fuchsia/ui/composition/cpp/fidl.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/containers/queue.h"
 
@@ -50,8 +52,19 @@ class FlatlandConnection final {
   uint64_t next_transform_id_ = 0;
   uint64_t next_content_id_ = 0;
   uint32_t present_credits_ = 1;
-  bool present_after_receiving_credits_ = false;
 
+  struct PendingPresent {
+    PendingPresent(fuchsia::ui::composition::PresentArgs present_args,
+                   OnFramePresentedCallback callback);
+    ~PendingPresent();
+
+    PendingPresent(PendingPresent&& other);
+    PendingPresent& operator=(PendingPresent&& other);
+
+    fuchsia::ui::composition::PresentArgs present_args;
+    OnFramePresentedCallback callback;
+  };
+  base::queue<PendingPresent> pending_presents_;
   std::vector<zx::event> previous_present_release_fences_;
   base::queue<OnFramePresentedCallback> presented_callbacks_;
 };

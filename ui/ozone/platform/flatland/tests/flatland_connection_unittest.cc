@@ -92,9 +92,27 @@ TEST_F(FlatlandConnectionTest, RespectsPresentCredits) {
   EXPECT_EQ(presents_called, 1u);
 
   // Next Present should fail because we dont have credits.
-  flatland_connection.Present();
+  fuchsia::ui::composition::PresentArgs present_args;
+  present_args.set_requested_presentation_time(0);
+  present_args.set_acquire_fences({});
+  present_args.set_release_fences({});
+  present_args.set_unsquashable(false);
+  bool on_presented_called = false;
+  flatland_connection.Present(
+      std::move(present_args),
+      base::BindLambdaForTesting(
+          [&on_presented_called](zx_time_t actual_presentation_time) {
+            on_presented_called = true;
+          }));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(presents_called, 1u);
+
+  // Fire on frame presented event;
+  fuchsia::scenic::scheduling::FramePresentedInfo frame_presented_info_1;
+  frame_presented_info_1.presentation_infos.resize(1);
+  fake_flatland_.FireOnFramePresentedEvent(std::move(frame_presented_info_1));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(on_presented_called);
 
   // Give additional present credits.
   fuchsia::ui::composition::OnNextFrameBeginValues on_next_frame_begin_values;
@@ -106,6 +124,13 @@ TEST_F(FlatlandConnectionTest, RespectsPresentCredits) {
   flatland_connection.Present();
   task_environment_.RunUntilIdle();
   EXPECT_EQ(presents_called, 2u);
+
+  // Pending callback should be called.
+  fuchsia::scenic::scheduling::FramePresentedInfo frame_presented_info_2;
+  frame_presented_info_2.presentation_infos.resize(1);
+  fake_flatland_.FireOnFramePresentedEvent(std::move(frame_presented_info_2));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(on_presented_called);
 }
 
 TEST_F(FlatlandConnectionTest, ReleaseFences) {
