@@ -4,27 +4,16 @@
     width:  100%;
   }
 
-  :host([orientation=row]) .page-wrapper {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-  }
-
-  :host([orientation=column]) .page-wrapper {
+  .page-wrapper {
     display: flex;
     flex-direction: row;
   }
 
-  :host([orientation=row]) .header {
-  }
-  :host([orientation=row]) .body {
-  }
-
-  :host([orientation=column]) .header {
+  .header {
     flex-grow: 1;
   }
 
-  :host([orientation=column]) .body {
+  .body {
     flex-basis: 500px;
   }
 
