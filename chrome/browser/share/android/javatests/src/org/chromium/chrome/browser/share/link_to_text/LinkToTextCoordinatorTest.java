@@ -81,13 +81,6 @@ public class LinkToTextCoordinatorTest {
 
     private static final String SELECTED_TEXT = "selection";
     private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL;
-    private static final String AMP_URL = JUnitTestGURLs.AMP_URL;
-    private static final String MOBILE_URL = "https://mobile.foo.com";
-    private static final String AMP_MOBILE_URL =
-            "https://mobile.google.com/amp/www.nyt.com/ampthml/blogs.html";
-    private static final String MOBILE_SUBDOMAIN_URL = "https://m.foo.com";
-    private static final String AMP_MOBILE_SUBDOMAIN_URL =
-            "https://m.google.com/amp/www.nyt.com/ampthml/blogs.html";
     private static final String BLOCKLIST_URL = JUnitTestGURLs.URL_1;
     private static final String SELECTED_TEXT_LONG =
             "This textbook has more freedom than most (but see some exceptions).";
@@ -200,19 +193,6 @@ public class LinkToTextCoordinatorTest {
                 mTab, mShareCallback, mChromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
         mLinkToTextCoordinator.onSelectorReady(selector);
         checkShowsShareSheetWithNoLink();
-    }
-
-    @Test
-    @SmallTest
-    public void isAmpUrlTest() {
-        Assert.assertEquals(true, mLinkToTextCoordinator.isAmpUrl(AMP_URL));
-        Assert.assertEquals(false, mLinkToTextCoordinator.isAmpUrl(VISIBLE_URL));
-
-        Assert.assertEquals(true, mLinkToTextCoordinator.isAmpUrl(AMP_MOBILE_URL));
-        Assert.assertEquals(false, mLinkToTextCoordinator.isAmpUrl(MOBILE_URL));
-
-        Assert.assertEquals(true, mLinkToTextCoordinator.isAmpUrl(AMP_MOBILE_SUBDOMAIN_URL));
-        Assert.assertEquals(false, mLinkToTextCoordinator.isAmpUrl(MOBILE_SUBDOMAIN_URL));
     }
 
     @Test

@@ -34,6 +34,13 @@ static jboolean JNI_LinkToTextBridge_ShouldOfferLinkToText(
   return shared_highlighting::ShouldOfferLinkToText(*url);
 }
 
+static jboolean JNI_LinkToTextBridge_IsAmpUrl(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_url) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return shared_highlighting::IsAmpUrl(*url);
+}
+
 static void JNI_LinkToTextBridge_LogFailureMetrics(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,

@@ -18,6 +18,10 @@ public class LinkToTextBridge {
         return LinkToTextBridgeJni.get().shouldOfferLinkToText(url);
     }
 
+    public static boolean isAmpUrl(GURL url) {
+        return LinkToTextBridgeJni.get().isAmpUrl(url);
+    }
+
     public static void logFailureMetrics(WebContents webContents, @LinkGenerationError int error) {
         LinkToTextBridgeJni.get().logFailureMetrics(webContents, error);
     }
@@ -38,6 +42,7 @@ public class LinkToTextBridge {
     @NativeMethods
     interface Natives {
         boolean shouldOfferLinkToText(GURL url);
+        boolean isAmpUrl(GURL url);
         void logFailureMetrics(WebContents webContents, @LinkGenerationError int error);
         void logSuccessMetrics(WebContents webContents);
         void logLinkRequestedBeforeStatus(

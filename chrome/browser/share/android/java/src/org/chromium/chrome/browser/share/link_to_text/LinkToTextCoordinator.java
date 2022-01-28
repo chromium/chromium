@@ -150,7 +150,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_HIGHLIGHTING_AMP)
-                    || !isAmpUrl(mShareUrl)) {
+                    || !LinkToTextBridge.isAmpUrl(new GURL(mShareUrl))) {
                 completeRequestWithFailure(LinkGenerationError.I_FRAME);
                 return;
             }
@@ -252,20 +252,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
         LinkToTextHelper.requestSelector(mProducer, this::onRemoteRequestCompleted);
-    }
-
-    public boolean isAmpUrl(String url) {
-        if (url.startsWith("www.", 8)) {
-            if (url.length() - 12 < LENGTH_AMP_DOMAIN) return false;
-            return AMP_VIEWER_DOMAINS.contains(url.substring(12, 12 + LENGTH_AMP_DOMAIN));
-        } else if (url.startsWith("m.", 8)) {
-            if (url.length() - 10 < LENGTH_AMP_DOMAIN) return false;
-            return AMP_VIEWER_DOMAINS.contains(url.substring(10, 10 + LENGTH_AMP_DOMAIN));
-        } else if (url.startsWith("mobile.", 8)) {
-            if (url.length() - 15 < LENGTH_AMP_DOMAIN) return false;
-            return AMP_VIEWER_DOMAINS.contains(url.substring(15, 15 + LENGTH_AMP_DOMAIN));
-        }
-        return false;
     }
 
     private void requestSelectorForCanonicalUrl() {

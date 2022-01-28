@@ -15,6 +15,9 @@ namespace shared_highlighting {
 // shared.
 bool ShouldOfferLinkToText(const GURL& url);
 
+// Returns true if given url is a valid amp url
+bool IsAmpUrl(GURL url);
+
 }  // namespace shared_highlighting
 
 #endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_DISABLED_SITES_H_
