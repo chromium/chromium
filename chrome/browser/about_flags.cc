@@ -730,6 +730,7 @@ const FeatureEntry::Choice kLacrosSelectionChoices[] = {
 };
 
 const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice,
      crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
      crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice},
