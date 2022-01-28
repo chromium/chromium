@@ -53,8 +53,9 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
   void SetElementId(CompositorElementId element_id);
 
   // This is the number of times that the animation will play. If this
-  // value is zero the animation will not play. If it is negative, then
-  // the animation will loop indefinitely.
+  // value is zero or negative, the animation will not play. If it is
+  // std::numeric_limits<double>::infinity(), then the animation will loop
+  // indefinitely.
   double Iterations() const;
   void SetIterations(double);
 

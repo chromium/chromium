@@ -102,8 +102,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   }
 
   // This is the number of times that the keyframe model will play. If this
-  // value is zero the keyframe model will not play. If it is negative, then
-  // the keyframe model will loop indefinitely.
+  // value is zero or negative, the keyframe model will not play. If it is
+  // std::numeric_limits<double>::infinity(), then the keyframe model will loop
+  // indefinitely.
   double iterations() const { return iterations_; }
   void set_iterations(double n) { iterations_ = n; }
 
