@@ -204,8 +204,7 @@ MULTIPROCESS_TEST_MAIN(SlowChildProcess) {
 }
 
 TEST_F(ProcessUtilTest, KillSlowChild) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileSlow);
+  const std::string signal_file = GetSignalFilePath(kSignalFileSlow);
   remove(signal_file.c_str());
   Process process = SpawnChild("SlowChildProcess");
   ASSERT_TRUE(process.IsValid());
@@ -218,8 +217,7 @@ TEST_F(ProcessUtilTest, KillSlowChild) {
 
 // Times out on Linux and Win, flakes on other platforms, http://crbug.com/95058
 TEST_F(ProcessUtilTest, DISABLED_GetTerminationStatusExit) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileSlow);
+  const std::string signal_file = GetSignalFilePath(kSignalFileSlow);
   remove(signal_file.c_str());
   Process process = SpawnChild("SlowChildProcess");
   ASSERT_TRUE(process.IsValid());
@@ -249,8 +247,7 @@ MULTIPROCESS_TEST_MAIN(CheckDataDirHasStaged) {
 
 // Test transferred paths override cloned paths.
 TEST_F(ProcessUtilTest, HandleTransfersOverrideClones) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kDataDirHasStaged);
+  const std::string signal_file = GetSignalFilePath(kDataDirHasStaged);
   remove(signal_file.c_str());
 
   // Create a tempdir with "staged" as its contents.
@@ -299,8 +296,7 @@ MULTIPROCESS_TEST_MAIN(CheckMountedDir) {
 
 // Test that we can install an opaque handle in the child process' namespace.
 TEST_F(ProcessUtilTest, TransferHandleToPath) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kFooDirHasStaged);
+  const std::string signal_file = GetSignalFilePath(kFooDirHasStaged);
   remove(signal_file.c_str());
 
   // Create a tempdir with "staged" as its contents.
@@ -366,8 +362,7 @@ MULTIPROCESS_TEST_MAIN(CheckOnlyTmpExists) {
 }
 
 TEST_F(ProcessUtilTest, CloneTmp) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileClone);
+  const std::string signal_file = GetSignalFilePath(kSignalFileClone);
   remove(signal_file.c_str());
 
   LaunchOptions options;
@@ -402,8 +397,7 @@ TEST_F(ProcessUtilTest, TransferInvalidHandleFails) {
 }
 
 TEST_F(ProcessUtilTest, CloneInvalidDirFails) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileClone);
+  const std::string signal_file = GetSignalFilePath(kSignalFileClone);
   remove(signal_file.c_str());
 
   LaunchOptions options;
@@ -420,8 +414,7 @@ MULTIPROCESS_TEST_MAIN(CheckOnlyDataExists) {
 }
 
 TEST_F(ProcessUtilTest, CloneAlternateDir) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileClone);
+  const std::string signal_file = GetSignalFilePath(kSignalFileClone);
   remove(signal_file.c_str());
 
   LaunchOptions options;
@@ -652,8 +645,7 @@ MULTIPROCESS_TEST_MAIN(CrashingChildProcess) {
 #define MAYBE_GetTerminationStatusCrash GetTerminationStatusCrash
 #endif
 TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusCrash) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileCrash);
+  const std::string signal_file = GetSignalFilePath(kSignalFileCrash);
   remove(signal_file.c_str());
   Process process = SpawnChild("CrashingChildProcess");
   ASSERT_TRUE(process.IsValid());
@@ -716,8 +708,7 @@ MULTIPROCESS_TEST_MAIN(TerminatedChildProcess) {
 #define MAYBE_GetTerminationStatusSigKill GetTerminationStatusSigKill
 #endif
 TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileKill);
+  const std::string signal_file = GetSignalFilePath(kSignalFileKill);
   remove(signal_file.c_str());
   Process process = SpawnChild("KilledChildProcess");
   ASSERT_TRUE(process.IsValid());
@@ -753,8 +744,7 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
 // implemented in Fuchsia. Unix signals are not implemented in Fuchsia so this
 // test might not be relevant anyway.
 TEST_F(ProcessUtilTest, GetTerminationStatusSigTerm) {
-  const std::string signal_file =
-      ProcessUtilTest::GetSignalFilePath(kSignalFileTerm);
+  const std::string signal_file = GetSignalFilePath(kSignalFileTerm);
   remove(signal_file.c_str());
   Process process = SpawnChild("TerminatedChildProcess");
   ASSERT_TRUE(process.IsValid());
