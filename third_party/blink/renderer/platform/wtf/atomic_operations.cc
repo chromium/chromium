@@ -1,28 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace {
-
-struct Empty {};
-
-struct StackAllocatedType {
-  STACK_ALLOCATED();
-};
-
-static_assert(!WTF::IsStackAllocatedType<Empty>::value,
-              "Failed to detect STACK_ALLOCATED macro.");
-static_assert(WTF::IsStackAllocatedType<StackAllocatedType>::value,
-              "Failed to detect STACK_ALLOCATED macro.");
-
-}  // namespace
+#include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 
 namespace WTF {
 
 void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
-  // Check alignment of |to| and |from|
+  // Check alignment of |to| and |from|.
   DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
   DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
   size_t* sizet_to = reinterpret_cast<size_t*>(to);
@@ -40,7 +25,7 @@ void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
 }
 
 void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
-  // Check alignment of |to| and |from|
+  // Check alignment of |to| and |from|.
   DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
   DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
   size_t* sizet_to = reinterpret_cast<size_t*>(to);
@@ -58,7 +43,7 @@ void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
 }
 
 void AtomicMemzero(void* buf, size_t bytes) {
-  // Check alignment of |buf|
+  // Check alignment of |buf|.
   DCHECK_EQ(0u, reinterpret_cast<size_t>(buf) & (sizeof(size_t) - 1));
   size_t* sizet_buf = reinterpret_cast<size_t*>(buf);
   for (; bytes >= sizeof(size_t); bytes -= sizeof(size_t), ++sizet_buf) {
