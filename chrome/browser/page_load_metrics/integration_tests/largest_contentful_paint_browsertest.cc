@@ -311,7 +311,7 @@ class MouseoverLCPTest : public MetricIntegrationTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
-                       LargestContentfulPaint_MouseoverOverLCPImage) {
+                       DISABLED_LargestContentfulPaint_MouseoverOverLCPImage) {
   test_mouseover("/mouseover.html",
                  blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
                  /*entries=*/"2",
@@ -321,8 +321,9 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
-                       LargestContentfulPaint_MouseoverOverLCPImageReplace) {
+IN_PROC_BROWSER_TEST_F(
+    MouseoverLCPTest,
+    DISABLED_LargestContentfulPaint_MouseoverOverLCPImageReplace) {
   test_mouseover("/mouseover.html?replace",
                  blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
                  /*entries=*/"2",
@@ -343,8 +344,9 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
-                       LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
+IN_PROC_BROWSER_TEST_F(
+    MouseoverLCPTest,
+    DISABLED_LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
   test_mouseover("/mouseover.html?dispatch",
                  blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
                  /*entries=*/"2",
