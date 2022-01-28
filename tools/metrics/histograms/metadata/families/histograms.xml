@@ -172,6 +172,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.LogSegment" enum="FamilyLinkUserLogSegment"
+    expires_after="never">
+<!-- expires-never: used internally for filtering -->
+
+  <owner>fernandex@chromium.org</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    To be implemented. Categorizes the current user based on Family Link user
+    type. Other is for all unsupervised users. Users under the age of consent
+    automatically have supervision applied to their accounts. Users over the age
+    of consent can opt into supervision. Recorded for ChromeOS and Chrome
+    browser platforms at the start of a user session, if the state changes
+    during the session this will only be recorded at the start of the next
+    session.
+  </summary>
+</histogram>
+
 <histogram name="FamilyUser.ChromeBrowserEngagement.Duration2" units="ms"
     expires_after="2023-01-20">
   <owner>agawronska@chromium.org</owner>
