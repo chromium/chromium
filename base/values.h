@@ -104,16 +104,23 @@ class ListValue;
 class BASE_EXPORT Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
-  using ListStorage = std::vector<Value>;
-  using DictStorage = flat_map<std::string, Value>;
+
+  using DeprecatedListStorage = std::vector<Value>;
+  using DeprecatedDictStorage = flat_map<std::string, Value>;
+  // TODO(https://crbug.com/1291666): Make these private.
+  using ListStorage = DeprecatedListStorage;
+  using DictStorage = DeprecatedDictStorage;
 
   // Like `DictStorage`, but with std::unique_ptr in the mapped type. This is
   // due to legacy reasons, and should be removed once no caller relies on
   // stability of pointers anymore.
   using LegacyDictStorage = flat_map<std::string, std::unique_ptr<Value>>;
 
-  using ListView = CheckedContiguousRange<ListStorage>;
-  using ConstListView = CheckedContiguousConstRange<ListStorage>;
+  using DeprecatedListView = CheckedContiguousRange<ListStorage>;
+  using DeprecatedConstListView = CheckedContiguousConstRange<ListStorage>;
+  // TODO(https://crbug.com/1291666): Make these private.
+  using ListView = DeprecatedListView;
+  using ConstListView = DeprecatedConstListView;
 
   enum class Type : unsigned char {
     NONE = 0,
@@ -215,13 +222,16 @@ class BASE_EXPORT Value {
   // modification of the underlying values, but does not allow changing the
   // structure of the list. If this is desired, use `TakeList()`, perform the
   // operations, and return the list back to the Value via move assignment.
-  ListView GetList();
-  ConstListView GetList() const;
+  DeprecatedListView GetListDeprecated();
+  DeprecatedConstListView GetListDeprecated() const;
+  DeprecatedListView GetList() { return GetListDeprecated(); }
+  DeprecatedConstListView GetList() const { return GetListDeprecated(); }
 
   // Transfers ownership of the underlying list to the caller. Subsequent
   // calls to `GetList()` will return an empty list.
   // Note: This requires that `type()` is Type::LIST.
-  ListStorage TakeList() &&;
+  DeprecatedListStorage TakeListDeprecated() &&;
+  ListStorage TakeList() && { return std::move(*this).TakeListDeprecated(); }
 
   // Appends `value` to the end of the list.
   // Note: These CHECK that `type()` is Type::LIST.
@@ -509,7 +519,10 @@ class BASE_EXPORT Value {
   // Transfers ownership of the underlying dict to the caller. Subsequent
   // calls to DictItems() will return an empty dict.
   // Note: This requires that `type()` is Type::DICTIONARY.
-  DictStorage TakeDict() &&;
+  DeprecatedDictStorage TakeDictDeprecated() &&;
+  DeprecatedDictStorage TakeDict() && {
+    return std::move(*this).TakeDictDeprecated();
+  }
 
   // Returns the size of the dictionary, if the dictionary is empty, and clears
   // the dictionary. Note: These CHECK that `type()` is Type::DICTIONARY.

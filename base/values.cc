@@ -336,15 +336,15 @@ const Value::BlobStorage& Value::GetBlob() const {
   return absl::get<BlobStorage>(data_);
 }
 
-Value::ListView Value::GetList() {
+Value::ListView Value::GetListDeprecated() {
   return list();
 }
 
-Value::ConstListView Value::GetList() const {
+Value::ConstListView Value::GetListDeprecated() const {
   return list();
 }
 
-Value::ListStorage Value::TakeList() && {
+Value::ListStorage Value::TakeListDeprecated() && {
   return std::exchange(list(), {});
 }
 
@@ -765,7 +765,7 @@ Value::const_dict_iterator_proxy Value::DictItems() const {
   return const_dict_iterator_proxy(&dict());
 }
 
-Value::DictStorage Value::TakeDict() && {
+Value::DictStorage Value::TakeDictDeprecated() && {
   DictStorage storage;
   storage.reserve(dict().size());
   for (auto& pair : dict()) {
