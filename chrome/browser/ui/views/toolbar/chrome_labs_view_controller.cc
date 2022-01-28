@@ -4,27 +4,38 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_view_controller.h"
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
+#include "chrome/common/buildflags.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/flags_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/about_flags.h"
+#include "chrome/browser/profiles/profile.h"
+#else
+#include "chrome/browser/browser_process.h"
 #endif
 
 namespace {
@@ -45,38 +56,34 @@ enum class ChromeLabsSelectedLab {
 void EmitToHistogram(const std::u16string& selected_lab_state,
                      const std::string& internal_name) {
   const auto get_histogram_name = [](const std::u16string& selected_lab_state) {
-    if (selected_lab_state == base::ASCIIToUTF16(base::StringPiece(
-                                  flags_ui::kGenericExperimentChoiceDefault))) {
+    if (selected_lab_state ==
+        base::ASCIIToUTF16(flags_ui::kGenericExperimentChoiceDefault)) {
       return "Toolbar.ChromeLabs.DefaultLabAction";
-    } else if (selected_lab_state ==
-               base::ASCIIToUTF16(base::StringPiece(
-                   flags_ui::kGenericExperimentChoiceEnabled))) {
-      return "Toolbar.ChromeLabs.EnableLabAction";
-    } else if (selected_lab_state ==
-               base::ASCIIToUTF16(base::StringPiece(
-                   flags_ui::kGenericExperimentChoiceDisabled))) {
-      return "Toolbar.ChromeLabs.DisableLabAction";
-    } else {
-      return "";
     }
+    if (selected_lab_state ==
+        base::ASCIIToUTF16(flags_ui::kGenericExperimentChoiceEnabled)) {
+      return "Toolbar.ChromeLabs.EnableLabAction";
+    }
+    if (selected_lab_state ==
+        base::ASCIIToUTF16(flags_ui::kGenericExperimentChoiceDisabled)) {
+      return "Toolbar.ChromeLabs.DisableLabAction";
+    }
+    return "";
   };
 
   const auto get_enum = [](const std::string& internal_name) {
-    if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
+    if (internal_name == flag_descriptions::kScrollableTabStripFlagId)
       return ChromeLabsSelectedLab::kTabScrollingSelected;
-    } else if (internal_name == flag_descriptions::kSidePanelFlagId) {
+    if (internal_name == flag_descriptions::kSidePanelFlagId)
       return ChromeLabsSelectedLab::kSidePanelSelected;
-    } else if (internal_name ==
-               flag_descriptions::kEnableLensRegionSearchFlagId) {
+    if (internal_name == flag_descriptions::kEnableLensRegionSearchFlagId)
       return ChromeLabsSelectedLab::kLensRegionSearchSelected;
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
-    } else if (internal_name == flag_descriptions::kWebUITabStripFlagId) {
+    if (internal_name == flag_descriptions::kWebUITabStripFlagId)
       return ChromeLabsSelectedLab::kWebUITabStripSelected;
 #endif
-    } else {
-      return ChromeLabsSelectedLab::kUnspecifiedSelected;
-    }
+    return ChromeLabsSelectedLab::kUnspecifiedSelected;
   };
 
   const std::string histogram_name = get_histogram_name(selected_lab_state);
@@ -115,7 +122,7 @@ int ChromeLabsViewController::GetIndexOfEnabledLabState(
   flags_state->GetSanitizedEnabledFlags(flags_storage, &enabled_entries);
   for (int i = 0; i < entry->NumOptions(); i++) {
     const std::string name = entry->NameForOption(i);
-    if (enabled_entries.count(name) > 0)
+    if (base::Contains(enabled_entries, name))
       return i;
   }
   return 0;
@@ -196,21 +203,22 @@ bool ChromeLabsViewController::ShouldLabShowNewBadge(Profile* profile,
 #endif
 
   base::Value* new_badge_prefs = update.Get();
-
-  DCHECK(new_badge_prefs->FindIntKey(lab.internal_name));
-  int start_day = *new_badge_prefs->FindIntKey(lab.internal_name);
-  if (start_day == chrome_labs_prefs::kChromeLabsNewExperimentPrefValue) {
+  absl::optional<int> start_day =
+      new_badge_prefs->FindIntKey(lab.internal_name);
+  DCHECK(start_day);
+  uint32_t current_day = GetCurrentDay();
+  if (*start_day == chrome_labs_prefs::kChromeLabsNewExperimentPrefValue) {
     // Set the dictionary value of this experiment to the number of days since
     // epoch (1970-01-01). This value is the first day the user sees the new
     // experiment in Chrome Labs and will be used to determine whether or not to
     // show the new badge.
-    new_badge_prefs->SetIntKey(lab.internal_name, GetCurrentDay());
+    new_badge_prefs->SetIntKey(lab.internal_name, current_day);
     return true;
   }
-  int days_elapsed = GetCurrentDay() - start_day;
+  int days_elapsed = current_day - *start_day;
   // Show the new badge for 7 days. If the users sets the clock such that the
   // current day is now before |start_day| don’t show the new badge.
-  return (days_elapsed < 7) && (days_elapsed >= 0);
+  return days_elapsed >= 0 && days_elapsed < 7;
 }
 
 void ChromeLabsViewController::RestartToApplyFlagsForTesting() {
