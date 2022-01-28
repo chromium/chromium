@@ -83,5 +83,15 @@ TEST_F(SingleFileTarReaderTest, ReadOctalNumber) {
                              reinterpret_cast<const char*>(kBigNumber), 12));
 }
 
+// Verify that it handles empty file as "complete".
+TEST_F(SingleFileTarReaderTest, EmptyFile) {
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
+  ASSERT_TRUE(OpenTarFile(test_data_dir.AppendASCII("empty_file.tar")));
+
+  EXPECT_EQ(SingleFileTarReader::Result::kSuccess, reader().ExtractChunk());
+  EXPECT_TRUE(reader().IsComplete());
+}
+
 }  // namespace image_writer
 }  // namespace extensions
