@@ -3172,7 +3172,6 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-002.html [ Fail
 crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-004.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/url/url-constructor.any.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-align-self-006.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
@@ -6314,7 +6313,7 @@ crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigat
 # Sheriff 2021-03-19
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Skip ]
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-editing-dom-from-inspector.js [ Skip ]
-crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Failure Pass Crash ]
+crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Crash Failure Pass ]
 
 crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
 
@@ -7640,8 +7639,8 @@ crbug.com/1248386 http/tests/text-autosizing/wide-iframe.html [ Failure Pass Tim
 crbug.com/1287563 [ Linux ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation-stress-glare-linear.https.html [ Crash Failure Pass ]
 
 # DevTools - Temporarily disable for new Interest Groups panel that requires tests to be rebaselined after the roll.
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-websql.js [ Pass Failure ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
+crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
