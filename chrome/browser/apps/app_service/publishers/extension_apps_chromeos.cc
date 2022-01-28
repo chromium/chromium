@@ -289,6 +289,8 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
   PublisherBase::Publish(
       paused_apps_.GetAppWithPauseStatus(mojom_app_type(), app_id, kPaused),
       subscribers());
+  AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
+      app_type(), app_id, /*paused=*/true));
 
   if (!instance_registry_->ContainsAppId(app_id)) {
     return;
@@ -309,6 +311,8 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
   PublisherBase::Publish(
       paused_apps_.GetAppWithPauseStatus(mojom_app_type(), app_id, kPaused),
       subscribers());
+  AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
+      app_type(), app_id, /*paused=*/false));
 
   ash::app_time::AppTimeLimitInterface* app_time =
       ash::app_time::AppTimeLimitInterface::Get(profile());
@@ -817,6 +821,7 @@ std::unique_ptr<App> ExtensionAppsChromeOs::CreateApp(
     app->show_in_management = false;
 
   app->has_badge = app_notifications_.HasNotification(extension->id());
+  app->paused = paused;
 
   return app;
 }

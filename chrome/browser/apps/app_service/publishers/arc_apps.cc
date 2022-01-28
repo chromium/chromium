@@ -1034,7 +1034,8 @@ void ArcApps::PauseApp(const std::string& app_id) {
   PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
                              apps::mojom::AppType::kArc, app_id, kPaused),
                          subscribers_);
-
+  AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
+      AppType::kArc, app_id, /*paused=*/true));
   CloseTasks(app_id);
 }
 
@@ -1047,6 +1048,8 @@ void ArcApps::UnpauseApp(const std::string& app_id) {
   PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
                              apps::mojom::AppType::kArc, app_id, kPaused),
                          subscribers_);
+  AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
+      AppType::kArc, app_id, /*paused=*/false));
 }
 
 void ArcApps::StopApp(const std::string& app_id) {
@@ -1577,6 +1580,7 @@ std::unique_ptr<App> ArcApps::CreateApp(
   app->allow_uninstall = app_info.ready && !app_info.sticky;
 
   app->has_badge = app_notifications_.HasNotification(app_id);
+  app->paused = paused_apps_.IsPaused(app_id);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

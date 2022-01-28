@@ -522,6 +522,7 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
 #endif
 
   app->allow_uninstall = web_app->CanUserUninstallWebApp();
+  app->paused = IsPaused(web_app->app_id());
 
   return app;
 }

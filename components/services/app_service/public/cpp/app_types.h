@@ -166,6 +166,11 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // Whether the app icon should add the notification badging.
   absl::optional<bool> has_badge;
 
+  // Paused apps cannot be launched, and any running apps that become paused
+  // will be stopped. This is independent of whether or not the app is ready to
+  // be launched (defined by the Readiness field).
+  absl::optional<bool> paused;
+
   // TODO(crbug.com/1253250): Add other App struct fields.
 
   // When adding new fields to the App type, the `Clone` function and the

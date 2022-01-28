@@ -43,6 +43,7 @@ std::unique_ptr<App> App::Clone() const {
   app->handles_intents = handles_intents;
   app->allow_uninstall = allow_uninstall;
   app->has_badge = has_badge;
+  app->paused = paused;
 
   return app;
 }
@@ -233,6 +234,7 @@ std::unique_ptr<App> ConvertMojomAppToApp(
   app->handles_intents = GetOptionalBool(mojom_app->handles_intents);
   app->allow_uninstall = GetOptionalBool(mojom_app->allow_uninstall);
   app->has_badge = GetOptionalBool(mojom_app->has_badge);
+  app->paused = GetOptionalBool(mojom_app->paused);
 
   return app;
 }

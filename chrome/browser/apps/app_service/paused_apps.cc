@@ -25,6 +25,15 @@ apps::mojom::AppPtr PausedApps::GetAppWithPauseStatus(
   return app;
 }
 
+std::unique_ptr<App> PausedApps::CreateAppWithPauseStatus(
+    AppType app_type,
+    const std::string& app_id,
+    bool paused) {
+  std::unique_ptr<App> app = std::make_unique<App>(app_type, app_id);
+  app->paused = paused;
+  return app;
+}
+
 bool PausedApps::MaybeAddApp(const std::string& app_id) {
   auto ret = paused_apps_.insert(app_id);
   return ret.second;

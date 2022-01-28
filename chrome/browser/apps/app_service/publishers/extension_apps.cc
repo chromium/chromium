@@ -47,6 +47,7 @@ std::unique_ptr<App> ExtensionApps::CreateApp(
   app->icon_key =
       std::move(*icon_key_factory().CreateIconKey(GetIconEffects(extension)));
   app->has_badge = false;
+  app->paused = false;
   return app;
 }
 

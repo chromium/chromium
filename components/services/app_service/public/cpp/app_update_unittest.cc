@@ -99,6 +99,8 @@ class AppUpdateTest : public testing::Test {
 
   absl::optional<bool> expect_has_badge_;
 
+  absl::optional<bool> expect_paused_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -154,6 +156,8 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_has_badge_, u.GetHasBadge());
 
+    EXPECT_EQ(expect_paused_, u.GetPaused());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -187,6 +191,7 @@ class AppUpdateTest : public testing::Test {
     expect_show_in_management_ = absl::nullopt;
     expect_handles_intents_ = absl::nullopt;
     expect_has_badge_ = absl::nullopt;
+    expect_paused_ = absl::nullopt;
     CheckExpects(u);
 
     if (delta) {
@@ -690,6 +695,26 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_has_badge_, state->has_badge);
+      CheckExpects(u);
+    }
+
+    // Pause tests.
+
+    if (state) {
+      state->paused = false;
+      expect_paused_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->paused = true;
+      expect_paused_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_paused_, state->paused);
       CheckExpects(u);
     }
   }

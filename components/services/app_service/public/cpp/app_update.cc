@@ -215,6 +215,7 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(handles_intents);
   SET_OPTIONAL_VALUE(allow_uninstall);
   SET_OPTIONAL_VALUE(has_badge);
+  SET_OPTIONAL_VALUE(paused);
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -826,6 +827,10 @@ apps::mojom::OptionalBool AppUpdate::Paused() const {
     return mojom_state_->paused;
   }
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetPaused() const {
+  GET_VALUE_WITH_FALLBACK(paused, absl::nullopt);
 }
 
 bool AppUpdate::PausedChanged() const {

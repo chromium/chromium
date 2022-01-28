@@ -32,6 +32,7 @@ std::unique_ptr<App> AppPublisher::MakeApp(AppType app_type,
   app->is_platform_app = false;
   app->recommendable = true;
   app->searchable = true;
+  app->paused = false;
 
   return app;
 }
