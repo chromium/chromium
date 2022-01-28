@@ -574,6 +574,12 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& coalesced_event,
     ui::Cursor* cursor) {
   const blink::WebInputEvent& event = coalesced_event.Event();
+
+  // Don't log gesture events, which aren't exposed to the Pepper API (see
+  // ClassifyInputEvent in content/renderer/pepper/event_conversion.cc).
+  if (blink::WebInputEvent::IsGestureEventType(event.GetType()))
+    return blink::WebInputEventResult::kNotHandled;
+
   const char* event_name = blink::WebInputEvent::GetName(event.GetType());
   if (!strcmp(event_name, "") || !strcmp(event_name, "Undefined"))
     event_name = "unknown";
