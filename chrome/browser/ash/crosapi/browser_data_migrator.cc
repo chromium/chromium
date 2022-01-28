@@ -12,21 +12,13 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/copy_migrator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/common/chrome_constants.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -239,119 +231,18 @@ void BrowserDataMigratorImpl::Migrate() {
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kRestartCalled);
   SetMigrationStep(local_state_, MigrationStep::kStarted);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&BrowserDataMigratorImpl::MigrateInternal,
-                     original_profile_dir_, std::move(progress_tracker_),
-                     cancel_flag_),
+  migrator_delegate_ = std::make_unique<CopyMigrator>(
+      original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
+      cancel_flag_,
       base::BindOnce(&BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
                      weak_factory_.GetWeakPtr()));
+
+  migrator_delegate_->Migrate();
 }
 
 void BrowserDataMigratorImpl::Cancel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cancel_flag_->Set();
-}
-
-// static
-// TODO(crbug.com/1178702): Once testing phase is over and lacros becomes the
-// only web browser, update the underlying logic of migration from copy to move.
-// Note that during testing phase we are copying files and leaving files in
-// original location intact. We will allow these two states to diverge.
-BrowserDataMigratorImpl::MigrationResult
-BrowserDataMigratorImpl::MigrateInternal(
-    const base::FilePath& original_profile_dir,
-    std::unique_ptr<MigrationProgressTracker> progress_tracker,
-    scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag) {
-  ResultValue data_wipe_result = ResultValue::kSkipped;
-
-  const base::FilePath tmp_dir =
-      original_profile_dir.Append(browser_data_migrator_util::kTmpDir);
-  const base::FilePath new_user_dir =
-      original_profile_dir.Append(browser_data_migrator_util::kLacrosDir);
-
-  if (base::DirectoryExists(new_user_dir)) {
-    if (!base::DeletePathRecursively(new_user_dir)) {
-      PLOG(ERROR) << "Deleting " << new_user_dir.value() << " failed: ";
-      UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kDataWipeFailed);
-      return {ResultValue::kFailed, ResultValue::kFailed};
-    }
-    data_wipe_result = ResultValue::kSucceeded;
-  }
-
-  // Check if tmp directory already exists and delete if it does.
-  if (base::PathExists(tmp_dir)) {
-    LOG(WARNING) << browser_data_migrator_util::kTmpDir
-                 << " already exists indicating migration was aborted on the"
-                    "previous attempt.";
-    if (!base::DeletePathRecursively(tmp_dir)) {
-      PLOG(ERROR) << "Failed to delete tmp dir";
-      UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kDeleteTmpDirFailed);
-      return {data_wipe_result, ResultValue::kFailed};
-    }
-  }
-
-  browser_data_migrator_util::TargetItems need_copy_items =
-      browser_data_migrator_util::GetTargetItems(
-          original_profile_dir,
-          browser_data_migrator_util::ItemType::kNeedCopy);
-  browser_data_migrator_util::TargetItems lacros_items =
-      browser_data_migrator_util::GetTargetItems(
-          original_profile_dir, browser_data_migrator_util::ItemType::kLacros);
-  const int64_t total_copy_size =
-      need_copy_items.total_size + lacros_items.total_size;
-  progress_tracker->SetTotalSizeToCopy(total_copy_size);
-
-  base::ElapsedTimer timer;
-
-  if (!browser_data_migrator_util::HasEnoughDiskSpace(total_copy_size,
-                                                      original_profile_dir)) {
-    UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kNotEnoughSpace);
-    return {data_wipe_result, ResultValue::kFailed};
-  }
-
-  // Copy files to `tmp_dir`.
-  if (!SetupTmpDir(lacros_items, need_copy_items, tmp_dir, cancel_flag.get(),
-                   progress_tracker.get())) {
-    if (base::PathExists(tmp_dir)) {
-      base::DeletePathRecursively(tmp_dir);
-    }
-    if (cancel_flag->IsSet()) {
-      LOG(WARNING) << "Migration was cancelled.";
-      UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kCancelled);
-      return {data_wipe_result, ResultValue::kCancelled};
-    }
-
-    UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kCopyFailed);
-    return {data_wipe_result, ResultValue::kFailed};
-  }
-
-  // Move `tmp_dir` to `new_user_dir`.
-  if (!base::Move(tmp_dir, new_user_dir)) {
-    PLOG(ERROR) << "Move failed";
-    if (base::PathExists(tmp_dir)) {
-      base::DeletePathRecursively(tmp_dir);
-    }
-    UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kMoveFailed);
-    return {data_wipe_result, ResultValue::kFailed};
-  }
-
-  LOG(WARNING) << "BrowserDataMigratorImpl::Migrate took "
-               << timer.Elapsed().InMilliseconds() << " ms and migrated "
-               << total_copy_size / (1024 * 1024) << " MB.";
-  UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kSuccess);
-  // Record elapsed time for a successful migration.
-  // Record byte size. Range 0 ~ 10GB in MBs.
-  UMA_HISTOGRAM_CUSTOM_COUNTS(kCopiedDataSize, total_copy_size / 1024 / 1024, 1,
-                              10000, 100);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      kLacrosDataSize, lacros_items.total_size / 1024 / 1024, 1, 10000, 100);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      kCommonDataSize, need_copy_items.total_size / 1024 / 1024, 1, 10000, 100);
-  UMA_HISTOGRAM_MEDIUM_TIMES(kTotalTime, timer.Elapsed());
-  return {data_wipe_result, ResultValue::kSucceeded};
 }
 
 void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
@@ -360,6 +251,13 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kStarted);
   SetMigrationStep(local_state_, MigrationStep::kEnded);
+
+  // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
+  // log level to VLOG(1).
+  LOG(WARNING)
+      << "MigrateInternalFinishedUIThread() called with results data wipe = "
+      << static_cast<int>(result.data_wipe) << " and migration "
+      << static_cast<int>(result.data_migration);
 
   final_status_ = result.data_migration;
 
@@ -386,51 +284,6 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
 
 BrowserDataMigratorImpl::ResultValue BrowserDataMigratorImpl::GetFinalStatus() {
   return final_status_;
-}
-
-// static
-bool BrowserDataMigratorImpl::SetupTmpDir(
-    const browser_data_migrator_util::TargetItems& lacros_items,
-    const browser_data_migrator_util::TargetItems& need_copy_items,
-    const base::FilePath& tmp_dir,
-    browser_data_migrator_util::CancelFlag* cancel_flag,
-    MigrationProgressTracker* progress_tracker) {
-  base::File::Error error;
-  if (!base::CreateDirectoryAndGetError(
-          tmp_dir.Append(browser_data_migrator_util::kLacrosProfilePath),
-          &error)) {
-    PLOG(ERROR) << "CreateDirectoryFailed " << error;
-    // Maps to histogram enum `PlatformFileError`.
-    UMA_HISTOGRAM_ENUMERATION(kCreateDirectoryFail, -error,
-                              -base::File::FILE_ERROR_MAX);
-    return false;
-  }
-
-  // Copy lacros items.
-  base::ElapsedTimer timer_for_lacros_items;
-  if (!browser_data_migrator_util::CopyTargetItems(
-          tmp_dir.Append(browser_data_migrator_util::kLacrosProfilePath),
-          lacros_items, cancel_flag, progress_tracker)) {
-    return false;
-  }
-  UMA_HISTOGRAM_MEDIUM_TIMES(kLacrosDataTime, timer_for_lacros_items.Elapsed());
-
-  // Copy common items.
-  base::ElapsedTimer timer_for_need_copy_items;
-  if (!browser_data_migrator_util::CopyTargetItems(
-          tmp_dir.Append(browser_data_migrator_util::kLacrosProfilePath),
-          need_copy_items, cancel_flag, progress_tracker)) {
-    return false;
-  }
-  UMA_HISTOGRAM_MEDIUM_TIMES(kCommonDataTime,
-                             timer_for_need_copy_items.Elapsed());
-
-  // Create `First Run` sentinel file instead of copying. This avoids copying
-  // from outside of cryptohome.
-  if (!base::WriteFile(tmp_dir.Append(chrome::kFirstRunSentinel), ""))
-    return false;
-
-  return true;
 }
 
 // static

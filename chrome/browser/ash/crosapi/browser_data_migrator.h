@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
@@ -21,21 +21,6 @@ class PrefService;
 class PrefRegistrySimple;
 
 namespace ash {
-
-// The following are UMA names.
-constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
-constexpr char kCopiedDataSize[] = "Ash.BrowserDataMigrator.CopiedDataSizeMB";
-constexpr char kLacrosDataSize[] = "Ash.BrowserDataMigrator.LacrosDataSizeMB";
-constexpr char kCommonDataSize[] = "Ash.BrowserDataMigrator.CommonDataSizeMB";
-constexpr char kTotalTime[] = "Ash.BrowserDataMigrator.TotalTimeTakenMS";
-constexpr char kLacrosDataTime[] =
-    "Ash.BrowserDataMigrator.LacrosDataTimeTakenMS";
-constexpr char kCommonDataTime[] =
-    "Ash.BrowserDataMigrator.CommonDataTimeTakenMS";
-constexpr char kCreateDirectoryFail[] =
-    "Ash.BrowserDataMigrator.CreateDirectoryFailure";
-constexpr char kTotalCopySizeWhenNotEnoughSpace[] =
-    "Ash.BrowserDataMigrator.TotalCopySizeWhenNotEnoughSpace";
 
 // Local state pref name, which is used to keep track of what step migration is
 // at. This ensures that ash does not get repeatedly for migration.
@@ -66,28 +51,13 @@ class BrowserDataMigrator {
 };
 
 // BrowserDataMigratorImpl is responsible for one time browser data migration
-// from ash-chrome to lacros-chrome.
+// from ash-chrome to lacros-chrome. It is responsible for coordination the
+// overrall flow of the migration from checking whether migration is required to
+// marking migration as completed. The actual task of migration (i.e. setting up
+// the profile directories for ash and lacros) is delegated to
+// `MigratorDelegate`.
 class BrowserDataMigratorImpl : public BrowserDataMigrator {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // This enum corresponds to BrowserDataMigratorFinalStatus in hisograms.xml
-  // and enums.xml.
-  enum class FinalStatus {
-    kSkipped = 0,  // No longer in use.
-    kSuccess = 1,
-    kGetPathFailed = 2,
-    kDeleteTmpDirFailed = 3,
-    kNotEnoughSpace = 4,
-    kCopyFailed = 5,
-    kMoveFailed = 6,
-    kDataWipeFailed = 7,
-    kSizeLimitExceeded = 8,  // No longer in use.
-    kCancelled = 9,
-    kMaxValue = kCancelled
-  };
-
   // The value for `kMigrationStep`.
   enum class MigrationStep {
     kCheckStep = 0,      // Migration check should run.
@@ -96,8 +66,10 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
     kEnded = 3  // Migration ended. It was either skipped, failed or succeeded.
   };
 
+  // TODO(ythjkt): Move this struct to browser_data_migrator_util.h.
   enum class ResultValue { kSkipped, kSucceeded, kFailed, kCancelled };
 
+  // TODO(ythjkt): Move this struct to browser_data_migrator_util.h.
   // Return value of `MigrateInternal()`.
   struct MigrationResult {
     // Describes the end result of user data wipe.
@@ -115,6 +87,15 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                          // TargetInfo::no_copy_items to make extra space.
     kDeleteAndMove = 3   // Similar to kMove but deletes
                          // TargetInfo::no_copy_items to make extra space.
+  };
+
+  // Delegate interface which is responsible for the actual task of setting up
+  // the profile directories for ash and lacros. The class should call
+  // `MigrateInternalFinishedUIThread()` once migration is completed.
+  class MigratorDelegate {
+   public:
+    virtual ~MigratorDelegate() = default;
+    virtual void Migrate() = 0;
   };
 
   // `BrowserDataMigratorImpl` migrates browser data from `original_profile_dir`
@@ -156,9 +137,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
                            ManipulateMigrationAttemptCount);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, SetupTmpDir);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, CancelSetupTmpDir);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateInternal);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
 
@@ -186,14 +164,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       PrefService* local_state,
       const std::string& user_id_hash);
 
-  // Handles the migration on a worker thread. Returns the end status of data
-  // wipe and migration. `progress_callback` gets posted on UI thread whenever
-  // an update to the UI is required
-  static MigrationResult MigrateInternal(
-      const base::FilePath& original_profile_dir,
-      std::unique_ptr<MigrationProgressTracker> progress_tracker,
-      scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag);
-
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
   // the migration. It returns true if D-Bus call was successful.
   static bool RestartToMigrate(const AccountId& account_id,
@@ -201,14 +171,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
 
   // Called on UI thread once migration is finished.
   void MigrateInternalFinishedUIThread(MigrationResult result);
-
-  // Set up the temporary directory `tmp_dir` by copying items into it.
-  static bool SetupTmpDir(
-      const browser_data_migrator_util::TargetItems& lacros_items,
-      const browser_data_migrator_util::TargetItems& common_items,
-      const base::FilePath& tmp_dir,
-      browser_data_migrator_util::CancelFlag* cancel_flag,
-      MigrationProgressTracker* progress_tracker);
 
   // Path to the original profile data directory, which is directly under the
   // user data directory.
@@ -227,6 +189,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   PrefService* local_state_ = nullptr;
   // Final status of the migration.
   ResultValue final_status_;
+  std::unique_ptr<MigratorDelegate> migrator_delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
