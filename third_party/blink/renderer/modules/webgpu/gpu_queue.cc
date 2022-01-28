@@ -76,27 +76,6 @@ WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(const V8GPUOrigin2D* webgpu_origin) {
   return dawn_origin;
 }
 
-bool IsExternalImageWebGLCanvas(
-    const V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas* external_image
-) {
-  CanvasRenderingContextHost* canvas = nullptr;
-  switch (external_image->GetContentType()) {
-    case V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas::ContentType::
-        kHTMLCanvasElement:
-      canvas = external_image->GetAsHTMLCanvasElement();
-      break;
-    case V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas::ContentType::
-        kOffscreenCanvas:
-      canvas = external_image->GetAsOffscreenCanvas();
-      break;
-    default:
-      canvas = nullptr;
-      break;
-  }
-
-  return canvas && canvas->IsWebGL();
-}
-
 bool IsValidExternalImageDestinationFormat(
     WGPUTextureFormat dawn_texture_format) {
   switch (dawn_texture_format) {
@@ -240,11 +219,23 @@ scoped_refptr<Image> GetImageFromExternalImage(
   return image;
 }
 
+// CopyExternalImageToTexture() will always copy from the top-left corner of the
+// back resource. But whether do flipY is decided by the source
+// StaticBitmapImage origin.
+// The StaticImageBitmap is a container that specifies an orientation for its
+// content, but the content of StaticImageBitmap has its own orientation so we
+// need to take both into account.
+bool IsExternalImageOriginTopLeft(StaticBitmapImage* static_bitmap_image) {
+  bool frameTopLeft =
+      static_bitmap_image->CurrentFrameOrientation().Orientation() ==
+      ImageOrientationEnum::kOriginTopLeft;
+  return frameTopLeft == static_bitmap_image->IsOriginTopLeft();
+}
+
 }  // namespace
 
 GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
-    : DawnObject<WGPUQueue>(device, queue) {
-}
+    : DawnObject<WGPUQueue>(device, queue) {}
 
 void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
   std::unique_ptr<WGPUCommandBuffer[]> commandBuffers = AsDawnType(buffers);
@@ -441,22 +432,6 @@ void GPUQueue::copyExternalImageToTexture(
   // "srgb" is the only valid color space for now.
   DCHECK_EQ(destination->colorSpace(), "srgb");
 
-  // TODO(crbug.com/1257856): Current implementation takes wrong flip step for
-  // WebGL canvas. It should follow the canvas origin but it follows WebGL
-  // coords instead. Use the temporary origin config for WebGL canvas so user
-  // could fix the flip issue.
-  bool copy_origin_is_bottom_left =
-      copyImage->temporaryOriginBottomLeftIfWebGL() &&
-      IsExternalImageWebGLCanvas(copyImage->source());
-
-  if (copy_origin_is_bottom_left) {
-    device_->AddConsoleWarning(
-        "temporaryOriginBottomLeftIfWebGL is true means the top-left pixel in "
-        "destination gpu texture is from"
-        "bottom-left pixel of WebGL Canvas. Set "
-        "temporaryOriginBottomLeftIfWebGL to false to unflip the result.");
-  }
-
   scoped_refptr<Image> image =
       GetImageFromExternalImage(copyImage->source(), exception_state);
 
@@ -468,9 +443,6 @@ void GPUQueue::copyExternalImageToTexture(
         "from external image. This API call will return early.");
     return;
   }
-
-  // TODO(crbug.com/1197369): Extract alpha info and config the following
-  // CopyContentFromCPU() and CopyContentFromGPU().
 
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
 
@@ -547,12 +519,10 @@ void GPUQueue::copyExternalImageToTexture(
 
   // Try GPU path first and delegate noop copy to CPU path.
   if (static_bitmap_image->IsTextureBacked()) {  // Try GPU uploading path.
-    if (CopyContentFromGPU(static_bitmap_image.get(), origin_in_external_image,
-                           dawn_copy_size, dawn_destination,
-                           destination->texture()->Format(),
-                           destination->premultipliedAlpha(),
-                           static_bitmap_image->IsOriginTopLeft() ==
-                               copy_origin_is_bottom_left)) {
+    if (CopyContentFromGPU(
+            static_bitmap_image.get(), origin_in_external_image, dawn_copy_size,
+            dawn_destination, destination->texture()->Format(),
+            destination->premultipliedAlpha(), copyImage->flipY())) {
       return;
     }
   }
@@ -564,7 +534,7 @@ void GPUQueue::copyExternalImageToTexture(
   if (!CopyContentFromCPU(
           static_bitmap_image.get(), origin_in_external_image, dawn_copy_size,
           dawn_destination, destination->texture()->Format(),
-          destination->premultipliedAlpha(), copy_origin_is_bottom_left)) {
+          destination->premultipliedAlpha(), copyImage->flipY())) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
     return;
@@ -684,6 +654,8 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
   WGPUBuffer buffer =
       GetProcs().deviceCreateBuffer(device_->GetHandle(), &buffer_desc);
 
+  bool isExternalImageOriginTopLeft = IsExternalImageOriginTopLeft(image);
+
   // Bypass extract source content in noop copy but follow the copy path
   // for validation.
   if (!isNoopCopy) {
@@ -692,7 +664,7 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
     if (!CopyBytesFromImageBitmapForWebGPU(
             image, base::span<uint8_t>(static_cast<uint8_t*>(data), size),
             image_data_rect, dest_texture_format, dst_premultiplied_alpha,
-            flipY)) {
+            isExternalImageOriginTopLeft == flipY)) {
       // Release the buffer.
       GetProcs().bufferRelease(buffer);
       return false;
@@ -765,11 +737,11 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
   src.texture = src_texture;
   src.origin = origin;
 
+  bool isExternalImageOriginTopLeft = IsExternalImageOriginTopLeft(image);
+
   WGPUCopyTextureForBrowserOptions options = {};
 
-  if (flipY) {
-    options.flipY = true;
-  }
+  options.flipY = (isExternalImageOriginTopLeft == flipY);
 
   options.srcAlphaMode = image->IsPremultiplied()
                              ? WGPUAlphaMode_Premultiplied
