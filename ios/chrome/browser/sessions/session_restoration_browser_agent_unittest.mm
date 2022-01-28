@@ -64,11 +64,7 @@ class TestRestorationObserver : public SessionRestorationObserver {
 class SessionRestorationBrowserAgentTest : public PlatformTest {
  public:
   SessionRestorationBrowserAgentTest()
-      : web_state_list_delegate_(
-            std::make_unique<BrowserWebStateListDelegate>()),
-        web_state_list_(
-            std::make_unique<WebStateList>(web_state_list_delegate_.get())),
-        test_session_service_([[TestSessionService alloc] init]) {
+      : test_session_service_([[TestSessionService alloc] init]) {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
     TestChromeBrowserState::Builder test_cbs_builder;
@@ -78,8 +74,9 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     // it needs to use a WebStateList with the full BrowserWebStateListDelegate,
     // rather than the TestWebStateList delegate used in the default TestBrowser
     // constructor.
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             web_state_list_.get());
+    browser_ = std::make_unique<TestBrowser>(
+        chrome_browser_state_.get(),
+        std::make_unique<BrowserWebStateListDelegate>());
     // Web usage is disabled during these tests.
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
     web_usage_enabler_ =
@@ -98,7 +95,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 
   void TearDown() override {
     @autoreleasepool {
-      web_state_list_->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+      browser_->GetWebStateList()->CloseAllWebStates(
+          WebStateList::CLOSE_NO_FLAGS);
     }
     PlatformTest::TearDown();
   }
@@ -124,7 +122,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   }
 
   // Creates a WebState with the given parameters and insert it in the
-  // |web_state_list_|.
+  // Browser's WebStateList.
   web::WebState* InsertNewWebState(const GURL& url,
                                    web::WebState* parent,
                                    int index,
@@ -142,14 +140,12 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     int insertion_flags = WebStateList::INSERT_FORCE_INDEX;
     if (!background)
       insertion_flags |= WebStateList::INSERT_ACTIVATE;
-    web_state_list_->InsertWebState(index, std::move(web_state),
-                                    insertion_flags, WebStateOpener(parent));
-    return web_state_list_->GetWebStateAt(index);
+    browser_->GetWebStateList()->InsertWebState(
+        index, std::move(web_state), insertion_flags, WebStateOpener(parent));
+    return browser_->GetWebStateList()->GetWebStateAt(index);
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
-  std::unique_ptr<WebStateList> web_state_list_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
 
@@ -165,9 +161,9 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
       CreateSessionWindow(/*sessions_count=*/5, /*selected_index=*/1));
   session_restoration_agent_->RestoreSessionWindow(window);
 
-  ASSERT_EQ(5, web_state_list_->count());
-  EXPECT_EQ(web_state_list_->GetWebStateAt(1),
-            web_state_list_->GetActiveWebState());
+  ASSERT_EQ(5, browser_->GetWebStateList()->count());
+  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
+            browser_->GetWebStateList()->GetActiveWebState());
 }
 
 // Tests that restoring a session works correctly on non empty WebStatelist.
@@ -180,13 +176,13 @@ TEST_F(SessionRestorationBrowserAgentTest,
       CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
   session_restoration_agent_->RestoreSessionWindow(window);
 
-  ASSERT_EQ(4, web_state_list_->count());
-  EXPECT_EQ(web_state_list_->GetWebStateAt(3),
-            web_state_list_->GetActiveWebState());
-  EXPECT_EQ(web_state, web_state_list_->GetWebStateAt(0));
-  EXPECT_NE(web_state, web_state_list_->GetWebStateAt(1));
-  EXPECT_NE(web_state, web_state_list_->GetWebStateAt(2));
-  EXPECT_NE(web_state, web_state_list_->GetWebStateAt(3));
+  ASSERT_EQ(4, browser_->GetWebStateList()->count());
+  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(3),
+            browser_->GetWebStateList()->GetActiveWebState());
+  EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(2));
+  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(3));
 }
 
 // TODO(crbug.com/888674): This test requires commiting item to
@@ -206,12 +202,12 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {
       CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
   session_restoration_agent_->RestoreSessionWindow(window);
 
-  ASSERT_EQ(3, web_state_list_->count());
-  EXPECT_EQ(web_state_list_->GetWebStateAt(2),
-            web_state_list_->GetActiveWebState());
-  EXPECT_NE(web_state, web_state_list_->GetWebStateAt(0));
-  EXPECT_NE(web_state, web_state_list_->GetWebStateAt(1));
-  EXPECT_NE(web_state, web_state_list_->GetWebStateAt(2));
+  ASSERT_EQ(3, browser_->GetWebStateList()->count());
+  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(2),
+            browser_->GetWebStateList()->GetActiveWebState());
+  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(2));
 }
 
 // Tests that saving a non-empty session, then saving an empty session, then
@@ -225,7 +221,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
   [test_session_service_ setPerformIO:NO];
 
   // Session should be saved, now remove the webstate.
-  web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseWebStateAt(0, WebStateList::CLOSE_NO_FLAGS);
   [test_session_service_ setPerformIO:YES];
   session_restoration_agent_->SaveSession(/*immediately=*/true);
   [test_session_service_ setPerformIO:NO];
@@ -239,7 +235,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
   SessionWindowIOS* session_window = session.sessionWindows[0];
   session_restoration_agent_->RestoreSessionWindow(session_window);
 
-  EXPECT_EQ(0, web_state_list_->count());
+  EXPECT_EQ(0, browser_->GetWebStateList()->count());
 }
 
 // Tests that saving a session with web states, then clearing the WebStatelist
@@ -250,8 +246,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
   InsertNewWebState(GURL(kURL1), web_state, /*index=*/1, /*background=*/false);
   InsertNewWebState(GURL(kURL2), web_state, /*index=*/0, /*background=*/false);
 
-  ASSERT_EQ(3, web_state_list_->count());
-  web_state_list_->ActivateWebStateAt(1);
+  ASSERT_EQ(3, browser_->GetWebStateList()->count());
+  browser_->GetWebStateList()->ActivateWebStateAt(1);
 
   // Force state to flush to disk on the main thread so it can be immediately
   // tested below.
@@ -259,7 +255,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
   session_restoration_agent_->SaveSession(/*immediately=*/true);
   [test_session_service_ setPerformIO:NO];
   // close all the webStates
-  web_state_list_->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
 
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionIOS* session =
@@ -271,10 +267,10 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
   // Restore from saved session.
   session_restoration_agent_->RestoreSessionWindow(session_window);
 
-  EXPECT_EQ(3, web_state_list_->count());
+  EXPECT_EQ(3, browser_->GetWebStateList()->count());
 
-  EXPECT_EQ(web_state_list_->GetWebStateAt(1),
-            web_state_list_->GetActiveWebState());
+  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
+            browser_->GetWebStateList()->GetActiveWebState());
 }
 
 // Tests that SessionRestorationObserver methods are called when sessions is
@@ -289,7 +285,7 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
   SessionWindowIOS* window(
       CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
   session_restoration_agent_->RestoreSessionWindow(window);
-  ASSERT_EQ(4, web_state_list_->count());
+  ASSERT_EQ(4, browser_->GetWebStateList()->count());
 
   EXPECT_TRUE(observer.restore_started());
   EXPECT_EQ(observer.restored_web_states_count(), 3);
@@ -312,24 +308,24 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 1);
 
   // Removing the active webstate.
-  web_state_list_->CloseWebStateAt(/*index=*/2,
-                                   WebStateList::CLOSE_USER_ACTION);
+  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/2,
+                                               WebStateList::CLOSE_USER_ACTION);
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 2);
 
-  EXPECT_EQ(web_state_list_->active_index(), 1);
+  EXPECT_EQ(browser_->GetWebStateList()->active_index(), 1);
 
   // Activating another webState without removing or inserting.
-  web_state_list_->ActivateWebStateAt(/*index=*/0);
+  browser_->GetWebStateList()->ActivateWebStateAt(/*index=*/0);
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 3);
 
   // Removing a non active webState.
-  web_state_list_->CloseWebStateAt(/*index=*/1,
-                                   WebStateList::CLOSE_USER_ACTION);
+  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/1,
+                                               WebStateList::CLOSE_USER_ACTION);
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 4);
 
   // Removing the last active webState.
-  web_state_list_->CloseWebStateAt(/*index=*/0,
-                                   WebStateList::CLOSE_USER_ACTION);
+  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
+                                               WebStateList::CLOSE_USER_ACTION);
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 5);
 }
 

@@ -10,12 +10,14 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/observer_list.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
+
+class WebStateListDelegate;
 
 class TestBrowser : public Browser {
  public:
-  // Constructor that takes a WebStateList.
-  TestBrowser(ChromeBrowserState* browser_state, WebStateList* web_state_list);
+  // Constructor that takes a WebStateListDelegate.
+  TestBrowser(ChromeBrowserState* browser_state,
+              std::unique_ptr<WebStateListDelegate> web_state_list_delegate);
 
   // Constructor that takes only a BrowserState; an empty web state list will be
   // created internally.
@@ -40,15 +42,12 @@ class TestBrowser : public Browser {
   void RemoveObserver(BrowserObserver* observer) override;
 
  private:
+  ChromeBrowserState* browser_state_ = nullptr;
   // Used when the test browser creates and owns its own browser state.
   std::unique_ptr<ChromeBrowserState> owned_browser_state_;
-  // Used when the test browser creates and owns its own web state list.
-  std::unique_ptr<WebStateList> owned_web_state_list_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  // Used in all cases.
+  std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
+  std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_ = nil;
-  ChromeBrowserState* browser_state_ = nullptr;
-  WebStateList* web_state_list_ = nullptr;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
 };
 

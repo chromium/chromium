@@ -56,9 +56,7 @@ class SyncScreenCoordinatorTest : public PlatformTest {
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
-    WebStateList* web_state_list = nullptr;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     PolicyWatcherBrowserAgent::CreateForBrowser(browser_.get());
 
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(

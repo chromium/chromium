@@ -30,9 +30,7 @@ class AutofillCreditCardTableViewControllerTest
   AutofillCreditCardTableViewControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
-    WebStateList* web_state_list = nullptr;
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             web_state_list);
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     // Credit card import requires a PersonalDataManager which itself needs the
     // WebDataService; this is not initialized on a TestChromeBrowserState by
     // default.

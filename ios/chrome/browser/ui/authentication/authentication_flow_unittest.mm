@@ -50,9 +50,7 @@ class AuthenticationFlowTest : public PlatformTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
     builder.SetPrefService(CreatePrefService());
     browser_state_ = builder.Build();
-    WebStateList* web_state_list = nullptr;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     ios::FakeChromeIdentityService* identityService =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();

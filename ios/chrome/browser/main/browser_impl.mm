@@ -29,13 +29,6 @@ BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state)
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
 }
 
-BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
-                         std::unique_ptr<WebStateList> web_state_list)
-    : browser_state_(browser_state),
-      web_state_list_(std::move(web_state_list)) {
-  DCHECK(browser_state_);
-}
-
 BrowserImpl::~BrowserImpl() {
   for (auto& observer : observers_) {
     observer.BrowserDestroyed(this);

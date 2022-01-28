@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #include "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/test/block_cleanup_test.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -111,8 +110,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
  public:
   RecentTabsTableCoordinatorTest()
       : no_error_(GoogleServiceAuthError::NONE),
-        fake_controller_delegate_(syncer::SESSIONS),
-        web_state_list_(&web_state_list_delegate_) {}
+        fake_controller_delegate_(syncer::SESSIONS) {}
 
  protected:
   void SetUp() override {
@@ -139,8 +137,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
     chrome_browser_state_ = test_cbs_builder.Build();
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             &web_state_list_);
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
   }
 
   void TearDown() override {
@@ -230,8 +227,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   signin::IdentityTestEnvironment identity_test_env_;
 
   syncer::FakeModelTypeControllerDelegate fake_controller_delegate_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;
   testing::NiceMock<GlobalIdMapperMock> global_id_mapper_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;

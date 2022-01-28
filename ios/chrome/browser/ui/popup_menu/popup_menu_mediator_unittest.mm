@@ -38,7 +38,6 @@
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
-#include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -105,11 +104,30 @@ class PopupMenuMediatorTest : public ChromeWebTest {
         OCMStrictClassMock([PopupMenuTableViewController class]);
     OCMExpect([popup_menu_strict_ setPopupMenuItems:[OCMArg any]]);
     OCMExpect([popup_menu_strict_ setDelegate:[OCMArg any]]);
-    SetUpWebStateList();
 
     // Set up the TestBrowser.
-    browser_ =
-        std::make_unique<TestBrowser>(GetBrowserState(), web_state_list_.get());
+    browser_ = std::make_unique<TestBrowser>(GetBrowserState());
+
+    // Set up the WebStateList.
+    auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
+
+    navigation_item_ = web::NavigationItem::Create();
+    navigation_item_->SetURL(GURL("http://chromium.org"));
+    navigation_manager->SetVisibleItem(navigation_item_.get());
+
+    std::unique_ptr<web::FakeWebState> test_web_state =
+        std::make_unique<web::FakeWebState>();
+    test_web_state->SetNavigationManager(std::move(navigation_manager));
+    test_web_state->SetLoading(true);
+    web_state_ = test_web_state.get();
+
+    browser_->GetWebStateList()->InsertWebState(
+        0, std::move(test_web_state), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener());
+    for (int i = 1; i < kNumberOfWebStates; i++) {
+      InsertNewWebState(i);
+    }
+
     // Set up the OverlayPresenter.
     OverlayPresenter::FromBrowser(browser_.get(),
                                   OverlayModality::kWebContentArea)
@@ -118,7 +136,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
 
   void TearDown() override {
     // Explicitly disconnect the mediator so there won't be any WebStateList
-    // observers when web_state_list_ gets dealloc.
+    // observers when browser_ gets destroyed.
     [mediator_ disconnect];
 
     ChromeWebTest::TearDown();
@@ -171,51 +189,29 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     mediator_.bookmarkModel = bookmark_model_;
   }
 
-  void SetUpWebStateList() {
-    auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
-    navigation_manager_ = navigation_manager.get();
-
-    navigation_item_ = web::NavigationItem::Create();
-    navigation_item_->SetURL(GURL("http://chromium.org"));
-    navigation_manager->SetVisibleItem(navigation_item_.get());
-
-    std::unique_ptr<web::FakeWebState> test_web_state =
-        std::make_unique<web::FakeWebState>();
-    test_web_state->SetNavigationManager(std::move(navigation_manager));
-    test_web_state->SetLoading(true);
-    web_state_ = test_web_state.get();
-
-    web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
-    web_state_list_->InsertWebState(0, std::move(test_web_state),
-                                    WebStateList::INSERT_FORCE_INDEX,
-                                    WebStateOpener());
-    for (int i = 1; i < kNumberOfWebStates; i++) {
-      InsertNewWebState(i);
-    }
-  }
-
   void InsertNewWebState(int index) {
     auto web_state = std::make_unique<web::FakeWebState>();
     GURL url("http://test/" + std::to_string(index));
     web_state->SetCurrentURL(url);
-    web_state_list_->InsertWebState(index, std::move(web_state),
-                                    WebStateList::INSERT_FORCE_INDEX,
-                                    WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        index, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener());
   }
 
   void SetUpActiveWebState() {
     // PopupMenuMediator expects an language::IOSLanguageDetectionTabHelper for
     // the currently active WebState.
     language::IOSLanguageDetectionTabHelper::CreateForWebState(
-        web_state_list_->GetWebStateAt(0), /*url_language_histogram=*/nullptr);
+        browser_->GetWebStateList()->GetWebStateAt(0),
+        /*url_language_histogram=*/nullptr);
 
-    web_state_list_->ActivateWebStateAt(0);
+    browser_->GetWebStateList()->ActivateWebStateAt(0);
   }
 
   // Checks that the popup_menu_ is receiving a number of items corresponding to
   // |number_items|.
   void CheckMediatorSetItems(NSArray<NSNumber*>* number_items) {
-    mediator_.webStateList = web_state_list_.get();
+    mediator_.webStateList = browser_->GetWebStateList();
     SetUpActiveWebState();
     auto same_number_items = ^BOOL(id items) {
       if (![items isKindOfClass:[NSArray class]])
@@ -258,15 +254,12 @@ class PopupMenuMediatorTest : public ChromeWebTest {
   }
 
   FakeOverlayPresentationContext presentation_context_;
-  std::unique_ptr<WebStateList> web_state_list_;
-  FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<Browser> browser_;
   PopupMenuMediator* mediator_;
   BookmarkModel* bookmark_model_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<ReadingListModelImpl> reading_list_model_;
   web::FakeWebState* web_state_;
-  ToolbarTestNavigationManager* navigation_manager_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   id popup_menu_;
   // Mock refusing all calls except -setPopupMenuItems:.
@@ -346,7 +339,7 @@ TEST_F(PopupMenuMediatorTest, TestTabGridMenuIncognito) {
 TEST_F(PopupMenuMediatorTest, TestNewIncognitoHint) {
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/YES);
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   SetUpActiveWebState();
   OCMExpect([popup_menu_ setItemToHighlight:[OCMArg isNotNil]]);
   mediator_.popupMenu = popup_menu_;
@@ -358,7 +351,7 @@ TEST_F(PopupMenuMediatorTest, TestNewIncognitoNoHint) {
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
   [[popup_menu_ reject] setItemToHighlight:[OCMArg any]];
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   SetUpActiveWebState();
   mediator_.popupMenu = popup_menu_;
 }
@@ -368,7 +361,7 @@ TEST_F(PopupMenuMediatorTest, TestNewIncognitoHintTabGrid) {
   CreateMediator(PopupMenuTypeTabGrid, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/YES);
   OCMExpect([popup_menu_ setItemToHighlight:[OCMArg isNotNil]]);
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   SetUpActiveWebState();
   mediator_.popupMenu = popup_menu_;
   EXPECT_OCMOCK_VERIFY(popup_menu_);
@@ -379,7 +372,7 @@ TEST_F(PopupMenuMediatorTest, TestNewIncognitoHintTabGrid) {
 TEST_F(PopupMenuMediatorTest, TestItemsStatusOnWebPage) {
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
   SetUpActiveWebState();
@@ -396,7 +389,7 @@ TEST_F(PopupMenuMediatorTest, TestItemsStatusOnWebPage) {
 TEST_F(PopupMenuMediatorTest, TestItemsStatusOnNTP) {
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
   SetUpActiveWebState();
@@ -417,7 +410,7 @@ TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
   CreatePrefs();
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
@@ -446,11 +439,12 @@ TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
 TEST_F(PopupMenuMediatorTest, TestTextZoomDisabled) {
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
 
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
-  FontSizeTabHelper::CreateForWebState(web_state_list_->GetWebStateAt(0));
+  FontSizeTabHelper::CreateForWebState(
+      browser_->GetWebStateList()->GetWebStateAt(0));
   SetUpActiveWebState();
   EXPECT_TRUE(HasItem(consumer, kToolsMenuTextZoom, /*enabled=*/YES));
 
@@ -467,7 +461,7 @@ TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoHidden) {
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
 
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
   SetUpActiveWebState();
@@ -496,7 +490,7 @@ TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoShown) {
       PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
       /*trigger_incognito_hint=*/NO, connector);
 
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
   SetUpActiveWebState();
@@ -516,7 +510,7 @@ TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   SetUpBookmarks();
   bookmarks::AddIfNotBookmarked(bookmark_model_, url,
                                 base::SysNSStringToUTF16(@"Test bookmark"));
-  mediator_.webStateList = web_state_list_.get();
+  mediator_.webStateList = browser_->GetWebStateList();
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
   mediator_.prefService = prefs_.get();

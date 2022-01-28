@@ -55,9 +55,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     authentication_service->SignIn(identity);
 
-    WebStateList* web_state_list = nullptr;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
   }
 
   Browser* browser() { return browser_.get(); }

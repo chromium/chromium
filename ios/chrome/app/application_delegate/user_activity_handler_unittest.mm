@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ui/main/test/fake_connection_information.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
@@ -826,28 +825,21 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
   // Setup.
   base::test::TaskEnvironment task_enviroment_;
 
-  TestChromeBrowserState::Builder test_cbs_builder;
-  std::unique_ptr<ChromeBrowserState> browser_state_ = test_cbs_builder.Build();
-
-  FakeWebStateListDelegate _webStateListDelegate;
-  std::unique_ptr<WebStateList> web_state_list_ =
-      std::make_unique<WebStateList>(&_webStateListDelegate);
+  std::unique_ptr<ChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
 
   auto web_state = std::make_unique<web::FakeWebState>();
   FakeU2FTabHelper::CreateForWebState(web_state.get());
   web::WebState* web_state_ptr = web_state.get();
-  web_state_list_->InsertWebState(
+
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(browser_state.get());
+  browser->GetWebStateList()->InsertWebState(
       0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
 
-  std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>(
-      browser_state_.get(), web_state_list_.get());
-  std::unique_ptr<Browser> otr_browser_ = std::make_unique<TestBrowser>(
-      browser_state_->GetOffTheRecordChromeBrowserState(),
-      web_state_list_.get());
-
-  BrowserList* browser_list_ =
-      BrowserListFactory::GetForBrowserState(browser_state_.get());
-  browser_list_->AddBrowser(browser_.get());
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state.get());
+  browser_list->AddBrowser(browser.get());
 
   std::string urlRepresentation = base::StringPrintf(
       "chromium://u2f-callback?isU2F=1&tabID=%s",
@@ -871,9 +863,9 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
 
   StubBrowserInterfaceProvider* interfaceProvider =
       [[StubBrowserInterfaceProvider alloc] init];
-  interfaceProvider.mainInterface.browserState = browser_state_.get();
+  interfaceProvider.mainInterface.browserState = browser_state.get();
   interfaceProvider.incognitoInterface.browserState =
-      browser_state_->GetOffTheRecordChromeBrowserState();
+      browser_state->GetOffTheRecordChromeBrowserState();
 
   MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
 

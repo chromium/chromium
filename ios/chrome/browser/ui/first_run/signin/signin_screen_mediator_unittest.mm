@@ -257,9 +257,8 @@ TEST_F(SigninScreenMediatorTest, TestSignIn) {
   mediator_.consumer = consumer_;
 
   // Set browser UI objects.
-  WebStateList* web_state_list = nullptr;
   std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+      std::make_unique<TestBrowser>(browser_state_.get());
   UIViewController* presenting_view_controller_mock =
       OCMStrictClassMock([UIViewController class]);
 

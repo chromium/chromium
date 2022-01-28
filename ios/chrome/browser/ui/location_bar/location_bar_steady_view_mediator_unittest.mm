@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_steady_view_consumer.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -34,21 +33,19 @@ using java_script_dialog_overlays::JavaScriptDialogRequest;
 class LocationBarSteadyViewMediatorTest : public PlatformTest {
  protected:
   LocationBarSteadyViewMediatorTest()
-      : web_state_list_(&web_state_list_delegate_),
-        mediator_([[LocationBarSteadyViewMediator alloc]
+      : mediator_([[LocationBarSteadyViewMediator alloc]
             initWithLocationBarModel:&model_]),
         consumer_([[FakeLocationBarSteadyViewConsumer alloc] init]) {
     // Set up the TestBrowser.
     TestChromeBrowserState::Builder browser_state_builder;
     browser_state_ = browser_state_builder.Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     // Set up the OverlayPresenter.
     OverlayPresenter* overlay_presenter = OverlayPresenter::FromBrowser(
         browser_.get(), OverlayModality::kWebContentArea);
     overlay_presenter->SetPresentationContext(&presentation_context_);
     // Set up the mediator.
-    mediator_.webStateList = &web_state_list_;
+    mediator_.webStateList = browser_->GetWebStateList();
     mediator_.webContentAreaOverlayPresenter = overlay_presenter;
     mediator_.consumer = consumer_;
   }
@@ -56,8 +53,6 @@ class LocationBarSteadyViewMediatorTest : public PlatformTest {
 
   FakeOverlayPresentationContext presentation_context_;
   web::WebTaskEnvironment task_environment_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   TestLocationBarModel model_;
@@ -72,9 +67,9 @@ TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
-  web_state_list_.InsertWebState(0, std::move(passed_web_state),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener(nullptr));
+  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
+                                              WebStateList::INSERT_ACTIVATE,
+                                              WebStateOpener(nullptr));
   ASSERT_TRUE(consumer_.locationShareable);
 
   // Present a JavaScript alert over the WebState and verify that the page is no
@@ -99,9 +94,9 @@ TEST_F(LocationBarSteadyViewMediatorTest, HTTPAuthDialog) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
-  web_state_list_.InsertWebState(0, std::move(passed_web_state),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener(nullptr));
+  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
+                                              WebStateList::INSERT_ACTIVATE,
+                                              WebStateOpener(nullptr));
 
   // Present an HTTP authentication dialog over the WebState and verify the
   // location text and page icon.
@@ -126,9 +121,9 @@ TEST_F(LocationBarSteadyViewMediatorTest,
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
-  web_state_list_.InsertWebState(0, std::move(passed_web_state),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener(nullptr));
+  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
+                                              WebStateList::INSERT_ACTIVATE,
+                                              WebStateOpener(nullptr));
 
   // Present an HTTP authentication dialog over the WebState
   const std::string kMessage("message");
@@ -144,8 +139,8 @@ TEST_F(LocationBarSteadyViewMediatorTest,
   // Disable dismissal callbacks in the presentation context so that the active
   // WebState can be reset to null before the dismisal callbacks are executed.
   presentation_context_.SetDismissalCallbacksEnabled(false);
-  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
-  EXPECT_FALSE(web_state_list_.GetActiveWebState());
+  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  EXPECT_FALSE(browser_->GetWebStateList()->GetActiveWebState());
 
   // Execute the dismissal callback and verify that the location text has been
   // updated.

@@ -80,9 +80,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
     chrome_browser_state_ = builder.Build();
 
-    WebStateList* web_state_list = nullptr;
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             web_state_list);
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(

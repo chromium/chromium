@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -81,7 +80,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
   BadgeMediatorTest()
       : badge_consumer_([[FakeBadgeConsumer alloc] init]),
         browser_state_(TestChromeBrowserState::Builder().Build()),
-        web_state_list_(&web_state_list_delegate_) {
+        browser_(std::make_unique<TestBrowser>(browser_state())) {
     OverlayPresenter::FromBrowser(browser(), OverlayModality::kInfobarBanner)
         ->SetPresentationContext(&overlay_presentation_context_);
     badge_mediator_ = [[BadgeMediator alloc] initWithBrowser:browser()];
@@ -102,9 +101,9 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     web_state->SetBrowserState(browser_state());
     InfoBarManagerImpl::CreateForWebState(web_state.get());
     InfobarBadgeTabHelper::CreateForWebState(web_state.get());
-    web_state_list_.InsertWebState(index, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list()->InsertWebState(index, std::move(web_state),
+                                     WebStateList::INSERT_ACTIVATE,
+                                     WebStateOpener());
   }
 
   // Adds an Infobar of |type| to the InfoBarManager and returns the infobar.
@@ -133,15 +132,11 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
                : browser_state_.get();
   }
   // Returns the Browser to use for the test fixture.
-  Browser* browser() {
-    if (!browser_) {
-      browser_ =
-          std::make_unique<TestBrowser>(browser_state(), &web_state_list_);
-    }
-    return browser_.get();
-  }
+  Browser* browser() { return browser_.get(); }
+  // Returns the Browser's WebStateList.
+  WebStateList* web_state_list() { return browser()->GetWebStateList(); }
   // Returns the active WebState.
-  web::WebState* web_state() { return web_state_list_.GetActiveWebState(); }
+  web::WebState* web_state() { return web_state_list()->GetActiveWebState(); }
   // Returns the active WebState's InfoBarManagerImpl.
   InfoBarManagerImpl* infobar_manager() {
     return InfoBarManagerImpl::FromWebState(web_state());
@@ -154,8 +149,6 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
   base::test::TaskEnvironment environment_;
   FakeBadgeConsumer* badge_consumer_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   BadgeMediator* badge_mediator_ = nil;
@@ -235,7 +228,7 @@ TEST_P(BadgeMediatorTest,
   InsertActivatedWebState(/*index=*/1);
   std::unique_ptr<InfoBarIOS> added_infobar = std::make_unique<FakeInfobarIOS>(
       kSecondInfobarType, kSecondInfobarMessageText);
-  InfoBarManagerImpl::FromWebState(web_state_list_.GetWebStateAt(0))
+  InfoBarManagerImpl::FromWebState(web_state_list()->GetWebStateAt(0))
       ->AddInfoBar(std::move(added_infobar));
   EXPECT_FALSE(badge_consumer_.displayedBadge);
 }
@@ -248,7 +241,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestDoNotAddInfobarIfWebStateListGone) {
   [badge_mediator_ disconnect];
   std::unique_ptr<InfoBarIOS> added_infobar = std::make_unique<FakeInfobarIOS>(
       kSecondInfobarType, kSecondInfobarMessageText);
-  InfoBarManagerImpl::FromWebState(web_state_list_.GetActiveWebState())
+  InfoBarManagerImpl::FromWebState(web_state_list()->GetActiveWebState())
       ->AddInfoBar(std::move(added_infobar));
   EXPECT_FALSE(badge_consumer_.displayedBadge);
 }
@@ -294,7 +287,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestCloseLastTab) {
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType,
             BadgeType::kBadgeTypePasswordSave);
-  web_state_list_.DetachWebStateAt(0);
+  web_state_list()->DetachWebStateAt(0);
   InsertActivatedWebState(/*index=*/0);
   ASSERT_FALSE(badge_consumer_.displayedBadge);
 }

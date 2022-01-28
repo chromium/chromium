@@ -18,35 +18,30 @@
 
 class BrowserImplTest : public PlatformTest {
  protected:
-  BrowserImplTest()
-      : web_state_list_(
-            std::make_unique<WebStateList>(&web_state_list_delegate_)) {
+  BrowserImplTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-
-  FakeWebStateListDelegate web_state_list_delegate_;
-  // Unique ptr to the web_state_list_ to transfer into new Browser instances.
-  std::unique_ptr<WebStateList> web_state_list_;
 };
 
 // Tests that the accessors return the expected values.
 TEST_F(BrowserImplTest, TestAccessors) {
-  WebStateList* web_state_list_weak_reference = web_state_list_.get();
-  BrowserImpl browser(chrome_browser_state_.get(), std::move(web_state_list_));
-
+  BrowserImpl browser(chrome_browser_state_.get());
   EXPECT_EQ(chrome_browser_state_.get(), browser.GetBrowserState());
-  EXPECT_EQ(web_state_list_weak_reference, browser.GetWebStateList());
+  EXPECT_TRUE(browser.GetWebStateList());
+  EXPECT_TRUE(browser.GetCommandDispatcher());
 }
 
 // Tests that the BrowserDestroyed() callback is sent when a browser is deleted.
 TEST_F(BrowserImplTest, BrowserDestroyed) {
-  std::unique_ptr<Browser> browser =
-      std::make_unique<BrowserImpl>(chrome_browser_state_.get());
-  FakeBrowserObserver observer(browser.get());
-  browser = nullptr;
-  EXPECT_TRUE(observer.browser_destroyed());
+  std::unique_ptr<FakeBrowserObserver> observer;
+  {
+    BrowserImpl browser(chrome_browser_state_.get());
+    observer = std::make_unique<FakeBrowserObserver>(&browser);
+  }
+  ASSERT_TRUE(observer);
+  EXPECT_TRUE(observer->browser_destroyed());
 }

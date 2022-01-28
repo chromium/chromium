@@ -56,9 +56,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
-    WebStateList* web_state_list = nullptr;
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             web_state_list);
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
     mockDelegate_ = [OCMockObject
         niceMockForProtocol:@protocol(SettingsNavigationControllerDelegate)];
