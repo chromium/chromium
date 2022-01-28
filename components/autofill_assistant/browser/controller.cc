@@ -1174,8 +1174,7 @@ void Controller::DidFinishNavigation(
   }
 }
 
-void Controller::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void Controller::PrimaryMainDocumentElementAvailable() {
   OnUrlChange();
 }
 

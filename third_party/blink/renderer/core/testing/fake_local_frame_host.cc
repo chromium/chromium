@@ -43,7 +43,7 @@ void FakeLocalFrameHost::DidDisplayInsecureContent() {}
 
 void FakeLocalFrameHost::DidContainInsecureFormAction() {}
 
-void FakeLocalFrameHost::DocumentAvailableInMainFrame(
+void FakeLocalFrameHost::MainDocumentElementAvailable(
     bool uses_temporary_zoom_level) {}
 
 void FakeLocalFrameHost::SetNeedsOcclusionTracking(bool needs_tracking) {}

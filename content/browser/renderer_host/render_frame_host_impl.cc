@@ -5437,7 +5437,7 @@ void RenderFrameHostImpl::DidContainInsecureFormAction() {
   frame_tree_->controller().ssl_manager()->DidContainInsecureFormAction();
 }
 
-void RenderFrameHostImpl::DocumentAvailableInMainFrame(
+void RenderFrameHostImpl::MainDocumentElementAvailable(
     bool uses_temporary_zoom_level) {
   if (!is_main_frame()) {
     bad_message::ReceivedBadMessage(
@@ -5445,10 +5445,10 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
     return;
   }
 
-  GetPage().set_is_document_available_in_main_document(true);
+  GetPage().set_is_main_document_element_available(true);
   GetPage().set_uses_temporary_zoom_level(uses_temporary_zoom_level);
 
-  // Don't dispatch DocumentAvailableInMainFrame for non-primary
+  // Don't dispatch PrimaryMainDocumentElementAvailable for non-primary
   // RenderFrameHosts. As most of the observers are interested only in taking
   // into account and can interact with or send IPCs to only the current
   // document in the primary main frame. Since the WebContents could be hosting
@@ -5457,7 +5457,7 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
   if (!IsInPrimaryMainFrame())
     return;
 
-  delegate_->DocumentAvailableInMainFrame(this);
+  delegate_->PrimaryMainDocumentElementAvailable();
 
   if (!uses_temporary_zoom_level)
     return;

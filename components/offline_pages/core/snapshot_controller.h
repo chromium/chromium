@@ -82,8 +82,8 @@ class SnapshotController {
   // now completed (so the next one can be started).
   void PendingSnapshotCompleted();
 
-  // Invoked from WebContentObserver::DocumentAvailableInMainFrame
-  void DocumentAvailableInMainFrame();
+  // Invoked from WebContentObserver::PrimaryMainDocumentElementAvailable
+  void PrimaryMainDocumentElementAvailable();
 
   // Invoked from WebContentObserver::DocumentOnLoadCompletedInPrimaryMainFrame
   void DocumentOnLoadCompletedInPrimaryMainFrame();

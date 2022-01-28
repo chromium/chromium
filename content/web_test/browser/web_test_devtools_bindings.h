@@ -30,8 +30,7 @@ class WebTestDevToolsBindings : public ShellDevToolsBindings {
   class SecondaryObserver;
 
   // WebContentsObserver implementation.
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
 
   void NavigateDevToolsFrontend();
 

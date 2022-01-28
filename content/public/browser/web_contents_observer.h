@@ -359,10 +359,10 @@ class CONTENT_EXPORT WebContentsObserver {
   // implementation of blink::Document in DocumentUserData/DocumentService which
   // are typically created when navigation commits.
   //
-  // Note that DocumentAvailableInMainFrame should be used when the observers
-  // which send IPCs to the renderer want to ensure that window.document is
-  // non-null. For for the comment cases like observing primary document/URL
-  // changes in the omnibox due to navigation
+  // Note that PrimaryMainDocumentElementAvailable should be used when the
+  // observers which send IPCs to the renderer want to ensure that
+  // window.document is non-null. For for the comment cases like observing
+  // primary document/URL changes in the omnibox due to navigation
   // WebContentsObserver::PrimaryPageChanged should be used and to observe fully
   // loaded signal WebContentsObserver::DidFinishLoad can be used.
   //
@@ -371,13 +371,7 @@ class CONTENT_EXPORT WebContentsObserver {
   // For prerendering, this signal is dispatched when the main document element
   // is available and the document is shown to the user (i.e., after the
   // activation).
-  //
-  // TODO(crbug.com/1257140): Rename DocumentAvailableInMainFrame to
-  // PrimaryMainDocumentElementAvailable to capture the new behaviour. Remove
-  // RenderFrameHost* argument and directly use
-  // WebContents::GetPrimaryMainFrame().
-  virtual void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  virtual void PrimaryMainDocumentElementAvailable() {}
 
   // This method is invoked once the onload handler of the primary main frame's
   // current document (i.e., |render_frame_host|) has completed. This happens

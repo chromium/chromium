@@ -3656,11 +3656,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
-// Test that WebContentsObserver::DocumentAvailableInMainFrame is not
+// Test that WebContentsObserver::PrimaryMainDocumentElementAvailable is not
 // invoked when the page gets loaded while prerendering but it is deferred and
 // invoked on prerender activation.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       DocumentAvailableInMainFrameInvokedAfterActivation) {
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    PrimaryMainDocumentElementAvailableInvokedAfterActivation) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
 
@@ -3668,13 +3669,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Initialize a MockWebContentsObserver and ensure that
-  // DocumentAvailableInMainFrame is not invoked while prerendering.
+  // PrimaryMainDocumentElementAvailable is not invoked while prerendering.
   testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
-  EXPECT_CALL(observer, DocumentAvailableInMainFrame(testing::_)).Times(0);
+  EXPECT_CALL(observer, PrimaryMainDocumentElementAvailable()).Times(0);
 
   // AddPrerender() below waits until WebContentsObserver::DidStopLoading() is
-  // called and RenderFrameHostImpl::DocumentAvailableInMainFrame() call is
-  // expected before it returns.
+  // called and RenderFrameHostImpl::PrimaryMainDocumentElementAvailable() call
+  // is expected before it returns.
   int prerender_host_id = AddPrerender(kPrerenderingUrl);
   RenderFrameHostImpl* prerender_frame_host =
       GetPrerenderedMainFrameHost(prerender_host_id);
@@ -3687,13 +3688,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   testing::InSequence s;
 
   // Activate the prerendered page. This should result in invoking
-  // DocumentOnLoadCompletedInPrimaryMainFrame only for main RenderFrameHost.
+  // PrimaryMainDocumentElementAvailable only for main RenderFrameHost.
   // Verify that DidFinishNavigation is invoked before
-  // DocumentAvailableInMainFrame on activation.
+  // PrimaryMainDocumentElementAvailable on activation.
   EXPECT_CALL(observer, DidFinishNavigation(testing::_));
 
-  EXPECT_CALL(observer, DocumentAvailableInMainFrame(prerender_frame_host))
-      .Times(1);
+  EXPECT_CALL(observer, PrimaryMainDocumentElementAvailable()).Times(1);
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }

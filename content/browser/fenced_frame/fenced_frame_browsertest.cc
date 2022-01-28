@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CrossOriginMessagePost) {
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
                        DocumentOnLoadCompletedInPrimaryMainFrame) {
   // Initialize a MockWebContentsObserver to ensure that
-  // DocumentAvailableInMainFrame is only invoked for primary main
+  // DocumentOnLoadCompletedInPrimaryMainFrame is only invoked for primary main
   // RenderFrameHosts.
   testing::NiceMock<MockWebContentsObserver> web_contents_observer(
       web_contents());
@@ -266,28 +266,28 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
 }
 
 // Test that when the documents inside the fenced frame tree are loading,
-// WebContentsObserver::DocumentAvailableInMainFrame is not invoked for fenced
-// frames as it is only invoked for primary main frames.
-IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, DocumentAvailableInMainFrame) {
+// WebContentsObserver::PrimaryMainDocumentElementAvailable is not invoked for
+// fenced frames as it is only invoked for primary main frames.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
+                       PrimaryMainDocumentElementAvailable) {
   // Initialize a MockWebContentsObserver to ensure that
-  // DocumentAvailableInMainFrame is only invoked for primary main
+  // PrimaryMainDocumentElementAvailable is only invoked for primary main
   // RenderFrameHosts.
   testing::NiceMock<MockWebContentsObserver> web_contents_observer(
       web_contents());
   testing::InSequence s;
 
   // Navigate to an initial primary page. This should result in invoking
-  // DocumentAvailableInMainFrame once.
-  EXPECT_CALL(web_contents_observer,
-              DocumentAvailableInMainFrame(primary_main_frame_host()))
+  // PrimaryMainDocumentElementAvailable once.
+  EXPECT_CALL(web_contents_observer, PrimaryMainDocumentElementAvailable())
       .Times(1);
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                          "fencedframe.test", "/title1.html")));
   RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
 
   // Once the fenced frame completes loading, it shouldn't result in
-  // invoking DocumentAvailableInMainFrame.
-  EXPECT_CALL(web_contents_observer, DocumentAvailableInMainFrame(testing::_))
+  // invoking PrimaryMainDocumentElementAvailable.
+  EXPECT_CALL(web_contents_observer, PrimaryMainDocumentElementAvailable())
       .Times(0);
   const GURL fenced_frame_url = embedded_test_server()->GetURL(
       "fencedframe.test", "/fenced_frames/title1.html");

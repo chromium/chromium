@@ -113,8 +113,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
   void DidStopLoading() override;
 
   // content::WebContentsDelegate:

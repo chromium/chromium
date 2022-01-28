@@ -56,8 +56,7 @@ class WebContentsObserverConsistencyChecker
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(Page& page) override;
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void DOMContentLoaded(RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(RenderFrameHost* render_frame_host,

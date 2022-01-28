@@ -4379,9 +4379,8 @@ class LoadingObserver : public WebContentsObserver {
     run_loop_.Quit();
   }
 
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override {
-    events_.push_back("DocumentAvailableInMainFrame");
+  void PrimaryMainDocumentElementAvailable() override {
+    events_.push_back("PrimaryMainDocumentElementAvailable");
   }
 
   void DocumentOnLoadCompletedInPrimaryMainFrame() override {
@@ -4429,13 +4428,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   loading_observer.Wait();
 
-  EXPECT_THAT(
-      loading_observer.GetEvents(),
-      testing::ElementsAre("DidStartLoading", "DidStartNavigation",
-                           "DidFinishNavigation",
-                           "DocumentAvailableInMainFrame", "DOMContentLoaded",
-                           "DocumentOnLoadCompletedInPrimaryMainFrame",
-                           "DidFinishLoad", "DidStopLoading"));
+  EXPECT_THAT(loading_observer.GetEvents(),
+              testing::ElementsAre("DidStartLoading", "DidStartNavigation",
+                                   "DidFinishNavigation",
+                                   "PrimaryMainDocumentElementAvailable",
+                                   "DOMContentLoaded",
+                                   "DocumentOnLoadCompletedInPrimaryMainFrame",
+                                   "DidFinishLoad", "DidStopLoading"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
@@ -4503,13 +4502,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   loading_observer.Wait();
 
-  EXPECT_THAT(
-      loading_observer.GetEvents(),
-      testing::ElementsAre("DidStartLoading", "DidStartNavigation",
-                           "DidFinishNavigation",
-                           "DocumentAvailableInMainFrame", "DOMContentLoaded",
-                           "DocumentOnLoadCompletedInPrimaryMainFrame",
-                           "DidFinishLoad", "DidStopLoading"));
+  EXPECT_THAT(loading_observer.GetEvents(),
+              testing::ElementsAre("DidStartLoading", "DidStartNavigation",
+                                   "DidFinishNavigation",
+                                   "PrimaryMainDocumentElementAvailable",
+                                   "DOMContentLoaded",
+                                   "DocumentOnLoadCompletedInPrimaryMainFrame",
+                                   "DidFinishLoad", "DidStopLoading"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
@@ -4530,13 +4529,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   response.Done();
 
   loading_observer.Wait();
-  EXPECT_THAT(
-      loading_observer.GetEvents(),
-      testing::ElementsAre("DidStartLoading", "DidStartNavigation",
-                           "DidFinishNavigation",
-                           "DocumentAvailableInMainFrame", "DOMContentLoaded",
-                           "DocumentOnLoadCompletedInPrimaryMainFrame",
-                           "DidFinishLoad", "DidStopLoading"));
+  EXPECT_THAT(loading_observer.GetEvents(),
+              testing::ElementsAre("DidStartLoading", "DidStartNavigation",
+                                   "DidFinishNavigation",
+                                   "PrimaryMainDocumentElementAvailable",
+                                   "DOMContentLoaded",
+                                   "DocumentOnLoadCompletedInPrimaryMainFrame",
+                                   "DidFinishLoad", "DidStopLoading"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,

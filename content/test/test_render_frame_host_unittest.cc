@@ -39,9 +39,8 @@ class TestRenderFrameHostTest : public RenderViewHostImplTestHarness,
 
   void DidStopLoading() override { events_.push_back("DidStopLoading"); }
 
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override {
-    events_.push_back("DocumentAvailableInMainFrame");
+  void PrimaryMainDocumentElementAvailable() override {
+    events_.push_back("PrimaryMainDocumentElementAvailable");
   }
 
   void DocumentOnLoadCompletedInPrimaryMainFrame() override {
@@ -79,12 +78,13 @@ TEST_F(TestRenderFrameHostTest, LoadingCallbacksOrder_CrossDocument) {
   simulator->Start();
   simulator->Commit();
 
-  EXPECT_THAT(Events(), testing::ElementsAre(
-                            "DidStartLoading", "DidStartNavigation",
-                            "DidFinishNavigation",
-                            "DocumentAvailableInMainFrame", "DOMContentLoaded",
-                            "DocumentOnLoadCompletedInPrimaryMainFrame",
-                            "DidFinishLoad", "DidStopLoading"));
+  EXPECT_THAT(Events(),
+              testing::ElementsAre("DidStartLoading", "DidStartNavigation",
+                                   "DidFinishNavigation",
+                                   "PrimaryMainDocumentElementAvailable",
+                                   "DOMContentLoaded",
+                                   "DocumentOnLoadCompletedInPrimaryMainFrame",
+                                   "DidFinishLoad", "DidStopLoading"));
 }
 
 TEST_F(TestRenderFrameHostTest, LoadingCallbacksOrder_SameDocument) {

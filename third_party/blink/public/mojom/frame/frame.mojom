@@ -250,7 +250,7 @@ interface LocalFrameHost {
   // Indicates that the document element is available for the top-level frame.
   // This happens after the page starts loading, but before all resources are
   // finished.
-  DocumentAvailableInMainFrame(bool uses_temporary_zoom_level);
+  MainDocumentElementAvailable(bool uses_temporary_zoom_level);
 
   // Indicates that a child frame requires its parent frame to send it
   // information about whether it is occluded or has visual effects applied,

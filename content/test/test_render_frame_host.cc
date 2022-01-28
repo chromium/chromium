@@ -673,7 +673,7 @@ void TestRenderFrameHost::SimulateLoadingCompleted(
 
   if (loading_scenario == LoadingScenario::NewDocumentNavigation) {
     if (is_main_frame())
-      DocumentAvailableInMainFrame(/* uses_temporary_zoom_level */ false);
+      MainDocumentElementAvailable(/* uses_temporary_zoom_level */ false);
 
     DidDispatchDOMContentLoadedEvent();
 

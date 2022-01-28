@@ -135,9 +135,10 @@ void WebContentsObserverProxy::DidChangeVisibleSecurityState() {
       AttachCurrentThread(), java_observer_);
 }
 
-void WebContentsObserverProxy::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void WebContentsObserverProxy::PrimaryMainDocumentElementAvailable() {
   JNIEnv* env = AttachCurrentThread();
+  // TODO(crbug.com/1288029): Rename DocumentAvailableInMainFrame to
+  // PrimaryMainDocumentElementAvailable in java code.
   Java_WebContentsObserverProxy_documentAvailableInMainFrame(env,
                                                              java_observer_);
 }

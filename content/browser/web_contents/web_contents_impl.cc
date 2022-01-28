@@ -5814,15 +5814,13 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
       /*include_credentials=*/include_credentials);
 }
 
-void WebContentsImpl::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void WebContentsImpl::PrimaryMainDocumentElementAvailable() {
   OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::DocumentAvailableInMainFrame");
-  DCHECK(render_frame_host->IsInPrimaryMainFrame());
+                        "WebContentsImpl::PrimaryMainDocumentElementAvailable");
   SCOPED_UMA_HISTOGRAM_TIMER(
-      "WebContentsObserver.DocumentAvailableInMainFrame");
-  observers_.NotifyObservers(&WebContentsObserver::DocumentAvailableInMainFrame,
-                             render_frame_host);
+      "WebContentsObserver.PrimaryMainDocumentElementAvailable");
+  observers_.NotifyObservers(
+      &WebContentsObserver::PrimaryMainDocumentElementAvailable);
 }
 
 void WebContentsImpl::PassiveInsecureContentFound(const GURL& resource_url) {

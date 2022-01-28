@@ -469,7 +469,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesSamePageLoad) {
   NavigateAndCommit(kTestUrl);
 
   // Set page loading state to the 1st snapshot-able stage. No capture so far.
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   EXPECT_EQ(0U, page_added_count());
 
@@ -516,7 +516,7 @@ TEST_F(RecentTabHelperTest, DISABLED_TwoCapturesWhere2ndFailsSamePageLoad) {
   // Navigate and load until the 1st stage. Tab hidden should trigger a capture.
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -567,7 +567,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesDifferentPageLoadsSameUrl) {
   // Reload the same URL until the page is minimally loaded. The previous
   // snapshot should have been removed.
   NavigateAndCommitTyped(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   EXPECT_EQ(1U, page_added_count());
   EXPECT_EQ(1U, model_removed_count());
@@ -671,7 +671,7 @@ TEST_F(RecentTabHelperTest, TwoLastNAndTwoDownloadCapturesSamePage) {
   // check that two last_n snapshots were created but only one was kept.
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -754,7 +754,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestEarlyInLoad) {
   ASSERT_EQ(0U, GetAllPages().size());
 
   // Minimally load the page. First capture should occur.
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   ASSERT_EQ(1U, GetAllPages().size());
   const OfflinePageItem& early_page = GetAllPages()[0];
@@ -782,7 +782,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestEarlyInLoad) {
 TEST_F(RecentTabHelperTest, DownloadRequestLaterInLoad) {
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   ASSERT_EQ(0U, GetAllPages().size());
 
@@ -884,7 +884,7 @@ TEST_F(RecentTabHelperTest, SimultaneousCapturesFromLastNAndDownloads) {
 // signals are poor signals for those).
 TEST_F(RecentTabHelperTest, DuplicateTabHiddenEventsShouldTriggerNewSnapshots) {
   NavigateAndCommit(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();

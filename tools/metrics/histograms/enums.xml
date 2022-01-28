@@ -65460,9 +65460,9 @@ Called by update_net_trust_anchors.py.-->
   </int>
   <int value="15" label="Saved after timeout on last retry">
     The attempt succeeded, but only as a result of snapshotting on the last
-    retry and we have already received DocumentAvailableInMainFrame. Note that
-    if we're already in the middle of snapshotting, we will record SAVED. The
-    quality of the page is presumed to be lower.
+    retry and we have already received PrimaryMainDocumentElementAvailable. Note
+    that if we're already in the middle of snapshotting, we will record SAVED.
+    The quality of the page is presumed to be lower.
   </int>
   <int value="16" label="Browser killed">
     The browser was killed for reasons such as OOM, swiped out, or crashed.

@@ -65,8 +65,7 @@ class NavigationControllerImpl final
 
   // content::WebContentsObserver implementation.
   void TitleWasSet(content::NavigationEntry*) override;
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void PrimaryMainFrameRenderProcessGone(

@@ -1578,7 +1578,7 @@ void FrameLoader::DispatchDocumentElementAvailable() {
       // For now, don't remember plugin zoom values.  We don't want to mix them
       // with normal web content (i.e. a fixed layout plugin would usually want
       // them different).
-      frame_->GetLocalFrameHostRemote().DocumentAvailableInMainFrame(
+      frame_->GetLocalFrameHostRemote().MainDocumentElementAvailable(
           frame_->GetDocument()->IsPluginDocument());
     }
   }

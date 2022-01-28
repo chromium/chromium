@@ -330,8 +330,8 @@ void WebContentsObserverConsistencyChecker::DidFinishNavigation(
   ongoing_navigations_.erase(navigation_handle);
 }
 
-void WebContentsObserverConsistencyChecker::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void WebContentsObserverConsistencyChecker::
+    PrimaryMainDocumentElementAvailable() {
   AssertMainFrameExists();
 }
 

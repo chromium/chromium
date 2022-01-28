@@ -87,7 +87,7 @@ TEST_F(SnapshotControllerTest, OnLoad) {
 TEST_F(SnapshotControllerTest, OnDocumentAvailable) {
   EXPECT_GT(controller()->GetDelayAfterDocumentAvailableForTest(), 0LL);
   // OnDOM should make snapshot after a delay.
-  controller()->DocumentAvailableInMainFrame();
+  controller()->PrimaryMainDocumentElementAvailable();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   FastForwardBy(base::Milliseconds(
@@ -100,7 +100,7 @@ TEST_F(SnapshotControllerTest, OnLoadSnapshotIsTheLastOne) {
   EXPECT_GT(controller()->GetDelayAfterDocumentAvailableForTest(),
             controller()->GetDelayAfterDocumentOnLoadCompletedForTest());
   // OnDOM should make snapshot after a delay.
-  controller()->DocumentAvailableInMainFrame();
+  controller()->PrimaryMainDocumentElementAvailable();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   controller()->DocumentOnLoadCompletedInPrimaryMainFrame();
@@ -119,7 +119,7 @@ TEST_F(SnapshotControllerTest, OnLoadSnapshotIsTheLastOne) {
 
 TEST_F(SnapshotControllerTest, OnLoadSnapshotAfterLongDelay) {
   // OnDOM should make snapshot after a delay.
-  controller()->DocumentAvailableInMainFrame();
+  controller()->PrimaryMainDocumentElementAvailable();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   FastForwardBy(base::Milliseconds(
@@ -136,7 +136,7 @@ TEST_F(SnapshotControllerTest, OnLoadSnapshotAfterLongDelay) {
 
 TEST_F(SnapshotControllerTest, Stop) {
   // OnDOM should make snapshot after a delay.
-  controller()->DocumentAvailableInMainFrame();
+  controller()->PrimaryMainDocumentElementAvailable();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   controller()->Stop();
@@ -150,7 +150,7 @@ TEST_F(SnapshotControllerTest, Stop) {
 }
 
 TEST_F(SnapshotControllerTest, ClientReset) {
-  controller()->DocumentAvailableInMainFrame();
+  controller()->PrimaryMainDocumentElementAvailable();
 
   controller()->Reset();
   FastForwardBy(base::Milliseconds(
@@ -163,7 +163,7 @@ TEST_F(SnapshotControllerTest, ClientReset) {
   EXPECT_EQ(1, snapshot_count());
 
   controller()->Reset();
-  controller()->DocumentAvailableInMainFrame();
+  controller()->PrimaryMainDocumentElementAvailable();
   FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   // No snapshot since session was reset.
@@ -181,7 +181,7 @@ TEST_F(SnapshotControllerTest, ClientResetWhileSnapshotting) {
   controller()->Reset();
   controller()->PendingSnapshotCompleted();
   // Next snapshot should be initiated when new document is loaded.
-  controller()->DocumentAvailableInMainFrame();
+  controller()->PrimaryMainDocumentElementAvailable();
   FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   // No snapshot since session was reset.

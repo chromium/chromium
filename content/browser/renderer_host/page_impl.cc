@@ -199,10 +199,10 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
   if (load_progress() != blink::kFinalLoadProgress)
     main_document_.DidChangeLoadProgress(load_progress());
 
-  // Dispatch DocumentAvailableInMainFrame before dispatching following load
-  // complete events.
-  if (is_document_available_in_main_document())
-    main_document_.DocumentAvailableInMainFrame(uses_temporary_zoom_level());
+  // Dispatch PrimaryMainDocumentElementAvailable before dispatching following
+  // load complete events.
+  if (is_main_document_element_available())
+    main_document_.MainDocumentElementAvailable(uses_temporary_zoom_level());
 
   main_document_.ForEachRenderFrameHost(
       base::BindRepeating([](RenderFrameHostImpl* rfh) {

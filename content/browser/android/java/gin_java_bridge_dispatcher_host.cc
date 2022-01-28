@@ -275,7 +275,7 @@ void GinJavaBridgeDispatcherHost::RemoveNamedObject(
   // As the object isn't going to be removed from the JavaScript side until the
   // next page reload, calls to it must still work, thus we should continue to
   // hold it. All the transient objects and removed named objects will be purged
-  // during the cleansing caused by DocumentAvailableInMainFrame event.
+  // during the cleansing caused by PrimaryMainDocumentElementAvailable event.
 
   // We should include pending RenderFrameHosts, otherwise they will miss the
   // chance when calling add or remove methods when they are created but not
@@ -298,8 +298,7 @@ void GinJavaBridgeDispatcherHost::SetAllowObjectContentsInspection(bool allow) {
   allow_object_contents_inspection_ = allow;
 }
 
-void GinJavaBridgeDispatcherHost::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void GinJavaBridgeDispatcherHost::PrimaryMainDocumentElementAvailable() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Called when the window object has been cleared in the main frame.
   // That means, all sub-frames have also been cleared, so only named

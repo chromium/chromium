@@ -109,6 +109,7 @@ chromium-metrics-reviews@google.com.
   <variant name="NavigationEntryCommitted"/>
   <variant name="NavigationEntryDeleted"/>
   <variant name="OnVisibilityChanged"/>
+  <variant name="PrimaryMainDocumentElementAvailable"/>
   <variant name="RenderFrameCreated"/>
   <variant name="RenderFrameDeleted"/>
   <variant name="RenderViewReady"/>
