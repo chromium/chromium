@@ -560,7 +560,7 @@ public class LibraryLoader {
         synchronized (mLock) {
             if (mLinker == null) {
                 mLinker = mUseModernLinker ? new ModernLinker() : new LegacyLinker();
-                Log.i(TAG, "Using linker: %s", mLinker.getClass().getName());
+                Log.i(TAG, mUseModernLinker ? "Using ModernLinker" : "Using LegacyLinker");
             }
             return mLinker;
         }
