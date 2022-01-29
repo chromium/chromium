@@ -75,16 +75,9 @@ export class SecureDnsInputElement extends PolymerElement {
   async validate() {
     this.showError_ = false;
     const valueToValidate = this.value;
-    const templates =
-        await this.browserProxy_.parseCustomDnsEntry(valueToValidate);
-    const valid = templates.length > 0;
-    let successfulProbe = false;
-    for (const template of templates) {
-      if (await this.browserProxy_.probeCustomDnsTemplate(template)) {
-        successfulProbe = true;
-        break;
-      }
-    }
+    const valid = await this.browserProxy_.isValidConfig(valueToValidate);
+    const successfulProbe =
+        valid && await this.browserProxy_.probeConfig(valueToValidate);
     // If there was an invalid template or no template can successfully
     // answer a probe query, show an error as long as the input field value
     // hasn't changed and is non-empty.

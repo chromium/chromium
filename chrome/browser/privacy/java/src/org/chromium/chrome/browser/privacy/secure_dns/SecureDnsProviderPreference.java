@@ -261,14 +261,12 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
         if (group.isEmpty() || !mState.valid || !mState.secure) {
             return;
         }
-        // probeServer() is a blocking network call that uses WaitableEvent, so it cannot run
+        // probeConfig() is a blocking network call that uses WaitableEvent, so it cannot run
         // on the UI thread, nor via the Java PostTask bindings, which do not expose
         // base::WithBaseSyncPrimitives.  Instead, it runs on a fresh Java thread.
         new Thread(() -> {
-            for (String template : SecureDnsBridge.splitTemplateGroup(group)) {
-                if (SecureDnsBridge.probeServer(template)) {
-                    return;
-                }
+            if (SecureDnsBridge.probeConfig(group)) {
+                return;
             }
             mCustomServer.post(() -> { // Send the state change back to the UI thread.
                 // Check that the setting hasn't been changed.

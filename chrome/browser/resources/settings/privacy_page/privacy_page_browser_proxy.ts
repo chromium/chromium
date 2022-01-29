@@ -63,15 +63,16 @@ export interface PrivacyPageBrowserProxy {
   getSecureDnsSetting(): Promise<SecureDnsSetting>;
 
   /**
-   * @return the URL templates, if they are all valid.
+   * @return true if the config string is syntactically valid.
    */
-  parseCustomDnsEntry(entry: string): Promise<Array<string>>;
+  isValidConfig(entry: string): Promise<boolean>;
 
   /**
-   * @return True if a test query to the secure DNS template succeeded
-   *     or was cancelled.
+   * @return True if a test query succeeded in the specified DoH
+   *     configuration or the probe was cancelled.
    */
-  probeCustomDnsTemplate(template: string): Promise<boolean>;
+  probeConfig(entry: string): Promise<boolean>;
+
 
   /**
    * Records metrics on the user's interaction with the dropdown menu.
@@ -112,12 +113,12 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
     return sendWithPromise('getSecureDnsSetting');
   }
 
-  parseCustomDnsEntry(entry: string): Promise<Array<string>> {
-    return sendWithPromise('parseCustomDnsEntry', entry);
+  isValidConfig(entry: string): Promise<boolean> {
+    return sendWithPromise('isValidConfig', entry);
   }
 
-  probeCustomDnsTemplate(template: string): Promise<boolean> {
-    return sendWithPromise('probeCustomDnsTemplate', template);
+  probeConfig(entry: string): Promise<boolean> {
+    return sendWithPromise('probeConfig', entry);
   }
 
   recordUserDropdownInteraction(oldSelection: string, newSelection: string) {

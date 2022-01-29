@@ -36,8 +36,8 @@ namespace settings {
 namespace {
 
 constexpr char kGetSecureDnsResolverList[] = "getSecureDnsResolverList";
-constexpr char kParseCustomDnsEntry[] = "parseCustomDnsEntry";
-constexpr char kProbeCustomDnsTemplate[] = "probeCustomDnsTemplate";
+constexpr char kIsValidConfig[] = "isValidConfig";
+constexpr char kProbeConfig[] = "probeConfig";
 constexpr char kRecordUserDropdownInteraction[] =
     "recordUserDropdownInteraction";
 constexpr char kWebUiFunctionName[] = "webUiCallbackName";
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateValid) {
   args.Append("https://example.template/dns-query");
 
   base::HistogramTester histograms;
-  web_ui_.HandleReceivedMessage(kParseCustomDnsEntry,
+  web_ui_.HandleReceivedMessage(kIsValidConfig,
                                 &base::Value::AsListValue(args));
   const content::TestWebUI::CallData& call_data = *web_ui_.call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
@@ -390,9 +390,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateValid) {
   // The request should be successful.
   ASSERT_TRUE(call_data.arg2()->GetBool());
   // The template should be valid.
-  auto result = call_data.arg3()->GetList();
-  ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(result[0].GetString(), "https://example.template/dns-query");
+  EXPECT_TRUE(call_data.arg3()->GetBool());
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", false, 0);
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", true, 1);
 }
@@ -403,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateInvalid) {
   args.Append("invalid_template");
 
   base::HistogramTester histograms;
-  web_ui_.HandleReceivedMessage(kParseCustomDnsEntry,
+  web_ui_.HandleReceivedMessage(kIsValidConfig,
                                 &base::Value::AsListValue(args));
   const content::TestWebUI::CallData& call_data = *web_ui_.call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
@@ -411,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateInvalid) {
   // The request should be successful.
   ASSERT_TRUE(call_data.arg2()->GetBool());
   // The template should be invalid.
-  EXPECT_THAT(call_data.arg3()->GetList(), IsEmpty());
+  EXPECT_FALSE(call_data.arg3()->GetBool());
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", false, 1);
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", true, 0);
 }
@@ -422,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, MultipleTemplates) {
   args_valid.Append(kWebUiFunctionName);
   args_valid.Append(
       "https://example1.template/dns    https://example2.template/dns-query");
-  web_ui_.HandleReceivedMessage(kParseCustomDnsEntry,
+  web_ui_.HandleReceivedMessage(kIsValidConfig,
                                 &base::Value::AsListValue(args_valid));
   const content::TestWebUI::CallData& call_data_valid =
       *web_ui_.call_data().back();
@@ -431,17 +429,14 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, MultipleTemplates) {
   // The request should be successful.
   ASSERT_TRUE(call_data_valid.arg2()->GetBool());
   // Both templates should be valid.
-  auto result = call_data_valid.arg3()->GetList();
-  ASSERT_EQ(2u, result.size());
-  EXPECT_EQ(result[0].GetString(), "https://example1.template/dns");
-  EXPECT_EQ(result[1].GetString(), "https://example2.template/dns-query");
+  EXPECT_TRUE(call_data_valid.arg3()->GetBool());
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", false, 0);
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", true, 1);
 
   base::Value args_invalid(base::Value::Type::LIST);
   args_invalid.Append(kWebUiFunctionName);
   args_invalid.Append("invalid_template https://example.template/dns");
-  web_ui_.HandleReceivedMessage(kParseCustomDnsEntry,
+  web_ui_.HandleReceivedMessage(kIsValidConfig,
                                 &base::Value::AsListValue(args_invalid));
   const content::TestWebUI::CallData& call_data_invalid =
       *web_ui_.call_data().back();
@@ -450,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, MultipleTemplates) {
   // The request should be successful.
   ASSERT_TRUE(call_data_invalid.arg2()->GetBool());
   // The entry should be invalid.
-  EXPECT_THAT(call_data_invalid.arg3()->GetList(), IsEmpty());
+  EXPECT_FALSE(call_data_invalid.arg3()->GetBool());
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", false, 1);
   histograms.ExpectBucketCount("Net.DNS.UI.ValidationAttemptSuccess", true, 1);
 }
@@ -469,8 +464,8 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateProbeSuccess) {
   base::HistogramTester histograms;
   base::Value args_valid(base::Value::Type::LIST);
   args_valid.Append(kWebUiFunctionName);
-  args_valid.Append("https://example.template/dns-query");
-  web_ui_.HandleReceivedMessage(kProbeCustomDnsTemplate,
+  args_valid.Append("https://example.template/dns-query https://example2/");
+  web_ui_.HandleReceivedMessage(kProbeConfig,
                                 &base::Value::AsListValue(args_valid));
   base::RunLoop().RunUntilIdle();
 
@@ -502,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateProbeFailure) {
   base::Value args_valid(base::Value::Type::LIST);
   args_valid.Append(kWebUiFunctionName);
   args_valid.Append("https://example.template/dns-query");
-  web_ui_.HandleReceivedMessage(kProbeCustomDnsTemplate,
+  web_ui_.HandleReceivedMessage(kProbeConfig,
                                 &base::Value::AsListValue(args_valid));
   base::RunLoop().RunUntilIdle();
 
@@ -537,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateProbeDebounce) {
   args_valid.Append("https://example.template/dns-query");
   // Request a probe that will hang.
   handler_->SetNetworkContextForTesting(network_context_hang.get());
-  web_ui_.HandleReceivedMessage(kProbeCustomDnsTemplate,
+  web_ui_.HandleReceivedMessage(kProbeConfig,
                                 &base::Value::AsListValue(args_valid));
   size_t responses = web_ui_.call_data().size();
   base::RunLoop().RunUntilIdle();
@@ -546,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateProbeDebounce) {
 
   // Request a probe that will fail.
   handler_->SetNetworkContextForTesting(network_context_fail.get());
-  web_ui_.HandleReceivedMessage(kProbeCustomDnsTemplate,
+  web_ui_.HandleReceivedMessage(kProbeConfig,
                                 &base::Value::AsListValue(args_valid));
   // The hanging response should now have arrived.
   EXPECT_EQ(responses + 1, web_ui_.call_data().size());

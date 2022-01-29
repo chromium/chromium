@@ -48,9 +48,9 @@ void UpdateDropdownHistograms(const net::DohProviderEntry::List& providers,
 void UpdateValidationHistogram(bool valid);
 void UpdateProbeHistogram(bool success);
 
-// Modifies |overrides| to use the DoH server specified by |server_template|.
-void ApplyTemplate(net::DnsConfigOverrides* overrides,
-                   std::string server_template);
+// Modifies `overrides` to use the DoH servers specified by `doh_config`.
+void ApplyConfig(net::DnsConfigOverrides* overrides,
+                 base::StringPiece doh_config);
 
 // Registers the backup preference required for the DNS probes setting reset.
 // TODO(crbug.com/1062698): Remove this once the privacy settings redesign

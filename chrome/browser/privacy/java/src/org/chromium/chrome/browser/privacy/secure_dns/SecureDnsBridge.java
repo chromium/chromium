@@ -137,22 +137,14 @@ class SecureDnsBridge {
     }
 
     /**
-     * @param group A collection of DoH templates in textual format.
-     * @return All templates in the group, or an empty array if the group is not valid.
-     */
-    static String[] splitTemplateGroup(String group) {
-        return SecureDnsBridgeJni.get().splitTemplateGroup(group);
-    }
-
-    /**
-     * Perform a probe to see if a server is working.  This function blocks until the
-     * probe completes.
+     * Perform a probe to see if a server set is working.  This function blocks until the
+     * probes complete.
      *
-     * @param template A valid DoH URI template.
-     * @return True if the server is reachable and functioning correctly.
+     * @param dohConfig A valid DoH configuration string.
+     * @return True if any server is reachable and functioning correctly.
      */
-    static boolean probeServer(String template) {
-        return SecureDnsBridgeJni.get().probeServer(template);
+    static boolean probeConfig(String dohConfig) {
+        return SecureDnsBridgeJni.get().probeConfig(dohConfig);
     }
 
     @NativeMethods
@@ -168,7 +160,6 @@ class SecureDnsBridge {
         int getManagementMode();
         void updateDropdownHistograms(String oldTemplate, String newTemplate);
         void updateValidationHistogram(boolean valid);
-        String[] splitTemplateGroup(String group);
-        boolean probeServer(String dohTemplate);
+        boolean probeConfig(String dohConfig);
     }
 }

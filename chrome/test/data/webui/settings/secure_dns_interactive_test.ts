@@ -136,12 +136,12 @@ suite('SettingsSecureDnsInteractive', function() {
     // click outside the text field. The mode pref should be updated to
     // 'secure'.
     testElement.$.secureDnsInput.value = validEntry;
-    testBrowserProxy.setParsedEntry([validEntry]);
-    testBrowserProxy.setProbeResults({[validEntry]: true});
+    testBrowserProxy.setIsValidConfigResult(validEntry, true);
+    testBrowserProxy.setProbeConfigResult(validEntry, true);
     testElement.$.secureDnsInput.blur();
     await Promise.all([
-      testBrowserProxy.whenCalled('parseCustomDnsEntry'),
-      testBrowserProxy.whenCalled('probeCustomDnsTemplate')
+      testBrowserProxy.whenCalled('isValidConfig'),
+      testBrowserProxy.whenCalled('probeConfig')
     ]);
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
@@ -164,8 +164,8 @@ suite('SettingsSecureDnsInteractive', function() {
         SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
     testElement.$.secureDnsInput.blur();
     await Promise.all([
-      testBrowserProxy.whenCalled('parseCustomDnsEntry'),
-      testBrowserProxy.whenCalled('probeCustomDnsTemplate')
+      testBrowserProxy.whenCalled('isValidConfig'),
+      testBrowserProxy.whenCalled('probeConfig')
     ]);
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
@@ -255,6 +255,7 @@ suite('SettingsSecureDnsInteractive', function() {
     // Input a custom template and make sure it is still there after
     // manipulating the dropdown.
     testBrowserProxy.reset();
+    testBrowserProxy.setIsValidConfigResult('some_input', false);
     testElement.$.secureDnsInput.value = 'some_input';
     dropdownMenu.value = resolverList[1]!.value;
     dropdownMenu.dispatchEvent(new Event('change'));
@@ -367,9 +368,9 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsInput.focus();
     assertTrue(focused(testElement.$.secureDnsInput));
     testElement.$.secureDnsInput.value = invalidEntry;
-    testBrowserProxy.setParsedEntry([]);
+    testBrowserProxy.setIsValidConfigResult(invalidEntry, false);
     testElement.$.secureDnsInput.blur();
-    await testBrowserProxy.whenCalled('parseCustomDnsEntry');
+    await testBrowserProxy.whenCalled('isValidConfig');
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
     assertTrue(testElement.$.secureDnsInput.isInvalid());
     assertEquals(
@@ -400,14 +401,14 @@ suite('SettingsSecureDnsInteractive', function() {
     // Make the template valid, but don't change the radio button yet.
     testElement.$.secureDnsInput.focus();
     assertTrue(focused(testElement.$.secureDnsInput));
-    const otherEntry = 'https://dns.ex.another/dns-query';
-    testElement.$.secureDnsInput.value = `${validEntry} ${otherEntry}`;
-    testBrowserProxy.setParsedEntry([validEntry, otherEntry]);
-    testBrowserProxy.setProbeResults({[validEntry]: true});
+    const doubleValidEntry = `${validEntry} https://dns.ex.another/dns-query`;
+    testElement.$.secureDnsInput.value = doubleValidEntry;
+    testBrowserProxy.setIsValidConfigResult(doubleValidEntry, true);
+    testBrowserProxy.setProbeConfigResult(doubleValidEntry, true);
     testElement.$.secureDnsInput.blur();
     await Promise.all([
-      testBrowserProxy.whenCalled('parseCustomDnsEntry'),
-      testBrowserProxy.whenCalled('probeCustomDnsTemplate')
+      testBrowserProxy.whenCalled('isValidConfig'),
+      testBrowserProxy.whenCalled('probeConfig')
     ]);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
     assertFalse(testElement.$.secureDnsInput.isInvalid());
@@ -426,8 +427,8 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals('', testElement.prefs.dns_over_https.templates.value);
     testElement.$.secureDnsInput.blur();
     await Promise.all([
-      testBrowserProxy.whenCalled('parseCustomDnsEntry'),
-      testBrowserProxy.whenCalled('probeCustomDnsTemplate')
+      testBrowserProxy.whenCalled('isValidConfig'),
+      testBrowserProxy.whenCalled('probeConfig')
     ]);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
     assertFalse(testElement.$.secureDnsInput.isInvalid());
@@ -436,8 +437,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
     assertEquals(
-        `${validEntry} ${otherEntry}`,
-        testElement.prefs.dns_over_https.templates.value);
+        doubleValidEntry, testElement.prefs.dns_over_https.templates.value);
 
     // Make sure the input field updates with a change in the underlying
     // templates pref in secure mode.
@@ -476,20 +476,16 @@ suite('SettingsSecureDnsInteractive', function() {
     // Enter two valid templates that are both unreachable.
     testElement.$.secureDnsInput.focus();
     assertTrue(focused(testElement.$.secureDnsInput));
-    const otherEntry = 'https://dns.ex.another/dns-query';
-    testElement.$.secureDnsInput.value = `${validEntry} ${otherEntry}`;
-    const parsed = [validEntry, otherEntry];
-    testBrowserProxy.setParsedEntry(parsed);
-    testBrowserProxy.setProbeResults({
-      [validEntry]: false,
-      [otherEntry]: false,
-    });
+    const doubleValidEntry = `${validEntry} https://dns.ex.another/dns-query`;
+    testElement.$.secureDnsInput.value = doubleValidEntry;
+    testBrowserProxy.setIsValidConfigResult(doubleValidEntry, true);
+    testBrowserProxy.setProbeConfigResult(doubleValidEntry, false);
     testElement.$.secureDnsInput.blur();
     assertEquals(
         testElement.$.secureDnsInput.value,
-        await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
+        await testBrowserProxy.whenCalled('isValidConfig'));
     await flushTasks();
-    assertEquals(2, testBrowserProxy.getCallCount('probeCustomDnsTemplate'));
+    assertEquals(1, testBrowserProxy.getCallCount('probeConfig'));
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
     assertTrue(testElement.$.secureDnsInput.isInvalid());
 
@@ -499,7 +495,6 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
     assertEquals(
-        `${validEntry} ${otherEntry}`,
-        testElement.prefs.dns_over_https.templates.value);
+        doubleValidEntry, testElement.prefs.dns_over_https.templates.value);
   });
 });

@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
@@ -18,6 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/dns/public/dns_config_overrides.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 
 namespace chrome_browser_net {
@@ -137,13 +140,12 @@ void UpdateProbeHistogram(bool success) {
   UMA_HISTOGRAM_BOOLEAN("Net.DNS.UI.ProbeAttemptSuccess", success);
 }
 
-void ApplyTemplate(net::DnsConfigOverrides* overrides,
-                   std::string server_template) {
-  // We only allow use of templates that have already passed a format
-  // validation check.
-  auto config =
-      net::DnsOverHttpsServerConfig::FromString(std::move(server_template));
-  overrides->dns_over_https_servers.emplace({std::move(*config)});
+void ApplyConfig(net::DnsConfigOverrides* overrides,
+                 base::StringPiece doh_config) {
+  absl::optional<net::DnsOverHttpsConfig> parsed =
+      net::DnsOverHttpsConfig::FromString(doh_config);
+  CHECK(parsed);  // `doh_config` must be valid.
+  overrides->dns_over_https_servers = parsed->servers();
 }
 
 }  // namespace secure_dns

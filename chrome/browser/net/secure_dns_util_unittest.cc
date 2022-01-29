@@ -15,7 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/dns/public/dns_config_overrides.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,21 +75,28 @@ TEST_F(SecureDnsUtilTest, MigrateProbesPrefForwardCustomDisabled) {
 TEST(SecureDnsUtil, ApplyDohTemplatePost) {
   std::string post_template("https://valid");
   net::DnsConfigOverrides overrides;
-  ApplyTemplate(&overrides, post_template);
+  ApplyConfig(&overrides, post_template);
 
-  EXPECT_THAT(overrides.dns_over_https_servers,
-              testing::Optional(ElementsAre(
-                  *net::DnsOverHttpsServerConfig::FromString(post_template))));
+  EXPECT_EQ(net::DnsOverHttpsConfig::FromString(post_template)->servers(),
+            overrides.dns_over_https_servers);
+}
+
+TEST(SecureDnsUtil, ApplyTwoDohTemplates) {
+  std::string two_templates("https://valid https://valid/{?dns}");
+  net::DnsConfigOverrides overrides;
+  ApplyConfig(&overrides, two_templates);
+
+  EXPECT_EQ(net::DnsOverHttpsConfig::FromString(two_templates)->servers(),
+            overrides.dns_over_https_servers);
 }
 
 TEST(SecureDnsUtil, ApplyDohTemplateGet) {
   std::string get_template("https://valid/{?dns}");
   net::DnsConfigOverrides overrides;
-  ApplyTemplate(&overrides, get_template);
+  ApplyConfig(&overrides, get_template);
 
-  EXPECT_THAT(overrides.dns_over_https_servers,
-              testing::Optional(ElementsAre(
-                  *net::DnsOverHttpsServerConfig::FromString(get_template))));
+  EXPECT_EQ(net::DnsOverHttpsConfig::FromString(get_template)->servers(),
+            overrides.dns_over_https_servers);
 }
 
 net::DohProviderEntry::List GetProvidersForTesting() {

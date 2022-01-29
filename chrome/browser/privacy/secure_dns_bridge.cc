@@ -153,26 +153,15 @@ static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
   secure_dns::UpdateValidationHistogram(valid);
 }
 
-static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_SplitTemplateGroup(
+static jboolean JNI_SecureDnsBridge_ProbeConfig(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jgroup) {
-  std::string group = base::android::ConvertJavaStringToUTF8(jgroup);
-  auto config = net::DnsOverHttpsConfig::FromString(group);
-  DCHECK(config);  // `group` must already have been validated
-  std::vector<base::StringPiece> templates = config->ToStrings();
-  std::vector<std::string> templates_copy(templates.begin(), templates.end());
-  return base::android::ToJavaArrayOfStrings(env, templates_copy);
-}
-
-static jboolean JNI_SecureDnsBridge_ProbeServer(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jtemplate) {
+    const JavaParamRef<jstring>& jtemplates) {
   net::DnsConfigOverrides overrides;
   overrides.search = std::vector<std::string>();
   overrides.attempts = 1;
   overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
-  secure_dns::ApplyTemplate(&overrides,
-                            base::android::ConvertJavaStringToUTF8(jtemplate));
+  secure_dns::ApplyConfig(&overrides,
+                          base::android::ConvertJavaStringToUTF8(jtemplates));
 
   // Android recommends converting async functions to blocking when using JNI:
   // https://developer.android.com/training/articles/perf-jni.

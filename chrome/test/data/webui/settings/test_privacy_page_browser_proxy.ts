@@ -14,8 +14,8 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
   metricsReporting: MetricsReporting;
   secureDnsSetting: SecureDnsSetting;
   private resolverList_: ResolverOption[];
-  private parsedEntry_: string[] = [];
-  private probeResults_: {[template: string]: boolean} = {};
+  private isValidConfigResults_: {[config: string]: boolean} = {};
+  private probeConfigResults_: {[config: string]: boolean} = {};
 
   constructor() {
     super([
@@ -25,8 +25,8 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
       'setBlockAutoplayEnabled',
       'getSecureDnsResolverList',
       'getSecureDnsSetting',
-      'parseCustomDnsEntry',
-      'probeCustomDnsTemplate',
+      'isValidConfig',
+      'probeConfig',
       'recordUserDropdownInteraction',
     ]);
 
@@ -80,29 +80,33 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
   }
 
   /**
-   * Sets the return value for the next parseCustomDnsEntry call.
+   * Sets the return value for the next isValidConfig call.
    */
-  setParsedEntry(parsedEntry: string[]) {
-    this.parsedEntry_ = parsedEntry;
+  setIsValidConfigResult(entry: string, result: boolean) {
+    this.isValidConfigResults_[entry] = result;
   }
 
-  parseCustomDnsEntry(entry: string) {
-    this.methodCalled('parseCustomDnsEntry', entry);
-    return Promise.resolve(this.parsedEntry_);
+  isValidConfig(entry: string): Promise<boolean> {
+    this.methodCalled('isValidConfig', entry);
+    // Prohibit unexpected validations.
+    const result = this.isValidConfigResults_[entry];
+    assertFalse(result === undefined);
+    return Promise.resolve(result || false);
   }
 
   /**
-   * Sets the return values for probes to each template
+   * Sets the return value for the next probeConfig call.
    */
-  setProbeResults(results: {[template: string]: boolean}) {
-    this.probeResults_ = results;
+  setProbeConfigResult(entry: string, result: boolean) {
+    this.probeConfigResults_[entry] = result;
   }
 
-  probeCustomDnsTemplate(template: string) {
-    this.methodCalled('probeCustomDnsTemplate', template);
+  probeConfig(entry: string): Promise<boolean> {
+    this.methodCalled('probeConfig', entry);
     // Prohibit unexpected probes.
-    assertFalse(this.probeResults_[template] === undefined);
-    return Promise.resolve(this.probeResults_[template]!);
+    const result = this.probeConfigResults_[entry];
+    assertFalse(result === undefined);
+    return Promise.resolve(result || false);
   }
 
   recordUserDropdownInteraction(oldSelection: string, newSelection: string) {
