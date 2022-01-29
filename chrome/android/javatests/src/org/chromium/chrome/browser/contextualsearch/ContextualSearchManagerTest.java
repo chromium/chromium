@@ -1946,7 +1946,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled in 2018 due to flakes.  See https://crbug.com/832539.")
+    // Previously flaky and disabled in 2018.  See https://crbug.com/832539.
     public void testContextualSearchDismissedOnForegroundTabCrash(
             @EnabledFeature int enabledFeature) throws Exception {
         triggerResolve("states");
