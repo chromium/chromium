@@ -14,14 +14,19 @@ namespace base {
 // has a trivial destructor. Use for cases where the same class might have
 // different implementations that vary on destructor triviality or when the
 // LSan hiding properties of NoDestructor are needed.
+// 用于 NoDestructor 的标记类型，以允许为具有普通析构函数的类型创建它。
+// 用于同一类可能具有因析构函数琐碎性而异的不同实现或需要 NoDestructor 的 LSan 隐藏属性的情况。
 struct AllowForTriviallyDestructibleType;
 
 // A wrapper that makes it easy to create an object of type T with static
 // storage duration that:
 // - is only constructed on first access
 // - never invokes the destructor
-// in order to satisfy the styleguide ban on global constructors and
-// destructors.
+// in order to satisfy the styleguide ban on global constructors and destructors.
+// 一个包装器，可以轻松创建具有静态存储持续时间的 T 类型对象：
+// - 仅在首次访问时构建
+// - 从不调用析构函数
+// 为了满足样式指南对全局构造函数和析构函数的禁令。
 //
 // Runtime constant example:
 // const std::string& GetLineSeparator() {
@@ -46,10 +51,14 @@ struct AllowForTriviallyDestructibleType;
 // use NoDestructor<T> over:
 // - A function scoped static T* or T& that is dynamically initialized.
 // - A global base::LazyInstance<T>.
-//
+// NoDestructor<T> 内联存储对象，因此它还避免了指针间接和 malloc。
+// - 动态初始化的函数作用域静态 T* 或 T&。
+// - 一个全局 base::LazyInstance<T>。
 // Note that since the destructor is never run, this *will* leak memory if used
 // as a stack or member variable. Furthermore, a NoDestructor<T> should never
 // have global scope as that may require a static initializer.
+// 请注意，由于析构函数永远不会运行，因此如果用作栈变量或成员变量，它将泄漏内存。
+// 此外， NoDestructor<T> 永远不应具有全局范围，因为这可能需要静态初始化程序。
 template <typename T, typename O = std::nullptr_t>
 class NoDestructor {
  public:
@@ -68,13 +77,18 @@ class NoDestructor {
   // be a constexpr.
   template <typename... Args>
   explicit NoDestructor(Args&&... args) {
-    new (storage_) T(std::forward<Args>(args)...);
+    new (storage_) T(std::forward<Args>(args)...); // 在指定的指针上调用构造函数
   }
 
   // Allows copy and move construction of the contained type, to allow
   // construction from an initializer list, e.g. for std::vector.
-  explicit NoDestructor(const T& x) { new (storage_) T(x); }
-  explicit NoDestructor(T&& x) { new (storage_) T(std::move(x)); }
+  explicit NoDestructor(const T& x) {
+    new (storage_) T(x);
+  }
+
+  explicit NoDestructor(T&& x) {
+    new (storage_) T(std::move(x));
+  }
 
   NoDestructor(const NoDestructor&) = delete;
   NoDestructor& operator=(const NoDestructor&) = delete;
@@ -91,7 +105,7 @@ class NoDestructor {
   T* get() { return reinterpret_cast<T*>(storage_); }
 
  private:
-  alignas(T) char storage_[sizeof(T)];
+  alignas(T) char storage_[sizeof(T)]; // 这里的堆内存保证了T类型的对象一直不会被析构
 
 #if defined(LEAK_SANITIZER)
   // TODO(https://crbug.com/812277): This is a hack to work around the fact
