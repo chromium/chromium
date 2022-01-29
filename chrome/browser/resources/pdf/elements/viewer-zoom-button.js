@@ -51,6 +51,7 @@ export class ViewerZoomButtonElement extends PolymerElement {
        * Array version of the list of icons. Polymer does not allow array
        * properties to be set from HTML, so we must use a string property and
        * perform the conversion manually.
+       * @private {!Array<string>}
        */
       icons_: {
         type: Array,
@@ -58,6 +59,7 @@ export class ViewerZoomButtonElement extends PolymerElement {
         computed: 'computeIconsArray_(icons)',
       },
 
+      /** @private {!Array<string>} */
       tooltips_: {
         type: Array,
         computed: 'computeTooltipsArray_(tooltips)',
@@ -65,12 +67,14 @@ export class ViewerZoomButtonElement extends PolymerElement {
 
       /**
        * Icon currently being displayed on the FAB.
+       * @private
        */
       visibleIcon_: {
         type: String,
         computed: 'computeVisibleIcon_(icons_, activeIndex)',
       },
 
+      /** @private */
       visibleTooltip_: {
         type: String,
         computed: 'computeVisibleTooltip_(tooltips_, activeIndex)',
@@ -78,39 +82,40 @@ export class ViewerZoomButtonElement extends PolymerElement {
     };
   }
 
-  activeIndex: number;
-  disabled: boolean;
-  icons: string;
-  keyboardNavigationActive: boolean;
-  tooltips: string;
-  private icons_: string[];
-  private tooltips_: string[];
-  private visibleIcon_: string;
-  private visibleTooltip_: string;
-
-  private computeIconsArray_(): string[] {
+  /**
+   * @return {!Array<string>} Array of icon name strings
+   * @private
+   */
+  computeIconsArray_() {
     return this.icons.split(' ');
   }
 
-  private computeTooltipsArray_(): string[] {
+  /**
+   * @return {!Array<string>} Array of tooltip strings
+   * @private
+   */
+  computeTooltipsArray_() {
     return this.tooltips.split(',');
   }
 
   /**
-   * @return Icon name for the currently visible icon.
+   * @return {string} Icon name for the currently visible icon.
+   * @private
    */
-  private computeVisibleIcon_(): string {
+  computeVisibleIcon_() {
     return this.icons_[this.activeIndex];
   }
 
   /**
-   * @return Tooltip for the currently visible icon.
+   * @return {string} Tooltip for the currently visible icon.
+   * @private
    */
-  private computeVisibleTooltip_(): string {
+  computeVisibleTooltip_() {
     return this.tooltips_ === undefined ? '' : this.tooltips_[this.activeIndex];
   }
 
-  private fireClick_() {
+  /** @private */
+  fireClick_() {
     // We cannot attach an on-click to the entire viewer-zoom-button, as this
     // will include clicks on the margins. Instead, proxy clicks on the FAB
     // through.
