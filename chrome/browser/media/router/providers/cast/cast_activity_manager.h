@@ -215,8 +215,8 @@ class CastActivityManager : public CastActivityManagerBase,
 
   // Removes an activity without sending the usual notification.
   //
-  // TODO(jrw): Figure out why it's desirable to avoid sending the usual
-  // notification sometimes.
+  // TODO(crbug.com/1291719): Figure out why it's desirable to avoid sending the
+  // usual notification sometimes.
   void RemoveActivityWithoutNotification(
       ActivityMap::iterator activity_it,
       blink::mojom::PresentationConnectionState state,

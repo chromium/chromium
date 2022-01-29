@@ -274,7 +274,7 @@ class CastActivityManagerTest : public testing::Test,
                                 const std::string& client_id = kClientId) {
     app_activity_callback_ =
         base::BindLambdaForTesting([this](MockAppActivity* activity) {
-          // TODO(jrw): Check parameters.
+          // TODO(crbug.com/1291744): Check parameters.
           EXPECT_CALL(*activity, AddClient);
           EXPECT_CALL(*activity, SendMessageToClient).Times(2);
           EXPECT_CALL(*activity, OnSessionSet).WillOnce([this]() {
@@ -343,7 +343,7 @@ class CastActivityManagerTest : public testing::Test,
     if (times == 0) {
       EXPECT_CALL(message_handler_, StopSession).Times(0);
     } else {
-      // TODO(jrw): Check other parameters
+      // TODO(crbug.com/1291744): Check other parameters
       EXPECT_CALL(message_handler_, StopSession(kChannelId, _, _, _))
           .Times(times);
     }
@@ -614,7 +614,7 @@ TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionOnSink) {
   // Use LaunchSessionParsed() instead of LaunchSession() here because
   // LaunchSessionParsed() is called asynchronously and will fail the test.
   manager_->LaunchSessionParsed(
-      // TODO(jrw): Verify that presentation ID is used correctly.
+      // TODO(crbug.com/1291744): Verify that presentation ID is used correctly.
       *source, sink_, kPresentationId2, origin_, kTabId2, /*incognito*/
       false,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,

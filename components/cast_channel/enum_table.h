@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// TODO(jrw): Move this file to a more appropriate directory.
+// TODO(crbug.com/1291730): Move this file to a more appropriate directory.
 //
 //
 // A bidirectional mapping between enum values and strings.
@@ -413,8 +413,8 @@ inline absl::optional<base::StringPiece> EnumToString(E value) {
 // Converts a literal enum value to a string at compile time using the default
 // table (EnumTable<E>::GetInstance()) for the given enum type.
 //
-// TODO(jrw): Once C++17 features are allowed, change this function to have only
-// one template parameter:
+// TODO(crbug.com/1291730): Once C++17 features are allowed, change this
+// function to have only one template parameter:
 //
 //   template <auto Value>
 //   inline base::StringPiece EnumToString() {

@@ -272,29 +272,28 @@ CastMessageType ParseMessageTypeFromPayload(const base::Value& payload) {
                      : CastMessageType::kOther;
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 const char* ToString(CastMessageType message_type) {
   return EnumToString(message_type).value_or("").data();
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 const char* ToString(V2MessageType message_type) {
   return EnumToString(message_type).value_or("").data();
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 CastMessageType CastMessageTypeFromString(const std::string& type) {
   auto result = StringToEnum<CastMessageType>(type);
   DVLOG_IF(1, !result) << "Unknown message type: " << type;
   return result.value_or(CastMessageType::kOther);
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 V2MessageType V2MessageTypeFromString(const std::string& type) {
   return StringToEnum<V2MessageType>(type).value_or(V2MessageType::kOther);
 }
 
-// TODO(jrw): Convert to operator<<
 std::string AuthMessageToString(const DeviceAuthMessage& message) {
   std::string out("{");
   if (message.has_challenge()) {
@@ -580,7 +579,7 @@ bool IsMediaRequestMessageType(V2MessageType type) {
   }
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 const char* ToString(GetAppAvailabilityResult result) {
   return EnumToString(result).value_or("").data();
 }

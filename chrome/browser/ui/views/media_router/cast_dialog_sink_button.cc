@@ -202,7 +202,7 @@ void CastDialogSinkButton::RequestFocus() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static bool requesting_focus = false;
   if (requesting_focus) {
-    // TODO(jrw): Figure out why this happens.
+    // TODO(crbug.com/1291739): Figure out why this happens.
     DLOG(ERROR) << "Recursive call to RequestFocus\n"
                 << base::debug::StackTrace();
     return;

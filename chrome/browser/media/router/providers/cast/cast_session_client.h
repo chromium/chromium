@@ -64,13 +64,11 @@ class CastSessionClient {
   // Depending on the value of |auto_join_policy_|, |origin|, |tab_id|, or both
   // may be ignored.
   //
-  // TODO(jrw): It appears the real purpose of this method is to detect whether
-  // this session was created by an auto-join request, but auto-joining isn't
-  // implemented yet.  This comment should probably be updated once auto-join is
-  // implemented and I've verified this method does what I think it does.
-  // Alternatively, it might make more sense to record at session creation time
-  // whether a particular session was created by an auto-join request, in which
-  // case I believe this method would no longer be needed.
+  // TODO(crbug.com/1291742): It appears the purpose of this method is to detect
+  // whether this session was created by an auto-join request.  It might make
+  // more sense to record at session creation time whether a particular session
+  // was created by an auto-join request, in which case this method would no
+  // longer be needed.
   virtual bool MatchesAutoJoinPolicy(url::Origin origin, int tab_id) const = 0;
 
   virtual void SendErrorCodeToClient(

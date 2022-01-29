@@ -234,7 +234,7 @@ AppActivity* CastActivityManager::FindActivityForSessionJoin(
   // request.
   if (!base::StartsWith(presentation_id, kCastPresentationIdPrefix,
                         base::CompareCase::SENSITIVE)) {
-    // TODO(jrw): Find session by presentation_id.
+    // TODO(crbug.com/1291725): Find session by presentation_id.
     return nullptr;
   }
 
@@ -307,8 +307,8 @@ void CastActivityManager::JoinSession(
     return;
   }
 
-  // TODO(jrw): Check whether |activity| is from an OffTheRecord route, maybe
-  // report INCOGNITO_MISMATCH, or remove INCOGNITO_MISMATCH from
+  // TODO(crbug.com/1291723): Check whether |activity| is from an OffTheRecord
+  // route, maybe report INCOGNITO_MISMATCH, or remove INCOGNITO_MISMATCH from
   // RouteRequestResult::ResultCode.  The check is currently performed inside
   // CanJoinSession(), and the behavior is consistent with the old
   // implementation, which never reports an INCOGNITO_MISMATCH error.
@@ -453,7 +453,7 @@ void CastActivityManager::TerminateSession(
   const MediaSinkInternal* sink = media_sink_service_->GetSinkByRoute(route);
   CHECK(sink);
 
-  // TODO(jrw): Get the real client ID.
+  // TODO(crbug.com/1291748): Get the real client ID.
   absl::optional<std::string> client_id = absl::nullopt;
 
   activity->SendStopSessionMessageToClients(hash_token_);
@@ -512,7 +512,7 @@ CastActivity* CastActivityManager::AddMirroringActivity(
     const std::string& app_id,
     const int tab_id,
     const CastSinkExtraData& cast_data) {
-  // NOTE(jrw): We could theoretically use base::Unretained() below instead of
+  // We could theoretically use base::Unretained() below instead of
   // GetWeakPtr(), but that seems like an unnecessary optimization here.
   auto on_stop =
       base::BindOnce(&CastActivityManager::OnActivityStopped,
@@ -574,7 +574,7 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
   // This condition seems to always be true in practice, but if it's not, we
   // still try to handle them gracefully below.
   //
-  // TODO(jrw): Replace VLOG_IF with an UMA metric.
+  // TODO(crbug.com/1291721): Replace VLOG_IF with an UMA metric.
   VLOG_IF(1, !existing_session_id) << "No existing_session_id.";
 
   // If |existing_session_id| is empty, then most likely it's due to a pending
@@ -591,10 +591,9 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
     // unclear whether it even happens in practice; I haven't been able to
     // trigger it.
     //
-    // TODO(jrw): Try to come up with a test to exercise this code.
-    //
-    // TODO(jrw): Figure out why this code was originally written to
-    // explicitly avoid calling NotifyAllOnRoutesUpdated().
+    // TODO(crbug.com/1291721): Try to come up with a test to exercise this
+    // code.  Figure out why this code was originally written to explicitly
+    // avoid calling NotifyAllOnRoutesUpdated().
     RemoveActivityWithoutNotification(
         activity_it, PresentationConnectionState::TERMINATED,
         PresentationConnectionCloseReason::CLOSED);
@@ -629,8 +628,7 @@ void CastActivityManager::OnMediaStatusUpdated(const MediaSinkInternal& sink,
   }
 }
 
-// TODO(jrw): This method is only called in one place.  Just implement the
-// functionality there.
+// This method is only called in one place, so it should probably be inlined.
 cast_channel::ResultCallback CastActivityManager::MakeResultCallbackForRoute(
     const std::string& route_id,
     mojom::MediaRouteProvider::TerminateRouteCallback callback) {
