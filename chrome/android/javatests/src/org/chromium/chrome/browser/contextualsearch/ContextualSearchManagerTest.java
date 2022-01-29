@@ -1777,7 +1777,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1180304")
+    // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
     public void testTapGestureOnSpecialCharacterDoesntSelect() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
