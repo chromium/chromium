@@ -3520,7 +3520,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1058297")
+    // Previously flaky and disabled 4/2021.  https://crbug.com/1058297
     public void testAllInternalStatesVisitedResolvingTap() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
