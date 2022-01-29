@@ -106,14 +106,16 @@ TEST_F(DeviceMetadataFetcherTest, ValidResponse) {
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
         std::string decoded;
         base::Base64Decode(kValidResponseEncoded, &decoded);
-        std::move(callback).Run(std::make_unique<std::string>(decoded),
-                                nullptr);
+        std::move(callback).Run(
+            std::make_unique<std::string>(decoded),
+            std::make_unique<FastPairHttpResult>(net::Error::OK, nullptr));
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
       .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
-                       response) {
+                       response,
+                   bool has_retryable_error) {
         ASSERT_EQ("Pixel Buds", response->device().name());
         ASSERT_EQ(
             "https://lh3.googleusercontent.com/"
@@ -147,8 +149,10 @@ TEST_F(DeviceMetadataFetcherTest, InvalidResponse) {
 
   base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
-      .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
-                       response) { ASSERT_EQ(absl::nullopt, response); });
+      .WillOnce(
+          [](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+                 response,
+             bool has_retryable_error) { ASSERT_EQ(absl::nullopt, response); });
 
   device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
   task_environment.RunUntilIdle();
@@ -166,8 +170,10 @@ TEST_F(DeviceMetadataFetcherTest, EmptyResponse) {
 
   base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
-      .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
-                       response) { ASSERT_EQ(absl::nullopt, response); });
+      .WillOnce(
+          [](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+                 response,
+             bool has_retryable_error) { ASSERT_EQ(absl::nullopt, response); });
 
   device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
   task_environment.RunUntilIdle();
@@ -184,8 +190,10 @@ TEST_F(DeviceMetadataFetcherTest, NoResponse) {
 
   base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
-      .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
-                       response) { ASSERT_EQ(absl::nullopt, response); });
+      .WillOnce(
+          [](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+                 response,
+             bool has_retryable_error) { ASSERT_EQ(absl::nullopt, response); });
 
   device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
   task_environment.RunUntilIdle();
@@ -213,8 +221,10 @@ TEST_F(DeviceMetadataFetcherTest, RecordNetError) {
 
   base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
-      .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
-                       response) { ASSERT_EQ(absl::nullopt, response); });
+      .WillOnce(
+          [](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+                 response,
+             bool has_retryable_error) { ASSERT_EQ(absl::nullopt, response); });
 
   device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
   task_environment.RunUntilIdle();
@@ -246,8 +256,10 @@ TEST_F(DeviceMetadataFetcherTest, RecordHttpError) {
 
   base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
-      .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
-                       response) { ASSERT_EQ(absl::nullopt, response); });
+      .WillOnce(
+          [](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+                 response,
+             bool has_retryable_error) { ASSERT_EQ(absl::nullopt, response); });
 
   device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
   task_environment.RunUntilIdle();

@@ -58,7 +58,8 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
         scoped_refptr<Device> device,
         base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
             on_get_instance_callback,
-        DeviceMetadata* device_metadata);
+        DeviceMetadata* device_metadata,
+        bool has_retryable_error);
   };
 
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(

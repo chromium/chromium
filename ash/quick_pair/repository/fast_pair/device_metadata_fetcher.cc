@@ -80,26 +80,34 @@ void DeviceMetadataFetcher::OnFetchComplete(
     GetObservedDeviceCallback callback,
     std::unique_ptr<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
-  QP_LOG(VERBOSE) << "DeviceMetadataFetcher::" << __func__ << ": HTTP result: "
+  QP_LOG(VERBOSE) << __func__ << ": HTTP result: "
                   << (http_result ? http_result->ToString() : "[null]");
 
-  if (http_result)
-    RecordDeviceMetadataFetchResult(*http_result);
+  if (!http_result) {
+    QP_LOG(WARNING) << __func__ << "Unable to make request.";
+    std::move(callback).Run(absl::nullopt, /*has_retryable_error=*/true);
+    return;
+  }
+
+  RecordDeviceMetadataFetchResult(*http_result);
 
   if (!response_body) {
     QP_LOG(WARNING) << "No response.";
-    std::move(callback).Run(absl::nullopt);
+    // Only suggest retrying when the actual request failed, otherwise there is
+    // no matching metadata for the given model_id.
+    std::move(callback).Run(absl::nullopt,
+                            /*has_retryable_error=*/!http_result->IsSuccess());
     return;
   }
 
   nearby::fastpair::GetObservedDeviceResponse device_metadata;
   if (!device_metadata.ParseFromString(*response_body)) {
     QP_LOG(WARNING) << "Failed to parse.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(absl::nullopt, /*has_retryable_error=*/true);
     return;
   }
 
-  std::move(callback).Run(device_metadata);
+  std::move(callback).Run(device_metadata, /*has_retryable_error=*/false);
 }
 
 }  // namespace quick_pair

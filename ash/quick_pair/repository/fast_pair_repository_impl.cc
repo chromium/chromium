@@ -46,7 +46,8 @@ void FastPairRepositoryImpl::GetDeviceMetadata(
   if (metadata_cache_.contains(normalized_id)) {
     QP_LOG(VERBOSE) << __func__ << ": Data already in cache.";
     RecordFastPairRepositoryCacheResult(/*success=*/true);
-    std::move(callback).Run(metadata_cache_[normalized_id].get());
+    std::move(callback).Run(metadata_cache_[normalized_id].get(),
+                            /*has_retryable_error=*/false);
     return;
   }
   QP_LOG(VERBOSE) << __func__ << ": Not cached, fetching from web service.";
@@ -60,15 +61,17 @@ void FastPairRepositoryImpl::GetDeviceMetadata(
 void FastPairRepositoryImpl::OnMetadataFetched(
     const std::string& normalized_model_id,
     DeviceMetadataCallback callback,
-    absl::optional<nearby::fastpair::GetObservedDeviceResponse> response) {
+    absl::optional<nearby::fastpair::GetObservedDeviceResponse> response,
+    bool has_retryable_error) {
   if (!response) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr, has_retryable_error);
     return;
   }
   if (response->image().empty()) {
     metadata_cache_[normalized_model_id] =
         std::make_unique<DeviceMetadata>(std::move(*response), gfx::Image());
-    std::move(callback).Run(metadata_cache_[normalized_model_id].get());
+    std::move(callback).Run(metadata_cache_[normalized_model_id].get(),
+                            /*has_retryable_error=*/false);
     return;
   }
 
@@ -90,7 +93,8 @@ void FastPairRepositoryImpl::OnImageDecoded(
     gfx::Image image) {
   metadata_cache_[normalized_model_id] =
       std::make_unique<DeviceMetadata>(response, std::move(image));
-  std::move(callback).Run(metadata_cache_[normalized_model_id].get());
+  std::move(callback).Run(metadata_cache_[normalized_model_id].get(),
+                          /*has_retryable_error=*/false);
 }
 
 void FastPairRepositoryImpl::IsValidModelId(
@@ -162,7 +166,8 @@ void FastPairRepositoryImpl::RetryCheckAccountKeys(
 void FastPairRepositoryImpl::CompleteAccountKeyLookup(
     CheckAccountKeysCallback callback,
     const std::vector<uint8_t> account_key,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
   if (!device_metadata) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -197,7 +202,8 @@ void FastPairRepositoryImpl::AddToFootprints(
     const std::string& hex_model_id,
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
-    DeviceMetadata* metadata) {
+    DeviceMetadata* metadata,
+    bool has_retryable_error) {
   if (!metadata) {
     QP_LOG(WARNING) << __func__ << ": Unable to retrieve metadata.";
     return;
@@ -256,7 +262,14 @@ void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
 
 void FastPairRepositoryImpl::CompleteFetchDeviceImages(
     const std::string& hex_model_id,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
+  if (!device_metadata) {
+    QP_LOG(WARNING) << __func__ << ": No metadata available for "
+                    << hex_model_id;
+    return;
+  }
+
   QP_LOG(INFO) << __func__
                << ": Completing fetching device images for model ID "
                << hex_model_id;

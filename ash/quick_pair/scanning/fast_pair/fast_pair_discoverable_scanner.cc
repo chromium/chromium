@@ -114,7 +114,8 @@ void FastPairDiscoverableScanner::OnModelIdRetrieved(
 void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
     const std::string& address,
     const std::string model_id,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
   if (!device_metadata) {
     QP_LOG(WARNING) << __func__
                     << ": Could not get metadata for id: " << model_id

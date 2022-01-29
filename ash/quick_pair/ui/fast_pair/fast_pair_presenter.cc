@@ -50,7 +50,8 @@ void FastPairPresenter::ShowDiscovery(scoped_refptr<Device> device,
 void FastPairPresenter::OnDiscoveryMetadataRetrieved(
     scoped_refptr<Device> device,
     DiscoveryCallback callback,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
   QP_LOG(VERBOSE) << __func__;
   if (!device_metadata) {
     return;
@@ -106,7 +107,8 @@ void FastPairPresenter::ShowPairing(scoped_refptr<Device> device) {
 
 void FastPairPresenter::OnPairingMetadataRetrieved(
     scoped_refptr<Device> device,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
   if (!device_metadata) {
     return;
   }
@@ -129,7 +131,8 @@ void FastPairPresenter::ShowPairingFailed(scoped_refptr<Device> device,
 void FastPairPresenter::OnPairingFailedMetadataRetrieved(
     scoped_refptr<Device> device,
     PairingFailedCallback callback,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
   if (!device_metadata) {
     return;
   }
@@ -176,7 +179,8 @@ void FastPairPresenter::ShowAssociateAccount(
 void FastPairPresenter::OnAssociateAccountMetadataRetrieved(
     scoped_refptr<Device> device,
     AssociateAccountCallback callback,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
   QP_LOG(VERBOSE) << __func__ << ": " << device;
   if (!device_metadata) {
     return;

@@ -31,7 +31,7 @@ class AccountKeyFilter;
 
 using CheckAccountKeysCallback =
     base::OnceCallback<void(absl::optional<PairingMetadata>)>;
-using DeviceMetadataCallback = base::OnceCallback<void(DeviceMetadata*)>;
+using DeviceMetadataCallback = base::OnceCallback<void(DeviceMetadata*, bool)>;
 using ValidModelIdCallback = base::OnceCallback<void(bool)>;
 
 // The entry point for the Repository component in the Quick Pair system,

@@ -113,7 +113,8 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
     scoped_refptr<Device> device,
     base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
         on_get_instance_callback,
-    DeviceMetadata* device_metadata) {
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
   if (!device_metadata) {
     QP_LOG(WARNING) << "No device metadata retrieved.";
     std::move(on_get_instance_callback).Run(nullptr);

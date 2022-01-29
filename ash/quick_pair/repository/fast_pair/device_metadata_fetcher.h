@@ -23,8 +23,8 @@ namespace quick_pair {
 
 class HttpFetcher;
 
-using GetObservedDeviceCallback = base::OnceCallback<void(
-    absl::optional<nearby::fastpair::GetObservedDeviceResponse>)>;
+using GetObservedDeviceCallback = base::OnceCallback<
+    void(absl::optional<nearby::fastpair::GetObservedDeviceResponse>, bool)>;
 
 class DeviceMetadataFetcher {
  public:
