@@ -10,6 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
 #include "components/strings/grit/components_strings.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -31,9 +32,10 @@ const CGFloat kDialogVerticalLocation = 20;
 // Test fixture to test RepostFormCoordinator class.
 class RepostFormCoordinatorTest : public PlatformTest {
  protected:
-  RepostFormCoordinatorTest()
-      : view_controller_([[UIViewController alloc] init]),
-        browser_(std::make_unique<TestBrowser>()) {
+  RepostFormCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    view_controller_ = [[UIViewController alloc] init];
     CGPoint dialogLocation =
         CGPointMake(kDialogHorizontalLocation, kDialogVerticalLocation);
     coordinator_ = [[RepostFormCoordinator alloc]
@@ -59,10 +61,11 @@ class RepostFormCoordinatorTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   web::FakeWebState web_state_;
   UIViewController* view_controller_;
-  std::unique_ptr<Browser> browser_;
 };
 
 // Tests that if there is a popover, it uses location passed in init.

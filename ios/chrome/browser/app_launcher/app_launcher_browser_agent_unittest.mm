@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -37,18 +38,21 @@ using app_launcher_overlays::AllowAppLaunchResponse;
 class AppLauncherBrowserAgentTest : public PlatformTest {
  protected:
   AppLauncherBrowserAgentTest() {
-    AppLauncherBrowserAgent::CreateForBrowser(&browser_);
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    AppLauncherBrowserAgent::CreateForBrowser(browser_.get());
     application_ = OCMClassMock([UIApplication class]);
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
   ~AppLauncherBrowserAgentTest() override {
     [application_ stopMocking];
-    browser_.GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+    browser_->GetWebStateList()->CloseAllWebStates(
+        WebStateList::CLOSE_NO_FLAGS);
   }
 
   // Returns the AppLauncherBrowserAgent.
   AppLauncherBrowserAgent* browser_agent() {
-    return AppLauncherBrowserAgent::FromBrowser(&browser_);
+    return AppLauncherBrowserAgent::FromBrowser(browser_.get());
   }
 
   // Adds a WebState to |browser_| using |opener|.  The WebState's session
@@ -72,8 +76,8 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     abuse_detectors_[web_state] = abuse_detector;
     AppLauncherTabHelper::CreateForWebState(web_state, abuse_detector);
     // Insert the WebState into the Browser's WebStateList.
-    int index = browser_.GetWebStateList()->count();
-    browser_.GetWebStateList()->InsertWebState(
+    int index = browser_->GetWebStateList()->count();
+    browser_->GetWebStateList()->InsertWebState(
         index, std::move(passed_web_state), WebStateList::INSERT_ACTIVATE,
         WebStateOpener(opener));
     return web_state;
@@ -95,7 +99,8 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  TestBrowser browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   std::map<web::WebState*, FakeAppLauncherAbuseDetector*> abuse_detectors_;
   id application_ = nil;
 };

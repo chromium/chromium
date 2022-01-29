@@ -64,13 +64,15 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
         ->SetPresentationContext(&presentation_context_);
   }
 
+  ~BreadcrumbManagerBrowserAgentTest() override { browser_.reset(); }
+
   web::WebTaskEnvironment task_env_{
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<Browser> browser_;
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
   FakeOverlayPresentationContext presentation_context_;
-  std::unique_ptr<Browser> browser_;
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for

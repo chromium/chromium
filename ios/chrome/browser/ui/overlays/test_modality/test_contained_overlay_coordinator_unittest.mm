@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/test_modality/test_contained_overlay_coordinator.h"
 
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_contained_overlay_request_config.h"
@@ -19,20 +20,23 @@
 // Test fixture for TestContainedOverlayCoordinator.
 class TestContainedOverlayCoordinatorTest : public PlatformTest {
  public:
-  TestContainedOverlayCoordinatorTest()
-      : root_view_controller_([[UIViewController alloc] init]),
-        request_(OverlayRequest::CreateWithConfig<TestContainedOverlay>()),
-        coordinator_([[TestContainedOverlayCoordinator alloc]
-            initWithBaseViewController:root_view_controller_
-                               browser:&browser_
-                               request:request_.get()
-                              delegate:&delegate_]) {
+  TestContainedOverlayCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    root_view_controller_ = [[UIViewController alloc] init];
+    request_ = OverlayRequest::CreateWithConfig<TestContainedOverlay>();
+    coordinator_ = [[TestContainedOverlayCoordinator alloc]
+        initWithBaseViewController:root_view_controller_
+                           browser:browser_.get()
+                           request:request_.get()
+                          delegate:&delegate_];
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestBrowser browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   std::unique_ptr<OverlayRequest> request_;

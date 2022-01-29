@@ -127,7 +127,6 @@ class SyncScreenMediatorTest : public PlatformTest {
   SyncScreenMediator* mediator_;
   FakeChromeIdentity* identity_;
   FakeSyncScreenConsumer* consumer_;
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   SyncSetupServiceMock* sync_setup_service_mock_;
   syncer::MockSyncService* sync_service_mock_;
@@ -162,7 +161,7 @@ TEST_F(SyncScreenMediatorTest, TestStartSyncService) {
 TEST_F(SyncScreenMediatorTest, TestAuthenticationFlow) {
   mediator_.consumer = consumer_;
   consumer_.UIEnabled = YES;
-  TestBrowser browser;
+  TestBrowser browser(browser_state_.get());
 
   id mock_delegate = OCMProtocolMock(@protocol(SyncScreenMediatorDelegate));
   id mock_flow = OCMClassMock([AuthenticationFlow class]);

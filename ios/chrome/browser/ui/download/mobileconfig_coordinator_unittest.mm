@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/download/download_test_util.h"
 #import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #import "ios/chrome/browser/download/mobileconfig_tab_helper_delegate.h"
@@ -44,12 +45,13 @@ base::FilePath GetTestFilePath() {
 
 class MobileConfigCoordinatorTest : public PlatformTest {
  protected:
-  MobileConfigCoordinatorTest()
-      : base_view_controller_([[UIViewController alloc] init]),
-        browser_(std::make_unique<TestBrowser>()),
-        coordinator_([[MobileConfigCoordinator alloc]
-            initWithBaseViewController:base_view_controller_
-                               browser:browser_.get()]) {
+  MobileConfigCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    base_view_controller_ = [[UIViewController alloc] init];
+    coordinator_ = [[MobileConfigCoordinator alloc]
+        initWithBaseViewController:base_view_controller_
+                           browser:browser_.get()];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
 
     // The Coordinator should install itself as delegate for the existing
@@ -72,10 +74,10 @@ class MobileConfigCoordinatorTest : public PlatformTest {
 
   // Needed for test browser state created by TestBrowser().
   base::test::TaskEnvironment task_environment_;
-
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<Browser> browser_;
   MobileConfigCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
   base::HistogramTester histogram_tester_;

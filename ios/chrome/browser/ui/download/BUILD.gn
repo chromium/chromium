@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/download:test_support",
     "//ios/chrome/browser/infobars",

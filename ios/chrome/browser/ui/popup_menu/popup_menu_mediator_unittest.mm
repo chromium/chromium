@@ -14,6 +14,8 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -27,6 +29,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #include "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_text_item.h"
@@ -35,8 +38,6 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -49,6 +50,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -89,13 +91,22 @@ const int kNumberOfWebStates = 3;
 @implementation TestPopupMenuMediator
 @end
 
-class PopupMenuMediatorTest : public ChromeWebTest {
+class PopupMenuMediatorTest : public PlatformTest {
  public:
-  PopupMenuMediatorTest()
-      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+  PopupMenuMediatorTest() {}
 
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
+
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
+                              ios::BookmarkModelFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                            web::BrowserState,
+                            password_manager::MockPasswordStoreInterface>));
+    browser_state_ = builder.Build();
 
     reading_list_model_.reset(new ReadingListModelImpl(
         nullptr, nullptr, base::DefaultClock::GetInstance()));
@@ -106,7 +117,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     OCMExpect([popup_menu_strict_ setDelegate:[OCMArg any]]);
 
     // Set up the TestBrowser.
-    browser_ = std::make_unique<TestBrowser>(GetBrowserState());
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     // Set up the WebStateList.
     auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
@@ -138,16 +149,12 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     // Explicitly disconnect the mediator so there won't be any WebStateList
     // observers when browser_ gets destroyed.
     [mediator_ disconnect];
+    browser_.reset();
 
-    ChromeWebTest::TearDown();
+    PlatformTest::TearDown();
   }
 
  protected:
-  TestChromeBrowserState::TestingFactories GetTestingFactories() override {
-    return {{ios::BookmarkModelFactory::GetInstance(),
-             ios::BookmarkModelFactory::GetDefaultFactory()}};
-  }
-
   PopupMenuMediator* CreateMediator(PopupMenuType type,
                                     BOOL is_incognito,
                                     BOOL trigger_incognito_hint) {
@@ -183,7 +190,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
 
   void SetUpBookmarks() {
     bookmark_model_ =
-        ios::BookmarkModelFactory::GetForBrowserState(GetBrowserState());
+        ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get());
     DCHECK(bookmark_model_);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     mediator_.bookmarkModel = bookmark_model_;
@@ -253,8 +260,11 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     return NO;
   }
 
-  FakeOverlayPresentationContext presentation_context_;
+  web::WebTaskEnvironment task_env_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
+
+  FakeOverlayPresentationContext presentation_context_;
   PopupMenuMediator* mediator_;
   BookmarkModel* bookmark_model_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;

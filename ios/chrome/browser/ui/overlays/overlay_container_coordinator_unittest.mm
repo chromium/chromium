@@ -6,6 +6,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator+initialization.h"
 
 #import "base/test/ios/wait_util.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_contained_overlay_request_config.h"
@@ -29,14 +30,15 @@ using base::test::ios::kWaitForUIElementTimeout;
 // Test fixture for OverlayContainerCoordinator.
 class OverlayContainerCoordinatorTest : public PlatformTest {
  public:
-  OverlayContainerCoordinatorTest()
-      : browser_(std::make_unique<TestBrowser>()),
-        context_(browser_.get()),
-        root_view_controller_([[UIViewController alloc] init]),
-        coordinator_([[OverlayContainerCoordinator alloc]
-            initWithBaseViewController:root_view_controller_
-                               browser:browser_.get()
-                   presentationContext:&context_]) {
+  OverlayContainerCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    context_ = std::make_unique<TestOverlayPresentationContext>(browser_.get());
+    root_view_controller_ = [[UIViewController alloc] init];
+    coordinator_ = [[OverlayContainerCoordinator alloc]
+        initWithBaseViewController:root_view_controller_
+                           browser:browser_.get()
+               presentationContext:context_.get()];
     root_view_controller_.definesPresentationContext = YES;
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
@@ -45,13 +47,14 @@ class OverlayContainerCoordinatorTest : public PlatformTest {
     // can be unhooked due to BrowserDestroyed().  This is not a problem for
     // non-test OverlayPresentationContextImpls since they're owned by the
     // Browser and get destroyed after BrowserDestroyed() is called.
-    browser_ = nullptr;
+    browser_.reset();
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  TestOverlayPresentationContext context_;
+  std::unique_ptr<TestOverlayPresentationContext> context_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   OverlayContainerCoordinator* coordinator_ = nil;
@@ -60,26 +63,26 @@ class OverlayContainerCoordinatorTest : public PlatformTest {
 // Tests that the coordinator updates its OverlayPresentationContext's
 // presentation capabilities when started and stopped.
 TEST_F(OverlayContainerCoordinatorTest, UpdatePresentationCapabilities) {
-  ASSERT_FALSE(OverlayPresentationContextSupportsContainedUI(&context_));
+  ASSERT_FALSE(OverlayPresentationContextSupportsContainedUI(context_.get()));
 
   // Start the coordinator and verify that the presentation context begins
   // supporting contained overlay UI.
   [coordinator_ start];
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<TestContainedOverlay>();
-  context_.PrepareToShowOverlayUI(request.get());
-  EXPECT_TRUE(OverlayPresentationContextSupportsContainedUI(&context_));
+  context_->PrepareToShowOverlayUI(request.get());
+  EXPECT_TRUE(OverlayPresentationContextSupportsContainedUI(context_.get()));
 
   // Stop the coordinator and verify that the presentation context no longer
   // supports contained overlay UI.
   [coordinator_ stop];
-  EXPECT_FALSE(OverlayPresentationContextSupportsContainedUI(&context_));
+  EXPECT_FALSE(OverlayPresentationContextSupportsContainedUI(context_.get()));
 }
 
 // Tests that the coordinator sets up the presentation context upon being added
 // to the window.
 TEST_F(OverlayContainerCoordinatorTest, PresentationContextSetup) {
-  ASSERT_FALSE(OverlayPresentationContextSupportsPresentedUI(&context_));
+  ASSERT_FALSE(OverlayPresentationContextSupportsPresentedUI(context_.get()));
 
   // Start the coordinator.  This will add it to the key window, triggering the
   // presentation of the UIViewController that will be used as the base for
@@ -87,7 +90,7 @@ TEST_F(OverlayContainerCoordinatorTest, PresentationContextSetup) {
   [coordinator_ start];
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
-  context_.PrepareToShowOverlayUI(request.get());
+  context_->PrepareToShowOverlayUI(request.get());
   UIViewController* presented_view_controller =
       coordinator_.viewController.presentedViewController;
   ASSERT_TRUE(presented_view_controller);
@@ -98,7 +101,7 @@ TEST_F(OverlayContainerCoordinatorTest, PresentationContextSetup) {
 
   // Once |presented_view_controller| is finished being presented, it should
   // update the presentation capabilities to allow presented overlay UI.
-  EXPECT_TRUE(OverlayPresentationContextSupportsPresentedUI(&context_));
+  EXPECT_TRUE(OverlayPresentationContextSupportsPresentedUI(context_.get()));
 
   // Stop the container coordinator and wait for |presented_view_controller| to
   // finish being dismissed, verifying that the context no longer supports
@@ -107,5 +110,5 @@ TEST_F(OverlayContainerCoordinatorTest, PresentationContextSetup) {
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
     return !presented_view_controller.presentingViewController;
   }));
-  EXPECT_FALSE(OverlayPresentationContextSupportsPresentedUI(&context_));
+  EXPECT_FALSE(OverlayPresentationContextSupportsPresentedUI(context_.get()));
 }

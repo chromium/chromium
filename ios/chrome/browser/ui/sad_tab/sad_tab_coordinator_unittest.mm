@@ -27,17 +27,19 @@
 // Test fixture for testing SadTabCoordinator class.
 class SadTabCoordinatorTest : public PlatformTest {
  protected:
-  SadTabCoordinatorTest()
-      : base_view_controller_([[UIViewController alloc] init]),
-        browser_(std::make_unique<TestBrowser>()) {
+  SadTabCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    base_view_controller_ = [[UIViewController alloc] init];
     UILayoutGuide* guide = [[NamedGuide alloc] initWithName:kContentAreaGuide];
     [base_view_controller_.view addLayoutGuide:guide];
     AddSameConstraints(guide, base_view_controller_.view);
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
   }
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<Browser> browser_;
 };
 
 // Tests starting coordinator.

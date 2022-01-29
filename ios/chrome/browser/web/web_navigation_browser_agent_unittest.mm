@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
@@ -51,9 +52,10 @@ namespace {
 
 class WebNavigationBrowserAgentTest : public PlatformTest {
  public:
-  WebNavigationBrowserAgentTest()
-      : browser_(std::make_unique<TestBrowser>()),
-        delegate_([[FakeNTPDelegate alloc] init]) {
+  WebNavigationBrowserAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    delegate_ = [[FakeNTPDelegate alloc] init];
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
     agent_->SetDelegate(delegate_);
@@ -70,7 +72,8 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   FakeNTPDelegate* delegate_;
   WebNavigationBrowserAgent* agent_;
   // Navigation manager for the web state at index 0 in |browser_|'s web state

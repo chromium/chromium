@@ -78,12 +78,12 @@ class InfobarModalOverlayCoordinatorTest : public PlatformTest {
  public:
   InfobarModalOverlayCoordinatorTest()
       : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(browser_state_.get()),
+        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
         request_(OverlayRequest::CreateWithConfig<ModalConfig>()),
         root_view_controller_([[UIViewController alloc] init]),
         coordinator_([[FakeInfobarModalOverlayCoordinator alloc]
             initWithBaseViewController:root_view_controller_
-                               browser:&browser_
+                               browser:browser_.get()
                                request:request_.get()
                               delegate:&delegate_]) {
     scoped_window_.Get().rootViewController = root_view_controller_;
@@ -92,7 +92,7 @@ class InfobarModalOverlayCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  TestBrowser browser_;
+  std::unique_ptr<TestBrowser> browser_;
   MockOverlayRequestCoordinatorDelegate delegate_;
   std::unique_ptr<OverlayRequest> request_;
   ScopedKeyWindow scoped_window_;

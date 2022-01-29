@@ -146,6 +146,7 @@ source_set("unit_tests") {
     ":internal",
     ":ui",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/broadcaster",

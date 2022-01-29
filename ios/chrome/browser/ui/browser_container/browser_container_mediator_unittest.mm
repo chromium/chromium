@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 
 #import "base/test/ios/wait_util.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -41,14 +42,15 @@ using base::test::ios::kWaitForUIElementTimeout;
 // Test fixture for BrowserContainerMediator.
 class BrowserContainerMediatorTest : public PlatformTest {
  public:
-  BrowserContainerMediatorTest()
-      : overlay_presenter_(
-            OverlayPresenter::FromBrowser(&browser_,
-                                          OverlayModality::kWebContentArea)),
-        mediator_([[BrowserContainerMediator alloc]
-                      initWithWebStateList:browser_.GetWebStateList()
-            webContentAreaOverlayPresenter:overlay_presenter_]),
-        consumer_([[FakeBrowserContainerConsumer alloc] init]) {
+  BrowserContainerMediatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    overlay_presenter_ = OverlayPresenter::FromBrowser(
+        browser_.get(), OverlayModality::kWebContentArea);
+    mediator_ = [[BrowserContainerMediator alloc]
+                  initWithWebStateList:browser_->GetWebStateList()
+        webContentAreaOverlayPresenter:overlay_presenter_];
+    consumer_ = [[FakeBrowserContainerConsumer alloc] init];
     mediator_.consumer = consumer_;
     overlay_presenter_->SetPresentationContext(&presentation_context_);
   }
@@ -58,7 +60,8 @@ class BrowserContainerMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestBrowser browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   FakeOverlayPresentationContext presentation_context_;
   OverlayPresenter* overlay_presenter_ = nullptr;
   BrowserContainerMediator* mediator_ = nil;
@@ -75,9 +78,9 @@ TEST_F(BrowserContainerMediatorTest, BlockContentForHTTPAuthDialog) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kWebStateUrl);
-  browser_.GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
-                                             WebStateList::INSERT_ACTIVATE,
-                                             WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
+                                              WebStateList::INSERT_ACTIVATE,
+                                              WebStateOpener());
 
   // Show an HTTP authentication dialog from a different URL.
   const GURL kHttpAuthUrl("http://www.http_auth.test");

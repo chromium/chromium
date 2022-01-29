@@ -40,6 +40,12 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     agent_.sceneState = scene_state_;
   }
 
+  void TearDown() override {
+    agent_ = nil;
+    scene_state_ = nil;
+    PlatformTest::TearDown();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

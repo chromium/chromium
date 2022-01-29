@@ -143,6 +143,11 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
     }
   }
 
+  void TearDown() override {
+    connected_scenes_ = nil;
+    PlatformTest::TearDown();
+  }
+
   void verifySwizzleHasBeenCalled() {
     EXPECT_TRUE(num_tabs_has_been_called_);
     EXPECT_TRUE(num_ntp_tabs_has_been_called_);

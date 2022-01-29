@@ -21,8 +21,10 @@ namespace {
 class ContentSettingsTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
-  ContentSettingsTableViewControllerTest()
-      : browser_(std::make_unique<TestBrowser>()) {}
+  ContentSettingsTableViewControllerTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+  }
 
   ChromeTableViewController* InstantiateController() override {
     return [[ContentSettingsTableViewController alloc]
@@ -31,6 +33,7 @@ class ContentSettingsTableViewControllerTest
 
  private:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
 };
 

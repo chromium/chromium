@@ -110,7 +110,8 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     AddAgentsToBrowser(browser_.get(), scene_state_);
 
-    incognito_browser_ = std::make_unique<TestBrowser>();
+    incognito_browser_ = std::make_unique<TestBrowser>(
+        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
     AddAgentsToBrowser(incognito_browser_.get(), scene_state_);
 
     UIWindow* window = GetAnyKeyWindow();

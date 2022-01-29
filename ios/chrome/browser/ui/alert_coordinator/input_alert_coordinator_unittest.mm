@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/input_alert_coordinator.h"
 
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -20,10 +21,13 @@ TEST_F(InputAlertCoordinatorTest, AddTextField) {
   // Setup.
   base::test::TaskEnvironment task_environment_;
   UIViewController* viewController = [[UIViewController alloc] init];
-  std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(browser_state.get());
   InputAlertCoordinator* alertCoordinator =
       [[InputAlertCoordinator alloc] initWithBaseViewController:viewController
-                                                        browser:browser_.get()
+                                                        browser:browser.get()
                                                           title:@"Test"
                                                         message:nil];
 
@@ -44,10 +48,13 @@ TEST_F(InputAlertCoordinatorTest, GetTextFields) {
   // Setup.
   base::test::TaskEnvironment task_environment_;
   UIViewController* viewController = [[UIViewController alloc] init];
-  std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(browser_state.get());
   InputAlertCoordinator* alertCoordinator =
       [[InputAlertCoordinator alloc] initWithBaseViewController:viewController
-                                                        browser:browser_.get()
+                                                        browser:browser.get()
                                                           title:@"Test"
                                                         message:nil];
 

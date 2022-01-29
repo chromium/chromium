@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,11 +25,14 @@ TEST_F(ActivityOverlayCoordinatorTest, StartAndStop) {
   __weak UIView* overlay_view;
   @autoreleasepool {
     UIViewController* base_view_controller = [[UIViewController alloc] init];
-    std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
+    std::unique_ptr<TestChromeBrowserState> browser_state =
+        TestChromeBrowserState::Builder().Build();
+    std::unique_ptr<Browser> browser =
+        std::make_unique<TestBrowser>(browser_state.get());
     ActivityOverlayCoordinator* coordinator =
         [[ActivityOverlayCoordinator alloc]
             initWithBaseViewController:base_view_controller
-                               browser:browser_.get()];
+                               browser:browser.get()];
 
     EXPECT_EQ(0u, [base_view_controller.childViewControllers count]);
 

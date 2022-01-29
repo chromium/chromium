@@ -19,15 +19,9 @@ class TestBrowser : public Browser {
   TestBrowser(ChromeBrowserState* browser_state,
               std::unique_ptr<WebStateListDelegate> web_state_list_delegate);
 
-  // Constructor that takes only a BrowserState; an empty web state list will be
-  // created internally.
+  // Constructor that takes only a BrowserState; a fake WebStateListDelegate
+  // will be used.
   TestBrowser(ChromeBrowserState* browser_state);
-
-  // Constructor that creates a test browser state and an empty web state list.
-  // Test fixtures will need to include a base::test::TaskEnvironment member if
-  // this constructor is used (since it creates a TestChromeBrowserState that
-  // requires a task environment).
-  TestBrowser();
 
   TestBrowser(const TestBrowser&) = delete;
   TestBrowser& operator=(const TestBrowser&) = delete;
@@ -43,8 +37,6 @@ class TestBrowser : public Browser {
 
  private:
   ChromeBrowserState* browser_state_ = nullptr;
-  // Used when the test browser creates and owns its own browser state.
-  std::unique_ptr<ChromeBrowserState> owned_browser_state_;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_ = nil;

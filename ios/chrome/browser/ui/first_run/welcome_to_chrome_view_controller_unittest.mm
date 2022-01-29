@@ -38,8 +38,7 @@ class WelcomeToChromeViewControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     controller_ =
         [[WelcomeToChromeViewController alloc] initWithBrowser:browser_.get()

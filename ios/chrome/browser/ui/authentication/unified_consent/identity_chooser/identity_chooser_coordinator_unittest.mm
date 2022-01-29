@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
@@ -28,8 +29,9 @@
 class IdentityChooserCoordinatorTest : public PlatformTest {
  public:
   IdentityChooserCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     view_controller_ = [[UIViewController alloc] init];
-    browser_ = std::make_unique<TestBrowser>();
     [scoped_key_window_.Get() setRootViewController:view_controller_];
   }
 
@@ -55,7 +57,8 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
 
   UIViewController* view_controller_;

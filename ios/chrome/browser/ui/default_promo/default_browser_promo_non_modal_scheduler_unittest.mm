@@ -45,6 +45,7 @@ namespace {
 class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
  protected:
   DefaultBrowserPromoNonModalSchedulerTest() {}
+
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     std::unique_ptr<TestChromeBrowserState> chrome_browser_state =

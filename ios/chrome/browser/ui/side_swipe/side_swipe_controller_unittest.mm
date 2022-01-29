@@ -57,10 +57,9 @@ class SideSwipeControllerTest : public PlatformTest {
     [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
     original_web_state->SetWebViewProxy(web_view_proxy_mock);
 
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
-    // Create the object to test.
+    browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+
     browser_->GetWebStateList()->InsertWebState(
         0, std::move(original_web_state), WebStateList::INSERT_NO_FLAGS,
         WebStateOpener());

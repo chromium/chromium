@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_presented_overlay_request_config.h"
@@ -26,14 +27,15 @@ using base::test::ios::kWaitForUIElementTimeout;
 // Test fixture for OverlayPresentationContextCoordinator.
 class OverlayPresentationContextCoordinatorTest : public PlatformTest {
  public:
-  OverlayPresentationContextCoordinatorTest()
-      : browser_(std::make_unique<TestBrowser>()),
-        context_(browser_.get()),
-        root_view_controller_([[UIViewController alloc] init]),
-        coordinator_([[OverlayPresentationContextCoordinator alloc]
-            initWithBaseViewController:root_view_controller_
-                               browser:browser_.get()
-                   presentationContext:&context_]) {
+  OverlayPresentationContextCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    context_ = std::make_unique<TestOverlayPresentationContext>(browser_.get());
+    root_view_controller_ = [[UIViewController alloc] init];
+    coordinator_ = [[OverlayPresentationContextCoordinator alloc]
+        initWithBaseViewController:root_view_controller_
+                           browser:browser_.get()
+               presentationContext:context_.get()];
     root_view_controller_.definesPresentationContext = YES;
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
@@ -42,13 +44,14 @@ class OverlayPresentationContextCoordinatorTest : public PlatformTest {
     // can be unhooked due to BrowserDestroyed().  This is not a problem for
     // non-test OverlayPresentationContextImpls since they're owned by the
     // Browser and get destroyed after BrowserDestroyed() is called.
-    browser_ = nullptr;
+    browser_.reset();
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  TestOverlayPresentationContext context_;
+  std::unique_ptr<TestOverlayPresentationContext> context_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   OverlayPresentationContextCoordinator* coordinator_ = nil;
@@ -58,7 +61,7 @@ class OverlayPresentationContextCoordinatorTest : public PlatformTest {
 // presentation capabilities when started and stopped.
 TEST_F(OverlayPresentationContextCoordinatorTest,
        UpdatePresentationCapabilities) {
-  ASSERT_FALSE(OverlayPresentationContextSupportsPresentedUI(&context_));
+  ASSERT_FALSE(OverlayPresentationContextSupportsPresentedUI(context_.get()));
 
   // Start the coordinator and wait until the view is finished being presented.
   // This is necessary because UIViewController presentation is asynchronous,
@@ -72,7 +75,7 @@ TEST_F(OverlayPresentationContextCoordinatorTest,
   }));
 
   // Verify that the presentation context supports presentation.
-  EXPECT_TRUE(OverlayPresentationContextSupportsPresentedUI(&context_));
+  EXPECT_TRUE(OverlayPresentationContextSupportsPresentedUI(context_.get()));
 
   // Stop the coordinator and wait until the view is finished being dismissed.
   // This is necessary because UIViewController presentation is asynchronous,
@@ -83,5 +86,5 @@ TEST_F(OverlayPresentationContextCoordinatorTest,
   }));
 
   // Verify that the presentation context no longer supports presentation.
-  EXPECT_FALSE(OverlayPresentationContextSupportsPresentedUI(&context_));
+  EXPECT_FALSE(OverlayPresentationContextSupportsPresentedUI(context_.get()));
 }

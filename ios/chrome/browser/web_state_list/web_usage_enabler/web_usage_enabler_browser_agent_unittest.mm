@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -24,9 +25,10 @@ const char kURL[] = "https://chromium.org";
 
 class WebUsageEnablerBrowserAgentTest : public PlatformTest {
  public:
-  WebUsageEnablerBrowserAgentTest()
-      : browser_(std::make_unique<TestBrowser>()),
-        web_state_list_(browser_->GetWebStateList()) {
+  WebUsageEnablerBrowserAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    web_state_list_ = browser_->GetWebStateList();
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
     enabler_ = WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());
     enabler_->SetWebUsageEnabled(false);
@@ -39,7 +41,8 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   WebStateList* web_state_list_;
   WebUsageEnablerBrowserAgent* enabler_;
 

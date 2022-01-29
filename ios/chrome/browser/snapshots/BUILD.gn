@@ -70,6 +70,7 @@ source_set("unit_tests") {
     ":test_utils",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/image_util",

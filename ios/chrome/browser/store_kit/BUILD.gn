@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":store_kit",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test:test_support",

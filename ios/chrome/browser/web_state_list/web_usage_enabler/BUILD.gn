@@ -31,6 +31,7 @@ source_set("unit_tests") {
     ":web_usage_enabler",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",

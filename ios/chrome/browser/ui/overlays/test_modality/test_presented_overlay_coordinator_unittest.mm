@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/test_modality/test_presented_overlay_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_presented_overlay_request_config.h"
@@ -23,20 +24,23 @@ using base::test::ios::kWaitForUIElementTimeout;
 // Test fixture for TestPresentedOverlayCoordinator.
 class TestPresentedOverlayCoordinatorTest : public PlatformTest {
  public:
-  TestPresentedOverlayCoordinatorTest()
-      : root_view_controller_([[UIViewController alloc] init]),
-        request_(OverlayRequest::CreateWithConfig<TestPresentedOverlay>()),
-        coordinator_([[TestPresentedOverlayCoordinator alloc]
-            initWithBaseViewController:root_view_controller_
-                               browser:&browser_
-                               request:request_.get()
-                              delegate:&delegate_]) {
+  TestPresentedOverlayCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    root_view_controller_ = [[UIViewController alloc] init];
+    request_ = OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
+    coordinator_ = [[TestPresentedOverlayCoordinator alloc]
+        initWithBaseViewController:root_view_controller_
+                           browser:browser_.get()
+                           request:request_.get()
+                          delegate:&delegate_];
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestBrowser browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   std::unique_ptr<OverlayRequest> request_;

@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -37,14 +38,18 @@ DEFINE_TEST_OVERLAY_REQUEST_CONFIG(kConfig);
 // Test fixture for OverlayPresentationContextFullscreenDisabler.
 class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
  public:
-  OverlayPresentationContextFullscreenDisablerTest()
-      : disabler_(&browser_, kModality),
-        web_view_([[WKWebView alloc]
-            initWithFrame:scoped_window_.Get().bounds
-            configuration:[[WKWebViewConfiguration alloc] init]]),
-        content_view_([[CRWWebViewContentView alloc]
-            initWithWebView:web_view_
-                 scrollView:web_view_.scrollView]) {
+  OverlayPresentationContextFullscreenDisablerTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+
+    disabler_ = std::make_unique<OverlayContainerFullscreenDisabler>(
+        browser_.get(), kModality);
+    web_view_ =
+        [[WKWebView alloc] initWithFrame:scoped_window_.Get().bounds
+                           configuration:[[WKWebViewConfiguration alloc] init]];
+    content_view_ =
+        [[CRWWebViewContentView alloc] initWithWebView:web_view_
+                                            scrollView:web_view_.scrollView];
     // Set up the fake presentation context so OverlayPresenterObserver
     // callbacks are sent.
     overlay_presenter()->SetPresentationContext(&presentation_context_);
@@ -59,29 +64,30 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
     [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
     web_state->SetWebViewProxy(web_view_proxy_mock);
     // Insert and activate a WebState.
-    browser_.GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                               WebStateList::INSERT_ACTIVATE,
-                                               WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
+                                                WebStateList::INSERT_ACTIVATE,
+                                                WebStateOpener());
   }
   ~OverlayPresentationContextFullscreenDisablerTest() override {
     overlay_presenter()->SetPresentationContext(nullptr);
   }
 
   bool fullscreen_enabled() {
-      return FullscreenController::FromBrowser(&browser_)->IsEnabled();
+    return FullscreenController::FromBrowser(browser_.get())->IsEnabled();
   }
   OverlayPresenter* overlay_presenter() {
-    return OverlayPresenter::FromBrowser(&browser_, kModality);
+    return OverlayPresenter::FromBrowser(browser_.get(), kModality);
   }
   OverlayRequestQueue* queue() {
     return OverlayRequestQueue::FromWebState(
-        browser_.GetWebStateList()->GetActiveWebState(), kModality);
+        browser_->GetWebStateList()->GetActiveWebState(), kModality);
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestBrowser browser_;
-  OverlayContainerFullscreenDisabler disabler_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<OverlayContainerFullscreenDisabler> disabler_;
   FakeOverlayPresentationContext presentation_context_;
   ScopedKeyWindow scoped_window_;
   WKWebView* web_view_ = nil;
