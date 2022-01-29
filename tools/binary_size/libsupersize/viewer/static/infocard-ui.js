@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @ts-check
 'use strict';
 
 /**
@@ -179,6 +178,8 @@ const displayInfocard = (() => {
       );
     }
   }
+  /** @type {number} */
+  Infocard._pendingFrame = 0;
 
   class SymbolInfocard extends Infocard {
     /**
@@ -278,8 +279,8 @@ const displayInfocard = (() => {
     /**
      * Update a row in the breakdown table with the given values.
      * @param {HTMLTableRowElement} row
-     * @param {{size:number,count:number} | null} stats Total size of the
-     *   symbols of a given type in the artifact.
+     * @param {?TreeNodeChildStats} stats Total size of the symbols of a given
+     *   type in the artifact.
      * @param {number} percentage How much the size represents in relation to
      *   the total size of the symbols in the artifact.
      */

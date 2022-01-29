@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @ts-check
 'use strict';
 
 /**
@@ -11,10 +10,12 @@
  */
 
 /** @type {HTMLFormElement} Form with options and filters */
-const form = document.getElementById('options');
+const form = /** @type {HTMLFormElement} */ (
+    document.getElementById('options'));
 
 /** @type {HTMLInputElement} */
-const methodCountInput = form.elements.namedItem('method_count');
+const methodCountInput = /** @type {HTMLInputElement} */ (
+    form.elements.namedItem('method_count'));
 
 /** Utilities for working with the DOM */
 const dom = {
@@ -61,6 +62,8 @@ function _initState() {
    * can be manipulated by this object. Keys in the query match with
    * input names.
    */
+
+  /** @type {URLSearchParams} */
   let _filterParams = new URLSearchParams(location.search.slice(1));
   const typeList = _filterParams.getAll(_TYPE_STATE_KEY);
   _filterParams.delete(_TYPE_STATE_KEY);
@@ -77,6 +80,7 @@ function _initState() {
     get(key) {
       return _filterParams.get(key);
     },
+
     /**
      * Checks if a key is present in the query string state.
      * @param {string} key
@@ -85,6 +89,7 @@ function _initState() {
     has(key) {
       return _filterParams.has(key);
     },
+
     /**
      * Formats the filter state as a string.
      */
@@ -96,6 +101,7 @@ function _initState() {
       const queryString = copy.toString();
       return queryString.length > 0 ? `?${queryString}` : '';
     },
+
     /**
      * Saves a key and value into a temporary state not displayed in the URL.
      * @param {string} key
@@ -112,7 +118,8 @@ function _initState() {
   });
 
   // Update form inputs to reflect the state from URL.
-  for (const element of Array.from(form.elements)) {
+  for (const element of
+      /** @type {Array<HTMLInputElement>} */ (Array.from(form.elements))) {
     if (element.name) {
       const input = /** @type {HTMLInputElement} */ (element);
       const values = _filterParams.getAll(input.name);
@@ -136,7 +143,9 @@ function _initState() {
   /**
    * Yields only entries that have been modified in
    * comparison to `_DEFAULT_FORM`.
+   * @generator
    * @param {FormData} modifiedForm
+   * @yields {{key: string, value: FormDataEntryValue}}
    */
   function* onlyChangedEntries(modifiedForm) {
     // Remove default values
@@ -145,11 +154,11 @@ function _initState() {
       const defaultValues = _DEFAULT_FORM.getAll(key);
 
       const valuesChanged =
-        modifiedValues.length !== defaultValues.length ||
-        modifiedValues.some((v, i) => v !== defaultValues[i]);
+          (modifiedValues.length !== defaultValues.length) ||
+          modifiedValues.some((v, i) => v !== defaultValues[i]);
       if (valuesChanged) {
         for (const value of modifiedValues) {
-          yield [key, value];
+          yield {key, value};
         }
       }
     }
@@ -157,8 +166,11 @@ function _initState() {
 
   // Update the state when the form changes.
   function _updateStateFromForm() {
+    _filterParams = new URLSearchParams();
     const modifiedForm = new FormData(form);
-    _filterParams = new URLSearchParams(onlyChangedEntries(modifiedForm));
+    for (const {key, value} of onlyChangedEntries(modifiedForm)) {
+      _filterParams.append(key, value.toString());
+    }
     history.replaceState(null, null, state.toString());
   }
 
@@ -171,13 +183,17 @@ function _startListeners() {
   const _SHOW_OPTIONS_STORAGE_KEY = 'show-options';
 
   /** @type {HTMLFieldSetElement} */
-  const typesFilterElement = document.getElementById('types-filter');
+  const typesFilterElement = /** @type {HTMLFieldSetElement} */ (
+      document.getElementById('types-filter'));
   /** @type {HTMLFieldSetElement} */
-  const byteunit = form.elements.namedItem('byteunit');
-  /** @type {HTMLCollectionOf<HTMLInputElement>} */
-  const typeCheckboxes = form.elements.namedItem(_TYPE_STATE_KEY);
+  const byteunit = /** @type {HTMLFieldSetElement} */ (
+      form.elements.namedItem('byteunit'));
+  /** @type {RadioNodeList} */
+  const typeCheckboxes = /** @type {RadioNodeList} */ (
+      form.elements.namedItem(_TYPE_STATE_KEY));
   /** @type {HTMLSpanElement} */
-  const sizeHeader = document.getElementById('size-header');
+  const sizeHeader = /** @type {HTMLSpanElement} */ (
+      document.getElementById('size-header'));
 
   /**
    * The settings dialog on the side can be toggled on and off by elements with
@@ -237,13 +253,13 @@ function _startListeners() {
 
   document.getElementById('type-all').addEventListener('click', () => {
     for (const checkbox of typeCheckboxes) {
-      checkbox.checked = true;
+      /** @type {HTMLInputElement} */ (checkbox).checked = true;
     }
     form.dispatchEvent(new Event('change'));
   });
   document.getElementById('type-none').addEventListener('click', () => {
     for (const checkbox of typeCheckboxes) {
-      checkbox.checked = false;
+      /** @type {HTMLInputElement} */ (checkbox).checked = false;
     }
     form.dispatchEvent(new Event('change'));
   });
@@ -295,7 +311,8 @@ function _makeIconTemplateGetter() {
    */
   function getIconTemplate(type, readonly = false) {
     const iconTemplate = symbolIcons[type] || symbolIcons[_OTHER_SYMBOL_TYPE];
-    return readonly ? iconTemplate : iconTemplate.cloneNode(true);
+    return /** @type {SVGSVGElement} */ (
+        readonly ? iconTemplate : iconTemplate.cloneNode(true));
   }
 
   /**
@@ -321,8 +338,6 @@ function _makeIconTemplateGetter() {
    * status of the node. Only valid for leaf nodes.
    * @param {TreeNode} node Leaf node whose diff status is used to select
    * template.
-   * @param {boolean} readonly If true, the original template is returned.
-   * If false, a copy is returned that can be modified.
    * @returns {SVGSVGElement}
    */
   function getDiffStatusTemplate(node) {

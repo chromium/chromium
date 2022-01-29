@@ -78,3 +78,12 @@ All `.size` files pointed to by this launcher are restricted to Googlers.
 
 This is the main WebApp. It uses a Service Worker (`sw.js`) and an App Manifest
 (`manifest.json`) to be more slick (and work offline).
+
+### Type Checking
+
+The TypeScript Compiler is used to check JavaScript syntax and JSDoc. This is
+manually invoked using:
+
+``` bash
+python3 tools/binary_size/libsupersize/viewer/check_js.py
+```

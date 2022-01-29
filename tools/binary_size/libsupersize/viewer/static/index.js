@@ -2,12 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+'use strict';
+
+/** @type {string}  */
 const DO_NOT_DIFF = 'Don\'t diff';
-// Domain hosting the viewer.html
+
+/** @type {string} Domain hosting the viewer.html */
 const FIREBASE_HOST = 'https://chrome-supersize.firebaseapp.com'
-// Storage bucket hosting the size diffs.
+
+/** @type {string} Storage bucket hosting the size diffs. */
 const SIZE_FILEHOST = 'https://storage.googleapis.com/chrome-supersize'
 
+/**
+ * @param {Array<*>} options
+ * @return {DocumentFragment}
+ */
 function buildOptions(options) {
   const fragment = document.createDocumentFragment();
   for (let option of options) {
@@ -19,18 +28,25 @@ function buildOptions(options) {
   return fragment;
 }
 
+/**
+ * @param {NodeListOf<HTMLOptionElement>} optList
+ * @param {number} index
+ */
 function selectOption(optList, index) {
   const n = optList.length;
   if (n > 0)
     optList[((index % n) + n) % n].selected = true;
 }
 
+/**
+ * @param {HTMLFormElement} form
+ * @param {function(): string} fetchDataUrl
+ */
 function setSubmitListener(form, fetchDataUrl) {
   form.addEventListener('submit', event => {
     event.preventDefault();
     const dataUrl = fetchDataUrl();
-    window.open(
-        `${FIREBASE_HOST}/viewer.html?load_url=${dataUrl}`);
+    window.open(`${FIREBASE_HOST}/viewer.html?load_url=${dataUrl}`);
   });
 }
 
@@ -58,21 +74,51 @@ function setSubmitListener(form, fetchDataUrl) {
     });
   }
 
-  /** @type {HTMLFormElement} */
-  const submitButton = document.getElementById('submit-button');
-  const form = document.getElementById('select-form');
-  const selApk = form.elements.namedItem('apk');
-  const selVersion1 = form.elements.namedItem('version1');
-  const selVersion2 = form.elements.namedItem('version2');
-  const showAll = document.getElementsByName('showall')[0];
-  const btnOpen = form.querySelector('button[type="submit"]');
+  /** @type {HTMLButtonElement} */
+  const submitButton =   /** @type {HTMLButtonElement} */ (
+      document.getElementById('submit-button'));
 
+  /** @type {HTMLFormElement} */
+  const form = /** @type {HTMLFormElement} */ (
+      document.getElementById('select-form'));
+
+  /** @type {HTMLSelectElement} */
+  const selApk = /** @type {HTMLSelectElement} */ (
+      form.elements.namedItem('apk'));
+
+  /** @type {HTMLSelectElement} */
+  const selVersion1 = /** @type {HTMLSelectElement} */ (
+      form.elements.namedItem('version1'));
+
+  /** @type {HTMLSelectElement} */
+  const selVersion2 = /** @type {HTMLSelectElement} */ (
+      form.elements.namedItem('version2'));
+
+  /** @type {HTMLInputElement} */
+  const showAll = /** @type {HTMLInputElement} */ (
+      document.getElementsByName('showall')[0]);
+
+  /** @type {HTMLButtonElement} */
+  const btnOpen = /** @type {HTMLButtonElement} */ (
+      form.querySelector('button[type="submit"]'));
+
+  /** @type {Array<string>} */
   let activeVersions = [];
 
+  /**
+   * @param {string} cpu
+   * @param {string} apk
+   * @return {string}
+   */
   function fmtCpuApk(cpu, apk) {
     return cpu + '/' + apk;
   }
 
+  /**
+   * @param {Array<string>} cpus
+   * @param {Array<string>} apks
+   * @return {Array<string>}
+   */
   function cpuApkPairs(cpus, apks) {
     let out = [];
     for (let cpu of cpus) {
@@ -89,14 +135,17 @@ function setSubmitListener(form, fetchDataUrl) {
   function updateApk() {
     // Overwrites the apk selector with entries of format {cpu}/{apk}
     let mainApks = cpuApkPairs(milestonesPushed.cpu, milestonesPushed.apk);
-    let canaryApks = officialBuildsPushed.map(a => {
-      return fmtCpuApk(a.cpu, a.apk);
-    });
+    let canaryApks = officialBuildsPushed.map(a => fmtCpuApk(a.cpu, a.apk));
     selApk.innerHTML = '';
     selApk.appendChild(
         buildOptions([...new Set([...mainApks, ...canaryApks])]));
   }
 
+  /**
+   * @param {string} v1
+   * @param {string} v2
+   * @return {number}
+   */
   function compareVersions(v1, v2) {
     function toNumber(s) {
       return (
@@ -134,7 +183,9 @@ function setSubmitListener(form, fetchDataUrl) {
     selVersion1.appendChild(buildOptions(activeVersions));
     // Selects latest version (index -1) if previous option not still in list.
     selectOption(
-        selVersion1.querySelectorAll('option'), activeVersions.indexOf(prev));
+        /** @type {NodeListOf<HTMLOptionElement>} */ (
+            selVersion1.querySelectorAll('option')),
+        activeVersions.indexOf(prev));
   }
 
   function updateDiffVersions() {
@@ -149,7 +200,9 @@ function setSubmitListener(form, fetchDataUrl) {
       diffVersions.push(DO_NOT_DIFF);
       selVersion2.appendChild(buildOptions(diffVersions));
       selectOption(
-          selVersion2.querySelectorAll('option'), diffVersions.indexOf(prev));
+          /** @type {NodeListOf<HTMLOptionElement>} */ (
+              selVersion2.querySelectorAll('option')),
+          diffVersions.indexOf(prev));
     }
   }
 
@@ -171,6 +224,7 @@ function setSubmitListener(form, fetchDataUrl) {
     updateDiffVersions();
   });
 
+  /** @return {string} */
   function getDataUrl() {
     function sizeUrlFor(value) {
       if (value.indexOf('canary') != -1) {

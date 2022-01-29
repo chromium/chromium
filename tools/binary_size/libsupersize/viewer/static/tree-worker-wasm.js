@@ -8,6 +8,7 @@ importScripts('./auth-consts.js');
 importScripts('./shared.js');
 importScripts('./caspian_web.js');
 
+/** @type {Promise} */
 const g_wasmPromise = new Promise(function(resolve, reject) {
   Module['onRuntimeInitialized'] = function() {
     console.log('Loaded WebAssembly runtime');
@@ -15,7 +16,10 @@ const g_wasmPromise = new Promise(function(resolve, reject) {
   }
 });
 
+/** @type {string} */
 const _PATH_SEP = '/';
+
+/** @type {Object<string, _FLAGS>} */
 const _NAMES_TO_FLAGS = Object.freeze({
   hot: _FLAGS.HOT,
   generated: _FLAGS.GENERATED_SOURCE,
@@ -23,21 +27,25 @@ const _NAMES_TO_FLAGS = Object.freeze({
   uncompressed: _FLAGS.UNCOMPRESSED,
 });
 
+/** @type {?Promise} */
 let g_loadTreePromise = null;
+
+/** @type {?Promise} */
 let g_buildTreePromise = null;
 
 
 /**
- * Wrapper around fetch for requesting the same resource multiple times.
+ * Wrapper around fetch to request the same resource multiple times.
  */
 class DataFetcher {
   constructor(accessToken, url) {
-    /** @type {string | null} */
+    /** @type {?string} */
     this._accessToken = accessToken;
     /** @type {string} */
     this._url = url;
   }
 
+  /** @return {Promise<Response, Error>} */
   _fetchFromGoogleCloudStorage() {
     const {bucket, file} = parseGoogleCloudStorageUrl(this._url);
     const params = `alt=media`;
@@ -47,6 +55,11 @@ class DataFetcher {
     return this._fetchDirectly(api_url, headers);
   }
 
+  /**
+   * @param {string} url
+   * @param {?Headers=} headers
+   * @return {Promise<Response, Error>}
+   */
   async _fetchDirectly(url, headers = null) {
     if (!headers) {
       headers = new Headers();
@@ -61,6 +74,7 @@ class DataFetcher {
     return response;
   }
 
+  /** @return {Promise<Uint8Array>} */
   async fetchSizeBuffer() {
     let response;
     if (this._accessToken && looksLikeGoogleCloudStorage(this._url)) {
@@ -72,10 +86,12 @@ class DataFetcher {
   }
 }
 
+/** @param {string} url */
 function looksLikeGoogleCloudStorage(url) {
   return url.startsWith('https://storage.googleapis.com/');
 }
 
+/** @param {string} url */
 function parseGoogleCloudStorageUrl(url) {
   const re = /^https:\/\/storage\.googleapis\.com\/(?<bkt>[^\/]+)\/(?<file>.+)/;
   const match = re.exec(url);
@@ -84,6 +100,7 @@ function parseGoogleCloudStorageUrl(url) {
   return {bucket, file};
 }
 
+/** @param {Uint8Array} buf */
 function mallocBuffer(buf) {
   var dataPtr = Module._malloc(buf.byteLength);
   var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, buf.byteLength);
@@ -91,34 +108,33 @@ function mallocBuffer(buf) {
   return dataHeap;
 }
 
+/** @param {number} percent */
 function sendProgressMessage(percent) {
   // @ts-ignore
   self.postMessage({percent, id: 0});
 };
 
-async function Open(name) {
-  const wasmOpen = Module.cwrap('Open', 'number', ['string']);
-  const stringPtr = wasmOpen(name);
-  // Something has gone wrong if we get back a string longer than 67MB.
-  return JSON.parse(Module.UTF8ToString(stringPtr, 2 ** 26));
-}
-
-function loadSizeFile(isBefore, sizeBuffer) {
+/**
+ * @param {boolean} isBefore
+ * @param {Uint8Array} sizeBuffer
+ */
+function wasmLoadSizeFile(isBefore, sizeBuffer) {
   const heapBuffer = mallocBuffer(sizeBuffer);
-  const wasmLoadSizeFile = Module.cwrap(
+  const cwrapLoadSizeFile = Module.cwrap(
       isBefore ? 'LoadBeforeSizeFile' : 'LoadSizeFile', 'bool',
       ['number', 'number']);
   const start_time = Date.now();
-  wasmLoadSizeFile(heapBuffer.byteOffset, sizeBuffer.byteLength);
+  cwrapLoadSizeFile(heapBuffer.byteOffset, sizeBuffer.byteLength);
   console.log(
       'Loaded size file in ' + (Date.now() - start_time) / 1000.0 + ' seconds');
   Module._free(heapBuffer.byteOffset);
 }
 
-function loadSizeProperties() {
-  const wasmQueryProperty = Module.cwrap('QueryProperty', 'number', ['string']);
+function wasmLoadSizeProperties() {
+  const cwrapQueryProperty =
+      Module.cwrap('QueryProperty', 'number', ['string']);
   const getProperty = (key) => {
-    const stringPtr = wasmQueryProperty(key);
+    const stringPtr = cwrapQueryProperty(key);
     const r = Module.UTF8ToString(stringPtr, 2 ** 16);
     return r;
   };
@@ -127,9 +143,71 @@ function loadSizeProperties() {
   };
 }
 
-async function loadTree(input, accessToken, url, beforeUrl) {
-  const isUpload = input !== 'from-url://';
+/**
+ * @typedef {Object} BuildOptions
+ * @property {string} url
+ * @property {string} beforeUrl
+ * @property {boolean} methodCountMode
+ * @property {string} groupBy
+ * @property {string} includeRegex
+ * @property {string} excludeRegex
+ * @property {string} includeSections
+ * @property {number} minSymbolSize
+ * @property {number} flagToFilter
+ */
 
+/**
+ * Parse the options represented as a query string, into an object. Performs
+ * checks for valid values.
+ * @param {string} optionsStr Options encoded as query string.
+ * @return {BuildOptions}
+ */
+function parseOptions(optionsStr) {
+  const ret = /** @type {BuildOptions} */ ({});
+  const params = new URLSearchParams(optionsStr);
+
+  ret.url = params.get('load_url');
+  ret.beforeUrl = params.get('before_url');
+
+  ret.methodCountMode = params.has('method_count');
+  ret.groupBy = params.get('group_by') || 'source_path';
+
+  ret.includeRegex = params.get('include');
+  ret.excludeRegex = params.get('exclude');
+
+  ret.includeSections = params.get('type');
+  if (ret.methodCountMode) {
+    ret.includeSections = _DEX_METHOD_SYMBOL_TYPE;
+  } else if (  ret.includeSections === null) {
+    // Exclude native symbols by default.
+    const includeSectionsSet = new Set(_SYMBOL_TYPE_SET);
+    includeSectionsSet.delete('b');
+    ret.includeSections = Array.from(includeSectionsSet.values()).join('');
+  }
+
+  ret.minSymbolSize = Number(params.get('min_size'));
+  if (Number.isNaN(  ret.minSymbolSize)) {
+    ret.minSymbolSize = 0;
+  }
+
+  ret.flagToFilter = _NAMES_TO_FLAGS[params.get('flag_filter')] || 0;
+
+  return ret;
+}
+
+/**
+ * @param {string} input
+ * @param {?string} accessToken
+ * @param {string} optionsStr
+ * @return {Promise<!LoadTreeResults, Error>}
+ */
+async function loadTreeWorkhorse(input, accessToken, optionsStr) {
+  const {
+    url,
+    beforeUrl,
+  } = parseOptions(optionsStr);
+
+  const isUpload = (input !== 'from-url://');
   if (isUpload) {
     console.info('Displaying uploaded data');
   } else {
@@ -153,15 +231,15 @@ async function loadTree(input, accessToken, url, beforeUrl) {
     sendProgressMessage(.4);
     let beforeSizeBuffer = null;
     const beforeSizeBufferPromise = beforeFetcher?.fetchSizeBuffer();
-    await loadSizeFile(false, mainSizeBuffer);
+    wasmLoadSizeFile(false, mainSizeBuffer);
     sendProgressMessage(.6);
     if (beforeSizeBufferPromise) {
       beforeSizeBuffer = await beforeSizeBufferPromise;
       sendProgressMessage(.7);
-      await loadSizeFile(true, beforeSizeBuffer);
+      wasmLoadSizeFile(true, beforeSizeBuffer);
     }
     sendProgressMessage(.8);
-    const sizeProperties = await loadSizeProperties();
+    const sizeProperties = wasmLoadSizeProperties();
     isMultiContainer = sizeProperties.isMultiContainer;
     if (!isUpload) {
       loadBlobUrl = URL.createObjectURL(new Blob(
@@ -176,17 +254,29 @@ async function loadTree(input, accessToken, url, beforeUrl) {
     throw e;
   }
 
-  return {beforeBlobUrl, loadBlobUrl, isMultiContainer}
+  return {isMultiContainer, beforeBlobUrl, loadBlobUrl}
 }
 
-async function buildTree(
-    groupBy, includeRegex, excludeRegex, includeSections, minSymbolSize,
-    flagToFilter, methodCountMode) {
-  const wasmBuildTree = Module.cwrap(
+/**
+ * @param {string} optionsStr
+ * @return {Promise<boolean>}
+ */
+async function wasmBuildTree(optionsStr) {
+  const {
+    methodCountMode,
+    groupBy,
+    includeRegex,
+    excludeRegex,
+    includeSections,
+    minSymbolSize,
+    flagToFilter,
+  } = parseOptions(optionsStr);
+
+  const cwrapBuildTree = Module.cwrap(
       'BuildTree', 'bool',
       ['bool', 'string', 'string', 'string', 'string', 'number', 'number']);
   const start_time = Date.now();
-  const diffMode = wasmBuildTree(
+  const diffMode = cwrapBuildTree(
       methodCountMode, groupBy, includeRegex, excludeRegex,
       includeSections, minSymbolSize, flagToFilter);
   console.log(
@@ -195,83 +285,44 @@ async function buildTree(
 }
 
 /**
- * Parse the options represented as a query string, into an object.
- * Includes checks for valid values.
- * @param {string} options Query string
+ * @param {string} name
+ * @return {Promise<TreeNode>}
  */
-function parseOptions(options) {
-  const params = new URLSearchParams(options);
-
-  const groupBy = params.get('group_by') || 'source_path';
-  const methodCountMode = params.has('method_count');
-
-  const includeRegex = params.get('include');
-  const excludeRegex = params.get('exclude');
-
-  let includeSections = params.get('type');
-  if (methodCountMode) {
-    includeSections = _DEX_METHOD_SYMBOL_TYPE;
-  } else if (includeSections === null) {
-    // Exclude native symbols by default.
-    const includeSectionsSet = new Set(_SYMBOL_TYPE_SET);
-    includeSectionsSet.delete('b');
-    includeSections = Array.from(includeSectionsSet.values()).join('');
-  }
-
-  const minSymbolSize = Number(params.get('min_size'));
-  if (Number.isNaN(minSymbolSize)) {
-    minSymbolSize = 0;
-  }
-
-  const flagToFilter = _NAMES_TO_FLAGS[params.get('flag_filter')] || 0;
-  const url = params.get('load_url');
-  const beforeUrl = params.get('before_url');
-
-  return {
-    groupBy,
-    includeRegex,
-    excludeRegex,
-    includeSections,
-    minSymbolSize,
-    flagToFilter,
-    methodCountMode,
-    url,
-    beforeUrl,
-  };
+async function wasmOpen(name) {
+  const cwrapOpen = Module.cwrap('Open', 'number', ['string']);
+  const stringPtr = cwrapOpen(name);
+  // Something has gone wrong if we get back a string longer than 67MB.
+  return /** @type {TreeNode} */ (
+      JSON.parse(Module.UTF8ToString(stringPtr, 2 ** 26)));
 }
 
+/**
+ * The functions in `action` are referenced to by TreeWorker as strings, and
+ * destructured object parameters are specified by keys. When remaining these,
+ * be sure to update these strings / keys.
+ */
 const actions = {
   /**
-   * @param {{input:string,accessToken:?string,options:string}} param0
+   * @param {{input:string,accessToken:?string,optionsStr:string}} param0
+   * @return {Promise<BuildTreeResults, Error>}
    */
-  async loadAndBuildTree({input, accessToken, options}) {
-    const {
-      url,
-      beforeUrl,
-    } = parseOptions(options);
-
+  async loadAndBuildTree({input, accessToken, optionsStr}) {
     if (g_loadTreePromise) {
       // New loads should create new WebWorkers instead.
       throw new Error('loadTree with input called multiple times.');
     }
-    g_loadTreePromise = loadTree(input, accessToken, url, beforeUrl);
+    g_loadTreePromise = loadTreeWorkhorse(input, accessToken, optionsStr);
     const loadResults = await g_loadTreePromise;
-    const ret = await actions.buildTree({options});
+    const ret = await actions.buildTree({optionsStr});
     ret.loadResults = loadResults;
     return ret;
   },
 
-  async buildTree({options}) {
-    const {
-      groupBy,
-      includeRegex,
-      excludeRegex,
-      includeSections,
-      minSymbolSize,
-      flagToFilter,
-      methodCountMode,
-    } = parseOptions(options);
-
+  /**
+   * @param {{optionsStr:string}} param0
+   * @return {Promise<BuildTreeResults>}
+   */
+  async buildTree({optionsStr}) {
     // Ensure iniitial load is complete.
     await g_loadTreePromise;
 
@@ -282,25 +333,26 @@ const actions = {
     while (g_buildTreePromise) {
       await g_buildTreePromise;
     }
-    g_buildTreePromise = buildTree(
-        groupBy, includeRegex, excludeRegex, includeSections, minSymbolSize,
-        flagToFilter, methodCountMode);
+    g_buildTreePromise = wasmBuildTree(optionsStr);
 
     const diffMode = await g_buildTreePromise;
     g_buildTreePromise = null;
     sendProgressMessage(0.9);
-    const root = await Open('');
+    const root = await wasmOpen('');
     // TODO(crbug.com/1290946): Move diffMode to loadResults and do not store it
     //     the viewer's query parameters.
     return {
       root,
       diffMode,
+      loadResults: null,
     };
   },
 
-  /** @param {string} path */
+  /**
+   * @param {string} path
+   * @return {Promise<TreeNode>} */
   async open(path) {
-    return Open(path);
+    return wasmOpen(path);
   },
 };
 
