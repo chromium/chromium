@@ -14397,6 +14397,40 @@
        {}
       ]
      ],
+     "fragmented-inline-block-001-print.html": [
+      "848635431ecfc5ae3835cdc1f8398b1c04c95ed9",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "!="
+        ]
+       ],
+       {
+        "page_ranges": {
+         "/css/printing/fragmented-inline-block-001-print.html": [
+          [
+           10
+          ]
+         ]
+        }
+       }
+      ]
+     ],
+     "fragmented-inline-block-002-print.html": [
+      "c5390aad6c09085b76ffb2d5355f7f4a2def001d",
+      [
+       null,
+       [
+        [
+         "/css/printing/fragmented-inline-block-002-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-overflow-crash-print.html": [
       "e295c569d2d634867bab43741baf23c905918fc3",
       [
@@ -276112,6 +276146,10 @@
       "900edfa8897bff45e2d78035e657ad437257cb28",
       []
      ],
+     "cssom-getBoxQuads-002-expected.txt": [
+      "19b1b33baad44505e87356141791ffed7e0d19c7",
+      []
+     ],
      "elementFromPosition-expected.txt": [
       "2fe7e1c682c23a7ef036121aface45959c4cf180",
       []
@@ -277244,6 +277282,12 @@
        []
       ]
      }
+    },
+    "printing": {
+     "fragmented-inline-block-002-print-ref.html": [
+      "dcfa3a1385628a90cb2d1be17e8bf6da09cde20e",
+      []
+     ]
     },
     "reference": {
      "black_box_ends_when_blue_box_ends_6_boxes_ahem.html": [
@@ -384018,6 +384062,13 @@
      ],
      "cssom-getBoxQuads-001.html": [
       "25c3e934ac92d6b44f601e3655da2ae2f0208ac8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cssom-getBoxQuads-002.html": [
+      "24c6a1935ce7f66b99f8e8d1598b030cc126c9a1",
       [
        null,
        {}
