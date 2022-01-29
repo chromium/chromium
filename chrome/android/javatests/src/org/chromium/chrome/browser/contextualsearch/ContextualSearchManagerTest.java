@@ -1757,7 +1757,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285, https://crbug.com/1192561")
+    // Previously flaky, disabled 4/2021.  https://crbug.com/1192285, https://crbug.com/1192561
     public void testResolveGestureSelects(@EnabledFeature int enabledFeature) throws Exception {
         simulateResolveSearch("intelligence");
         Assert.assertEquals("Intelligence", getSelectedText());
