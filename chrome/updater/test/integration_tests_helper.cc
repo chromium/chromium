@@ -254,6 +254,8 @@ void AppTestHelper::FirstTaskRun() {
      WithSystemScope(Wrap(&SetupFakeLegacyUpdaterData))},
     {"expect_legacy_updater_data_migrated",
      WithSystemScope(Wrap(&ExpectLegacyUpdaterDataMigrated))},
+    {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
+    {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
   };
 
   const base::CommandLine* command_line =

@@ -195,6 +195,10 @@ void CallServiceUpdate(UpdaterScope updater_scope,
 void SetupFakeLegacyUpdaterData(UpdaterScope scope);
 void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope);
 
+void ExpectLastChecked(UpdaterScope scope);
+
+void ExpectLastStarted(UpdaterScope scope);
+
 }  // namespace test
 }  // namespace updater
 

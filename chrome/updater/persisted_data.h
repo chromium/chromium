@@ -17,6 +17,7 @@ class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
+class Time;
 class Value;
 class Version;
 }  // namespace base
@@ -83,6 +84,20 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   bool GetHadApps() const;
   void SetHadApps();
 
+  // LastChecked is set when the updater completed successfully a call to
+  // `UpdateService::UpdateAll` as indicated by the `UpdateService::Result`
+  // argument of the completion callback. This means that the execution path
+  // for updating all applications works end to end, including communicating
+  // with the backend.
+  base::Time GetLastChecked() const;
+  void SetLastChecked(const base::Time& time);
+
+  // LastStarted is set when `UpdateService::RunPeriodicTasks` is called. This
+  // indicates that the mechanism to initiate automated update checks is
+  // working.
+  base::Time GetLastStarted() const;
+  void SetLastStarted(const base::Time& time);
+
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;
   ~PersistedData();
@@ -97,6 +112,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   void SetString(const std::string& id,
                  const std::string& key,
                  const std::string& value);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned by this class.

@@ -9,8 +9,10 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +22,7 @@ namespace updater {
 TEST(PersistedDataTest, Simple) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(pref.get());
 
   EXPECT_FALSE(metadata->GetProductVersion("someappid").IsValid());
@@ -43,6 +46,13 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_TRUE(base::Contains(app_ids, "someappid"));
   EXPECT_TRUE(base::Contains(app_ids, "appid1"));
   EXPECT_FALSE(base::Contains(app_ids, "appid2-nopv"));  // No valid pv.
+
+  const base::Time time1 = base::Time::FromJsTime(10000);
+  metadata->SetLastChecked(time1);
+  EXPECT_EQ(metadata->GetLastChecked(), time1);
+  const base::Time time2 = base::Time::FromJsTime(20000);
+  metadata->SetLastStarted(time2);
+  EXPECT_EQ(metadata->GetLastStarted(), time2);
 }
 
 TEST(PersistedDataTest, RegistrationRequest) {

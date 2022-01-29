@@ -38,8 +38,6 @@ const char kPrefServerStarts[] = "server_starts";
 
 }  // namespace
 
-const char kPrefUpdateTime[] = "update_time";
-
 UpdaterPrefsImpl::UpdaterPrefsImpl(std::unique_ptr<ScopedPrefsLock> lock,
                                    std::unique_ptr<PrefService> prefs)
     : lock_(std::move(lock)), prefs_(std::move(prefs)) {}
@@ -110,7 +108,6 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   pref_registry->RegisterBooleanPref(kPrefSwapping, false);
   pref_registry->RegisterBooleanPref(kPrefMigratedLegacyUpdaters, false);
   pref_registry->RegisterStringPref(kPrefActiveVersion, "0");
-  pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
   pref_registry->RegisterIntegerPref(kPrefServerStarts, 0);
   RegisterPersistedDataPrefs(pref_registry);
 
@@ -131,7 +128,6 @@ scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   update_client::RegisterPrefs(pref_registry.get());
   pref_registry->RegisterBooleanPref(kPrefQualified, false);
-  pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
   RegisterPersistedDataPrefs(pref_registry);
 
   return base::MakeRefCounted<UpdaterPrefsImpl>(

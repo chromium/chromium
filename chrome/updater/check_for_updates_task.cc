@@ -33,7 +33,8 @@
 namespace updater {
 namespace {
 
-bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
+bool ShouldSkipCheck(scoped_refptr<Configurator> config,
+                     scoped_refptr<updater::PersistedData> persisted_data) {
   // Skip if periodic updates are disabled altogether.
   const int check_delay_seconds = config->NextCheckDelay();
   if (check_delay_seconds == 0) {
@@ -43,8 +44,7 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
 
   // Skip if the most recent check was too recent (and not in the future).
   const base::TimeDelta time_since_update =
-      base::Time::NowFromSystemTime() -
-      config->GetPrefService()->GetTime(kPrefUpdateTime);
+      base::Time::NowFromSystemTime() - persisted_data->GetLastChecked();
   if (base::TimeDelta() < time_since_update &&
       time_since_update < base::Seconds(check_delay_seconds)) {
     VLOG(0) << "Skipping checking for updates: last update was "
@@ -110,7 +110,7 @@ bool CheckForUpdatesTask::WaitingOnUninstallPings() const {
 void CheckForUpdatesTask::MaybeCheckForUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (ShouldSkipCheck(config_)) {
+  if (ShouldSkipCheck(config_, persisted_data_)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone, this));
@@ -122,20 +122,12 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
       base::BindOnce(
           std::move(update_checker_),
           base::BindOnce(
-              [](base::OnceClosure closure, scoped_refptr<Configurator> config,
-                 UpdateService::Result result) {
-                const int exit_code = static_cast<int>(result);
-                VLOG(0) << "Check for update task complete: exit_code = "
-                        << exit_code;
-                if (result == UpdateService::Result::kSuccess) {
-                  config->GetPrefService()->SetTime(
-                      kPrefUpdateTime, base::Time::NowFromSystemTime());
-                }
+              [](base::OnceClosure closure, UpdateService::Result result) {
+                VLOG(0) << "Check for update task complete: " << result;
                 std::move(closure).Run();
               },
               base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone,
-                             this),
-              config_)),
+                             this))),
       base::Seconds(config_->InitialDelay()));
 }
 

@@ -207,6 +207,14 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectLegacyUpdaterDataMigrated(updater_scope_);
   }
 
+  void ExpectLastChecked() const override {
+    updater::test::ExpectLastChecked(updater_scope_);
+  }
+
+  void ExpectLastStarted() const override {
+    updater::test::ExpectLastStarted(updater_scope_);
+  }
+
  private:
   ~IntegrationTestCommandsUser() override = default;
 

@@ -230,6 +230,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_legacy_updater_data_migrated");
   }
 
+  void ExpectLastChecked() const override { RunCommand("expect_last_checked"); }
+
+  void ExpectLastStarted() const override { RunCommand("expect_last_started"); }
+
  private:
   ~IntegrationTestCommandsSystem() override = default;
 

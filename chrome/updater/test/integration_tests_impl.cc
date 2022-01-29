@@ -580,5 +580,19 @@ void CallServiceUpdate(UpdaterScope updater_scope,
   loop.Run();
 }
 
+void ExpectLastChecked(UpdaterScope updater_scope) {
+  EXPECT_FALSE(base::MakeRefCounted<PersistedData>(
+                   CreateGlobalPrefs(updater_scope)->GetPrefService())
+                   ->GetLastChecked()
+                   .is_null());
+}
+
+void ExpectLastStarted(UpdaterScope updater_scope) {
+  EXPECT_FALSE(base::MakeRefCounted<PersistedData>(
+                   CreateGlobalPrefs(updater_scope)->GetPrefService())
+                   ->GetLastStarted()
+                   .is_null());
+}
+
 }  // namespace test
 }  // namespace updater

@@ -273,6 +273,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyUpdaterDataMigrated();
   }
 
+  void ExpectLastChecked() { test_commands_->ExpectLastChecked(); }
+
+  void ExpectLastStarted() { test_commands_->ExpectLastStarted(); }
+
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
  private:
@@ -424,6 +428,8 @@ TEST_F(IntegrationTest, UpdateApp) {
   Update(kAppId);
   WaitForUpdaterExit();
   ExpectAppVersion(kAppId, v2);
+  ExpectLastChecked();
+  ExpectLastStarted();
 
   Uninstall();
   Clean();

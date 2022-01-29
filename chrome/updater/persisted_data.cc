@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -29,6 +30,10 @@ constexpr char kBP[] = "bp";    // Key for storing brand path.
 constexpr char kAP[] = "ap";    // Key for storing ap.
 
 constexpr char kHadApps[] = "had_apps";
+
+// TODO(crbug.com/1292189): rename "updater_time" to "last_checked".
+constexpr char kLastChecked[] = "update_time";
+constexpr char kLastStarted[] = "last_started";
 
 }  // namespace
 
@@ -210,10 +215,34 @@ void PersistedData::SetHadApps() {
     pref_service_->SetBoolean(kHadApps, true);
 }
 
+base::Time PersistedData::GetLastChecked() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetTime(kLastChecked);
+}
+
+void PersistedData::SetLastChecked(const base::Time& time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_)
+    pref_service_->SetTime(kLastChecked, time);
+}
+
+base::Time PersistedData::GetLastStarted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetTime(kLastStarted);
+}
+
+void PersistedData::SetLastStarted(const base::Time& time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_)
+    pref_service_->SetTime(kLastStarted, time);
+}
+
 // Register persisted data prefs, except for kPersistedDataPreference.
 // kPersistedDataPreference is registered by update_client::RegisterPrefs.
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterBooleanPref(kHadApps, false);
+  registry->RegisterTimePref(kLastChecked, {});
+  registry->RegisterTimePref(kLastStarted, {});
 }
 
 }  // namespace updater
