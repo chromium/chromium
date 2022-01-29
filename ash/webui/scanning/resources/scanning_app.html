@@ -148,14 +148,26 @@
   }
 
   #getHelpLink {
-    color: var(--google-blue-300);
+    color: var(--cros-link-color);
     text-decoration: none;
   }
 
   #dialogInfoIcon {
     display: block;
-    fill: var(--google-red-600);
+    fill: var(--cros-icon-color-alert);
     margin-bottom: 14px;
+  }
+
+  #scanFailedDialog [slot=body] {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #scanFailedDialog [slot=title] {
+    color: var(--cros-text-color-primary);
+  }
+
+  cr-dialog#scanFailedDialog::part(dialog) {
+    background-color: var(--cros-bg-color-elevation-3);
   }
 </style>
 <div id="scanningContainer">
