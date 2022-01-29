@@ -312,12 +312,6 @@ bool PDFiumEngineExports::RenderPDFPageToDC(
   return true;
 }
 
-void PDFiumEngineExports::SetPDFEnsureTypefaceCharactersAccessible(
-    PDFEnsureTypefaceCharactersAccessible func) {
-  FPDF_SetTypefaceAccessibleFunc(
-      reinterpret_cast<PDFiumEnsureTypefaceCharactersAccessible>(func));
-}
-
 void PDFiumEngineExports::SetPDFUsePrintMode(int mode) {
   FPDF_SetPrintMode(mode);
 }

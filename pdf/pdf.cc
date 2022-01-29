@@ -71,11 +71,6 @@ bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
                                            dc);
 }
 
-void SetPDFEnsureTypefaceCharactersAccessible(
-    PDFEnsureTypefaceCharactersAccessible func) {
-  PDFEngineExports::Get()->SetPDFEnsureTypefaceCharactersAccessible(func);
-}
-
 void SetPDFUsePrintMode(int mode) {
   PDFEngineExports::Get()->SetPDFUsePrintMode(mode);
 }

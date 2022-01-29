@@ -16,12 +16,6 @@
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_WIN)
-typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
-                                                      const wchar_t* text,
-                                                      size_t text_length);
-#endif
-
 namespace gfx {
 class Rect;
 class Size;
@@ -94,9 +88,6 @@ bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
                        bool center_in_bounds,
                        bool autorotate,
                        bool use_color);
-
-void SetPDFEnsureTypefaceCharactersAccessible(
-    PDFEnsureTypefaceCharactersAccessible func);
 
 void SetPDFUsePrintMode(int mode);
 #endif  // BUILDFLAG(IS_WIN)

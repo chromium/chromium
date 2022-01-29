@@ -31,12 +31,6 @@
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_WIN)
-typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
-                                                      const wchar_t* text,
-                                                      size_t text_length);
-#endif
-
 class SkBitmap;
 
 namespace base {
@@ -534,9 +528,6 @@ class PDFEngineExports {
                                  int page_number,
                                  const RenderingSettings& settings,
                                  HDC dc) = 0;
-
-  virtual void SetPDFEnsureTypefaceCharactersAccessible(
-      PDFEnsureTypefaceCharactersAccessible func) = 0;
 
   virtual void SetPDFUsePrintMode(int mode) = 0;
 #endif  // BUILDFLAG(IS_WIN)

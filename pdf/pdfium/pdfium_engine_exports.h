@@ -30,9 +30,6 @@ class PDFiumEngineExports : public PDFEngineExports {
                          int page_number,
                          const RenderingSettings& settings,
                          HDC dc) override;
-  void SetPDFEnsureTypefaceCharactersAccessible(
-      PDFEnsureTypefaceCharactersAccessible func) override;
-
   void SetPDFUsePrintMode(int mode) override;
 #endif  // BUILDFLAG(IS_WIN)
   bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,

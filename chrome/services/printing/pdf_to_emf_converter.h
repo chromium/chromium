@@ -15,8 +15,7 @@ namespace printing {
 class PdfToEmfConverter : public mojom::PdfToEmfConverter {
  public:
   PdfToEmfConverter(base::ReadOnlySharedMemoryRegion pdf_region,
-                    const PdfRenderSettings& render_settings,
-                    mojo::PendingRemote<mojom::PdfToEmfConverterClient> client);
+                    const PdfRenderSettings& render_settings);
 
   PdfToEmfConverter(const PdfToEmfConverter&) = delete;
   PdfToEmfConverter& operator=(const PdfToEmfConverter&) = delete;
