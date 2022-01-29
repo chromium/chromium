@@ -44,6 +44,7 @@ include_rules = [
   "+components/services/heap_profiling",
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
+  "+components/tracing/common",
   "+components/url_formatter",
   "+components/user_prefs",
   "+components/variations",
@@ -133,4 +134,6 @@ include_rules = [
   "+third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h",
   # For the content_browser overlay manifest
   "+third_party/blink/public/mojom/input",
+  # For background tracing setup.
+  "+third_party/metrics_proto",
 ]

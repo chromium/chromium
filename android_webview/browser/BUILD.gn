@@ -184,6 +184,8 @@ source_set("browser") {
     "scoped_add_feature_flags.h",
     "state_serializer.cc",
     "state_serializer.h",
+    "tracing/aw_background_tracing_metrics_provider.cc",
+    "tracing/aw_background_tracing_metrics_provider.h",
     "tracing/aw_trace_event_args_allowlist.cc",
     "tracing/aw_trace_event_args_allowlist.h",
     "tracing/aw_tracing_controller.cc",
