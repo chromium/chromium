@@ -1168,6 +1168,14 @@ bool FrameImpl::DidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id) {
+  // Prevent logging when log_level_ is 0. See crbug.com/1292187.
+  // TODO(crbug.com/1292208): Convert to DCHECK when FUCHSIA_LOG_NONE
+  // is defined to be greater than other log levels.
+  if (log_level_ == 0) {
+    // Prevent the default logging mechanism from logging the message.
+    return true;
+  }
+
   FuchsiaLogSeverity severity =
       BlinkConsoleMessageLevelToFxLogSeverity(log_level);
   if (severity < log_level_) {
