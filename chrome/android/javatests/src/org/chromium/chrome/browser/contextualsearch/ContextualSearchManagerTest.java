@@ -3617,7 +3617,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1180304")
+    // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
     public void testTriggeringContextualSearchHidesFindInPageOverlay(
             @EnabledFeature int enabledFeature) throws Exception {
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
