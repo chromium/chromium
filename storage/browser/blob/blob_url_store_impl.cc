@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/strcat.h"
+#include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
@@ -137,6 +138,14 @@ void BlobURLStoreImpl::ResolveForNavigation(
 
 bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
                                       const char* method) const {
+  // TODO(crbug.com/1278268): Remove crash keys.
+  static crash_reporter::CrashKeyString<256> origin_key("origin");
+  static crash_reporter::CrashKeyString<256> url_key("url");
+  crash_reporter::ScopedCrashKeyString scoped_origin_key(
+      &origin_key, origin_.GetDebugString());
+  crash_reporter::ScopedCrashKeyString scoped_url_key(
+      &url_key, url.possibly_invalid_spec());
+
   if (!url.SchemeIsBlob()) {
     mojo::ReportBadMessage(
         base::StrCat({"Invalid scheme passed to BlobURLStore::", method}));

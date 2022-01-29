@@ -234,6 +234,7 @@ component("browser") {
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//components/crash/core/common:crash_key",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/cpp/filesystem",
     "//mojo/public/cpp/bindings",
