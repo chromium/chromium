@@ -715,6 +715,10 @@ class QuotaManagerImpl::StorageKeyGathererTask {
 // usage is not being tracked by QuotaClients yet.
 // TODO(crbug.com/1199417): Update to call QuotaClients to clear data for
 // non-default buckets when QuotaClient is migrated to operate on buckets.
+//
+// `callback` will run to return the status of the deletion on task completion,
+// followed by `completion_closure` which will be called to destroy itself by
+// its owner. Neither callback will outlive the BucketDataDeleter.
 class QuotaManagerImpl::BucketDataDeleter {
  public:
   BucketDataDeleter(
@@ -742,6 +746,12 @@ class QuotaManagerImpl::BucketDataDeleter {
   }
 
   void Run() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if DCHECK_IS_ON()
+    DCHECK(!run_called_) << __func__ << " already called";
+    run_called_ = true;
+#endif  // DCHECK_IS_ON()
+
     DCHECK(manager_->client_types_.contains(bucket_.type));
 
     // If bucket is not the default bucket, skip calls to the registered
@@ -786,6 +796,7 @@ class QuotaManagerImpl::BucketDataDeleter {
  private:
   void DidDeleteBucketData(int tracing_id,
                            blink::mojom::QuotaStatusCode status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GT(remaining_clients_, 0U);
     TRACE_EVENT_NESTABLE_ASYNC_END0(
         "browsing_data", "QuotaManagerImpl::BucketDataDeleter", tracing_id);
@@ -798,6 +809,8 @@ class QuotaManagerImpl::BucketDataDeleter {
   }
 
   void FinishDeletion() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     // Only remove the bucket from the database if we didn't skip any client
     // types.
     if (skipped_clients_ == 0 && error_count_ == 0) {
@@ -811,11 +824,16 @@ class QuotaManagerImpl::BucketDataDeleter {
   }
 
   void DidDeleteBucketFromDatabase(QuotaError result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     manager_->DidDatabaseWork(result != QuotaError::kDatabaseError);
     Complete(result == QuotaError::kNone);
   }
 
   void Complete(bool success) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(callback_);
+    DCHECK(completion_closure_);
+
     std::move(callback_).Run(
         success ? blink::mojom::QuotaStatusCode::kOk
                 : blink::mojom::QuotaStatusCode::kErrorInvalidModification);
@@ -824,22 +842,31 @@ class QuotaManagerImpl::BucketDataDeleter {
     std::move(completion_closure_).Run(this);
   }
 
-  QuotaManagerImpl* const manager_;
+  SEQUENCE_CHECKER(sequence_checker_);
+  QuotaManagerImpl* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
   const BucketLocator bucket_;
   const QuotaClientTypes quota_client_types_;
-  int error_count_ = 0;
-  size_t remaining_clients_ = 0;
-  int skipped_clients_ = 0;
+  int error_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  size_t remaining_clients_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int skipped_clients_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   StatusCallback callback_;
   base::OnceCallback<void(BucketDataDeleter*)> completion_closure_;
 
-  base::WeakPtrFactory<BucketDataDeleter> weak_factory_{this};
+#if DCHECK_IS_ON()
+  bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+#endif  // DCHECK_IS_ON()
+
+  base::WeakPtrFactory<BucketDataDeleter> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 // Retrieves all buckets for `host` from QuotaDatabase and calls
 // BucketDataDeleter for `quota_client_types` for each bucket.
 // If BucketDataDeleter is called for all registered QuotaClientTypes,
 // BucketDataDeleter will remove the bucket from QuotaDatabase.
+// `callback` will run to return the status of the deletion on task completion,
+// followed by `completion_closure` which will be called to destroy itself by
+// its owner. Neither will callbacks will outlive the deleter.
 class QuotaManagerImpl::HostDataDeleter {
  public:
   HostDataDeleter(QuotaManagerImpl* manager,
@@ -868,6 +895,7 @@ class QuotaManagerImpl::HostDataDeleter {
   }
 
   void Run() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
     DCHECK(!run_called_) << __func__ << " already called";
     run_called_ = true;
@@ -882,6 +910,7 @@ class QuotaManagerImpl::HostDataDeleter {
 
  private:
   void DidGetBucketsForHost(QuotaErrorOr<std::set<BucketLocator>> result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!result.ok()) {
       Complete(/*success=*/false);
       return;
@@ -896,24 +925,32 @@ class QuotaManagerImpl::HostDataDeleter {
   }
 
   void ScheduleBucketsDeletion() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     for (const auto& bucket : buckets_) {
+      // base::Unretained() is safe here because `this` is guaranteed to outlive
+      // the callbacks, thanks to an indirect ownership chain. `this` owns the
+      // BucketDataDeleter created here, which guarantees it will only use the
+      // callbacks when it's alive.
       auto bucket_deleter = std::make_unique<BucketDataDeleter>(
           manager_, bucket, quota_client_types_,
           base::BindOnce(&HostDataDeleter::DidDeleteBucketData,
-                         weak_factory_.GetWeakPtr()),
+                         base::Unretained(this)),
           base::BindOnce(&HostDataDeleter::FinishedBucketDeletion,
-                         weak_factory_.GetWeakPtr()));
-      bucket_deleter->Run();
-      bucket_deleters_[bucket_deleter.get()] = std::move(bucket_deleter);
+                         base::Unretained(this)));
+      auto* bucket_deleter_ptr = bucket_deleter.get();
+      bucket_deleters_[bucket_deleter_ptr] = std::move(bucket_deleter);
+      bucket_deleter_ptr->Run();
     }
   }
 
   void DidDeleteBucketData(blink::mojom::QuotaStatusCode status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (status != blink::mojom::QuotaStatusCode::kOk)
       ++error_count_;
   }
 
   void FinishedBucketDeletion(BucketDataDeleter* deleter) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(deleter->completed());
     bucket_deleters_.erase(deleter);
 
@@ -922,6 +959,10 @@ class QuotaManagerImpl::HostDataDeleter {
   }
 
   void Complete(bool success) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(callback_);
+    DCHECK(completion_closure_);
+
     std::move(callback_).Run(
         success ? blink::mojom::QuotaStatusCode::kOk
                 : blink::mojom::QuotaStatusCode::kErrorInvalidModification);
@@ -930,19 +971,20 @@ class QuotaManagerImpl::HostDataDeleter {
     std::move(completion_closure_).Run(this);
   }
 
-  QuotaManagerImpl* const manager_;
+  SEQUENCE_CHECKER(sequence_checker_);
+  QuotaManagerImpl* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
   const std::string host_;
   const StorageType type_;
   const QuotaClientTypes quota_client_types_;
   std::map<BucketDataDeleter*, std::unique_ptr<BucketDataDeleter>>
       bucket_deleters_;
   std::set<BucketLocator> buckets_;
-  int error_count_ = 0;
+  int error_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   StatusCallback callback_;
   base::OnceCallback<void(HostDataDeleter*)> completion_closure_;
 
 #if DCHECK_IS_ON()
-  bool run_called_ = false;
+  bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 #endif  // DCHECK_IS_ON()
 
   base::WeakPtrFactory<HostDataDeleter> weak_factory_{this};
@@ -1430,8 +1472,9 @@ void QuotaManagerImpl::DeleteHostData(const std::string& host,
       this, host, type, std::move(quota_client_types), std::move(callback),
       base::BindOnce(&QuotaManagerImpl::DidDeleteHostData,
                      weak_factory_.GetWeakPtr()));
-  host_deleter->Run();
-  host_data_deleters_[host_deleter.get()] = std::move(host_deleter);
+  auto* host_deleter_ptr = host_deleter.get();
+  host_data_deleters_[host_deleter_ptr] = std::move(host_deleter);
+  host_deleter_ptr->Run();
 }
 
 void QuotaManagerImpl::DidDeleteHostData(HostDataDeleter* deleter) {
@@ -1930,8 +1973,9 @@ void QuotaManagerImpl::DeleteBucketDataInternal(
       this, bucket, std::move(quota_client_types), std::move(callback),
       base::BindOnce(&QuotaManagerImpl::DidDeleteBucketData,
                      weak_factory_.GetWeakPtr()));
-  bucket_deleter->Run();
-  bucket_data_deleters_[bucket_deleter.get()] = std::move(bucket_deleter);
+  auto* bucket_deleter_ptr = bucket_deleter.get();
+  bucket_data_deleters_[bucket_deleter_ptr] = std::move(bucket_deleter);
+  bucket_deleter_ptr->Run();
 }
 
 void QuotaManagerImpl::DidDeleteBucketData(BucketDataDeleter* deleter) {
