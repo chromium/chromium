@@ -236,7 +236,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       return RespondNow(Error(std::move(error)));
 
     if (extension()->GetType() == Manifest::TYPE_EXTENSION) {
-      // Whitelisted IME extensions are allowed to use this API to create IME
+      // Allowlisted IME extensions are allowed to use this API to create IME
       // specific windows to show accented characters or suggestions.
       if (!extension()->permissions_data()->HasAPIPermission(
               mojom::APIPermissionID::kImeWindowEnabled)) {
@@ -267,7 +267,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
 
     if (options->alpha_enabled.get()) {
-      const char* const kWhitelist[] = {
+      const char* const kAllowlist[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
         "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/425539
@@ -285,8 +285,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
         "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"
       };
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
-          !SimpleFeature::IsIdInArray(extension_id(), kWhitelist,
-                                      base::size(kWhitelist))) {
+          !SimpleFeature::IsIdInArray(extension_id(), kAllowlist,
+                                      base::size(kAllowlist))) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }

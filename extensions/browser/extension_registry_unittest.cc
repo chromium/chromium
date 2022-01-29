@@ -170,7 +170,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
   scoped_refptr<const Extension> terminated =
       ExtensionBuilder("terminated").Build();
   scoped_refptr<const Extension> blocklisted =
-      ExtensionBuilder("blacklisted").Build();
+      ExtensionBuilder("blocklisted").Build();
 
   // Add an extension to each set.
   registry.AddEnabled(enabled);

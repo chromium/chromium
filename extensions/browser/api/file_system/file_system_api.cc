@@ -1075,7 +1075,7 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
+  // Additionally it is enabled for allowlisted component extensions and apps.
   if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
                                     *extension()) ==
       FileSystemDelegate::kGrantNone) {
@@ -1114,7 +1114,7 @@ ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
+  // Additionally it is enabled for allowlisted component extensions and apps.
   if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
                                     *extension()) ==
       FileSystemDelegate::kGrantNone) {

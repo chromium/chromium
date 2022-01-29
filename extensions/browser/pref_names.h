@@ -33,7 +33,7 @@ extern const char kAlertsInitialized[];
 extern const char kAllowedInstallSites[];
 
 // A list of allowed extension types. Extensions can only be installed if their
-// type is on this whitelist or alternatively on kInstallAllowList or
+// type is on this allowlist or alternatively on kInstallAllowList or
 // kInstallForceList.
 extern const char kAllowedTypes[];
 
@@ -55,7 +55,7 @@ extern const char kExtensionManagement[];
 // Policy that indicates whether CRX2 extension updates are allowed.
 extern const char kInsecureExtensionUpdatesEnabled[];
 
-// A whitelist of extension ids the user can install: exceptions from the
+// A allowlist of extension ids the user can install: exceptions from the
 // following denylist.
 extern const char kInstallAllowList[];
 

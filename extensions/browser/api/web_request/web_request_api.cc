@@ -700,7 +700,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
   if (!MayHaveProxies()) {
     bool skip_proxy = true;
-    // There are a few internal WebUIs that use WebView tag that are whitelisted
+    // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
     if (web_contents && WebViewGuest::IsGuest(web_contents)) {
       auto* guest_web_contents =
@@ -1618,12 +1618,12 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
 
     // In Public Sessions we want to restrict access to security or privacy
     // sensitive data. Data is filtered for *all* listeners, not only extensions
-    // which are force-installed by policy. Whitelisted extensions are exempt
+    // which are force-installed by policy. Allowlisted extensions are exempt
     // from this filtering.
     WebRequestEventDetails* custom_event_details = event_details.get();
     if (extension_web_request_api_helpers::
             ArePublicSessionRestrictionsEnabled() &&
-        !extensions::IsWhitelistedForPublicSession(listener->id.extension_id)) {
+        !extensions::IsAllowlistedForPublicSession(listener->id.extension_id)) {
       if (!event_details_filtered_copy) {
         event_details_filtered_copy =
             event_details->CreatePublicSessionCopy();
@@ -2741,10 +2741,10 @@ WebRequestInternalEventHandledFunction::Run() {
         dict_value.FindKey("responseHeaders");
 
     // In Public Session we restrict everything but "cancel" (except for
-    // whitelisted extensions which have no such restrictions).
+    // allowlisted extensions which have no such restrictions).
     if (extension_web_request_api_helpers::
             ArePublicSessionRestrictionsEnabled() &&
-        !extensions::IsWhitelistedForPublicSession(extension_id_safe()) &&
+        !extensions::IsAllowlistedForPublicSession(extension_id_safe()) &&
         (redirect_url_value || auth_credentials_value ||
          request_headers_value || response_headers_value)) {
       OnError(event_name, sub_event_name, request_id, render_process_id,

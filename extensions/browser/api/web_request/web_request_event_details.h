@@ -109,12 +109,12 @@ class WebRequestEventDetails {
   // dictionary is empty.
   std::unique_ptr<base::DictionaryValue> GetAndClearDict();
 
-  // Returns a filtered copy with only whitelisted data for public session.
+  // Returns a filtered copy with only allowlisted data for public session.
   std::unique_ptr<WebRequestEventDetails> CreatePublicSessionCopy();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      WebRequestEventDetailsTest, WhitelistedCopyForPublicSession);
+  FRIEND_TEST_ALL_PREFIXES(WebRequestEventDetailsTest,
+                           AllowlistedCopyForPublicSession);
 
   // Empty constructor used in unittests.
   WebRequestEventDetails();

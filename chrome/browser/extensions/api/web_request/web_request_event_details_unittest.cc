@@ -19,7 +19,7 @@
 
 namespace extensions {
 
-TEST(WebRequestEventDetailsTest, WhitelistedCopyForPublicSession) {
+TEST(WebRequestEventDetailsTest, AllowlistedCopyForPublicSession) {
   // Create original, and populate it with some values.
   std::unique_ptr<WebRequestEventDetails> orig(new WebRequestEventDetails);
 

@@ -817,7 +817,7 @@ DeviceLocalAccountManagementPolicyProvider::
 // static
 bool DeviceLocalAccountManagementPolicyProvider::IsWhitelisted(
     const std::string& extension_id) {
-  return extensions::IsWhitelistedForPublicSession(extension_id);
+  return extensions::IsAllowlistedForPublicSession(extension_id);
 }
 
 std::string DeviceLocalAccountManagementPolicyProvider::
