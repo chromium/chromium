@@ -101,6 +101,9 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1279285: Flaky.
   "policy.AllowWakeLocks",
 
+  # https://crbug.com/1285206
+  "policy.DeveloperToolsAvailability",
+
   # https://crbug.com/1281645
   "quicksettings.LockScreen",
 
@@ -131,6 +134,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardChangeInput",
   "inputs.PhysicalKeyboardAutocorrect.en_us_1",
   "inputs.PhysicalKeyboardDeadKeys.us_intl_acute",
+
+  # https://crbug.com/1260046
+  "wmp.WindowCycle",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
