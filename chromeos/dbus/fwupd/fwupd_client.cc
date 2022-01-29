@@ -184,14 +184,16 @@ class FwupdClientImpl : public FwupdClient {
                               dbus::ErrorResponse* error_response) {
     bool can_parse = true;
     if (!response) {
-      LOG(ERROR) << "No Dbus response received from fwupd.";
+      // This isn't necessarily an error. Keep at verbose logging to prevent
+      // spam.
+      VLOG(1) << "No Dbus response received from fwupd.";
       can_parse = false;
     }
 
     dbus::MessageReader reader(response);
     dbus::MessageReader array_reader(nullptr);
 
-    if (!reader.PopArray(&array_reader)) {
+    if (can_parse && !reader.PopArray(&array_reader)) {
       LOG(ERROR) << "Failed to parse string from DBus Signal";
       can_parse = false;
     }
