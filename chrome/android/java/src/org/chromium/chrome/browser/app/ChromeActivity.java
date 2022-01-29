@@ -2546,13 +2546,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.disable_price_tracking_menu_id) {
-            // TODO(crbug.com/1266881): Add event here to support IPH.
             // TODO(crbug.com/1268976): Extract this code into a one-liner.
-            BookmarkId bookmarkId =
-                    mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
+            List<BookmarkId> bookmarkIds =
+                    PowerBookmarkUtils.getBookmarkIdsWithSharedClusterIdForTab(
+                            currentTab, mBookmarkBridgeSupplier.get());
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mSubscriptionsManager,
-                    mBookmarkBridgeSupplier.get(), bookmarkId,
-                    /*enabled=*/false, mSnackbarManager, getResources(), (status) -> {});
+                    mBookmarkBridgeSupplier.get(), bookmarkIds,
+                    /*enabled=*/false, mSnackbarManager, getResources());
             RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
         }

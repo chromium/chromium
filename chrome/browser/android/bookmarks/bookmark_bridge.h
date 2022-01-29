@@ -221,6 +221,11 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
                        jint type,
                        jint max_results);
 
+  void GetBookmarksOfType(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& obj,
+                          const base::android::JavaParamRef<jobject>& j_list,
+                          jint type);
+
   base::android::ScopedJavaLocalRef<jobject> AddFolder(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

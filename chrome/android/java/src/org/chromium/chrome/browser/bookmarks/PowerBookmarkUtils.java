@@ -28,9 +28,13 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Utilities for use in power bookmarks. */
 public class PowerBookmarkUtils {
     private static Boolean sPriceTrackingEligibleForTesting;
+    private static PowerBookmarkMeta sPowerBookmarkMetaForTesting;
 
     /**
      * Checks if the given tab is price-trackable.
@@ -41,7 +45,57 @@ public class PowerBookmarkUtils {
         if (tab == null) return false;
         if (sPriceTrackingEligibleForTesting != null) return sPriceTrackingEligibleForTesting;
 
-        return ShoppingDataProviderBridge.getForWebContents(tab.getWebContents()) != null;
+        return getPriceTrackingMetadataForTab(tab) != null;
+    }
+
+    /**
+     * Gets the price tracking metadata for the given tab.
+     * @param tab The tab to lookup the metadata for.
+     * @return The {@link PowerBookmarkMeta} for the given tab or null.
+     */
+    public static @Nullable PowerBookmarkMeta getPriceTrackingMetadataForTab(@Nullable Tab tab) {
+        if (tab == null) return null;
+        if (sPowerBookmarkMetaForTesting != null) return sPowerBookmarkMetaForTesting;
+
+        return ShoppingDataProviderBridge.getForWebContents(tab.getWebContents());
+    }
+
+    /**
+     * Lookup the cluster id for the given tab and retrieve the corresponding bookmark id which
+     * tracks the cluster id.
+     * @param tab The tab to lookup the {@link BookmarkId} for.
+     * @param bookmarkBridge The {@link BookmarkBridge} used to lookup bookmark data.
+     * @return The {@link BookmarkId} for the given tab or null.
+     */
+    public static List<BookmarkId> getBookmarkIdsWithSharedClusterIdForTab(
+            @Nullable Tab tab, BookmarkBridge bookmarkBridge) {
+        if (tab == null) return new ArrayList<>();
+        PowerBookmarkMeta meta = getPriceTrackingMetadataForTab(tab);
+        if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return new ArrayList<>();
+        return getBookmarkIdsForClusterId(
+                meta.getShoppingSpecifics().getProductClusterId(), bookmarkBridge);
+    }
+
+    /**
+     * Checks if the bookmark associated with the given cluster id has price tracking enabled.
+     * @param clusterId The cluster id to lookup.
+     * @param bookmarkBridge The {@link BookmarkBridge} used to lookup bookmark data.
+     * @return The {@link BookmarkId} for the given tab or null.
+     */
+    public static boolean isPriceTrackingEnabledForClusterId(
+            Long clusterId, BookmarkBridge bookmarkBridge) {
+        List<BookmarkId> productIds = getBookmarkIdsForClusterId(clusterId, bookmarkBridge);
+        for (BookmarkId productId : productIds) {
+            PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(productId);
+
+            // Return any of the bookmarks with the given cluster id are price-tracked.
+            if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING
+                    && meta.getShoppingSpecifics().getIsPriceTracked()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -81,13 +135,7 @@ public class PowerBookmarkUtils {
         Callback<Integer> wrapperCallback = (status) -> {
             if (bookmarkBridge.isDestroyed()) return;
             if (status == SubscriptionsManager.StatusCode.OK) {
-                bookmarkBridge.setPowerBookmarkMeta(bookmarkId,
-                        PowerBookmarkMeta.newBuilder(meta)
-                                .setShoppingSpecifics(
-                                        ShoppingSpecifics.newBuilder(meta.getShoppingSpecifics())
-                                                .setIsPriceTracked(enabled)
-                                                .build())
-                                .build());
+                setPriceTrackingEnabledInMetadata(bookmarkBridge, bookmarkId, enabled);
             }
             callback.onResult(status);
         };
@@ -97,6 +145,37 @@ public class PowerBookmarkUtils {
         } else {
             subscriptionsManager.unsubscribe(subscription, wrapperCallback);
         }
+    }
+
+    /**
+     * Sets the price-tracking status of the given bookmarks.
+     *
+     * @param subscriptionsManager Manages price-tracking subscriptions.
+     * @param bookmarkBridge The BookmarkBridge used to query bookmarks.
+     * @param bookmarkIds A list of BookmarkIds to set the price-tracking status of.
+     * @param enabled Whether price-tracking should be enabled.
+     * @param snackbarManager Manages snackbars, non-null if a message should be sent to alert the
+     *         users of price-tracking events.
+     * @param resources Used to retrieve resources.
+     */
+    public static void setPriceTrackingEnabledWithSnackbars(
+            @NonNull SubscriptionsManager subscriptionsManager,
+            @NonNull BookmarkBridge bookmarkBridge, @Nullable List<BookmarkId> bookmarkIds,
+            boolean enabled, SnackbarManager snackbarManager, Resources resources) {
+        if (bookmarkIds == null || bookmarkIds.size() == 0) return;
+
+        // Only the the first bookmark out of the list needs to query subscriptions manager.
+        BookmarkId id = bookmarkIds.get(0);
+        setPriceTrackingEnabledWithSnackbars(subscriptionsManager, bookmarkBridge, id, enabled,
+                snackbarManager, resources, (status) -> {
+                    if (status == SubscriptionsManager.StatusCode.OK) {
+                        // If the request was successful, set the metadata properly.
+                        for (int i = 1; i < bookmarkIds.size(); i++) {
+                            setPriceTrackingEnabledInMetadata(
+                                    bookmarkBridge, bookmarkIds.get(i), enabled);
+                        }
+                    }
+                });
     }
 
     /**
@@ -191,16 +270,54 @@ public class PowerBookmarkUtils {
         return bookmarkBridge.getPowerBookmarkMeta(bookmarkId);
     }
 
-    /** Sets the price-tracking eligibility to the test value given. */
-    public static void setPriceTrackingEligibleForTesting(@Nullable Boolean enabled) {
-        sPriceTrackingEligibleForTesting = enabled;
-    }
-
     /** @return Whether the price tracking flag is set in the bookmark's meta. */
     public static boolean isBookmarkPriceTracked(BookmarkModel model, BookmarkId id) {
         PowerBookmarkMeta meta = model.getPowerBookmarkMeta(id);
         if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return false;
 
         return meta.getShoppingSpecifics().getIsPriceTracked();
+    }
+
+    private static List<BookmarkId> getBookmarkIdsForClusterId(
+            Long clusterId, BookmarkBridge bookmarkBridge) {
+        List<BookmarkId> results = new ArrayList<>();
+        List<BookmarkId> products = bookmarkBridge.getBookmarksOfType(PowerBookmarkType.SHOPPING);
+        if (products == null || products.size() == 0) return results;
+
+        for (BookmarkId product : products) {
+            PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(product);
+            if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) continue;
+
+            Long productClusterId = meta.getShoppingSpecifics().getProductClusterId();
+            if (productClusterId.equals(clusterId)) {
+                results.add(product);
+            }
+        }
+
+        return results;
+    }
+
+    private static void setPriceTrackingEnabledInMetadata(@NonNull BookmarkBridge bookmarkBridge,
+            @Nullable BookmarkId bookmarkId, boolean enabled) {
+        PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(bookmarkId);
+        if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return;
+
+        bookmarkBridge.setPowerBookmarkMeta(bookmarkId,
+                PowerBookmarkMeta.newBuilder(meta)
+                        .setShoppingSpecifics(
+                                ShoppingSpecifics.newBuilder(meta.getShoppingSpecifics())
+                                        .setIsPriceTracked(enabled)
+                                        .build())
+                        .build());
+    }
+
+    /** Sets the price-tracking eligibility to the test value given. */
+    public static void setPriceTrackingEligibleForTesting(@Nullable Boolean enabled) {
+        sPriceTrackingEligibleForTesting = enabled;
+    }
+
+    /** Sets the current page meta to the test value given. */
+    public static void setPowerBookmarkMetaForTesting(@Nullable PowerBookmarkMeta meta) {
+        sPowerBookmarkMetaForTesting = meta;
     }
 }

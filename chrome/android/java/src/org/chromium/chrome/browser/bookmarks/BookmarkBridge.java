@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -762,6 +763,20 @@ public class BookmarkBridge {
     }
 
     /**
+     * Synchronously gets a list of bookmarks of the given type
+     * @param powerBookmarkType The type of power bookmark type to search for (or null for all).
+     * @return List of bookmark IDs that are related to the given query.
+     */
+    public List<BookmarkId> getBookmarksOfType(@NonNull PowerBookmarkType powerBookmarkType) {
+        ThreadUtils.assertOnUiThread();
+        List<BookmarkId> bookmarkMatches = new ArrayList<>();
+        int typeInt = powerBookmarkType.getNumber();
+        BookmarkBridgeJni.get().getBookmarksOfType(
+                mNativeBookmarkBridge, BookmarkBridge.this, bookmarkMatches, typeInt);
+        return bookmarkMatches;
+    }
+
+    /**
      * Set title of the given bookmark.
      */
     public void setBookmarkTitle(BookmarkId id, String title) {
@@ -1421,6 +1436,8 @@ public class BookmarkBridge {
         void searchBookmarks(long nativeBookmarkBridge, BookmarkBridge caller,
                 List<BookmarkId> bookmarkMatches, String query, String[] tags,
                 int powerBookmarkType, int maxNumber);
+        void getBookmarksOfType(long nativeBookmarkBridge, BookmarkBridge caller,
+                List<BookmarkId> bookmarkMatches, int powerBookmarkType);
         long init(BookmarkBridge caller, Profile profile);
         boolean isDoingExtensiveChanges(long nativeBookmarkBridge, BookmarkBridge caller);
         void destroy(long nativeBookmarkBridge, BookmarkBridge caller);

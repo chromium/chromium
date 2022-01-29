@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.appmenu;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -181,6 +182,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
 
         mBookmarkBridgeSupplier.set(mBookmarkBridge);
+        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
+        PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
@@ -766,15 +769,23 @@ public class AppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
 
-        doReturn(Mockito.mock(BookmarkId.class))
+        BookmarkId bookmarkId = Mockito.mock(BookmarkId.class);
+        List<BookmarkId> allBookmarks = new ArrayList<>();
+        allBookmarks.add(bookmarkId);
+        doReturn(bookmarkId).when(mBookmarkBridge).getUserBookmarkIdForTab(any());
+        doReturn(allBookmarks)
                 .when(mBookmarkBridge)
-                .getUserBookmarkIdForTab(any());
+                .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
+        Long clusterId = 1L;
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setType(PowerBookmarkType.SHOPPING)
-                        .setShoppingSpecifics(
-                                ShoppingSpecifics.newBuilder().setIsPriceTracked(true).build())
+                        .setShoppingSpecifics(ShoppingSpecifics.newBuilder()
+                                                      .setIsPriceTracked(true)
+                                                      .setProductClusterId(clusterId)
+                                                      .build())
                         .build();
+        PowerBookmarkUtils.setPowerBookmarkMetaForTesting(meta);
         doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
 
         MenuItem startPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
