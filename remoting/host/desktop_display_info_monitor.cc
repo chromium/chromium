@@ -63,13 +63,6 @@ void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
   }
 }
 
-webrtc::DesktopCapturer::SourceId DesktopDisplayInfoMonitor::SourceIdFromIndex(
-    int index) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const DisplayGeometry* display = desktop_display_info_.GetDisplayInfo(index);
-  return (display ? display->id : webrtc::kFullDesktopScreenId);
-}
-
 void DesktopDisplayInfoMonitor::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -89,8 +82,10 @@ void DesktopDisplayInfoMonitor::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
     track->set_height(display.height);
     track->set_x_dpi(display.dpi);
     track->set_y_dpi(display.dpi);
+    track->set_id(display.id);
     HOST_LOG << "   Display: " << display.x << "," << display.y << " "
-             << display.width << "x" << display.height << " @ " << display.dpi;
+             << display.width << "x" << display.height << " @ " << display.dpi
+             << ", id=" << display.id;
   }
   client_session_control_->OnDesktopDisplayChanged(std::move(layout));
 }

@@ -273,41 +273,59 @@ void ClientSession::SelectDesktopDisplay(
   LOG(INFO) << "SelectDesktopDisplay "
             << "'" << select_display.id() << "'";
 
-  // Parse the string with the selected display.
-  int id = webrtc::kInvalidScreenId;
+  // Parse the string with the selected display. Note that this request's |id|
+  // field is not a monitor ID, but an index into the list of displays (or the
+  // special string "all"),
+  int new_index = webrtc::kInvalidScreenId;
   if (select_display.id() == "all") {
-    id = webrtc::kFullDesktopScreenId;
+    new_index = webrtc::kFullDesktopScreenId;
   } else {
-    if (!base::StringToInt(select_display.id().c_str(), &id)) {
-      LOG(ERROR) << "  Unable to parse display id "
+    if (!base::StringToInt(select_display.id().c_str(), &new_index)) {
+      LOG(ERROR) << "  Unable to parse display index "
                  << "'" << select_display.id() << "'";
-      id = webrtc::kInvalidScreenId;
+      new_index = webrtc::kInvalidScreenId;
     }
-    if (!desktop_display_info_.GetDisplayInfo(id)) {
-      LOG(ERROR) << "  Invalid display id "
+    if (!desktop_display_info_.GetDisplayInfo(new_index)) {
+      LOG(ERROR) << "  Invalid display index "
                  << "'" << select_display.id() << "'";
-      id = webrtc::kInvalidScreenId;
+      new_index = webrtc::kInvalidScreenId;
     }
-  }
-  // Don't allow requests for fullscreen if not supported by the current
-  // display configuration.
-  if (!can_capture_full_desktop_ && id == webrtc::kFullDesktopScreenId) {
-    LOG(ERROR) << "  Full desktop not supported";
-    id = webrtc::kInvalidScreenId;
-  }
-  // Fall back to default capture config if invalid request.
-  if (id == webrtc::kInvalidScreenId) {
-    LOG(ERROR) << "  Invalid display specification, falling back to default";
-    id = can_capture_full_desktop_ ? webrtc::kFullDesktopScreenId : 0;
   }
 
-  if (show_display_id_ == id) {
-    LOG(INFO) << "  Display " << id << " is already selected. Ignoring";
+  // Don't allow requests for fullscreen if not supported by the current
+  // display configuration.
+  if (!can_capture_full_desktop_ && new_index == webrtc::kFullDesktopScreenId) {
+    LOG(ERROR) << "  Full desktop not supported";
+    new_index = webrtc::kInvalidScreenId;
+  }
+  // Fall back to default capture config if invalid request.
+  if (new_index == webrtc::kInvalidScreenId) {
+    LOG(ERROR) << "  Invalid display specification, falling back to default";
+    new_index = can_capture_full_desktop_ ? webrtc::kFullDesktopScreenId : 0;
+  }
+
+  if (selected_display_index_ == new_index) {
+    LOG(INFO) << "  Display " << new_index << " is already selected. Ignoring";
     return;
   }
 
-  video_stream_->SelectSource(id);
-  show_display_id_ = id;
+  const DisplayGeometry* oldGeo =
+      desktop_display_info_.GetDisplayInfo(selected_display_index_);
+  const DisplayGeometry* newGeo =
+      desktop_display_info_.GetDisplayInfo(new_index);
+
+  if (newGeo) {
+    video_stream_->SelectSource(newGeo->id);
+  } else if (new_index == webrtc::kFullDesktopScreenId) {
+    video_stream_->SelectSource(webrtc::kFullDesktopScreenId);
+  } else {
+    // This corner-case might occur if fullscreen capture is not supported, and
+    // the fallback default of 0 is not a valid index (the list is empty).
+    LOG(ERROR) << "  Display geometry not found for index " << new_index;
+    return;
+  }
+
+  selected_display_index_ = new_index;
 
   // If the old and new displays are the different sizes, then SelectSource()
   // will trigger an OnVideoSizeChanged() message which will update the mouse
@@ -316,9 +334,6 @@ void ClientSession::SelectDesktopDisplay(
   // video size message will not be generated (because the size of the video
   // has not changed). But we still need to update the mouse clamping filter
   // with the new display origin, so we update that directly.
-  const DisplayGeometry* oldGeo =
-      desktop_display_info_.GetDisplayInfo(show_display_id_);
-  const DisplayGeometry* newGeo = desktop_display_info_.GetDisplayInfo(id);
   if (oldGeo != nullptr && newGeo != nullptr) {
     if (oldGeo->width == newGeo->width && oldGeo->height == newGeo->height) {
       UpdateMouseClampingFilterOffset();
@@ -717,11 +732,11 @@ void ClientSession::SetMouseClampingFilter(const DisplaySize& size) {
 }
 
 void ClientSession::UpdateMouseClampingFilterOffset() {
-  if (show_display_id_ == webrtc::kInvalidScreenId)
+  if (selected_display_index_ == webrtc::kInvalidScreenId)
     return;
 
   webrtc::DesktopVector origin;
-  origin = desktop_display_info_.CalcDisplayOffset(show_display_id_);
+  origin = desktop_display_info_.CalcDisplayOffset(selected_display_index_);
   mouse_clamping_filter_.set_output_offset(origin);
 }
 
@@ -739,8 +754,8 @@ void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
   // then this will be the size of the default display.
   if (default_webrtc_desktop_size_.IsEmpty()) {
     default_webrtc_desktop_size_ = size;
-    LOG(INFO) << "  display id " << show_display_id_;
-    DCHECK(show_display_id_ == webrtc::kInvalidScreenId);
+    LOG(INFO) << "  display index " << selected_display_index_;
+    DCHECK(selected_display_index_ == webrtc::kInvalidScreenId);
     LOG(INFO) << "  Recording default webrtc capture size "
               << default_webrtc_desktop_size_;
   }
@@ -798,7 +813,7 @@ void ClientSession::OnDesktopDisplayChanged(
     LOG(INFO) << "   #" << display_id << " : " << track.position_x() << ","
               << track.position_y() << " " << track.width() << "x"
               << track.height() << " [" << track.x_dpi() << "," << track.y_dpi()
-              << "]";
+              << "], id=" << track.id();
     if (dpi_x == 0)
       dpi_x = track.x_dpi();
     if (dpi_y == 0)
@@ -825,7 +840,7 @@ void ClientSession::OnDesktopDisplayChanged(
   // If this is our first message, then we need to determine if the current
   // display configuration supports capturing the entire desktop.
   LOG(INFO) << "    Webrtc desktop size " << default_webrtc_desktop_size_;
-  if (show_display_id_ == webrtc::kInvalidScreenId) {
+  if (selected_display_index_ == webrtc::kInvalidScreenId) {
 #if BUILDFLAG(IS_APPLE)
     // On MacOS, there are situations where webrtc cannot capture the entire
     // desktop (e.g, when there are displays with different DPIs). We detect
@@ -888,13 +903,13 @@ void ClientSession::OnDesktopDisplayChanged(
     LOG(INFO) << "  Display " << display_id << " = " << display.position_x()
               << "," << display.position_y() << " " << display.width() << "x"
               << display.height() << " [" << display.x_dpi() << ","
-              << display.y_dpi() << "]";
+              << display.y_dpi() << "], id=" << display.id();
   }
 
-  // Set the display id, if this is the first message being processed.
-  if (show_display_id_ == webrtc::kInvalidScreenId) {
+  // Set the display index, if this is the first message being processed.
+  if (selected_display_index_ == webrtc::kInvalidScreenId) {
     if (can_capture_full_desktop_) {
-      show_display_id_ = webrtc::kFullDesktopScreenId;
+      selected_display_index_ = webrtc::kFullDesktopScreenId;
     } else {
       // Select the default display.
       protocol::SelectDesktopDisplayRequest req;

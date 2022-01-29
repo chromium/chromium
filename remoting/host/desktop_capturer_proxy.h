@@ -62,12 +62,6 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
                                   shared_memory_factory) override;
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
-
-  // |id| here is currently index-based, so this method requires a
-  // DesktopDisplayInfoMonitor to convert |id| to a monitor id, otherwise this
-  // is a no-op.
-  // TODO(lambroslambrou): Fix callers to provide a monitor id instead of an
-  // index (so that this method works consistently with the base-class version).
   bool SelectSource(SourceId id) override;
 
  private:

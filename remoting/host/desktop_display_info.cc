@@ -155,6 +155,7 @@ void DesktopDisplayInfo::AddDisplay(const DisplayGeometry& display) {
 void DesktopDisplayInfo::AddDisplayFrom(
     const protocol::VideoTrackLayout& track) {
   DisplayGeometry display;
+  display.id = track.id();
   display.x = track.position_x();
   display.y = track.position_y();
   display.width = track.width();

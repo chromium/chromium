@@ -326,11 +326,13 @@ class ClientSession : public protocol::HostStub,
   int default_x_dpi_;
   int default_y_dpi_;
 
-  // The id of the desktop display to show to the user.
+  // The index of the desktop display to show to the user.
   // Default is webrtc::kInvalidScreenScreenId because we need to perform
   // an initial capture to determine if the current setup support capturing
   // the entire desktop or if it is restricted to a single display.
-  webrtc::ScreenId show_display_id_ = webrtc::kInvalidScreenId;
+  // This value is either an index into |desktop_display_info_| or one of
+  // the special values webrtc::kInvalidScreenId, webrtc::kFullDesktopScreenId.
+  webrtc::ScreenId selected_display_index_ = webrtc::kInvalidScreenId;
 
   // The initial video size captured by WebRTC.
   // This will be the full desktop unless webrtc cannot capture the entire

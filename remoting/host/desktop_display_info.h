@@ -14,7 +14,7 @@
 namespace remoting {
 
 struct DisplayGeometry {
-  int32_t id;
+  webrtc::ScreenId id;
   int32_t x, y;
   uint32_t width, height;
   uint32_t dpi;     // Number of pixels per logical inch.

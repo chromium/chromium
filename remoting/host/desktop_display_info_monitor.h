@@ -51,14 +51,6 @@ class DesktopDisplayInfoMonitor {
   // query the display info on each captured frame.
   void QueryDisplayInfo();
 
-  // Needed by DesktopCapturerProxy to convert an index into the monitor-list
-  // to an ID that can be passed to the real capturer's SelectSource(). Returns
-  // webrtc::kFullDesktopScreenId if an out-of-bounds index is provided.
-  // TODO(lambroslambrou): Remove this method and fix
-  // DesktopCapturerProxy::SelectSource() to accept a monitor SourceId instead
-  // of an array-index.
-  webrtc::DesktopCapturer::SourceId SourceIdFromIndex(int index) const;
-
  private:
   void OnDisplayInfoLoaded(DesktopDisplayInfo info);
 

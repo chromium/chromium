@@ -194,17 +194,12 @@ bool DesktopCapturerProxy::GetSourceList(SourceList* sources) {
   return false;
 }
 
-bool DesktopCapturerProxy::SelectSource(SourceId id_index) {
+bool DesktopCapturerProxy::SelectSource(SourceId id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (desktop_display_info_monitor_) {
-    SourceId id = desktop_display_info_monitor_->SourceIdFromIndex(id_index);
-    capture_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Core::SelectSource, base::Unretained(core_.get()), id));
-  } else {
-    NOTIMPLEMENTED();
-  }
+  capture_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::SelectSource, base::Unretained(core_.get()), id));
   return false;
 }
 
