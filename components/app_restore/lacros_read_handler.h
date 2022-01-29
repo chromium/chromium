@@ -57,6 +57,18 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosReadHandler {
   void OnLacrosBrowserWindowAdded(aura::Window* const window,
                                   int32_t restored_browser_session_id);
 
+  // Invoked when an Chrome app Lacros window is created. `app_id` is the
+  // AppService id, and `window_id` is the wayland app_id property for the
+  // window.
+  void OnAppWindowAdded(const std::string& app_id,
+                        const std::string& lacros_window_id);
+
+  // Invoked when an Chrome app Lacros window is removed. `app_id` is the
+  // AppService id, and `window_id` is the wayland app_id property for the
+  // window.
+  void OnAppWindowRemoved(const std::string& app_id,
+                          const std::string& lacros_window_id);
+
   // Invoked when `window` is added to the root window.
   void OnWindowAddedToRootWindow(aura::Window* window);
 
@@ -73,7 +85,15 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosReadHandler {
     int32_t restore_window_id = -1;
   };
 
-  // Set `kRestoreWindowIdKey` and `kWindowInfoKey` to restore and remove
+  // Sets `app_id` and `restore_window_id` for `window` in
+  // `window_to_window_data_`. If there is no restore data for
+  // `restore_window_id`, `app_id` won't be set to skip setting the restore data
+  // for `window`.
+  void SetWindowData(aura::Window* const window,
+                     const std::string& app_id,
+                     int32_t restore_window_id);
+
+  // Sets `kRestoreWindowIdKey` and `kWindowInfoKey` to restore and remove
   // `window from the hidden container`.
   void UpdateWindow(aura::Window* const window);
 
@@ -92,6 +112,9 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosReadHandler {
   // id is received, the window can be restored and removed from the hidden
   // container.
   std::set<aura::Window*> window_candidates_;
+
+  // The map from the lacros window id to the app id for Chrome app windows.
+  std::map<std::string, std::string> lacros_window_id_to_app_id_;
 };
 
 }  // namespace app_restore

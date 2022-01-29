@@ -67,6 +67,8 @@ void OnLacrosChromeAppWindowAdded(const std::string& app_id,
   if (!full_restore::features::IsFullRestoreForLacrosEnabled())
     return;
 
+  FullRestoreReadHandler::GetInstance()->OnLacrosChromeAppWindowAdded(
+      app_id, window_id);
   FullRestoreSaveHandler::GetInstance()->OnLacrosChromeAppWindowAdded(
       app_id, window_id);
 }
@@ -76,6 +78,8 @@ void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
   if (!full_restore::features::IsFullRestoreForLacrosEnabled())
     return;
 
+  FullRestoreReadHandler::GetInstance()->OnLacrosChromeAppWindowRemoved(
+      app_id, window_id);
   FullRestoreSaveHandler::GetInstance()->OnLacrosChromeAppWindowRemoved(
       app_id, window_id);
 }

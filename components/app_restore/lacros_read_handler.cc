@@ -54,18 +54,61 @@ void LacrosReadHandler::OnLacrosBrowserWindowAdded(
     UpdateWindow(window);
 }
 
+void LacrosReadHandler::OnAppWindowAdded(const std::string& app_id,
+                                         const std::string& lacros_window_id) {
+  lacros_window_id_to_app_id_[lacros_window_id] = app_id;
+
+  auto window_it =
+      std::find_if(window_candidates_.begin(), window_candidates_.end(),
+                   [lacros_window_id](aura::Window* window) {
+                     return GetLacrosWindowId(window) == lacros_window_id;
+                   });
+  if (window_it == window_candidates_.end())
+    return;
+
+  SetWindowData(
+      *window_it, app_id,
+      full_restore::FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(
+          app_id));
+  UpdateWindow(*window_it);
+}
+
+void LacrosReadHandler::OnAppWindowRemoved(
+    const std::string& app_id,
+    const std::string& lacros_window_id) {
+  lacros_window_id_to_app_id_.erase(lacros_window_id);
+}
+
 void LacrosReadHandler::OnWindowAddedToRootWindow(aura::Window* window) {
-  auto it = window_to_window_data_.find(window);
-  if (it == window_to_window_data_.end()) {
-    // We haven't received the restore window id, add `window` to
-    // `window_candidates_` to wait for the restore window id.
-    window_candidates_.insert(window);
+  if (!window->GetProperty(app_restore::kParentToHiddenContainerKey)) {
+    // If `window` has been removed from the hidden container, we don't need to
+    // restore it, because it has been restored.
     return;
   }
 
-  // We have received the restore window, so restore and remove `window` from
-  // the hidden container.
-  UpdateWindow(window);
+  auto window_it = window_to_window_data_.find(window);
+  if (window_it != window_to_window_data_.end()) {
+    // We have received the restore window, so restore and remove `window` from
+    // the hidden container.
+    UpdateWindow(window);
+    return;
+  }
+
+  const auto lacros_window_id = GetLacrosWindowId(window);
+  auto it = lacros_window_id_to_app_id_.find(lacros_window_id);
+  if (it != lacros_window_id_to_app_id_.end()) {
+    // We have received the app id for the Chrome app window, so restore and
+    // remove `window` from the hidden container.
+    SetWindowData(window, it->second,
+                  full_restore::FullRestoreReadHandler::GetInstance()
+                      ->FetchRestoreWindowId(it->second));
+    UpdateWindow(window);
+    return;
+  }
+
+  // We haven't received the restore window id, add `window` to
+  // `window_candidates_` to wait for the restore window id.
+  window_candidates_.insert(window);
 }
 
 void LacrosReadHandler::OnWindowDestroyed(aura::Window* window) {
@@ -75,9 +118,19 @@ void LacrosReadHandler::OnWindowDestroyed(aura::Window* window) {
 
 int32_t LacrosReadHandler::GetLacrosRestoreWindowId(
     const std::string& lacros_window_id) const {
-  // TODO(crbug.com/1239984): Get restore window id for Lacros Chrome app
-  // windows.
-  return kParentToHiddenContainer;
+  auto it = lacros_window_id_to_app_id_.find(lacros_window_id);
+  return it == lacros_window_id_to_app_id_.end()
+             ? kParentToHiddenContainer
+             : full_restore::FullRestoreReadHandler::GetInstance()
+                   ->FetchRestoreWindowId(it->second);
+}
+
+void LacrosReadHandler::SetWindowData(aura::Window* const window,
+                                      const std::string& app_id,
+                                      int32_t restore_window_id) {
+  if (base::Contains(restore_window_id_to_app_id_, restore_window_id))
+    window_to_window_data_[window].app_id = app_id;
+  window_to_window_data_[window].restore_window_id = restore_window_id;
 }
 
 void LacrosReadHandler::UpdateWindow(aura::Window* const window) {

@@ -99,6 +99,18 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   void OnLacrosBrowserWindowAdded(aura::Window* const window,
                                   uint32_t restored_browser_session_id);
 
+  // Invoked when an Chrome app Lacros window is created. `app_id` is the
+  // AppService id, and `window_id` is the wayland app_id property for the
+  // window.
+  void OnLacrosChromeAppWindowAdded(const std::string& app_id,
+                                    const std::string& window_id);
+
+  // Invoked when an Chrome app Lacros window is removed. `app_id` is the
+  // AppService id, and `window_id` is the wayland app_id property for the
+  // window.
+  void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
+                                      const std::string& window_id);
+
   void SetPrimaryProfilePath(const base::FilePath& profile_path);
 
   void SetActiveProfilePath(const base::FilePath& profile_path);

@@ -211,8 +211,10 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   DCHECK(proxy);
 
-  if (app_type == apps::mojom::AppType::kChromeApp)
+  if (app_type == apps::mojom::AppType::kChromeApp ||
+      app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp) {
     OnExtensionLaunching(app_id);
+  }
 
   for (const auto& it : launch_list) {
     RecordRestoredAppLaunch(GetHistogrameAppType(app_type));

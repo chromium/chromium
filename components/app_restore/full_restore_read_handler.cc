@@ -174,6 +174,20 @@ void FullRestoreReadHandler::OnLacrosBrowserWindowAdded(
   }
 }
 
+void FullRestoreReadHandler::OnLacrosChromeAppWindowAdded(
+    const std::string& app_id,
+    const std::string& window_id) {
+  if (lacros_read_handler_)
+    lacros_read_handler_->OnAppWindowAdded(app_id, window_id);
+}
+
+void FullRestoreReadHandler::OnLacrosChromeAppWindowRemoved(
+    const std::string& app_id,
+    const std::string& window_id) {
+  if (lacros_read_handler_)
+    lacros_read_handler_->OnAppWindowRemoved(app_id, window_id);
+}
+
 void FullRestoreReadHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
   primary_profile_path_ = profile_path;
