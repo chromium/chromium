@@ -170,8 +170,8 @@ void CdmStorageImpl::CreateCdmFile(const std::string& file_name,
   }
 
   auto cdm_file_impl = std::make_unique<CdmFileImpl>(
-      file_name, origin(), cdm_type_.legacy_file_system_id,
-      file_system_root_uri_, file_system_context_);
+      file_name, origin(), cdm_type_, file_system_root_uri_,
+      file_system_context_);
 
   if (!cdm_file_impl->Initialize()) {
     // Unable to initialize with the file requested.
