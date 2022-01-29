@@ -28,6 +28,10 @@ namespace embedder_support {
 // flag-enabled overrides.
 std::string GetProduct(bool allow_override = false);
 
+// Returns a string representing the major version number of the user agent
+// string for Chrome, potentially overridden by policy.
+std::string GetMajorVersionForUserAgentString();
+
 // Returns the user agent string for Chrome.
 std::string GetFullUserAgent();
 

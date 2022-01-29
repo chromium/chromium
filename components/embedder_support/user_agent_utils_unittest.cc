@@ -383,6 +383,21 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
                                  content::GetUnifiedPlatform().c_str(),
                                  major_version, device_compat.c_str()));
   }
+
+  // Verify that the reduced user agent string respects
+  // --force-major-version-to-minor
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+      blink::features::kForceMajorVersionInMinorPositionInUserAgent}, {});
+  {
+    std::string buffer = GetReducedUserAgent();
+    std::string device_compat = "Mobile ";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                content::GetUnifiedPlatform().c_str(), "99",
+                                device_compat.c_str()));
+  }
 #else
   {
     std::string buffer = GetUserAgent();
@@ -392,6 +407,19 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
                           ForceMajorVersionTo100()
                               ? "100"
                               : version_info::GetMajorVersionNumber().c_str()));
+  }
+
+  // Verify that the reduced user agent string respects
+  // --force-major-version-to-minor
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+      blink::features::kForceMajorVersionInMinorPositionInUserAgent}, {});
+  {
+    std::string buffer = GetReducedUserAgent();
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
+                                content::GetUnifiedPlatform().c_str(), "99"));
   }
 #endif
 

@@ -221,6 +221,7 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
 
 const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
+  // TODO(crbug.com/1290902): Respect #force-major-version-to-minor here.
   return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
                                enable_updated_grease_by_policy,
                                version_info::GetVersionNumber(),
@@ -236,6 +237,7 @@ blink::UserAgentBrandList GetForcedM100UserAgentBrandMajorVersionList(
 
 blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
     bool enable_updated_grease_by_policy) {
+  // TODO(crbug.com/1290902): Respect #force-major-version-to-minor here.
   return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
                                enable_updated_grease_by_policy,
                                version_info::GetVersionNumber(),
@@ -317,10 +319,23 @@ std::string GetReducedUserAgent() {
   return content::GetReducedUserAgent(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent),
-      base::FeatureList::IsEnabled(
-          blink::features::kForceMajorVersion100InUserAgent)
-          ? kVersion100
-          : version_info::GetMajorVersionNumber());
+          GetMajorVersionForUserAgentString());
+}
+
+std::string GetMajorVersionForUserAgentString() {
+  // Priority 1: force major version to 99.
+  if (base::FeatureList::IsEnabled(
+    blink::features::kForceMajorVersionInMinorPositionInUserAgent))
+    // TODO(crbug.com/1287531): Consider enterprise policy for
+    // #force-major-to-minor here as well.
+    return kVersion99;
+
+  // Priority 2: Force major version to 100.
+  if (base::FeatureList::IsEnabled(
+    blink::features::kForceMajorVersion100InUserAgent))
+    return kVersion100;
+
+  return version_info::GetMajorVersionNumber();
 }
 
 std::string GetFullUserAgent() {
