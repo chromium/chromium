@@ -56,8 +56,11 @@ export interface ItemDelegate {
 
 export interface ExtensionsItemElement {
   $: {
+    a11yAssociation: HTMLElement,
     detailsButton: HTMLElement,
     enableToggle: CrToggleElement,
+    name: HTMLElement,
+    removeButton: HTMLElement,
   };
 }
 

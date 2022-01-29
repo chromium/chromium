@@ -5,25 +5,29 @@
 /** @fileoverview Suite of tests for extensions-item-list. */
 import 'chrome://extensions/extensions.js';
 
+import {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
 
-window.extension_item_list_tests = {};
-extension_item_list_tests.suiteName = 'ExtensionItemListTest';
-/** @enum {string} */
-extension_item_list_tests.TestNames = {
-  Filtering: 'item list filtering',
-  NoItemsMsg: 'empty item list',
-  NoSearchResultsMsg: 'empty item list filtering results',
-  LoadTimeData: 'loadTimeData contains isManaged and managedByOrg',
+const extension_item_list_tests = {
+  suiteName: 'ExtensionItemListTest',
+  TestNames: {
+    Filtering: 'item list filtering',
+    NoItemsMsg: 'empty item list',
+    NoSearchResultsMsg: 'empty item list filtering results',
+    LoadTimeData: 'loadTimeData contains isManaged and managedByOrg',
+  },
 };
 
+Object.assign(window, {extension_item_list_tests: extension_item_list_tests});
+
 suite(extension_item_list_tests.suiteName, function() {
-  /** @type {extensions.ItemList} */
-  let itemList;
-  let boundTestVisible;
+  let itemList: ExtensionsItemListElement;
+  let boundTestVisible: (selector: string, visible: boolean, text?: string) =>
+      void;
 
   // Initialize an extension item before each test.
   setup(function() {
@@ -47,10 +51,10 @@ suite(extension_item_list_tests.suiteName, function() {
   });
 
   test(assert(extension_item_list_tests.TestNames.Filtering), function() {
-    function itemLengthEquals(num) {
+    function itemLengthEquals(num: number) {
       flush();
-      expectEquals(
-          itemList.shadowRoot.querySelectorAll('extensions-item').length, num);
+      assertEquals(
+          itemList.shadowRoot!.querySelectorAll('extensions-item').length, num);
     }
 
     // We should initially show all the items.
@@ -65,21 +69,21 @@ suite(extension_item_list_tests.suiteName, function() {
     // Only 'Bravo' has a 'b'.
     itemList.filter = 'b';
     itemLengthEquals(1);
-    expectEquals(
+    assertEquals(
         'Bravo',
-        itemList.shadowRoot.querySelector('extensions-item').data.name);
+        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
     // Test inner substring (rather than prefix).
     itemList.filter = 'lph';
     itemLengthEquals(1);
-    expectEquals(
+    assertEquals(
         'Alpha',
-        itemList.shadowRoot.querySelector('extensions-item').data.name);
+        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
     // Test trailing/leading spaces.
     itemList.filter = '   Alpha  ';
     itemLengthEquals(1);
-    expectEquals(
+    assertEquals(
         'Alpha',
-        itemList.shadowRoot.querySelector('extensions-item').data.name);
+        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
     // Test string with no matching items.
     itemList.filter = 'z';
     itemLengthEquals(0);
@@ -93,9 +97,9 @@ suite(extension_item_list_tests.suiteName, function() {
     // matches.
     itemList.filter = 'xy';
     itemLengthEquals(1);
-    expectEquals(
+    assertEquals(
         'Charlie',
-        itemList.shadowRoot.querySelector('extensions-item').data.name);
+        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
   });
 
   test(assert(extension_item_list_tests.TestNames.NoItemsMsg), function() {

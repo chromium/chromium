@@ -4,10 +4,10 @@
 
 /** @fileoverview Suite of tests for extension-item. */
 
-import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {ExtensionsItemElement, IronIconElement, navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -15,9 +15,9 @@ import {createExtensionInfo, MockItemDelegate, testVisible} from './test_util.js
 
 /**
  * The data used to populate the extension item.
- * @type {chrome.developerPrivate.ExtensionInfo}
  */
-const extensionData = createExtensionInfo();
+const extensionData: chrome.developerPrivate.ExtensionInfo =
+    createExtensionInfo();
 
 // The normal elements, which should always be shown.
 const normalElements = [
@@ -26,7 +26,7 @@ const normalElements = [
   {selector: '#description', text: extensionData.description},
   {selector: '#enableToggle'},
   {selector: '#detailsButton'},
-  {selector: '#remove-button'},
+  {selector: '#removeButton'},
 ];
 // The developer elements, which should only be shown if in developer
 // mode *and* showing details.
@@ -43,62 +43,56 @@ const devElements = [
 
 /**
  * Tests that the elements' visibility matches the expected visibility.
- * @param {Item} item
- * @param {Array<Object<string>>} elements
- * @param {boolean} visibility
  */
-function testElementsVisibility(item, elements, visibility) {
+function testElementsVisibility(
+    item: HTMLElement, elements: Array<{selector: string, text?: string}>,
+    visibility: boolean): void {
   elements.forEach(function(element) {
     testVisible(item, element.selector, visibility, element.text);
   });
 }
 
 /** Tests that normal elements are visible. */
-function testNormalElementsAreVisible(item) {
+function testNormalElementsAreVisible(item: HTMLElement): void {
   testElementsVisibility(item, normalElements, true);
 }
 
-/** Tests that normal elements are hidden. */
-function testNormalElementsAreHidden(item) {
-  testElementsVisibility(item, normalElements, false);
-}
-
 /** Tests that dev elements are visible. */
-function testDeveloperElementsAreVisible(item) {
+function testDeveloperElementsAreVisible(item: HTMLElement): void {
   testElementsVisibility(item, devElements, true);
 }
 
 /** Tests that dev elements are hidden. */
-function testDeveloperElementsAreHidden(item) {
+function testDeveloperElementsAreHidden(item: HTMLElement): void {
   testElementsVisibility(item, devElements, false);
 }
 
-window.extension_item_tests = {};
-extension_item_tests.suiteName = 'ExtensionItemTest';
-/** @enum {string} */
-extension_item_tests.TestNames = {
-  ElementVisibilityNormalState: 'element visibility: normal state',
-  ElementVisibilityDeveloperState:
-      'element visibility: after enabling developer mode',
-  ClickableItems: 'clickable items',
-  FailedReloadFiresLoadError: 'failed reload fires load error',
-  Warnings: 'warnings',
-  SourceIndicator: 'source indicator',
-  EnableToggle: 'Enable toggle is disabled when necessary',
-  RemoveButton: 'remove button hidden when necessary',
-  HtmlInName: 'html in extension name',
-  RepairButton: 'Repair button visibility',
+const extension_item_tests = {
+  suiteName: 'ExtensionItemTest',
+  TestNames: {
+    ElementVisibilityNormalState: 'element visibility: normal state',
+    ElementVisibilityDeveloperState:
+        'element visibility: after enabling developer mode',
+    ClickableItems: 'clickable items',
+    FailedReloadFiresLoadError: 'failed reload fires load error',
+    Warnings: 'warnings',
+    SourceIndicator: 'source indicator',
+    EnableToggle: 'Enable toggle is disabled when necessary',
+    RemoveButton: 'remove button hidden when necessary',
+    HtmlInName: 'html in extension name',
+    RepairButton: 'Repair button visibility',
+  },
 };
+
+Object.assign(window, {extension_item_tests: extension_item_tests});
 
 suite(extension_item_tests.suiteName, function() {
   /**
    * Extension item created before each test.
-   * @type {Item}
    */
-  let item;
+  let item: ExtensionsItemElement;
 
-  /** @type {MockItemDelegate} */
-  let mockDelegate;
+  let mockDelegate: MockItemDelegate;
 
   // Initialize an extension item before each test.
   setup(function() {
@@ -118,11 +112,11 @@ suite(extension_item_tests.suiteName, function() {
         testNormalElementsAreVisible(item);
         testDeveloperElementsAreHidden(item);
 
-        expectTrue(item.$['enableToggle'].checked);
+        assertTrue(item.$.enableToggle.checked);
         item.set('data.state', 'DISABLED');
-        expectFalse(item.$['enableToggle'].checked);
+        assertFalse(item.$.enableToggle.checked);
         item.set('data.state', 'BLACKLISTED');
-        expectFalse(item.$['enableToggle'].checked);
+        assertFalse(item.$.enableToggle.checked);
       });
 
   test(
@@ -163,11 +157,12 @@ suite(extension_item_tests.suiteName, function() {
     item.set('inDevMode', true);
 
     mockDelegate.testClickingCalls(
-        item.$['remove-button'], 'deleteItem', [item.data.id]);
+        item.$.removeButton, 'deleteItem', [item.data.id]);
     mockDelegate.testClickingCalls(
-        item.$['enableToggle'], 'setItemEnabled', [item.data.id, false]);
+        item.$.enableToggle, 'setItemEnabled', [item.data.id, false]);
     mockDelegate.testClickingCalls(
-        item.shadowRoot.querySelector('#inspect-views a[is="action-link"]'),
+        item.shadowRoot!.querySelector<HTMLElement>(
+            '#inspect-views a[is="action-link"]')!,
         'inspectItemView', [item.data.id, item.data.views[0]]);
 
     // Setup for testing navigation buttons.
@@ -176,24 +171,24 @@ suite(extension_item_tests.suiteName, function() {
       currentPage = newPage;
     });
 
-    item.shadowRoot.querySelector('#detailsButton').click();
-    expectDeepEquals(
+    item.$.detailsButton.click();
+    assertDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: item.data.id});
 
     // Reset current page and test inspect-view navigation.
     navigation.navigateTo({page: Page.LIST});
     currentPage = null;
-    item.shadowRoot
-        .querySelector('#inspect-views a[is="action-link"]:nth-of-type(2)')
-        .click();
-    expectDeepEquals(
+    item.shadowRoot!
+        .querySelector<HTMLElement>(
+            '#inspect-views a[is="action-link"]:nth-of-type(2)')!.click();
+    assertDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: item.data.id});
 
     item.set('data.disableReasons.corruptInstall', true);
     flush();
     mockDelegate.testClickingCalls(
-        item.shadowRoot.querySelector('#repair-button'), 'repairItem',
-        [item.data.id]);
+        item.shadowRoot!.querySelector<HTMLElement>('#repair-button')!,
+        'repairItem', [item.data.id]);
     testVisible(item, '#enableToggle', false);
     item.set('data.disableReasons.corruptInstall', false);
     flush();
@@ -201,7 +196,8 @@ suite(extension_item_tests.suiteName, function() {
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
     flush();
     mockDelegate.testClickingCalls(
-        item.shadowRoot.querySelector('#terminated-reload-button'),
+        item.shadowRoot!.querySelector<HTMLElement>(
+            '#terminated-reload-button')!,
         'reloadItem', [item.data.id], Promise.resolve());
 
     item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
@@ -232,24 +228,26 @@ suite(extension_item_tests.suiteName, function() {
         const proxyDelegate = new TestService();
         item.delegate = proxyDelegate;
 
-        const verifyEventPromise = function(expectCalled) {
-          return new Promise((resolve, reject) => {
+        function verifyEventPromise(expectCalled: boolean): Promise<void> {
+          return new Promise((resolve, _reject) => {
             setTimeout(() => {
-              expectEquals(expectCalled, firedLoadError);
+              assertEquals(expectCalled, firedLoadError);
               resolve();
             });
           });
-        };
+        }
 
-        item.shadowRoot.querySelector('#dev-reload-button').click();
+        item.shadowRoot!.querySelector<HTMLElement>(
+                            '#dev-reload-button')!.click();
         let id = await proxyDelegate.whenCalled('reloadItem');
-        expectEquals(item.data.id, id);
+        assertEquals(item.data.id, id);
         await verifyEventPromise(false);
         proxyDelegate.resetResolver('reloadItem');
         proxyDelegate.setForceReloadItemError(true);
-        item.shadowRoot.querySelector('#dev-reload-button').click();
+        item.shadowRoot!.querySelector<HTMLElement>(
+                            '#dev-reload-button')!.click();
         id = await proxyDelegate.whenCalled('reloadItem');
-        expectEquals(item.data.id, id);
+        assertEquals(item.data.id, id);
         return verifyEventPromise(true);
       });
 
@@ -260,7 +258,7 @@ suite(extension_item_tests.suiteName, function() {
     const kRuntime = 1 << 3;
     const kSafeBrowsingAllowlist = 1 << 4;
 
-    function assertWarnings(mask) {
+    function assertWarnings(mask: number) {
       assertEquals(
           !!(mask & kCorrupt), isChildVisible(item, '#corrupted-warning'));
       assertEquals(
@@ -315,42 +313,43 @@ suite(extension_item_tests.suiteName, function() {
   });
 
   test(assert(extension_item_tests.TestNames.SourceIndicator), function() {
-    expectFalse(isChildVisible(item, '#source-indicator'));
+    assertFalse(isChildVisible(item, '#source-indicator'));
     item.set('data.location', 'UNPACKED');
     flush();
-    expectTrue(isChildVisible(item, '#source-indicator'));
-    const icon = item.shadowRoot.querySelector('#source-indicator iron-icon');
+    assertTrue(isChildVisible(item, '#source-indicator'));
+    const icon = item.shadowRoot!.querySelector<IronIconElement>(
+        '#source-indicator iron-icon');
     assertTrue(!!icon);
-    expectEquals('extensions-icons:unpacked', icon.icon);
+    assertEquals('extensions-icons:unpacked', icon.icon);
 
     item.set('data.location', 'THIRD_PARTY');
     flush();
-    expectTrue(isChildVisible(item, '#source-indicator'));
-    expectEquals('extensions-icons:input', icon.icon);
+    assertTrue(isChildVisible(item, '#source-indicator'));
+    assertEquals('extensions-icons:input', icon.icon);
 
     item.set('data.location', 'UNKNOWN');
     flush();
-    expectTrue(isChildVisible(item, '#source-indicator'));
-    expectEquals('extensions-icons:input', icon.icon);
+    assertTrue(isChildVisible(item, '#source-indicator'));
+    assertEquals('extensions-icons:input', icon.icon);
 
     item.set('data.location', 'FROM_STORE');
     item.set('data.controlledInfo', {text: 'policy'});
     flush();
-    expectTrue(isChildVisible(item, '#source-indicator'));
-    expectEquals('extensions-icons:business', icon.icon);
+    assertTrue(isChildVisible(item, '#source-indicator'));
+    assertEquals('extensions-icons:business', icon.icon);
 
     item.set('data.controlledInfo', null);
     flush();
-    expectFalse(isChildVisible(item, '#source-indicator'));
+    assertFalse(isChildVisible(item, '#source-indicator'));
   });
 
   test(assert(extension_item_tests.TestNames.EnableToggle), function() {
-    expectFalse(item.$['enableToggle'].disabled);
+    assertFalse(item.$.enableToggle.disabled);
 
     // Test case where user does not have permission.
     item.set('data.userMayModify', false);
     flush();
-    expectTrue(item.$['enableToggle'].disabled);
+    assertTrue(item.$.enableToggle.disabled);
     // Reset state.
     item.set('data.userMayModify', true);
     flush();
@@ -358,7 +357,7 @@ suite(extension_item_tests.suiteName, function() {
     // Test case of a blacklisted extension.
     item.set('data.state', 'BLACKLISTED');
     flush();
-    expectTrue(item.$['enableToggle'].disabled);
+    assertTrue(item.$.enableToggle.disabled);
     // Reset state.
     item.set('data.state', 'ENABLED');
     flush();
@@ -369,7 +368,7 @@ suite(extension_item_tests.suiteName, function() {
     item.set('data.disableReasons.blockedByPolicy', true);
     flush();
     testVisible(item, '#enableToggle', true);
-    expectTrue(item.$['enableToggle'].disabled);
+    assertTrue(item.$.enableToggle.disabled);
     item.set('data.disableReasons.blockedByPolicy', false);
     flush();
 
@@ -377,7 +376,7 @@ suite(extension_item_tests.suiteName, function() {
     item.set('data.disableReasons.parentDisabledPermissions', true);
     flush();
     testVisible(item, '#enableToggle', true);
-    expectFalse(item.$['enableToggle'].disabled);
+    assertFalse(item.$.enableToggle.disabled);
     testVisible(item, '#parentDisabledPermissionsToolTip', true);
     item.set('data.disableReasons.parentDisabledPermissions', false);
     flush();
@@ -385,26 +384,26 @@ suite(extension_item_tests.suiteName, function() {
     item.set('data.disableReasons.custodianApprovalRequired', true);
     flush();
     testVisible(item, '#enableToggle', true);
-    expectFalse(item.shadowRoot.querySelector('#enableToggle').disabled);
+    assertFalse(item.$.enableToggle.disabled);
     item.set('data.disableReasons.custodianApprovalRequired', false);
     flush();
   });
 
   test(assert(extension_item_tests.TestNames.RemoveButton), function() {
-    expectFalse(item.$['remove-button'].hidden);
+    assertFalse(item.$.removeButton.hidden);
     item.set('data.mustRemainInstalled', true);
     flush();
-    expectTrue(item.$['remove-button'].hidden);
+    assertTrue(item.$.removeButton.hidden);
   });
 
   test(assert(extension_item_tests.TestNames.HtmlInName), function() {
     let name = '<HTML> in the name!';
     item.set('data.name', name);
     flush();
-    assertEquals(name, item.$.name.textContent.trim());
+    assertEquals(name, item.$.name.textContent!.trim());
     // "Related to $1" is IDS_MD_EXTENSIONS_EXTENSION_A11Y_ASSOCIATION.
     assertEquals(
-        `Related to ${name}`, item.$.a11yAssociation.textContent.trim());
+        `Related to ${name}`, item.$.a11yAssociation.textContent!.trim());
   });
 
   test(assert(extension_item_tests.TestNames.RepairButton), function() {

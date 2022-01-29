@@ -6,6 +6,7 @@ import './manager.js';
 
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
+export {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 export {ActivityLogExtensionPlaceholder, ExtensionsActivityLogElement} from './activity_log/activity_log.js';
 export {ActivityLogHistoryElement, ActivityLogPageState} from './activity_log/activity_log_history.js';
 export {ActivityGroup, ActivityLogHistoryItemElement} from './activity_log/activity_log_history_item.js';
@@ -15,7 +16,8 @@ export {ExtensionsCodeSectionElement} from './code_section.js';
 export {ExtensionsDetailViewElement} from './detail_view.js';
 export {ErrorPageDelegate, ExtensionsErrorPageElement} from './error_page.js';
 export {ExtensionsHostPermissionsToggleListElement} from './host_permissions_toggle_list.js';
-export {ItemDelegate} from './item.js';
+export {ExtensionsItemElement, ItemDelegate} from './item.js';
+export {ExtensionsItemListElement} from './item_list.js';
 export {UserAction} from './item_util.js';
 // <if expr="chromeos">
 export {KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl, KioskSettings} from './kiosk_browser_proxy.js';
