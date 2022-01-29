@@ -9,6 +9,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
@@ -34,6 +36,13 @@ namespace content {
 
 using WriteLock = FileSystemAccessWriteLockManager::WriteLock;
 using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
+
+namespace {
+std::string GetURLDisplayName(const storage::FileSystemURL& url) {
+  return base::UTF16ToUTF8(url.path().BaseName().LossyDisplayName());
+}
+
+}  // namespace
 
 FileSystemAccessHandleBase::FileSystemAccessHandleBase(
     FileSystemAccessManagerImpl* manager,
@@ -334,7 +343,10 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
       manager()->TakeWriteLock(url(), WriteLockType::kExclusive);
   if (!source_write_lock.has_value()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
+        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
+        base::StrCat(
+            {"Failed to move ", GetURLDisplayName(url()),
+             ". A FileSystemHandle cannot be moved while it is locked."})));
     return;
   }
   locks.emplace_back(std::move(source_write_lock.value()));
@@ -346,7 +358,11 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
         manager()->TakeWriteLock(dest_url, WriteLockType::kExclusive);
     if (!dest_write_lock.has_value()) {
       std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
+          blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
+          base::StrCat({"Failed to move ", GetURLDisplayName(url()), " to ",
+                        GetURLDisplayName(dest_url),
+                        ". A FileSystemHandle cannot be moved to a destination "
+                        "which is locked."})));
       return;
     }
     locks.emplace_back(std::move(dest_write_lock.value()));
