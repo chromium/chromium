@@ -46,7 +46,8 @@
       <div class="body-1">$i18n{accessCodeMessage}</div>
       <div class="space"></div>
       <div class="center-content">
-        <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
+        <c2c-code-input length="6" value="" id="codeInput" 
+          disabled="[[!canCast]]"></c2c-code-input>
       </div>
       <template is="dom-if" if="[[qrScannerEnabled]]" class="center-content">
         <div class="center-content">
@@ -65,7 +66,7 @@
   <div slot="button-container">
     <cr-button on-click="close" class="cancel-button">$i18n{close}</cr-button>
     <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
-      disabled="[[castButtonDisabled(accessCode)]]">
+      disabled="[[castButtonDisabled(accessCode, canCast)]]">
       $i18n{cast}
     </cr-button>
     <cr-button id="backButton" on-click="switchToCodeInput"

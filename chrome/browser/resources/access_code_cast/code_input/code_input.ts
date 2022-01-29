@@ -18,6 +18,7 @@ export class CodeInputElement extends PolymerElement {
 
   static get properties() {
     return {
+      disabled: Boolean,
       length: Number,
       value: {
         type: String,

@@ -59,6 +59,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   private static readonly ACCESS_CODE_LENGTH = 6;
   private accessCode: string;
+  private canCast: boolean;
   private state: PageState;
   private qrScannerEnabled: boolean;
 
@@ -66,6 +67,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     super();
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
+    this.canCast = true;
 
     this.accessCode = '';
     BrowserProxy.getInstance().isQrScanningAvailable().then((available) => {
@@ -75,6 +77,12 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     window.onblur = () => {
       this.close();
     };
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        this.handleEnterPressed();
+      }
+    });
   }
 
   ready() {
@@ -112,6 +120,11 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     if (this.accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH) {
       return;
     }
+    if (!this.canCast) {
+      return;
+    }
+
+    this.canCast = false;
 
     const method = this.state === PageState.CODE_INPUT ? 
       CastDiscoveryMethod.INPUT_ACCESS_CODE : CastDiscoveryMethod.QR_CODE;
@@ -122,6 +135,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (addResult !== AddSinkResultCode.OK) {
       this.$.errorMessage.setAddSinkError(addResult);
+      this.canCast = true;
       return;
     }
 
@@ -131,6 +145,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (castResult !== RouteRequestResultCode.OK) {
       this.$.errorMessage.setCastError(castResult);
+      this.canCast = true;
       return;
     }
 
@@ -139,7 +154,11 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   // Even though we can get this.accessCode directly, passing it triggers
   // Polymer's data binding whenever this.accessCode updates.
-  castButtonDisabled(accessCode: string) {
+  castButtonDisabled(accessCode: string, canCast: boolean) {
+    if (!canCast) {
+      return true;
+    }
+
     return accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH;
   }
 
@@ -164,6 +183,20 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   private handleCodeInput(e: any) {
     this.accessCode = e.detail.value;
+  }
+
+  private handleEnterPressed() {
+    if (this.castButtonDisabled(this.accessCode, this.canCast)) {
+      return;
+    }
+    if (this.$.codeInput.getFocusedIndex() === -1) {
+      return;
+    }
+    if (this.state !== PageState.CODE_INPUT) {
+      return;
+    }
+
+    this.addSinkAndCast();
   }
 
   private async addSink(method: CastDiscoveryMethod):
