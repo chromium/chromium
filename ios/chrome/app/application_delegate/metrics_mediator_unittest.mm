@@ -13,6 +13,7 @@
 #import "components/previous_session_info/previous_session_info_private.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -103,7 +104,8 @@ typedef void (^LogLaunchMetricsBlock)(id, const char*, int);
 class MetricsMediatorLogLaunchTest : public PlatformTest {
  protected:
   MetricsMediatorLogLaunchTest()
-      : num_tabs_has_been_called_(FALSE),
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        num_tabs_has_been_called_(FALSE),
         num_ntp_tabs_has_been_called_(FALSE),
         num_live_ntp_tabs_has_been_called_(FALSE) {}
 
@@ -147,6 +149,7 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   NSArray<FakeSceneState*>* connected_scenes_;
   __block BOOL num_tabs_has_been_called_;
   __block BOOL num_ntp_tabs_has_been_called_;
@@ -157,7 +160,6 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
   std::unique_ptr<ScopedBlockSwizzler> tabs_uma_histogram_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> ntp_tabs_uma_histogram_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> live_ntp_tabs_uma_histogram_swizzler_;
-  std::set<std::unique_ptr<TestBrowser>> browsers_;
 };
 
 // Verifies that the log of the number of open tabs is sent and verifies
@@ -167,7 +169,8 @@ TEST_F(MetricsMediatorLogLaunchTest,
   BOOL coldStart = YES;
   initiateMetricsMediator(coldStart, 23);
   // 23 tabs across three scenes.
-  connected_scenes_ = [FakeSceneState sceneArrayWithCount:3];
+  connected_scenes_ = [FakeSceneState sceneArrayWithCount:3
+                                             browserState:browser_state_.get()];
   [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
                                          count:9];
   [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
@@ -208,7 +211,8 @@ TEST_F(MetricsMediatorLogLaunchTest, logLaunchMetricsNoBackgroundDate) {
   BOOL coldStart = NO;
   initiateMetricsMediator(coldStart, 32);
   // 32 tabs across five scenes.
-  connected_scenes_ = [FakeSceneState sceneArrayWithCount:5];
+  connected_scenes_ = [FakeSceneState sceneArrayWithCount:5
+                                             browserState:browser_state_.get()];
   [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
                                          count:8];
   [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)

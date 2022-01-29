@@ -361,7 +361,9 @@ class AppStateTest : public BlockCleanupTest {
               applicationDelegate:main_application_delegate_];
       [app_state_.connectedScenes addObject:main_scene_state_];
 
-      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
+      main_scene_state_ =
+          [main_scene_state_ initWithAppState:app_state_
+                                 browserState:browser_state_.get()];
       main_scene_state_.window = getWindowMock();
 
       if (with_safe_mode_agent) {
@@ -401,7 +403,9 @@ class AppStateTest : public BlockCleanupTest {
               applicationDelegate:main_application_delegate_];
       [app_state_.connectedScenes addObject:main_scene_state_];
 
-      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
+      main_scene_state_ =
+          [main_scene_state_ initWithAppState:app_state_
+                                 browserState:browser_state_.get()];
       main_scene_state_.window = window;
       [window makeKeyAndVisible];
 

@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -31,13 +32,17 @@ const char kURL[] = "https://chromium.org/";
 class StartSurfaceSceneAgentTest : public PlatformTest {
  public:
   StartSurfaceSceneAgentTest()
-      : scene_state_([[FakeSceneState alloc] initWithAppState:nil]),
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        scene_state_([[FakeSceneState alloc]
+            initWithAppState:nil
+                browserState:browser_state_.get()]),
         agent_([[StartSurfaceSceneAgent alloc] init]) {
     agent_.sceneState = scene_state_;
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   // The scene state that the agent works with.
   FakeSceneState* scene_state_;
   // The tested agent

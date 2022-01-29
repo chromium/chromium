@@ -16,6 +16,7 @@ source_set("test") {
     "stub_browser_interface_provider.mm",
   ]
   deps = [
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/main",
