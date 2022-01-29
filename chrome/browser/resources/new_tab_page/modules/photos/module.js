@@ -17,6 +17,25 @@ import {ModuleDescriptor} from '../module_descriptor.js';
 import {PhotosProxy} from './photos_module_proxy.js';
 
 /**
+ * List of possible OptIn status. This enum must match with the numbering for
+ * NtpPhotosModuleOptInStatus in histogram/enums.xml. These values are persisted
+ * to logs. Entries should not be renumbered, removed or reused.
+ * @enum {number}
+ */
+const OptInStatus = {
+  kHardOptOut: 0,
+  kOptIn: 1,
+  kSoftOptOut: 2,
+};
+
+/** @param {!OptInStatus} optInStatus */
+function recordOptInStatus(optInStatus) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.Photos.UserOptIn', optInStatus,
+      Object.keys(OptInStatus).length);
+}
+
+/**
  * The Photos module, which serves Memories for the current user.
  * @polymer
  * @extends {PolymerElement}
@@ -41,6 +60,9 @@ class PhotosModuleElement extends mixinBehaviors
         type: Boolean,
         reflectToAttribute: true,
       },
+
+      /** @type {boolean} */
+      showSoftOptOutButton: Boolean,
 
       /**
        * @type {boolean}
@@ -104,6 +126,20 @@ class PhotosModuleElement extends mixinBehaviors
   }
 
   /** @private */
+  onSoftOptOutClick_() {
+    recordOptInStatus(OptInStatus.kSoftOptOut);
+    PhotosProxy.getHandler().softOptOut();
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getString('modulesPhotosMemoriesSoftOptOut'),
+        restoreCallback: () => PhotosProxy.getHandler().restoreModule(),
+      },
+    }));
+  }
+
+  /** @private */
   onDisableButtonClick_() {
     this.dispatchEvent(new CustomEvent('disable-module', {
       bubbles: true,
@@ -128,14 +164,14 @@ class PhotosModuleElement extends mixinBehaviors
 
   /** @private */
   onOptInClick_() {
-    chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.UserOptIn', true);
+    recordOptInStatus(OptInStatus.kOptIn);
     PhotosProxy.getHandler().onUserOptIn(true);
     this.showOptInScreen = false;
   }
 
   /** @private */
   onOptOutClick_() {
-    chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.UserOptIn', false);
+    recordOptInStatus(OptInStatus.kHardOptOut);
     PhotosProxy.getHandler().onUserOptIn(false);
     // Disable the module when user opt out.
     this.onDisableButtonClick_();
@@ -172,11 +208,14 @@ async function createPhotosElement() {
   const {memories} = await PhotosProxy.getHandler().getMemories();
   const {showOptInScreen} =
       await PhotosProxy.getHandler().shouldShowOptInScreen();
+  const {showSoftOptOutButton} =
+      await PhotosProxy.getHandler().shouldShowSoftOptOutButton();
   if (memories.length === 0) {
     return null;
   }
   const element = new PhotosModuleElement();
   element.showOptInScreen = showOptInScreen;
+  element.showSoftOptOutButton = showSoftOptOutButton;
   // We show only the first 3 at most.
   element.memories = memories.slice(0, 3);
   return element;

@@ -1287,16 +1287,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Photos.UserOptIn" enum="BooleanOptedIn"
+<histogram name="NewTabPage.Photos.UserOptIn" enum="NtpPhotosModuleOptInStatus"
     expires_after="2022-06-30">
   <owner>tiborg@chromium.org</owner>
   <owner>jerem@google.com</owner>
+  <owner>mplg@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Logged every time the user decides to opt in ('Opted-in') or out ('Not
-    opted-in') from seeing the photos module. Only logged on the 1P NTP. Note
-    that even if the user has Google as their default search engine, Incognito
-    and Guest mode NTPs are not considered 1P and don't log this histogram.
+    Logged every time the user changes the opt-in status of the photos module
+    (OptIn/SoftOptOut/HardOptOut). Only logged on the 1P NTP. Note that even if
+    the user has Google as their default search engine, Incognito and Guest mode
+    NTPs are not considered 1P and don't log this histogram.
   </summary>
 </histogram>
 

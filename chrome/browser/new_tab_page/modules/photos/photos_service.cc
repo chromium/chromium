@@ -84,9 +84,15 @@ const char PhotosService::kOptInAcknowledgedPrefName[] =
     "NewTabPage.Photos.OptInAcknowledged";
 const char PhotosService::kLastMemoryOpenTimePrefName[] =
     "NewTabPage.Photos.LastMemoryOpenTime";
+const char PhotosService::kSoftOptOutCountPrefName[] =
+    "NewTabPage.Photos.SoftOptOutCount";
+const char PhotosService::kLastSoftOptedOutTimePrefName[] =
+    "NewTabPage.Photos.LastSoftOptedoutTime";
 
 // static
 const base::TimeDelta PhotosService::kDismissDuration = base::Days(1);
+const base::TimeDelta PhotosService::kSoftOptOutDuration = base::Days(2);
+const int PhotosService::kMaxSoftOptOuts = 2;
 
 PhotosService::PhotosService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -107,6 +113,8 @@ void PhotosService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
   registry->RegisterBooleanPref(kOptInAcknowledgedPrefName, false);
   registry->RegisterTimePref(kLastMemoryOpenTimePrefName, base::Time());
+  registry->RegisterTimePref(kLastSoftOptedOutTimePrefName, base::Time());
+  registry->RegisterIntegerPref(kSoftOptOutCountPrefName, 0);
 }
 
 void PhotosService::OnPrimaryAccountChanged(
@@ -126,11 +134,12 @@ void PhotosService::GetMemories(GetMemoriesCallback callback) {
     return;
   }
 
-  // Bail if module is still dismissed.
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
-      !pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
-      base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
-          kDismissDuration) {
+  // Bail if module is still dismissed or user soft opted out.
+  if (IsModuleSoftOptedOut() ||
+      (!base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
+       !pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
+       base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
+           kDismissDuration)) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
     }
@@ -177,10 +186,38 @@ void PhotosService::DismissModule() {
 
 void PhotosService::RestoreModule() {
   pref_service_->SetTime(kLastDismissedTimePrefName, base::Time());
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModuleSoftOptOut)) {
+    pref_service_->SetTime(kLastSoftOptedOutTimePrefName, base::Time());
+    pref_service_->SetInteger(
+        kSoftOptOutCountPrefName,
+        pref_service_->GetInteger(kSoftOptOutCountPrefName) - 1);
+  }
+}
+
+bool PhotosService::IsModuleSoftOptedOut() {
+  return base::FeatureList::IsEnabled(
+             ntp_features::kNtpPhotosModuleSoftOptOut) &&
+         !pref_service_->GetTime(kLastSoftOptedOutTimePrefName).is_null() &&
+         base::Time::Now() -
+                 pref_service_->GetTime(kLastSoftOptedOutTimePrefName) <
+             kSoftOptOutDuration;
 }
 
 bool PhotosService::ShouldShowOptInScreen() {
   return !pref_service_->GetBoolean(kOptInAcknowledgedPrefName);
+}
+
+bool PhotosService::ShouldShowSoftOptOutButton() {
+  return base::FeatureList::IsEnabled(
+             ntp_features::kNtpPhotosModuleSoftOptOut) &&
+         pref_service_->GetInteger(kSoftOptOutCountPrefName) < kMaxSoftOptOuts;
+}
+
+void PhotosService::SoftOptOut() {
+  pref_service_->SetTime(kLastSoftOptedOutTimePrefName, base::Time::Now());
+  pref_service_->SetInteger(
+      kSoftOptOutCountPrefName,
+      pref_service_->GetInteger(kSoftOptOutCountPrefName) + 1);
 }
 
 void PhotosService::OnUserOptIn(bool accept) {

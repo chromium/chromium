@@ -40,3 +40,13 @@ void PhotosHandler::OnUserOptIn(bool accept) {
 void PhotosHandler::OnMemoryOpen() {
   PhotosServiceFactory::GetForProfile(profile_)->OnMemoryOpen();
 }
+
+void PhotosHandler::ShouldShowSoftOptOutButton(
+    ShouldShowSoftOptOutButtonCallback callback) {
+  std::move(callback).Run(PhotosServiceFactory::GetForProfile(profile_)
+                              ->ShouldShowSoftOptOutButton());
+}
+
+void PhotosHandler::SoftOptOut() {
+  PhotosServiceFactory::GetForProfile(profile_)->SoftOptOut();
+}

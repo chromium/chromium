@@ -504,6 +504,11 @@ TEST_F(PhotosServiceTest, PassesNoDataIfDismissed) {
   EXPECT_TRUE(empty_response);
 }
 
+TEST_F(PhotosServiceTest, SoftOptInNotShownWhenDisabled) {
+  EXPECT_FALSE(service_->ShouldShowSoftOptOutButton());
+  EXPECT_FALSE(service_->IsModuleSoftOptedOut());
+}
+
 TEST_F(PhotosServiceTest, DismissModule) {
   service_->DismissModule();
   EXPECT_EQ(base::Time::Now(),
@@ -572,6 +577,70 @@ TEST_F(PhotosServiceFakeDataTest, ReturnsFakeData) {
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(fake_memories.empty());
+}
+
+class PhotosServiceSoftOptOutEnabledTest : public PhotosServiceTest {
+ public:
+  PhotosServiceSoftOptOutEnabledTest() {
+    features_.InitAndEnableFeature(ntp_features::kNtpPhotosModuleSoftOptOut);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(PhotosServiceSoftOptOutEnabledTest, PassesNoDataIfSoftOptedOut) {
+  bool empty_response = false;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&empty_response](std::vector<photos::mojom::MemoryPtr> memories) {
+            empty_response = memories.empty();
+          }));
+
+  prefs_.SetTime(PhotosService::kLastSoftOptedOutTimePrefName,
+                 base::Time::Now());
+  service_->GetMemories(callback.Get());
+
+  EXPECT_TRUE(empty_response);
+}
+
+TEST_F(PhotosServiceSoftOptOutEnabledTest, SoftOptOutShown) {
+  EXPECT_TRUE(service_->ShouldShowSoftOptOutButton());
+}
+
+TEST_F(PhotosServiceSoftOptOutEnabledTest, SoftOptOutNotShownBeyondMaxOptOuts) {
+  prefs_.SetInteger(PhotosService::kSoftOptOutCountPrefName,
+                    PhotosService::kMaxSoftOptOuts);
+  EXPECT_FALSE(service_->ShouldShowSoftOptOutButton());
+}
+
+TEST_F(PhotosServiceSoftOptOutEnabledTest, ModuleOptedOut) {
+  prefs_.SetInteger(PhotosService::kSoftOptOutCountPrefName, 1);
+  prefs_.SetTime(PhotosService::kLastSoftOptedOutTimePrefName,
+                 base::Time::Now());
+  EXPECT_TRUE(service_->IsModuleSoftOptedOut());
+}
+
+TEST_F(PhotosServiceSoftOptOutEnabledTest,
+       PrefsUpdatedAppropriatelyWhenSoftOptedOut) {
+  service_->SoftOptOut();
+  EXPECT_EQ(prefs_.GetInteger(PhotosService::kSoftOptOutCountPrefName), 1);
+  EXPECT_NE(prefs_.GetTime(PhotosService::kLastSoftOptedOutTimePrefName),
+            base::Time());
+}
+
+TEST_F(PhotosServiceSoftOptOutEnabledTest,
+       RestoreModuleUpdateSoftOptOutParams) {
+  prefs_.SetTime(PhotosService::kLastSoftOptedOutTimePrefName,
+                 base::Time::Now());
+  prefs_.SetInteger(PhotosService::kSoftOptOutCountPrefName, 2);
+  service_->RestoreModule();
+  EXPECT_EQ(base::Time(),
+            prefs_.GetTime(PhotosService::kLastSoftOptedOutTimePrefName));
+  EXPECT_EQ(prefs_.GetInteger(PhotosService::kSoftOptOutCountPrefName), 1);
 }
 
 class PhotosServiceModulesRedesignedTest : public PhotosServiceTest {

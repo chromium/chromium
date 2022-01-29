@@ -108,6 +108,11 @@ const base::Feature kNtpDriveModule{"NtpDriveModule",
 const base::Feature kNtpPhotosModule{"NtpPhotosModule",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, Google Photos opt-in card will show a button to soft opt-out.
+const base::Feature kNtpPhotosModuleSoftOptOut(
+    "NtpPhotosModuleSoftOptOut",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, SafeBrowsing module will be shown to a target user.
 const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
