@@ -206,9 +206,8 @@ suite(pdf_toolbar_manager_test.suiteName, function() {
         assertFalse(zoomToolbar.isVisible());
 
         // Simulate focusing the fit to page button using the tab key.
-        zoomToolbar.shadowRoot.querySelector('#fit-button')
-            .dispatchEvent(
-                new CustomEvent('focus', {bubbles: true, composed: true}));
+        zoomToolbar.$.fitButton.dispatchEvent(
+            new CustomEvent('focus', {bubbles: true, composed: true}));
         assertTrue(zoomToolbar.isVisible());
 
         // Call resetKeyboardNavigationAndHideToolbar(). This happens when focus
@@ -220,9 +219,8 @@ suite(pdf_toolbar_manager_test.suiteName, function() {
 
         // Simulate re-focusing the zoom toolbar with the tab key. See
         // https://crbug.com/982694.
-        zoomToolbar.shadowRoot.querySelector('#fit-button')
-            .dispatchEvent(
-                new CustomEvent('keyup', {bubbles: true, composed: true}));
+        zoomToolbar.$.fitButton.dispatchEvent(
+            new CustomEvent('keyup', {bubbles: true, composed: true}));
         mockWindow.runTimeout();
         assertTrue(zoomToolbar.isVisible());
 

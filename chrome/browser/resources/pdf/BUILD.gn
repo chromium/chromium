@@ -50,9 +50,7 @@ preprocess_if_expr("preprocess_print_preview_html_css") {
 # Build the grdp for Print Preview.
 generate_grd("build_print_preview_grdp") {
   # Get all the shared files out of the tsc folder.
-  input_files =
-      shared_non_webcomponents_files + shared_webcomponents_files +
-      print_preview_non_webcomponents_files + print_preview_webcomponents_files
+  input_files = print_preview_grdp_input_files
   input_files_base_dir =
       rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
 

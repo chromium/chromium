@@ -13,11 +13,19 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {FittingType} from '../constants.js';
 
+import {ViewerZoomButtonElement} from './viewer-zoom-button.js';
+
 const FIT_TO_PAGE_BUTTON_STATE = 0;
 const FIT_TO_WIDTH_BUTTON_STATE = 1;
 
 const TWO_UP_VIEW_DISABLED_STATE = 0;
 const TWO_UP_VIEW_ENABLED_STATE = 1;
+
+export interface ViewerZoomToolbarElement {
+  $: {
+    fitButton: ViewerZoomButtonElement,
+  };
+}
 
 export class ViewerZoomToolbarElement extends PolymerElement {
   static get is() {
@@ -30,13 +38,11 @@ export class ViewerZoomToolbarElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private */
       keyboardNavigationActive_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       visible_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -44,11 +50,9 @@ export class ViewerZoomToolbarElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-  }
+  private keyboardNavigationActive_: boolean;
+  private visible_: boolean;
 
-  /** @override */
   ready() {
     super.ready();
     this.addEventListener('focus', this.onFocus_);
@@ -56,23 +60,16 @@ export class ViewerZoomToolbarElement extends PolymerElement {
     this.addEventListener('pointerdown', this.onPointerDown_);
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any): void {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /** @return {boolean} */
-  isVisible() {
+  isVisible(): boolean {
     return this.visible_;
   }
 
-  /** @private */
-  onFocus_() {
+  private onFocus_(): void {
     if (this.visible_) {
       return;
     }
@@ -83,14 +80,12 @@ export class ViewerZoomToolbarElement extends PolymerElement {
     this.show();
   }
 
-  /** @private */
-  onKeyUp_() {
+  private onKeyUp_(): void {
     this.fire_('keyboard-navigation-active', true);
     this.keyboardNavigationActive_ = true;
   }
 
-  /** @private */
-  onPointerDown_() {
+  private onPointerDown_(): void {
     this.fire_('keyboard-navigation-active', false);
     this.keyboardNavigationActive_ = false;
   }
@@ -98,7 +93,7 @@ export class ViewerZoomToolbarElement extends PolymerElement {
   /** Handle clicks of the fit-button. */
   fitToggle() {
     this.fireFitToChangedEvent_(
-        this.$['fit-button'].activeIndex === FIT_TO_WIDTH_BUTTON_STATE ?
+        this.$.fitButton.activeIndex === FIT_TO_WIDTH_BUTTON_STATE ?
             FittingType.FIT_TO_WIDTH :
             FittingType.FIT_TO_PAGE);
   }
@@ -108,7 +103,7 @@ export class ViewerZoomToolbarElement extends PolymerElement {
     this.fitToggle();
 
     // Toggle the button state since there was no mouse click.
-    const button = this.$['fit-button'];
+    const button = this.$.fitButton;
     button.activeIndex =
         (button.activeIndex === FIT_TO_WIDTH_BUTTON_STATE ?
              FIT_TO_PAGE_BUTTON_STATE :
@@ -117,22 +112,21 @@ export class ViewerZoomToolbarElement extends PolymerElement {
 
   /**
    * Handle forcing zoom via scripting to a fitting type.
-   * @param {!FittingType} fittingType Page fitting type to force.
+   * @param fittingType Page fitting type to force.
    */
-  forceFit(fittingType) {
+  forceFit(fittingType: FittingType) {
     // Set the button state since there was no mouse click.
     const nextButtonState =
         (fittingType === FittingType.FIT_TO_WIDTH ? FIT_TO_PAGE_BUTTON_STATE :
                                                     FIT_TO_WIDTH_BUTTON_STATE);
-    this.$['fit-button'].activeIndex = nextButtonState;
+    this.$.fitButton.activeIndex = nextButtonState;
   }
 
   /**
    * Fire a 'fit-to-changed' {CustomEvent} with the given FittingType as detail.
-   * @param {!FittingType} fittingType to include as payload.
-   * @private
+   * @param fittingType to include as payload.
    */
-  fireFitToChangedEvent_(fittingType) {
+  private fireFitToChangedEvent_(fittingType: FittingType) {
     this.fire_('fit-to-changed', fittingType);
   }
 
@@ -156,10 +150,10 @@ export class ViewerZoomToolbarElement extends PolymerElement {
 
   /**
    * Offsets the toolbar position so that it doesn't move if scrollbars appear.
-   * @param {!{horizontal: boolean, vertical: boolean}} hasScrollbars
-   * @param {number} scrollbarWidth
    */
-  shiftForScrollbars(hasScrollbars, scrollbarWidth) {
+  shiftForScrollbars(
+      hasScrollbars: {horizontal: boolean, vertical: boolean},
+      scrollbarWidth: number) {
     const verticalScrollbarWidth = hasScrollbars.vertical ? scrollbarWidth : 0;
     const horizontalScrollbarWidth =
         hasScrollbars.horizontal ? scrollbarWidth : 0;
@@ -179,6 +173,12 @@ export class ViewerZoomToolbarElement extends PolymerElement {
     // that when there is a scrollbar visible, it will be a full scrollbar
     // width closer to the bottom of the screen than usual, but this is ok.
     this.style.bottom = -horizontalScrollbarWidth + 'px';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-zoom-toolbar': ViewerZoomToolbarElement;
   }
 }
 
