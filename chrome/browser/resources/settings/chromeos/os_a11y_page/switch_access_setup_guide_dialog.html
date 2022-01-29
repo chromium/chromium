@@ -1,3 +1,4 @@
+<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
 <style include="cr-shared-style settings-shared">
   cr-dialog::part(dialog) {
     height: 380px;
@@ -96,12 +97,22 @@
   }
 
   #bluetooth {
-    margin-inline-end: 250px;
+    margin-inline-end: 324px;
+  }
+
+  #exit {
+    float: right;
+    margin-top: -6px;
+    padding: none;
   }
 </style>
 <cr-dialog id="switchAccessSetupGuideDialog" show-on-attach>
   <div slot="title" class="sa-setup-title" id="title">
-    $i18n{switchAccessSetupIntroTitle}
+    <span id="titleText">
+      $i18n{switchAccessSetupIntroTitle}
+    </span>
+    <cr-icon-button iron-icon="cr:close" id="exit" on-click="onExitClick_">
+    </cr-icon-button>
   </div>
   <div slot="body" class="sa-setup-body">
     <div id="intro" class="flex">
@@ -190,9 +201,6 @@
     </cr-button>
     <cr-button on-click="onStartOverClick_" id="start-over" hidden>
       $i18n{switchAccessSetupStartOver}
-    </cr-button>
-    <cr-button on-click="onExitClick_" id="exit">
-      $i18n{switchAccessDialogExit}
     </cr-button>
     <cr-button class="action-button" on-click="onExitClick_"
         id="done" hidden>

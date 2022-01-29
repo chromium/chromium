@@ -35,7 +35,6 @@ import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} fr
 const SASetupElement = {
   BLUETOOTH_BUTTON: 'bluetooth',
   DONE_BUTTON: 'done',
-  EXIT_BUTTON: 'exit',
   NEXT_BUTTON: 'next',
   PREVIOUS_BUTTON: 'previous',
   START_OVER_BUTTON: 'start-over',
@@ -79,15 +78,14 @@ const SASetupPageList = {};
 SASetupPageList[SASetupPageId.INTRO] = {
   titleId: 'switchAccessSetupIntroTitle',
   visibleElements: [
-    SASetupElement.BLUETOOTH_BUTTON, SASetupElement.EXIT_BUTTON,
-    SASetupElement.NEXT_BUTTON, SASetupElement.INTRO_CONTENT
+    SASetupElement.BLUETOOTH_BUTTON, SASetupElement.NEXT_BUTTON,
+    SASetupElement.INTRO_CONTENT
   ]
 };
 
 SASetupPageList[SASetupPageId.ASSIGN_SELECT] = {
   titleId: 'switchAccessSetupAssignSelectTitle',
-  visibleElements:
-      [SASetupElement.EXIT_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
+  visibleElements: [SASetupElement.ASSIGN_SWITCH_CONTENT]
 };
 
 SASetupPageList[SASetupPageId.AUTO_SCAN_ENABLED] = {
@@ -258,7 +256,7 @@ Polymer({
     this.addOrRemoveAssignmentPane_(id);
 
     const newPage = SASetupPageList[id];
-    this.$.title.textContent = this.i18n(newPage.titleId);
+    this.$.titleText.textContent = this.i18n(newPage.titleId);
 
     for (const element of Object.values(SASetupElement)) {
       this['$'][element]['hidden'] = !newPage.visibleElements.includes(element);
