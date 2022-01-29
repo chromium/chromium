@@ -1667,6 +1667,11 @@ const char kSuppressDifferentOriginSubframeJSDialogs[] =
 // or disabled. Defaults to blink::features::kReduceUserAgent field trial.
 const char kUserAgentReduction[] = "user_agent_reduction";
 
+// Enum indicating if the user agent string should freeze the major version
+// at 99 and report the browser's major version in the minor position.
+const char kForceMajorVersionToMinorPositionInUserAgent[] =
+    "force_major_version_to_minor_position_in_user_agent";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

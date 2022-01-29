@@ -1595,6 +1595,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFirstPartySetsEnabled,
     first_party_sets::kFirstPartySetsEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kForceMajorVersionToMinorPositionInUserAgent,
+    prefs::kForceMajorVersionToMinorPositionInUserAgent,
+    base::Value::Type::INTEGER},
 };
 // clang-format on
 

@@ -22,25 +22,41 @@ class WebContents;
 
 namespace embedder_support {
 
+// TODO(crbug.com/1291612): Move this enum definition to
+// chrome/browser/chrome_content_browser_client.h
+// TODO(crbug.com/1290820): Remove this enum along with policy.
+enum ForceMajorVersionToMinorPosition {
+  kDefault = 0,
+  kForceDisabled = 1,
+  kForceEnabled = 2,
+};
+
+// TODO(crbug.com/1291612): Define UserAgentOptions struct here.
+
 // Returns the product string, e.g. "Chrome/98.0.4521.0".  If `allow_override`
 // is set to true, it's possible to have a mismatch between the product's
 // version number and the version number in the User-Agent string if there are
 // flag-enabled overrides.
-std::string GetProduct(bool allow_override = false);
-
-// Returns a string representing the major version number of the user agent
-// string for Chrome, potentially overridden by policy.
-std::string GetMajorVersionForUserAgentString();
+// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+std::string GetProduct(
+    bool allow_override = false,
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the user agent string for Chrome.
-std::string GetFullUserAgent();
+// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+std::string GetFullUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the reduced user agent string for Chrome.
-std::string GetReducedUserAgent();
+// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+std::string GetReducedUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the full or "reduced" user agent string, depending on the
 // UserAgentReduction enterprise policy and blink::features::kReduceUserAgent
-std::string GetUserAgent();
+// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+std::string GetUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns UserAgentMetadata per the default policy.
 // This override is currently used in fuchsia, where the enterprise policy

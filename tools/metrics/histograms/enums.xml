@@ -28442,6 +28442,7 @@ Called by update_document_policy_enum.py.-->
   <int value="947"
       label="ExemptDomainFileTypePairsFromFileTypeDownloadWarnings"/>
   <int value="948" label="FirstPartySetsEnabled"/>
+  <int value="949" label="UserAgentForceMajorVersionToMinorPosition"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
