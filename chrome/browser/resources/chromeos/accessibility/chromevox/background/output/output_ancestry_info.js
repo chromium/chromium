@@ -53,7 +53,7 @@ OutputAncestryInfo = class {
 
     let afterEndNode = AutomationUtil.findNextNode(
         node, Dir.FORWARD, AutomationPredicate.leafOrStaticText,
-        {skipInitialSubtree: true});
+        {root: r => r === node.root, skipInitialSubtree: true});
     if (!afterEndNode) {
       afterEndNode = AutomationUtil.getTopLevelRoot(node) || node.root;
     }
@@ -66,7 +66,7 @@ OutputAncestryInfo = class {
 
     let beforeStartNode = AutomationUtil.findNextNode(
         node, Dir.BACKWARD, AutomationPredicate.leafOrStaticText,
-        {skipInitialAncestry: true});
+        {root: r => r === node.root, skipInitialAncestry: true});
     if (!beforeStartNode) {
       beforeStartNode = AutomationUtil.getTopLevelRoot(node) || node.root;
     }

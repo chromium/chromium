@@ -395,7 +395,8 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       deep = deep.previousOnLine;
     }
     const next = AutomationUtil.findNextNode(
-        deep, Dir.BACKWARD, AutomationPredicate.inlineTextBox);
+        deep, Dir.BACKWARD, AutomationPredicate.inlineTextBox,
+        {root: r => r === this.node_});
     if (!next) {
       return true;
     }
@@ -412,7 +413,8 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       deep = deep.nextOnLine;
     }
     const next = AutomationUtil.findNextNode(
-        deep, Dir.FORWARD, AutomationPredicate.inlineTextBox);
+        deep, Dir.FORWARD, AutomationPredicate.inlineTextBox,
+        {root: r => r === this.node_});
     if (!next) {
       return true;
     }

@@ -1719,12 +1719,11 @@ Output = class {
     }.bind(this);
 
     let lca = null;
+    if (range.start.node !== range.end.node) {
+      lca = AutomationUtil.getLeastCommonAncestor(
+          range.end.node, range.start.node);
+    }
     if (addContextAfter) {
-      if (range.start.node !== range.end.node) {
-        lca = AutomationUtil.getLeastCommonAncestor(
-            range.end.node, range.start.node);
-      }
-
       prevNode = lca || prevNode;
     }
 
@@ -1774,8 +1773,15 @@ Output = class {
         rangeBuff.push.apply(rangeBuff, formatNodeAndAncestors(node, prevNode));
       }
 
+      // End early if the range is just a single node.
+      if (range.start.node === range.end.node) {
+        break;
+      }
+
       prevNode = node;
-      node = AutomationUtil.findNextNode(node, Dir.FORWARD, pred) || prevNode;
+      node = AutomationUtil.findNextNode(
+                 node, Dir.FORWARD, pred, {root: r => r === lca}) ||
+          prevNode;
 
       // Reached a boundary.
       if (node === prevNode) {

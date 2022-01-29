@@ -97,7 +97,8 @@ cursors.Cursor = class {
         !args.preferNodeStartEquivalent) {
       // Re-interpret this case as the beginning of the next node.
       const nextNode = AutomationUtil.findNextNode(
-          node, Dir.FORWARD, AutomationPredicate.leafOrStaticText);
+          node, Dir.FORWARD, AutomationPredicate.leafOrStaticText,
+          {root: r => r === node.root});
 
       // The exception is when a user types at the end of a line. In that
       // case, staying on the current node is appropriate.
@@ -442,7 +443,8 @@ cursors.Cursor = class {
                 newIndex = firstWordStart;
               } else {
                 newNode = AutomationUtil.findNextNode(
-                    newNode, dir, AutomationPredicate.leafWithWordStop);
+                    newNode, dir, AutomationPredicate.leafWithWordStop,
+                    {root: r => r === newNode.root});
                 if (newNode) {
                   let starts;
                   if (newNode.role === RoleType.INLINE_TEXT_BOX) {
@@ -512,6 +514,7 @@ cursors.Cursor = class {
     let newNode = this.node;
     let newIndex = this.index_;
     let isTextIndex = false;
+
     while (newNode.firstChild) {
       if (newNode.role === RoleType.STATIC_TEXT) {
         // Text offset.
