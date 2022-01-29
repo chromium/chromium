@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/entity_metadata.h"
 
+#include <ostream>
 #include <string>
 #include <vector>
 
