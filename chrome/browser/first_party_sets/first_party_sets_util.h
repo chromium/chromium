@@ -37,6 +37,9 @@ class FirstPartySetsUtil {
   // policy is enabled.
   bool IsFirstPartySetsEnabled();
 
+  // Resets internal state for testing.
+  void ResetForTesting();
+
  private:
   friend class base::NoDestructor<FirstPartySetsUtil>;
 

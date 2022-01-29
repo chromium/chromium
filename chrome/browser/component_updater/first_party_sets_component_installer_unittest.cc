@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "chrome/browser/first_party_sets/first_party_sets_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -45,6 +46,7 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
  public:
   FirstPartySetsComponentInstallerTest() {
     CHECK(component_install_dir_.CreateUniqueTempDir());
+    FirstPartySetsUtil::GetInstance()->ResetForTesting();
   }
 
   void TearDown() override {
@@ -85,9 +87,7 @@ class FirstPartySetsComponentInstallerFeatureDisabledTest
   }
 };
 
-TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest, FeatureDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
+TEST_F(FirstPartySetsComponentInstallerFeatureDisabledTest, FeatureDisabled) {
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 

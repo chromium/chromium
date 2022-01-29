@@ -107,6 +107,11 @@ bool FirstPartySetsUtil::IsFirstPartySetsEnabled() {
   return enabled_.value();
 }
 
+void FirstPartySetsUtil::ResetForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  enabled_ = absl::nullopt;
+}
+
 void FirstPartySetsUtil::OnGetUpdatedSets(const base::FilePath& path,
                                           const std::string& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
