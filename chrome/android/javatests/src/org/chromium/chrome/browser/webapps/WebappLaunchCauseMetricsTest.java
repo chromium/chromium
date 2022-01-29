@@ -73,6 +73,7 @@ public final class WebappLaunchCauseMetricsTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisabledTest(message = "https://crbug.com/1292239")
     public void testHomescreenLaunch() throws Throwable {
         int otherCount = histogramCountForValue(LaunchCause.WEBAPK_OTHER_DISTRIBUTOR);
         int chromeCount = histogramCountForValue(LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
