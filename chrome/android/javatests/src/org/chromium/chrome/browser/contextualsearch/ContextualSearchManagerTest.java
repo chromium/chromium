@@ -2439,7 +2439,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1180304")
+    // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
     public void testNotifyObserversAfterLongPressWithoutSurroundings(
             @EnabledFeature int enabledFeature) throws Exception {
         // Mark the user undecided so we won't allow sending surroundings.
