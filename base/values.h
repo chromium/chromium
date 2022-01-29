@@ -831,10 +831,6 @@ class BASE_EXPORT ListValue : public Value {
   // for (auto it = list_value.GetList().begin();
   //      it != list_value.GetList().end(); ++it) {
   //   ...
-
-  // DEPRECATED, use `Value::Clone()` instead.
-  // TODO(crbug.com/646113): Delete this and migrate callsites.
-  std::unique_ptr<ListValue> CreateDeepCopy() const;
 };
 
 // This interface is implemented by classes that know how to serialize

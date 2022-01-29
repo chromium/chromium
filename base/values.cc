@@ -1388,10 +1388,6 @@ void ListValue::Swap(ListValue* other) {
   list().swap(other->list());
 }
 
-std::unique_ptr<ListValue> ListValue::CreateDeepCopy() const {
-  return std::make_unique<ListValue>(list());
-}
-
 ValueSerializer::~ValueSerializer() = default;
 
 ValueDeserializer::~ValueDeserializer() = default;
