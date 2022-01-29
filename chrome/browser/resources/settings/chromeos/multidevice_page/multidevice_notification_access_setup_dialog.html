@@ -85,16 +85,21 @@
             url(chrome://os-settings/images/notification_access_error.svg);
       }
 
+      :host([has-completed-setup-successfully_]) #illustration {
+        background-image:
+            url(chrome://os-settings/images/notification_access_finished.svg);
+      }
+
       @media(prefers-color-scheme: dark) {
         :host([did-setup-attempt-fail_]) #illustration {
           background-image: url(
             chrome://os-settings/images/notification_access_error_dark.svg);
         }
-      }
 
-      :host([has-completed-setup-successfully_]) #illustration {
-        background-image:
-            url(chrome://os-settings/images/notification_access_finished.svg);
+        :host([has-completed-setup-successfully_]) #illustration {
+          background-image: url(
+            chrome://os-settings/images/notification_access_finished_dark.svg);
+        }
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
