@@ -2936,7 +2936,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
+    // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
     public void testChainedSearchContentVisibility() throws Exception {
         // Chained searches are tap-triggered very close to existing tap-triggered searches.
         FeatureList.setTestFeatures(ENABLE_NONE);
