@@ -601,23 +601,23 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceZeroSamplingRateBrowserTest,
   EXPECT_EQ(0u, requests_seen());
 }
 
-// Test fixture with SCT auditing and retry/persist enabled.
-class SCTReportingServiceWithRetryAndPersistBrowserTest
+// Test fixture with SCT auditing and retry enabled.
+class SCTReportingServiceWithRetryBrowserTest
     : public SCTReportingServiceBrowserTest {
  public:
-  SCTReportingServiceWithRetryAndPersistBrowserTest() {
+  SCTReportingServiceWithRetryBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kSCTAuditing,
           {{features::kSCTAuditingSamplingRate.name, "1.0"}}},
-         {network::features::kSCTAuditingRetryAndPersistReports, {}}},
+         {network::features::kSCTAuditingRetryReports, {}}},
         {});
   }
-  ~SCTReportingServiceWithRetryAndPersistBrowserTest() override = default;
+  ~SCTReportingServiceWithRetryBrowserTest() override = default;
 
-  SCTReportingServiceWithRetryAndPersistBrowserTest(
-      const SCTReportingServiceWithRetryAndPersistBrowserTest&) = delete;
-  const SCTReportingServiceWithRetryAndPersistBrowserTest& operator=(
-      const SCTReportingServiceWithRetryAndPersistBrowserTest&) = delete;
+  SCTReportingServiceWithRetryBrowserTest(
+      const SCTReportingServiceWithRetryBrowserTest&) = delete;
+  const SCTReportingServiceWithRetryBrowserTest& operator=(
+      const SCTReportingServiceWithRetryBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     // ConnectionListener must be set before the report server is started. Lets
@@ -667,7 +667,7 @@ class SCTReportingServiceWithRetryAndPersistBrowserTest
 };
 
 // Tests the simple case where a report succeeds on the first try.
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryBrowserTest,
                        SucceedOnFirstTry) {
   // Succeed on the first try.
   set_error_count(0);
@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
       GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }
 
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryBrowserTest,
                        RetryOnceAndSucceed) {
   // Succeed on the second try.
   set_error_count(1);
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
       GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }
 
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryBrowserTest,
                        FailAfterMaxRetries) {
   // Don't succeed for max_retries+1.
   set_error_count(16);
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
 
 // Test that a cert error on the first attempt to send a report will trigger
 // retries that succeed if the server starts using a good cert.
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryBrowserTest,
                        CertificateErrorTriggersRetry) {
   {
     // Override the retry delay to 1s so that the retries don't all happen

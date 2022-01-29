@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/features.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
@@ -187,8 +188,11 @@ const base::Feature kWebSocketReassembleShortMessages{
 const base::Feature kAcceptCHFrame{"AcceptCHFrame",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSCTAuditingRetryAndPersistReports{
-    "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSCTAuditingRetryReports{"SCTAuditingRetryReports",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSCTAuditingPersistReports{
+    "SCTAuditingPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // This feature is used for tuning several loading-related data pipe
 // parameters. See crbug.com/1041006.
