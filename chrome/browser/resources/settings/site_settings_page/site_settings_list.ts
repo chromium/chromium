@@ -12,7 +12,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
@@ -32,13 +32,6 @@ export type CategoryListItem = {
 };
 
 type FocusConfig = Map<string, (string|(() => void))>;
-
-/** Event interface for dom-repeat. */
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    index: number,
-  };
-}
 
 export function defaultSettingLabel(
     setting: string, enabled: string, disabled: string,
@@ -237,7 +230,7 @@ class SettingsSiteSettingsListElement extends
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }
 
-  private onClick_(event: RepeaterEvent) {
+  private onClick_(event: DomRepeatEvent<CategoryListItem>) {
     Router.getInstance().navigateTo(this.categoryList[event.model.index].route);
   }
 }

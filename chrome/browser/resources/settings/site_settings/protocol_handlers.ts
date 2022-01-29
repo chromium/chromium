@@ -23,7 +23,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 
@@ -62,19 +62,6 @@ export type AppProtocolEntry = {
   protocol: string,
   protocol_display_name: string,
 };
-
-
-interface RepeaterEvent extends Event {
-  model: {
-    item: HandlerEntry,
-  }
-}
-
-interface AppRepeaterEvent extends Event {
-  model: {
-    item: AppHandlerEntry,
-  }
-}
 
 export interface ProtocolHandlersElement {
   $: {
@@ -292,7 +279,8 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   /**
    * Handler for removing web app protocol handlers that were allowed.
    */
-  private onRemoveAppAllowedHandlerButtonClick_(event: AppRepeaterEvent) {
+  private onRemoveAppAllowedHandlerButtonClick_(
+      event: DomRepeatEvent<AppHandlerEntry>) {
     const item = event.model.item;
     this.browserProxy.removeAppAllowedHandler(
         item.protocol, item.spec, item.app_id);
@@ -301,7 +289,8 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   /**
    * Handler for removing web app protocol handlers that were disallowed.
    */
-  private onRemoveAppDisallowedHandlerButtonClick_(event: AppRepeaterEvent) {
+  private onRemoveAppDisallowedHandlerButtonClick_(
+      event: DomRepeatEvent<AppHandlerEntry>) {
     const item = event.model.item;
     this.browserProxy.removeAppDisallowedHandler(
         item.protocol, item.spec, item.app_id);
@@ -310,7 +299,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   /**
    * Handler for removing handlers that were blocked
    */
-  private onRemoveIgnored_(event: RepeaterEvent) {
+  private onRemoveIgnored_(event: DomRepeatEvent<HandlerEntry>) {
     const item = event.model.item;
     this.browserProxy.removeProtocolHandler(item.protocol, item.spec);
   }
@@ -318,7 +307,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   /**
    * A handler to show the action menu next to the clicked menu button.
    */
-  private showMenu_(event: RepeaterEvent) {
+  private showMenu_(event: DomRepeatEvent<HandlerEntry>) {
     this.actionMenuModel_ = event.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
         event.target as HTMLElement);

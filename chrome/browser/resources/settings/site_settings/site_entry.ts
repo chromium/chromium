@@ -21,7 +21,7 @@ import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -33,12 +33,6 @@ import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_bro
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
-
-interface RepeaterEvent {
-  model: {
-    index: number,
-  },
-}
 
 export interface SiteEntryElement {
   $: {
@@ -360,7 +354,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   /**
    * A handler for selecting a site (by clicking on the origin).
    */
-  private onOriginTap_(e: RepeaterEvent) {
+  private onOriginTap_(e: DomRepeatEvent<OriginInfo>) {
     if (this.siteGroup.origins[e.model.index].isPartitioned) {
       return;
     }

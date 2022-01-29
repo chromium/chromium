@@ -21,7 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {fuzzySearch, FuzzySearchOptions} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
@@ -35,27 +35,6 @@ import {TitleItem} from './title_item.js';
 // The minimum number of list items we allow viewing regardless of browser
 // height. Includes a half row that hints to the user the capability to scroll.
 const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT: number = 5.5;
-
-interface RepeaterEvent<T> extends Event {
-  model: {
-    item: T,
-    index: number,
-  };
-}
-
-interface RepeaterCustomEvent<M, P> extends CustomEvent<P> {
-  model: {
-    item: M,
-    index: number,
-  };
-}
-
-interface RepeaterKeyboardEvent<T> extends KeyboardEvent {
-  model: {
-    item: T,
-    index: number,
-  };
-}
 
 export interface TabSearchAppElement {
   $: {
@@ -361,7 +340,7 @@ export class TabSearchAppElement extends PolymerElement {
     }, 0);
   }
 
-  private onItemClick_(e: RepeaterEvent<ItemData>) {
+  private onItemClick_(e: DomRepeatEvent<ItemData>) {
     const tabItem = e.model.item;
     this.tabItemAction_(tabItem, e.model.index);
   }
@@ -400,7 +379,7 @@ export class TabSearchAppElement extends PolymerElement {
         Math.round(Date.now() - this.windowShownTimestamp_));
   }
 
-  private onItemClose_(e: RepeaterEvent<TabData>) {
+  private onItemClose_(e: DomRepeatEvent<TabData>) {
     performance.mark('tab_search:close_tab:metric_begin');
     const tabId = e.model.item.tab.tabId;
     this.apiProxy_.closeTab(
@@ -412,7 +391,7 @@ export class TabSearchAppElement extends PolymerElement {
     });
   }
 
-  private onItemKeyDown_(e: RepeaterKeyboardEvent<ItemData>) {
+  private onItemKeyDown_(e: DomRepeatEvent<ItemData, KeyboardEvent>) {
     if (e.key !== 'Enter' && e.key !== ' ') {
       return;
     }
@@ -458,14 +437,14 @@ export class TabSearchAppElement extends PolymerElement {
         Math.max(this.getSelectedIndex(), 0), this.selectableItemCount_() - 1);
   }
 
-  private onItemFocus_(e: RepeaterEvent<TabData|TabGroupData>) {
+  private onItemFocus_(e: DomRepeatEvent<TabData|TabGroupData>) {
     // Ensure that when a TabSearchItem receives focus, it becomes the selected
     // item in the list.
     this.$.tabsList.selected = e.model.index;
   }
 
   private onTitleExpandChanged_(
-      e: RepeaterCustomEvent<TitleItem, {value: boolean}>) {
+      e: DomRepeatEvent<TitleItem, CustomEvent<{value: boolean}>>) {
     // Instead of relying on two-way binding to update the `expanded` property,
     // we update the value directly as the `expanded-changed` event takes place
     // before a two way bound property update and we need the TitleItem

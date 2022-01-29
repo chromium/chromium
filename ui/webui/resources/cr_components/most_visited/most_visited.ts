@@ -25,7 +25,7 @@ import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MostVisitedBrowserProxy} from './browser_proxy.js';
 import {MostVisitedInfo, MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
@@ -68,13 +68,6 @@ function normalizeUrl(urlString: string): URL|null {
   } catch (e) {
   }
   return null;
-}
-
-interface RepeaterEvent extends Event {
-  model: {
-    item: MostVisitedTile,
-    index: number,
-  };
 }
 
 const MostVisitedElementBase = I18nMixin(PolymerElement);
@@ -711,18 +704,18 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  private onTileActionButtonClick_(e: RepeaterEvent) {
+  private onTileActionButtonClick_(e: DomRepeatEvent<MostVisitedTile>) {
     e.preventDefault();
     this.actionMenuTargetIndex_ = e.model.index;
     this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
-  private onTileRemoveButtonClick_(e: RepeaterEvent) {
+  private onTileRemoveButtonClick_(e: DomRepeatEvent<MostVisitedTile>) {
     e.preventDefault();
     this.tileRemove_(e.model.index);
   }
 
-  private onTileClick_(e: MouseEvent&RepeaterEvent) {
+  private onTileClick_(e: DomRepeatEvent<MostVisitedTile, MouseEvent>) {
     if (e.defaultPrevented) {
       // Ignore previousely handled events.
       return;
@@ -737,7 +730,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
         e.metaKey, e.shiftKey);
   }
 
-  private onTileKeyDown_(e: KeyboardEvent&RepeaterEvent) {
+  private onTileKeyDown_(e: DomRepeatEvent<MostVisitedTile, KeyboardEvent>) {
     if (hasKeyModifiers(e)) {
       return;
     }

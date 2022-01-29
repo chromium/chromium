@@ -30,7 +30,7 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
@@ -47,13 +47,6 @@ export interface ExtensionsDetailViewElement {
     extensionsOptions: CrLinkRowElement,
     parentDisabledPermissionsToolTip: CrTooltipIconElement,
     source: HTMLElement,
-  };
-}
-
-/** Event interface for dom-repeat. */
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    item: chrome.developerPrivate.ExtensionView,
   };
 }
 
@@ -235,7 +228,8 @@ export class ExtensionsDetailViewElement extends
     this.$.enableToggle.checked = this.isEnabled_();
   }
 
-  private onInspectTap_(e: RepeaterEvent) {
+  private onInspectTap_(
+      e: DomRepeatEvent<chrome.developerPrivate.ExtensionView>) {
     this.delegate.inspectItemView(this.data.id, e.model.item);
   }
 

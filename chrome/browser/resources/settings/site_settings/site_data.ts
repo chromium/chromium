@@ -23,7 +23,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
@@ -39,10 +39,6 @@ type FocusConfig = Map<string, string|(() => void)>;
 type SelectedItem = {
   item: LocalDataItem,
   index: number,
-};
-
-type RepeaterEvent = {
-  model: SelectedItem,
 };
 
 interface SiteDataElement {
@@ -297,7 +293,7 @@ class SiteDataElement extends SiteDataElementBase {
     });
   }
 
-  private onSiteClick_(event: RepeaterEvent) {
+  private onSiteClick_(event: DomRepeatEvent<LocalDataItem>) {
     // If any delete button is selected, the focus will be in a bad state when
     // returning to this page. To avoid this, the site select button is given
     // focus. See https://crbug.com/872197.

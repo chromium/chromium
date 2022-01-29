@@ -14,7 +14,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 
@@ -23,13 +23,6 @@ interface ExtensionsKioskDialogElement {
     bailout: CrCheckboxElement,
     'confirm-dialog': CrDialogElement,
     dialog: CrDialogElement,
-  };
-}
-
-/** Event interface for dom-repeat. */
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    item: KioskApp,
   };
 }
 
@@ -117,7 +110,7 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
     this.errorAppId_ = null;
   }
 
-  private onAutoLaunchButtonTap_(event: RepeaterEvent) {
+  private onAutoLaunchButtonTap_(event: DomRepeatEvent<KioskApp>) {
     const app = event.model.item;
     if (app.autoLaunch) {  // If the app is originally set to
                            // auto-launch.
@@ -151,7 +144,7 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
     this.$.dialog.close();
   }
 
-  private onDeleteAppTap_(event: RepeaterEvent) {
+  private onDeleteAppTap_(event: DomRepeatEvent<KioskApp>) {
     this.kioskBrowserProxy_.removeKioskApp(event.model.item.id);
   }
 

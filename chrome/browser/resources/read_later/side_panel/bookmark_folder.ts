@@ -7,18 +7,9 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/mwb_element_shared_style.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
-
-/** Event interface for dom-repeat. */
-interface RepeaterMouseEvent extends MouseEvent {
-  clientX: number;
-  clientY: number;
-  model: {
-    item: chrome.bookmarks.BookmarkTreeNode,
-  };
-}
 
 export interface BookmarkFolderElement {
   $: {
@@ -86,7 +77,8 @@ export class BookmarkFolderElement extends PolymerElement {
     return this.open_ ? 'true' : 'false';
   }
 
-  private onBookmarkAuxClick_(event: RepeaterMouseEvent) {
+  private onBookmarkAuxClick_(
+      event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode, MouseEvent>) {
     if (event.button !== 1) {
       // Not a middle click.
       return;
@@ -103,7 +95,8 @@ export class BookmarkFolderElement extends PolymerElement {
     });
   }
 
-  private onBookmarkClick_(event: RepeaterMouseEvent) {
+  private onBookmarkClick_(
+      event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode, MouseEvent>) {
     event.preventDefault();
     event.stopPropagation();
     this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
@@ -115,7 +108,8 @@ export class BookmarkFolderElement extends PolymerElement {
     });
   }
 
-  private onBookmarkContextMenu_(event: RepeaterMouseEvent) {
+  private onBookmarkContextMenu_(
+      event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode, MouseEvent>) {
     event.preventDefault();
     event.stopPropagation();
     this.bookmarksApi_.showContextMenu(

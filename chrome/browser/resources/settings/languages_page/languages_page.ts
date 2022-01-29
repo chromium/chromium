@@ -34,11 +34,10 @@ import '../settings_vars_css.js';
 import './edit_dictionary_page.js';
 
 // </if>
-
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -48,12 +47,6 @@ import {Router} from '../router.js';
 
 import {LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
-
-interface RepeaterEvent extends Event {
-  model: {
-    item: LanguageState,
-  };
-}
 
 type FocusConfig = Map<string, (string|(() => void))>;
 
@@ -294,7 +287,8 @@ export class SettingsLanguagesPageElement extends
   /**
    * Handler for enabling or disabling spell check for a specific language.
    */
-  private onSpellCheckLanguageChange_(e: RepeaterEvent) {
+  private onSpellCheckLanguageChange_(
+      e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>) {
     const item = e.model.item;
     if (!item.language.supportsSpellcheck) {
       return;
@@ -315,7 +309,8 @@ export class SettingsLanguagesPageElement extends
    * Handler to initiate another attempt at downloading the spell check
    * dictionary for a specified language.
    */
-  private onRetryDictionaryDownloadClick_(e: RepeaterEvent) {
+  private onRetryDictionaryDownloadClick_(
+      e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>) {
     assert(this.errorsGreaterThan_(
         e.model.item.downloadDictionaryFailureCount, 0));
     this.languageHelper.retryDownloadDictionary(e.model.item.language.code);
@@ -325,7 +320,8 @@ export class SettingsLanguagesPageElement extends
    * Handler for clicking on the name of the language. The action taken must
    * match the control that is available.
    */
-  private onSpellCheckNameClick_(e: RepeaterEvent) {
+  private onSpellCheckNameClick_(
+      e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>) {
     assert(!this.isSpellCheckNameClickDisabled_(e.model.item));
     this.onSpellCheckLanguageChange_(e);
   }

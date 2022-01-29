@@ -19,10 +19,9 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
-
 import {assert} from '//resources/js/assert.m.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
@@ -31,12 +30,6 @@ import {Route, Router} from '../router.js';
 import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export const MAX_SIGNIN_PROMO_IMPRESSION: number = 10;
-
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    item: StoredAccount,
-  };
-}
 
 export interface SettingsSyncAccountControlElement {
   $: {
@@ -435,7 +428,7 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  private onAccountTap_(e: RepeaterEvent) {
+  private onAccountTap_(e: DomRepeatEvent<StoredAccount>) {
     this.shownAccount_ = e.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
