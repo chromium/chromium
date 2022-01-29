@@ -1197,4 +1197,91 @@ TEST_F(TranslatePrefsTest, ForceTriggerOnEnglishPagesCount) {
   EXPECT_EQ(-1, translate_prefs_->GetForceTriggerOnEnglishPagesCount());
 }
 
+class TranslatePrefsMigrationTest : public testing::Test {
+ protected:
+  TranslatePrefsMigrationTest() {
+    language::LanguagePrefs::RegisterProfilePrefs(prefs_.registry());
+    TranslatePrefs::RegisterProfilePrefs(prefs_.registry());
+  }
+
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+};
+
+TEST_F(TranslatePrefsMigrationTest,
+       MigrateObsoleteAlwaysTranslateLanguagesPref_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kMigrateAlwaysTranslateLanguagesFix);
+
+  base::Value never_translate_list(base::Value::Type::LIST);
+  never_translate_list.Append("en");
+
+  base::Value old_always_translate_map(base::Value::Type::DICTIONARY);
+  old_always_translate_map.SetStringKey("fr", "en");
+
+  base::Value new_always_translate_map(base::Value::Type::DICTIONARY);
+  new_always_translate_map.SetStringKey("ru", "en");
+
+  prefs_.Set(prefs::kBlockedLanguages, never_translate_list.Clone());
+  prefs_.Set(TranslatePrefs::kPrefAlwaysTranslateListDeprecated,
+             old_always_translate_map.Clone());
+  prefs_.Set(prefs::kPrefAlwaysTranslateList, new_always_translate_map.Clone());
+
+  // Since the kMigrateAlwaysTranslateLanguagesFix feature is disabled, no
+  // migration should occur during construction.
+  TranslatePrefs translate_prefs(&prefs_);
+
+  EXPECT_EQ(
+      *prefs_.GetDictionary(TranslatePrefs::kPrefAlwaysTranslateListDeprecated),
+      old_always_translate_map);
+  EXPECT_EQ(*prefs_.GetDictionary(prefs::kPrefAlwaysTranslateList),
+            new_always_translate_map);
+}
+
+TEST_F(TranslatePrefsMigrationTest,
+       MigrateObsoleteAlwaysTranslateLanguagesPref_Enabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      kMigrateAlwaysTranslateLanguagesFix);
+
+  base::Value never_translate_list(base::Value::Type::LIST);
+  never_translate_list.Append("en");
+  never_translate_list.Append("es");
+  prefs_.Set(prefs::kBlockedLanguages, std::move(never_translate_list));
+
+  base::Value old_always_translate_map(base::Value::Type::DICTIONARY);
+  // A non-conflicting language pair that should be merged.
+  old_always_translate_map.SetStringKey("fr", "en");
+  // Conflicts with a new language pair with the same source language.
+  old_always_translate_map.SetStringKey("ru", "de");
+  // Conflicts with a new language pair with this source language as the target.
+  old_always_translate_map.SetStringKey("jp", "de");
+  // Conflicts with a new language pair with this target language as the source.
+  old_always_translate_map.SetStringKey("pt", "hi");
+
+  prefs_.Set(TranslatePrefs::kPrefAlwaysTranslateListDeprecated,
+             std::move(old_always_translate_map));
+
+  base::Value new_always_translate_map(base::Value::Type::DICTIONARY);
+  new_always_translate_map.SetStringKey("ru", "en");
+  new_always_translate_map.SetStringKey("id", "jp");
+  new_always_translate_map.SetStringKey("hi", "en");
+  prefs_.Set(prefs::kPrefAlwaysTranslateList,
+             std::move(new_always_translate_map));
+
+  // The always-translate pref migration should be done during construction.
+  TranslatePrefs translate_prefs(&prefs_);
+
+  EXPECT_FALSE(prefs_.GetUserPrefValue(
+      TranslatePrefs::kPrefAlwaysTranslateListDeprecated));
+
+  base::Value expected_always_translate_map(base::Value::Type::DICTIONARY);
+  expected_always_translate_map.SetStringKey("ru", "en");
+  expected_always_translate_map.SetStringKey("id", "jp");
+  expected_always_translate_map.SetStringKey("hi", "en");
+  expected_always_translate_map.SetStringKey("fr", "en");
+
+  EXPECT_EQ(*prefs_.GetDictionary(prefs::kPrefAlwaysTranslateList),
+            expected_always_translate_map);
+}
+
 }  // namespace translate
