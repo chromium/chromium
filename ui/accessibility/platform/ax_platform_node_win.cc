@@ -8278,7 +8278,14 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_TogglePatternId:
-      if (SupportsToggle(GetRole())) {
+      // According to the CoreAAM spec [1], TogglePattern should be exposed for
+      // all aria-checkable roles. However, the UIA documentation [2] specifies
+      // the RadioButton control does not implement IToggleProvider.
+      // [1] https://w3c.github.io/core-aam/#mapping_state-property_table
+      // [2]
+      // https://docs.microsoft.com/en-us/dotnet/framework/ui-automation/implementing-the-ui-automation-toggle-control-pattern
+      if ((IsPlatformCheckable() || SupportsToggle(GetRole())) &&
+          !IsRadio(GetRole())) {
         return &PatternProvider<IToggleProvider>;
       }
       break;

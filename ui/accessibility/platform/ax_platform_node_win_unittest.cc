@@ -6050,12 +6050,15 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   constexpr AXNodeID grid_with_header_cell_id = 20;
   constexpr AXNodeID button_with_value = 21;
   constexpr AXNodeID button_without_value = 22;
+  constexpr AXNodeID tree_item_checked_id = 23;
+  constexpr AXNodeID tree_item_unchecked_id = 24;
+  constexpr AXNodeID tree_item_id = 25;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.has_tree_data = true;
   update.root_id = root_id;
-  update.nodes.resize(22);
+  update.nodes.resize(25);
   update.nodes[0].id = root_id;
   update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   update.nodes[0].child_ids = {text_field_with_combo_box_id,
@@ -6068,7 +6071,10 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                                grid_without_header_id,
                                grid_with_header_id,
                                button_with_value,
-                               button_without_value};
+                               button_without_value,
+                               tree_item_checked_id,
+                               tree_item_unchecked_id,
+                               tree_item_id};
   update.nodes[1].id = text_field_with_combo_box_id;
   update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
   update.nodes[1].AddState(ax::mojom::State::kEditable);
@@ -6131,6 +6137,18 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   update.nodes[21].id = button_without_value;
   update.nodes[21].role = ax::mojom::Role::kButton;
   update.nodes[21].SetName("button");
+  update.nodes[22].id = tree_item_checked_id;
+  update.nodes[22].role = ax::mojom::Role::kTreeItem;
+  update.nodes[22].AddIntAttribute(
+      ax::mojom::IntAttribute::kCheckedState,
+      static_cast<int>(ax::mojom::CheckedState::kTrue));
+  update.nodes[23].id = tree_item_unchecked_id;
+  update.nodes[23].role = ax::mojom::Role::kTreeItem;
+  update.nodes[23].AddIntAttribute(
+      ax::mojom::IntAttribute::kCheckedState,
+      static_cast<int>(ax::mojom::CheckedState::kFalse));
+  update.nodes[24].id = tree_item_id;
+  update.nodes[24].role = ax::mojom::Role::kTreeItem;
 
   Init(update);
 
@@ -6211,6 +6229,15 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_InvokePatternId,
                         UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(button_without_value));
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_TogglePatternId,
+                        UIA_ExpandCollapsePatternId, UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(tree_item_checked_id));
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_TogglePatternId,
+                        UIA_ExpandCollapsePatternId, UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(tree_item_checked_id));
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ExpandCollapsePatternId,
+                        UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(tree_item_id));
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
