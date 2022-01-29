@@ -2078,7 +2078,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
+    // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
     public void testTapOnARIAIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
