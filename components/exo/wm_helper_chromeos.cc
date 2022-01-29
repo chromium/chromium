@@ -165,7 +165,7 @@ aura::client::DragDropDelegate::DropCallback WMHelperChromeOS::GetDropCallback(
       drop_callbacks.push_back(std::move(drop_cb));
     }
   }
-  return base::BindOnce(&WMHelperChromeOS::PerformDrop,
+  return base::BindOnce(&WMHelperChromeOS::PerformDropAdapter,
                         weak_ptr_factory_.GetWeakPtr(),
                         std::move(drop_callbacks));
 }
@@ -290,14 +290,23 @@ float GetDefaultDeviceScaleFactor() {
   return display_info.display_modes()[0].device_scale_factor();
 }
 
+void WMHelperChromeOS::PerformDropAdapter(
+    std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
+    const ui::DropTargetEvent&,
+    std::unique_ptr<ui::OSExchangeData> data,
+    ui::mojom::DragOperation& output_drag_op) {
+  // TODO(crbug.com/1289902): Remove this adapter when the event parameter is
+  // eliminated.
+  PerformDrop(std::move(drop_callbacks), std::move(data), output_drag_op);
+}
+
 void WMHelperChromeOS::PerformDrop(
     std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
-    const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data,
     ui::mojom::DragOperation& output_drag_op) {
   for (auto& drop_cb : drop_callbacks) {
     auto operation = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(event, operation);
+    std::move(drop_cb).Run(operation);
     if (operation != ui::mojom::DragOperation::kNone)
       output_drag_op = operation;
   }

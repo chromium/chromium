@@ -191,7 +191,7 @@ TEST_F(DataDeviceTest, DataEventsDrop) {
       FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), true));
 
-  DragOperation result = device_->OnPerformDrop(event);
+  DragOperation result = device_->OnPerformDrop();
   EXPECT_EQ(DragOperation::kLink, result);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kDrop, events[0]);
@@ -284,7 +284,7 @@ TEST_F(DataDeviceTest, DataEventsPreventMotion) {
       FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), true));
 
-  DragOperation result = device_->OnPerformDrop(event);
+  DragOperation result = device_->OnPerformDrop();
   EXPECT_EQ(DragOperation::kLink, result);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kDrop, events[0]);
@@ -319,7 +319,7 @@ TEST_F(DataDeviceTest, DeleteDataDeviceDuringDrop) {
   device_->OnDragEntered(event);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { device_.reset(); }));
-  DragOperation result = device_->OnPerformDrop(event);
+  DragOperation result = device_->OnPerformDrop();
   EXPECT_EQ(DragOperation::kNone, result);
 }
 
@@ -340,7 +340,7 @@ TEST_F(DataDeviceTest, DeleteDataOfferDuringDrag) {
             device_->OnDragUpdated(event).drag_operation);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
-  device_->OnPerformDrop(event);
+  device_->OnPerformDrop();
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
@@ -364,7 +364,7 @@ TEST_F(DataDeviceTest, DataOfferNotFinished) {
       FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), false));
 
-  DragOperation result = device_->OnPerformDrop(event);
+  DragOperation result = device_->OnPerformDrop();
   EXPECT_EQ(DragOperation::kNone, result);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kDrop, events[0]);
@@ -385,7 +385,7 @@ TEST_F(DataDeviceTest, NotAcceptDataEventsForSurface) {
             device_->OnDragUpdated(event).drag_operation);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
-  device_->OnPerformDrop(event);
+  device_->OnPerformDrop();
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
@@ -412,7 +412,7 @@ TEST_F(DataDeviceTest, DropCallback_Run) {
                                 base::Unretained(&delegate_), true));
 
   DragOperation output_drag_op = DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
+  std::move(drop_cb).Run(output_drag_op);
 
   EXPECT_EQ(DragOperation::kLink, output_drag_op);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
@@ -440,7 +440,7 @@ TEST_F(DataDeviceTest, DropCallback_Invalidated) {
   delegate_.DeleteDataOffer(false);
 
   DragOperation output_drag_op = DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
+  std::move(drop_cb).Run(output_drag_op);
 
   EXPECT_EQ(DragOperation::kNone, output_drag_op);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));

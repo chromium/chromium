@@ -52,15 +52,13 @@ class WMHelper : public aura::client::DragDropDelegate {
   class DragDropObserver {
    public:
     using DropCallback =
-        base::OnceCallback<void(const ui::DropTargetEvent& event,
-                                ui::mojom::DragOperation& output_drag_op)>;
+        base::OnceCallback<void(ui::mojom::DragOperation& output_drag_op)>;
 
     virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
     virtual aura::client::DragUpdateInfo OnDragUpdated(
         const ui::DropTargetEvent& event) = 0;
     virtual void OnDragExited() = 0;
-    virtual ui::mojom::DragOperation OnPerformDrop(
-        const ui::DropTargetEvent& event) = 0;
+    virtual ui::mojom::DragOperation OnPerformDrop() = 0;
     virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event) = 0;
 
    protected:

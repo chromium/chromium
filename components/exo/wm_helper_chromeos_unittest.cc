@@ -44,14 +44,13 @@ class MockDragDropObserver : public WMHelper::DragDropObserver {
     return aura::client::DragUpdateInfo();
   }
   void OnDragExited() override {}
-  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
-    return drop_result_;
-  }
+  DragOperation OnPerformDrop() override { return drop_result_; }
   WMHelper::DragDropObserver::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
     return base::BindOnce(
-        [](DragOperation drop_result, const ui::DropTargetEvent& event,
-           DragOperation& output_drag_op) { output_drag_op = drop_result; },
+        [](DragOperation drop_result, DragOperation& output_drag_op) {
+          output_drag_op = drop_result;
+        },
         drop_result_);
   }
 

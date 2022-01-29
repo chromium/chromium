@@ -163,7 +163,7 @@ void DataDevice::OnDragExited() {
   data_offer_.reset();
 }
 
-DragOperation DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
+DragOperation DataDevice::OnPerformDrop() {
   if (!data_offer_)
     return DragOperation::kNone;
 
@@ -271,9 +271,8 @@ void DataDevice::SetSelectionToCurrentClipboardData() {
 
 void DataDevice::PerformDropOrExitDrag(
     base::ScopedClosureRunner exit_drag,
-    const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op) {
-  output_drag_op = OnPerformDrop(event);
+  output_drag_op = OnPerformDrop();
   exit_drag.ReplaceClosure(base::DoNothing());
 }
 
