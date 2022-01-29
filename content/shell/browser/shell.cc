@@ -638,10 +638,7 @@ bool Shell::ShouldAllowRunningInsecureContent(WebContents* web_contents,
   return g_platform->ShouldAllowRunningInsecureContent(this);
 }
 
-PictureInPictureResult Shell::EnterPictureInPicture(
-    WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
+PictureInPictureResult Shell::EnterPictureInPicture(WebContents* web_contents) {
   // During tests, returning success to pretend the window was created and allow
   // tests to run accordingly.
   if (!switches::IsRunWebTestsSwitchPresent())

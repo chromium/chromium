@@ -83,10 +83,6 @@ namespace url {
 class Origin;
 }
 
-namespace viz {
-class SurfaceId;
-}  // namespace viz
-
 namespace blink {
 class WebGestureEvent;
 enum class ProtocolHandlerSecurityLevel;
@@ -672,9 +668,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // entering Picture-in-Picture.
   // Returns the result of the enter request.
   virtual PictureInPictureResult EnterPictureInPicture(
-      WebContents* web_contents,
-      const viz::SurfaceId&,
-      const gfx::Size& natural_size);
+      WebContents* web_contents);
 
   // Updates the Picture-in-Picture controller with a signal that
   // Picture-in-Picture mode has ended.

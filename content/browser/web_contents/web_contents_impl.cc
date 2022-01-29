@@ -8538,13 +8538,10 @@ void WebContentsImpl::BrowserPluginGuestWillDetach() {
     outermost->SetAsFocusedWebContentsIfNecessary();
 }
 
-PictureInPictureResult WebContentsImpl::EnterPictureInPicture(
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
+PictureInPictureResult WebContentsImpl::EnterPictureInPicture() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::EnterPictureInPicture");
-  return delegate_
-             ? delegate_->EnterPictureInPicture(this, surface_id, natural_size)
-             : PictureInPictureResult::kNotSupported;
+  return delegate_ ? delegate_->EnterPictureInPicture(this)
+                   : PictureInPictureResult::kNotSupported;
 }
 
 void WebContentsImpl::ExitPictureInPicture() {

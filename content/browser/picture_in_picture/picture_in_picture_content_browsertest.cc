@@ -130,9 +130,7 @@ class TestWebContentsDelegate : public WebContentsDelegate {
     return shell_->IsFullscreenForTabOrPending(web_contents);
   }
   PictureInPictureResult EnterPictureInPicture(
-      WebContents* web_contents,
-      const viz::SurfaceId&,
-      const gfx::Size& natural_size) override {
+      WebContents* web_contents) override {
     is_in_picture_in_picture_ = true;
     return PictureInPictureResult::kSuccess;
   }

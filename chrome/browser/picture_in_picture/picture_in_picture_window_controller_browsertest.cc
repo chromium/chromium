@@ -35,7 +35,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "components/viz/common/surfaces/surface_id.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/overlay_window.h"

@@ -435,11 +435,9 @@ void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
 
 content::PictureInPictureResult
 TabWebContentsDelegateAndroid::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
+    content::WebContents* web_contents) {
   return PictureInPictureWindowManager::GetInstance()->EnterPictureInPicture(
-      web_contents, surface_id, natural_size);
+      web_contents);
 }
 
 void TabWebContentsDelegateAndroid::ExitPictureInPicture() {

@@ -438,11 +438,8 @@ bool ExtensionHost::IsNeverComposited(content::WebContents* web_contents) {
 }
 
 content::PictureInPictureResult ExtensionHost::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
-  return delegate_->EnterPictureInPicture(web_contents, surface_id,
-                                          natural_size);
+    content::WebContents* web_contents) {
+  return delegate_->EnterPictureInPicture(web_contents);
 }
 
 void ExtensionHost::ExitPictureInPicture() {

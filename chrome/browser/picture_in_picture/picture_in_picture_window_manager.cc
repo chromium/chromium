@@ -51,9 +51,7 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
 
 content::PictureInPictureResult
 PictureInPictureWindowManager::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
+    content::WebContents* web_contents) {
   // Create or update |pip_window_controller_| for the current WebContents, if
   // it is a WebContents based PIP.
   if (!pip_window_controller_ ||

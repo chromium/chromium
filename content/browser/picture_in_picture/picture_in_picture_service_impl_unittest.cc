@@ -54,10 +54,7 @@ class PictureInPictureDelegate : public WebContentsDelegate {
   PictureInPictureDelegate(const PictureInPictureDelegate&) = delete;
   PictureInPictureDelegate& operator=(const PictureInPictureDelegate&) = delete;
 
-  MOCK_METHOD3(EnterPictureInPicture,
-               PictureInPictureResult(WebContents*,
-                                      const viz::SurfaceId&,
-                                      const gfx::Size&));
+  MOCK_METHOD1(EnterPictureInPicture, PictureInPictureResult(WebContents*));
 };
 
 class TestOverlayWindow : public OverlayWindow {
@@ -218,8 +215,7 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
                      viz::LocalSurfaceId(
                          11, base::UnguessableToken::Deserialize(0x111111, 0)));
 
-  EXPECT_CALL(delegate(),
-              EnterPictureInPicture(contents(), surface_id, gfx::Size(42, 42)))
+  EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kSuccess));
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
@@ -264,8 +260,7 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
                      viz::LocalSurfaceId(
                          11, base::UnguessableToken::Deserialize(0x111111, 0)));
 
-  EXPECT_CALL(delegate(),
-              EnterPictureInPicture(contents(), surface_id, gfx::Size(42, 42)))
+  EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kNotSupported));
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;

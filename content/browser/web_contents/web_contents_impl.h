@@ -1156,8 +1156,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Notifies the Picture-in-Picture controller that there is a new player
   // entering Picture-in-Picture.
   // Returns the result of the enter request.
-  PictureInPictureResult EnterPictureInPicture(const viz::SurfaceId&,
-                                               const gfx::Size& natural_size);
+  PictureInPictureResult EnterPictureInPicture();
 
   // Updates the Picture-in-Picture controller with a signal that
   // Picture-in-Picture mode has ended.

@@ -14,14 +14,6 @@ class PictureInPictureWindowController;
 class WebContents;
 }  // namespace content
 
-namespace gfx {
-class Size;
-}  // namespace gfx
-
-namespace viz {
-class SurfaceId;
-}  // namespace viz
-
 // PictureInPictureWindowManager is a singleton that handles the lifetime of the
 // current Picture-in-Picture window and its PictureInPictureWindowController.
 // The class also guarantees that only one window will be present per Chrome
@@ -40,9 +32,7 @@ class PictureInPictureWindowManager {
   // controller directly.
   void EnterPictureInPictureWithController(
       content::PictureInPictureWindowController* pip_window_controller);
-  content::PictureInPictureResult EnterPictureInPicture(content::WebContents*,
-                                                        const viz::SurfaceId&,
-                                                        const gfx::Size&);
+  content::PictureInPictureResult EnterPictureInPicture(content::WebContents*);
   void ExitPictureInPicture();
 
   content::WebContents* GetWebContents();

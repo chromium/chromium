@@ -20,12 +20,7 @@ class WebContents;
 
 namespace gfx {
 class Rect;
-class Size;
 }  // namespace gfx
-
-namespace viz {
-class SurfaceId;
-}
 
 namespace extensions {
 class Extension;
@@ -78,9 +73,7 @@ class ExtensionHostDelegate {
   // entering Picture-in-Picture.
   // Returns the result of the enter request.
   virtual content::PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents,
-      const viz::SurfaceId& surface_id,
-      const gfx::Size& natural_size) = 0;
+      content::WebContents* web_contents) = 0;
 
   // Updates the Picture-in-Picture controller with a signal that
   // Picture-in-Picture mode has ended.

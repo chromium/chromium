@@ -208,8 +208,7 @@ PictureInPictureResult PictureInPictureWindowControllerImpl::StartSession(
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer,
     mojo::PendingRemote<blink::mojom::PictureInPictureSession>* session_remote,
     gfx::Size* window_size) {
-  auto result =
-      GetWebContentsImpl()->EnterPictureInPicture(surface_id, natural_size);
+  auto result = GetWebContentsImpl()->EnterPictureInPicture();
 
   // Picture-in-Picture may not be supported by all embedders, so we should only
   // create the session if the EnterPictureInPicture request was successful.
