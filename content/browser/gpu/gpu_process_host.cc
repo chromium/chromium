@@ -773,15 +773,18 @@ GpuProcessHost::~GpuProcessHost() {
   bool block_offscreen_contexts = true;
   if (!in_process_ && process_launched_) {
     ChildProcessTerminationInfo info =
-        process_->GetTerminationInfo(false /* known_dead */);
+        process_->GetTerminationInfo(/*known_dead=*/false);
     std::string message;
     if (kind_ == GPU_PROCESS_KIND_SANDBOXED) {
       UMA_HISTOGRAM_ENUMERATION("GPU.GPUProcessTerminationStatus2",
                                 ConvertToGpuTerminationStatus(info.status),
                                 GpuTerminationStatus::MAX_ENUM);
+      int exit_code = base::clamp(info.exit_code, 0, 100);
 #if !BUILDFLAG(IS_ANDROID)
       if (info.status != base::TERMINATION_STATUS_NORMAL_TERMINATION &&
-          info.status != base::TERMINATION_STATUS_STILL_RUNNING) {
+          info.status != base::TERMINATION_STATUS_STILL_RUNNING &&
+          exit_code !=
+              static_cast<int>(content::RESULT_CODE_GPU_DEAD_ON_ARRIVAL)) {
         // Add a sample to Stability.Counts2's GPU crash bucket.
         //
         // On Android Chrome and Android WebLayer, GPU crashes are logged via
@@ -797,8 +800,7 @@ GpuProcessHost::~GpuProcessHost() {
           info.status == base::TERMINATION_STATUS_PROCESS_CRASHED) {
         // Windows always returns PROCESS_CRASHED on abnormal termination, as it
         // doesn't have a way to distinguish the two.
-        base::UmaHistogramSparse("GPU.GPUProcessExitCode",
-                                 base::clamp(info.exit_code, 0, 100));
+        base::UmaHistogramSparse("GPU.GPUProcessExitCode", exit_code);
       }
 
       message = "The GPU process ";
@@ -977,7 +979,7 @@ void GpuProcessHost::OnProcessCrashed(int exit_code) {
   SendOutstandingReplies();
 
   ChildProcessTerminationInfo info =
-      process_->GetTerminationInfo(true /* known_dead */);
+      process_->GetTerminationInfo(/*known_dead=*/true);
   GpuDataManagerImpl::GetInstance()->ProcessCrashed(info.status);
 }
 
