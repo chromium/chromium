@@ -7,7 +7,7 @@ import './settings_section.js';
 import '../strings.m.js';
 import './settings_select.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -87,7 +87,7 @@ export class PrintPreviewDpiSettingsElement extends
     }
 
     const dpiValue = this.getSettingValue('dpi') as DpiOption;
-    for (const option of assert(this.capabilityWithLabels_.option)) {
+    for (const option of this.capabilityWithLabels_.option) {
       const dpiOption = option as LabelledDpiOption;
       if (dpiValue.horizontal_dpi === dpiOption.horizontal_dpi &&
           dpiValue.vertical_dpi === dpiOption.vertical_dpi &&

@@ -47,6 +47,7 @@ preprocess_if_expr("preprocess_src_ts") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   in_files = [
+    "assert_ts.ts",
     "custom_element.ts",
     "i18n_mixin.ts",
     "list_property_update_mixin.ts",

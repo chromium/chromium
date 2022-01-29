@@ -4,7 +4,7 @@
 
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -732,9 +732,10 @@ export class Destination {
     let hasColor = false;
     let hasMonochrome = false;
     capability.option.forEach(option => {
-      const type = assert(option.type!);
-      hasColor = hasColor || this.COLOR_TYPES_.includes(type);
-      hasMonochrome = hasMonochrome || this.MONOCHROME_TYPES_.includes(type);
+      assert(option.type);
+      hasColor = hasColor || this.COLOR_TYPES_.includes(option.type);
+      hasMonochrome =
+          hasMonochrome || this.MONOCHROME_TYPES_.includes(option.type);
     });
     return hasColor && hasMonochrome;
   }

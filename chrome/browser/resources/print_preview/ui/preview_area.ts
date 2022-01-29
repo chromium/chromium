@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';

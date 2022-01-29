@@ -1,7 +1,7 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 /**
  *  These values must be kept in sync with the Reason enum in
@@ -148,6 +148,5 @@ export function getPrinterStatusIcon(
       return `${printerTypePrefix}grey${darkModeSuffix}`;
     default:
       assertNotReached();
-      return '';
   }
 }

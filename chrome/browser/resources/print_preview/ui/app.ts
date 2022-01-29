@@ -9,7 +9,7 @@ import '../data/document_info.js';
 import './sidebar.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
@@ -356,10 +356,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     this.cloudPrintInterface_ = CloudPrintInterfaceImpl.getInstance();
     this.cloudPrintInterface_.configure(cloudPrintUrl, appKioskMode, uiLocale);
     this.tracker_.add(
-        assert(this.cloudPrintInterface_).getEventTarget(),
+        this.cloudPrintInterface_.getEventTarget(),
         CloudPrintInterfaceEventType.SUBMIT_DONE, this.close_.bind(this));
     this.tracker_.add(
-        assert(this.cloudPrintInterface_).getEventTarget(),
+        this.cloudPrintInterface_.getEventTarget(),
         CloudPrintInterfaceEventType.SUBMIT_FAILED,
         this.onCloudPrintError_.bind(this, appKioskMode));
   }
@@ -445,13 +445,12 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         this.nativeLayer_!.hidePreview();
       }
     } else if (this.state === State.PRINTING) {
-      const destination = assert(this.destination_);
       const whenPrintDone =
           this.nativeLayer_!.print(this.$.model.createPrintTicket(
-              destination, this.openPdfInPreview_,
+              this.destination_, this.openPdfInPreview_,
               this.showSystemDialogBeforePrint_));
-      if (destination.isLocal) {
-        const onError = getPrinterTypeForDestination(destination) ===
+      if (this.destination_.isLocal) {
+        const onError = getPrinterTypeForDestination(this.destination_) ===
                 PrinterType.PDF_PRINTER ?
             this.onFileSelectionCancel_.bind(this) :
             this.onPrintFailed_.bind(this);
@@ -520,9 +519,8 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     assert(
         this.cloudPrintInterface_ !== null,
         'Google Cloud Print is not enabled');
-    const destination = assert(this.destination_);
     this.cloudPrintInterface_.submit(
-        destination, this.$.model.createCloudJobTicket(destination),
+        this.destination_, this.$.model.createCloudJobTicket(this.destination_),
         this.documentSettings_.title, data);
   }
 

@@ -223,6 +223,7 @@ ts_library("library") {
     "cr_elements/mwb_shared_style.ts",
     "cr_elements/mwb_shared_vars.ts",
     "cr_elements/search_highlight_style_css.ts",
+    "js/assert_ts.ts",
     "js/custom_element.ts",
     "js/i18n_mixin.ts",
     "js/list_property_update_mixin.ts",

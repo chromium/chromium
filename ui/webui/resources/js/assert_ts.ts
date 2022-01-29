@@ -1,0 +1,42 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/** @fileoverview A better version of assert.js for TypeScript. */
+
+/**
+ * Verify |value| is truthy.
+ * @param value A value to check for truthiness. Note that this
+ *     may be used to test whether |value| is defined or not, and we don't want
+ *     to force a cast to boolean.
+ */
+export function assert<T>(value: T, message?: string): asserts value {
+  if (value) {
+    return;
+  }
+
+  throw new Error('Assertion failed' + (message ? `: ${message}` : ''));
+}
+
+/**
+ * Call this from places in the code that should never be reached.
+ *
+ * For example, handling all the values of enum with a switch() like this:
+ *
+ *   function getValueFromEnum(enum) {
+ *     switch (enum) {
+ *       case ENUM_FIRST_OF_TWO:
+ *         return first
+ *       case ENUM_LAST_OF_TWO:
+ *         return last;
+ *     }
+ *     assertNotReached();
+ *   }
+ *
+ * This code should only be hit in the case of serious programmer error or
+ * unexpected input.
+ */
+export function assertNotReached(message: string = 'Unreachable code hit'):
+    never {
+  assert(false, message);
+}

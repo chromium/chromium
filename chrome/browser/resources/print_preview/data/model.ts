@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -194,7 +194,8 @@ let instance: PrintPreviewModelElement|null = null;
 let whenReadyResolver: PromiseResolver<void> = new PromiseResolver();
 
 export function getInstance(): PrintPreviewModelElement {
-  return assert(instance!);
+  assert(instance);
+  return instance;
 }
 
 export function whenReady(): Promise<void> {
@@ -1493,7 +1494,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     STICKY_SETTING_NAMES.forEach(settingName => {
       const setting = this.get(settingName, this.settings);
       if (setting.setFromUi) {
-        serialization[assert(setting.key)] = setting.value;
+        serialization[setting.key] = setting.value;
       }
     });
 
