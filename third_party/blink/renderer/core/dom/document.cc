@@ -1114,9 +1114,7 @@ Element* Document::CreateElementForBinding(
 
   // 5. Let element be the result of creating an element given ...
   Element* element =
-      CreateElement(q_name, CreateElementFlags::ByCreateElement(),
-                    is
-      );
+      CreateElement(q_name, CreateElementFlags::ByCreateElement(), is);
 
   return element;
 }
@@ -1184,9 +1182,7 @@ Element* Document::createElementNS(
 
   // 3. Let element be the result of creating an element
   Element* element =
-      CreateElement(q_name, CreateElementFlags::ByCreateElement(),
-                    is
-      );
+      CreateElement(q_name, CreateElementFlags::ByCreateElement(), is);
 
   return element;
 }
@@ -2087,6 +2083,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   SCOPED_UMA_AND_UKM_TIMER(View()->EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kStyle);
   FontPerformance::StyleScope font_performance_scope;
+  ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(), GetFrame(),
+                       BlinkState::STYLE);
 
   // RecalcSlotAssignments should be done before checking
   // NeedsLayoutTreeUpdateForThisDocument().

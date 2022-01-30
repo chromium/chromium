@@ -21,13 +21,36 @@ TEST(ProfilerTraceBuilderTest, AddVMStateMarker) {
       script_state, nullptr, base::TimeTicks::Now());
 
   base::TimeTicks sample_ticks = base::TimeTicks::Now();
-  builder->AddSample(nullptr, sample_ticks, v8::StateTag::GC);
+  builder->AddSample(nullptr, sample_ticks, v8::StateTag::GC,
+                     v8::EmbedderStateTag::EMPTY);
 
   auto* profiler_trace = builder->GetTrace();
   const auto& samples = profiler_trace->samples();
   EXPECT_EQ(samples.size(), 1u);
   auto* sample = samples.at(0).Get();
   EXPECT_EQ(sample->marker(), V8ProfilerMarker::Enum::kGc);
+}
+
+TEST(ProfilerTraceBuilderTest, AddEmbedderStateMarker) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
+      script_state, nullptr, base::TimeTicks::Now());
+
+  base::TimeTicks sample_ticks = base::TimeTicks::Now();
+  builder->AddSample(nullptr, sample_ticks, v8::StateTag::IDLE,
+                     static_cast<v8::EmbedderStateTag>(BlinkState::LAYOUT));
+  builder->AddSample(nullptr, sample_ticks, v8::StateTag::IDLE,
+                     static_cast<v8::EmbedderStateTag>(BlinkState::STYLE));
+  builder->AddSample(nullptr, sample_ticks, v8::StateTag::IDLE,
+                     static_cast<v8::EmbedderStateTag>(BlinkState::PAINT));
+  auto* profiler_trace = builder->GetTrace();
+  const auto& samples = profiler_trace->samples();
+  EXPECT_EQ(samples.size(), 3u);
+  EXPECT_EQ(samples.at(0).Get()->marker(), V8ProfilerMarker::Enum::kLayout);
+  EXPECT_EQ(samples.at(1).Get()->marker(), V8ProfilerMarker::Enum::kStyle);
+  EXPECT_EQ(samples.at(2).Get()->marker(), V8ProfilerMarker::Enum::kPaint);
 }
 
 }  // namespace blink

@@ -259,6 +259,10 @@ WindowProxy* Frame::GetWindowProxy(DOMWrapperWorld& world) {
   return window_proxy_manager_->GetWindowProxy(world);
 }
 
+WindowProxy* Frame::GetWindowProxyMaybeUninitialized(DOMWrapperWorld& world) {
+  return window_proxy_manager_->GetWindowProxyMaybeUninitialized(world);
+}
+
 void Frame::DidChangeVisibilityState() {
   HeapVector<Member<Frame>> child_frames;
   for (Frame* child = Tree().FirstChild(); child;

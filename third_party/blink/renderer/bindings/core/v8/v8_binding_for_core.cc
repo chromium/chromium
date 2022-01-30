@@ -783,6 +783,25 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   return frame->WindowProxy(world)->ContextIfInitialized();
 }
 
+v8::Local<v8::Context> ToV8ContextMaybeEmpty(LocalFrame* frame,
+                                             DOMWrapperWorld& world) {
+  DCHECK(frame);
+
+  // TODO(crbug.com/1046282): The following bailout is a temporary fix
+  // introduced due to crbug.com/1037985 .  Remove this temporary fix once
+  // the root cause is fixed.
+  if (frame->IsProvisional()) {
+    base::debug::DumpWithoutCrashing();
+    return v8::Local<v8::Context>();
+  }
+  DCHECK(frame->WindowProxyMaybeUninitialized(world));
+  v8::Local<v8::Context> context =
+      frame->WindowProxyMaybeUninitialized(world)->ContextIfInitialized();
+
+  DCHECK(context.IsEmpty() || frame == ToLocalFrameIfNotDetached(context));
+  return context;
+}
+
 ScriptState* ToScriptState(ExecutionContext* context, DOMWrapperWorld& world) {
   DCHECK(context);
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
