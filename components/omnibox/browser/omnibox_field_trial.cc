@@ -975,6 +975,10 @@ const base::FeatureParam<int> kZeroSuggestCacheDurationSec(
     &omnibox::kZeroSuggestPrefetching,
     "ZeroSuggestCacheDurationSec",
     0);
+const base::FeatureParam<bool> kZeroSuggestPrefetchBypassCache(
+    &omnibox::kZeroSuggestPrefetching,
+    "ZeroSuggestPrefetchBypassCache",
+    false);
 
 }  // namespace OmniboxFieldTrial
 

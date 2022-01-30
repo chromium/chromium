@@ -117,6 +117,9 @@ void RemoteSuggestionsService::CreateSuggestionsRequest(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = suggest_url;
   request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+  if (search_terms_args.bypass_cache) {
+    request->load_flags |= net::LOAD_BYPASS_CACHE;
+  }
   // Try to attach cookies for signed in user.
   request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   AddVariationHeaders(request.get());
