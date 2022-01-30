@@ -208,8 +208,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
 
   std::string old_guid = GetGUIDFromONCPart(onc_part);
   std::unique_ptr<NetworkUIData> ui_data =
-      shill_property_util::GetUIDataFromProperties(
-          base::Value::AsDictionaryValue(entry_properties));
+      shill_property_util::GetUIDataFromProperties(entry_properties);
   if (!ui_data) {
     VLOG(1) << "Entry " << entry_identifier << " of profile "
             << profile_.ToDebugString() << " contains no or no valid UIData.";

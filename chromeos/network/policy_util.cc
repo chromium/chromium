@@ -320,10 +320,8 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
             .value_or(true);
     const std::string credential_mask =
         saving_credentials ? kFakeCredential : std::string();
-    std::unique_ptr<base::Value> sanitized_user_settings =
-        base::Value::ToUniquePtrValue(
-            onc::MaskCredentialsInOncObject(onc::kNetworkConfigurationSignature,
-                                            *user_settings, credential_mask));
+    base::Value sanitized_user_settings = onc::MaskCredentialsInOncObject(
+        onc::kNetworkConfigurationSignature, *user_settings, credential_mask);
     ui_data->SetUserSettingsDictionary(std::move(sanitized_user_settings));
   }
 
