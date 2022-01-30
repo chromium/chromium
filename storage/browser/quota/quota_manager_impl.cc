@@ -40,6 +40,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/client_usage_tracker.h"
@@ -235,15 +236,6 @@ QuotaError UpdateBucketAccessTimeOnDBThread(BucketId bucket_id,
                                             QuotaDatabase* database) {
   DCHECK(database);
   return database->SetBucketLastAccessTime(bucket_id, accessed_time);
-}
-
-QuotaError UpdateModifiedTimeOnDBThread(const StorageKey& storage_key,
-                                        StorageType type,
-                                        base::Time modified_time,
-                                        QuotaDatabase* database) {
-  DCHECK(database);
-  return database->SetStorageKeyLastModifiedTime(storage_key, type,
-                                                 modified_time);
 }
 
 QuotaError UpdateBucketModifiedTimeOnDBThread(BucketId bucket_id,
@@ -764,11 +756,15 @@ class QuotaManagerImpl::BucketDataDeleter {
     }
 
     remaining_clients_ = manager_->client_types_[bucket_.type].size();
+    UsageTracker* usage_tracker = manager_->GetUsageTracker(bucket_.type);
 
     for (const auto& client_and_type : manager_->client_types_[bucket_.type]) {
       mojom::QuotaClient* client = client_and_type.first;
       QuotaClientType client_type = client_and_type.second;
       if (quota_client_types_.contains(client_type)) {
+        // Delete cached usage.
+        usage_tracker->DeleteBucketCache(client_type, bucket_);
+
         static int tracing_id = 0;
         std::string bucket_params = base::StrCat(
             {"storage_key: ", bucket_.storage_key.Serialize(),
@@ -1570,7 +1566,7 @@ void QuotaManagerImpl::SetPersistentHostQuota(const std::string& host,
 }
 
 void QuotaManagerImpl::GetGlobalUsage(StorageType type,
-                                      GlobalUsageCallback callback) {
+                                      UsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
   DCHECK(GetUsageTracker(type));
@@ -1625,7 +1621,7 @@ bool QuotaManagerImpl::ResetUsageTracker(StorageType type) {
     return false;
 
   auto usage_tracker = std::make_unique<UsageTracker>(
-      client_types_[type], type, special_storage_policy_.get());
+      this, client_types_[type], type, special_storage_policy_.get());
   switch (type) {
     case StorageType::kTemporary:
       temporary_usage_tracker_ = std::move(usage_tracker);
@@ -1666,13 +1662,13 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
                     : profile_path_.AppendASCII(kDatabaseName));
 
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
-      client_types_[StorageType::kTemporary], StorageType::kTemporary,
+      this, client_types_[StorageType::kTemporary], StorageType::kTemporary,
       special_storage_policy_.get());
   persistent_usage_tracker_ = std::make_unique<UsageTracker>(
-      client_types_[StorageType::kPersistent], StorageType::kPersistent,
+      this, client_types_[StorageType::kPersistent], StorageType::kPersistent,
       special_storage_policy_.get());
   syncable_usage_tracker_ = std::make_unique<UsageTracker>(
-      client_types_[StorageType::kSyncable], StorageType::kSyncable,
+      this, client_types_[StorageType::kSyncable], StorageType::kSyncable,
       special_storage_policy_.get());
 
   if (!is_incognito_) {
@@ -1836,19 +1832,19 @@ void QuotaManagerImpl::NotifyStorageModified(QuotaClientType client_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
   DCHECK(GetUsageTracker(type));
-  GetUsageTracker(type)->UpdateUsageCache(client_id, storage_key, delta);
 
-  if (callback)
-    std::move(callback).Run();
-
-  if (db_disabled_)
+  if (db_disabled_) {
+    if (callback)
+      std::move(callback).Run();
     return;
+  }
 
   PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(&UpdateModifiedTimeOnDBThread, storage_key, type,
-                     modification_time),
-      base::BindOnce(&QuotaManagerImpl::OnComplete,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(&GetBucketOnDBThread, storage_key, kDefaultBucketName,
+                     type),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsage,
+                     weak_factory_.GetWeakPtr(), client_id, delta,
+                     modification_time, std::move(callback)));
 }
 
 void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
@@ -2099,13 +2095,13 @@ void QuotaManagerImpl::SetQuotaDatabaseForTesting(
 
   // Initialize usage trackers after database is set.
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
-      client_types_[StorageType::kTemporary], StorageType::kTemporary,
+      this, client_types_[StorageType::kTemporary], StorageType::kTemporary,
       special_storage_policy_.get());
   persistent_usage_tracker_ = std::make_unique<UsageTracker>(
-      client_types_[StorageType::kPersistent], StorageType::kPersistent,
+      this, client_types_[StorageType::kPersistent], StorageType::kPersistent,
       special_storage_policy_.get());
   syncable_usage_tracker_ = std::make_unique<UsageTracker>(
-      client_types_[StorageType::kSyncable], StorageType::kSyncable,
+      this, client_types_[StorageType::kSyncable], StorageType::kSyncable,
       special_storage_policy_.get());
 }
 
@@ -2476,6 +2472,38 @@ void QuotaManagerImpl::DidGetBucketForDeletion(
   BucketLocator bucket(result->id, result->storage_key, result->type,
                        result->name == kDefaultBucketName);
   DeleteBucketDataInternal(bucket, AllQuotaClientTypes(), std::move(callback));
+  return;
+}
+
+void QuotaManagerImpl::DidGetBucketForUsage(QuotaClientType client_type,
+                                            int64_t delta,
+                                            base::Time modification_time,
+                                            base::OnceClosure callback,
+                                            QuotaErrorOr<BucketInfo> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
+
+  if (!result.ok()) {
+    if (callback)
+      std::move(callback).Run();
+    return;
+  }
+
+  BucketLocator bucket(result->id, result->storage_key, result->type,
+                       result->name == kDefaultBucketName);
+  GetUsageTracker(bucket.type)
+      ->UpdateBucketUsageCache(client_type, bucket, delta);
+
+  // Return once usage cache is updated for callers waiting for quota changes to
+  // be reflected before querying for usage.
+  if (callback)
+    std::move(callback).Run();
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&UpdateBucketModifiedTimeOnDBThread, bucket.id,
+                     modification_time),
+      base::BindOnce(&QuotaManagerImpl::OnComplete,
+                     weak_factory_.GetWeakPtr()));
   return;
 }
 

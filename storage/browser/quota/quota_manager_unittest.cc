@@ -1181,12 +1181,19 @@ void QuotaManagerImplTest::GetUsage_WithModifyTestBody(const StorageType type) {
                                     -5);
   client->ModifyStorageKeyAndNotify(ToStorageKey("https://foo.com/"), type, 1);
 
+  // Database call to ensure modification calls have completed.
+  GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
+
   result = GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), type);
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.usage, 10 + 20 + 30 - 5 + 1);
   int foo_usage = result.usage;
 
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://bar.com/"), type, 40);
+
+  // Database call to ensure modification calls have completed.
+  GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
+
   result = GetUsageAndQuotaForWebApps(ToStorageKey("http://bar.com/"), type);
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.usage, 40);
@@ -2554,6 +2561,9 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://c.com/"), kTemp, 10);
   base::Time time3 = client->IncrementMockTime();
 
+  // Database call to ensure modification calls have completed.
+  GetBucket(ToStorageKey("http://a.com"), kDefaultBucketName, kTemp);
+
   buckets = GetBucketsModifiedBetween(kTemp, time1, base::Time::Max());
   EXPECT_THAT(buckets, testing::UnorderedElementsAre(
                            testing::Field(&BucketLocator::storage_key,
@@ -2572,6 +2582,9 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
   EXPECT_TRUE(buckets.empty());
 
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://a.com/"), kTemp, 10);
+
+  // Database call to ensure modification calls have completed.
+  GetBucket(ToStorageKey("http://a.com"), kDefaultBucketName, kTemp);
 
   buckets = GetBucketsModifiedBetween(kTemp, time3, base::Time::Max());
   EXPECT_THAT(buckets,

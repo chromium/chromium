@@ -361,8 +361,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void SetPersistentHostQuota(const std::string& host,
                               int64_t new_quota,
                               QuotaCallback callback);
-  void GetGlobalUsage(blink::mojom::StorageType type,
-                      GlobalUsageCallback callback);
+  void GetGlobalUsage(blink::mojom::StorageType type, UsageCallback callback);
   void GetHostUsageWithBreakdown(const std::string& host,
                                  blink::mojom::StorageType type,
                                  UsageWithBreakdownCallback callback);
@@ -446,6 +445,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   friend class QuotaManagerProxy;
   friend class QuotaManagerImplTest;
   friend class QuotaTemporaryStorageEvictor;
+  friend class UsageTrackerTest;
 
   class EvictionRoundInfoHelper;
   class UsageAndQuotaInfoGatherer;
@@ -595,6 +595,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                     QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForDeletion(StatusCallback callback,
                                QuotaErrorOr<BucketInfo> result);
+  void DidGetBucketForUsage(QuotaClientType client_type,
+                            int64_t delta,
+                            base::Time modification_time,
+                            base::OnceClosure callback,
+                            QuotaErrorOr<BucketInfo> result);
   void DidGetStorageKeys(GetStorageKeysCallback callback,
                          QuotaErrorOr<std::set<blink::StorageKey>> result);
   void DidGetBuckets(

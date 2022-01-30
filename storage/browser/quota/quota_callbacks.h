@@ -30,17 +30,14 @@ using UsageInfoEntries = std::vector<UsageInfo>;
 
 // Common callback types that are used throughout in the quota module.
 using AddChangeListenerCallback = base::OnceCallback<void()>;
-using GlobalUsageCallback =
+using UsageCallback =
     base::OnceCallback<void(int64_t usage, int64_t unlimited_usage)>;
 using QuotaCallback =
     base::OnceCallback<void(blink::mojom::QuotaStatusCode status,
                             int64_t quota)>;
-using UsageCallback = base::OnceCallback<void(int64_t usage)>;
 using UsageWithBreakdownCallback =
     base::OnceCallback<void(int64_t usage,
                             blink::mojom::UsageBreakdownPtr usage_breakdown)>;
-using AvailableSpaceCallback =
-    base::OnceCallback<void(blink::mojom::QuotaStatusCode, int64_t)>;
 using StatusCallback = base::OnceCallback<void(blink::mojom::QuotaStatusCode)>;
 using GetBucketsCallback =
     base::OnceCallback<void(const std::set<BucketLocator>& buckets,
