@@ -555,14 +555,6 @@ config("compiler") {
     if (is_android) {
       cflags += [ "-ffp-contract=off" ]
     }
-
-    # TODO(crbug.com/1290191): Some ios tests fail without this.
-    if (is_ios) {
-      cflags += [
-        "-Xclang",
-        "-disable-noundef-analysis",
-      ]
-    }
   }
 
   # Rust compiler setup (for either clang or rustc).
