@@ -868,7 +868,9 @@ void V4L2ImageProcessorBackend::Dequeue() {
   // Dequeue completed input (VIDEO_OUTPUT) buffers,
   // and recycle to the free list.
   while (input_queue_->QueuedBuffersCount() > 0) {
-    auto [res, buffer] = input_queue_->DequeueBuffer();
+    bool res;
+    V4L2ReadableBufferRef buffer;
+    std::tie(res, buffer) = input_queue_->DequeueBuffer();
     if (!res) {
       NotifyError();
       return;
@@ -884,7 +886,9 @@ void V4L2ImageProcessorBackend::Dequeue() {
   while (output_queue_->QueuedBuffersCount() > 0) {
     DCHECK(output_queue_->IsStreaming());
 
-    auto [res, buffer] = input_queue_->DequeueBuffer();
+    bool res;
+    V4L2ReadableBufferRef buffer;
+    std::tie(res, buffer) = output_queue_->DequeueBuffer();
     if (!res) {
       NotifyError();
       return;

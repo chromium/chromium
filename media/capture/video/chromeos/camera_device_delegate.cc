@@ -1202,7 +1202,8 @@ void CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings(
             chromeos::features::kPreferConstantFrameRate) ||
         (camera_app_device && camera_app_device->GetCaptureIntent() ==
                                   cros::mojom::CaptureIntent::VIDEO_RECORD);
-    auto [target_min, target_max] = GetTargetFrameRateRange(
+    int32_t target_min, target_max;
+    std::tie(target_min, target_max) = GetTargetFrameRateRange(
         static_metadata_, requested_frame_rate, prefer_constant_frame_rate);
     if (target_min == 0 || target_max == 0) {
       device_context_->SetErrorState(
