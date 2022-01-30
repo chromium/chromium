@@ -385,6 +385,11 @@ class CORE_EXPORT NGPhysicalFragment
   // Return true if this fragment is monolithic, as far as block fragmentation
   // is concerned.
   bool IsMonolithic() const {
+    // Line boxes are monolithic, except for line boxes that are just there to
+    // contain a block inside an inline, in which case the anonymous block child
+    // wrapper inside the line is breakable.
+    if (IsLineBox())
+      return !IsBlockInInline();
     const LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !IsBox() || !layout_object->IsBox())
       return false;

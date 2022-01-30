@@ -727,7 +727,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 
   if (!space.HasKnownFragmentainerBlockSize()) {
     if (space.IsInitialColumnBalancingPass() && builder) {
-      if (child.IsMonolithic() ||
+      if (layout_result.PhysicalFragment().IsMonolithic() ||
           (child.IsBlock() &&
            IsAvoidBreakValue(space, child.Style().BreakInside()))) {
         // If this is the initial column balancing pass, attempt to make the
