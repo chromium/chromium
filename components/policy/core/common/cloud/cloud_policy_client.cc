@@ -271,7 +271,6 @@ void CloudPolicyClient::Register(const RegistrationParameters& parameters,
 void CloudPolicyClient::RegisterWithCertificate(
     const RegistrationParameters& parameters,
     const std::string& client_id,
-    DMAuth auth,
     const std::string& pem_certificate_chain,
     const std::string& sub_organization,
     SigningService* signing_service) {
@@ -298,7 +297,7 @@ void CloudPolicyClient::RegisterWithCertificate(
   signing_service->SignData(
       data.SerializeAsString(),
       base::BindOnce(&CloudPolicyClient::OnRegisterWithCertificateRequestSigned,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(auth)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CloudPolicyClient::RegisterWithToken(
@@ -329,7 +328,6 @@ void CloudPolicyClient::RegisterWithToken(
 }
 
 void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
-    DMAuth auth,
     bool success,
     em::SignedData signed_data) {
   if (!success) {
@@ -341,7 +339,7 @@ void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
   std::unique_ptr<RegistrationJobConfiguration> config = std::make_unique<
       RegistrationJobConfiguration>(
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
-      this, std::move(auth),
+      this, DMAuth::NoAuth(),
       /*oauth_token=*/absl::nullopt,
       base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                      weak_ptr_factory_.GetWeakPtr()));

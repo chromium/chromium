@@ -784,9 +784,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
       em::DeviceRegisterRequest::DEVICE,
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
   client_->RegisterWithCertificate(
-      device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */,
-      &fake_signing_service_);
+      device_attestation, std::string() /* client_id */, kEnrollmentCertificate,
+      std::string() /* sub_organization */, &fake_signing_service_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
@@ -821,9 +820,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateFailToSignRequest) {
       em::DeviceRegisterRequest::DEVICE,
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
   client_->RegisterWithCertificate(
-      device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */,
-      &fake_signing_service_);
+      device_attestation, std::string() /* client_id */, kEnrollmentCertificate,
+      std::string() /* sub_organization */, &fake_signing_service_);
   EXPECT_FALSE(client_->is_registered());
   EXPECT_EQ(DM_STATUS_CANNOT_SIGN_REQUEST, client_->status());
 }
@@ -1717,9 +1715,8 @@ TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
       kExpectedPsmDeterminationTimestamp);
   device_attestation.SetPsmExecutionResult(psm_execution_result);
   client_->RegisterWithCertificate(
-      device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */,
-      &fake_signing_service_);
+      device_attestation, std::string() /* client_id */, kEnrollmentCertificate,
+      std::string() /* sub_organization */, &fake_signing_service_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,

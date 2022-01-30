@@ -482,8 +482,8 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
     return;
   }
   client_->RegisterWithCertificate(*register_params_, client_id_,
-                                   dm_auth_.Clone(), pem_certificate_chain,
-                                   sub_organization_, signing_service_.get());
+                                   pem_certificate_chain, sub_organization_,
+                                   signing_service_.get());
 }
 
 void EnrollmentHandler::StartOfflineDemoEnrollmentFlow() {

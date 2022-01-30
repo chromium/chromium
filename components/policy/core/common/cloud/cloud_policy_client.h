@@ -231,7 +231,6 @@ class POLICY_EXPORT CloudPolicyClient {
   // make callees sign their data themselves.
   virtual void RegisterWithCertificate(const RegistrationParameters& parameters,
                                        const std::string& client_id,
-                                       DMAuth auth,
                                        const std::string& pem_certificate_chain,
                                        const std::string& sub_organization,
                                        SigningService* signing_service);
@@ -639,9 +638,8 @@ class POLICY_EXPORT CloudPolicyClient {
           certificate_type,
       StatusCallback callback);
 
-  // Callback for siganture of requests.
+  // This is called when a RegisterWithCertiifcate request has been signed.
   void OnRegisterWithCertificateRequestSigned(
-      DMAuth auth,
       bool success,
       enterprise_management::SignedData signed_data);
 
