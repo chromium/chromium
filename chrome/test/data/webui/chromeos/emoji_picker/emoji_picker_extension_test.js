@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
-import {V2_CONTENT_LOADED} from 'chrome://emoji-picker/events.js';
+import {EMOJI_BUTTON_CLICK, V2_CONTENT_LOADED} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {deepQuerySelector, isGroupButtonActive, timeout, waitForCondition} from './emoji_picker_test_util.js';
+import {deepQuerySelector, isGroupButtonActive, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
@@ -63,6 +63,7 @@ suite('emoji-picker-extension', () => {
             'emoji-search', 'emoji-category-button:last-of-type',
             'cr-icon-button');
         emoticonCategoryButton.click();
+        flush();
         assertTrue(isCategoryButtonActive(emoticonCategoryButton));
         assertFalse(isCategoryButtonActive(emojiCategoryButton));
       });
@@ -119,5 +120,29 @@ suite('emoji-picker-extension', () => {
               () => expectedNumberOfEmoticons ===
                   group.shadowRoot.querySelectorAll('.emoticon-button').length);
         }
+      });
+
+  test(
+      'click at an emoticon button should trigger the clicking event with ' +
+          'correct emoticon string and name.',
+      async () => {
+        const firstEmoticonButton = await waitForCondition(
+            () => findInEmojiPicker('emoticon-group', '.emoticon-button'));
+        const expectedEmoticonString =
+            emojiPicker.emoticonData[0].emoji[0].base.string;
+        const expectedEmoticonName =
+            emojiPicker.emoticonData[0].emoji[0].base.name;
+        const buttonClickPromise = new Promise(
+            (resolve) =>
+                emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
+                  assertEquals(expectedEmoticonString, event.detail.emoji);
+                  assertEquals(expectedEmoticonName, event.detail.name);
+                  resolve();
+                }));
+        firstEmoticonButton.click();
+        await flush();
+        await waitWithTimeout(
+            buttonClickPromise, 1000,
+            'Failed to receive emoticon button click event');
       });
 });

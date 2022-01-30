@@ -54,7 +54,10 @@
 <div id="palette">
     <div id="fake-focus-target" tabindex="-1"></div>
     <template is="dom-repeat" items="[[data.emoji]]" as="emoticon">
-        <button class="emoticon-button">
+        <button class="emoticon-button"
+            emoticon-name$="[[emoticon.base.name]]"
+            on-click="onEmoticonClick"
+            emoticon-string$="[[emoticon.base.string]]">
             [[emoticon.base.string]]
         </button>
     </template>
