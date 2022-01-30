@@ -358,6 +358,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool is_popup_ = false;
   bool has_grab_ = false;
   bool server_side_resize_ = false;
+  bool needs_layout_on_show_ = false;
 
   // The orientation to be applied when widget is being created. Only set when
   // widget is not created yet orientation lock is being set. This is currently

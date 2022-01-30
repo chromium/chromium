@@ -8,12 +8,14 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -77,10 +79,6 @@
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/display/screen_orientation_controller.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
 namespace {
@@ -1299,15 +1297,6 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   window->AddObserver(this);
   ash::WindowState* window_state = ash::WindowState::Get(window);
   InitializeWindowState(window_state);
-  // TODO(1261321): correct the initial origin once lacros can communicate
-  // it instead of centering.
-  if (show_state == ui::SHOW_STATE_MAXIMIZED) {
-    gfx::Rect screen_size = display::Screen::GetScreen()
-                                ->GetDisplayNearestWindow(window)
-                                .work_area();
-    screen_size.ClampToCenteredSize(initial_size_);
-    window_state->SetRestoreBoundsInParent(screen_size);
-  }
 
   SetShellUseImmersiveForFullscreen(window, immersive_implied_by_fullscreen_);
 
@@ -1661,11 +1650,38 @@ void ShellSurfaceBase::CommitWidget() {
 
   UpdateSurfaceBounds();
 
+  // Don't show yet if the shell surface doesn't have content or is minimized
+  // while waiting for content.
+  bool should_show =
+      !host_window()->bounds().IsEmpty() && !widget_->IsMinimized();
+
   // Show widget if needed.
-  if (pending_show_widget_) {
+  if (pending_show_widget_ && should_show) {
     DCHECK(!widget_->IsClosed());
     DCHECK(!widget_->IsVisible());
     pending_show_widget_ = false;
+
+    auto* window = widget_->GetNativeWindow();
+    auto* window_state = ash::WindowState::Get(window);
+
+    // TODO(crbug.com/1261321): correct the initial origin once lacros can
+    // communicate it instead of centering.
+    if (window_state->IsMaximizedOrFullscreenOrPinned()) {
+      gfx::Size current_content_size = CalculatePreferredSize();
+      gfx::Rect restore_bounds = display::Screen::GetScreen()
+                                     ->GetDisplayNearestWindow(window)
+                                     .work_area();
+      if (!current_content_size.IsEmpty())
+        restore_bounds.ClampToCenteredSize(current_content_size);
+
+      window_state->SetRestoreBoundsInScreen(restore_bounds);
+    }
+
+    // TODO(crbug.com/1291592): Hook this up with the WM's window positioning
+    // logic.
+    if (needs_layout_on_show_ && !is_popup_)
+      widget_->CenterWindow(widget_->GetWindowBoundsInScreen().size());
+
     widget_->Show();
     if (has_grab_)
       StartCapture();

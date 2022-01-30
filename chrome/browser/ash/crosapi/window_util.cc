@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/window_util.h"
 
 #include "ash/shell.h"
+#include "ash/wm/window_state.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/aura/window.h"
 
@@ -16,8 +17,13 @@ namespace {
 aura::Window* FindWindowWithShellAppId(aura::Window* root,
                                        const std::string& app_id) {
   const std::string* id = exo::GetShellApplicationId(root);
-  if (id && *id == app_id)
+  if (id && *id == app_id) {
+    // Do not include a window still being created.
+    auto* window_state = ash::WindowState::Get(root);
+    if (!root->IsVisible() && !window_state->IsMinimized())
+      return nullptr;
     return root;
+  }
   for (aura::Window* child : root->children()) {
     aura::Window* found = FindWindowWithShellAppId(child, app_id);
     if (found)
