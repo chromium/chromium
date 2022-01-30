@@ -8100,6 +8100,199 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             EvalJs(root->child_at(0), "document.body.innerHTML"));
 }
 
+// Verify that calling Restore() and LoadIfNecessary() on a NavigationController
+// that already has existing entries & non-null pending entry won't crash and
+// won't clear existing non-initial entries. This can happen because WebView's
+// restoreState() API, which triggers the session restore code, can be called at
+// any point in time, which used to cause crashes.
+// Regression test for https://crbug.com/1287624.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RestoreAndLoadOnUsedNavigationController) {
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_3(embedded_test_server()->GetURL("a.com", "/title3.html"));
+
+  // 1. Start in a tab with 1 NavigationEntry.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(url_1, root->current_url());
+
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+
+  // 2. Create a NavigationEntry with the same PageState as |entry1|.
+  std::unique_ptr<NavigationEntryImpl> restored_entry =
+      NavigationEntryImpl::FromNavigationEntry(
+          NavigationController::CreateNavigationEntry(
+              url_1, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
+              false, std::string(), controller.GetBrowserContext(),
+              nullptr /* blob_url_loader_factory */));
+  EXPECT_EQ(0U, restored_entry->root_node()->children.size());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry1->GetPageState(), context.get());
+
+  // 3. Create a new tab with a new NavigationController, and navigate it twice.
+  Shell* new_shell = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  NavigationControllerImpl& new_controller =
+      static_cast<NavigationControllerImpl&>(
+          new_shell->web_contents()->GetController());
+  EXPECT_TRUE(NavigateToURL(new_shell, url_2));
+  EXPECT_EQ(1, new_controller.GetEntryCount());
+  EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+  NavigationEntryImpl* entry2 = new_controller.GetLastCommittedEntry();
+  EXPECT_EQ(url_2, entry2->GetURL());
+
+  EXPECT_TRUE(NavigateToURL(new_shell, url_3));
+  EXPECT_EQ(2, new_controller.GetEntryCount());
+  EXPECT_EQ(1, new_controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(url_3, new_controller.GetLastCommittedEntry()->GetURL());
+
+  // 4. Start and pause a back navigation in the new NavigationController, which
+  // will set the pending entry to `entry2`. Disable BFCache so that we can
+  // pause the navigation.
+  DisableBackForwardCacheForTesting(new_shell->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  TestNavigationManager back_navigation_manager(new_shell->web_contents(),
+                                                url_2);
+  new_controller.GoBack();
+  EXPECT_TRUE(back_navigation_manager.WaitForRequestStart());
+  EXPECT_EQ(entry2, new_controller.GetPendingEntry());
+  EXPECT_TRUE(new_root->navigation_request());
+
+  // 5. Restore `restored_entry` in the new tab.
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  entries.push_back(std::move(restored_entry));
+  new_controller.Restore(entries.size() - 1, RestoreType::kRestored, &entries);
+  // The previously existing entries were kept, in addition to the restored
+  // entries. Note that the last committed entry index is updated to 0, which
+  // is supposed to point to `url_1`'s entry, but actually points to `url_2`'s
+  // entry because the pre-existing entries are not cleared.
+  // TODO(https://crbug.com/1287624): Fix this.
+  EXPECT_EQ(3, new_controller.GetEntryCount());
+  EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(url_2, new_controller.GetEntryAtIndex(0)->GetURL());
+  EXPECT_EQ(url_3, new_controller.GetEntryAtIndex(1)->GetURL());
+  EXPECT_EQ(url_1, new_controller.GetEntryAtIndex(2)->GetURL());
+  // The pending entry is not cleared and the back navigation is still pending.
+  EXPECT_EQ(entry2, new_controller.GetPendingEntry());
+  EXPECT_TRUE(new_root->navigation_request());
+
+  // 6. Call LoadIfNecessary() in the new tab.
+  ASSERT_EQ(0u, entries.size());
+  {
+    TestNavigationObserver restore_observer(new_shell->web_contents());
+    new_controller.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  // Because the pending entry still pointed to the back navigation's entry,
+  // `url_2` is loaded instead of the entry restored from the other tab.
+  // TODO(https://crbug.com/1287624): This should load the restored entry
+  // instead.
+  EXPECT_EQ(3, new_controller.GetEntryCount());
+  EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+  NavigationEntryImpl* current_entry = new_controller.GetLastCommittedEntry();
+  EXPECT_EQ(entry2, current_entry);
+  EXPECT_EQ(url_2, current_entry->GetURL());
+  EXPECT_EQ(url_2, new_root->current_url());
+}
+
+// Verify that calling Restore with an empty set of entries does not crash,
+// since this may be possible via Android WebView's restoreState() API.
+// See https://crbug.com/1287624.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RestoreEmptyAndLoadOnUsedNavigationController) {
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  // 1. Create a new tab with a new NavigationController, and navigate it twice.
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL::EmptyGURL(), nullptr, gfx::Size());
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  NavigationControllerImpl& new_controller =
+      static_cast<NavigationControllerImpl&>(
+          new_shell->web_contents()->GetController());
+  EXPECT_TRUE(NavigateToURL(new_shell, url_1));
+  EXPECT_EQ(1, new_controller.GetEntryCount());
+  EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+  NavigationEntryImpl* entry1 = new_controller.GetLastCommittedEntry();
+  EXPECT_EQ(url_1, entry1->GetURL());
+
+  EXPECT_TRUE(NavigateToURL(new_shell, url_2));
+  EXPECT_EQ(2, new_controller.GetEntryCount());
+  EXPECT_EQ(1, new_controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(url_2, new_controller.GetLastCommittedEntry()->GetURL());
+
+  // 2. Start and pause a back navigation in the new NavigationController, which
+  // will set the pending entry to `entry1`. Disable BFCache so that we can
+  // pause the navigation.
+  DisableBackForwardCacheForTesting(new_shell->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  TestNavigationManager back_navigation_manager(new_shell->web_contents(),
+                                                url_1);
+  new_controller.GoBack();
+  EXPECT_TRUE(back_navigation_manager.WaitForRequestStart());
+  EXPECT_EQ(entry1, new_controller.GetPendingEntry());
+  EXPECT_TRUE(new_root->navigation_request());
+
+  // 3. Restore an empty set of entries in the new tab, which is possible via
+  // Android WebView's restoreState API.
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  new_controller.Restore(-1, RestoreType::kRestored, &entries);
+  // The previously existing entries were kept without crashing, and no changes
+  // to the entries were made except the last committed index.
+  // TODO(https://crbug.com/1287624): A selected index of -1 should not be
+  // allowed.
+  EXPECT_EQ(2, new_controller.GetEntryCount());
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    // When InitialNavigationEntry is enabled, there is always a valid index.
+    EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+  } else {
+    EXPECT_EQ(-1, new_controller.GetLastCommittedEntryIndex());
+  }
+  EXPECT_EQ(url_1, new_controller.GetEntryAtIndex(0)->GetURL());
+  EXPECT_EQ(url_2, new_controller.GetEntryAtIndex(1)->GetURL());
+  // The pending entry is not cleared and the back navigation is still pending.
+  EXPECT_EQ(entry1, new_controller.GetPendingEntry());
+  EXPECT_TRUE(new_root->navigation_request());
+
+  // 4. Call LoadIfNecessary() in the new tab.
+  ASSERT_EQ(0u, entries.size());
+  {
+    TestNavigationObserver restore_observer(new_shell->web_contents());
+    new_controller.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  // Because the pending entry still pointed to the back navigation's entry,
+  // `url_1` is loaded.
+  // TODO(https://crbug.com/1287624): A selected index of -1 should not be
+  // allowed.
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_EQ(2, new_controller.GetEntryCount());
+  } else {
+    // Somehow the later entry is pruned in this unusual case.
+    EXPECT_EQ(1, new_controller.GetEntryCount());
+  }
+  EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+  NavigationEntryImpl* current_entry = new_controller.GetLastCommittedEntry();
+  EXPECT_EQ(url_1, current_entry->GetURL());
+  EXPECT_EQ(url_1, new_root->current_url());
+}
+
 // Verifies that the |frame_unique_name| is set to the correct frame, so that we
 // can match subframe FrameNavigationEntries to newly created frames after
 // back/forward and restore.
@@ -12009,11 +12202,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Navigate the top-level frame to another page with an iframe.
   GURL url_b(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_iframe.html"));
-  GURL frame_url_b1(url::kAboutBlankURL);
+  GURL frame_url_2(url::kAboutBlankURL);
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(url_b, root->current_url());
-  EXPECT_EQ(frame_url_b1, root->child_at(0)->current_url());
+  EXPECT_EQ(frame_url_2, root->child_at(0)->current_url());
 
   // Go back two entries. The original frame URL should be back.
   ASSERT_TRUE(controller.CanGoToOffset(-2));
@@ -12048,7 +12241,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(url_b, root->current_url());
-  EXPECT_EQ(frame_url_b1, root->child_at(0)->current_url());
+  EXPECT_EQ(frame_url_2, root->child_at(0)->current_url());
 
   // Check the PageState of the previous entry to ensure it isn't corrupted.
   NavigationEntry* entry = controller.GetEntryAtIndex(1);

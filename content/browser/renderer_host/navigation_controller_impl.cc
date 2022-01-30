@@ -42,6 +42,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -645,25 +646,53 @@ void NavigationControllerImpl::Restore(
     int selected_navigation,
     RestoreType type,
     std::vector<std::unique_ptr<NavigationEntry>>* entries) {
-  // Verify that this controller is unused and that the input is valid.
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    DCHECK_EQ(1, GetEntryCount());
-    DCHECK(GetLastCommittedEntry()->IsInitialEntry());
-  } else {
-    DCHECK_EQ(0, GetEntryCount());
+  // Note that it's possible for `entries_` to contain multiple entries at this
+  // point, as Restore() might be called on a NavigationController that is
+  // already used (e.g. due to WebView's restoreState() API), not only for fresh
+  // NavigationControllers. These entries are not cleared to preserve legacy
+  // behavior and also because `pending_entry_` might point to one of the
+  // pre-existing entries. An exception for this is when `entries_` contains
+  // only the initial NavigationEntry, which must be removed.
+
+  // Do not proceed if selected_navigation will be out of bounds for the updated
+  // entries_ list, since it will be assigned to last_committed_entry_index_ and
+  // used to index entries_.
+  // TODO(https://crbug.com/1287624): Consider also returning early if entries
+  // is empty, since there should be no work to do (rather than marking the
+  // existing entries as needing reload). Also consider returning early if the
+  // selected index is -1, which represents a no-committed-entry state.
+  if (selected_navigation < -1 ||
+      selected_navigation >=
+          base::checked_cast<int>(entries->size() + entries_.size())) {
+    return;
   }
-  DCHECK(!GetPendingEntry());
-  DCHECK(selected_navigation >= 0 &&
-         selected_navigation < static_cast<int>(entries->size()));
-  DCHECK_EQ(-1, pending_entry_index_);
+
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    // In InitialNavigationEntry mode, there will always be at least one entry.
+    if (selected_navigation == -1)
+      selected_navigation = 0;
+
+    if (GetLastCommittedEntry()->IsInitialEntry() && entries->size() > 0) {
+      // If we are on the initial NavigationEntry, it must be the only entry in
+      // the list. Since it's impossible to do a history navigation to the
+      // initial NavigationEntry, `pending_entry_index_` must be -1 (but
+      // `pending_entry` might be set for a new non-history navigation).
+      // Note that we should not clear `entries_` if `entries` is empty (when
+      // InitialNavigationEntry mode is enabled), since that would leave us
+      // without any NavigationEntry.
+      CHECK_EQ(1, GetEntryCount());
+      CHECK_EQ(-1, pending_entry_index_);
+      entries_.clear();
+    }
+  }
 
   needs_reload_ = true;
   needs_reload_type_ = NeedsReloadType::kRestoreSession;
-  entries_.clear();
   entries_.reserve(entries->size());
-  for (auto& entry : *entries)
+  for (auto& entry : *entries) {
     entries_.push_back(
         NavigationEntryImpl::FromNavigationEntry(std::move(entry)));
+  }
 
   // At this point, the |entries| is full of empty scoped_ptrs, so it can be
   // cleared out safely.
@@ -3993,9 +4022,15 @@ void NavigationControllerImpl::NotifyEntryChanged(NavigationEntry* entry) {
 
 void NavigationControllerImpl::FinishRestore(int selected_index,
                                              RestoreType type) {
-  DCHECK(selected_index >= 0 && selected_index < GetEntryCount());
+  // TODO(https://crbug.com/1287624): Don't allow an index of -1, which would
+  // represent a no-committed-entry state.
+  DCHECK(selected_index >= -1 && selected_index < GetEntryCount());
   ConfigureEntriesForRestore(&entries_, type);
-
+  // TODO(https://crbug.com/1287624): This will be pointing to the wrong entry
+  // if `entries_` contains pre-existing entries from the NavigationController
+  // before restore, which would not be removed and will be at the front of the
+  // entries list, causing the index to be off by the amount of pre-existing
+  // entries in the list. Fix this to point to the correct entry.
   last_committed_entry_index_ = selected_index;
 }
 
