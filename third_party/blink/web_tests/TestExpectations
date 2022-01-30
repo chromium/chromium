@@ -7647,3 +7647,6 @@ crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-on-navig
 crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
 crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
 crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
+
+# Now flaky due to a timing issue, but so far only on Windows 7.
+crbug.com/1292296 [ Win7 ] http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js [ Failure Pass ]
