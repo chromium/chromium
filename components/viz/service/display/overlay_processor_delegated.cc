@@ -97,6 +97,9 @@ bool OverlayProcessorDelegated::DisableSplittingQuads() const {
 
 constexpr size_t kTooManyQuads = 128;
 
+DBG_FLAG_FBOOL("delegated.enable.dup_id", enable_dup_id)
+DBG_FLAG_FBOOL("delegated.disable.delegation", disable_delegation)
+
 bool OverlayProcessorDelegated::AttemptWithStrategies(
     const skia::Matrix44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
@@ -113,10 +116,14 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   constexpr bool is_delegated_context = true;
   delegated_status_ = DelegationStatus::kCompositedOther;
 
+  if (disable_delegation())
+    return false;
+
   if (quad_list->size() >= kTooManyQuads ||
       !render_pass_backdrop_filters.empty())
     return false;
 
+  std::set<ResourceId> candidate_res_ids;
   std::vector<QuadList::Iterator> candidate_quads;
   int num_quads_skipped = 0;
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
@@ -134,6 +141,15 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
         is_delegated_context);
     if (candidate_status == OverlayCandidate::CandidateStatus::kSuccess) {
+      if (candidate_res_ids.find(candidate.resource_id) !=
+          candidate_res_ids.end()) {
+        DBG_DRAW_RECT("delegated.duplicate.failed", display_rect);
+        // TODO(https://crbug.com/1291161) : We cannot have duplicate resource
+        // ids in the overlay candidate list until this bug is resolved.
+        if (!enable_dup_id())
+          continue;
+      }
+
       if (it->material == DrawQuad::Material::kSolidColor) {
         DBG_DRAW_RECT("delegated.overlay.color", candidate.display_rect);
       } else if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
@@ -141,7 +157,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       } else {
         DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
       }
-
+      candidate_res_ids.insert(candidate.resource_id);
       candidates->push_back(candidate);
       candidate_quads.push_back(it);
     } else {
