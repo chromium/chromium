@@ -61,6 +61,12 @@ class WebStateDelegate;
 class WebStateObserver;
 class WebStatePolicyDecider;
 
+// Normally it would be a bug for multiple WebStates to be realized in quick
+// succession. However, there are some specific use cases where this is
+// expected. In these scenarios call IgnoreOverRealizationCheck() before
+// each expected -ForceRealized.
+void IgnoreOverRealizationCheck();
+
 // Core interface for interaction with the web.
 class WebState : public base::SupportsUserData {
  public:
