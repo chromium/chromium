@@ -65,6 +65,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chrome. Para manter a sua navegação separada, o Chrome pode criar-lhe o seu próprio perfil.</translation>
 <translation id="2580411288591421699">Não é possível instalar a mesma versão do Google Chrome atualmente em execução. Feche o Google Chrome e tente novamente.</translation>
 <translation id="2586406160782125153">Esta ação elimina os seus dados de navegação deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">As autorizações que já concedeu aos Websites e às apps podem aplicar-se a esta conta. Se não quiser que os Websites ou as apps acedam às informações da sua conta, utilize o Modo convidado no navegador Chrome. Também pode gerir as suas Contas Google nas <ph name="LINK_2_BEGIN" />Definições<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">O Chrome não consegue verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2644798301485385923">Sistema Chrome OS</translation>
 <translation id="2652691236519827073">Abrir link num novo &amp;separador do Chrome</translation>

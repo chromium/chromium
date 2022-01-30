@@ -771,6 +771,7 @@
 <translation id="176587472219019965">&amp;Nova Janela</translation>
 <translation id="1766575458646819543">Saiu do modo de ecrã inteiro</translation>
 <translation id="1766957085594317166">Guarde as palavras-passe em segurança na sua Conta Google para que não tenha de as introduzir novamente.</translation>
+<translation id="1767043563165955993">Utilizar com apps Android</translation>
 <translation id="1768212860412467516">Enviar feedback para <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Ups! Ocorreu um problema ao contactar o servidor de início de sessão. Verifique a sua ligação de rede e o nome do domínio, e tente novamente.</translation>
 <translation id="1769104665586091481">Abrir Link Numa Nova &amp;Janela</translation>
@@ -1108,6 +1109,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2113479184312716848">Abrir &amp;Ficheiro...</translation>
 <translation id="2113921862428609753">Acesso a informações sobre autoridade</translation>
 <translation id="2114326799768592691">Atualizar &amp;frame</translation>
+<translation id="2114413269775311385">Utilize esta conta com as apps Android. Pode controlar as autorizações das apps Android nas <ph name="LINK_BEGIN" />Definições de apps<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nenhum cartão SIM inserido</translation>
 <translation id="2116619964159595185">Normalmente, os sites estabelecem ligação a dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
@@ -2954,6 +2956,7 @@ Pretende pará-lo?</translation>
 <translation id="3943582379552582368">&amp;Anterior</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3945513714196326460">Tente utilizar um nome mais curto</translation>
+<translation id="3947643756376959257">Introduza o código de acesso apresentado no Chromecast ou na TV.</translation>
 <translation id="3948027458879361203">Alterar nome do anfitrião</translation>
 <translation id="3948116654032448504">Pe&amp;squisar Imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar ficheiros nas seguintes pastas</translation>
@@ -3195,12 +3198,14 @@ Pretende pará-lo?</translation>
 <translation id="4210048056321123003">A transferir a máquina virtual…</translation>
 <translation id="421182450098841253">&amp;Mostrar Barra de Marcadores</translation>
 <translation id="4211851069413100178">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android ao enviar automaticamente dados de diagnóstico, de utilização do dispositivo e das aplicações para a Google. Deste modo, ajudará a melhorar a estabilidade das aplicações e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as aplicações e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnóstico e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Parar de utilizar com apps Android</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="42137655013211669">O acesso a este recurso foi proibido pelo servidor.</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Ocorreu um erro durante a ativação.</translation>
 <translation id="4225397296022057997">Em todos os sites</translation>
+<translation id="4227605727325220318">Adicionar um novo telemóvel Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensão não é permitida}one{Esta(s) extensão(ões) não é(são) permitida(s)}other{Estas extensões não são permitidas}}</translation>
 <translation id="4231095370974836764">Instale apps e jogos do Google Play no dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configure o Kerberos</translation>
@@ -4739,6 +4744,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5862109781435984885">Mostrar ferramentas da caneta stylus na prateleira</translation>
 <translation id="5862319196656206789">Configurar dispositivos ligados</translation>
 <translation id="5863445608433396414">Ativar funcionalidades de depuração</translation>
+<translation id="5864147196375746035">Transmita para um dispositivo gerido</translation>
 <translation id="5864195618110239517">Utilizar ligação com acesso limitado</translation>
 <translation id="5864754048328252126">Ação de inatividade ao carregar</translation>
 <translation id="5865508026715185451">A app <ph name="APP_NAME" /> será colocada em pausa em breve</translation>
@@ -5924,6 +5930,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7086672505018440886">Inclua ficheiros de registo do Chrome no arquivo.</translation>
 <translation id="7088434364990739311">Falha ao iniciar a verificação de atualizações (código de erro <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Este dispositivo foi colocado num estado descontinuado pelo gestor. Para ativá-lo para inscrição, solicite ao gestor que coloque o dispositivo num estado pendente.</translation>
+<translation id="7090160970140261931">Pode adicionar mais contas ao seu dispositivo <ph name="DEVICE_TYPE" /> para utilizar com Websites e apps Android. Também pode controlar as contas que são utilizadas com as apps Android.</translation>
 <translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093416310351037609">Para segurança e proteção dos dados, a sua entidade exige que todas as transferências elegíveis sejam guardadas na conta do <ph name="WEB_DRIVE" /> da sua entidade.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6984,6 +6991,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8147900440966275470"><ph name="NUM" /> separador encontrado</translation>
 <translation id="8148760431881541277">Limitar início de sessão</translation>
 <translation id="8149564499626272569">Validar através do telemóvel com um cabo USB</translation>
+<translation id="815114315010033526">Utilizar código QR em alternativa</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Sem ficheiro</translation>
 <translation id="8154912474061769055">As funcionalidades em muitos sites podem não funcionar</translation>
@@ -7009,6 +7017,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8176332201990304395">Cor-de-rosa e branco</translation>
 <translation id="8177196903785554304">Detalhes da rede</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Mover separador para nova janela}one{Mover separador(es) para nova janela}other{Mover separadores para nova janela}}</translation>
+<translation id="8179188928355984576">Não utilizada com apps Android</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">A extensão "<ph name="EXTENSION" />" consegue ler e eliminar imagens, ficheiros de vídeo e de som nas localizações marcadas.</translation>
 <translation id="8181215761849004992">Não é possível associar ao domínio. Verifique a sua conta para saber se tem privilégios suficientes para adicionar dispositivos.</translation>

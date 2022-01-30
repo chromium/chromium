@@ -296,6 +296,7 @@
 <translation id="1293264513303784526">USB-C መሣሪያ (የግራ ወደብ)</translation>
 <translation id="1293556467332435079">ፋይሎች</translation>
 <translation id="1294807885394205587">ይህ ሂደት ጥቂት ደቂቃዎችን ሊወስድ ይችላል። የመያዣ አስተዳዳሪውን በማስጀመር ላይ።</translation>
+<translation id="1296046226918222533">የሆነ ችግር ተፈጥሯል፣ እንዲሁም Linux ማሻሻል አልተሳካም። ስለ አለመሳካት ተጨማሪ መረጃ በምዝግብ ማስታወሻዎች ውስጥ ሊገኝ ይችላል። ምዝግብ ማስታወሻዎቹ በ<ph name="LOG_FILE" /> ውስጥ ተቀምጠዋል</translation>
 <translation id="1296911687402551044">የተመረጠውን ትር ሰካ</translation>
 <translation id="1297175357211070620">መዳረሻ</translation>
 <translation id="129770436432446029">ለ<ph name="EXPERIMENT_NAME" /> ግብረመልስ ይላኩ</translation>
@@ -2797,6 +2798,7 @@
 <translation id="3799128412641261490">የመዳረሻ መቀየሪያ ቅንብሮች</translation>
 <translation id="3800806661949714323">ሁሉንም አሳይ (የሚመከር)</translation>
 <translation id="3800828618615365228">የGoogle Chrome እና የChromeOS ተጨማሪ ደንቦች</translation>
+<translation id="3802486193901166966">ይህ ቅጥያ ምንም ልዩ ፈቃዶች አያስፈልጉትም፣ እንዲሁም ምንም ተጨማሪ የጣቢያ መዳረሻ የለውም</translation>
 <translation id="380329542618494757">ስም</translation>
 <translation id="3803345858388753269">የቪዲዮ ጥራት</translation>
 <translation id="380408572480438692">የአፈጻጸም ውሂብ ስብስብን ማንቃት Google ከጊዜ ወደ ጊዜ ስርዓቱን እንዲያሻሽለው ያግዘዋል። የግብረ መልስ ሪፖርት ፋይል እስኪያደርጉ (Alt-Shift-I) እና የአፈጻጸም ውሂብ እስኪያካትቱ ድረስ ምንም ውሂብ አይላክም። በማንኛውም ጊዜ ስብስቡን ለማሰናከል ወደዚህ ማያ ገጽ መመለስ ይችላሉ።</translation>
@@ -3208,6 +3210,7 @@
 <translation id="4231095370974836764">ከGoogle Play በእርስዎ <ph name="DEVICE_TYPE" /> ላይ መተግበሪያዎችን እና ጨዋታዎችን ይጫኑ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosን ያዋቅሩ</translation>
 <translation id="4235965441080806197">መግባትን ሰርዝ</translation>
+<translation id="4236163961381003811">ተጨማሪ ቅጥያዎችን ያግኙ</translation>
 <translation id="4241182343707213132">የድርጅት መተግበሪያዎችን ለማዘመን ዳግም አስጀምር</translation>
 <translation id="4242145785130247982">በርካታ የደንበኛ ምስክርነቶች አይደገፉም</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
@@ -3824,6 +3827,7 @@
 <translation id="4883436287898674711">ሁሉም የ<ph name="WEBSITE_1" /> ጣቢያዎች</translation>
 <translation id="48838266408104654">&amp;ተግባር አስተዳዳሪ</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">ይህ ቅጥያ ምንም ተጨማሪ የጣቢያ መዳረሻ የለውም</translation>
 <translation id="4887424188275796356">በስርዓት መመልከቻ ክፈት</translation>
 <translation id="488785315393301722">ዝርዝሮችን አሳይ</translation>
 <translation id="4890773143211625964">የላቁ የአታሚ አማራጮችን አሳይ</translation>
@@ -3998,6 +4002,7 @@
 <translation id="5075910247684008552">ደህንነታቸው በተጠበቁ ጣቢያዎች ላይ በነባሪነት ደህንነቱ ያልተጠበቀ ይዘት ይታገዳል</translation>
 <translation id="5078638979202084724">ለሁሉም ትሮች ዕልባት ያብጁ</translation>
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
+<translation id="5079010647467150187">አብሮገነብ VPN አክል...</translation>
 <translation id="5079950360618752063">የተጠቆመ የይለፍ ቃልን ይጠቀሙ</translation>
 <translation id="508059534790499809">የKerberos ቲኬት ያድሱ</translation>
 <translation id="5084230410268011727">ጣቢያዎች የእንቅስቃሴ እና የብርሃን ዳሳሾችን እንዲጠቀሙ ፍቀድ</translation>
@@ -5550,6 +5555,7 @@
 <translation id="6709133671862442373">ዜና</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />ን በመጠቀም አገናኝ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
+<translation id="6710973041022512889">ማሻሻል በተሳካ ሁኔታ ተጠናቅቋል። ለዝርዝር የማሻሻያ መረጃ፣ ምዝግብ ማስታወሻዎቹ በ<ph name="LOG_FILE" /> ተቀምጠዋል</translation>
 <translation id="6711146141291425900">ለውርዶች <ph name="WEB_DRIVE" /> መለያን ያገናኙ</translation>
 <translation id="6712943853047024245">ለ<ph name="WEBSITE" /> ከዚህ የተጠቃሚ ስም ጋር የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="6713233729292711163">የስራ መገለጫን አክል</translation>

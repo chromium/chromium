@@ -1708,6 +1708,7 @@
 <translation id="2684004000387153598">계속하려면 확인을 클릭한 다음 사용자 추가를 클릭하여 이메일 주소로 새로운 프로필을 만드세요.</translation>
 <translation id="2687403674020088961">모든 쿠키 차단(권장되지 않음)</translation>
 <translation id="2687407218262674387">Google 서비스 약관</translation>
+<translation id="2687621393791886981">나중에 알림</translation>
 <translation id="2688196195245426394">기기를 서버에 등록하는 중에 오류 발생: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">언어 옵션 표시</translation>
 <translation id="2691385045260836588">모델</translation>
@@ -3213,6 +3214,7 @@
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
 <translation id="4235965441080806197">로그인 취소</translation>
+<translation id="4236163961381003811">더 많은 확장 프로그램 찾아보기</translation>
 <translation id="4241182343707213132">다시 시작하여 조직의 앱 업데이트</translation>
 <translation id="4242145785130247982">여러 개의 클라이언트 인증서는 지원되지 않습니다.</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -7221,6 +7223,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 허용함</translation>
 <translation id="8413385045638830869">우선 확인(권장)</translation>
+<translation id="8414249071344507766">이틀 동안 추억 숨김</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
 <translation id="8417548266957501132">부모 비밀번호</translation>
 <translation id="8418445294933751433">탭으로 표시(&amp;S)</translation>

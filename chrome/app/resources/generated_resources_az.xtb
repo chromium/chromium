@@ -293,6 +293,7 @@
 <translation id="1293264513303784526">USB-C cihazı (sol port)</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1294807885394205587">Bir az səbr edin; konteyner meneceri başladılır.</translation>
+<translation id="1296046226918222533">Xəta oldu və Linux güncəlləməsi alınmadı. Xəta haqqında daha çox məlumatı qeydlərdə tapa bilərsiniz. Qeydlər burada saxlanılıb: <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Seçilmiş tabı sancın</translation>
 <translation id="1297175357211070620">Təyinat yeri</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> üçün rəy göndər</translation>
@@ -2786,6 +2787,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3799128412641261490">Düymə ilə giriş ayarları</translation>
 <translation id="3800806661949714323">Hamısını göstərin (tövsiyə olunur)</translation>
 <translation id="3800828618615365228">Google Chrome və ChromeOS üzrə Əlavə Şərtlər</translation>
+<translation id="3802486193901166966">Bu artırma xüsusi icazələr tələb etmir və əlavə sayt girişi yoxdur</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803345858388753269">Video Keyfiyyəti</translation>
 <translation id="380408572480438692">Performans datasının toplanmasına icazə vermək Google'a sistemi gəlişdirmək imkanı verir. Geri əlaqə raportu hazırlayana (Alt-Shift-I) və performans datası təqdim edənə qədər heç bir data göndərilmir. Toplamaya qadağa qoymaq üçün buraya istədiyiniz vaxt qayıda bilərsiniz.</translation>
@@ -3813,6 +3815,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4883436287898674711">Bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="48838266408104654">&amp;Tapşırıq Meneceri</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Bu artırmanın əlavə sayt girişi yoxdur</translation>
 <translation id="4887424188275796356">Sistem İzləyici ilə Açın</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
 <translation id="4890773143211625964">Qabaqcıl printer seçimlərini göstərin</translation>
@@ -3987,6 +3990,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5075910247684008552">Təhlükəli məzmun defolt olaraq təhlükəsiz saytlarda blok edildi</translation>
 <translation id="5078638979202084724">Bütün vərəqələri əlfəcinləyin</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
+<translation id="5079010647467150187">Daxili VPN əlavə edin...</translation>
 <translation id="5079950360618752063">Təklif edilmiş paroldan istifadə edin</translation>
 <translation id="508059534790499809">Kerberos biletini yeniləyin</translation>
 <translation id="5084230410268011727">Saytların hərəkət və işıq senorlarından istifadəsinə icazə verin</translation>
@@ -5537,6 +5541,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6709133671862442373">Xəbərlər</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> istifadə edərək qoşulun</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
+<translation id="6710973041022512889">Güncəlləmə uğurla başa çatdı. Ətraflı güncəlləmə məlumatı üçün qeydlər burada saxlanılıb: <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Endirmələr üçün <ph name="WEB_DRIVE" /> hesabını əlaqələndirin</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> üçün bu istifadəçi adı ilə parolu artıq yadda saxlamısınız</translation>
 <translation id="6713233729292711163">İş Profili əlavə edin</translation>

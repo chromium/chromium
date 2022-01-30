@@ -772,6 +772,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="176587472219019965">&amp;Nowe okno</translation>
 <translation id="1766575458646819543">Wyłączono tryb pełnego ekranu</translation>
 <translation id="1766957085594317166">Możesz bezpiecznie zapisać hasła na swoim koncie Google, by w przyszłości nie musieć ich wpisywać</translation>
+<translation id="1767043563165955993">Używaj z aplikacjami na Androida</translation>
 <translation id="1768212860412467516">Prześlij opinię na temat: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Ups. Podczas łączenia się z serwerem logowania wystąpił problem. Sprawdź połączenie sieciowe i nazwę domeny, a potem spróbuj jeszcze raz.</translation>
 <translation id="1769104665586091481">Otwórz link w nowym &amp;oknie</translation>
@@ -1105,6 +1106,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2113479184312716848">&amp;Otwórz plik</translation>
 <translation id="2113921862428609753">Dostęp do informacji o urzędzie</translation>
 <translation id="2114326799768592691">Załaduj ponownie &amp;ramkę</translation>
+<translation id="2114413269775311385">Używaj tego konta z aplikacjami na Androida. Uprawnieniami aplikacji na Androida możesz zarządzać w <ph name="LINK_BEGIN" />Ustawieniach aplikacji<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Zdjęcie: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Brak karty SIM</translation>
 <translation id="2116619964159595185">Witryny łączą się z urządzeniami Bluetooth na przykład po to, żeby skonfigurować lub zsynchronizować niskoenergetyczne moduły beacon, inteligentne żarówki albo monitory stanu zdrowia lub aktywności fizycznej</translation>
@@ -2949,6 +2951,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3943582379552582368">&amp;Wstecz</translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="3945513714196326460">Podaj krótszą nazwę</translation>
+<translation id="3947643756376959257">Wpisz kod dostępu widoczny na urządzeniu Chromecast lub telewizorze.</translation>
 <translation id="3948027458879361203">Zmień nazwę hosta</translation>
 <translation id="3948116654032448504">&amp;Szukaj obrazu w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Strona <ph name="ORIGIN" /> może edytować pliki w tych folderach</translation>
@@ -3190,16 +3193,19 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4210048056321123003">Pobieram maszynę wirtualną</translation>
 <translation id="421182450098841253">&amp;Pokaż pasek zakładek</translation>
 <translation id="4211851069413100178">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Przestań używać z aplikacjami na Androida</translation>
 <translation id="42126664696688958">Eksportuj</translation>
 <translation id="42137655013211669">Serwer zabronił dostępu do tego zasobu.</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Podczas aktywowania wystąpił błąd.</translation>
 <translation id="4225397296022057997">We wszystkich witrynach</translation>
+<translation id="4227605727325220318">Dodaj nowy telefon z Androidem</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{To rozszerzenie jest niedozwolone}few{Niektóre rozszerzenia są niedozwolone}many{Niektóre rozszerzenia są niedozwolone}other{Niektóre rozszerzenia są niedozwolone}}</translation>
 <translation id="4231095370974836764">Instaluj aplikacje i gry z Google Play na urządzeniu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurowanie Kerberos</translation>
 <translation id="4235965441080806197">Anuluj logowanie</translation>
+<translation id="4236163961381003811">Znajdź więcej rozszerzeń</translation>
 <translation id="4241182343707213132">Uruchom ponownie, aby zaktualizować aplikacje organizacji</translation>
 <translation id="4242145785130247982">Funkcja nie obsługuje wielu certyfikatów klienta</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
@@ -4731,6 +4737,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="5862109781435984885">Pokaż narzędzia rysika na półce</translation>
 <translation id="5862319196656206789">Skonfiguruj połączone urządzenia</translation>
 <translation id="5863445608433396414">Włącz funkcje debugowania</translation>
+<translation id="5864147196375746035">Przesyłaj na urządzenie zarządzane</translation>
 <translation id="5864195618110239517">Użyj połączenia z pomiarem użycia danych</translation>
 <translation id="5864754048328252126">Bezczynność podczas ładowania</translation>
 <translation id="5865508026715185451">Aplikacja <ph name="APP_NAME" /> wkrótce zostanie wstrzymana</translation>
@@ -5916,6 +5923,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7086672505018440886">Uwzględnij pliki dzienników Chrome w archiwum.</translation>
 <translation id="7088434364990739311">Nie udało się uruchomić sprawdzania aktualizacji (kod błędu <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Administrator ustawił to urządzenie jako nieobsługiwane. Aby umożliwić jego rejestrację, poproś administratora, by ustawił je jako oczekujące.</translation>
+<translation id="7090160970140261931">Do urządzenia <ph name="DEVICE_TYPE" /> możesz dodać kolejne konta użytkownika umożliwiające dostęp do witryn i aplikacji na Androida. Możesz też określić, których kont będzie można używać z aplikacjami na Androida.</translation>
 <translation id="7093220653036489319">Szybkie podpowiedzi</translation>
 <translation id="7093416310351037609">Aby zapewnić bezpieczeństwo danych, Twoja organizacja wymaga, aby wszystkie kwalifikujące się pobrane pliki były zapisywane na jej koncie w usłudze <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6976,6 +6984,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8147900440966275470">Znaleziono <ph name="NUM" /> kartę</translation>
 <translation id="8148760431881541277">Ograniczanie logowania</translation>
 <translation id="8149564499626272569">Potwierdź swoją tożsamość za pomocą telefonu podłączonego kablem USB</translation>
+<translation id="815114315010033526">Zamiast tego użyj kodu QR</translation>
 <translation id="8151638057146502721">Konfiguruj</translation>
 <translation id="8154790740888707867">Brak pliku</translation>
 <translation id="8154912474061769055">W wielu witrynach mogą nie działać funkcje</translation>
@@ -7001,6 +7010,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8176332201990304395">Różowo-biały</translation>
 <translation id="8177196903785554304">Szczegóły sieci</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Przenieś kartę do nowego okna}few{Przenieś karty do nowego okna}many{Przenieś karty do nowego okna}other{Przenieś karty do nowego okna}}</translation>
+<translation id="8179188928355984576">Nieużywane z aplikacjami na Androida</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />” może odczytywać oraz usuwać pliki graficzne, wideo i dźwiękowe ze sprawdzonych lokalizacji.</translation>
 <translation id="8181215761849004992">Nie można dołączyć do domeny. Sprawdź, czy masz uprawnienia do dodawania urządzeń.</translation>

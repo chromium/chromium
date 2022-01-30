@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
 <translation id="1387854245479784695">Isa itong pagsasama-sama ng lahat ng core</translation>
+<translation id="1394661041439318933">May <ph name="BATTERY_PERCENTAGE" />% baterya ang case ng device.</translation>
 <translation id="1397738625398125236">Puwedeng I-ping ang Gateway</translation>
 <translation id="1398634363027580500">Napakataas na latency ng HTTPS</translation>
 <translation id="1413240736185167732">Hindi na-print - Hindi gumana ang filter</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">May keypair ako</translation>
+<translation id="1451536289672181509">Keyboard ang device.</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
 <translation id="1476467821656042872">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at puwede nitong masubaybayan ang iyong aktibidad.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Higit pang mga setting</translation>
 <translation id="2104796393919810494">Kumpleto na ang pag-repair</translation>
+<translation id="2105810540595158374">Game controller ang device.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, bersyon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB sa <ph name="TOTAL_MEMORY" /> GB ang available</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
+<translation id="3031560714565892478">Video camera ang device.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Nabigo ang pagsubok</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Nakakonekta ang device.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Alisin ang page?}=1{Alisin ang page {PAGE_NUMBER}?}one{Alisin ang page {PAGE_NUMBER}?}other{Alisin ang page {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
 <translation id="3156846309055100599">Sina-scan ang page <ph name="PAGE_NUMBER" />...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
+<translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Sina-scan ang pahina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% na ang natapos.</translation>
 <translation id="3459509316159669723">Pagpi-print</translation>
 <translation id="3462187165860821523">Ina-update ang <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="3486220673238053218">kahulugan</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Walang nakakonektang device</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3954678691475912818">Hindi alam ang uri ng device.</translation>
 <translation id="3966286471246132217">Para sa mga tumpak na resulta, isara ang lahat ng app hanggang sa makumpleto ang pagsusuri.</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Pumili agad ng bago</translation>
 <translation id="4891842000192098784">Stress</translation>
+<translation id="4897058166682006107">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kaliwang bud ng device.</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4917889632206600977">Huminto - Wala nang papel</translation>
 <translation id="4921665434385737356">Na-charge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
@@ -322,6 +331,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5346687412805619883">Lokal na Network</translation>
 <translation id="5358174242040570474">Nagkaproblema. Subukang pumili ulit ng wallpaper o buksan ulit ang app.</translation>
 <translation id="5372659122375744710">Hindi secure ang WiFi network</translation>
+<translation id="5400907029458559844">Kumokonekta ang device.</translation>
 <translation id="5401938042319910061">Patakbuhin ang Lahat ng Routine</translation>
 <translation id="5423849171846380976">Na-activate</translation>
 <translation id="5430931332414098647">Instant na Pag-tether</translation>
@@ -383,6 +393,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
+<translation id="6319207335391420837">I-update ang firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Nabigo</translation>
 <translation id="6340526405444716530">Pag-personalize</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
@@ -415,6 +426,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
 <translation id="6749473226660745022">Mga Larawan</translation>
+<translation id="6753452347192452143">Computer ang device.</translation>
 <translation id="6756731097889387912">Hindi makansela ang pag-scan</translation>
 <translation id="6766275201586212568">May mga hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6768237774506518020">Mataas na rate ng hindi naisagawang pagresolba sa DNS</translation>
@@ -432,12 +444,14 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6992266763844448459">Piliin ang opsyong ito kung hindi magbabago ang pagmamay-ari ng device. Halimbawa, inililipat ang device sa ibang tao sa loob ng isang organisasyon.</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7041549558901442110">Hindi nakakonekta ang device.</translation>
 <translation id="7058278511608979688">Tapusin at i-save</translation>
 <translation id="7059230779847288458">Nagcha-charge, <ph name="TIME_VALUE" /> hanggang sa mapuno</translation>
 <translation id="7068619307603204412">Ihanda ang iyong device</translation>
 <translation id="708426984172631313">INIHINTO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nabigo - Hindi Nabigyan ng Pahintulot</translation>
+<translation id="7103252855940681301">Device <ph name="INDEX" /> sa <ph name="COUNT" /> na nagngangalang <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}one{Mga name server}other{Mga name server}}</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
@@ -472,6 +486,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Mga Diagnostic na Routine</translation>
+<translation id="7551123448725492271">Audio device ang device.</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB na touchscreen</translation>
@@ -479,6 +494,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7620771111601174153">Matuto pa sa Help Center</translation>
 <translation id="763165478673169849">Oras ng Huling Pag-reset</translation>
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
+<translation id="7656388927906093505">Mouse ang device.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7690294790491645610">Kumpirmahin ang bagong password</translation>
 <translation id="7701040980221191251">Wala</translation>
@@ -575,6 +591,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8855781559874488009">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website</translation>
 <translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Tablet ang device.</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>
 <translation id="8898840733695078011">Lakas ng signal</translation>
 <translation id="8910721771319628100">Mas mataas sa limitasyon ng latency ang default na network</translation>
@@ -585,11 +602,13 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8936793075252196307">IP address ng client</translation>
 <translation id="8945750210906526975">Internal na touchpad</translation>
+<translation id="894617464444543719">Telepono ang device.</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{I-scan}=1{I-scan ang page {NUMBER_OF_PAGES}}one{I-scan ang page {NUMBER_OF_PAGES}}other{I-scan ang page {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Ini-install - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">May <ph name="BATTERY_PERCENTAGE" />% baterya ang device.</translation>
 <translation id="9003704114456258138">Frequency</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Mataas ang latency ng resolution ng DNS</translation>

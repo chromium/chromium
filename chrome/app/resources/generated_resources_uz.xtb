@@ -1901,6 +1901,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="287205682142673348">Portni uzatish</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> tarmog‘ini qo‘shish...</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
+<translation id="2873995907777332853">Barcha cookie fayllar bloklanishi tafsilotini chiqarish</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
 <translation id="2875698561019555027">(Chrome xatolik sahifalari)</translation>
 <translation id="2876336351874743617">Barmoq izi 2</translation>
@@ -2207,6 +2208,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3189187154924005138">Katta kursor</translation>
 <translation id="3190558889382726167">Parol saqlandi</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
+<translation id="3194786596445804250">Tashqi cookie fayllar bloklanishi tafsilotini chiqarish</translation>
 <translation id="3197453258332670132">Oʻng klik yoki biroz bosib turilsa, belgilangan matn uchun aloqador axborot chiqariladi</translation>
 <translation id="3199127022143353223">Serverlar</translation>
 <translation id="3200061262156232574">Xarid qutingizda</translation>
@@ -5309,6 +5311,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6455264371803474013">Tanlangan saytlarda</translation>
 <translation id="6455894534188563617">&amp;Yangi jild</translation>
 <translation id="645705751491738698">JavaScript bloklansin</translation>
+<translation id="6458347417133445570">Barcha cookie fayllarga ruxsat berilishi tafsilotini chiqarish</translation>
 <translation id="6458701200018867744">Yuklanmadi (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Belgilanish bo‘yicha qidiruv</translation>
 <translation id="6459799433792303855">Faol oyna boshqa ekranga uzatildi.</translation>
@@ -6745,6 +6748,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> sayti <ph name="FILENAME" /> faylini koʻra oladi</translation>
 <translation id="7920482456679570420">Imlo tekshiruvidan istisno soʻzlarni kiriting</translation>
+<translation id="7922935920104868876">Inkognito rejimida tashqi cookie fayllar bloklanishi tafsilotini chiqarish</translation>
 <translation id="7924358170328001543">Portni uzatishda xato</translation>
 <translation id="7925108652071887026">Avtomatik to‘ldiriladigan ma’lumotlar</translation>
 <translation id="792514962475806987">Mahkamlangan lupa masshtabi:</translation>
@@ -6909,6 +6913,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8076492880354921740">Varaqlar</translation>
 <translation id="8076835018653442223">Mobil qurilmangizdagi mahalliy fayllarga ruxsat administrator tomonidan o‘chirib qo‘yilgan</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Android ilovalarida foydalanish mumkin hisoblar mavjud</translation>
 <translation id="8081989000209387414">ADB tuzatish vositasi oʻchirilsinmi?</translation>
 <translation id="8082106343289440791">“<ph name="DEVICE_NAME" />” bilan ulansinmi?</translation>
 <translation id="8082390128630131497">Agar ADB tuzatish vositasi oʻchirilsa, ushbu <ph name="DEVICE_TYPE" /> qurilmasi sozlamalari asliga qaytariladi. Barcha hisoblar va qurilmadagi maʼlumotlar tozalanadi.</translation>
@@ -7167,6 +7172,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8342861492835240085">To‘plamni tanlang</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="834785183489258869">Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
+<translation id="8349499562373871073">Android ilovalari bilan ishlash uchun mavjud hisobni tanlash yoki yangi Google hisobini kiriting. Android ilovasida hisobga kirsangiz, hisobingiz boshqa Android ilovalarida ham ishlatiladi. Android ilovalariga ruxsatni <ph name="LINK_BEGIN" />Sozlamalar &gt; Hisoblar<ph name="LINK_END" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="8350789879725387295">Dokdagi stilus vositalari</translation>
 <translation id="8351316842353540018">Maxsus imkoniyatlar doimo koʻrsatilsin</translation>
 <translation id="8351419472474436977">Bu kengaytma proksi-server sozlamalarini boshqaradi. Demak siz uzatayotgan ma’lumotlarni kuzatishi yoki o‘zgartirishi, hamda internet aloqasini uzib qo‘yishi ham mumkin. Agar buni bilmagan bo‘lsangiz, kengaytmani o‘chirib qo‘yishingiz mumkin.</translation>

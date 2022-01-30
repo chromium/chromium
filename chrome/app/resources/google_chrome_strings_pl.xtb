@@ -64,6 +64,7 @@
 <translation id="2574930892358684005">W tym profilu Chrome jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Aby umożliwić Ci przeglądanie osobno, Chrome może utworzyć dla Ciebie nowy profil.</translation>
 <translation id="2580411288591421699">Nie można zainstalować tej samej wersji przeglądarki Google Chrome co obecnie uruchomiona. Zamknij przeglądarkę Google Chrome i spróbuj ponownie.</translation>
 <translation id="2586406160782125153">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. Jeśli nie chcesz, aby strony lub aplikacje uzyskiwały dostęp do informacji o Twoim koncie, użyj trybu gościa w przeglądarce Chrome. Kontami Google możesz też zarządzać w <ph name="LINK_2_BEGIN" />Ustawieniach<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome nie może sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="2644798301485385923">System operacyjny Chrome</translation>
 <translation id="2652691236519827073">O&amp;twórz link w nowej karcie Chrome</translation>

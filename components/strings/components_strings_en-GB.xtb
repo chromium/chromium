@@ -1670,7 +1670,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6272383483618007430">Google update</translation>
 <translation id="6276112860590028508">Pages from your reading list appear here</translation>
 <translation id="627746635834430766">To pay faster next time, save your card and billing address to your Google Account.</translation>
-<translation id="6279098320682980337">Virtual card number not filled in? Click card details to copy</translation>
 <translation id="6280223929691119688">Can’t deliver to this address. Select a different address.</translation>
 <translation id="6282194474023008486">Postcode</translation>
 <translation id="6285507000506177184">Manage downloads in Chrome button; press Enter to manage files that you have downloaded in Chrome</translation>
@@ -1977,6 +1976,7 @@ Additional details:
 <translation id="7334320624316649418">&amp;Redo reorder</translation>
 <translation id="7335157162773372339">Can ask to use your camera</translation>
 <translation id="7337248890521463931">Show more lines</translation>
+<translation id="7337418456231055214">Virtual card number not filled in? Click card details to copy. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Not available on your platform.</translation>
 <translation id="733923710415886693">The server's certificate was not disclosed via Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

@@ -300,6 +300,7 @@
 <translation id="1293264513303784526">USB-C įrenginys (prievadas kairėje)</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1294807885394205587">Šis procesas gali užtrukti kelias minutes. Paleidžiama sudėtinių rodinių tvarkytuvė.</translation>
+<translation id="1296046226918222533">Įvyko klaida, todėl nepavyko naujovinti „Linux“. Daugiau informacijos apie triktį galima rasti žurnaluose. Žurnalai išsaugoti faile „<ph name="LOG_FILE" />“</translation>
 <translation id="1296911687402551044">Prisegti pasirinktą skirtuką</translation>
 <translation id="1297175357211070620">Paskirties vieta</translation>
 <translation id="129770436432446029">Siųsti atsiliepimus apie eksperimentą „<ph name="EXPERIMENT_NAME" />“</translation>
@@ -2806,6 +2807,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3799128412641261490">Prieigos jungikliu nustatymai</translation>
 <translation id="3800806661949714323">Rodyti viską (rekomenduojama)</translation>
 <translation id="3800828618615365228">„Google Chrome“ ir „Chrome“ OS papildomos sąlygos</translation>
+<translation id="3802486193901166966">Šiam plėtiniui nereikia specialių leidimų ir jam nesuteikta papildoma svetainės prieiga</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803345858388753269">Vaizdo įrašo kokybė</translation>
 <translation id="380408572480438692">Įgalinus našumo duomenų rinkimą „Google“ galės lengviau tobulinti sistemą laikui bėgant. Jokie duomenys nesiunčiami, kol pateikiate atsiliepimų ataskaitą („Alt“ – „Shift“ – I) ir įtraukiate našumo duomenis. Bet kada galite grįžti į šį ekraną ir neleisti rinkti duomenų.</translation>
@@ -3836,6 +3838,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4883436287898674711">Visos <ph name="WEBSITE_1" /> svetainės</translation>
 <translation id="48838266408104654">&amp;Užduočių tvarkytuvė</translation>
 <translation id="4884987973312178454">6 k.</translation>
+<translation id="4885692421645694729">Šiam plėtiniui nesuteikta papildoma svetainės prieiga</translation>
 <translation id="4887424188275796356">Atidaryti naudojat sistemos peržiūros priemonę</translation>
 <translation id="488785315393301722">Rodyti išsamią informaciją</translation>
 <translation id="4890773143211625964">Rodyti išplėstines spausdintuvo parinktis</translation>
@@ -4010,6 +4013,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5075910247684008552">Nesaugus turinys blokuojamas pagal numatytuosius nustatymus saugiose svetainėse</translation>
 <translation id="5078638979202084724">Žymėti visus skirtukus</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
+<translation id="5079010647467150187">Pridėti įtaisytąjį VPN...</translation>
 <translation id="5079950360618752063">Naudoti siūlomą slaptažodį</translation>
 <translation id="508059534790499809">Atnaujinti „Kerberos“ bilietą</translation>
 <translation id="5084230410268011727">Leisti svetainėms naudoti judesio ir šviesos jutiklius</translation>
@@ -5563,6 +5567,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6709133671862442373">Naujienos</translation>
 <translation id="6709357832553498500">Prisijungti naudojant „<ph name="EXTENSIONNAME" />“</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
+<translation id="6710973041022512889">Naujovinimas sėkmingai baigtas. Jei reikia išsamios naujovinimo informacijos, žurnalus rasite išsaugotus faile „<ph name="LOG_FILE" />“</translation>
 <translation id="6711146141291425900">Atsisiuntimams skirtos „<ph name="WEB_DRIVE" />“ paskyros susiejimas</translation>
 <translation id="6712943853047024245">Jau išsaugojote <ph name="WEBSITE" /> slaptažodį su šiuo naudotojo vardu</translation>
 <translation id="6713233729292711163">Pridėti darbo profilį</translation>

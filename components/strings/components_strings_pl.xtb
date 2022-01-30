@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Zobacz szczegóły</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce na stałe przechowywać dużą ilość danych na Twoim urządzeniu</translation>
 <translation id="1032854598605920125">Obróć w prawo</translation>
+<translation id="1033329911862281889">Tryb incognito nie sprawia, że nie widać Cię w internecie:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />witryny i usługi otrzymują informacje o wizytach,<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />pracodawcy i szkolni administratorzy mogą sprawdzać Twoją aktywność związaną z przeglądaniem,<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />dostawcy usług internetowych mogą monitorować ruch w sieci.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1036982837258183574">Aby zamknąć pełny ekran, naciśnij |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Pokaż sugestie</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Pamięć podręczna zasad: OK</translation>
 <translation id="1130564665089811311">Przycisk tłumaczenia strony. Naciśnij Enter, by Tłumacz Google przetłumaczył tę stronę.</translation>
 <translation id="1131264053432022307">Skopiowany obraz</translation>
+<translation id="1142846828089312304">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="1150979032973867961">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego komputera. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="1151972924205500581">Wymagane hasło</translation>
 <translation id="1156303062776767266">Przeglądasz plik lokalny lub udostępniony</translation>
@@ -180,6 +187,12 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1483493594462132177">Wyślij</translation>
 <translation id="1484290072879560759">Wybierz adres wysyłki</translation>
 <translation id="1492194039220927094">Przekazywanie zasad w trybie push:</translation>
+<translation id="149293076951187737">Gdy w Chrome zamkniesz wszystkie karty incognito, z urządzenia zostanie usunięta Twoja aktywność powiązana z nimi, w tym:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />aktywność związana z przeglądaniem,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />historia wyszukiwania,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />informacje wpisane w formularzach.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Wróć do karty</translation>
 <translation id="1501859676467574491">Pokaż karty z konta Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ten komunikat pojawia się, jeśli do połączenia z internetem wymagane jest zalogowanie się w portalu Wi-Fi.&lt;/p&gt;
@@ -281,6 +294,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1763864636252898013">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego urządzenia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Serwer <ph name="ORIGIN" />, z którym chcesz się połączyć, ma ustawiony nagłówek z wymaganiem, by do wszystkich kierowanych do niego żądań stosować zasadę dotyczącą źródła. Jednak ten nagłówek ma nieprawidłowy format, przez co przeglądarka nie może zrealizować Twojego żądania dotyczącego strony <ph name="SITE" />. Zasady dotyczące źródła mogą stosować operatorzy stron internetowych, by skonfigurować zabezpieczenia i inne właściwości strony.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Więcej informacji o trybie incognito w Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Tutaj pojawiają się otwarte karty</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -523,6 +537,12 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2597378329261239068">Ten dokument jest chroniony hasłem. Wprowadź hasło.</translation>
 <translation id="2609632851001447353">Odmiany</translation>
 <translation id="2610561535971892504">Kliknij, aby skopiować</translation>
+<translation id="2617988307566202237">W Chrome <ph name="BEGIN_EMPHASIS" />nie są zapisywane<ph name="END_EMPHASIS" /> te informacje:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Twoja historia przeglądania,
+<ph name="LIST_ITEM" />pliki cookie ani dane witryn,
+<ph name="LIST_ITEM" />informacje podane w formularzach.
+<ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (koperta)</translation>
 <translation id="2623663032199728144">Może prosić o zgodę na używanie informacji o ekranach</translation>
 <translation id="2625385379895617796">Twój zegar się śpieszy</translation>
@@ -589,6 +609,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2850739647070081192">Invite (koperta)</translation>
 <translation id="2856444702002559011">Osoby atakujące mogą próbować wykraść Twoje informacje ze strony <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na przykład hasła, wiadomości lub dane kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy.</translation>
+<translation id="286512204874376891">Karta wirtualna ukrywa Twoją prawdziwą kartę, aby chronić Cię przed oszustwami. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Przyjazny</translation>
 <translation id="2876489322757410363">Opuszczasz tryb incognito, aby zapłacić w aplikacji zewnętrznej. Czy chcesz kontynuować?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać Bezpiecznym przeglądaniem i innymi opcjami w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
@@ -709,6 +730,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3252266817569339921">Francuski</translation>
 <translation id="3257954757204451555">Od kogo pochodzi ta informacja?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nowe wydarzenie w Kalendarzu Google</translation>
+<translation id="3261488570342242926">Dowiedz się więcej o kartach wirtualnych</translation>
 <translation id="3264837738038045344">Przycisk zarządzania ustawieniami Chrome; aby otworzyć ustawienia Chrome, naciśnij Enter</translation>
 <translation id="3266793032086590337">Wartość (konflikt)</translation>
 <translation id="3268451620468152448">Otwarte karty</translation>
@@ -1148,6 +1170,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4628948037717959914">Zdjęcie</translation>
 <translation id="4631649115723685955">Połączone ze zwrotem za zakupy</translation>
 <translation id="4636930964841734540">Informacje</translation>
+<translation id="4638670630777875591">Tryb incognito w Chromium</translation>
 <translation id="464342062220857295">Funkcje wyszukiwarki</translation>
 <translation id="4644670975240021822">Odwrotna kolejność, strona do drukowania skierowana w dół</translation>
 <translation id="4646534391647090355">Przejdź tam teraz</translation>
@@ -1243,6 +1266,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a następnie Enter, by wyszukać.</translation>
 <translation id="4930153903256238152">Duża pojemność</translation>
+<translation id="4940163644868678279">Tryb incognito w Chrome</translation>
 <translation id="4943872375798546930">Brak wyników</translation>
 <translation id="4950898438188848926">Przycisk przełączania kart. Naciśnij Enter, by przełączyć się na otwartą kartę, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Czynności</translation>
@@ -1603,6 +1627,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6120179357481664955">Zapamiętać Twój identyfikator UPI?</translation>
 <translation id="6124432979022149706">Oprogramowanie sprzęgające Chrome Enterprise</translation>
 <translation id="6127379762771434464">Element został usunięty</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Dowiedz się więcej o trybie incognito w Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Sprawdź wszystkie kable i uruchom ponownie wszelkie używane routery, modemy
     i inne urządzenia sieciowe.</translation>
 <translation id="614940544461990577">Wypróbuj te rozwiązania:</translation>
@@ -1637,7 +1662,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Tu pojawią się strony z Twojej listy Do przeczytania</translation>
 <translation id="627746635834430766">Aby następnym razem zapłacić szybciej, zapisz kartę i adres rozliczeniowy na swoim koncie Google.</translation>
-<translation id="6279098320682980337">Nie uzupełniono numeru karty wirtualnej? Kliknij dane karty, które chcesz skopiować</translation>
 <translation id="6280223929691119688">Nie można dostarczyć pod ten adres. Wybierz inny.</translation>
 <translation id="6282194474023008486">Kod pocztowy</translation>
 <translation id="6285507000506177184">Przycisk Zarządzaj pobranymi plikami w Chrome; aby zarządzać pobranymi plikami w Chrome, naciśnij Enter</translation>
@@ -1878,6 +1902,12 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="7111012039238467737">(Ważny)</translation>
 <translation id="7118618213916969306">Wyszukaj URL ze schowka, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Zamknij inne karty lub programy</translation>
+<translation id="7129355289156517987">Gdy w Chromium zamkniesz wszystkie karty incognito, z urządzenia zostanie usunięta Twoja aktywność powiązana z nimi, w tym:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />aktywność związana z przeglądaniem,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />historia wyszukiwania,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />informacje wpisane w formularzach.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Nie można wysłać pod ten adres. Wybierz inny.</translation>
 <translation id="7132939140423847331">Administrator nie zezwala na kopiowanie tych danych.</translation>
 <translation id="7135130955892390533">Wyświetlanie informacji o obecności</translation>
@@ -1996,6 +2026,12 @@ Dodatkowe informacje:
 <translation id="7485870689360869515">Nie znaleziono danych.</translation>
 <translation id="7495528107193238112">Ta zawartość jest zablokowana. Aby rozwiązać problem, skontaktuj się z właścicielem witryny.</translation>
 <translation id="7497998058912824456">Przycisk Utwórz dokument; naciśnij Enter, aby szybko utworzyć nowy dokument Google</translation>
+<translation id="7506488012654002225">W Chromium <ph name="BEGIN_EMPHASIS" />nie są zapisywane<ph name="END_EMPHASIS" /> te informacje:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Twoja historia przeglądania,
+<ph name="LIST_ITEM" />pliki cookie ani dane witryn,
+<ph name="LIST_ITEM" />informacje podane w formularzach.
+<ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Zwrócony identyfikator urządzenia dla zasad jest pusty lub nie pasuje do bieżącego identyfikatora urządzenia</translation>
 <translation id="7508870219247277067">Zielony awokado</translation>
 <translation id="7511955381719512146">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2215,6 +2251,7 @@ Dodatkowe informacje:
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (koperta)</translation>
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
+<translation id="8217240300496046857">Strony nie mogą używać plików cookie śledzących, co robisz w sieci. Funkcje niektórych stron mogą nie działać prawidłowo.</translation>
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>
 <translation id="8220146938470311105">C7/C6 (koperta)</translation>
 <translation id="8225771182978767009">Administrator tego komputera zablokował tę witrynę.</translation>

@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1387854245479784695">Dette er den samlede værdi for alle kerner</translation>
+<translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
 <translation id="1398634363027580500">Meget høj HTTPS-forsinkelse</translation>
 <translation id="1413240736185167732">Handlingen mislykkedes – Filterfejl</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Jeg har et nøglepar</translation>
+<translation id="1451536289672181509">Enheden er et tastatur.</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer din enhed og kan muligvis overvåge din aktivitet.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -81,6 +83,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2104796393919810494">Reparation er fuldført</translation>
+<translation id="2105810540595158374">Enheden er en spilcontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB ledig hukommelse ud af <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -134,6 +137,7 @@
 <translation id="2926057806159140518">Angiv dit brugernavn og din adgangskode, eller scan din QR-kode</translation>
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
+<translation id="3031560714565892478">Enheden er et videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Slutpunkt</translation>
 <translation id="3069085583900247081">Testen mislykkedes</translation>
@@ -141,6 +145,7 @@
 <translation id="3091839911843451378">Handlingen mislykkedes – Stoppede</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Enheden har forbindelse.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vil du fjerne siden?}=1{Vil du fjerne side {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Vil du fjerne side {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Scanner side <ph name="PAGE_NUMBER" />...</translation>
@@ -156,6 +161,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
+<translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
 <translation id="3369013195428705271">Er du sikker på, at du vil rydde hele udskriftshistorikken? Dine igangværende udskriftsjobs ryddes ikke.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -164,6 +170,7 @@
 <translation id="345898999683440380">Scanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % er blevet scannet.</translation>
 <translation id="3459509316159669723">Udskrivning</translation>
 <translation id="3462187165860821523">Opdaterer <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Du må ikke frakoble den eksterne enhed eller slukke din computer, mens firmwaren opdaterer. Du kan minimere dette vindue. Denne opdatering kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvist aktiveret</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
@@ -193,6 +200,7 @@
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="3954678691475912818">Enhedstypen er ukendt.</translation>
 <translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="397105322502079400">Beregner...</translation>
@@ -274,6 +282,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="4891842000192098784">Stress</translation>
+<translation id="4897058166682006107">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på venstre øretelefon.</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
@@ -320,6 +329,7 @@
 <translation id="5346687412805619883">Lokalt netværk</translation>
 <translation id="5358174242040570474">Noget gik galt. Prøv at vælge en baggrund igen eller genåbne appen.</translation>
 <translation id="5372659122375744710">Wi-Fi-netværket er ikke sikkert</translation>
+<translation id="5400907029458559844">Enheden opretter forbindelse.</translation>
 <translation id="5401938042319910061">Kør alle rutiner</translation>
 <translation id="5423849171846380976">Aktiveret</translation>
 <translation id="5430931332414098647">Øjeblikkelig netdeling</translation>
@@ -381,6 +391,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testen er annulleret</translation>
+<translation id="6319207335391420837">Opdater firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="6340526405444716530">Tilpasning</translation>
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>
@@ -413,6 +424,7 @@
 <translation id="6704062477274546131">DNS-udførelse</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="6749473226660745022">Billeder</translation>
+<translation id="6753452347192452143">Enheden er en computer.</translation>
 <translation id="6756731097889387912">Scanningen kunne ikke annulleres</translation>
 <translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
 <translation id="6768237774506518020">Høj fejlrate for DNS-opslag</translation>
@@ -430,12 +442,14 @@
 <translation id="6992266763844448459">Vælg denne mulighed, hvis ejerskabet over enheden ikke ændres. Det kan f.eks. være, hvis enheden overdrages til en anden person i samme organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7040230719604914234">Udbyder</translation>
+<translation id="7041549558901442110">Enheden er ikke tilsluttet.</translation>
 <translation id="7058278511608979688">Afslut, og gem</translation>
 <translation id="7059230779847288458">Oplader, fuldt opladet om <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Gør enheden klar</translation>
 <translation id="708426984172631313">STOPPET</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Handlingen mislykkedes – Godkendelse mislykkedes</translation>
+<translation id="7103252855940681301">Enhed <ph name="INDEX" /> af <ph name="COUNT" /> med navnet <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navneserver}one{Navneserver}other{Navneservere}}</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
@@ -470,6 +484,7 @@
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostikrutiner</translation>
+<translation id="7551123448725492271">Enheden er en lydenhed.</translation>
 <translation id="7561454561030345039">Denne handling administreres af din administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchskærm</translation>
@@ -477,6 +492,7 @@
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>
 <translation id="763165478673169849">Tidspunkt for seneste nulstilling</translation>
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
+<translation id="7656388927906093505">Enheden er en mus.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7701040980221191251">Ingen</translation>
@@ -573,6 +589,7 @@
 <translation id="8855781559874488009">Der kan ikke oprettes forbindelse via firewallen til HTTPS-websites</translation>
 <translation id="8863888432376731307">Få <ph name="INTENT" /> på "<ph name="QUERY" />" m.m.</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Enheden er en tablet.</translation>
 <translation id="8881098542468797602">Testen blev gennemført</translation>
 <translation id="8898840733695078011">Signalstyrke</translation>
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
@@ -583,11 +600,13 @@
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8936793075252196307">Klient-IP-adresse</translation>
 <translation id="8945750210906526975">Indbygget touchplade</translation>
+<translation id="894617464444543719">Enheden er en telefon.</translation>
 <translation id="8968751544471797276">Opladningshastighed</translation>
 <translation id="8970109610781093811">Kør igen</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{Scan side {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Scan siderne {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Installerer – <ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="8997710128084572139">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri.</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Der er stor forsinkelse på DNS-oversættelse</translation>

@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
 <translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
+<translation id="1394661041439318933">Төхөөрөмжийн гэрийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
 <translation id="1398634363027580500">Маш өндөр HTTPS хоцролт</translation>
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Надад хос түлхүүр байгаа</translation>
+<translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2104796393919810494">Засвар дууссан</translation>
+<translation id="2105810540595158374">Төхөөрөмж нь тоглоомын гар байна.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Хэрэглэгчийн нэр болон нууц үгээ оруулах эсвэл QR кодыг скан хийнэ үү</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
 <translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
+<translation id="3031560714565892478">Төхөөрөмж нь видео камер байна.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мA</translation>
 <translation id="3056720590588772262">Төгсгөлийн цэг</translation>
 <translation id="3069085583900247081">Туршилт амжилтгүй боллоо</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Амжилтгүй болсон - Зогссон</translation>
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Төхөөрөмж холбогдсон байна.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
+<translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369013195428705271">Та хэвлэлийн бүх түүхийг арилгахдаа итгэлтэй байна уу? Таны хийж буй хэвлэлийн ажлуудыг арилгахгүй.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-р хуудсыг скан хийж байна. <ph name="PERCENTAGE_VALUE" />% дууссан.</translation>
 <translation id="3459509316159669723">Хэвлэж байна</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" />-г шинэчилж байна</translation>
+<translation id="3484914941826596830">Жижиг программыг шинэчилж байх үед энэ гадны төхөөрөмжийг бүү салгаарай. Мөн компьютероо бүү унтраагаарай. Та энэ цонхыг багасгах боломжтой. Энэ шинэчлэлтэд хэдэн минут зарцуулж магадгүй бөгөөд энэ хугацаанд таны гадны төхөөрөмж ажиллахгүй байж магадгүй.</translation>
 <translation id="3486220673238053218">тодорхойлолт</translation>
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Холбогдсон төхөөрөмж алга</translation>
 <translation id="3941014780699102620">Хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="3942420633017001071">Оношилгоо</translation>
+<translation id="3954678691475912818">Төхөөрөмжийн төрөл тодорхойгүй байна.</translation>
 <translation id="3966286471246132217">Илүү нарийвчилсан илэрц авах бол туршилт дуусах хүртэл бүх аппыг хаана уу.</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPV2</translation>
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
 <translation id="4891842000192098784">Стресс</translation>
+<translation id="4897058166682006107">Төхөөрөмжийн зүүн талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">Дотоод сүлжээ</translation>
 <translation id="5358174242040570474">Алдаа гарлаа. Дэлгэцийн зураг дахин сонгох эсвэл аппыг дахин нээж үзнэ үү.</translation>
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
+<translation id="5400907029458559844">Төхөөрөмж холбогдож байна.</translation>
 <translation id="5401938042319910061">Бүх хэвшлийг ажиллуулах</translation>
 <translation id="5423849171846380976">Идэвхжүүлсэн байна</translation>
 <translation id="5430931332414098647">Шуурхай модем болгох</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
+<translation id="6319207335391420837">Жижиг программыг <ph name="DEVICE_NAME" /> дээр шинэчлэх</translation>
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
 <translation id="6340526405444716530">Хувийн тохиргоо</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">DNS-н тайлал</translation>
 <translation id="6747215703636344499">Зогссон - Гаралт дүүрсэн</translation>
 <translation id="6749473226660745022">Зураг</translation>
+<translation id="6753452347192452143">Төхөөрөмж нь компьютер байна.</translation>
 <translation id="6756731097889387912">Скан хийхийг цуцалж чадсангүй</translation>
 <translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">Хэрэв төхөөрөмжийн өмчлөл өөрчлөгдөхгүй байвал энэ сонголтыг сонгоно уу. Жишээлбэл төхөөрөмжийг байгууллагын өөр хүн рүү шилжүүлж байна.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7041549558901442110">Төхөөрөмж холбогдоогүй байна.</translation>
 <translation id="7058278511608979688">Дуусгаад, хадгалах</translation>
 <translation id="7059230779847288458">Цэнэглэж байна. Дүүрэх хүртэл <ph name="TIME_VALUE" /> үлдсэн байна</translation>
 <translation id="7068619307603204412">Төхөөрөмжөө бэлтгэх</translation>
 <translation id="708426984172631313">ЗОГСООСОН</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Амжилтгүй боллоо - Баталгаажуулалт амжилтгүй боллоо</translation>
+<translation id="7103252855940681301"><ph name="NAME" /> гэсэн нэртэй <ph name="COUNT" />-н <ph name="INDEX" />-р төхөөрөмж.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">IPv6 хаяг</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Оношилгооны хэвшил</translation>
+<translation id="7551123448725492271">Төхөөрөмж нь аудио төхөөрөмж байна.</translation>
 <translation id="7561454561030345039">Энэ үйлдлийг таны администратор удирддаг</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB мэдрэмтгий дэлгэц</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
 <translation id="763165478673169849">Хамгийн сүүлд шинэчилсэн цаг</translation>
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
+<translation id="7656388927906093505">Төхөөрөмж нь хулгана байна.</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">HTTP вебсайтуудад галт хана дундуур холбогдох боломжгүй</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" болон бусад зүйлд <ph name="INTENT" />-г авах</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Төхөөрөмж нь таблет байна.</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>
 <translation id="8898840733695078011">Дохионы хүч</translation>
 <translation id="8910721771319628100">Өгөгдмөл сүлжээ хоцролтын хязгаараас дээш байна</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">Утасгүй</translation>
 <translation id="8936793075252196307">Клиентийн IP хаяг</translation>
 <translation id="8945750210906526975">Дотоод мэдрэгч самбар</translation>
+<translation id="894617464444543719">Төхөөрөмж нь утас байна.</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скан хийх}=1{{NUMBER_OF_PAGES} хуудас скан хийх}other{{NUMBER_OF_PAGES} хуудас скан хийх}}</translation>
 <translation id="8994273342647807496">Суулгаж байна - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Төхөөрөмжийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="9003704114456258138">Давтамж</translation>
 <translation id="9039663905644212491">PEAP /Хамгаалагдсан өргөжих боломжтой таниулах протокол/</translation>
 <translation id="9062831201344759865">DNS-н нягтрал өндөр хоцролттой байна</translation>

@@ -1210,6 +1210,7 @@
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
 <translation id="4825507807291741242">Puissant</translation>
+<translation id="4829962028570902310">Ignoré parce que la politique peut uniquement être définie par la politique utilisateur du nuage.</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4838327282952368871">Rêveur</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
@@ -1636,7 +1637,6 @@
 <translation id="6272383483618007430">Mise à jour Google</translation>
 <translation id="6276112860590028508">Les pages de votre liste de lecture apparaissent ici</translation>
 <translation id="627746635834430766">Pour accélérer le paiement la prochaine fois, enregistrez votre carte et votre adresse de facturation dans votre compte Google.</translation>
-<translation id="6279098320682980337">Numéro de carte virtuelle non rempli? Cliquez sur les détails de la carte pour les copier</translation>
 <translation id="6280223929691119688">Impossible d'effectuer une livraison à cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="6282194474023008486">Code postal</translation>
 <translation id="6285507000506177184">Bouton Gérer les téléchargements dans Chrome, appuyez sur la touche Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>

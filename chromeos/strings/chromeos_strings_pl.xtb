@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
 <translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
+<translation id="1394661041439318933">Poziom naładowania baterii obudowy urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Brama reaguje na ping</translation>
 <translation id="1398634363027580500">bardzo duże opóźnienie HTTPS</translation>
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Mam parę kluczy</translation>
+<translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
 <translation id="1468664791493211953">Oferty</translation>
 <translation id="1476467821656042872">Tym urządzeniem zarządza <ph name="MANAGER" />. Może też monitorować Twoją aktywność.</translation>
 <translation id="1478594628797167447">Skanery</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2104796393919810494">Naprawa ukończona</translation>
+<translation id="2105810540595158374">Urządzenie to kontroler do gier.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostępne: <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Wpisz nazwę użytkownika i hasło lub zeskanuj kod QR</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
+<translation id="3031560714565892478">Urządzenie to kamera wideo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punkt końcowy</translation>
 <translation id="3069085583900247081">Niepowodzenie testu</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
 <translation id="3102119246920354026">Pamięć podręczna</translation>
 <translation id="3122464029669770682">Procesor</translation>
+<translation id="3124039320086536031">Urządzenie jest połączone.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Usunąć stronę?}=1{Usunąć stronę {PAGE_NUMBER}?}few{Usunąć stronę {PAGE_NUMBER}?}many{Usunąć stronę {PAGE_NUMBER}?}other{Usunąć stronę {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
 <translation id="3328783797891415197">Test w toku</translation>
+<translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3369013195428705271">Czy na pewno chcesz usunąć całą historię drukowania? Bieżące zadania drukowania nie zostaną usunięte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Skanuję stronę <ph name="PAGE_NUM" />. Ukończono <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
 <translation id="3462187165860821523">Aktualizuję urządzenie <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Podczas aktualizowania oprogramowania układowego nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Aktualizowanie może potrwać kilka minut i w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="3486220673238053218">definicja</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
 <translation id="3942420633017001071">Diagnostyka</translation>
+<translation id="3954678691475912818">Typ urządzenia jest nieznany.</translation>
 <translation id="3966286471246132217">Aby uzyskać dokładniejsze wyniki, zamknij wszystkie aplikacje do czasu ukończenia testu.</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
 <translation id="4891842000192098784">Obciążenie</translation>
+<translation id="4897058166682006107">Poziom naładowania baterii lewej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
 <translation id="4921665434385737356">Naładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> s.</translation>
@@ -322,6 +331,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5346687412805619883">Sieć lokalna</translation>
 <translation id="5358174242040570474">Coś poszło nie tak. Spróbuj jeszcze raz wybrać tapetę lub ponownie otwórz aplikację.</translation>
 <translation id="5372659122375744710">Sieć Wi-Fi nie jest bezpieczna</translation>
+<translation id="5400907029458559844">Urządzenie się łączy.</translation>
 <translation id="5401938042319910061">Uruchom wszystkie testy</translation>
 <translation id="5423849171846380976">Aktywowano</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
@@ -383,6 +393,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> został anulowany</translation>
+<translation id="6319207335391420837">Aktualizacja oprogramowania układowego na urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="6340526405444716530">Personalizacja</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
@@ -415,6 +426,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
 <translation id="6749473226660745022">Zdjęcia</translation>
+<translation id="6753452347192452143">Urządzenie to komputer.</translation>
 <translation id="6756731097889387912">Nie udało się anulować skanowania</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
@@ -432,12 +444,14 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6992266763844448459">Wybierz tę opcję, jeśli nie zmienia się właściciel urządzenia. Na przykład wtedy, gdy urządzenie zostaje przekazane innemu członkowi organizacji.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7041549558901442110">Urządzenie nie ma połączenia.</translation>
 <translation id="7058278511608979688">Zakończ i zapisz</translation>
 <translation id="7059230779847288458">Ładuję (pełne naładowanie za <ph name="TIME_VALUE" />)</translation>
 <translation id="7068619307603204412">Przygotowanie urządzenia</translation>
 <translation id="708426984172631313">ZATRZYMANO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Niepowodzenie – nieudana autoryzacja</translation>
+<translation id="7103252855940681301">Urządzenie <ph name="INDEX" /> z <ph name="COUNT" /> o nazwie <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -472,6 +486,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7502658306369382406">Adres IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
+<translation id="7551123448725492271">To urządzenie typu audio.</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekran dotykowy USB</translation>
@@ -479,6 +494,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>
 <translation id="763165478673169849">Czas ostatniego resetu</translation>
 <translation id="7648838807254605802">duże opóźnienie HTTPS</translation>
+<translation id="7656388927906093505">Urządzenie to mysz.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7690294790491645610">Potwierdź nowe hasło</translation>
 <translation id="7701040980221191251">Brak</translation>
@@ -575,6 +591,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8855781559874488009">Nie udało się połączyć z witrynami HTTP przez zaporę sieciową</translation>
 <translation id="8863888432376731307">Pobierz <ph name="INTENT" />, aby znajdować odpowiedzi na pytania takie jak „<ph name="QUERY" />” i inne</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Urządzenie to tablet.</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
 <translation id="8898840733695078011">Siła sygnału</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
@@ -585,11 +602,13 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>
 <translation id="8936793075252196307">Adres IP klienta</translation>
 <translation id="8945750210906526975">Touchpad wbudowany</translation>
+<translation id="894617464444543719">Urządzenie to telefon.</translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanuj}=1{Skanuj {NUMBER_OF_PAGES} stronę}few{Skanuj {NUMBER_OF_PAGES} strony}many{Skanuj {NUMBER_OF_PAGES} stron}other{Skanuj {NUMBER_OF_PAGES} strony}}</translation>
 <translation id="8994273342647807496">Instaluję – <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Poziom naładowania baterii urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Częstotliwość</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Długi czas oczekiwania na rozpoznanie nazw DNS</translation>

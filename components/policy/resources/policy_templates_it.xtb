@@ -1106,16 +1106,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
       Se impostato su Vero o non impostato, verrà segnalato lo stato di rete del dispositivo.</translation>
-<translation id="2221850122314326571">Se questa impostazione viene attivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati integrato.
-      Se viene disattivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati precedente fornito dalla piattaforma.
-      Se non viene configurata, potrebbe essere utilizzato lo strumento di verifica dei certificati integrato o quello precedente.
-
-      È prevista la rimozione di questo criterio nella versione 81 di <ph name="PRODUCT_OS_NAME" />, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente su <ph name="PRODUCT_OS_NAME" />.
-
-      È prevista la rimozione di questo criterio nella versione 83 di <ph name="PRODUCT_NAME" /> per Linux, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente su Linux.
-
-      È prevista la rimozione di questo criterio nella versione 92 di <ph name="PRODUCT_NAME" /> per Mac OS X, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente su Mac OS X.
-      </translation>
 <translation id="2223393221350938149">Non consentire ad alcun sito di eseguire JIT di JavaScript</translation>
 <translation id="2223582957891074498">Se il criterio è impostato su True, gli screenshot acquisiti con scorciatoie da tastiera o API di estensioni non sono consentiti. Se il criterio è impostato su False, gli screenshot sono consentiti.</translation>
 <translation id="2223598546285729819">Impostazione di notifica predefinita</translation>

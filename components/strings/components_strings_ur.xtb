@@ -14,6 +14,13 @@
 <translation id="1028781062521375153">تفصیلات دیکھیں</translation>
 <translation id="1030706264415084469"><ph name="URL" /> آپ کے آلے پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="1032854598605920125">گھڑی کی سمت میں گھمائیں</translation>
+<translation id="1033329911862281889">پوشیدگی وضع آپ کو آن لائن غیر مرئی نہیں کرتی ہے:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />سائٹس اور سروسز جو صارف استعمال کرتا ہے ملاحظات دیکھ سکتی ہیں
+<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />آجر یا اسکول براؤزنگ کی سرگرمی کو ٹریک کر سکتے ہیں<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />انٹرنیٹ سروس پرووائیڈرز ویب ٹریفک کو مانیٹر کر سکتے ہیں<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036982837258183574">پوری اسکرین سے باہر نکلنے کیلئے |<ph name="ACCELERATOR" />| کو دبائیں</translation>
 <translation id="1038106730571050514">تجاویز دکھائیں</translation>
@@ -47,6 +54,7 @@
 <translation id="112840717907525620">پالیسی کیش ٹھیک ہے</translation>
 <translation id="1130564665089811311">‏'صفحے کا ترجمہ کریں' بٹن، Google ترجمے سے اس صفحے کا ترجمہ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="1131264053432022307">آپ کی کاپی کردہ تصویر</translation>
+<translation id="1142846828089312304">پوشیدگی وضع میں فریق ثالث کی کوکیز کو مسدود کریں</translation>
 <translation id="1150979032973867961">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے کمپیوٹر کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="1151972924205500581">پاس ورڈ درکار ہے</translation>
 <translation id="1156303062776767266">آپ ایک مقامی یا اشتراک کردہ فائل دیکھ رہے ہیں</translation>
@@ -180,6 +188,12 @@
 <translation id="1483493594462132177">بھیجیں</translation>
 <translation id="1484290072879560759">ترسیل کا پتہ منتخب کریں</translation>
 <translation id="1492194039220927094">پالیسیوں کو پُش کرنا:</translation>
+<translation id="149293076951187737">‏جب آپ سبھی Chrome ونڈوز بند کرتے ہیں تو ان ٹیبز پر آپ کی سرگرمی اس آلے سے صاف ہو جاتی ہے:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />براؤزنگ کی سرگرمی<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />تلاش کی سرگزشت<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ٹیب پر واپس جائیں</translation>
 <translation id="1501859676467574491">‏اپنے Google اکاؤنٹ سے کارڈز دکھائیں</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;اگر آپ کسی ایسے Wi-Fi پورٹل کا استعمال کر رہے ہیں، جس میں آپ کو آن لائن جانے سے پہلے سائن ان کرنا پڑتا ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
@@ -285,6 +299,7 @@
     ہیڈر ناقص ہے، جو براؤزر کو <ph name="SITE" /> کے ليے کی گئی
     آپ کی درخواست کو پورا کرنے سے روکتا ہے۔ کسی سائٹ کی خاطر سیکیورٹی اور دیگر پراپرٹیز کو ترتیب دینے کے لیے
     سائٹ آپریٹرز کے ذریعے ماخذ پالیسیوں کا استعمال کیا جا سکتا ہے۔</translation>
+<translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />Chromium میں پوشیدگی وضع کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">آپ کے کھلے ٹیبز یہاں ظاہر ہوتے ہیں</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -527,6 +542,12 @@
 <translation id="2597378329261239068">یہ دستاویز پاس ورڈ کے ذریعہ تحفظ یافتہ ہے۔  براہ کرم ایک پاس ورڈ درج کریں۔</translation>
 <translation id="2609632851001447353">تغیرات</translation>
 <translation id="2610561535971892504">کلک کر کے کاپی کریں</translation>
+<translation id="2617988307566202237">‏Chrome درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />آپ کی براؤزنگ کی سرگزشت
+          <ph name="LIST_ITEM" />کوکیز اور سائٹ ڈیٹا
+          <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 ‎(Envelope‎)‎</translation>
 <translation id="2623663032199728144">آپ کی اسکرینز کے بارے میں معلومات کا استعمال کرنے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="2625385379895617796">آپ کی گھڑی آگے ہے</translation>
@@ -593,6 +614,7 @@
 <translation id="2850739647070081192">Invite ‎(Envelope‎)‎</translation>
 <translation id="2856444702002559011">حملہ آور <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> سے آپ کی معلومات (مثلاً، پاس ورڈز، پیغامات یا کریڈٹ کارڈز) چوری کرنے کی کوشش کر سکتے ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">یہ سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے۔</translation>
+<translation id="286512204874376891">ورچوئل کارڈ آپ کے اصل کارڈ کو چھپاتا ہے تاکہ آپ کی ممکنہ دھوکہ دہی سے حفاظت کرنے میں مدد کر سکے۔ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">دوستانہ</translation>
 <translation id="2876489322757410363">کسی خارجی ایپلیکیشن کے ذریعے ادائیگی کرنے کے لیے پوشیدگی وضع کو چھوڑ رہے ہیں۔ جاری رکھیں؟</translation>
 <translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں محفوظ براؤزنگ اور بہت کچھ کا نظم کرنے کے لیے ٹیب پھر Enter دبائیں</translation>
@@ -714,6 +736,7 @@
 <translation id="3252266817569339921">فرانسيسی</translation>
 <translation id="3257954757204451555">اس معلومات کے پیچھے کون ہے؟</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
+<translation id="3261488570342242926">ورچوئل کارڈز کے بارے میں جانیں</translation>
 <translation id="3264837738038045344">‏Chrome کی ترتیبات کے بٹن کا نظم کریں، اپنے Chrome کی ترتیبات ملاحظہ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="3266793032086590337">قدر (متضاد)</translation>
 <translation id="3268451620468152448">کھلے ٹیبز</translation>
@@ -1158,6 +1181,7 @@
 <translation id="4628948037717959914">تصویر</translation>
 <translation id="4631649115723685955">کیش بیک لنک کردہ ہے</translation>
 <translation id="4636930964841734540">معلومات</translation>
+<translation id="4638670630777875591">‏Chromium میں پوشیدگی وضع</translation>
 <translation id="464342062220857295">خصوصیات تلاش کریں</translation>
 <translation id="4644670975240021822">اُلٹ ترتیب میں، صفحات کا رُخ نیچے کی جانب</translation>
 <translation id="4646534391647090355">اب مجھے وہاں لے چلیں</translation>
@@ -1253,6 +1277,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، تلاش کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4930153903256238152">بڑی گنجائش</translation>
+<translation id="4940163644868678279">‏Chrome میں پوشیدگی وضع</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4950898438188848926">‏ٹیب پر سوئچ کرنے کا بٹن، کھلے ہوئے ٹیب پر سوئچ کرنے کے لیے Enter دبائیں، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">کارروائیاں</translation>
@@ -1613,6 +1638,7 @@
 <translation id="6120179357481664955">‏آپ کی UPI ID یاد رکھیں؟</translation>
 <translation id="6124432979022149706">‏Chrome Enterprise کنیکٹرز</translation>
 <translation id="6127379762771434464">آئٹم ہٹا دیا گیا</translation>
+<translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />Chrome میں پوشیدگی وضع کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">کوئی بھی کیبلز چیک کریں اور کوئی بھی
     روٹرز، موڈمز
 یا ان دیگر نیٹ ورک آلات کو ریبوٹ کریں جنہیں آپ استعمال کر سکتے ہیں۔</translation>
@@ -1648,7 +1674,6 @@
 <translation id="6272383483618007430">‏Google اپ ڈیٹ</translation>
 <translation id="6276112860590028508">آپ کی پڑھنے کی فہرست کے صفحات یہاں دکھائی دیتے ہیں</translation>
 <translation id="627746635834430766">‏اگلی بار زیادہ تیزی سے ادائیگی کرنے کے لیے، اپنے کارڈ اور بلنگ پتہ کو اپنے Google اکاؤنٹ میں محفوظ کریں۔</translation>
-<translation id="6279098320682980337">ورچوئل کارڈ نمبر پُر نہیں ہے؟ کاپی کرنے کے لیے کارڈ کی تفصیلات پر کلک کریں</translation>
 <translation id="6280223929691119688">اس پتے پر ڈیلیوری نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="6282194474023008486">پوسٹل کوڈ</translation>
 <translation id="6285507000506177184">‏Chrome بٹن میں ڈاؤن لوڈز کا نظم کریں، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے اینٹر دبائیں</translation>
@@ -1889,6 +1914,12 @@
 <translation id="7111012039238467737">(درست)</translation>
 <translation id="7118618213916969306">‏کلپ بورڈ URL تلاش کریں، <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">دیگر ٹیبز یا پروگرامز کو کھولیں</translation>
+<translation id="7129355289156517987">‏جب آپ سبھی Chromium ونڈوز بند کرتے ہیں تو ان ٹیبز پر آپ کی سرگرمی اس آلے سے صاف ہو جاتی ہے:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />براؤزنگ کی سرگرمی<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />تلاش کی سرگزشت<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">اس پتے پر ترسیل نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="7132939140423847331">آپ کے منتظم نے اس ڈیٹا کے کاپی کیے جانے پر پابندی لگائی ہے۔</translation>
 <translation id="7135130955892390533">اسٹیٹس دکھائیں</translation>
@@ -2007,6 +2038,12 @@
 <translation id="7485870689360869515">کوئی ڈیٹا نہیں ملا۔</translation>
 <translation id="7495528107193238112">یہ مواد مسدود ہے۔ مسئلے کو حل کرنے کے لیے سائٹ کے مالک سے رابطہ کریں۔</translation>
 <translation id="7497998058912824456">‏دستاویز تخلیق کریں بٹن، تیزی سے ایک نیا Google Doc تخلیق کرنے کیلئے Enter دبائیں</translation>
+<translation id="7506488012654002225">‏Chromium درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />آپ کی براؤزنگ کی سرگزشت
+          <ph name="LIST_ITEM" />کوکیز اور سائٹ ڈیٹا
+          <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">‏واپس کردہ پالیسی آلہ id خالی ہے یا موجودہ آلہ id سے مماثل نہیں ہے</translation>
 <translation id="7508870219247277067">مَگَر ناشپاتی سبز</translation>
 <translation id="7511955381719512146">‏آپ کا زیر استعمال Wi-Fi آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
@@ -2226,6 +2263,7 @@
 <translation id="8202370299023114387">تصادم</translation>
 <translation id="8206978196348664717">Prc4 ‎(Envelope‎)‎</translation>
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
+<translation id="8217240300496046857">سائٹس ان کوکیز کا استعمال نہیں کر سکتی ہیں جو آپ کو پورے ویب پر ٹریک کرتی ہیں۔ کچھ سائٹس پر خصوصیات میں خلل ہو سکتا ہے۔</translation>
 <translation id="8218327578424803826">تفویض کردہ مقام</translation>
 <translation id="8220146938470311105">C7/C6 ‎(Envelope‎)‎</translation>
 <translation id="8225771182978767009">اس کمپیوٹر کو ترتیب دینے والے شخص نے اس سائٹ کو مسدود کرنے کا انتخاب کیا ہے۔</translation>

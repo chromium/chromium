@@ -1079,16 +1079,6 @@
 
       如果此政策设为 false，系统将不会报告这些信息。
       如果此政策设为 true 或未设置，系统将会报告设备的网络状态。</translation>
-<translation id="2221850122314326571">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
-      如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书。
-      如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。
-
-      按照我们的计划，此政策将会从 <ph name="PRODUCT_OS_NAME" /> 81 版中移除，该版本将不再支持在 <ph name="PRODUCT_OS_NAME" />上使用旧版证书验证程序。
-
-      按照我们的计划，此政策将会从 Linux 上的 <ph name="PRODUCT_NAME" /> 83 版中移除，该版本将不再支持在 Linux 上使用旧版证书验证程序。
-
-      按照我们的计划，此政策将会从 Mac OS X 上的 <ph name="PRODUCT_NAME" /> 92 版中移除，该版本将不再支持在 Mac OS X 上使用旧版证书验证程序。
-      </translation>
 <translation id="2223393221350938149">不允许任何网站运行 JavaScript JIT</translation>
 <translation id="2223582957891074498">如果此政策设为 True，用户无法使用键盘快捷键或扩展程序 API 截取屏幕截图。如果此政策设为 False，用户可以截取屏幕截图。</translation>
 <translation id="2223598546285729819">默认通知设置</translation>

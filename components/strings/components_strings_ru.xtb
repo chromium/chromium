@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Подробнее…</translation>
 <translation id="1030706264415084469">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение большого объема данных на вашем устройстве.</translation>
 <translation id="1032854598605920125">Повернуть по часовой стрелке</translation>
+<translation id="1033329911862281889">Режим инкогнито не позволяет скрыть информацию о ваших действиях в интернете:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Сайты и используемые ими сервисы регистрируют посещения.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Работодатели и администраторы образовательных учреждений могут отслеживать действия в браузере.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Интернет-провайдеры могут анализировать трафик.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1036982837258183574">Чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Показать подсказки</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">В кеше политики ошибок не найдено</translation>
 <translation id="1130564665089811311">Кнопка перевода страницы. Чтобы с помощью Google Переводчика ознакомиться с ее содержанием, нажмите Ввод.</translation>
 <translation id="1131264053432022307">Скопированное изображение</translation>
+<translation id="1142846828089312304">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
 <translation id="1150979032973867961">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Операционная система компьютера не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="1151972924205500581">Необходимо ввести пароль</translation>
 <translation id="1156303062776767266">Вы просматриваете локальный или общий файл</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">Отправить</translation>
 <translation id="1484290072879560759">Выбрать адрес доставки посылок</translation>
 <translation id="1492194039220927094">Обновление правил:</translation>
+<translation id="149293076951187737">Когда вы закроете все вкладки инкогнито в Chrome, с этого устройства будет удалена связанная с ними информация:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />сведения о действиях в браузере;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />история поиска;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />данные, указанные в формах.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Вернуться на вкладку</translation>
 <translation id="1501859676467574491">Показывать банковские карты, сохраненные в аккаунте Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Эта ошибка может возникать при использовании портала Wi-Fi, для работы с которым требуется выполнить вход.&lt;/p&gt;
@@ -281,6 +294,7 @@
 <translation id="1763864636252898013">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Операционная система устройства не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Выполните диагностику сети в Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Сервер <ph name="ORIGIN" />, на который вы переходите, установил заголовок, требующий применять правило источника ко всем запросам. Однако из-за неверного формата заголовка браузер не может выполнить ваш запрос для сайта <ph name="SITE" />. Правила в отношении источников позволяют операторам настраивать параметры безопасности и другие свойства сайтов.</translation>
+<translation id="1774592222195216949">Подробнее <ph name="BEGIN_LINK" />о режиме инкогнито в Chromium<ph name="END_LINK" />…</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Здесь появятся открытые вкладки.</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -523,6 +537,12 @@
 <translation id="2597378329261239068">Документ защищен паролем. Введите пароль.</translation>
 <translation id="2609632851001447353">Варианты</translation>
 <translation id="2610561535971892504">Нажмите, чтобы скопировать</translation>
+<translation id="2617988307566202237">В Chrome <ph name="BEGIN_EMPHASIS" />не будет сохраняться<ph name="END_EMPHASIS" /> следующая информация:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />история браузера;
+          <ph name="LIST_ITEM" />файлы cookie и данные сайтов;
+          <ph name="LIST_ITEM" />сведения, указанные в формах.
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (конверт)</translation>
 <translation id="2623663032199728144">Разрешено запрашивать сведения о ваших экранах</translation>
 <translation id="2625385379895617796">Часы спешат</translation>
@@ -589,6 +609,7 @@
 <translation id="2850739647070081192">Invite (конверт)</translation>
 <translation id="2856444702002559011">Злоумышленники могут пытаться похитить ваши данные с сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (например, пароли, сообщения или номера банковских карт). <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу.</translation>
+<translation id="286512204874376891">Чтобы защитить ваши данные от мошенников, вместо настоящей карты будет использоваться виртуальная. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Дружелюбный</translation>
 <translation id="2876489322757410363">Вы выйдете из режима инкогнито, чтобы выполнить оплату во внешнем приложении. Продолжить?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
@@ -708,6 +729,7 @@
 <translation id="3252266817569339921">Французский</translation>
 <translation id="3257954757204451555">Кто предоставил эти сведения?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать мероприятие в Google Календаре, нажмите Tab, а затем Ввод.</translation>
+<translation id="3261488570342242926">Подробнее…</translation>
 <translation id="3264837738038045344">Кнопка "Открыть настройки Chrome". Нажмите Ввод, чтобы перейти в настройки Chrome.</translation>
 <translation id="3266793032086590337">Значение (конфликтующее)</translation>
 <translation id="3268451620468152448">Вкладки</translation>
@@ -1147,6 +1169,7 @@
 <translation id="4628948037717959914">Фото</translation>
 <translation id="4631649115723685955">С кешбэком</translation>
 <translation id="4636930964841734540">Информация</translation>
+<translation id="4638670630777875591">Режим инкогнито в Chromium</translation>
 <translation id="464342062220857295">Функции поиска</translation>
 <translation id="4644670975240021822">В обратном порядке лицевой стороной вниз</translation>
 <translation id="4646534391647090355">Перейти сейчас</translation>
@@ -1242,6 +1265,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы выполнить поиск.</translation>
 <translation id="4930153903256238152">Большая емкость</translation>
+<translation id="4940163644868678279">Режим инкогнито в Chrome</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
 <translation id="4950898438188848926">Кнопка переключения между вкладками. Чтобы переключиться на открытую вкладку (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />), нажмите клавишу "Ввод".</translation>
 <translation id="495170559598752135">Действия</translation>
@@ -1602,6 +1626,7 @@
 <translation id="6120179357481664955">Запомнить идентификатор UPI?</translation>
 <translation id="6124432979022149706">Коннекторы Chrome Enterprise</translation>
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
+<translation id="6132161237766805930">Подробнее <ph name="BEGIN_LINK" />о режиме инкогнито в Chrome<ph name="END_LINK" />…</translation>
 <translation id="6146055958333702838">Проверьте соединение кабелей, перезагрузите маршрутизаторы, модемы и другие
     сетевые устройства.</translation>
 <translation id="614940544461990577">Попробуйте сделать следующее:</translation>
@@ -1636,7 +1661,6 @@
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Здесь будут страницы из списка для чтения.</translation>
 <translation id="627746635834430766">Чтобы ускорить процесс оплаты в будущем, сохраните карту и платежный адрес в аккаунте Google.</translation>
-<translation id="6279098320682980337">Номер виртуальной карты не указан? Нажмите на реквизиты, чтобы скопировать их.</translation>
 <translation id="6280223929691119688">Невозможно доставить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="6282194474023008486">Почтовый индекс</translation>
 <translation id="6285507000506177184">Кнопка "Управлять скачанными файлами в Chrome". Нажмите Ввод, чтобы управлять скачанными файлами в Chrome.</translation>
@@ -1877,6 +1901,12 @@
 <translation id="7111012039238467737">(действительный)</translation>
 <translation id="7118618213916969306">Поиск по адресу <ph name="SHORT_URL" /> из буфера обмена</translation>
 <translation id="7119414471315195487">Закройте другие вкладки и программы.</translation>
+<translation id="7129355289156517987">Когда вы закроете все вкладки инкогнито в Chromium, с этого устройства будет удалена связанная с ними информация:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />сведения о действиях в браузере;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />история поиска;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />данные, указанные в формах.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Невозможно отправить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="7132939140423847331">Администратор запретил копирование этих данных.</translation>
 <translation id="7135130955892390533">Показать статус</translation>
@@ -1995,6 +2025,12 @@
 <translation id="7485870689360869515">Данные не найдены.</translation>
 <translation id="7495528107193238112">Этот контент заблокирован. Чтобы устранить неполадку, свяжитесь с владельцем сайта.</translation>
 <translation id="7497998058912824456">Кнопка "Создать документ". Чтобы быстро создать документ Google, нажмите Ввод.</translation>
+<translation id="7506488012654002225">В Chromium <ph name="BEGIN_EMPHASIS" />не будет сохраняться<ph name="END_EMPHASIS" /> следующая информация:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />история браузера;
+          <ph name="LIST_ITEM" />файлы cookie и данные сайтов;
+          <ph name="LIST_ITEM" />сведения, указанные в формах.
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Возвращенный идентификатор устройства пуст или не соответствует имеющемуся</translation>
 <translation id="7508870219247277067">Зеленый (авокадо)</translation>
 <translation id="7511955381719512146">Возможно, вам нужно перейти на страницу <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сети Wi-Fi.</translation>
@@ -2214,6 +2250,7 @@
 <translation id="8202370299023114387">Конфликт</translation>
 <translation id="8206978196348664717">Prc4 (конверт)</translation>
 <translation id="8211406090763984747">Безопасное подключение</translation>
+<translation id="8217240300496046857">Сайтам запрещается использовать файлы cookie, которые отслеживают ваши действия в интернете. Из-за этого некоторые функции сайтов могут работать некорректно.</translation>
 <translation id="8218327578424803826">Назначенное местоположение:</translation>
 <translation id="8220146938470311105">C7/C6 (конверт)</translation>
 <translation id="8225771182978767009">Тот, кто настраивал компьютер, заблокировал этот сайт.</translation>

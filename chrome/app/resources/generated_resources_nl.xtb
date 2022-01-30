@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">USB-C-apparaat (poort aan linkerkant)</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1294807885394205587">Dit kan een paar minuten duren. Containerbeheer wordt gestart.</translation>
+<translation id="1296046226918222533">Er is iets misgegaan en de Linux-upgrade is mislukt. Je kunt meer informatie over het probleem vinden in de logboeken. De logboeken zijn opgeslagen in <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Geselecteerd tabblad vastzetten</translation>
 <translation id="1297175357211070620">Bestemming</translation>
 <translation id="129770436432446029">Feedback sturen voor <ph name="EXPERIMENT_NAME" /></translation>
@@ -2787,6 +2788,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3799128412641261490">Instellingen voor 'Toegang via schakelaar'</translation>
 <translation id="3800806661949714323">Alles bekijken (aanbevolen)</translation>
 <translation id="3800828618615365228">Aanvullende voorwaarden van Google Chrome en Chrome OS</translation>
+<translation id="3802486193901166966">Deze extensie vereist geen speciale rechten en heeft geen aanvullende sitetoegang nodig</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803345858388753269">Videokwaliteit</translation>
 <translation id="380408572480438692">Als je prestatiegegevens verzamelt, help je Google het systeem nog beter te maken. Er worden geen gegevens verstuurd totdat je een feedbackrapport (Alt-Shift-I) indient en prestatiegegevens toevoegt. Je kunt op elk moment teruggaan naar dit scherm om de verzameling uit te zetten.</translation>
@@ -3816,6 +3818,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4883436287898674711">Alle sites op <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Taakbeheer</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Deze extensie heeft geen aanvullende sitetoegang</translation>
 <translation id="4887424188275796356">Openen met Systeemviewer</translation>
 <translation id="488785315393301722">Details bekijken</translation>
 <translation id="4890773143211625964">Geavanceerde printeropties bekijken</translation>
@@ -3988,6 +3991,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5075910247684008552">Onveilige content wordt standaard geblokkeerd op beveiligde sites</translation>
 <translation id="5078638979202084724">Bookmark toevoegen aan alle tabbladen</translation>
 <translation id="5078796286268621944">Onjuiste pincode</translation>
+<translation id="5079010647467150187">Ingebouwde VPN toevoegen...</translation>
 <translation id="5079950360618752063">Voorgesteld wachtwoord gebruiken</translation>
 <translation id="508059534790499809">Een Kerberos-ticket vernieuwen</translation>
 <translation id="5084230410268011727">Toestaan dat websites toegang krijgen tot bewegings- en lichtsensoren</translation>
@@ -5540,6 +5544,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6709133671862442373">Nieuws</translation>
 <translation id="6709357832553498500">Verbinding maken via <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Vorige</translation>
+<translation id="6710973041022512889">De upgrade is afgerond. Je kunt gedetailleerde upgrade-informatie bekijken in de logboeken die zijn opgeslagen in <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900"><ph name="WEB_DRIVE" />-account koppelen voor downloads</translation>
 <translation id="6712943853047024245">Je hebt al een wachtwoord met deze gebruikersnaam opgeslagen voor <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Werkprofiel toevoegen</translation>

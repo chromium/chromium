@@ -1121,16 +1121,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Si se asigna el valor false a esta política, no se enviará la información.
       Si se le asigna el valor true o no se establece, se enviará información sobre el estado de la red del dispositivo.</translation>
-<translation id="2221850122314326571">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores utilizando el verificador de certificados integrado.
-      Si se inhabilita esta opción, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores utilizando el verificador de certificados antiguo proporcionado por la plataforma.
-      Si no se configura esta opción, se podrá utilizar el verificador de certificados integrado o el antiguo.
-
-      Se prevé que esta política se elimine en la versión 81 de <ph name="PRODUCT_OS_NAME" />, en la que el verificador de certificados antiguo dejará de ser compatible con <ph name="PRODUCT_OS_NAME" />.
-
-      Se prevé que esta política se elimine en la versión 83 de <ph name="PRODUCT_NAME" /> para Linux, en la que el verificador de certificados antiguo dejará de ser compatible con Linux.
-
-      Se prevé que esta política se elimine en la versión 92 de <ph name="PRODUCT_NAME" /> para Mac OS X, en la que el verificador de certificados antiguo dejará de ser compatible con Mac OS X.
-      </translation>
 <translation id="2223393221350938149">No permitir que JavaScript use JIT en ningún sitio</translation>
 <translation id="2223582957891074498">Si se asigna el valor "Verdadero" a esta política, no se permitirá hacer capturas de pantalla utilizando combinaciones de teclas ni API de extensiones. Si se le asigna el valor "Falso", se permitirán las capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>

@@ -1082,16 +1082,6 @@
 
       如果將這項政策設為 False，系統不會回報這項資訊。
       如果設為 True 或未設定，則系統會回報裝置的網路狀態。</translation>
-<translation id="2221850122314326571">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
-      如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
-      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
-
-      我們計劃將這項政策從 <ph name="PRODUCT_OS_NAME" /> 81 版中移除，屆時也將停止支援 <ph name="PRODUCT_OS_NAME" />的舊版憑證驗證器。
-
-     我們計劃將這項政策從 Linux 適用的 <ph name="PRODUCT_NAME" /> 83 版中移除，屆時也將停止支援 Linux 的舊版憑證驗證器。
-
-      我們計劃將這項政策從 Mac OS X 適用的 <ph name="PRODUCT_NAME" /> 92 版中移除，屆時也將停止支援 Mac OS X 的舊版憑證驗證器。
-      </translation>
 <translation id="2223393221350938149">禁止任何網站執行 JavaScript JIT</translation>
 <translation id="2223582957891074498">如果將這項政策設為 True，使用者無法使用鍵盤快速鍵或擴充功能 API 來擷取螢幕畫面。如果將這項政策設為 False，使用者可以擷取螢幕畫面。</translation>
 <translation id="2223598546285729819">預設通知設定</translation>

@@ -294,6 +294,7 @@
 <translation id="1293264513303784526">USB-C 裝置 (左側連接埠)</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1294807885394205587">這項程序可能需要幾分鐘才能完成。正在啟動容器管理工具。</translation>
+<translation id="1296046226918222533">發生錯誤，Linux 升級失敗。你可以查看記錄，進一步瞭解升級失敗的資訊。這類記錄已儲存至 <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">固定所選分頁</translation>
 <translation id="1297175357211070620">目的地</translation>
 <translation id="129770436432446029">提供你對「<ph name="EXPERIMENT_NAME" />」的意見</translation>
@@ -2786,6 +2787,7 @@
 <translation id="3799128412641261490">切換控制功能設定</translation>
 <translation id="3800806661949714323">全部顯示 (建議)</translation>
 <translation id="3800828618615365228">Google Chrome 和 ChromeOS 的《附加條款》</translation>
+<translation id="3802486193901166966">這個擴充功能不需要特殊權限，且沒有其他的網站存取權</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">視訊品質</translation>
 <translation id="380408572480438692">啟用成效資料收集功能可協助 Google 持續改善系統。除非你提交意見回饋報告 (Alt-Shift-I) 並在其中包含成效資料，否則 Google 不會收到任何相關資料。你可以隨時回到這個畫面停用收集功能。</translation>
@@ -3814,6 +3816,7 @@
 <translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="48838266408104654">工作管理員(&amp;T)</translation>
 <translation id="4884987973312178454">6 倍</translation>
+<translation id="4885692421645694729">這個擴充功能沒有其他網站存取權</translation>
 <translation id="4887424188275796356">使用 System Viewer 開啟</translation>
 <translation id="488785315393301722">顯示詳細資料</translation>
 <translation id="4890773143211625964">顯示進階印表機選項</translation>
@@ -3988,6 +3991,7 @@
 <translation id="5075910247684008552">系統預設會封鎖安全網站上的不安全內容</translation>
 <translation id="5078638979202084724">將所有分頁加入書籤</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
+<translation id="5079010647467150187">新增內建的 VPN...</translation>
 <translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="508059534790499809">更新 Kerberos 票證</translation>
 <translation id="5084230410268011727">允許網站使用動作感應器和光源感應器</translation>
@@ -5539,6 +5543,7 @@
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
 <translation id="6710213216561001401">返回</translation>
+<translation id="6710973041022512889">已成功完成升級。有關升級的詳細資訊，相關記錄已儲存至 <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">連結「<ph name="WEB_DRIVE" />」帳戶即可重新轉送下載內容</translation>
 <translation id="6712943853047024245">你已儲存過這個使用者名稱在「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="6713233729292711163">新增工作資料夾</translation>

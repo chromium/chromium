@@ -1112,16 +1112,6 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
 
       Nếu bạn tắt chính sách này thì hệ thống sẽ không báo cáo thông tin.
       Nếu bạn bật hoặc không đặt chính sách này, thì hệ thống sẽ báo cáo trạng thái mạng của thiết bị.</translation>
-<translation id="2221850122314326571">Khi bạn bật chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn để xác minh chứng chỉ máy chủ.
-      Khi bạn tắt chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ cũ do nền tảng cung cấp để xác minh chứng chỉ máy chủ.
-      Nếu bạn không đặt chế độ cài đặt này, thì trình xác minh chứng chỉ cũ hoặc tích hợp sẵn có thể được sử dụng.
-
-      Chúng tôi dự định loại bỏ chính sách này trong <ph name="PRODUCT_OS_NAME" /> phiên bản 81, khi ngừng hỗ trợ trình xác minh chứng chỉ cũ trong <ph name="PRODUCT_OS_NAME" /> theo kế hoạch.
-
-      Chúng tôi dự định loại bỏ chính sách này trong <ph name="PRODUCT_NAME" /> dành cho Linux phiên bản 83, khi ngừng hỗ trợ trình xác minh chứng chỉ cũ trên Linux theo kế hoạch.
-
-      Chúng tôi dự định loại bỏ chính sách này trong <ph name="PRODUCT_NAME" /> dành cho Mac OS X phiên bản 92, khi ngừng hỗ trợ trình xác minh chứng chỉ cũ trên Mac OS X theo kế hoạch.
-      </translation>
 <translation id="2223393221350938149">Không chấp nhận mọi trang web chạy JavaScript JIT</translation>
 <translation id="2223582957891074498">Nếu bạn đặt chính sách này thành True, thì người dùng sẽ không chụp được ảnh màn hình bằng cách dùng phím tắt hoặc API tiện ích. Nếu bạn đặt chính sách này thành False, thì người dùng có thể chụp ảnh màn hình.</translation>
 <translation id="2223598546285729819">Cài đặt thông báo mặc định</translation>

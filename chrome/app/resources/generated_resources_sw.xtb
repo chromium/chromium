@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">Kifaa cha USB-C (mlango wa kushoto)</translation>
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1294807885394205587">Huenda mchakato huu ukachukua dakika kadhaa. Inaanzisha kidhibiti cha metadata.</translation>
+<translation id="1296046226918222533">Hitilafu fulani imetokea na Linux haijasasishwa. Maelezo zaidi kuhusu hitilafu yanapatikana kwenye kumbukumbu. Kumbukumbu zimehifadhiwa katika <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Bandika Kichupo Kilichoteuliwa</translation>
 <translation id="1297175357211070620">Itumwe kwenye</translation>
 <translation id="129770436432446029">Tuma maoni kuhusu <ph name="EXPERIMENT_NAME" /></translation>
@@ -2799,6 +2800,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3799128412641261490">Mipangilio ya kufikia kupitia swichi</translation>
 <translation id="3800806661949714323">Onyeza zote (inapendekezwa)</translation>
 <translation id="3800828618615365228">Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome</translation>
+<translation id="3802486193901166966">Kiendelezi hiki hakihitaji ruhusa maalum na hakina idhini ya ziada ya kufikia tovuti</translation>
 <translation id="380329542618494757">Jina</translation>
 <translation id="3803345858388753269">Ubora wa Video</translation>
 <translation id="380408572480438692">Kuwasha ukusanyaji wa data ya utendaji kutasaidia Google kuboresha mfumo kadri muda unavyoenda. Hakuna data inayotumwa hadi utume ripoti ya maoni ("Alt"-"Shift"-"I") na ujumuishe data ya utendaji. Unaweza kurudi katika skrini hii ili kuzima ukusanyaji wakati wowote.</translation>
@@ -3210,6 +3212,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4231095370974836764">Sakinisha programu na michezo kutoka Google Play kwenye <ph name="DEVICE_TYPE" /> yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Weka Mipangilio ya Kerberos</translation>
 <translation id="4235965441080806197">Ghairi kuingia katika akaunti</translation>
+<translation id="4236163961381003811">Gundua viendelezi zaidi</translation>
 <translation id="4241182343707213132">Zima kisha uwashe ili usasishe programu za shirika lako</translation>
 <translation id="4242145785130247982">Vyeti vingi vya kiteja havitumiki</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
@@ -3827,6 +3830,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4883436287898674711">Tovuti zote <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Kidhibiti cha Shughuli</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Kiendelezi hiki hakina idhini ya ziada ya kufikia tovuti.</translation>
 <translation id="4887424188275796356">Fungua Kwa Kitazamaji cha Mfumo</translation>
 <translation id="488785315393301722">Onyesha Maelezo</translation>
 <translation id="4890773143211625964">Onyesha chaguo za kina za printa</translation>
@@ -4001,6 +4005,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5075910247684008552">Maudhui yasiyo salama yanazuiwa kwa chaguomsingi kwenye tovuti salama</translation>
 <translation id="5078638979202084724">Alamisha vichupo vyote</translation>
 <translation id="5078796286268621944">PIN isiyo sahihi</translation>
+<translation id="5079010647467150187">Ongeza VPN iliyojumuishwa ndani...</translation>
 <translation id="5079950360618752063">Tumia nenosiri linalopendekezwa</translation>
 <translation id="508059534790499809">Onyesha upya tiketi ya Kerberos</translation>
 <translation id="5084230410268011727">Ruhusu tovuti kutumia vitambuzi vya mwendo na mwangaza</translation>
@@ -5553,6 +5558,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6709133671862442373">Habari</translation>
 <translation id="6709357832553498500">Unganisha ukitumia <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Iliyopita</translation>
+<translation id="6710973041022512889">Imekamilisha kusasisha. Ili upate maelezo zaidi kuhusu sasisho, kumbukumbu zimehifadhiwa katika <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Unganisha akaunti ya <ph name="WEB_DRIVE" /> kwa ajili ya Vipakuliwa</translation>
 <translation id="6712943853047024245">Tayari umehifadhi nenosiri lenye jina hili la mtumiaji unalotumia katika <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Ongeza Wasifu wa Kazini</translation>

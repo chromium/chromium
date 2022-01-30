@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi oblasti za skeniranje</translation>
 <translation id="1387854245479784695">Ovo je zbir svih jezgara</translation>
+<translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije futrole.</translation>
 <translation id="1397738625398125236">Mrežni prolaz može da se pinguje</translation>
 <translation id="1398634363027580500">Veoma veliko HTTPS kašnjenje</translation>
 <translation id="1413240736185167732">Nije uspelo – filter je otkazao</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Imam par ključeva</translation>
+<translation id="1451536289672181509">Uređaj je tastatura.</translation>
 <translation id="1468664791493211953">Ponude</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i može da prati vaše aktivnosti.</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Više podešavanja</translation>
 <translation id="2104796393919810494">Popravka je završena</translation>
+<translation id="2105810540595158374">Uređaj je kontroler za igre.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno: <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izaberite folder za čuvanje</translation>
+<translation id="3031560714565892478">Uređaj je video kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Krajnja tačka</translation>
 <translation id="3069085583900247081">Test nije uspeo</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Nije uspelo – zaustavljeno je</translation>
 <translation id="3102119246920354026">Keš</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Uređaj je povezan.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Želite da uklonite stranicu?}=1{Želite da uklonite {PAGE_NUMBER}. stranicu?}one{Želite da uklonite {PAGE_NUMBER}. stranicu?}few{Želite da uklonite {PAGE_NUMBER}. stranicu?}other{Želite da uklonite {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
 <translation id="3156846309055100599">Skenira se <ph name="PAGE_NUMBER" />. stranica...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Kašnjenje DNS-a znatno premašuje dozvoljenu graničnu vrednost</translation>
 <translation id="3328783797891415197">Test je u toku</translation>
+<translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
 <translation id="3368922792935385530">Povezan</translation>
 <translation id="3369013195428705271">Želite li stvarno da obrišete svu istoriju štampanja? Zadaci štampanja koji su u toku se ne brišu.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Skenira se <ph name="PAGE_NUM" />. stranica. Dovršeno je <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> se ažurira</translation>
+<translation id="3484914941826596830">Ne isključujte spoljni uređaj ni računar dok se firmver ažurira. Možete da umanjite ovaj prozor. Ovo ažuriranje može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3488065109653206955">Delimično aktivirano</translation>
 <translation id="3527036260304016759">Nije uspelo – nepoznata greška</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Nema povezanih uređaja</translation>
 <translation id="3941014780699102620">Razrešenje hosta nije uspelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
+<translation id="3954678691475912818">Tip uređaja je nepoznat.</translation>
 <translation id="3966286471246132217">Da biste dobili tačnije rezultate, zatvorite sve aplikacije dok se test ne dovrši.</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4891842000192098784">Stres</translation>
+<translation id="4897058166682006107">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije leve slušalice.</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
@@ -322,6 +331,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5346687412805619883">Lokalna mreža</translation>
 <translation id="5358174242040570474">Došlo je do greške. Probajte ponovo da odaberete pozadinu ili otvorite ponovo aplikaciju.</translation>
 <translation id="5372659122375744710">WiFi mreža nije bezbedna</translation>
+<translation id="5400907029458559844">Uređaj se povezuje.</translation>
 <translation id="5401938042319910061">Pokreni sve rutine</translation>
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Trenutno privezivanje</translation>
@@ -383,6 +393,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> je otkazan</translation>
+<translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Neuspešno</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
@@ -415,6 +426,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6704062477274546131">DNS razrešavanje</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
 <translation id="6749473226660745022">Slike</translation>
+<translation id="6753452347192452143">Uređaj je računar.</translation>
 <translation id="6756731097889387912">Otkazivanje skeniranja nije uspelo</translation>
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
 <translation id="6768237774506518020">Velika stopa neuspeha DNS razrešavanja</translation>
@@ -432,12 +444,14 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6992266763844448459">Izaberite ovu opciju ako se vlasništvo nad uređajem ne menja. Na primer, ako se uređaj prebacuje drugoj osobi unutar organizacije.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="7040230719604914234">Mobilni operater</translation>
+<translation id="7041549558901442110">Uređaj nije povezan.</translation>
 <translation id="7058278511608979688">Završi i sačuvaj</translation>
 <translation id="7059230779847288458">Puni se. <ph name="TIME_VALUE" /> do kraja punjenja</translation>
 <translation id="7068619307603204412">Pripremite uređaj</translation>
 <translation id="708426984172631313">ZAUSTAVLJENO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Neuspešno – ovlašćenje nije uspelo</translation>
+<translation id="7103252855940681301"><ph name="INDEX" />. uređaj od <ph name="COUNT" /> sa nazivom <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server imena}one{Serveri imena}few{Serveri imena}other{Serveri imena}}</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
@@ -472,6 +486,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Dijagnostičke rutine</translation>
+<translation id="7551123448725492271">Uređaj je audio uređaj.</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dodirni ekran</translation>
@@ -479,6 +494,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="763165478673169849">Vreme poslednjeg resetovanja</translation>
 <translation id="7648838807254605802">Veliko HTTPS kašnjenje</translation>
+<translation id="7656388927906093505">Uređaj je miš.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7701040980221191251">Ništa</translation>
@@ -575,6 +591,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8855781559874488009">Ne možete da se povežete sa HTTP veb-sajtovima kroz zaštitni zid</translation>
 <translation id="8863888432376731307">Pronađite <ph name="INTENT" /> za „<ph name="QUERY" />“ i drugo</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspeo</translation>
 <translation id="8898840733695078011">Jačina signala</translation>
 <translation id="8910721771319628100">Podrazumevana mreža premašuje graničnu vrednost za kašnjenje</translation>
@@ -585,11 +602,13 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8930622219860340959">Bežično</translation>
 <translation id="8936793075252196307">IP adresa klijenta</translation>
 <translation id="8945750210906526975">Interni tačped</translation>
+<translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skeniraj}=1{Skeniraj {NUMBER_OF_PAGES}. stranicu}one{Skeniraj {NUMBER_OF_PAGES}. stranicu}few{Skeniraj {NUMBER_OF_PAGES}. stranicu}other{Skeniraj {NUMBER_OF_PAGES}. stranicu}}</translation>
 <translation id="8994273342647807496">Instalira se – <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS razrešavanje ima veliko kašnjenje</translation>

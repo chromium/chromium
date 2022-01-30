@@ -1078,16 +1078,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
       Als je het beleid instelt op True of niet instelt, wordt de netwerkstatus van het apparaat gerapporteerd.</translation>
-<translation id="2221850122314326571">Als je deze instelling aanzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
-      Als je deze instelling uitzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
-      Als je deze instelling niet instelt, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
-
-      Dit beleid wordt verwijderd in <ph name="PRODUCT_OS_NAME" /> versie 81, als de support voor de verouderde certificaatverificatie in <ph name="PRODUCT_OS_NAME" /> ook wordt verwijderd.
-
-      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor Linux-versie 83, als de support voor de verouderde certificaatverificatie in Linux ook wordt verwijderd.
-
-      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor Mac OS X-versie 92, als de support voor de verouderde certificaatverificatie in Mac OS X ook wordt verwijderd.
-      </translation>
 <translation id="2223393221350938149">Niet toestaan dat sites JavaScript JIT uitvoeren</translation>
 <translation id="2223582957891074498">Als je het beleid instelt op 'True', kunnen er geen screenshots worden gemaakt via sneltoetsen of extensie-API's. Als je het beleid instelt op 'False', zijn screenshots toegestaan.</translation>
 <translation id="2223598546285729819">Standaardinstelling voor meldingen</translation>

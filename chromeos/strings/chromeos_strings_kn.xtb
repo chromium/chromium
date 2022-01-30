@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ಸ್ಕ್ಯಾನ್ ಪ್ರದೇಶಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1387854245479784695">ಇದು ಎಲ್ಲಾ ಕೋರ್‌ಗಳ ಒಟ್ಟುಗೂಡಿಸುವಿಕೆಯಾಗಿದೆ</translation>
+<translation id="1394661041439318933">ಸಾಧನವು <ph name="BATTERY_PERCENTAGE" />% ಕೇಸ್ ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="1397738625398125236">ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
 <translation id="1398634363027580500">ಅತ್ಯಧಿಕ HTTPS ವಿಳಂಬ</translation>
 <translation id="1413240736185167732">ವಿಫಲವಾಗಿದೆ - ಫಿಲ್ಟರ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ನನ್ನ ಬಳಿ ಕೀ ಜೋಡಿಯಿದೆ</translation>
+<translation id="1451536289672181509">ಸಾಧನವು ಕೀಬೋರ್ಡ್ ಆಗಿದೆ.</translation>
 <translation id="1468664791493211953">ಆಫರ್‌ಗಳು</translation>
 <translation id="1476467821656042872">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ಗಮನವಿಡಲು ಇದಕ್ಕೆ ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
 <translation id="1478594628797167447">ಸ್ಕ್ಯಾನರ್</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2104796393919810494">ದುರಸ್ತಿ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
+<translation id="2105810540595158374">ಸಾಧನವು ಗೇಮ್ ಕಂಟ್ರೋಲ್ ಆಗಿದೆ.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿನ <ph name="AVAILABLE_MEMORY" /> GB ಲಭ್ಯವಿದೆ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="3009958530611748826">ಉಳಿಸಲು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="3031560714565892478">ಸಾಧನವು ವೀಡಿಯೊ ಕ್ಯಾಮರಾ ಆಗಿದೆ.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ಅಂತಿಮ ಬಿಂದು</translation>
 <translation id="3069085583900247081">ಪರೀಕ್ಷೆ ವಿಫಲವಾಗಿದೆ</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">ವಿಫಲವಾಗಿದೆ - ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3102119246920354026">ಸಂಗ್ರಹ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}=1{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}one{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}other{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}}</translation>
 <translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
 <translation id="3156846309055100599">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಗಮನಾರ್ಹವಾಗಿ ಮೇಲಿದೆ</translation>
 <translation id="3328783797891415197">ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
+<translation id="3340011300870565703">ಸಾಧನದ ಬಲ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369013195428705271">ಎಲ್ಲಾ ಪ್ರಿಂಟ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? ಪ್ರಸ್ತುತ ಚಾಲನೆಯಲ್ಲಿರುವ ನಿಮ್ಮ ಪ್ರಿಂಟ್ ಕಾರ್ಯವನ್ನು ತೆರವುಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ನೇ ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ. <ph name="PERCENTAGE_VALUE" />% ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="3459509316159669723">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="3484914941826596830">ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತಿರುವ ಸಮಯದಲ್ಲಿ, ಈ ಬಾಹ್ಯ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ ಅಥವಾ ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ಥಶಟ್ ಡೌನ್ ಮಾಡಬೇಡಿ. ನೀವು ಈ ವಿಂಡೋವನ್ನು ಕುಗ್ಗಿಸಬಹುದು. ಈ ಅಪ್‌ಡೇಟ್, ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನವು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="3486220673238053218">ವಿವರಣೆ</translation>
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">ಯಾವುದೇ ಸಾಧನವನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="3941014780699102620">ಹೋಸ್ಟ್ ಅನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="3942420633017001071">ತಪಾಸಣೆಗಳು</translation>
+<translation id="3954678691475912818">ಸಾಧನದ ಪ್ರಕಾರವು ತಿಳಿದಿಲ್ಲ.</translation>
 <translation id="3966286471246132217">ಇನ್ನಷ್ಟು ನಿಖರವಾದ ಫಲಿತಾಂಶಗಳಿಗಾಗಿ, ಪರೀಕ್ಷೆ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ಹೊಸದೊಂದನ್ನು ತತ್‌ಕ್ಷಣ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4891842000192098784">ಒತ್ತಡ</translation>
+<translation id="4897058166682006107">ಸಾಧನದ ಎಡ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="4917385247580444890">ಪ್ರಬಲ</translation>
 <translation id="4917889632206600977">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
@@ -321,6 +330,7 @@
 <translation id="5346687412805619883">ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="5358174242040570474">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ವಾಲ್‌ಪೇಪರ್ ಆಯ್ಕೆ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಪುನಃ ಆ್ಯಪ್ ತೆರೆಯಿರಿ.</translation>
 <translation id="5372659122375744710">ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
+<translation id="5400907029458559844">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗುತ್ತಿದೆ.</translation>
 <translation id="5401938042319910061">ಎಲ್ಲಾ ದಿನಚರಿಗಳನ್ನು ರನ್ ಮಾಡಿ</translation>
 <translation id="5423849171846380976">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5430931332414098647">ತತ್‌ಕ್ಷಣದ ಟೆಥರಿಂಗ್‌</translation>
@@ -382,6 +392,7 @@
 <translation id="6278428485366576908">ಥೀಮ್</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆಯನ್ನು ರದ್ದುಪಡಿಸಲಾಗಿದೆ</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> ನಲ್ಲಿ ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6340526405444716530">ವೈಯಕ್ತೀಕರಣ</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>
@@ -414,6 +425,7 @@
 <translation id="6704062477274546131">DNS ರೆಸಲ್ಯೂಷನ್‌‌</translation>
 <translation id="6747215703636344499">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಔಟ್‌ಪುಟ್ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="6749473226660745022">ಫೋಟೋಗಳು</translation>
+<translation id="6753452347192452143">ಸಾಧನವು ಕಂಪ್ಯೂಟರ್ ಆಗಿದೆ.</translation>
 <translation id="6756731097889387912">ಸ್ಕ್ಯಾನಿಂಗ್ ರದ್ದು ಮಾಡಲಾಗಲಿಲ್ಲ</translation>
 <translation id="6766275201586212568">DNS ರೆಸಲ್ಯೂಷನ್‌ಗಳು ವಿಫಲವಾಗಿವೆ</translation>
 <translation id="6768237774506518020">ಅಧಿಕ DNS ರೆಸಲ್ಯೂಷನ್ ವೈಫಲ್ಯ ದರ</translation>
@@ -431,12 +443,14 @@
 <translation id="6992266763844448459">ಸಾಧನದ ಮಾಲೀಕತ್ವವು ಬದಲಾಗದಿದ್ದರೆ ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ. ಉದಾಹರಣೆಗೆ, ಸಾಧನವನ್ನು ಸಂಸ್ಥೆಯೊಳಗಿನ ಬೇರೆ ವ್ಯಕ್ತಿಗೆ ವರ್ಗಾಯಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="7028979494427204405">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತದೆ.</translation>
 <translation id="7040230719604914234">ಆಪರೇಟರ್</translation>
+<translation id="7041549558901442110">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="7058278511608979688">ಕೊನೆಗೊಳಿಸಿ ಮತ್ತು ಉಳಿಸಿ</translation>
 <translation id="7059230779847288458">ಚಾರ್ಜಿಂಗ್ ಆಗುತ್ತಿದೆ, ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗಲು <ph name="TIME_VALUE" /> ಸಮಯ ಬೇಕು</translation>
 <translation id="7068619307603204412">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸಿದ್ಧಪಡಿಸಿ</translation>
 <translation id="708426984172631313">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ವಿಫಲವಾಗಿದೆ - ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="7103252855940681301"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />ನೇ ಸಾಧನವನ್ನು <ph name="NAME" /> ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7134436342991564651">{0,plural, =1{ಸರ್ವರ್ ಹೆಸರು}one{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}other{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}}</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
@@ -471,6 +485,7 @@
 <translation id="7502658306369382406">IPv6 ವಿಳಾಸ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
+<translation id="7551123448725492271">ಸಾಧನವು ಆಡಿಯೊ ಸಾಧನವಾಗಿದೆ.</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ಟಚ್‌ಸ್ಕ್ರೀನ್</translation>
@@ -478,6 +493,7 @@
 <translation id="7620771111601174153">ಸಹಾಯ ಕೇಂದ್ರದಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="763165478673169849">ಕೊನೆಯದಾಗಿ ರೀಸೆಟ್ ಮಾಡಿದ ಸಮಯ</translation>
 <translation id="7648838807254605802">ಅಧಿಕ HTTPS ವಿಳಂಬ</translation>
+<translation id="7656388927906093505">ಸಾಧನವು ಮೌಸ್ ಆಗಿದೆ.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7690294790491645610">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7701040980221191251">ಯಾವುದೂ ಇಲ್ಲ</translation>
@@ -574,6 +590,7 @@
 <translation id="8855781559874488009">HTTP ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಫೈರ್‌ವಾಲ್ ಮೂಲಕ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" ಗಾಗಿ ಮತ್ತು ಇನ್ನಷ್ಟಕ್ಕಾಗಿ <ph name="INTENT" /> ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">ಸಾಧನವು ಟ್ಯಾಬ್ಲೆಟ್ ಆಗಿದೆ.</translation>
 <translation id="8881098542468797602">ಪರೀಕ್ಷೆ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="8898840733695078011">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="8910721771319628100">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
@@ -584,11 +601,13 @@
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>
 <translation id="8936793075252196307">ಕ್ಲೈಂಟ್ IP ವಿಳಾಸ</translation>
 <translation id="8945750210906526975">ಆಂತರಿಕ ಟಚ್‌ಪ್ಯಾಡ್</translation>
+<translation id="894617464444543719">ಸಾಧನವು ಫೋನ್ ಆಗಿದೆ.</translation>
 <translation id="8968751544471797276">ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
 <translation id="8970109610781093811">ಮತ್ತೆ ಚಾಲನೆ ಮಾಡಿ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ಸ್ಕ್ಯಾನ್}=1{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}one{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}other{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">ಸಾಧನದಲ್ಲಿ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿ ಇದೆ.</translation>
 <translation id="9003704114456258138">ಫ್ರೀಕ್ವೆನ್ಸಿ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ರೆಸಲ್ಯೂಷನ್ ಹೆಚ್ಚಿನ ಲೇಟೆನ್ಸಿಯನ್ನು ಹೊಂದಿದೆ</translation>

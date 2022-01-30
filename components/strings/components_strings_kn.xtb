@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">ವಿವರಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="1030706264415084469">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ದೊಡ್ಡ ಪ್ರಮಾಣದ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲು <ph name="URL" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="1032854598605920125">ಪ್ರದಕ್ಷಿಣಾಕಾರದಲ್ಲಿ ತಿರುಗಿಸು</translation>
+<translation id="1033329911862281889">ಅದೃಶ್ಯ ಮೋಡ್ ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಅಗೋಚರವಾಗಿರುವಂತೆ ಮಾಡುವುದಿಲ್ಲ:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡುವವರು ಮತ್ತು ಅವರು ಬಳಸುವ ಸೇವೆಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಉದ್ಯೋಗದಾತರು ಅಥವಾ ಶಾಲೆಗಳು ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಇಂಟರ್ನೆಟ್ ಸೇವೆ ಒದಗಿಸುವವರು ವೆಬ್ ಟ್ರಾಫಿಕ್ ಅನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡು</translation>
 <translation id="1036982837258183574">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಲು |<ph name="ACCELERATOR" />| ಒತ್ತಿರಿ</translation>
 <translation id="1038106730571050514">ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">ನೀತಿಯ ಕ್ಯಾಷ್ ಸರಿಯಾಗಿದೆ</translation>
 <translation id="1130564665089811311">ಪುಟ ಅನುವಾದಿಸಿ ಬಟನ್, ಈ ಪುಟವನ್ನು Google Translate ನೊಂದಿಗೆ ಅನುವಾದಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="1131264053432022307">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
+<translation id="1142846828089312304">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="1150979032973867961">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು ನಿಮ್ಮ ಸಾಧನದ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂ‌ ಪ್ರಕಾರ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="1151972924205500581">ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1156303062776767266">ನೀವು ಸ್ಥಳೀಯ ಅಥವಾ ಹಂಚಿದ ಫೈಲ್‌ ಅನ್ನು ವೀಕ್ಷಿಸುತ್ತಿದ್ದೀರಿ</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">ಕಳುಹಿಸು</translation>
 <translation id="1484290072879560759">ಶಿಪ್ಪಿಂಗ್ ವಿಳಾಸವನ್ನು ಆರಿಸಿ</translation>
 <translation id="1492194039220927094">ಕಾರ್ಯನೀತಿಗಳನ್ನು ಪುಶ್ ಮಾಡುವ ಕ್ರಿಯೆ:</translation>
+<translation id="149293076951187737">ನೀವು ಎಲ್ಲಾ Chrome ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ, ಆ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ಟ್ಯಾಬ್‌ಗೆ ಮರಳಿ</translation>
 <translation id="1501859676467574491">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಕಾರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1507202001669085618">&lt;p&gt;ನೀವು ಆನ್‌ಲೈನ್ ಪ್ರವೇಶಿಸುವ ಮೊದಲು ಸೈನ್‌ ಇನ್‌ ಮಾಡಬೇಕಾದ ವೈ-ಫೈ ಪೋರ್ಟಲ್ ಅನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ ಈ ದೋಷವನ್ನು ಕಾಣುತ್ತೀರಿ.&lt;/p&gt; &lt;p&gt;ನೀವು ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಪುಟದಲ್ಲಿ ದೋಷವನ್ನು ಸರಿಪಡಿಸಲು &lt;strong&gt;ಸಂಪರ್ಕಿಸಿ&lt;/strong&gt; ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ.&lt;/p&gt;</translation>
@@ -283,6 +296,7 @@
 ಸೆಟ್ ಮಾಡಿದೆ ಹಾಗೂ ತನ್ನ ಎಲ್ಲಾ ವಿನಂತಿಗಳಿಗೆ ಮೂಲ ಕಾರ್ಯನೀತಿಯನ್ನು ಅನ್ವಯಿಸಲು ವಿನಂತಿಸಿದೆ. ಆದರೆ,
     ಹೆಡರ್ ಫೈಲ್ ವಿರೂಪಗೊಂಡಿದೆ, <ph name="SITE" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು
     ಬ್ರೌಸರ್ ಪೂರೈಸದಂತೆ ತಡೆಯುತ್ತದೆ. ಸೈಟ್‌ ಒಂದಕ್ಕಾಗಿ ಸುರಕ್ಷತೆ ಮತ್ತು ಇತರ ಗುಣಲಕ್ಷಣಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಸೈಟ್ ಆಪರೇಟರ್‌ಗಳು ಮೂಲ ಕಾರ್ಯನೀತಿಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">ನಿಮ್ಮ ತೆರೆಯಲಾದ ಟ್ಯಾಬ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@
 <translation id="2597378329261239068">ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ ಅನ್ನು ಪಾಸ್‌ವರ್ಡ್‌ನಿಂದ ರಕ್ಷಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="2609632851001447353">ಪರಿವರ್ತನೆಗಳು</translation>
 <translation id="2610561535971892504">ನಕಲಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="2617988307566202237">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chrome <ph name="BEGIN_EMPHASIS" />ಉಳಿಸುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ
+            <ph name="LIST_ITEM" />ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ
+            <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ಗಳ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="2625385379895617796">ನಿಮ್ಮ ಗಡಿಯಾರವು ಮುಂದೆ ಇದೆ</translation>
@@ -591,6 +611,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">ದಾಳಿಕೋರರು <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ನಿಂದ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಕದಿಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಸಂದೇಶಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು). <ph name="BEGIN_LEARN_MORE_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ಈ ಸೈಟ್ ತೋರಿಸುತ್ತದೆ.</translation>
+<translation id="286512204874376891">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಭಾವ್ಯ ವಂಚನೆಯಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು ನಿಮ್ಮ ನಿಜವಾದ ಕಾರ್ಡ್‌ಗೆ ಮಾರುವೇಷ ತೊಡಿಸುತ್ತದೆ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">ಸೌಹಾರ್ದ</translation>
 <translation id="2876489322757410363">ಬಾಹ್ಯ ಅಪ್ಲಿಕೇಶನ್‌‌ ಮೂಲಕ ಪಾವತಿಸಲು ಅಜ್ಞಾತ ಮೋಡ್‌‌ ತೊರೆಯಲಾಗುತ್ತಿದೆ. ಮುಂದುವರಿಸಬೇಕೆ?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
@@ -709,6 +730,7 @@
 <translation id="3252266817569339921">ಫ್ರೆಂಚ್</translation>
 <translation id="3257954757204451555">ಈ ಮಾಹಿತಿಯ ಹಿಂದೆ ಯಾರಿದ್ದಾರೆ?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar ನಲ್ಲಿ ಹೊಸ ಈವೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="3261488570342242926">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="3264837738038045344">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಬಟನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ, ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಲು Enter ಒತ್ತಿ</translation>
 <translation id="3266793032086590337">ಮೌಲ್ಯ (ಸಂಘರ್ಷ ಇರುವುದು)</translation>
 <translation id="3268451620468152448">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -1147,6 +1169,7 @@
 <translation id="4628948037717959914">ಫೋಟೋ</translation>
 <translation id="4631649115723685955">ಕ್ಯಾಶ್‌ಬ್ಯಾಕ್ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4636930964841734540">ಮಾಹಿತಿ</translation>
+<translation id="4638670630777875591">Chromium ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್</translation>
 <translation id="464342062220857295">ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="4644670975240021822">ಹಿಮ್ಮುಖ ಆರ್ಡರ್ ಮುಖ ಕೆಳಗೆ</translation>
 <translation id="4646534391647090355">ನನ್ನನ್ನು ಈಗ ಅಲ್ಲಿಗೆ ಕರೆದೊಯ್ಯಿರಿ</translation>
@@ -1242,6 +1265,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹುಡುಕಲು ಟ್ಯಾಬ್ ಒತ್ತಿ ನಂತರ ನಮೂದಿಸಿ</translation>
 <translation id="4930153903256238152">ದೊಡ್ಡ ಸಾಮರ್ಥ್ಯ</translation>
+<translation id="4940163644868678279">Chrome ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್</translation>
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4950898438188848926">ಟ್ಯಾಬ್ ಬದಲಿಸುವ ಬಟನ್, ತೆರೆದಿರುವ ಟ್ಯಾಬ್, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ಗೆ ಬದಲಾಯಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
@@ -1602,6 +1626,7 @@
 <translation id="6120179357481664955">ನಿಮ್ಮ UPI ಐಡಿ ನೆನಪಿದೆಯೇ?</translation>
 <translation id="6124432979022149706">Chrome ಎಂಟರ್‌ಪ್ರೈಸ್ ಕನೆಕ್ಟರ್‌ಗಳು</translation>
 <translation id="6127379762771434464">ಐಟಂ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">ಯಾವುದೇ ಕೇಬಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ. ನೀವು ಬಳಸುತ್ತಿರಬಹುದಾದ ಯಾವುದೇ ರೂಟರ್‌ಗಳು, ಮೋಡೆಮ್‌ಗಳು ಅಥವಾ ಇತರ ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳನ್ನು ರೀಬೂಟ್ ಮಾಡಿ.</translation>
 <translation id="614940544461990577">ಪ್ರಯತ್ನಿಸಿ:</translation>
 <translation id="6150036310511284407">ಎಡಭಾಗದಲ್ಲಿ ಮೂರು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
@@ -1635,7 +1660,6 @@
 <translation id="6272383483618007430">Google ಅಪ್‍ಡೇಟ್</translation>
 <translation id="6276112860590028508">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="627746635834430766">ಮುಂದಿನ ಬಾರಿ ವೇಗವಾಗಿ ಪಾವತಿಸಲು, ನಿಮ್ಮ ಕಾರ್ಡ್‌ ಮತ್ತು ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ.</translation>
-<translation id="6279098320682980337">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಭರ್ತಿ ಮಾಡಿಲ್ಲವೇ? ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ನಕಲಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6280223929691119688">ಈ ವಿಳಾಸಕ್ಕೆ ತಲುಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="6282194474023008486">ಪೋಸ್ಟಲ್ ಕೋಡ್</translation>
 <translation id="6285507000506177184">Chrome ಬಟನ್‌ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ, ನೀವು Chrome ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Enter ಒತ್ತಿರಿ</translation>
@@ -1876,6 +1900,12 @@
 <translation id="7111012039238467737">(ಮಾನ್ಯವಾಗಿದೆ)</translation>
 <translation id="7118618213916969306">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ URL ಗಾಗಿ ಹುಡುಕಿ, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಥವಾ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="7129355289156517987">ನೀವು ಎಲ್ಲಾ Chromium ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ, ಆ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ಈ ವಿಳಾಸಕ್ಕೆ ರವಾನಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="7132939140423847331">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಡೇಟಾವನ್ನು ನಕಲಿಸದಂತೆ ನಿಷೇಧಿಸಿದ್ದಾರೆ.</translation>
 <translation id="7135130955892390533">ಕಾರ್ಯನೀತಿ ಸ್ಥಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
@@ -1993,6 +2023,12 @@
 <translation id="7485870689360869515">ಯಾವುದೇ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="7495528107193238112">ಈ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ಸೈಟ್ ಮಾಲೀಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="7497998058912824456">Doc ರಚಿಸಿ ಬಟನ್, ಹೊಸ Google Doc ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Enter ಒತ್ತಿ</translation>
+<translation id="7506488012654002225">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chromium <ph name="BEGIN_EMPHASIS" />ಉಳಿಸುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ
+          <ph name="LIST_ITEM" />ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ
+          <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ಹಿಂತಿರುಗಿಸಲಾದ ನೀತಿಯ ಸಾಧನ ಐಡಿ ಖಾಲಿ ಇದೆ ಅಥವಾ ಪ್ರಸ್ತುತ ಸಾಧನ ಐಡಿಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7508870219247277067">ಅವಕಾಡೊ ಹಸಿರು</translation>
 <translation id="7511955381719512146">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈಗೆ ನೀವು <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ಅನ್ನು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
@@ -2212,6 +2248,7 @@
 <translation id="8202370299023114387">ಸಂಘರ್ಷ</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">ಸಂಪರ್ಕ ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
+<translation id="8217240300496046857">ವೆಬ್‌ನಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಕುಕೀಗಳನ್ನು ವೆಬ್‌ಸೈಟ್‌ಗಳು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸೈಟ್‌ಗಳಲ್ಲಿನ ಕೆಲವು ವೈಶಿಷ್ಟ್ಯಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು.</translation>
 <translation id="8218327578424803826">ನಿಯೋಜಿಸಲಾದ ಸ್ಥಳ:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">ಈ ಕಂಪ್ಯೂಟರ್ ಹೊಂದಿಸಿರುವ ವ್ಯಕ್ತಿಯು ಈ ಸೈಟ್ ನಿರ್ಬಂಧಿಸಲು ಆಯ್ಕೆಮಾಡಿದ್ದಾರೆ.</translation>

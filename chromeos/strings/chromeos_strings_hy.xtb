@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Տեղավորել սկանավորվող հատվածում</translation>
 <translation id="1387854245479784695">Սա բոլոր միջուկների միավորումն է</translation>
+<translation id="1394661041439318933">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="1397738625398125236">Անցախուցը պատասխանում է փինգ հարցմանը</translation>
 <translation id="1398634363027580500">HTTPS-ի շատ բարձր հապաղում</translation>
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ես ունեմ բանալիների զույգ</translation>
+<translation id="1451536289672181509">Սարքը ստեղնաշար է։</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
 <translation id="1476467821656042872">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս կարող է տեսնել ձեր գործողությունները։</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
@@ -81,6 +83,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2104796393919810494">Վերանորոգումն ավարտված է</translation>
+<translation id="2105810540595158374">Սարքը խաղային վահանակ է։</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, տարբերակ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ԳԲ-ից հասանելի է <ph name="AVAILABLE_MEMORY" /> ԳԲ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +137,7 @@
 <translation id="2926057806159140518">Մուտքագրեք ձեր անունը և գաղտնաբառը կամ սկանավորեք QR կոդը</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
+<translation id="3031560714565892478">Սարքը տեսախցիկ է։</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> մԱ</translation>
 <translation id="3056720590588772262">Վերջնակետ</translation>
 <translation id="3069085583900247081">Փորձարկումը ձախողվեց</translation>
@@ -141,6 +145,7 @@
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
 <translation id="3102119246920354026">Հիշապահեստ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Սարքը միացված է։</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Հեռացնե՞լ էջը}=1{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}one{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}other{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
 <translation id="3156846309055100599">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը...</translation>
@@ -156,6 +161,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> ԳՀց</translation>
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3328783797891415197">Փորձարկում</translation>
+<translation id="3340011300870565703">Աջ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +170,7 @@
 <translation id="345898999683440380">Սկանավորվում է էջ <ph name="PAGE_NUM" />-ը։ Կատարված է <ph name="PERCENTAGE_VALUE" />%-ը։</translation>
 <translation id="3459509316159669723">Տպում</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> սարքը թարմացվում է</translation>
+<translation id="3484914941826596830">Քանի դեռ ներկառուցված ծրագիրը թարմացվում է, մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Այս թարմացումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
 <translation id="3486220673238053218">սահմանում</translation>
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
@@ -193,6 +200,7 @@
 <translation id="3932043219784172185">Միացած սարքեր չկան</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
+<translation id="3954678691475912818">Սարքի տեսակը հայտնի չէ։</translation>
 <translation id="3966286471246132217">Ավելի ճշգրիտ արդյունքներ ստանալու համար փակեք բոլոր հավելվածները, մինչև որ փորձարկումը չավարտվի։</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
@@ -274,6 +282,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4891842000192098784">Ծանրաբեռնվածություն</translation>
+<translation id="4897058166682006107">Ձախ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
 <translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
@@ -321,6 +330,7 @@
 <translation id="5346687412805619883">Լոկալ ցանց</translation>
 <translation id="5358174242040570474">Սխալ առաջացավ։ Նորից ընտրեք պաստառ կամ հավելվածը փակեք ու նորից բացեք։</translation>
 <translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
+<translation id="5400907029458559844">Սարքը միանում է։</translation>
 <translation id="5401938042319910061">Գործարկել բոլոր հերթականությունները</translation>
 <translation id="5423849171846380976">Ակտիվացված է</translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
@@ -382,6 +392,7 @@
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> թեստը չեղարկվել է</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրի թարմացում</translation>
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
 <translation id="6340526405444716530">Անհատականացում</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
@@ -414,6 +425,7 @@
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
 <translation id="6747215703636344499">Դադարեցվել է – Ելքային դարակը լցված է</translation>
 <translation id="6749473226660745022">Լուսանկարներ</translation>
+<translation id="6753452347192452143">Սարքը համակարգիչ է։</translation>
 <translation id="6756731097889387912">Չհաջողվեց չեղարկել սկանավորումը</translation>
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
@@ -431,12 +443,14 @@
 <translation id="6992266763844448459">Ընտրեք այս տարբերակը, եթե սարքի նկատմամբ սեփականության իրավունքը չի փոխվում։ Օրինակ՝ սարքը փոխանցվում է այլ անձի՝ կազմակերպության ներսում։</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
+<translation id="7041549558901442110">Սարքը միացված չէ։</translation>
 <translation id="7058278511608979688">Ավարտել և պահել</translation>
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Նախապատրաստեք սարքը</translation>
 <translation id="708426984172631313">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Սխալ – չհաջողվեց թույլատրել</translation>
+<translation id="7103252855940681301">Սարք <ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
 <translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվեր}other{Անվանումների սերվերներ}}</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
@@ -471,6 +485,7 @@
 <translation id="7502658306369382406">IPv6 հասցե</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Դիագնոստիկայի ծրագրեր</translation>
+<translation id="7551123448725492271">Սարքն աուդիո սարք է։</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB հպէկրան</translation>
@@ -478,6 +493,7 @@
 <translation id="7620771111601174153">Մանրամասն Օգնության կենտրոնի մասին</translation>
 <translation id="763165478673169849">Վերջին զրոյացման ժամանակը</translation>
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
+<translation id="7656388927906093505">Սարքը մկնիկ է։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7701040980221191251">Չկա</translation>
@@ -574,6 +590,7 @@
 <translation id="8855781559874488009">Չհաջողվեց միանալ HTTP կայքերին հրապատի միջոցով</translation>
 <translation id="8863888432376731307">Ստացեք «<ph name="QUERY" />» բառի <ph name="INTENT" />ը և ավելին</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Սարքը պլանշետ է։</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
 <translation id="8898840733695078011">Ազդանշանի հզորությունը</translation>
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
@@ -584,11 +601,13 @@
 <translation id="8930622219860340959">Անլար</translation>
 <translation id="8936793075252196307">Սպասառուի IP հասցե</translation>
 <translation id="8945750210906526975">Ներքին հպահարթակ</translation>
+<translation id="894617464444543719">Սարքը հեռախոս է։</translation>
 <translation id="8968751544471797276">Լիցքավորման արագությունը</translation>
 <translation id="8970109610781093811">Կրկնել</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Սկանավորել}=1{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}one{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}other{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}}</translation>
 <translation id="8994273342647807496">Տեղադրում՝ <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Սարքի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="9003704114456258138">Հաճախականություն</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-ի փոխակերպումն ունի բարձր հապաղում</translation>

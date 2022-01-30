@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">USB-C-enhet (porten på venstre side)</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1294807885394205587">Denne prosessen kan ta noen minutter. Starter beholderbehandling.</translation>
+<translation id="1296046226918222533">Noe gikk galt, og Linux-oppgraderingen mislyktes. Du finner mer informasjon om feilen i loggene. Loggene er lagret i <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Fest den valgte fanen</translation>
 <translation id="1297175357211070620">Destinasjon</translation>
 <translation id="129770436432446029">Send tilbakemelding om <ph name="EXPERIMENT_NAME" /></translation>
@@ -2797,6 +2798,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3799128412641261490">Innstillinger for brytertilgang</translation>
 <translation id="3800806661949714323">Vis alle (anbefales)</translation>
 <translation id="3800828618615365228">Tilleggsvilkår for Google Chrome og ChromeOS</translation>
+<translation id="3802486193901166966">Denne utvidelsen krever ingen spesielle tillatelser og har ingen ytterligere nettstedstilgang</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
 <translation id="380408572480438692">Aktivering av innsamling av ytelsesdata hjelper Google med å bekrefte systemet over tid, Data sendes ikke inn før du fyller ut en tilbakemeldingsrapport (Alt-Shift-I) og legger ved ytelsesdata. Du kan deaktivere innsamlingen når som helst via denne skjermen.</translation>
@@ -3824,6 +3826,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-nettsteder</translation>
 <translation id="48838266408104654">&amp;Oppgavebehandling</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Denne utvidelsen har ingen ytterligere nettstedstilgang</translation>
 <translation id="4887424188275796356">Åpne med visningsprogrammet for systemet</translation>
 <translation id="488785315393301722">Vis detaljer</translation>
 <translation id="4890773143211625964">Vis avanserte skriveralternativer</translation>
@@ -3998,6 +4001,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5075910247684008552">Som standard blokkeres usikkert innhold på sikre nettsteder</translation>
 <translation id="5078638979202084724">Legg inn alle faner som bokmerke</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
+<translation id="5079010647467150187">Legg til innebygd VPN…</translation>
 <translation id="5079950360618752063">Bruk foreslått passord</translation>
 <translation id="508059534790499809">Oppdater en Kerberos-sak</translation>
 <translation id="5084230410268011727">Tillat at nettsteder bruker bevegelses- og lyssensorer</translation>
@@ -5549,6 +5553,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6709133671862442373">Nyheter</translation>
 <translation id="6709357832553498500">Koble til med <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Forrige</translation>
+<translation id="6710973041022512889">Oppgraderingen er fullført. For å se detaljert informasjon om oppgraderingen, se loggene som er lagret i <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Tilknytt <ph name="WEB_DRIVE" />-konto for Nedlastinger</translation>
 <translation id="6712943853047024245">Du har allerede lagret et passord med dette brukernavnet for <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Legg til en jobbprofil</translation>

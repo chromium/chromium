@@ -1119,16 +1119,6 @@ Web e PWAs. No momento, com suporte apenas no
 
       Se a política for definida como falsa, as informações não serão enviadas.
       Se for definida como verdadeira ou deixada sem definição, o status de rede do dispositivo será enviado.</translation>
-<translation id="2221850122314326571">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> verificará os certificados do servidor usando o verificador integrado de certificados.
-      Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> verificará os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
-      Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado poderão ser usados.
-
-      Esta política será removida na versão 81 do <ph name="PRODUCT_OS_NAME" />, quando a compatibilidade com o verificador de certificados legado no <ph name="PRODUCT_OS_NAME" /> também será removida.
-
-      Esta política será removida do <ph name="PRODUCT_NAME" /> na versão 83 do Linux, quando a compatibilidade com o verificador de certificados legado nesse SO também será removida.
-
-      Esta política será removida do <ph name="PRODUCT_NAME" /> na versão 92 do Mac OS X, quando a compatibilidade com o verificador de certificados legado nesse SO também será removida.
-      </translation>
 <translation id="2223393221350938149">Não permitir que sites executem o JIT do JavaScript</translation>
 <translation id="2223582957891074498">Se a política for definida como verdadeira, não será permitido fazer capturas de tela com os atalhos do teclado ou APIs de extensão. Se ela for definida como falsa, as capturas de tela serão permitidas.</translation>
 <translation id="2223598546285729819">Configuração padrão de notificações</translation>

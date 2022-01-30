@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">Peranti USB-C (port kiri)</translation>
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1294807885394205587">Proses ini mungkin mengambil masa beberapa minit. Memulakan pengurus bekas.</translation>
+<translation id="1296046226918222533">Kesilapan telah berlaku dan peningkatan Linux gagal. Maklumat lanjut tentang kegagalan boleh didapati dalam log. Log ini telah disimpan dalam <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Sematkan Tab yang Dipilih</translation>
 <translation id="1297175357211070620">Destinasi</translation>
 <translation id="129770436432446029">Hantar maklum balas untuk <ph name="EXPERIMENT_NAME" /></translation>
@@ -2803,6 +2804,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3799128412641261490">Tetapan akses suis</translation>
 <translation id="3800806661949714323">Tunjukkan semua (disyorkan)</translation>
 <translation id="3800828618615365228">Syarat Tambahan Google Chrome dan OS Chrome</translation>
+<translation id="3802486193901166966">Sambungan ini tidak memerlukan kebenaran khas dan tiada akses laman tambahan</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803345858388753269">Kualiti Video</translation>
 <translation id="380408572480438692">Tindakan mendayakan pengumpulan data prestasi akan membantu Google menambah baik sistem dengan berlalunya masa. Tiada data dihantar sehingga anda memfailkan laporan maklum balas (Alt-Shift-I) dan menyertakan data prestasi. Anda boleh kembali ke skrin ini untuk melumpuhkan pengumpulan pada bila-bila masa.</translation>
@@ -3216,6 +3218,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4231095370974836764">Pasang apl dan permainan daripada Google Play pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurasikan Kerberos</translation>
 <translation id="4235965441080806197">Batalkan log masuk</translation>
+<translation id="4236163961381003811">Temukan lebih banyak sambungan</translation>
 <translation id="4241182343707213132">Mulakan semula peranti untuk mengemas kini apl organisasi</translation>
 <translation id="4242145785130247982">Sijil pelanggan berbilang tidak disokong</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
@@ -3833,6 +3836,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4883436287898674711">Semua tapak <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Pengurus Tugas</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Sambungan ini tiada akses laman tambahan</translation>
 <translation id="4887424188275796356">Buka Dengan Pemapar Sistem</translation>
 <translation id="488785315393301722">Tunjukkan Butiran</translation>
 <translation id="4890773143211625964">Tunjukkan pilihan terperinci pencetak</translation>
@@ -4007,6 +4011,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5075910247684008552">Kandungan tidak selamat disekat secara lalai pada tapak selamat</translation>
 <translation id="5078638979202084724">Tanda halaman semua tab</translation>
 <translation id="5078796286268621944">PIN salah</translation>
+<translation id="5079010647467150187">Tambah VPN terbina dalam...</translation>
 <translation id="5079950360618752063">Gunakan kata laluan yang disyorkan</translation>
 <translation id="508059534790499809">Muat semula tiket Kerberos</translation>
 <translation id="5084230410268011727">Benarkan tapak menggunakan penderia gerakan dan cahaya</translation>
@@ -5559,6 +5564,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6709133671862442373">Berita</translation>
 <translation id="6709357832553498500">Sambung menggunakan <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
+<translation id="6710973041022512889">Peningkatan telah berjaya diselesaikan. Untuk maklumat peningkatan terperinci, log telah disimpan dalam <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Pautkan akaun <ph name="WEB_DRIVE" /> untuk Muat Turun</translation>
 <translation id="6712943853047024245">Anda telah menyimpan kata laluan dengan nama pengguna ini untuk <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Tambah Profil Kerja</translation>

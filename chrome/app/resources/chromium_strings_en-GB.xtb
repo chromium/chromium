@@ -225,6 +225,7 @@ Some features may be unavailable. Please specify a different profile directory o
 Google Chrome is unable to recover your settings.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">New window</translation>
+<translation id="7342713658732509484">Permissions that you've already given to websites and apps may apply to this account. If you don't want websites or apps to access your account info, use Guest Mode in Chromium browser. You can also manage your Google Accounts in <ph name="LINK_2_BEGIN" />Settings<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Your web, bookmarks and other Chromium stuff live here.</translation>
 <translation id="7349591376906416160">Your system administrator has configured Chromium to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">With Chromium profiles, you can separate all of your Chromium things. This makes it easier to split between work and fun.</translation>

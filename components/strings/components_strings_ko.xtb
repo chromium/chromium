@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">세부정보 보기</translation>
 <translation id="1030706264415084469"><ph name="URL" />에서 내 기기에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1032854598605920125">시계 방향으로 회전</translation>
+<translation id="1033329911862281889">시크릿 모드를 사용해도 나의 온라인 활동이 완전히 비공개로 유지되지는 않습니다.
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />사이트 및 사이트 서비스에서 나의 방문 사실을 알 수 있습니다.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />직장 또는 학교에서 탐색 활동을 추적할 수 있습니다.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />인터넷 서비스 제공업체(ISP)에서 웹 트래픽을 모니터링할 수 있습니다.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036982837258183574">전체화면을 종료하려면 |<ph name="ACCELERATOR" />|을(를) 누르세요.</translation>
 <translation id="1038106730571050514">추천 보기</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">정책 캐시 확인</translation>
 <translation id="1130564665089811311">페이지 번역 버튼, Google 번역으로 이 페이지를 번역하려면 Enter 누르기</translation>
 <translation id="1131264053432022307">복사한 이미지</translation>
+<translation id="1142846828089312304">시크릿 모드에서 서드 파티 쿠키 차단</translation>
 <translation id="1150979032973867961">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 컴퓨터의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="1151972924205500581">비밀번호를 입력해야 합니다.</translation>
 <translation id="1156303062776767266">표시된 파일은 로컬 또는 공유 파일입니다.</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">보내기</translation>
 <translation id="1484290072879560759">배송지 주소 선택</translation>
 <translation id="1492194039220927094">정책 푸시:</translation>
+<translation id="149293076951187737">Chrome 시크릿 탭을 모두 닫으면 기기에서 다음 탭의 활동이 삭제됩니다.
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />탐색 활동<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />검색 기록<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />양식에 입력된 정보<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">탭으로 돌아가기</translation>
 <translation id="1501859676467574491">Google 계정에 저장된 카드 표시</translation>
 <translation id="1507202001669085618">&lt;p&gt;온라인에 접속하기 위해 로그인해야 하는 Wi-Fi 포털을 사용하면 이 오류가 표시됩니다.&lt;/p&gt;
@@ -211,6 +224,7 @@
 <translation id="1567040042588613346">이 정책은 정상 작동 중이나 다른 위치에 같은 값이 설정되었으므로 이 정책에 의해 대체되었습니다.</translation>
 <translation id="1569487616857761740">만료일 입력</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581767074483369314">가상 카드 등록</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">이 웹페이지를 표시하는 도중 문제가 발생했습니다.</translation>
 <translation id="1586541204584340881">내가 설치한 확장 프로그램</translation>
@@ -280,6 +294,7 @@
 <translation id="1763864636252898013">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 기기의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="1772163372082567643">대상 서버인 <ph name="ORIGIN" />에서 헤더를 설정하여 서버로 전송되는 모든 요청에 출처 정책을 적용하도록 요청했습니다. 하지만 헤더의 형식이 잘못되어 브라우저에서 <ph name="SITE" />에 관한 요청을 처리할 수 없습니다. 사이트 운영자는 출처 정책을 사용해 사이트의 보안 및 기타 속성을 구성할 수 있습니다.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium 시크릿 모드 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">열린 탭이 여기에 표시됩니다.</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -372,6 +387,7 @@
 <translation id="2101225219012730419">버전:</translation>
 <translation id="2102134110707549001">강력한 비밀번호 추천...</translation>
 <translation id="2102495993840063010">Android 앱</translation>
+<translation id="2106249949168291652">저장했습니다. 가상 카드로 더 안전하게 만들까요?</translation>
 <translation id="2107021941795971877">인쇄 지지대</translation>
 <translation id="2108755909498034140">컴퓨터 다시 시작</translation>
 <translation id="2111166930115883695">플레이하려면 스페이스바를 누르세요.</translation>
@@ -521,12 +537,19 @@
 <translation id="2597378329261239068">문서가 비밀번호로 보호되고 있습니다. 비밀번호를 입력하세요.</translation>
 <translation id="2609632851001447353">유사 버전</translation>
 <translation id="2610561535971892504">클릭하여 복사</translation>
+<translation id="2617988307566202237">Chrome에서는 다음 정보를 <ph name="BEGIN_EMPHASIS" />저장하지 않습니다<ph name="END_EMPHASIS" />.
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />방문 기록
+            <ph name="LIST_ITEM" />쿠키 및 사이트 데이터
+            <ph name="LIST_ITEM" />양식에 입력된 정보
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10(봉투)</translation>
 <translation id="2623663032199728144">화면에 관한 정보 사용을 요청할 수 있음</translation>
 <translation id="2625385379895617796">시간이 너무 먼 미래로 설정되어 있습니다.</translation>
 <translation id="262745152991669301">USB 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="2629325967560697240">Chrome에서 가장 강력한 보안 기능을 사용하려면 <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하세요.</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />의 서버 IP 주소를 찾을 수 없습니다.</translation>
+<translation id="2638001509205834345">카드를 더 안전하게 만들까요?</translation>
 <translation id="2639739919103226564">상태:</translation>
 <translation id="264810637653812429">호환되는 기기가 없습니다.</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" />, <ph name="CITY" /></translation>
@@ -586,6 +609,7 @@
 <translation id="2850739647070081192">Invite(봉투)</translation>
 <translation id="2856444702002559011">공격자가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에서 정보(예: 비밀번호, 메시지, 신용카드 등)를 도용하려고 시도 중일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
+<translation id="286512204874376891">가상 카드는 실제 카드를 숨겨서 사기 위험을 줄여줍니다. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">친근함</translation>
 <translation id="2876489322757410363">시크릿 모드를 종료하고 외부 애플리케이션에서 결제합니다. 계속하시겠습니까?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 세이프 브라우징 등을 관리하려면 Tab과 Enter를 차례로 누르세요</translation>
@@ -659,6 +683,7 @@
 <translation id="3113284927548439113">세 번째 근무조</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" />에서 데이터를 백업하고 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다.</translation>
 <translation id="3116158981186517402">라미네이트</translation>
+<translation id="311958134571892113">다음 카드와 연결됨</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />연결 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />(으)로 이동</translation>
@@ -705,6 +730,7 @@
 <translation id="3252266817569339921">프랑스어</translation>
 <translation id="3257954757204451555">이 정보는 누가 제공했나요?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Calendar에서 빠르게 새 일정 만들기</translation>
+<translation id="3261488570342242926">가상 카드 자세히 알아보기</translation>
 <translation id="3264837738038045344">Chrome 설정 관리 버튼, Enter를 눌러 Chrome 설정으로 이동</translation>
 <translation id="3266793032086590337">값(충돌)</translation>
 <translation id="3268451620468152448">열린 탭</translation>
@@ -1144,6 +1170,7 @@
 <translation id="4628948037717959914">사진</translation>
 <translation id="4631649115723685955">캐시백 연결됨</translation>
 <translation id="4636930964841734540">정보</translation>
+<translation id="4638670630777875591">Chromium 시크릿 모드</translation>
 <translation id="464342062220857295">검색 기능</translation>
 <translation id="4644670975240021822">역순으로 인쇄면이 아래를 향하게</translation>
 <translation id="4646534391647090355">지금 이동</translation>
@@ -1239,6 +1266,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 검색</translation>
 <translation id="4930153903256238152">대용량</translation>
+<translation id="4940163644868678279">Chrome 시크릿 모드</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
 <translation id="4950898438188848926">탭 전환 버튼, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> 열린 탭으로 전환하려면 Enter를 누르세요</translation>
 <translation id="495170559598752135">작업</translation>
@@ -1599,6 +1627,7 @@
 <translation id="6120179357481664955">UPI ID를 저장하시겠습니까?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome 시크릿 모드 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">케이블을 확인하고 사용 중인 라우터, 모뎀 또는 기타 네트워크 기기를
     재부팅하시기 바랍니다.</translation>
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
@@ -1633,7 +1662,6 @@
 <translation id="6272383483618007430">Google 업데이트</translation>
 <translation id="6276112860590028508">읽기 목록의 페이지가 여기에 표시됩니다.</translation>
 <translation id="627746635834430766">다음번에 더 빠르게 결제할 수 있도록 Google 계정에 카드와 청구서 수신 주소를 저장하세요.</translation>
-<translation id="6279098320682980337">가상 카드 번호가 자동 완성되지 않았나요? 복사할 카드 세부정보를 클릭하세요.</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6282194474023008486">우편번호</translation>
 <translation id="6285507000506177184">Chrome 다운로드 관리 버튼, Chrome에서 다운로드한 파일을 관리하려면 Enter를 누르세요</translation>
@@ -1874,6 +1902,12 @@
 <translation id="7111012039238467737">(유효)</translation>
 <translation id="7118618213916969306">클립보드 URL <ph name="SHORT_URL" /> 검색</translation>
 <translation id="7119414471315195487">다른 탭 또는 프로그램 닫기</translation>
+<translation id="7129355289156517987">Chromium 시크릿 탭을 모두 닫으면 기기에서 다음 탭의 활동이 삭제됩니다.
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />탐색 활동<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />검색 기록<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />양식에 입력된 정보<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">이 주소로 배송할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="7132939140423847331">관리자가 복사를 금지한 데이터입니다.</translation>
 <translation id="7135130955892390533">상태 보기</translation>
@@ -1991,6 +2025,12 @@
 <translation id="7485870689360869515">데이터 없음</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="7497998058912824456">문서 만들기 버튼, Enter를 눌러 빠르게 새 Google 문서 만들기</translation>
+<translation id="7506488012654002225">Chromium에서는 다음 정보를 <ph name="BEGIN_EMPHASIS" />저장하지 않습니다<ph name="END_EMPHASIS" />.
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />방문 기록
+            <ph name="LIST_ITEM" />쿠키 및 사이트 데이터
+            <ph name="LIST_ITEM" />양식에 입력된 정보
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">반환된 정책 기기 ID가 비었거나 현재 기기 ID와 일치하지 않음</translation>
 <translation id="7508870219247277067">아보카도 녹색</translation>
 <translation id="7511955381719512146">사용 중인 Wi-Fi에서 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> 방문을 요청할 수 있습니다.</translation>
@@ -2210,6 +2250,7 @@
 <translation id="8202370299023114387">충돌</translation>
 <translation id="8206978196348664717">Prc4(봉투)</translation>
 <translation id="8211406090763984747">이 사이트는 보안 연결(HTTPS)이 사용되었습니다.</translation>
+<translation id="8217240300496046857">사이트에서 웹 전반에 걸쳐 사용자를 추적하는 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="8218327578424803826">지정된 위치:</translation>
 <translation id="8220146938470311105">C7/C6(봉투)</translation>
 <translation id="8225771182978767009">컴퓨터를 설정한 사용자가 이 사이트를 차단했습니다.</translation>
@@ -2336,6 +2377,7 @@
 <translation id="8669306706049782872">화면에 관한 정보를 사용하여 창을 열고 배치합니다.</translation>
 <translation id="867224526087042813">서명</translation>
 <translation id="8676424191133491403">지연 없음</translation>
+<translation id="8679903780129190080">동의</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, 답변, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">다음 이유로 <ph name="PAGE" />의 웹페이지를 로드할 수 없습니다.</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

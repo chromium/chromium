@@ -1119,16 +1119,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si estableces la política como falsa, no se informarán los eventos.
       Si la estableces como verdadera o no la estableces, se informará el estado de red del dispositivo.</translation>
-<translation id="2221850122314326571">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
-      Si la inhabilitas, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados heredado que incluye la plataforma.
-      Si no la estableces, podrán utilizarse el verificador de certificados integrado o el heredado.
-
-      Se planea quitar esta política en la versión 81 de <ph name="PRODUCT_OS_NAME" />, cuando se quite la compatibilidad con el verificador de certificados heredado de <ph name="PRODUCT_OS_NAME" />.
-
-      Se planea quitar esta política en la versión 83 de <ph name="PRODUCT_NAME" /> para Linux, cuando se quite la compatibilidad con el verificador de certificados heredado de Linux.
-
-      Se planea quitar esta política en la versión 92 de <ph name="PRODUCT_NAME" /> para Mac OS X, cuando se quite la compatibilidad con el verificador de certificados heredado de Mac OS X.
-      </translation>
 <translation id="2223393221350938149">No permitir que cualquier sitio ejecute JavaScript con JIT</translation>
 <translation id="2223582957891074498">Si estableces la política como verdadera, no se permitirá realizar capturas de pantalla con combinaciones de teclas ni API de extensiones. Si la estableces como falsa, se permitirá realizar capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>

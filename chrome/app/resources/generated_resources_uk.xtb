@@ -300,6 +300,7 @@
 <translation id="1293264513303784526">Пристрій із портом USB типу C (ліворуч)</translation>
 <translation id="1293556467332435079">Файли</translation>
 <translation id="1294807885394205587">Це може зайняти кілька хвилин. Запуск менеджера контейнера.</translation>
+<translation id="1296046226918222533">Сталася помилка. Не вдалось оновити Linux. Щоб дізнатися більше, перегляньте журнали, збережені у файлі "<ph name="LOG_FILE" />"</translation>
 <translation id="1296911687402551044">Закріпити вибрану вкладку</translation>
 <translation id="1297175357211070620">Місце призначення</translation>
 <translation id="129770436432446029">Надішліть відгук про експеримент "<ph name="EXPERIMENT_NAME" />"</translation>
@@ -2805,6 +2806,7 @@
 <translation id="3799128412641261490">Налаштування кнопкового доступу</translation>
 <translation id="3800806661949714323">Показати всі (рекомендовано)</translation>
 <translation id="3800828618615365228">Додаткові умови використання Google Chrome і ОС Chrome</translation>
+<translation id="3802486193901166966">Для цього розширення не потрібні спеціальні дозволи, і воно не має додаткового доступу до сайтів</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803345858388753269">Якість відео</translation>
 <translation id="380408572480438692">Увімкнення збору даних про ефективність допоможе Google із часом покращити систему. Дані не надсилаються, доки ви не напишете відгук (Alt-Shift-I) і не включите дані про ефективність. Можна будь-коли повернутися на цей екран і вимкнути збір даних.</translation>
@@ -3835,6 +3837,7 @@
 <translation id="4883436287898674711">Усі сайти <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Диспетчер завдань</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Це розширення не має додаткового доступу до сайтів</translation>
 <translation id="4887424188275796356">Відкрити за допомогою системного переглядача</translation>
 <translation id="488785315393301722">Показати деталі</translation>
 <translation id="4890773143211625964">Показати розширені налаштування принтера</translation>
@@ -4009,6 +4012,7 @@
 <translation id="5075910247684008552">Незахищений контент заблоковано за умовчанням на захищених сайтах</translation>
 <translation id="5078638979202084724">Додати всі вкладки в закладки</translation>
 <translation id="5078796286268621944">Неправильний PIN-код</translation>
+<translation id="5079010647467150187">Додати вбудовану мережу VPN…</translation>
 <translation id="5079950360618752063">Використати запропонований пароль</translation>
 <translation id="508059534790499809">Оновити квиток Kerberos</translation>
 <translation id="5084230410268011727">Надати сайтам доступ до датчиків руху й світла</translation>
@@ -5561,6 +5565,7 @@
 <translation id="6709133671862442373">Новини</translation>
 <translation id="6709357832553498500">Під’єднатися за допомогою розширення <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Назад</translation>
+<translation id="6710973041022512889">Оновлення успішно завершено. Щоб дізнатися більше, перегляньте журнали у файлі "<ph name="LOG_FILE" />"</translation>
 <translation id="6711146141291425900">Зв’яжіть обліковий запис сервісу <ph name="WEB_DRIVE" /> для завантажень</translation>
 <translation id="6712943853047024245">Ви вже зберегли пароль, зв’язаний із цим іменем користувача, для <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Додати робочий профіль</translation>

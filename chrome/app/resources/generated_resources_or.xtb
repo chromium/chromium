@@ -296,6 +296,7 @@
 <translation id="1293264513303784526">USB-C ଡିଭାଇସ୍ (ବାମ ପୋର୍ଟ)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">ଏହି ପ୍ରକ୍ରିୟା ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ। କଣ୍ଟେନର୍ ମ୍ୟାନେଜର୍ ଆରମ୍ଭ ହେଉଛି।</translation>
+<translation id="1296046226918222533">କିଛି ତ୍ରୁଟି ହୋଇଛି ଏବଂ Linuxର ଅପଗ୍ରେଡ ବିଫଳ ହୋଇଛି। ବିଫଳ ହେବା ସମ୍ବନ୍ଧରେ ଅଧିକ ସୂଚନା ଲଗଗୁଡ଼ିକରେ ମିଳିପାରିବ। ଲଗଗୁଡ଼ିକ <ph name="LOG_FILE" />ରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="1296911687402551044">ଚୟନ କରାଯାଇଥିବା ଟାବ୍‌କୁ ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="1297175357211070620">ଲକ୍ଷ୍ୟସ୍ଥଳ</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> ପାଇଁ ମତାମତ ପଠାନ୍ତୁ</translation>
@@ -2786,6 +2787,7 @@
 <translation id="3799128412641261490">ଆକ୍ସେସ୍ ସେଟିଂସକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="3800806661949714323">ସବୁ ଦେଖାନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="3800828618615365228">Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସର୍ତ୍ତାବଳୀ</translation>
+<translation id="3802486193901166966">ଏହି ଏକ୍ସଟେନସନ ପାଇଁ କୌଣସି ବିଶେଷ ଅନୁମତିର ଆବଶ୍ୟକତା ନାହିଁ ଏବଂ ଏହାର କୌଣସି ଅତିରିକ୍ତ ସାଇଟ ଆକ୍ସେସ ନାହିଁ</translation>
 <translation id="380329542618494757">ନାମ</translation>
 <translation id="3803345858388753269">ଭିଡିଓ ଗୁଣବତ୍ତା</translation>
 <translation id="380408572480438692">କାର୍ଯ୍ୟଦକ୍ଷତା ଡାଟା ସଂଗ୍ରହ ସକ୍ଷମ କରିବା ଦ୍ୱାରା ସମୟାନୁଯାୟୀ Googleକୁ ସିଷ୍ଟମ୍‌ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବ। ଯେପର୍ଯ୍ୟନ୍ତ ଆପଣ କୌଣସି ମତାମତ ରିପୋର୍ଟ (Alt-Shift-I) ଦାଖଲ କରିନାହିଁନ୍ତି ଏବଂ କାର୍ଯ୍ୟଦକ୍ଷତା ଡାଟା ଅନ୍ତର୍ଭୁକ୍ତ କରିନାହିଁନ୍ତି, ସେପର୍ଯ୍ୟନ୍ତ କୌଣସି ଡାଟା ପଠାଯାଏ ନାହିଁ। ଯେକୌଣସି ସମୟରେ ସଂଗ୍ରହଗୁଡ଼ିକୁ ଅକ୍ଷମ କରିବାକୁ ଆପଣ ଏହି ସ୍କ୍ରିନ୍‌କୁ ଫେରିପାରିବେ।</translation>
@@ -3815,6 +3817,7 @@
 <translation id="4883436287898674711">ସମସ୍ତ <ph name="WEBSITE_1" /> ସାଇଟ୍</translation>
 <translation id="48838266408104654">&amp;ଟାସ୍କ ପରିଚାଳକ</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">ଏହି ଏକ୍ସଟେନସନର କୌଣସି ଅତିରିକ୍ତ ସାଇଟ ଆକ୍ସେସ ନାହିଁ</translation>
 <translation id="4887424188275796356">ସିଷ୍ଟମ୍ ଭ୍ୟୁଅର୍ ସହିତ ଖୋଲନ୍ତୁ</translation>
 <translation id="488785315393301722">ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
 <translation id="4890773143211625964">ଉନ୍ନତ ପ୍ରିଣ୍ଟର୍ ବିକଳ୍ପଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
@@ -3989,6 +3992,7 @@
 <translation id="5075910247684008552">ସୁରକ୍ଷିତ ସାଇଟ୍‍ଗୁଡ଼ିକରେ ଅସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5078638979202084724">ସମସ୍ତ ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="5078796286268621944">ଭୁଲ ପିନ୍</translation>
+<translation id="5079010647467150187">ବିଲ୍ଟ-ଇନ VPN ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="5079950360618752063">ପ୍ରସ୍ତାବିତ ପାସ୍‍ୱର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="508059534790499809">ଏକ Kerberos ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="5084230410268011727">ମୋସନ୍‍ ଏବଂ ଲାଇଟ୍‍ ସେନ୍ସର୍‌ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
@@ -5543,6 +5547,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ବ୍ୟବହାର କରି ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
+<translation id="6710973041022512889">ଅପଗ୍ରେଡ ସଫଳତାର ସହ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। ଅପଗ୍ରେଡ ସମ୍ବନ୍ଧରେ ସବିଶେଷ ସୂଚନା ପାଇଁ, ଲଗଗୁଡ଼ିକ <ph name="LOG_FILE" />ରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="6711146141291425900">ଡାଉନଲୋଡ୍ ପାଇଁ <ph name="WEB_DRIVE" /> ଆକାଉଣ୍ଟ ଲିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="6712943853047024245">ଆପଣ <ph name="WEBSITE" /> ପାଇଁ ଏହି ଉପଯୋଗକର୍ତ୍ତାନାମରେ ପୂର୍ବରୁ ଏକ ପାସୱାର୍ଡ ସେଭ କରିଛନ୍ତି</translation>
 <translation id="6713233729292711163">ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ</translation>

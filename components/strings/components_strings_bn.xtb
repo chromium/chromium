@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">বিবরণ দেখুন</translation>
 <translation id="1030706264415084469"><ph name="URL" /> আপনার ডিভাইসে স্থায়ীভাবে বেশি ডেটা স্টোর করে রাখতে চায়</translation>
 <translation id="1032854598605920125">ঘড়ির কাঁটার দিকে ঘোরান</translation>
+<translation id="1033329911862281889">ছদ্মবেশী' মোড আপনাকে অনলাইন থাকাকালীন অদৃশ্য করে রাখে না:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />সাইট এবং যে পরিষেবাগুলি তারা ব্যবহার করবেন সেগুলি ভিজিট করতে পারেন<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />নিয়োগকর্তা বা স্কুল ব্রাউজিং অ্যাক্টিভিটি ট্র্যাক করতে পারে<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ইন্টারনেট পরিষেবা প্রদানকারী ওয়েব ট্রাফিক মনিটর করতে পারে<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1036982837258183574">পূর্ণ স্ক্রিন থেকে বেরিয়ে যেতে |<ph name="ACCELERATOR" />| চাপুন</translation>
 <translation id="1038106730571050514">সাজেশনগুলি দেখান</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">নীতি ক্যাশেটি ঠিক আছে</translation>
 <translation id="1130564665089811311">'পৃষ্ঠা অনুবাদ করুন' বোতাম, Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করতে Enter প্রেস করুন।</translation>
 <translation id="1131264053432022307">আপনার কপি করা ছবি</translation>
+<translation id="1142846828089312304">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="1150979032973867961">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেটটি আপনার কম্পিউটার অপারেটিং সিস্টেমের কাছে বিশ্বস্ত নয়। কোনও ভুল কনফিগারেশনের কারণে অথবা কোনও আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="1151972924205500581">পাসওয়ার্ড প্রয়োজন</translation>
 <translation id="1156303062776767266">আপনি একটি স্থানীয় বা শেয়ার করা ফাইল দেখছেন</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">পাঠান</translation>
 <translation id="1484290072879560759">শিপিং ঠিকানা বেছে নিন</translation>
 <translation id="1492194039220927094">নীতি সংক্রান্ত পুশ:</translation>
+<translation id="149293076951187737">অআপনি সমস্ত Chrome ছদ্মবেশী ট্যাব বন্ধ করলে, এই ডিভাইস থেকে সেই ট্যাবে অ্যাক্টিভিটি মুছে যাবে:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ব্রাউজিং অ্যাক্টিভিটি<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />সার্চ ইতিহাস<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ফর্মে তথ্য দেওয়া হয়েছে<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ট্যাবে ফিরে যান</translation>
 <translation id="1501859676467574491">আপনার Google Account থেকে কার্ড দেখুন</translation>
 <translation id="1507202001669085618">&lt;p&gt;আপনি যদি এমন কোনও ওয়াই-ফাই পোর্টাল ব্যবহার করেন যেখানে অনলাইন হওয়ার জন্য সাইন-ইন করতে হয়, তাহলে এই সমস্যাটি হতে পারে।&lt;/p&gt;
@@ -285,6 +298,7 @@
     হেডারটি সঠিকভাবে কাজ করছে না, তাই ব্রাউজার আপনার অনুরোধ অনুযায়ী <ph name="SITE" />-এর
      সাথে যোগাযোগ বা তা অ্যাক্সেস করতে পারছে না। সাইট অপারেটর কোনও সাইটের
     নিরাপত্তা ও অন্যান্য প্রপার্টি কনফিগার করতে 'অরিজিন নীতি' ব্যবহার করতে পারে।</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium-এ ছদ্মবেশী মোডের বিষয়ে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">আপনার খোলা ট্যাবগুলি এখানে দেখা যাবে</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -528,6 +542,12 @@
 <translation id="2597378329261239068">এই দস্তাবেজটি পাসওয়ার্ড সুরক্ষিত৷  দয়া করে একটি পাসওয়ার্ড লিখুন৷</translation>
 <translation id="2609632851001447353">বৈচিত্রতা</translation>
 <translation id="2610561535971892504">কপি করতে ক্লিক করুন</translation>
+<translation id="2617988307566202237">এক্ষেত্রে নিচে দেওয়া তথ্য Chrome <ph name="BEGIN_EMPHASIS" />সেভ করবে না<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />আপনার ব্রাউজিং ইতিহাস
+          <ph name="LIST_ITEM" />কুকি এবং সাইট ডেটা
+          <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">আপনার স্ক্রিন সম্পর্কে তথ্য ব্যবহার করতে চাইতে পারেন</translation>
 <translation id="2625385379895617796">আপনার ঘড়ির সময় অনেকটা এগিয়ে</translation>
@@ -594,6 +614,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">আক্রমণকারীরা হয়ত <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> থেকে আপনার তথ্য (যেমন পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ড) চুরি করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়।</translation>
+<translation id="286512204874376891">কোনও ভার্চুয়াল কার্ড আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে আপনার আসল কার্ডের ছদ্মবেশ নিতে পারে। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">বন্ধুত্বপূর্ণ</translation>
 <translation id="2876489322757410363">এক্সটার্নাল অ্যাপ্লিকেশনের মাধ্যমে পেমেন্ট করার জন্য ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসা হচ্ছে। চালিয়ে যেতে চান?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার Safe Browsing ও আরও অনেক কিছু ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -714,6 +735,7 @@
 <translation id="3252266817569339921">ফরাসী</translation>
 <translation id="3257954757204451555">এই তথ্যের পিছনে কে আছে?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Calendar তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="3261488570342242926">ভার্চুয়াল কার্ডের বিষয়ে জানুন</translation>
 <translation id="3264837738038045344">Chrome সেটিংস বোতাম ম্যানেজ করুন, আপনার Chrome সেটিংস দেখতে Enter প্রেস করুন</translation>
 <translation id="3266793032086590337">মান (ম্যাচ করছে না)</translation>
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
@@ -1158,6 +1180,7 @@
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4631649115723685955">ক্যাশব্যাক অফার লিঙ্ক করা হয়েছে</translation>
 <translation id="4636930964841734540">তথ্য</translation>
+<translation id="4638670630777875591">Chromium-এ ছদ্মবেশী মোড</translation>
 <translation id="464342062220857295">সার্চের ফিচার</translation>
 <translation id="4644670975240021822">রিভার্স অর্ডার, সামনের দিক নীচে</translation>
 <translation id="4646534391647090355">আমাকে এখনই সেখানে নিয়ে চলুন</translation>
@@ -1253,6 +1276,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, সার্চ করতে ট্যাব টিপে এন্টার টিপুন</translation>
 <translation id="4930153903256238152">অধিক ক্ষমতা সম্পন্ন</translation>
+<translation id="4940163644868678279">Chrome-এ ছদ্মবেশী মোড</translation>
 <translation id="4943872375798546930">কোন ফলাফল নেই</translation>
 <translation id="4950898438188848926">একটি ট্যাব থেকে অন্য ট্যাবে যাওয়ার বোতাম, খোলা ট্যাবে যেতে এন্টার টিপুন, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
@@ -1613,6 +1637,7 @@
 <translation id="6120179357481664955">আপনার UPI আইডি মনে আছে?</translation>
 <translation id="6124432979022149706">Chrome Enterprise কানেক্টর</translation>
 <translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome-এ ছদ্মবেশী মোডের বিষয়ে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">সব কেবল পরীক্ষা করুন এবং আপনি ব্যবহার করছেন এমন যেকোনো রাউটার, মডেম বা অন্যান্য নেটওয়ার্ক ডিভাইসগুলি আবার চালু করুন।</translation>
 <translation id="614940544461990577">এটি করে দেখুন:</translation>
 <translation id="6150036310511284407">বাঁদিকে ট্রিপল পাঞ্চ</translation>
@@ -1646,7 +1671,6 @@
 <translation id="6272383483618007430">Google আপডেট</translation>
 <translation id="6276112860590028508">পড়ার তালিকার পৃষ্ঠাগুলি এখানে দেখা যাবে</translation>
 <translation id="627746635834430766">পরের বার আরও দ্রুত পেমেন্ট করা জন্য আপনার এই কার্ড এবং বিলিং ঠিকানাটি Google অ্যাকাউন্টে সেভ করে রাখুন।</translation>
-<translation id="6279098320682980337">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি? কপি করতে কার্ডের বিবরণে ক্লিক করুন</translation>
 <translation id="6280223929691119688">এই ঠিকানায় ডেলিভারি করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="6282194474023008486">পোস্টাল কোড</translation>
 <translation id="6285507000506177184">Chrome বোতামে ডাউনলোড ম্যানেজ করুন, Chrome-এ ডাউনলোড করা ফাইল ম্যানেজ করতে Enter প্রেস করুন</translation>
@@ -1887,6 +1911,12 @@
 <translation id="7111012039238467737">(সঠিক)</translation>
 <translation id="7118618213916969306">ক্লিপবোর্ড ইউআরএল <ph name="SHORT_URL" /> সার্চ করুন</translation>
 <translation id="7119414471315195487">অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করুন</translation>
+<translation id="7129355289156517987">অআপনি সমস্ত Chromium ছদ্মবেশী ট্যাব বন্ধ করলে, এই ডিভাইস থেকে সেই ট্যাবে অ্যাক্টিভিটি মুছে যাবে:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ব্রাউজিং অ্যাক্টিভিটি<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />সার্চ ইতিহাস<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ফর্মে তথ্য দেওয়া হয়েছে<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">এই ঠিকানায় শিপিং করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="7132939140423847331">আপনার অ্যাডমিন এই ডেটা কপি করার থেকে সীমাবদ্ধ করেছেন।</translation>
 <translation id="7135130955892390533">স্ট্যাটাস দেখুন</translation>
@@ -2005,6 +2035,12 @@
 <translation id="7485870689360869515">কোনো ডেটা পাওয়া যায়নি৷</translation>
 <translation id="7495528107193238112">এই কন্টেন্ট ব্লক করা হয়েছে। এই সমস্যার সমাধান করতে সাইটের মালিকের সাথে যোগাযোগ করুন।</translation>
 <translation id="7497998058912824456">'Doc তৈরি করুন বোতাম', চটপট নতুন Google Doc তৈরি করতে Enter প্রেস করুন</translation>
+<translation id="7506488012654002225">এক্ষেত্রে নিচে দেওয়া তথ্য Chromium <ph name="BEGIN_EMPHASIS" />সেভ করবে না<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />আপনার ব্রাউজিং ইতিহাস
+          <ph name="LIST_ITEM" />কুকি এবং সাইট ডেটা
+          <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ফিরে পাওয়া নীতির ডিভাইস আইডি খালি অথবা বর্তমান ডিভাইস আইডির সাথে মিলছে না</translation>
 <translation id="7508870219247277067">অ্যাভোকাডো সবুজ</translation>
 <translation id="7511955381719512146">আপনি যে ওয়াই-ফাই-টি ব্যবহার করছেন সেটির জন্য অপনাকে <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />-তে যেতে হতে পারে৷</translation>
@@ -2224,6 +2260,7 @@
 <translation id="8202370299023114387">দ্বন্দ্ব</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">কানেকশনটি নিরাপদ</translation>
+<translation id="8217240300496046857">যেসব কুকি ওয়েব জুড়ে আপনার অ্যাক্টিভিটি ট্র্যাক করে, সাইট সেগুলি ব্যবহার করতে পারবে না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="8218327578424803826">নির্ধারিত লোকেশন:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">এই কম্পিউটার যিনি সেট-আপ করেছেন তিনি এই সাইটটি অবরুদ্ধ করার বিষয়টি চয়ন করেছেন।</translation>

@@ -781,6 +781,7 @@
 <translation id="176587472219019965">&amp;New Window</translation>
 <translation id="1766575458646819543">Exited full screen</translation>
 <translation id="1766957085594317166">Save passwords securely in your Google account and you'll never have to type them again</translation>
+<translation id="1767043563165955993">Use with Android apps</translation>
 <translation id="1768212860412467516">Send feedback for <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Oops!  There was a problem contacting the logon server. Please check your network connection and the domain name, then try again.</translation>
 <translation id="1769104665586091481">Open Link in New &amp;Window</translation>
@@ -1119,6 +1120,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2113479184312716848">Open &amp;File...</translation>
 <translation id="2113921862428609753">Authority Information Access</translation>
 <translation id="2114326799768592691">Reload &amp;Frame</translation>
+<translation id="2114413269775311385">Use this account with Android apps. You can control permissions for Android apps in <ph name="LINK_BEGIN" />Apps settings<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Photo by <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No SIM card inserted</translation>
 <translation id="2116619964159595185">Sites usually connect to Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb</translation>
@@ -1914,6 +1916,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="287205682142673348">Port forwarding</translation>
 <translation id="287286579981869940">Add <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Shut down</translation>
+<translation id="2873995907777332853">Show details about blocking all cookies</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2875698561019555027">(Chrome error pages)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
@@ -2220,6 +2223,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3190558889382726167">Password saved</translation>
 <translation id="3192947282887913208">Audio Files</translation>
+<translation id="3194786596445804250">Show details about blocking third-party cookies</translation>
 <translation id="3197453258332670132">With a right-click or long press, show related info for your text selection</translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3200061262156232574">In your shopping basket</translation>
@@ -2967,6 +2971,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3943582379552582368">&amp;Back</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3945513714196326460">Try a shorter name</translation>
+<translation id="3947643756376959257">Enter the access code shown on the Chromecast or TV.</translation>
 <translation id="3948027458879361203">Change hostname</translation>
 <translation id="3948116654032448504">&amp;Search <ph name="SEARCH_ENGINE" /> for Image</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> can edit files in the following folders</translation>
@@ -3208,12 +3213,14 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4210048056321123003">Downloading the virtual machine</translation>
 <translation id="421182450098841253">&amp;Show Bookmarks Bar</translation>
 <translation id="4211851069413100178">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregated data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Stop using with Android apps</translation>
 <translation id="42126664696688958">Export</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">An error occurred during activation.</translation>
 <translation id="4225397296022057997">On all sites</translation>
+<translation id="4227605727325220318">Add a new Android phone</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{This extension is not allowed}other{Some extensions are not allowed}}</translation>
 <translation id="4231095370974836764">Install apps and games from Google Play on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configure Kerberos</translation>
@@ -4752,6 +4759,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5862109781435984885">Show stylus tools in the shelf</translation>
 <translation id="5862319196656206789">Set up connected devices</translation>
 <translation id="5863445608433396414">Enable debugging features</translation>
+<translation id="5864147196375746035">Cast to a managed device</translation>
 <translation id="5864195618110239517">Use metered connection</translation>
 <translation id="5864754048328252126">Idle action while charging</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> will pause soon</translation>
@@ -5322,6 +5330,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6455264371803474013">On specific sites</translation>
 <translation id="6455894534188563617">&amp;New Folder</translation>
 <translation id="645705751491738698">Continue blocking JavaScript</translation>
+<translation id="6458347417133445570">Show details about allowing all cookies</translation>
 <translation id="6458701200018867744">Upload failed (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Active window moved to another display.</translation>
@@ -5937,6 +5946,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7086672505018440886">Include Chrome log files in the archive.</translation>
 <translation id="7088434364990739311">Update check failed to start (error code <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">This device has been placed into a deprovisioned state by the administrator. To enable it for enrolment, please have your administrator place the device into a pending state.</translation>
+<translation id="7090160970140261931">You can add additional accounts to your <ph name="DEVICE_TYPE" /> to use with websites and Android apps. You can also control which accounts are used with Android apps.</translation>
 <translation id="7093220653036489319">Quick Answers</translation>
 <translation id="7093416310351037609">For data safety and security, your organisation requires all eligible downloads to be saved to your organisation's <ph name="WEB_DRIVE" /> account.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6758,6 +6768,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Add words that you want spell check to skip</translation>
+<translation id="7922935920104868876">Show details about blocking third-party cookies in Incognito</translation>
 <translation id="7924358170328001543">Error forwarding port</translation>
 <translation id="7925108652071887026">Auto-fill data</translation>
 <translation id="792514962475806987">Docked zoom level:</translation>
@@ -6923,6 +6934,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8076835018653442223">Access to local files on your device is disabled by your administrator</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Accounts available to use with Android apps</translation>
 <translation id="8081989000209387414">Disable ADB debugging?</translation>
 <translation id="8082106343289440791">Pair with "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Disabling ADB debugging will reset this <ph name="DEVICE_TYPE" /> to factory settings. All user accounts and local data will be deleted.</translation>
@@ -6997,6 +7009,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8147900440966275470">Found <ph name="NUM" /> tab</translation>
 <translation id="8148760431881541277">Limit sign-in</translation>
 <translation id="8149564499626272569">Verify via your phone with a USB cable</translation>
+<translation id="815114315010033526">Use QR code instead</translation>
 <translation id="8151638057146502721">Configure</translation>
 <translation id="8154790740888707867">No file</translation>
 <translation id="8154912474061769055">Features on many sites may not work</translation>
@@ -7022,6 +7035,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8176332201990304395">Pink and white</translation>
 <translation id="8177196903785554304">Network Details</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Move tab to new window}other{Move tabs to new window}}</translation>
+<translation id="8179188928355984576">Not used with Android apps</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" can read and delete images, video and sound files in the ticked locations.</translation>
 <translation id="8181215761849004992">Can't join the domain. Check your account to see if you have sufficient privileges to add devices.</translation>
@@ -7181,6 +7195,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8342861492835240085">Select a collection</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="834785183489258869">While in Incognito, sites can't use your cookies to see your browsing activity across different sites; for example, to personalise ads. Features on some sites may not work.</translation>
+<translation id="8349499562373871073">You can select an existing account to use with Android apps or add a new Google Account. Once you sign in to an Android app, your account can be used with other Android apps. You can change Android apps access in <ph name="LINK_BEGIN" />Settings &gt; Accounts<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Stylus tools in dock</translation>
 <translation id="8351316842353540018">Always show a11y options</translation>
 <translation id="8351419472474436977">This extension has taken control of your proxy settings, which means it can change, break or eavesdrop on anything that you do online. If you aren't sure why this change happened, you probably don't want it.</translation>

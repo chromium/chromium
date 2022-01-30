@@ -1122,16 +1122,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.
       Jika kebijakan disetel ke benar (true) atau tidak disetel, status jaringan perangkat akan dilaporkan.</translation>
-<translation id="2221850122314326571">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan.
-      Jika setelan ini dinonaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat lama yang disediakan oleh platform.
-      Jika setelan ini tidak ditetapkan, pemverifikasi sertifikat yang lama atau bawaan dapat digunakan.
-
-      Kebijakan ini akan dihapus dari <ph name="PRODUCT_OS_NAME" /> versi 81 dan saat ini terjadi, dukungan untuk pemverifikasi sertifikat versi lama di <ph name="PRODUCT_OS_NAME" /> akan dihapus.
-
-      Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> untuk Linux versi 83 dan saat ini terjadi, dukungan untuk pemverifikasi sertifikat versi lama di Linux akan dihapus.
-
-      Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> untuk Mac OS X versi 92 dan saat ini terjadi, dukungan untuk pemverifikasi sertifikat versi lama di Mac OS X akan dihapus.
-      </translation>
 <translation id="2223393221350938149">Jangan izinkan situs apa pun menjalankan JIT JavaScript</translation>
 <translation id="2223582957891074498">Jika kebijakan ditetapkan ke Benar (True), screenshot yang diambil dengan pintasan keyboard atau API ekstensi tidak akan diizinkan. Jika kebijakan ditetapkan ke Salah (False), screenshot akan diizinkan.</translation>
 <translation id="2223598546285729819">Setelan pemberitahuan default</translation>

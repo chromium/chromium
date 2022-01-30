@@ -1665,7 +1665,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Mutolaa ro‘yxatingizdagi sahifalar bu yerda ko‘rsatiladi</translation>
 <translation id="627746635834430766">Keyingi safar tezroq to‘lash uchun kartangizni Google hisobingizga saqlang.</translation>
-<translation id="6279098320682980337">Virtual karta raqami kiritilmadimi? Nusxalanadigan karta maʼlumotlari ustiga bosing</translation>
 <translation id="6280223929691119688">Bu manzilga yetkazib bera olmaymiz. Boshqa manzilni tanlang.</translation>
 <translation id="6282194474023008486">Pochta indeksi</translation>
 <translation id="6285507000506177184">Chromeda yuklanmalarni boshqarish tugmasi, Chromeda yuklab olingan fayllarni boshqarish uchun Enter tugmasini bosing</translation>
@@ -1972,6 +1971,7 @@ Batafsil axborot:
 <translation id="7334320624316649418">&amp;Qayta tartiblashni qayta bajarish</translation>
 <translation id="7335157162773372339">Kameradan foydalanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="7337248890521463931">Koʻproq qatorlarni koʻrsatish</translation>
+<translation id="7337418456231055214">Virtual karta raqami kiritilmadimi? Nusxalanadigan karta maʼlumotlari ustiga bosing. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Sizdagi tizimda ishlamaydi.</translation>
 <translation id="733923710415886693">Sertifikatning ishonchlilik belgilari haqidagi ma’lumot server tomonidan taqdim etilmadi.</translation>
 <translation id="734600844861828519">11x15</translation>

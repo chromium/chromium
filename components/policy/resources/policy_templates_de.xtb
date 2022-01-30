@@ -1106,16 +1106,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
       Wenn sie auf „false“ gesetzt ist, werden keine Informationen ausgegeben.
       Ist sie auf „true“ festgelegt oder nicht konfiguriert, wird der Netzwerkstatus des Geräts ausgegeben.</translation>
-<translation id="2221850122314326571">Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
-      Ist sie deaktiviert, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mit der von der Plattform stammenden Legacy-Zertifikatsprüfung.
-      Wenn diese Einstellung nicht konfiguriert ist, wird die integrierte oder die Legacy-Zertifikatsprüfung verwendet.
-
-      Diese Richtlinie wird voraussichtlich in Version 81 von <ph name="PRODUCT_OS_NAME" /> entfernt, wenn auch die Legacy-Zertifikatsprüfung in <ph name="PRODUCT_OS_NAME" /> voraussichtlich nicht mehr unterstützt wird.
-
-      Außerdem wird sie voraussichtlich in Version 83 von <ph name="PRODUCT_NAME" /> für Linux entfernt, wenn auch die Legacy-Zertifikatsprüfung unter Linux voraussichtlich nicht mehr unterstützt wird.
-
-      Voraussichtlich wird sie auch in Version 92 von <ph name="PRODUCT_NAME" /> für Mac OS X entfernt, wenn auch die Legacy-Zertifikatsprüfung unter Mac OS X voraussichtlich nicht mehr unterstützt wird.
-      </translation>
 <translation id="2223393221350938149">Ausführung von JavaScript JIT für keine Website zulassen</translation>
 <translation id="2223582957891074498">Wenn die Richtlinie auf "True" gesetzt ist, können keine Screenshots über Tastenkombinationen oder Erweiterungs-APIs aufgenommen werden. Ist sie auf "False" gesetzt, können Screenshots aufgenommen werden.</translation>
 <translation id="2223598546285729819">Standardeinstellung für Benachrichtigungen</translation>

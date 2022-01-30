@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्क्यान गर्ने क्षेत्रमा मिलाउनुहोस्</translation>
 <translation id="1387854245479784695">यसमा सबै कोरहरूको डेटा समावेश हुन्छ</translation>
+<translation id="1394661041439318933">यो डिभाइसको केसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="1397738625398125236">गेटवे पिङ गर्न सकिन्छ</translation>
 <translation id="1398634363027580500">HTTPS को विलम्बता अति धेरै छ</translation>
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">मसँग किपेयर छ</translation>
+<translation id="1451536289672181509">यो डिभाइस किबोर्ड हो।</translation>
 <translation id="1468664791493211953">योजनाहरू</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले तपाईंको क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="1478594628797167447">स्क्यानर</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">थप सेटिङहरू</translation>
 <translation id="2104796393919810494">मर्मत गरियो</translation>
+<translation id="2105810540595158374">यो डिभाइस गेम कन्ट्रोलर हो।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, संस्करण <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> जि.बि. मध्ये <ph name="AVAILABLE_MEMORY" /> जि.बि. उपलब्ध छ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
+<translation id="3031560714565892478">यो डिभाइस भिडियो क्यामेरा हो।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">इन्डपोइन्ट</translation>
 <translation id="3069085583900247081">परीक्षण गर्न सकिएन</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">प्रिन्ट गर्न सकिएन - प्रिन्ट गर्दा गर्दै रोकियो</translation>
 <translation id="3102119246920354026">केस</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">डिभाइस कनेक्ट गरिएको छ।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{पेज हटाउने हो?}=1{{PAGE_NUMBER} नम्बरको पेज हटाउने हो?}other{{PAGE_NUMBER} नम्बरको पेज हटाउने हो?}}</translation>
 <translation id="315116470104423982">मोबाइल डाटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्याधिक मात्रामा बढी छ</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
+<translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> स्क्यान गरिँदै छ। <ph name="PERCENTAGE_VALUE" />% पूरा भयो।</translation>
 <translation id="3459509316159669723">प्रिन्टिङ</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट गरिँदै छ</translation>
+<translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
 <translation id="3527036260304016759">प्रिन्ट गर्न सकिएन - अज्ञात त्रुटि भयो</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3954678691475912818">यो डिभाइस कुन प्रकारको डिभाइस हो भन्ने जानकारी उपलब्ध छैन।</translation>
 <translation id="3966286471246132217">अझ सटीक परिणामहरू प्राप्त गर्न जाँच पूरा नहुँदासम्म सबै एप बन्द राख्नुहोस्।</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
+<translation id="4897058166682006107">यो डिभाइसको बायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="4917385247580444890">बलियो</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
@@ -321,6 +330,7 @@
 <translation id="5346687412805619883">स्थानीय नेटवर्क</translation>
 <translation id="5358174242040570474">केही चिज गडबड भयो। फेरि कुनै वालपेपर छनौट गरी हेर्नुहोस् वा यो एप पुनः खोल्नुहोस्।</translation>
 <translation id="5372659122375744710">WiFi नेटवर्क सुरक्षित छैन</translation>
+<translation id="5400907029458559844">डिभाइस कनेक्ट गरिँदै छ।</translation>
 <translation id="5401938042319910061">सबै रुटिनहरू चलाउनुहोस्</translation>
 <translation id="5423849171846380976">सक्रिय भयो</translation>
 <translation id="5430931332414098647">तात्कालिक टेदरिङ</translation>
@@ -382,6 +392,7 @@
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गर्नुहोस्</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
 <translation id="6340526405444716530">वैयक्तीकरण</translation>
 <translation id="636850387210749493">उद्यम भर्ना</translation>
@@ -414,6 +425,7 @@
 <translation id="6704062477274546131">DNS रिजोल्युसन</translation>
 <translation id="6747215703636344499">रोकियो - प्रिन्टरको आउटपुट ट्रे भरिएको छ</translation>
 <translation id="6749473226660745022">फोटोहरू</translation>
+<translation id="6753452347192452143">यो डिभाइस कम्प्युटर हो।</translation>
 <translation id="6756731097889387912">स्क्यान गर्ने कार्य रद्द गर्न सकिएन</translation>
 <translation id="6766275201586212568">DNS रिजोल्युसन पूरा हुन सकेनन्</translation>
 <translation id="6768237774506518020">DNS रिजोल्युसन पूरा हुन नसक्ने दर उच्च छ</translation>
@@ -431,12 +443,14 @@
 <translation id="6992266763844448459">यो डिभाइसको स्वामित्व हस्तान्तरण गर्न लागिएको छैन भने यो विकल्प चयन गर्नुहोस्। जस्तै, यो डिभाइसको स्वामित्व सङ्गठनका अर्कै व्यक्तिलाई हस्तान्तरण गरिँदै छ।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
 <translation id="7040230719604914234">सेवा प्रदायक</translation>
+<translation id="7041549558901442110">डिभाइस कनेक्ट गरिएको छैन।</translation>
 <translation id="7058278511608979688">अन्त्य गर्नुहोस् र सेभ गर्नुहोस्</translation>
 <translation id="7059230779847288458">चार्ज भइरहेको छ, पूर्ण रूपमा चार्ज हुन अझै <ph name="TIME_VALUE" /> लाग्छ</translation>
 <translation id="7068619307603204412">आफ्नो डिभाइस तयार पार्नुहोस्</translation>
 <translation id="708426984172631313">रोकिएको छ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">विफल भयो - अनुमति दिइएको छैन</translation>
+<translation id="7103252855940681301"><ph name="COUNT" /> वटामध्ये <ph name="INDEX" /> औँ डिभाइस, डिभाइसको नाम: <ph name="NAME" />।</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्भर}other{नेम सेभरहरू}}</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
@@ -471,6 +485,7 @@
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
+<translation id="7551123448725492271">यो डिभाइस अडियो डिभाइस हो।</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रिन</translation>
@@ -478,6 +493,7 @@
 <translation id="7620771111601174153">मद्दत केन्द्रमा गई थप जान्नुहोस्</translation>
 <translation id="763165478673169849">पछिल्लो पटक रिसेट गरिएको मिति र समय</translation>
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
+<translation id="7656388927906093505">यो डिभाइस माउस हो।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7690294790491645610">नयाँ पासवर्ड पुष्टि गर्नुहोस्</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
@@ -574,6 +590,7 @@
 <translation id="8855781559874488009">फायरवाल पार गरेर HTTP वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" को <ph name="INTENT" /> र अन्य कुरा हेर्नुहोस्</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
 <translation id="8898840733695078011">सिग्नलको क्षमता</translation>
 <translation id="8910721771319628100">डिफल्ट नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
@@ -584,11 +601,13 @@
 <translation id="8930622219860340959">वायरलेस</translation>
 <translation id="8936793075252196307">क्लाइन्टको IP ठेगाना</translation>
 <translation id="8945750210906526975">इन्टर्नल टचप्याड</translation>
+<translation id="894617464444543719">यो डिभाइस फोन हो।</translation>
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}}</translation>
 <translation id="8994273342647807496">इन्स्टल गरिँदै छ - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS रिजोल्युसनमा उच्च विलम्बता छ</translation>

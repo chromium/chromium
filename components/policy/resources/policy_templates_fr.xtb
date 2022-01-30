@@ -1112,16 +1112,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.
       Si elle est définie sur "True" ou n'est pas configurée, l'état du réseau de l'appareil sera signalé.</translation>
-<translation id="2221850122314326571">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
-      Lorsque ce paramètre est désactivé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme.
-      Lorsque ce paramètre n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.
-
-      Il est prévu que cette règle soit supprimée dans la version 81 de <ph name="PRODUCT_OS_NAME" />, car l'ancien outil de vérification des certificats sur <ph name="PRODUCT_OS_NAME" /> le sera également.
-
-      Il est prévu que cette règle soit supprimée dans la version 83 de <ph name="PRODUCT_NAME" /> pour Linux, car l'ancien outil de vérification des certificats sur Linux le sera également.
-
-      Il est prévu que cette règle soit supprimée dans la version 92 de <ph name="PRODUCT_NAME" /> pour Mac OS X, car l'ancien outil de vérification des certificats sur Mac OS X le sera également.
-      </translation>
 <translation id="2223393221350938149">Interdire à tous les sites d'exécuter le JIT pour JavaScript</translation>
 <translation id="2223582957891074498">Si cette règle est définie sur "True", les utilisateurs ne peuvent pas faire de captures d'écran avec des raccourcis clavier ni des API d'extension. Si cette règle est définie sur "False", les utilisateurs peuvent faire des captures d'écran.</translation>
 <translation id="2223598546285729819">Paramètre de notification par défaut</translation>

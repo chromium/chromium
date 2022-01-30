@@ -298,6 +298,7 @@
 <translation id="1293264513303784526">USB-Ц уред (лева порта)</translation>
 <translation id="1293556467332435079">Датотеки</translation>
 <translation id="1294807885394205587">Процесов може да потрае неколку минути. Се стартува управувачот со контејнери.</translation>
+<translation id="1296046226918222533">Нешто се случи и надградувањето на Linux не успеа. Повеќе информации за проблемот можете да најдете во евиденциите. Евиденциите се зачувани во <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Прикачи ја избраната картичка</translation>
 <translation id="1297175357211070620">Дестинација</translation>
 <translation id="129770436432446029">Испратете повратни информации за <ph name="EXPERIMENT_NAME" /></translation>
@@ -2804,6 +2805,7 @@
 <translation id="3799128412641261490">Поставки за „Пристап со прекинувачи“</translation>
 <translation id="3800806661949714323">Прикажи ги сите (се препорачува)</translation>
 <translation id="3800828618615365228">Дополнителни услови на Google Chrome и ChromeOS</translation>
+<translation id="3802486193901166966">Екстензијава не бара специјални дозволи и нема пристап до дополнителен сајт</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803345858388753269">Квалитет на видеото</translation>
 <translation id="380408572480438692">Со овозможување собирање податоци за учинок, му се помага на Google со време да го подобри системот. Не се испраќаат податоци додека не поднесете извештај со повратни информации (Alt-Shift-I) и не ги опфатите податоците за учинок. Во секое време може да се вратите на екранов за да оневозможите собирање податоци.</translation>
@@ -3834,6 +3836,7 @@
 <translation id="4883436287898674711">Сите локации на <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Управник со &amp;задачи</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Екстензијава нема пристап до дополнителен сајт</translation>
 <translation id="4887424188275796356">Отвори со Прикажувач на систем</translation>
 <translation id="488785315393301722">Прикажи детали</translation>
 <translation id="4890773143211625964">Покажи ги напредните опции за печатач</translation>
@@ -4008,6 +4011,7 @@
 <translation id="5075910247684008552">Несигурните содржини се стандардно блокирани на безбедни сајтови</translation>
 <translation id="5078638979202084724">Обележи ги сите картички</translation>
 <translation id="5078796286268621944">Неточен PIN</translation>
+<translation id="5079010647467150187">Додајте вградена VPN…</translation>
 <translation id="5079950360618752063">Користете ја предложената лозинка</translation>
 <translation id="508059534790499809">Освежете го билетот на Kerberos</translation>
 <translation id="5084230410268011727">Дозволи сајтовите да користат сензори за движење и светлина</translation>
@@ -5560,6 +5564,7 @@
 <translation id="6709133671862442373">Вести</translation>
 <translation id="6709357832553498500">Поврзете се повторно користејќи <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Претходно</translation>
+<translation id="6710973041022512889">Надградувањето заврши успешно. За детални информации за надградбата, евиденциите можете да ги најдете во <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Поврзете сметка на <ph name="WEB_DRIVE" /> за преземања</translation>
 <translation id="6712943853047024245">Веќе зачувавте лозинка со ова корисничко име за <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Додајте работен профил</translation>

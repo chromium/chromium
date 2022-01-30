@@ -1024,6 +1024,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="2022395138980869975">Basculer la recherche latérale</translation>
 <translation id="2023167225947895179">Ce NIP est facile à deviner</translation>
 <translation id="202352106777823113">Le téléchargement prenait trop de temps et a été interrompu par le réseau.</translation>
+<translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> a planté. Cliquez sur cette infobulle pour redémarrer l'application.</translation>
 <translation id="2028449514182362831">Les fonctionnalités qui nécessitent l'accès aux capteurs de mouvement ne seront pas accessibles</translation>
 <translation id="202918510990975568">Entrez votre mot de passe pour configurer la sécurité et la connexion</translation>
@@ -1165,6 +1166,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera dès que vous quitterez les paramètres de synchronisation</translation>
+<translation id="2162926944953615670">Aucun profil eSIM disponible</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour accéder à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Activer le mode sombre</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre commutateur</translation>
@@ -1859,6 +1861,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2828650939514476812">Connexion au réseau Wi-Fi</translation>
 <translation id="2831430281393059038">L'appareil est pris en charge</translation>
 <translation id="2832124733806557606">Votre enfant peut utiliser un NIP pour se connecter à l'appareil ou pour le déverrouiller.</translation>
+<translation id="2835177225987815960">Votre configuration de recherche actuelle sera réinitialisée, y compris les commutateurs attribués et les préférences de vitesse de la recherche automatique.</translation>
 <translation id="2835547721736623118">Service de reconnaissance vocale</translation>
 <translation id="2836269494620652131">Plantage</translation>
 <translation id="2836635946302913370">L'administrateur a désactivé la connexion avec ce nom d'utilisateur.</translation>
@@ -3503,6 +3506,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4547659257713117923">Pas d'onglets provenant d'autres appareils</translation>
 <translation id="4547672827276975204">Définir automatiquement</translation>
 <translation id="4549791035683739768">Votre clé de sécurité ne contient aucune empreinte digitale enregistrée</translation>
+<translation id="4550926046134589611">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Appuyez sur <ph name="MODIFIER_KEY_DESCRIPTION" /> pour annuler l'action</translation>
 <translation id="4553526521109675518">Vous devez redémarrer votre Chromebook pour changer la langue de l'appareil. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Faire glisser sur les images pour rechercher au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -3793,6 +3797,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="48704129375571883">Ajouter des fonctionnalités supplémentaires</translation>
 <translation id="4870758487381879312">Entrez le mot de passe fourni par l'administrateur pour obtenir les informations de configuration</translation>
 <translation id="4870903493621965035">Aucun appareil associé</translation>
+<translation id="4870995365819149457">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et une autre application.</translation>
 <translation id="4871308555310586478">Pas de la boutique Chrome Web Store</translation>
 <translation id="4871322859485617074">Le NIP contient des caractères incorrects</translation>
 <translation id="4871370605780490696">Ajouter aux favoris</translation>
@@ -4829,6 +4834,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5969728632630673489">Message sur les raccourcis clavier fermé</translation>
 <translation id="5971037678316050792">Gérer l'état et l'association de l'adaptateur Bluetooth</translation>
 <translation id="597235323114979258">Voir d'autres destinations</translation>
+<translation id="5972543790327947908">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> ou <ph name="APP_NAME_3" />.</translation>
 <translation id="5972666587303800813">Service non opérationnel</translation>
 <translation id="5972708806901999743">Déplacer en haut de la liste</translation>
 <translation id="5972826969634861500">Lancer <ph name="PRODUCT_NAME" /></translation>
@@ -5199,6 +5205,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6355789186038748882">Navigateur expérimental (qualité de version alpha)! Certaines fonctionnalités sont manquantes ou incomplètes. Signalez tout problème en sélectionnant Aide &gt; « Signaler un problème… ».</translation>
 <translation id="635609604405270300">Laissez l'appareil allumé</translation>
 <translation id="63566973648609420">Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit pas la phrase de passe et ne la stocke pas. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="6359706544163531585">Désactiver le thème clair</translation>
 <translation id="6361850914223837199">Information sur l'erreur :</translation>
@@ -5717,6 +5724,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6900284862687837908">Application en arrière-plan : <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6900651018461749106">Connectez-vous à nouveau pour mettre à jour <ph name="USER_EMAIL" /></translation>
+<translation id="6900654715912436255">Voulez-vous vraiment supprimer ce moteur de recherche?</translation>
 <translation id="6902066522699286937">Voix à écouter</translation>
 <translation id="6902336033320348843">Section non prise en charge : <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Associer l'appareil au domaine</translation>
@@ -5988,6 +5996,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7189234443051076392">Assurez-vous qu'il y a suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de mises à niveau pour inscrire cet appareil. Veuillez communiquer avec le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
+<translation id="7191063546666816478">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applications.</translation>
 <translation id="7191159667348037">Imprimante inconnue (USB)</translation>
 <translation id="7193051357671784796">Cette application a été ajoutée par votre organisation Redémarrez-la pour terminer l'installation.</translation>
 <translation id="7193374945610105795">Aucun mot de passe enregistré pour <ph name="ORIGIN" /></translation>

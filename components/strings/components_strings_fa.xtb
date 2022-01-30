@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">دیدن جزئیات</translation>
 <translation id="1030706264415084469"><ph name="URL" /> می‌خواهد داده‌های بزرگ را برای همیشه در دستگاهتان ذخیره کند</translation>
 <translation id="1032854598605920125">چرخش در جهت عقربه‌های ساعت</translation>
+<translation id="1033329911862281889">«حالت ناشناس» شما را در دنیای آنلاین نامرئی نمی‌کند:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />سایت‌ها و سرویس‌هایی که استفاده می‌کنند می‌توانند بازدیدها را ببینند<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />کارفرمایان یا مدارس می‌توانند فعالیت مرور را ردیابی کنند<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />رسانندگان خدمات اینترنتی می‌توانند ترافیک وب را پایش کنند<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1036982837258183574">برای خروج از حالت تمام صفحه |<ph name="ACCELERATOR" />| را فشار دهید</translation>
 <translation id="1038106730571050514">نمایش پیشنهادها</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
 <translation id="1130564665089811311">‏دکمه «ترجمه صفحه»، برای ترجمه کردن این صفحه بااستفاده از «ترجمه Google»، کلید Enter (ورود) را فشار دهید</translation>
 <translation id="1131264053432022307">تصویری که کپی کرده‌اید</translation>
+<translation id="1142846828089312304">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
 <translation id="1150979032973867961">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد سیستم‌عامل رایانه شما نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="1151972924205500581">گذرواژه ضروری است</translation>
 <translation id="1156303062776767266">شما فایلی محلی یا هم‌رسانی‌شده را مشاهده می‌کنید</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">ارسال</translation>
 <translation id="1484290072879560759">انتخاب نشانی تحویل کالا</translation>
 <translation id="1492194039220927094">اعمال خط‌مشی‌ها:</translation>
+<translation id="149293076951187737">‏وقتی همه برگه‌های ناشناس Chrome را ببندید، فعالیتتان در این برگه‌ها از دستگاهتان پاک می‌شود:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />فعالیت مرور<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />سابقه جستجو<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">برگشتن به برگه</translation>
 <translation id="1501859676467574491">‏کارت‌ها را از حساب Google خود نمایش دهید</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;اگر از پورتالی از Wi-Fi استفاده می‌کنید که پیش از آنلاین شدن شما را ملزم به ورود به سیستم می‌کند، این خطا را می‌بینید.&lt;/p&gt;
@@ -284,6 +297,7 @@
     قالب سرصفحه نادرست است و این موضوع اجازه نمی‌دهد 
    مرورگر درخواستتان را برای <ph name="SITE" /> اجرا کند. اپراتورهای سایت می‌توانند از
     خط‌مشی‌های اصلی برای پیکربندی امنیت و دیگر ویژگی‌های سایت استفاده کنند.</translation>
+<translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />درباره «حالت ناشناس» در Chromium بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">برگه‌های بازتان در اینجا نشان داده می‌شوند</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@
 <translation id="2597378329261239068">این سند توسط گذرواژه محافظت می‌شود.  لطفاً یک گذرواژه وارد کنید.</translation>
 <translation id="2609632851001447353">انواع مختلف</translation>
 <translation id="2610561535971892504">برای کپی کردن، کلیک کنید</translation>
+<translation id="2617988307566202237">‏Chrome اطلاعات زیر را <ph name="BEGIN_EMPHASIS" />ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />سابقه مرور شما
+            <ph name="LIST_ITEM" />داده‌های سایت و کوکی‌ها
+            <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">می‌تواند برای استفاده از اطلاعات صفحه‌نمایش‌هایتان درخواست کند</translation>
 <translation id="2625385379895617796">ساعت شما جلو است</translation>
@@ -590,6 +610,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">شاید مهاجم‌ها در تلاش باشند اطلاعات شما (مانند گذرواژه‌ها، پیام‌ها یا کارت‌های اعتباری) را از <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> سرقت کنند. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد.</translation>
+<translation id="286512204874376891">کارت مجازی با پنهان کردن کارت واقعی‌تان از شما دربرابر کلاهبرداری‌های احتمالی محافظت می‌کند. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">دوستانه</translation>
 <translation id="2876489322757410363">برای پرداخت ازطریق یک برنامه خارجی، از «حالت ناشناس» خارج می‌شوید. ادامه می‌دهید؟</translation>
 <translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت «مرور ایمن» و موارد دیگر در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -709,6 +730,7 @@
 <translation id="3252266817569339921">فرانسوی</translation>
 <translation id="3257954757204451555">چه کسی مسئول این اطلاعات است؟</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع رویداد جدید در «تقویم Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="3261488570342242926">درباره کارت‌های مجازی بیشتر بدانید</translation>
 <translation id="3264837738038045344">‏دکمه «مدیریت تنظیمات Chrome»؛ برای رفتن به تنظیمات Chrome، کلید «ورود» را فشار دهید</translation>
 <translation id="3266793032086590337">مقدار (مغایر)</translation>
 <translation id="3268451620468152448">برگه‌های باز</translation>
@@ -1153,6 +1175,7 @@
 <translation id="4628948037717959914">عکس</translation>
 <translation id="4631649115723685955">بازگشت نقدی پیوند داده شده است</translation>
 <translation id="4636930964841734540">اطلاعات</translation>
+<translation id="4638670630777875591">‏«حالت ناشناس» در Chromium</translation>
 <translation id="464342062220857295">ویژگی‌های جستجو</translation>
 <translation id="4644670975240021822">روبه‌پایین به‌ترتیب معکوس</translation>
 <translation id="4646534391647090355">اکنون من را به آنجا ببر</translation>
@@ -1248,6 +1271,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای جستجو کردن، ابتدا کلید Tab و سپس Enter را فشار دهید</translation>
 <translation id="4930153903256238152">ظرفیت زیاد</translation>
+<translation id="4940163644868678279">‏«حالت ناشناس» در Chrome</translation>
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
 <translation id="4950898438188848926">‏دکمه جابه‌جایی برگه، برای جابه‌جایی به برگه باز، کلید Enter را فشار دهید، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">کنش‌ها</translation>
@@ -1608,6 +1632,7 @@
 <translation id="6120179357481664955">‏شناسه «رابط پرداخت‌های یکپارچه» (UPI) شما به‌خاطر سپرده شود؟</translation>
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
+<translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />درباره «حالت ناشناس» در Chrome بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">همه کابل‌ها را بررسی کنید و همه ره‌یاب‌ها، مودم‌ها، یا دیگر دستگاه‌های
    شبکه‌ای را که ممکن است درحال استفاده از آن‌ها باشید مجدداً راه‌اندازی کنید.</translation>
 <translation id="614940544461990577">این موارد را امتحان کنید:</translation>
@@ -1642,7 +1667,6 @@
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">صفحه‌های مربوط به فهرست خواندنتان اینجا نشان داده می‌شوند</translation>
 <translation id="627746635834430766">‏برای اینکه دفعات بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت و نشانی صورت‌حسابتان را در حساب Google خود ذخیره کنید.</translation>
-<translation id="6279098320682980337">شماره کارت مجازی تکمیل نشود؟ روی جزئیات کارت کلیک کنید تا کپی شود</translation>
 <translation id="6280223929691119688">تحویل به این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
 <translation id="6282194474023008486">کد پستی</translation>
 <translation id="6285507000506177184">‏دکمه «مدیریت بارگیری‌ها در Chrome»؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، کلید «ورود» را فشار دهید</translation>
@@ -1883,6 +1907,12 @@
 <translation id="7111012039238467737">(معتبر)</translation>
 <translation id="7118618213916969306">جستجوی نشانی وب بریده‌دان، <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">برگه‌ها یا برنامه‌های دیگر را ببندید</translation>
+<translation id="7129355289156517987">‏وقتی همه برگه‌های ناشناس Chromium را ببندید، فعالیتتان در این برگه‌ها از دستگاهتان پاک می‌شود:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />فعالیت مرور<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />سابقه جستجو<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ارسال به این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
 <translation id="7132939140423847331">سرپرست کپی شدن این داده‌ها را ممنوع کرده است.</translation>
 <translation id="7135130955892390533">نمایش وضعیت</translation>
@@ -2001,6 +2031,12 @@
 <translation id="7485870689360869515">هیچ داده‌ای یافت نشد.</translation>
 <translation id="7495528107193238112">این محتوا مسدود شده است. برای برطرف کردن مشکل با مالک سایت تماس بگیرید.</translation>
 <translation id="7497998058912824456">‏دکمه ایجاد سند؛ برای ایجاد سریع «سندنگار Google» جدید، کلید «ورود» را فشار دهید</translation>
+<translation id="7506488012654002225">‏Chromium اطلاعات زیر را <ph name="BEGIN_EMPHASIS" />ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />سابقه مرور شما
+            <ph name="LIST_ITEM" />داده‌های سایت و کوکی‌ها
+            <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">شناسه دستگاه خط‌مشی برگردانده‌شده خالی است یا با شناسه کنونی دستگاه مطابقت ندارد</translation>
 <translation id="7508870219247277067">سبز مایل به زرد</translation>
 <translation id="7511955381719512146">‏شبکه Wi-Fi مورد استفاده‌تان احتمالاً نیاز دارد که به صفحه <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> بروید.</translation>
@@ -2220,6 +2256,7 @@
 <translation id="8202370299023114387">اختلال</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">اتصال امن است</translation>
+<translation id="8217240300496046857">سایت‌ها نمی‌توانند از کوکی‌هایی که شما را در وب ردیابی می‌کند استفاده کنند. ویژگی‌های برخی سایت‌ها ممکن است کار نکنند.</translation>
 <translation id="8218327578424803826">مکان اختصاص یافته:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">شخصی که این رایانه را راه‌اندازی کرده این سایت را مسدود کرده است.</translation>
