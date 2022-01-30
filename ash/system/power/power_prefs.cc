@@ -315,6 +315,11 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       values.battery_quick_dim_delay_ms =
           ash::GetQuickDimDelay().InMilliseconds();
       values.ac_quick_dim_delay_ms = ash::GetQuickDimDelay().InMilliseconds();
+
+      values.battery_quick_lock_delay_ms =
+          ash::GetQuickLockDelay().InMilliseconds();
+      values.ac_quick_lock_delay_ms = ash::GetQuickLockDelay().InMilliseconds();
+
       values.send_feedback_if_undimmed = ash::GetQuickDimFeedbackEnabled();
 
       hps_sense_controller_->EnableHpsSense();

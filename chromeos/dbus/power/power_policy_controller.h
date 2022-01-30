@@ -74,12 +74,14 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
     int ac_quick_dim_delay_ms = -1;
     int ac_screen_off_delay_ms = -1;
     int ac_screen_lock_delay_ms = -1;
+    int ac_quick_lock_delay_ms = -1;
     int ac_idle_warning_delay_ms = -1;
     int ac_idle_delay_ms = -1;
     int battery_screen_dim_delay_ms = -1;
     int battery_quick_dim_delay_ms = -1;
     int battery_screen_off_delay_ms = -1;
     int battery_screen_lock_delay_ms = -1;
+    int battery_quick_lock_delay_ms = -1;
     int battery_idle_warning_delay_ms = -1;
     int battery_idle_delay_ms = -1;
 

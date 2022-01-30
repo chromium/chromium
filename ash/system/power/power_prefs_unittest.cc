@@ -569,6 +569,12 @@ TEST_F(PowerPrefsTest, SetQuickDimParams) {
             ash::GetQuickDimDelay().InMilliseconds());
   EXPECT_EQ(policy.battery_delays().quick_dim_ms(),
             ash::GetQuickDimDelay().InMilliseconds());
+
+  EXPECT_EQ(policy.ac_delays().quick_lock_ms(),
+            ash::GetQuickLockDelay().InMilliseconds());
+  EXPECT_EQ(policy.battery_delays().quick_lock_ms(),
+            ash::GetQuickLockDelay().InMilliseconds());
+
   EXPECT_EQ(policy.send_feedback_if_undimmed(),
             ash::GetQuickDimFeedbackEnabled());
 

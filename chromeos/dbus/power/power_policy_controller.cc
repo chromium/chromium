@@ -45,6 +45,7 @@ PowerPolicyController* g_power_policy_controller = nullptr;
     APPEND_DELAY(str, delays, quick_dim_ms, prefix "_quick_dim_ms");       \
     APPEND_DELAY(str, delays, screen_off_ms, prefix "_screen_off_ms");     \
     APPEND_DELAY(str, delays, screen_lock_ms, prefix "_screen_lock_ms");   \
+    APPEND_DELAY(str, delays, quick_lock_ms, prefix "_quick_lock_ms");     \
     APPEND_DELAY(str, delays, idle_warning_ms, prefix "_idle_warning_ms"); \
     APPEND_DELAY(str, delays, idle_ms, prefix "_idle_ms");                 \
   }
@@ -462,13 +463,21 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
   delays->set_idle_ms(values.battery_idle_delay_ms);
 
   // Sets quick_dim_ms and send_feedback_if_undimmed for prefs_policy_.
-  if (values.battery_quick_dim_delay_ms > 0) {
+  if (values.battery_quick_dim_delay_ms >= 0) {
     prefs_policy_.mutable_battery_delays()->set_quick_dim_ms(
         values.battery_quick_dim_delay_ms);
   }
-  if (values.ac_quick_dim_delay_ms > 0) {
+  if (values.ac_quick_dim_delay_ms >= 0) {
     prefs_policy_.mutable_ac_delays()->set_quick_dim_ms(
         values.ac_quick_dim_delay_ms);
+  }
+  if (values.battery_quick_lock_delay_ms >= 0) {
+    prefs_policy_.mutable_battery_delays()->set_quick_lock_ms(
+        values.battery_quick_lock_delay_ms);
+  }
+  if (values.ac_quick_lock_delay_ms >= 0) {
+    prefs_policy_.mutable_ac_delays()->set_quick_lock_ms(
+        values.ac_quick_lock_delay_ms);
   }
   if (values.send_feedback_if_undimmed.has_value()) {
     prefs_policy_.set_send_feedback_if_undimmed(

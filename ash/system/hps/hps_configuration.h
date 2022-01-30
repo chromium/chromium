@@ -26,6 +26,9 @@ ASH_EXPORT absl::optional<hps::FeatureConfig> GetEnableHpsNotifyConfig();
 // Gets quick dim delay to configure power_manager.
 ASH_EXPORT base::TimeDelta GetQuickDimDelay();
 
+// Gets quick lock delay to configure power_manager.
+ASH_EXPORT base::TimeDelta GetQuickLockDelay();
+
 // If true, quick dim functionality should be temporarily disabled when a quick
 // dim is undimmed within a short period of time.
 // Used to configure power_manager.

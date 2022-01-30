@@ -2667,12 +2667,37 @@ const FeatureEntry::FeatureParam kQuickDim10s[] = {{"quick_dim_ms", "10000"}};
 const FeatureEntry::FeatureParam kQuickDimInstantly[] = {
     {"quick_dim_ms", "1000"}};
 
+const FeatureEntry::FeatureParam kQuickDim10sQuickLock40s[] = {
+    {"quick_dim_ms", "10000"},
+    {"quick_lock_ms", "40000"}};
+
+const FeatureEntry::FeatureParam kQuickDim10sQuickLock70s[] = {
+    {"quick_dim_ms", "10000"},
+    {"quick_lock_ms", "70000"}};
+
+const FeatureEntry::FeatureParam kQuickDim45sQuickLock135s[] = {
+    {"quick_dim_ms", "45000"},
+    {"quick_lock_ms", "135000"}};
+
+const FeatureEntry::FeatureParam kQuickDim120sQuickLock240s[] = {
+    {"quick_dim_ms", "120000"},
+    {"quick_lock_ms", "240000"}};
+
 const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
     {"QuickDim120s", kQuickDim120s, base::size(kQuickDim120s), nullptr},
     {"QuickDim45s", kQuickDim45s, base::size(kQuickDim45s), nullptr},
     {"QuickDim10s", kQuickDim10s, base::size(kQuickDim10s), nullptr},
     {"QuickDimInstantly", kQuickDimInstantly, base::size(kQuickDimInstantly),
-     nullptr}};
+     nullptr},
+    {"kQuickDim10sQuickLock40s", kQuickDim10sQuickLock40s,
+     base::size(kQuickDim10sQuickLock40s), nullptr},
+    {"kQuickDim10sQuickLock70s", kQuickDim10sQuickLock70s,
+     base::size(kQuickDim10sQuickLock70s), nullptr},
+    {"kQuickDim45sQuickLock135s", kQuickDim45sQuickLock135s,
+     base::size(kQuickDim45sQuickLock135s), nullptr},
+    {"kQuickDim120sQuickLock240s", kQuickDim120sQuickLock240s,
+     base::size(kQuickDim120sQuickLock240s), nullptr}};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

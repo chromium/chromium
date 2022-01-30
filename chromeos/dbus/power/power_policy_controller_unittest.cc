@@ -51,10 +51,12 @@ TEST_F(PowerPolicyControllerTest, Prefs) {
   prefs.ac_screen_dim_delay_ms = 600000;
   prefs.ac_quick_dim_delay_ms = 500000;
   prefs.ac_screen_off_delay_ms = 660000;
+  prefs.ac_quick_lock_delay_ms = 550000;
   prefs.ac_idle_delay_ms = 720000;
   prefs.battery_screen_dim_delay_ms = 300000;
   prefs.battery_quick_dim_delay_ms = 250000;
   prefs.battery_screen_off_delay_ms = 360000;
+  prefs.battery_quick_lock_delay_ms = 260000;
   prefs.battery_idle_delay_ms = 420000;
   prefs.ac_idle_action = PowerPolicyController::ACTION_SUSPEND;
   prefs.battery_idle_action = PowerPolicyController::ACTION_STOP_SESSION;
@@ -78,12 +80,14 @@ TEST_F(PowerPolicyControllerTest, Prefs) {
   expected_policy.mutable_ac_delays()->set_quick_dim_ms(500000);
   expected_policy.mutable_ac_delays()->set_screen_off_ms(660000);
   expected_policy.mutable_ac_delays()->set_screen_lock_ms(-1);
+  expected_policy.mutable_ac_delays()->set_quick_lock_ms(550000);
   expected_policy.mutable_ac_delays()->set_idle_warning_ms(-1);
   expected_policy.mutable_ac_delays()->set_idle_ms(720000);
   expected_policy.mutable_battery_delays()->set_screen_dim_ms(300000);
   expected_policy.mutable_battery_delays()->set_quick_dim_ms(250000);
   expected_policy.mutable_battery_delays()->set_screen_off_ms(360000);
   expected_policy.mutable_battery_delays()->set_screen_lock_ms(-1);
+  expected_policy.mutable_battery_delays()->set_quick_lock_ms(260000);
   expected_policy.mutable_battery_delays()->set_idle_warning_ms(-1);
   expected_policy.mutable_battery_delays()->set_idle_ms(420000);
   expected_policy.set_ac_idle_action(

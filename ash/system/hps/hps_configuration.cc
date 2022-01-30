@@ -17,6 +17,11 @@ namespace {
 // Default quick dim delay to configure power_manager.
 constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(45);
 
+// Default quick lock delay to configure power_manager. This default value is
+// set to be zero which disables quick lock in order to be consistent with
+// current behaviour.
+constexpr base::TimeDelta kQuickLockDelayDefault;
+
 // Default value determines whether send feedback to configure power_manager.
 constexpr int kShouldSendFeedbackIfUndimmed = false;
 
@@ -185,6 +190,13 @@ base::TimeDelta GetQuickDimDelay() {
       features::kQuickDim, "quick_dim_ms",
       kQuickDimDelayDefault.InMilliseconds());
   return base::Milliseconds(quick_dim_ms);
+}
+
+base::TimeDelta GetQuickLockDelay() {
+  const int quick_lock_ms = base::GetFieldTrialParamByFeatureAsInt(
+      features::kQuickDim, "quick_lock_ms",
+      kQuickLockDelayDefault.InMilliseconds());
+  return base::Milliseconds(quick_lock_ms);
 }
 
 bool GetQuickDimFeedbackEnabled() {
