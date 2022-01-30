@@ -39,7 +39,7 @@ class CC_EXPORT MirrorLayer : public Layer {
 
   // A reference to a layer that is mirrored by this layer. |mirrored_layer_|
   // cannot be an ancestor of |this|.
-  scoped_refptr<Layer> mirrored_layer_;
+  const scoped_refptr<Layer> mirrored_layer_;
 };
 
 }  // namespace cc

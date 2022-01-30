@@ -44,9 +44,9 @@ class CC_EXPORT VideoLayer : public Layer {
 
   // This pointer is only for passing to VideoLayerImpl's constructor. It should
   // never be dereferenced by this class.
-  raw_ptr<VideoFrameProvider> provider_;
+  ProtectedSequenceReadable<raw_ptr<VideoFrameProvider>> provider_;
 
-  media::VideoTransformation transform_;
+  const media::VideoTransformation transform_;
 };
 
 }  // namespace cc

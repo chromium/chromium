@@ -48,14 +48,11 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
         const gpu::SyncToken& sync_token,
         bool is_lost);
 
-   protected:
-    friend class TextureLayer;
-
-    // Protected visibility so only TextureLayer and unit tests can create
-    // these.
     static scoped_refptr<TransferableResourceHolder> Create(
         const viz::TransferableResource& resource,
         viz::ReleaseCallback release_callback);
+
+   protected:
     virtual ~TransferableResourceHolder();
 
    private:
@@ -101,7 +98,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // Sets whether this texture should be Y-flipped at draw time. Defaults to
   // true.
   void SetFlipped(bool flipped);
-  bool flipped() const { return flipped_; }
+  bool flipped() const { return flipped_.Read(*this); }
 
   // Sets whether this texture should use nearest neighbor interpolation as
   // opposed to bilinear. Defaults to false.
@@ -144,9 +141,10 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
       const viz::SharedBitmapId& id,
       scoped_refptr<CrossThreadSharedBitmap> bitmap) override;
 
-  viz::TransferableResource current_transferable_resource() const {
-    return resource_holder_ ? resource_holder_->resource()
-                            : viz::TransferableResource();
+  const viz::TransferableResource current_transferable_resource() const {
+    if (const auto& resource_holder = resource_holder_.Read(*this))
+      return resource_holder->resource();
+    return viz::TransferableResource();
   }
 
  protected:
@@ -166,37 +164,41 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // compositor.
   void UnregisterSharedBitmapId(viz::SharedBitmapId id);
 
-  raw_ptr<TextureLayerClient> client_;
+  ProtectedSequenceForbidden<raw_ptr<TextureLayerClient>> client_;
 
-  bool flipped_ = true;
-  bool nearest_neighbor_ = false;
-  gfx::PointF uv_top_left_ = gfx::PointF();
-  gfx::PointF uv_bottom_right_ = gfx::PointF(1.f, 1.f);
+  ProtectedSequenceReadable<bool> flipped_;
+  ProtectedSequenceReadable<bool> nearest_neighbor_;
+  ProtectedSequenceReadable<gfx::PointF> uv_top_left_;
+  ProtectedSequenceReadable<gfx::PointF> uv_bottom_right_;
   // [bottom left, top left, top right, bottom right]
-  bool premultiplied_alpha_ = true;
-  bool blend_background_color_ = false;
-  bool force_texture_to_opaque_ = false;
+  ProtectedSequenceReadable<bool> premultiplied_alpha_;
+  ProtectedSequenceReadable<bool> blend_background_color_;
+  ProtectedSequenceReadable<bool> force_texture_to_opaque_;
 
-  scoped_refptr<TransferableResourceHolder> resource_holder_;
-  bool needs_set_resource_ = false;
+  ProtectedSequenceWritable<scoped_refptr<TransferableResourceHolder>>
+      resource_holder_;
+  ProtectedSequenceWritable<bool> needs_set_resource_;
+
+  typedef base::flat_map<viz::SharedBitmapId,
+                         scoped_refptr<CrossThreadSharedBitmap>>
+      BitMapMap;
 
   // The set of SharedBitmapIds to register with the LayerTreeFrameSink on the
   // compositor thread. These requests are forwarded to the TextureLayerImpl to
   // use, then stored in |registered_bitmaps_| to re-send if the
   // TextureLayerImpl object attached to this layer changes, by moving out of
   // the LayerTreeHost.
-  base::flat_map<viz::SharedBitmapId, scoped_refptr<CrossThreadSharedBitmap>>
-      to_register_bitmaps_;
+  ProtectedSequenceWritable<BitMapMap> to_register_bitmaps_;
   // The set of previously registered SharedBitmapIds for the current
   // LayerTreeHost. If the LayerTreeHost changes, these must be re-sent to the
   // (new) TextureLayerImpl to be re-registered.
-  base::flat_map<viz::SharedBitmapId, scoped_refptr<CrossThreadSharedBitmap>>
-      registered_bitmaps_;
+  ProtectedSequenceWritable<BitMapMap> registered_bitmaps_;
   // The SharedBitmapIds to unregister on the compositor thread, passed to the
   // TextureLayerImpl.
-  std::vector<viz::SharedBitmapId> to_unregister_bitmap_ids_;
+  ProtectedSequenceWritable<std::vector<viz::SharedBitmapId>>
+      to_unregister_bitmap_ids_;
 
-  base::WeakPtrFactory<TextureLayer> weak_ptr_factory_{this};
+  const base::WeakPtrFactory<TextureLayer> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

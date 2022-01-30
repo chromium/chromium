@@ -5,12 +5,16 @@
 #ifndef CC_BASE_PROTECTED_SEQUENCE_SYNCHRONIZER_H_
 #define CC_BASE_PROTECTED_SEQUENCE_SYNCHRONIZER_H_
 
+#include <utility>
+
 namespace cc {
 
 // ProtectedSequenceSynchronizer can be used to enforce thread safety of data
 // that are owned and produced by an "owner" thread; and then passed by
 // reference to another thread to use for a limited duration (a "protected
-// sequence").
+// sequence"). A protected sequence must be initiated on the owning thread, and
+// it must be concluded on the non-owning thread. See the code comment above
+// InProtectedSequence() for more on this requirement.
 class ProtectedSequenceSynchronizer {
  public:
   ProtectedSequenceSynchronizer() = default;
@@ -20,14 +24,39 @@ class ProtectedSequenceSynchronizer {
   virtual bool IsOwnerThread() const = 0;
 
   // Returns true if a non-owner thread is currently running a protected
-  // sequence.
+  // sequence. The owner thread must be responsible for transitioning the return
+  // value from false to true, and the non-owner thread must be responsible for
+  // transitioning from true to false. Failure to adhere to these guidelines
+  // will likely cause race conditions and/or deadlock.
   virtual bool InProtectedSequence() const = 0;
 
   // Blocks execution of the owner thread until a non-owner thread finishes
-  // executing a protected sequence.
-  //
-  // It is an error for this to be called on a non-owner thread.
+  // executing a protected sequence. It is an error for this to be called on a
+  // non-owner thread.
   virtual void WaitForProtectedSequenceCompletion() const = 0;
+};
+
+// ProtectedSequenceForbidden values cannot be accessed for read or write by any
+// non-owner thread. There are no restrictions on access by the owner thread.
+template <typename T>
+class ProtectedSequenceForbidden {
+ public:
+  template <typename... Args>
+  explicit ProtectedSequenceForbidden(Args&&... args)
+      : value_(std::forward<Args>(args)...) {}
+
+  const T& Read(const ProtectedSequenceSynchronizer& synchronizer) const {
+    DCHECK(synchronizer.IsOwnerThread());
+    return value_;
+  }
+
+  T& Write(const ProtectedSequenceSynchronizer& synchronizer) {
+    DCHECK(synchronizer.IsOwnerThread());
+    return value_;
+  }
+
+ private:
+  T value_;
 };
 
 // ProtectedSequenceReadable values are...
@@ -39,7 +68,8 @@ template <typename T>
 class ProtectedSequenceReadable {
  public:
   template <typename... Args>
-  explicit ProtectedSequenceReadable(Args... args) : value_(args...) {}
+  explicit ProtectedSequenceReadable(Args&&... args)
+      : value_(std::forward<Args>(args)...) {}
 
   const T& Read(const ProtectedSequenceSynchronizer& synchronizer) const {
     DCHECK(synchronizer.IsOwnerThread() || synchronizer.InProtectedSequence());
@@ -68,7 +98,8 @@ template <typename T>
 class ProtectedSequenceWritable {
  public:
   template <typename... Args>
-  explicit ProtectedSequenceWritable(Args... args) : value_(args...) {}
+  explicit ProtectedSequenceWritable(Args&&... args)
+      : value_(std::forward<Args>(args)...) {}
 
   const T& Read(const ProtectedSequenceSynchronizer& synchronizer) const {
     DCHECK(synchronizer.IsOwnerThread() || synchronizer.InProtectedSequence());

@@ -30,7 +30,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
       LayerTreeImpl* tree_impl,
       int id,
       VideoFrameProvider* provider,
-      media::VideoTransformation video_transform);
+      const media::VideoTransformation& video_transform);
   VideoLayerImpl(const VideoLayerImpl&) = delete;
   ~VideoLayerImpl() override;
 
@@ -60,7 +60,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
       LayerTreeImpl* tree_impl,
       int id,
       scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl,
-      media::VideoTransformation video_transform);
+      const media::VideoTransformation& video_transform);
 
   const char* LayerTypeAsString() const override;
 

@@ -57,6 +57,12 @@ using SyncedScrollOffset =
 
 class PropertyTrees;
 
+enum {
+  kInvalidPropertyNodeId = -1,
+  kRootPropertyNodeId = 0,
+  kSecondaryRootPropertyNodeId = 1
+};
+
 template <typename T>
 class CC_EXPORT PropertyTree {
  public:

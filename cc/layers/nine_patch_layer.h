@@ -54,17 +54,17 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
-  gfx::Rect border_;
-  bool fill_center_;
-  bool nearest_neighbor_;
+  ProtectedSequenceReadable<gfx::Rect> border_;
+  ProtectedSequenceReadable<bool> fill_center_;
+  ProtectedSequenceReadable<bool> nearest_neighbor_;
 
   // The transparent center region that shows the parent layer's contents in
   // image space.
-  gfx::Rect image_aperture_;
+  ProtectedSequenceReadable<gfx::Rect> image_aperture_;
 
   // The occluded region in layer space set by SetLayerOcclusion. It is
   // usually larger than |image_aperture_|.
-  gfx::Rect layer_occlusion_;
+  ProtectedSequenceReadable<gfx::Rect> layer_occlusion_;
 };
 
 }  // namespace cc

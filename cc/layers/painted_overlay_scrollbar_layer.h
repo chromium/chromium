@@ -49,7 +49,7 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
 
  private:
   template <typename T>
-  bool UpdateProperty(T value, T* prop) {
+  bool UpdateProperty(const T value, T* prop) {
     if (*prop == value)
       return false;
     *prop = value;
@@ -60,14 +60,14 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
   bool PaintThumbIfNeeded();
   bool PaintTickmarks();
 
-  scoped_refptr<Scrollbar> scrollbar_;
+  ProtectedSequenceForbidden<scoped_refptr<Scrollbar>> scrollbar_;
 
-  gfx::Size thumb_size_;
-  gfx::Rect track_rect_;
-  gfx::Rect aperture_;
+  ProtectedSequenceReadable<gfx::Size> thumb_size_;
+  ProtectedSequenceReadable<gfx::Rect> track_rect_;
+  ProtectedSequenceReadable<gfx::Rect> aperture_;
 
-  std::unique_ptr<ScopedUIResource> thumb_resource_;
-  std::unique_ptr<ScopedUIResource> track_resource_;
+  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> thumb_resource_;
+  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> track_resource_;
 };
 
 }  // namespace cc

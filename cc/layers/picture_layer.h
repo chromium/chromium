@@ -56,7 +56,7 @@ class CC_EXPORT PictureLayer : public Layer {
   ContentLayerClient* client() { return picture_layer_inputs_.client; }
 
   RecordingSource* GetRecordingSourceForTesting() const {
-    return recording_source_.get();
+    return recording_source_.Read(*this).get();
   }
 
   const DisplayItemList* GetDisplayItemList() const;
@@ -90,13 +90,13 @@ class CC_EXPORT PictureLayer : public Layer {
   // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
 
-  std::unique_ptr<RecordingSource> recording_source_;
-  devtools_instrumentation::
-      ScopedLayerObjectTracker instrumentation_object_tracker_;
+  ProtectedSequenceWritable<std::unique_ptr<RecordingSource>> recording_source_;
+  ProtectedSequenceForbidden<devtools_instrumentation::ScopedLayerObjectTracker>
+      instrumentation_object_tracker_;
 
-  Region last_updated_invalidation_;
+  ProtectedSequenceWritable<Region> last_updated_invalidation_;
 
-  int update_source_frame_number_;
+  ProtectedSequenceReadable<int> update_source_frame_number_;
 };
 
 }  // namespace cc

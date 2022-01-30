@@ -27,13 +27,21 @@ scoped_refptr<TextureLayer> TextureLayer::CreateForMailbox(
   return scoped_refptr<TextureLayer>(new TextureLayer(client));
 }
 
-TextureLayer::TextureLayer(TextureLayerClient* client) : client_(client) {}
+TextureLayer::TextureLayer(TextureLayerClient* client)
+    : client_(client),
+      flipped_(true),
+      nearest_neighbor_(false),
+      uv_bottom_right_(1.f, 1.f),
+      premultiplied_alpha_(true),
+      blend_background_color_(false),
+      force_texture_to_opaque_(false),
+      needs_set_resource_(false) {}
 
 TextureLayer::~TextureLayer() = default;
 
 void TextureLayer::ClearClient() {
   DCHECK(IsMutationAllowed());
-  client_ = nullptr;
+  client_.Write(*this) = nullptr;
   ClearTexture();
   SetDrawsContent(HasDrawableContent());
 }
@@ -50,51 +58,52 @@ std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
 
 void TextureLayer::SetFlipped(bool flipped) {
   DCHECK(IsMutationAllowed());
-  if (flipped_ == flipped)
+  if (flipped_.Read(*this) == flipped)
     return;
-  flipped_ = flipped;
+  flipped_.Write(*this) = flipped;
   SetNeedsCommit();
 }
 
 void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
   DCHECK(IsMutationAllowed());
-  if (nearest_neighbor_ == nearest_neighbor)
+  if (nearest_neighbor_.Read(*this) == nearest_neighbor)
     return;
-  nearest_neighbor_ = nearest_neighbor;
+  nearest_neighbor_.Write(*this) = nearest_neighbor;
   SetNeedsCommit();
 }
 
 void TextureLayer::SetUV(const gfx::PointF& top_left,
                          const gfx::PointF& bottom_right) {
   DCHECK(IsMutationAllowed());
-  if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right)
+  if (uv_top_left_.Read(*this) == top_left &&
+      uv_bottom_right_.Read(*this) == bottom_right)
     return;
-  uv_top_left_ = top_left;
-  uv_bottom_right_ = bottom_right;
+  uv_top_left_.Write(*this) = top_left;
+  uv_bottom_right_.Write(*this) = bottom_right;
   SetNeedsCommit();
 }
 
 void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
   DCHECK(IsMutationAllowed());
-  if (premultiplied_alpha_ == premultiplied_alpha)
+  if (premultiplied_alpha_.Read(*this) == premultiplied_alpha)
     return;
-  premultiplied_alpha_ = premultiplied_alpha;
+  premultiplied_alpha_.Write(*this) = premultiplied_alpha;
   SetNeedsCommit();
 }
 
 void TextureLayer::SetBlendBackgroundColor(bool blend) {
   DCHECK(IsMutationAllowed());
-  if (blend_background_color_ == blend)
+  if (blend_background_color_.Read(*this) == blend)
     return;
-  blend_background_color_ = blend;
+  blend_background_color_.Write(*this) = blend;
   SetNeedsCommit();
 }
 
 void TextureLayer::SetForceTextureToOpaque(bool opaque) {
   DCHECK(IsMutationAllowed());
-  if (force_texture_to_opaque_ == opaque)
+  if (force_texture_to_opaque_.Read(*this) == opaque)
     return;
-  force_texture_to_opaque_ = opaque;
+  force_texture_to_opaque_.Write(*this) = opaque;
   SetNeedsCommit();
 }
 
@@ -103,18 +112,19 @@ void TextureLayer::SetTransferableResourceInternal(
     viz::ReleaseCallback release_callback,
     bool requires_commit) {
   DCHECK(IsMutationAllowed());
-  DCHECK(resource.mailbox_holder.mailbox.IsZero() || !resource_holder_ ||
-         resource != resource_holder_->resource());
+  DCHECK(resource.mailbox_holder.mailbox.IsZero() ||
+         !resource_holder_.Read(*this) ||
+         resource != resource_holder_.Read(*this)->resource());
   DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
 
   // If we never commited the mailbox, we need to release it here.
   if (!resource.mailbox_holder.mailbox.IsZero()) {
-    resource_holder_ = TransferableResourceHolder::Create(
+    resource_holder_.Write(*this) = TransferableResourceHolder::Create(
         resource, std::move(release_callback));
   } else {
-    resource_holder_ = nullptr;
+    resource_holder_.Write(*this) = nullptr;
   }
-  needs_set_resource_ = true;
+  needs_set_resource_.Write(*this) = true;
   // If we are within a commit, no need to do it again immediately after.
   if (requires_commit)
     SetNeedsCommit();
@@ -143,31 +153,33 @@ void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // If we're removed from the tree, the TextureLayerImpl will be destroyed, and
   // we will need to set the mailbox again on a new TextureLayerImpl the next
   // time we push.
-  if (!host && resource_holder_)
-    needs_set_resource_ = true;
+  if (!host && resource_holder_.Read(*this))
+    needs_set_resource_.Write(*this) = true;
   if (host) {
     // When attached to a new LayerTreeHost, all previously registered
     // SharedBitmapIds will need to be re-sent to the new TextureLayerImpl
     // representing this layer on the compositor thread.
-    to_register_bitmaps_.insert(
-        std::make_move_iterator(registered_bitmaps_.begin()),
-        std::make_move_iterator(registered_bitmaps_.end()));
-    registered_bitmaps_.clear();
+    auto& registered_bitmaps = registered_bitmaps_.Write(*this);
+    to_register_bitmaps_.Write(*this).insert(
+        std::make_move_iterator(registered_bitmaps.begin()),
+        std::make_move_iterator(registered_bitmaps.end()));
+    registered_bitmaps.clear();
   }
   Layer::SetLayerTreeHost(host);
 }
 
 bool TextureLayer::HasDrawableContent() const {
-  return (client_ || resource_holder_) && Layer::HasDrawableContent();
+  return (client_.Read(*this) || resource_holder_.Read(*this)) &&
+         Layer::HasDrawableContent();
 }
 
 bool TextureLayer::Update() {
   bool updated = Layer::Update();
-  if (client_) {
+  if (client_.Read(*this)) {
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
-    if (client_->PrepareTransferableResource(this, &resource,
-                                             &release_callback)) {
+    if (client_.Write(*this)->PrepareTransferableResource(this, &resource,
+                                                          &release_callback)) {
       // Already within a commit, no need to do another one immediately.
       bool requires_commit = false;
       SetTransferableResourceInternal(resource, std::move(release_callback),
@@ -199,49 +211,53 @@ void TextureLayer::PushPropertiesTo(
   TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
 
   TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
-  texture_layer->SetFlipped(flipped_);
-  texture_layer->SetNearestNeighbor(nearest_neighbor_);
-  texture_layer->SetUVTopLeft(uv_top_left_);
-  texture_layer->SetUVBottomRight(uv_bottom_right_);
-  texture_layer->SetPremultipliedAlpha(premultiplied_alpha_);
-  texture_layer->SetBlendBackgroundColor(blend_background_color_);
-  texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
-  if (needs_set_resource_) {
+  texture_layer->SetFlipped(flipped_.Read(*this));
+  texture_layer->SetNearestNeighbor(nearest_neighbor_.Read(*this));
+  texture_layer->SetUVTopLeft(uv_top_left_.Read(*this));
+  texture_layer->SetUVBottomRight(uv_bottom_right_.Read(*this));
+  texture_layer->SetPremultipliedAlpha(premultiplied_alpha_.Read(*this));
+  texture_layer->SetBlendBackgroundColor(blend_background_color_.Read(*this));
+  texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_.Read(*this));
+  if (needs_set_resource_.Read(*this)) {
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
-    if (resource_holder_) {
-      resource = resource_holder_->resource();
+    if (auto& resource_holder = resource_holder_.Write(*this)) {
+      resource = resource_holder->resource();
       release_callback =
-          base::BindOnce(&TransferableResourceHolder::Return, resource_holder_,
+          base::BindOnce(&TransferableResourceHolder::Return, resource_holder,
                          base::RetainedRef(layer->layer_tree_impl()
                                                ->task_runner_provider()
                                                ->MainThreadTaskRunner()));
     }
     texture_layer->SetTransferableResource(resource,
                                            std::move(release_callback));
-    needs_set_resource_ = false;
+    needs_set_resource_.Write(*this) = false;
   }
-  for (auto& pair : to_register_bitmaps_)
+  auto& to_register_bitmaps = to_register_bitmaps_.Write(*this);
+  for (auto& pair : to_register_bitmaps)
     texture_layer->RegisterSharedBitmapId(pair.first, pair.second);
   // Store the registered SharedBitmapIds in case we get a new TextureLayerImpl,
   // in a new tree, to re-send them to.
-  registered_bitmaps_.insert(
-      std::make_move_iterator(to_register_bitmaps_.begin()),
-      std::make_move_iterator(to_register_bitmaps_.end()));
-  to_register_bitmaps_.clear();
-  for (const auto& id : to_unregister_bitmap_ids_)
+  registered_bitmaps_.Write(*this).insert(
+      std::make_move_iterator(to_register_bitmaps.begin()),
+      std::make_move_iterator(to_register_bitmaps.end()));
+  to_register_bitmaps.clear();
+  auto& to_unregister_bitmap_ids = to_unregister_bitmap_ids_.Write(*this);
+  for (const auto& id : to_unregister_bitmap_ids)
     texture_layer->UnregisterSharedBitmapId(id);
-  to_unregister_bitmap_ids_.clear();
+  to_unregister_bitmap_ids.clear();
 }
 
 SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
     const viz::SharedBitmapId& id,
     scoped_refptr<CrossThreadSharedBitmap> bitmap) {
   DCHECK(IsMutationAllowed());
-  DCHECK(to_register_bitmaps_.find(id) == to_register_bitmaps_.end());
-  DCHECK(registered_bitmaps_.find(id) == registered_bitmaps_.end());
-  to_register_bitmaps_[id] = std::move(bitmap);
-  base::Erase(to_unregister_bitmap_ids_, id);
+  DCHECK(to_register_bitmaps_.Read(*this).find(id) ==
+         to_register_bitmaps_.Read(*this).end());
+  DCHECK(registered_bitmaps_.Read(*this).find(id) ==
+         registered_bitmaps_.Read(*this).end());
+  to_register_bitmaps_.Write(*this)[id] = std::move(bitmap);
+  base::Erase(to_unregister_bitmap_ids_.Write(*this), id);
   // This does not SetNeedsCommit() to be as lazy as possible. Notifying a
   // SharedBitmapId is not needed until it is used, and using it will require
   // a commit, so we can wait for that commit before forwarding the
@@ -255,12 +271,12 @@ void TextureLayer::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
   DCHECK(IsMutationAllowed());
   // If we didn't get to sending the registration to the compositor thread yet,
   // just remove it.
-  to_register_bitmaps_.erase(id);
+  to_register_bitmaps_.Write(*this).erase(id);
   // Since we also track all previously sent registrations, we must remove that
   // to in order to prevent re-registering on another LayerTreeHost.
-  registered_bitmaps_.erase(id);
+  registered_bitmaps_.Write(*this).erase(id);
 
-  to_unregister_bitmap_ids_.push_back(id);
+  to_unregister_bitmap_ids_.Write(*this).push_back(id);
   // Unregistering a SharedBitmapId needs to happen eventually to prevent
   // leaking the SharedMemory in the display compositor. But this attempts to be
   // lazy and not force a commit prematurely, so just requests a

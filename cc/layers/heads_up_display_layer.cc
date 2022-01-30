@@ -20,10 +20,11 @@ scoped_refptr<HeadsUpDisplayLayer> HeadsUpDisplayLayer::Create() {
 
 HeadsUpDisplayLayer::HeadsUpDisplayLayer()
     : typeface_(SkTypeface::MakeFromName("Arial", SkFontStyle())) {
-  if (!typeface_) {
-    typeface_ = SkTypeface::MakeFromName("monospace", SkFontStyle::Bold());
+  if (!typeface_.Read(*this)) {
+    typeface_.Write(*this) =
+        SkTypeface::MakeFromName("monospace", SkFontStyle::Bold());
   }
-  DCHECK(typeface_.get());
+  DCHECK(typeface_.Read(*this).get());
   SetIsDrawable(true);
   SetDrawsContent(HasDrawableContent());
 }
@@ -76,19 +77,19 @@ std::unique_ptr<LayerImpl> HeadsUpDisplayLayer::CreateLayerImpl(
 }
 
 const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {
-  return layout_shift_rects_;
+  return layout_shift_rects_.Read(*this);
 }
 
 void HeadsUpDisplayLayer::SetLayoutShiftRects(
     const std::vector<gfx::Rect>& rects) {
   DCHECK(IsMutationAllowed());
-  layout_shift_rects_ = rects;
+  layout_shift_rects_.Write(*this) = rects;
 }
 
 void HeadsUpDisplayLayer::UpdateWebVitalMetrics(
     std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
   DCHECK(IsMutationAllowed());
-  web_vital_metrics_ = std::move(web_vital_metrics);
+  web_vital_metrics_.Write(*this) = std::move(web_vital_metrics);
 }
 
 void HeadsUpDisplayLayer::PushPropertiesTo(
@@ -100,11 +101,12 @@ void HeadsUpDisplayLayer::PushPropertiesTo(
   HeadsUpDisplayLayerImpl* layer_impl =
       static_cast<HeadsUpDisplayLayerImpl*>(layer);
 
-  layer_impl->SetHUDTypeface(typeface_);
-  layer_impl->SetLayoutShiftRects(layout_shift_rects_);
-  layout_shift_rects_.clear();
-  if (web_vital_metrics_ && web_vital_metrics_->HasValue())
-    layer_impl->SetWebVitalMetrics(std::move(web_vital_metrics_));
+  layer_impl->SetHUDTypeface(typeface_.Write(*this));
+  layer_impl->SetLayoutShiftRects(LayoutShiftRects());
+  layout_shift_rects_.Write(*this).clear();
+  auto& metrics = web_vital_metrics_.Write(*this);
+  if (metrics && metrics->HasValue())
+    layer_impl->SetWebVitalMetrics(std::move(metrics));
 }
 
 }  // namespace cc

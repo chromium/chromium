@@ -48,10 +48,11 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
  private:
   ~HeadsUpDisplayLayer() override;
 
-  sk_sp<SkTypeface> typeface_;
-  std::vector<gfx::Rect> layout_shift_rects_;
+  ProtectedSequenceWritable<sk_sp<SkTypeface>> typeface_;
+  ProtectedSequenceWritable<std::vector<gfx::Rect>> layout_shift_rects_;
 
-  std::unique_ptr<WebVitalMetrics> web_vital_metrics_;
+  ProtectedSequenceWritable<std::unique_ptr<WebVitalMetrics>>
+      web_vital_metrics_;
 };
 
 }  // namespace cc
