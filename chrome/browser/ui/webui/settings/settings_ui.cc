@@ -279,6 +279,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               password_manager::features::kPasswordImport));
 
+  html_source->AddBoolean(
+      "showDismissCompromisedPasswordOption",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kMuteCompromisedPasswords));
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
                           base::FeatureList::IsEnabled(
