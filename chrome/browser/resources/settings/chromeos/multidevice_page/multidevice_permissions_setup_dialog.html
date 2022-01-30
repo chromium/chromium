@@ -167,6 +167,11 @@
       }
 
       @media(prefers-color-scheme: dark) {
+        :host([is-setup-attempt-in-progress_]) #illustration {
+          background-image: url(
+            chrome://os-settings/images/notification_access_connecting_dark.svg);
+        }
+
         :host([did-setup-attempt-fail_]) #illustration {
           background-image: url(
             chrome://os-settings/images/notification_access_error_dark.svg);
