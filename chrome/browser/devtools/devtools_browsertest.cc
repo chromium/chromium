@@ -1959,6 +1959,9 @@ class DevToolsAutoOpenerTest : public DevToolsTest {
 // TODO(https://crbug.com/1167158): Flaky on debug builds.
 #if !defined(NDEBUG)
 #define MAYBE_TestAutoOpenForTabs DISABLED_TestAutoOpenForTabs
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1289330): Flaky failures
+#define MAYBE_TestAutoOpenForTabs DISABLED_TestAutoOpenForTabs
 #else
 #define MAYBE_TestAutoOpenForTabs TestAutoOpenForTabs
 #endif
