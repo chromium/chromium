@@ -4,11 +4,20 @@
 
 module remoting.mojom;
 
+// Struct that represents a DOMException, yielded by the remote request during a
+// Create or Get request.
+struct WebAuthnExceptionDetails {
+  // The `name` field of a DOMException.
+  string name;
+
+  // The `message` field of a DOMException.
+  string message;
+};
+
 // The response object for WebAuthnProxy.Create().
 union WebAuthnCreateResponse {
-  // The `name` property of the `DOMException`, if any, yielded by the remote
-  // request.
-  string error_name;
+  // The `DOMException`, if any, yielded by the remote request.
+  WebAuthnExceptionDetails error_details;
 
   // A string-serialized representation of the `PublicKeyCredential`
   // (https://w3c.github.io/webauthn/#publickeycredential), if any, yielded

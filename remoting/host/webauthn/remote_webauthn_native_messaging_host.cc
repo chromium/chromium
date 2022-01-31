@@ -23,6 +23,24 @@
 
 namespace remoting {
 
+namespace {
+
+base::Value CreateWebAuthnExceptionDetailsDict(const std::string& name,
+                                               const std::string& message) {
+  base::Value details(base::Value::Type::DICTIONARY);
+  details.SetStringKey(kWebAuthnErrorNameKey, name);
+  details.SetStringKey(kWebAuthnErrorMessageKey, message);
+  return details;
+}
+
+base::Value MojoErrorToErrorDict(
+    const mojom::WebAuthnExceptionDetailsPtr& mojo_error) {
+  return CreateWebAuthnExceptionDetailsDict(mojo_error->name,
+                                            mojo_error->message);
+}
+
+}  // namespace
+
 RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : RemoteWebAuthnNativeMessagingHost(
@@ -119,13 +137,15 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
   // Create request: {id: string, type: 'create', requestData: string}
   // Create response: {
   //   id: string, type: 'createResponse', responseData?: string,
-  //   errorName?: string}
+  //   error?: {name: string, message: string}}
 
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (!EnsureIpcConnection()) {
     // TODO(yuweih): See if this is the right error to use here.
-    response.SetStringKey(kCreateResponseErrorNameKey, "InvalidStateError");
+    response.SetKey(kWebAuthnErrorKey, CreateWebAuthnExceptionDetailsDict(
+                                           "InvalidStateError",
+                                           "Failed to connect to IPC server."));
     SendMessageToClient(std::move(response));
     return;
   }
@@ -135,8 +155,10 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
 
   const base::Value* message_id = request.FindKey(kMessageId);
   if (!message_id) {
-    LOG(ERROR) << "Message ID not found in create request.";
-    response.SetStringKey(kCreateResponseErrorNameKey, "NotSupportedError");
+    response.SetKey(
+        kWebAuthnErrorKey,
+        CreateWebAuthnExceptionDetailsDict(
+            "NotSupportedError", "Message ID not found in create request."));
     SendMessageToClient(std::move(response));
     return;
   }
@@ -144,8 +166,10 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
   const std::string* request_data =
       request.FindStringKey(kCreateRequestDataKey);
   if (!request_data) {
-    LOG(ERROR) << "Request data not found in create request.";
-    response.SetStringKey(kCreateResponseErrorNameKey, "NotSupportedError");
+    response.SetKey(
+        kWebAuthnErrorKey,
+        CreateWebAuthnExceptionDetailsDict(
+            "NotSupportedError", "Request data not found in create request."));
     SendMessageToClient(std::move(response));
     return;
   }
@@ -252,9 +276,10 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
   // this case we just send back an empty create response.
   if (!remote_response.is_null()) {
     switch (remote_response->which()) {
-      case mojom::WebAuthnCreateResponse::Tag::kErrorName:
-        response.SetStringKey(kCreateResponseErrorNameKey,
-                              remote_response->get_error_name());
+      case mojom::WebAuthnCreateResponse::Tag::kErrorDetails:
+        response.SetKey(
+            kWebAuthnErrorKey,
+            MojoErrorToErrorDict(remote_response->get_error_details()));
         break;
       case mojom::WebAuthnCreateResponse::Tag::kResponseData:
         response.SetStringKey(kCreateResponseDataKey,

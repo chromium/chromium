@@ -12,6 +12,14 @@ package remoting.protocol;
 // channel.
 // Next ID: 8
 message RemoteWebAuthn {
+  // message that represents a DOMException, yielded by the remote request
+  // during a Create or Get request.
+  // Next ID: 3
+  message ExceptionDetails {
+    optional string name = 1;
+    optional string message = 2;
+  }
+
   // Requests the client to handle a call to
   // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().
   message IsUvpaaRequest {}
@@ -35,8 +43,8 @@ message RemoteWebAuthn {
     // has yielded `null`, which is still a valid response according to the
     // spec.
     oneof result {
-      // The `name` property of the `DOMException`, if any.
-      string error_name = 1;
+      // The `DOMException`, if any, yielded by the remote request.
+      ExceptionDetails error = 1;
 
       // A JSON serialized representation of the `PublicKeyCredential`
       // (https://w3c.github.io/webauthn/#publickeycredential), if any.

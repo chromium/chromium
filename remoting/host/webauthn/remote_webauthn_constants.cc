@@ -17,7 +17,9 @@ const char kIsUvpaaResponseIsAvailableKey[] = "isAvailable";
 const char kGetRemoteStateResponseIsRemotedKey[] = "isRemoted";
 const char kCancelResponseWasCanceledKey[] = "wasCanceled";
 const char kCreateRequestDataKey[] = "requestData";
-const char kCreateResponseErrorNameKey[] = "errorName";
 const char kCreateResponseDataKey[] = "responseData";
+const char kWebAuthnErrorKey[] = "error";
+const char kWebAuthnErrorNameKey[] = "name";
+const char kWebAuthnErrorMessageKey[] = "message";
 
 }  // namespace remoting

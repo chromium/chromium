@@ -17,6 +17,8 @@
 #include "remoting/proto/remote_webauthn.pb.h"
 #include "remoting/protocol/message_serialization.h"
 
+namespace remoting {
+
 namespace {
 
 template <typename CallbackType, typename... ResponseType>
@@ -32,9 +34,15 @@ void FindAndRunCallback(base::flat_map<uint64_t, CallbackType>& callback_map,
   callback_map.erase(it);
 }
 
-}  // namespace
+mojom::WebAuthnExceptionDetailsPtr ProtobufErrorToMojoError(
+    const protocol::RemoteWebAuthn::ExceptionDetails& pb_error) {
+  auto mojo_error = mojom::WebAuthnExceptionDetails::New();
+  mojo_error->name = pb_error.name();
+  mojo_error->message = pb_error.message();
+  return mojo_error;
+}
 
-namespace remoting {
+}  // namespace
 
 RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
     const std::string& name,
@@ -210,9 +218,9 @@ void RemoteWebAuthnMessageHandler::OnCreateResponse(
 
   mojom::WebAuthnCreateResponsePtr mojo_response;
   switch (response.result_case()) {
-    case protocol::RemoteWebAuthn::CreateResponse::ResultCase::kErrorName:
-      mojo_response =
-          mojom::WebAuthnCreateResponse::NewErrorName(response.error_name());
+    case protocol::RemoteWebAuthn::CreateResponse::ResultCase::kError:
+      mojo_response = mojom::WebAuthnCreateResponse::NewErrorDetails(
+          ProtobufErrorToMojoError(response.error()));
       break;
     case protocol::RemoteWebAuthn::CreateResponse::ResultCase::kResponseJson:
       mojo_response = mojom::WebAuthnCreateResponse::NewResponseData(
@@ -246,9 +254,12 @@ void RemoteWebAuthnMessageHandler::OnCancelResponse(
 
   if (base::Contains(create_callbacks_, id)) {
     FindAndRunCallback(cancel_callbacks_, id, /* was_canceled= */ true);
+    auto mojo_error = mojom::WebAuthnExceptionDetails::New();
+    mojo_error->name = "AbortError";
+    mojo_error->message = "Request has been canceled by the host.";
     FindAndRunCallback(
         create_callbacks_, id,
-        mojom::WebAuthnCreateResponse::NewErrorName("AbortError"));
+        mojom::WebAuthnCreateResponse::NewErrorDetails(std::move(mojo_error)));
     RemoveRequestCancellerByMessageId(id);
     return;
   }

@@ -274,7 +274,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_RequestMissingData_Error) {
 
   VerifyResponseMessage(response, kCreateMessageType);
   ASSERT_EQ(response.FindStringKey(kCreateResponseDataKey), nullptr);
-  ASSERT_NE(response.FindStringKey(kCreateResponseErrorNameKey), nullptr);
+  ASSERT_NE(response.FindKey(kWebAuthnErrorKey), nullptr);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest,
@@ -288,7 +288,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
 
   VerifyResponseMessage(response, kCreateMessageType);
   ASSERT_EQ(response.FindStringKey(kCreateResponseDataKey), nullptr);
-  ASSERT_NE(response.FindStringKey(kCreateResponseErrorNameKey), nullptr);
+  ASSERT_NE(response.FindKey(kWebAuthnErrorKey), nullptr);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_EmptyResponse) {
@@ -304,14 +304,17 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_EmptyResponse) {
 
   VerifyResponseMessage(response, kCreateMessageType);
   ASSERT_EQ(response.FindStringKey(kCreateResponseDataKey), nullptr);
-  ASSERT_EQ(response.FindStringKey(kCreateResponseErrorNameKey), nullptr);
+  ASSERT_EQ(response.FindKey(kWebAuthnErrorKey), nullptr);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_ErrorResponse) {
   ExpectGetSessionServices();
   ExpectBindWebAuthnProxy();
+  auto mojo_error = mojom::WebAuthnExceptionDetails::New();
+  mojo_error->name = "NotSupportedError";
+  mojo_error->message = "Test error message";
   auto mojo_response =
-      mojom::WebAuthnCreateResponse::NewErrorName("NotSupportedError");
+      mojom::WebAuthnCreateResponse::NewErrorDetails(std::move(mojo_error));
   EXPECT_CALL(webauthn_proxy_, Create("fake", _, _))
       .WillOnce(base::test::RunOnceCallback<2>(std::move(mojo_response)));
   auto request = CreateRequestMessage(kCreateMessageType);
@@ -322,8 +325,12 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_ErrorResponse) {
 
   VerifyResponseMessage(response, kCreateMessageType);
   ASSERT_EQ(response.FindStringKey(kCreateResponseDataKey), nullptr);
-  ASSERT_EQ(*response.FindStringKey(kCreateResponseErrorNameKey),
+  const auto* json_error = response.FindKey(kWebAuthnErrorKey);
+  ASSERT_NE(json_error, nullptr);
+  ASSERT_EQ(*json_error->FindStringKey(kWebAuthnErrorNameKey),
             "NotSupportedError");
+  ASSERT_EQ(*json_error->FindStringKey(kWebAuthnErrorMessageKey),
+            "Test error message");
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_DataResponse) {
@@ -341,7 +348,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_DataResponse) {
 
   VerifyResponseMessage(response, kCreateMessageType);
   ASSERT_EQ(*response.FindStringKey(kCreateResponseDataKey), "fake response");
-  ASSERT_EQ(response.FindStringKey(kCreateResponseErrorNameKey), nullptr);
+  ASSERT_EQ(response.FindKey(kWebAuthnErrorKey), nullptr);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest,

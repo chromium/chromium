@@ -20,8 +20,10 @@ extern const char kIsUvpaaResponseIsAvailableKey[];
 extern const char kGetRemoteStateResponseIsRemotedKey[];
 extern const char kCancelResponseWasCanceledKey[];
 extern const char kCreateRequestDataKey[];
-extern const char kCreateResponseErrorNameKey[];
 extern const char kCreateResponseDataKey[];
+extern const char kWebAuthnErrorKey[];
+extern const char kWebAuthnErrorNameKey[];
+extern const char kWebAuthnErrorMessageKey[];
 
 }  // namespace remoting
 
