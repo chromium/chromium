@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/pickle.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 
