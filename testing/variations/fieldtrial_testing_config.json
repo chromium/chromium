@@ -1752,6 +1752,7 @@
                         "EarlyCodeCache",
                         "FontManagerEarlyInit",
                         "NavigationThreadingOptimizations",
+                        "OptimizeLookalikeUrlNavigationThrottle",
                         "URLLoaderSyncClient"
                     ]
                 }
@@ -1773,6 +1774,7 @@
                     "enable_features": [
                         "EarlyCodeCache",
                         "NavigationThreadingOptimizations",
+                        "OptimizeLookalikeUrlNavigationThrottle",
                         "URLLoaderSyncClient"
                     ]
                 }
@@ -4199,26 +4201,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OptimizeEarlyNavigation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OptimizeLookalikeUrlNavigationThrottle": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211116",
-                    "enable_features": [
-                        "OptimizeLookalikeUrlNavigationThrottle"
                     ]
                 }
             ]
