@@ -143,9 +143,8 @@ class RootWindowTransformersTest : public AshTestBase {
     const display::ManagedDisplayInfo& source_display_info =
         display_manager()->GetDisplayInfo(
             display::Screen::GetScreen()->GetPrimaryDisplay().id());
-    return std::unique_ptr<RootWindowTransformer>(
-        CreateRootWindowTransformerForMirroredDisplay(source_display_info,
-                                                      mirror_display_info));
+    return CreateRootWindowTransformerForMirroredDisplay(source_display_info,
+                                                         mirror_display_info);
   }
 };
 

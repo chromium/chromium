@@ -177,15 +177,14 @@ void MirrorWindowController::UpdateWindow(
   for (const display::ManagedDisplayInfo& display_info : display_info_list) {
     std::unique_ptr<RootWindowTransformer> transformer;
     if (display_manager->IsInSoftwareMirrorMode()) {
-      transformer.reset(CreateRootWindowTransformerForMirroredDisplay(
-          display_manager->GetDisplayInfo(reflecting_source_id_),
-          display_info));
+      transformer = CreateRootWindowTransformerForMirroredDisplay(
+          display_manager->GetDisplayInfo(reflecting_source_id_), display_info);
     } else {
       DCHECK(display_manager->IsInUnifiedMode());
       display::Display display =
           display_manager->GetMirroringDisplayById(display_info.id());
-      transformer.reset(CreateRootWindowTransformerForUnifiedDesktop(
-          display::Screen::GetScreen()->GetPrimaryDisplay().bounds(), display));
+      transformer = CreateRootWindowTransformerForUnifiedDesktop(
+          display::Screen::GetScreen()->GetPrimaryDisplay().bounds(), display);
     }
 
     if (mirroring_host_info_map_.find(display_info.id()) ==
