@@ -108,7 +108,7 @@ def GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
 
   if gcs_folder is None:
     raise RuntimeError('Failed to determine architecture folder: ' +
-                       metadata._trace_file)
+                       str(metadata._trace_file))
   flag_utils.GetTracingLogger().debug(
       'Determined correct architecture folder is: %s', gcs_folder)
 
