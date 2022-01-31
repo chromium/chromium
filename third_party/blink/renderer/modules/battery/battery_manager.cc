@@ -32,6 +32,17 @@ ScriptPromise BatteryManager::getBattery(ScriptState* script_state,
     Deprecation::CountDeprecation(window,
                                   WebFeature::kBatteryStatusInsecureOrigin);
   }
+
+  // TODO(crbug.com/1007264, crbug.com/1290231): remove fenced frame specific
+  // code when permission policy implements the battery status API support.
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        DOMException::Create(
+            "getBattery is not allowed in a fenced frame tree.",
+            DOMException::GetErrorName(DOMExceptionCode::kNotAllowedError)));
+  }
+
   window->GetFrame()->CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
       WebFeature::kBatteryStatusCrossOrigin,
       WebFeature::kBatteryStatusSameOriginABA);

@@ -291,6 +291,7 @@ enum BadMessageReason {
   AUTH_INVALID_FENCED_FRAME = 264,
   BIBI_BIND_GAMEPAD_MONITOR_FOR_FENCED_FRAME = 265,
   BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME = 266,
+  BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME = 267,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

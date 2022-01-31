@@ -621,8 +621,17 @@ BatteryMonitorBinder& GetBatteryMonitorBinderOverride() {
 }
 
 void BindBatteryMonitor(
+    RenderFrameHostImpl* host,
     mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
   const auto& binder = GetBatteryMonitorBinderOverride();
+  // TODO(crbug.com/1007264, crbug.com/1290231): remove fenced frame specific
+  // code when permission policy implements the battery status API support.
+  if (host->IsNestedWithinFencedFrame()) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(), bad_message::BadMessageReason::
+                                BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME);
+    return;
+  }
   if (binder)
     binder.Run(std::move(receiver));
   else
@@ -713,7 +722,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::GetAudioContextManager, base::Unretained(host)));
 
   map->Add<device::mojom::BatteryMonitor>(
-      base::BindRepeating(&BindBatteryMonitor));
+      base::BindRepeating(&BindBatteryMonitor, base::Unretained(host)));
 
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
       &RenderFrameHostImpl::BindCacheStorage, base::Unretained(host)));
