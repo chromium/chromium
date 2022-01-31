@@ -27,6 +27,7 @@ using AttributionAllowedStatus =
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
+using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
 const char kDefaultTriggerOrigin[] = "https://sub.conversion.test/";
@@ -651,6 +652,17 @@ std::ostream& operator<<(std::ostream& out,
                          const DeactivatedSource& deactivated_source) {
   return out << "{source=" << deactivated_source.source
              << ",reason=" << deactivated_source.reason << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, StoreSourceResult::Status status) {
+  switch (status) {
+    case StoreSourceResult::Status::kSuccess:
+      return out << "kSuccess";
+    case StoreSourceResult::Status::kInternalError:
+      return out << "kInternalError";
+    case StoreSourceResult::Status::kInsufficientSourceCapacity:
+      return out << "kInsufficientSourceCapacity";
+  }
 }
 
 std::vector<AttributionReport> GetAttributionsToReportForTesting(

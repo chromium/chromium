@@ -364,14 +364,14 @@ AttributionStorageSql::DeactivateSources(
   return deactivated_sources;
 }
 
-std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
+AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
     const StorableSource& source,
     int deactivated_source_return_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent))
-    return {};
+    return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
   // Only delete expired impressions periodically to avoid excessive DB
   // operations.
@@ -381,7 +381,7 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
   const base::Time now = base::Time::Now();
   if (now - last_deleted_expired_sources_ >= delete_frequency) {
     if (!DeleteExpiredSources())
-      return {};
+      return StoreSourceResult(StoreSourceResult::Status::kInternalError);
     last_deleted_expired_sources_ = now;
   }
 
@@ -391,18 +391,20 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
   // error.
   const std::string serialized_impression_origin =
       SerializeOrigin(common_info.impression_origin());
-  if (!HasCapacityForStoringSource(serialized_impression_origin))
-    return {};
+  if (!HasCapacityForStoringSource(serialized_impression_origin)) {
+    return StoreSourceResult(
+        StoreSourceResult::Status::kInsufficientSourceCapacity);
+  }
 
   // Wrap the deactivation and insertion in the same transaction. If the
   // deactivation fails, we do not want to store the new source as we may
   // return the wrong set of sources for a trigger.
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return {};
+    return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
   if (!EnsureCapacityForPendingDestinationLimit(source))
-    return {};
+    return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
   const std::string serialized_conversion_destination =
       common_info.ConversionDestination().Serialize();
@@ -417,7 +419,7 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
                         serialized_reporting_origin,
                         deactivated_source_return_limit);
   if (!deactivated_sources.has_value())
-    return {};
+    return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
   static constexpr char kInsertImpressionSql[] =
       "INSERT INTO impressions"
@@ -455,7 +457,7 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
   }
 
   if (!statement.Run())
-    return {};
+    return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
   if (common_info.attribution_logic() ==
       CommonSourceInfo::AttributionLogic::kFalsely) {
@@ -478,12 +480,14 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
                                  /*id=*/absl::nullopt));
 
     if (!StoreReport(report))
-      return {};
+      return StoreSourceResult(StoreSourceResult::Status::kInternalError);
   }
 
   if (!transaction.Commit())
-    return {};
-  return *deactivated_sources;
+    return StoreSourceResult(StoreSourceResult::Status::kInternalError);
+
+  return StoreSourceResult(StoreSourceResult::Status::kSuccess,
+                           std::move(*deactivated_sources));
 }
 
 // Checks whether a new report is allowed to be stored for the given source

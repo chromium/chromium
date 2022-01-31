@@ -11,6 +11,7 @@ namespace content {
 namespace {
 using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
+using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 }  // namespace
 
 CreateReportResult::CreateReportResult(
@@ -81,5 +82,21 @@ DeactivatedSource& DeactivatedSource::operator=(const DeactivatedSource&) =
     default;
 
 DeactivatedSource& DeactivatedSource::operator=(DeactivatedSource&&) = default;
+
+StoreSourceResult::StoreSourceResult(
+    Status status,
+    std::vector<DeactivatedSource> deactivated_sources)
+    : status(status), deactivated_sources(std::move(deactivated_sources)) {}
+
+StoreSourceResult::~StoreSourceResult() = default;
+
+StoreSourceResult::StoreSourceResult(const StoreSourceResult&) = default;
+
+StoreSourceResult::StoreSourceResult(StoreSourceResult&&) = default;
+
+StoreSourceResult& StoreSourceResult::operator=(const StoreSourceResult&) =
+    default;
+
+StoreSourceResult& StoreSourceResult::operator=(StoreSourceResult&&) = default;
 
 }  // namespace content

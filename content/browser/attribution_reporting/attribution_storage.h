@@ -135,6 +135,29 @@ class AttributionStorage {
     Reason reason;
   };
 
+  struct CONTENT_EXPORT StoreSourceResult {
+    enum class Status {
+      kSuccess,
+      kInternalError,
+      kInsufficientSourceCapacity,
+    };
+
+    explicit StoreSourceResult(
+        Status status,
+        std::vector<DeactivatedSource> deactivated_sources = {});
+
+    ~StoreSourceResult();
+
+    StoreSourceResult(const StoreSourceResult&);
+    StoreSourceResult(StoreSourceResult&&);
+
+    StoreSourceResult& operator=(const StoreSourceResult&);
+    StoreSourceResult& operator=(StoreSourceResult&&);
+
+    Status status;
+    std::vector<DeactivatedSource> deactivated_sources;
+  };
+
   virtual ~AttributionStorage() = default;
 
   // When adding a new method, also add it to
@@ -147,7 +170,7 @@ class AttributionStorage {
   // Unconverted matching sources are not modified.
   // Returns at most `deactivated_source_return_limit` deactivated sources, to
   // put an upper bound on memory usage; use a negative number for no limit.
-  virtual std::vector<DeactivatedSource> StoreSource(
+  virtual StoreSourceResult StoreSource(
       const StorableSource& source,
       int deactivated_source_return_limit = -1) = 0;
 

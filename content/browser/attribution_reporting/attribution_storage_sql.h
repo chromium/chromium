@@ -77,7 +77,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   // AttributionStorage:
-  std::vector<DeactivatedSource> StoreSource(
+  StoreSourceResult StoreSource(
       const StorableSource& source,
       int deactivated_source_return_limit = -1) override;
   CreateReportResult MaybeCreateAndStoreReport(

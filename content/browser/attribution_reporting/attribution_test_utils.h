@@ -408,6 +408,9 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionStorage::DeactivatedSource& deactivated_source);
 
+std::ostream& operator<<(std::ostream& out,
+                         AttributionStorage::StoreSourceResult::Status status);
+
 std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time);

@@ -42,6 +42,7 @@ using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
+using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -495,7 +496,10 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   delegate()->set_max_sources_per_origin(2);
   storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
   storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
-  storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
+  EXPECT_EQ(storage()
+                ->StoreSource(SourceBuilder().SetSourceEventId(7).Build())
+                .status,
+            StoreSourceResult::Status::kInsufficientSourceCapacity);
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u)));
@@ -525,11 +529,15 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
 
   // This impression shouldn't be stored, because its origin has already hit the
   // limit of 2.
-  storage()->StoreSource(SourceBuilder()
-                             .SetImpressionOrigin(url::Origin::Create(
-                                 GURL("https://foo.a.example")))
-                             .SetSourceEventId(9)
-                             .Build());
+  EXPECT_EQ(storage()
+                ->StoreSource(SourceBuilder()
+                                  .SetImpressionOrigin(url::Origin::Create(
+                                      GURL("https://foo.a.example")))
+                                  .SetSourceEventId(9)
+                                  .Build())
+                .status,
+            StoreSourceResult::Status::kInsufficientSourceCapacity);
+
   // This impression should be stored, because its origin hasn't hit the limit
   // of 2.
   storage()->StoreSource(SourceBuilder()
@@ -1499,7 +1507,8 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
   SourceBuilder builder1;
   builder1.SetSourceEventId(7);
 
-  EXPECT_THAT(storage()->StoreSource(builder1.Build()), IsEmpty());
+  EXPECT_THAT(storage()->StoreSource(builder1.Build()).deactivated_sources,
+              IsEmpty());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
@@ -1514,7 +1523,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
   builder2.SetSourceEventId(9);
 
   builder1.SetDedupKeys({13});
-  EXPECT_THAT(storage()->StoreSource(builder2.Build()),
+  EXPECT_THAT(storage()->StoreSource(builder2.Build()).deactivated_sources,
               ElementsAre(DeactivatedSource(
                   builder1.BuildStored(),
                   DeactivatedSource::Reason::kReplacedByNewerSource)));
@@ -1526,11 +1535,13 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
 TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
   SourceBuilder builder1;
   builder1.SetSourceEventId(1);
-  EXPECT_THAT(storage()->StoreSource(builder1.Build()), IsEmpty());
+  EXPECT_THAT(storage()->StoreSource(builder1.Build()).deactivated_sources,
+              IsEmpty());
 
   SourceBuilder builder2;
   builder2.SetSourceEventId(2);
-  EXPECT_THAT(storage()->StoreSource(builder2.Build()), IsEmpty());
+  EXPECT_THAT(storage()->StoreSource(builder2.Build()).deactivated_sources,
+              IsEmpty());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 
@@ -1545,8 +1556,10 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
   // 2 sources are deactivated, but only 1 should be returned.
   SourceBuilder builder3;
   builder3.SetSourceEventId(3);
-  EXPECT_THAT(storage()->StoreSource(builder3.Build(),
-                                     /*deactivated_source_return_limit=*/1),
+  EXPECT_THAT(storage()
+                  ->StoreSource(builder3.Build(),
+                                /*deactivated_source_return_limit=*/1)
+                  .deactivated_sources,
               ElementsAre(DeactivatedSource(
                   builder1.BuildStored(),
                   DeactivatedSource::Reason::kReplacedByNewerSource)));
@@ -1558,7 +1571,8 @@ TEST_F(AttributionStorageTest,
        MaybeCreateAndStoreReport_ReturnsDeactivatedSources) {
   SourceBuilder builder;
   builder.SetSourceEventId(7);
-  EXPECT_THAT(storage()->StoreSource(builder.Build()), IsEmpty());
+  EXPECT_THAT(storage()->StoreSource(builder.Build()).deactivated_sources,
+              IsEmpty());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.

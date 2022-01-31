@@ -217,14 +217,16 @@ void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
       .WithArgs(std::move(source), deactivated_source_return_limit)
       .Then(base::BindOnce(
           [](base::WeakPtr<AttributionManagerImpl> manager,
-             std::vector<AttributionStorage::DeactivatedSource>
-                 deactivated_sources) {
+             AttributionStorage::StoreSourceResult result) {
+            // TODO(apaseltiner): Consider logging UMA based on `result` to help
+            // understand how often this fails due to privacy limits, etc.
+
             if (!manager)
               return;
 
             manager->NotifySourcesChanged();
 
-            for (const auto& source : deactivated_sources) {
+            for (const auto& source : result.deactivated_sources) {
               manager->NotifySourceDeactivated(source);
             }
           },
