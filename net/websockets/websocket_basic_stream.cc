@@ -269,6 +269,7 @@ int WebSocketBasicStream::ReadEverything(
           buffer_size_manager_.buffer_size() == BufferSize::kSmall
               ? kSmallReadBufferSize
               : kLargeReadBufferSize);
+      buffer_size_ = buffer_size_manager_.buffer_size();
     }
     buffer_size_manager_.OnRead(base::TimeTicks::Now());
 
