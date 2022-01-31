@@ -147,17 +147,16 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
                        wait_until_empty.QuitClosure());
   wait_until_empty.Run();
 
-  // This test occasionally flakes on Windows, where the cache size
-  // is still seen as non-zero after deletion. However, the exact value
-  // is consistent across all flakes observed within the same day, which
-  // indicates that there is a deterministic process writing into cache but with
-  // indeterministic timing, so as to cause this test to flake.
-  // On Windows, which is the only platform where this is the case, we'll
-  // wait until the value is 0 as opposed to checking it immediately. If this
-  // never happens, the test will fail with a timeout. Note that this only works
-  // if the process that populates the cache runs before our deletion - in that
-  // case the delay ensures that the deletion finishes. If this process happens
-  // after deletion, then this doesn't help and the test will still fail.
+  // This test occasionally flakes, where the cache size is still seen as
+  // non-zero after deletion. However, the exact value is consistent across all
+  // flakes observed within the same day, which indicates that there is a
+  // deterministic process writing into cache but with indeterministic timing,
+  // so as to cause this test to flake.  Wait until the value is 0 as opposed to
+  // checking it immediately. If this never happens, the test will fail with a
+  // timeout. Note that this only works if the process that populates the cache
+  // runs before our deletion - in that case the delay ensures that the deletion
+  // finishes. If this process happens after deletion, then this doesn't help
+  // and the test will still fail.
   while (true) {
     CacheCounter counter(profile);
     counter.Init(profile->GetPrefs(),
@@ -167,13 +166,9 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
     counter.Restart();
     WaitForCountingResult();
 
-#if !BUILDFLAG(IS_WIN)
-    break;
-#else
     if (GetResult() == 0u)
       break;
     base::PlatformThread::Sleep(base::Milliseconds(100));
-#endif
   }
   EXPECT_EQ(0u, GetResult());
 }
