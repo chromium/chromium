@@ -7,13 +7,11 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -49,16 +47,14 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  icon_button_ = AddChildView(std::make_unique<IconButton>(
+  icon_button_ = AddChildView(std::make_unique<FeaturePodIconButton>(
       base::BindRepeating(
           [](Delegate* delegate, QuickActionItem* item) {
             delegate->OnButtonPressed(item->IsToggled());
           },
           delegate, this),
-      IconButton::Type::kMedium, /*icon=*/nullptr,
-      /*is_togglable=*/true, /*has_border=*/true));
+      true /* is_togglable */));
   icon_button_->SetVectorIcon(icon);
-  icon_button_->SetFlipCanvasOnPaintForRTLUI(false);
 
   auto* label_view = AddChildView(std::make_unique<views::View>());
   label_view->SetLayoutManager(std::make_unique<views::BoxLayout>(

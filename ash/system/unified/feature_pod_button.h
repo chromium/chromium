@@ -20,6 +20,19 @@ namespace ash {
 
 class FeaturePodControllerBase;
 
+// TODO(crbug/1276545): Remove FeaturePodIconButton after the migration.
+// A toggle button with an icon used by feature pods and in other places.
+class ASH_EXPORT FeaturePodIconButton : public IconButton {
+ public:
+  FeaturePodIconButton(PressedCallback callback, bool is_togglable);
+  FeaturePodIconButton(const FeaturePodIconButton&) = delete;
+  FeaturePodIconButton& operator=(const FeaturePodIconButton&) = delete;
+  ~FeaturePodIconButton() override;
+
+  // views::ImageButton:
+  const char* GetClassName() const override;
+};
+
 // Button internally used in FeaturePodButton. Should not be used directly.
 class ASH_EXPORT FeaturePodLabelButton : public views::Button {
  public:
@@ -137,7 +150,7 @@ class ASH_EXPORT FeaturePodButton : public views::View {
 
   bool visible_preferred() const { return visible_preferred_; }
 
-  IconButton* icon_button() const { return icon_button_; }
+  FeaturePodIconButton* icon_button() const { return icon_button_; }
 
  private:
   // For unit tests.
@@ -147,7 +160,7 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
-  IconButton* const icon_button_;
+  FeaturePodIconButton* const icon_button_;
   FeaturePodLabelButton* const label_button_;
 
   // If true, it is preferred by the FeaturePodController that the view is

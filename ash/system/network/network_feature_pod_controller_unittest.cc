@@ -251,7 +251,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
 
   FeaturePodButton* feature_pod_button() { return feature_pod_button_.get(); }
 
-  IconButton* feature_pod_icon_button() {
+  FeaturePodIconButton* feature_pod_icon_button() {
     return feature_pod_button_->icon_button_;
   }
 

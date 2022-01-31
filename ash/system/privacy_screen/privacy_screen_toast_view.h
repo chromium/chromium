@@ -12,7 +12,7 @@
 
 namespace ash {
 
-class IconButton;
+class FeaturePodIconButton;
 class PrivacyScreenToastLabelView;
 class PrivacyScreenToastController;
 
@@ -41,7 +41,7 @@ class ASH_EXPORT PrivacyScreenToastView : public views::View,
   void OnViewBlurred(views::View* observed_view) override;
 
   PrivacyScreenToastController* controller_ = nullptr;
-  IconButton* button_ = nullptr;
+  FeaturePodIconButton* button_ = nullptr;
   PrivacyScreenToastLabelView* label_ = nullptr;
   bool is_enabled_ = false;
   bool is_managed_ = false;

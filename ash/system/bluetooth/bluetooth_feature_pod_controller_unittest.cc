@@ -82,7 +82,7 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
 
   void ExpectBluetoothDetailedViewFocused() {
     EXPECT_TRUE(tray_view()->detailed_view());
-    const IconButton::Views& children =
+    const FeaturePodIconButton::Views& children =
         tray_view()->detailed_view()->children();
     EXPECT_EQ(1u, children.size());
     EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
@@ -203,7 +203,8 @@ TEST_F(BluetoothFeaturePodControllerTest, HasCorrectMetadataWhenOff) {
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP)),
             label_button->GetTooltipText());
 
-  const IconButton* icon_button = feature_pod_button_->icon_button();
+  const ash::FeaturePodIconButton* icon_button =
+      feature_pod_button_->icon_button();
 
   EXPECT_STREQ(kUnifiedMenuBluetoothDisabledIcon.name,
                feature_pod_icon_button_icon()->name);
@@ -230,7 +231,8 @@ TEST_F(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithZeroDevices) {
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)),
             label_button->GetTooltipText());
 
-  const IconButton* icon_button = feature_pod_button_->icon_button();
+  const ash::FeaturePodIconButton* icon_button =
+      feature_pod_button_->icon_button();
 
   EXPECT_STREQ(kUnifiedMenuBluetoothIcon.name,
                feature_pod_icon_button_icon()->name);
@@ -269,7 +271,8 @@ TEST_F(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithOneDevice) {
                     public_name)),
             label_button->GetTooltipText());
 
-  const IconButton* icon_button = feature_pod_button_->icon_button();
+  const ash::FeaturePodIconButton* icon_button =
+      feature_pod_button_->icon_button();
 
   EXPECT_STREQ(kUnifiedMenuBluetoothConnectedIcon.name,
                feature_pod_icon_button_icon()->name);
@@ -330,7 +333,8 @@ TEST_F(BluetoothFeaturePodControllerTest,
               base::FormatNumber(kMultipleDeviceCount))),
       label_button->GetTooltipText());
 
-  const IconButton* icon_button = feature_pod_button_->icon_button();
+  const ash::FeaturePodIconButton* icon_button =
+      feature_pod_button_->icon_button();
 
   EXPECT_STREQ(kUnifiedMenuBluetoothConnectedIcon.name,
                feature_pod_icon_button_icon()->name);

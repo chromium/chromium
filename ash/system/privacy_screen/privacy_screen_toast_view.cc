@@ -7,9 +7,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/icon_button.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/feature_pod_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -121,13 +121,11 @@ PrivacyScreenToastView::PrivacyScreenToastView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  button_ = new IconButton(std::move(callback), IconButton::Type::kMedium,
-                           /*icon=*/nullptr, /*is_togglable=*/true,
-                           /*has_border=*/true);
+  button_ =
+      new FeaturePodIconButton(std::move(callback), /*is_togglable=*/true);
   button_->SetVectorIcon(kPrivacyScreenIcon);
   button_->SetToggled(false);
   button_->AddObserver(this);
-  button_->SetFlipCanvasOnPaintForRTLUI(false);
   AddChildView(button_);
 
   label_ = new PrivacyScreenToastLabelView();
