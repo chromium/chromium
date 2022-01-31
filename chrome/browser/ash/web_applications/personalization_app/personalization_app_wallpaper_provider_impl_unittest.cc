@@ -93,6 +93,8 @@ constexpr char kGooglePhotosPhotosFullResponse[] =
     "   } ],"
     "   \"resumeToken\": \"token\""
     "}";
+constexpr char kGooglePhotosResumeTokenOnlyResponse[] =
+    "{\"resumeToken\": \"token\"}";
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   ash::device_settings_cache::RegisterPrefs(local_state->registry());
@@ -394,6 +396,9 @@ class PersonalizationAppWallpaperProviderImplGooglePhotosTest
   // The number of times to start each idempotent API query.
   static constexpr size_t kNumFetches = 2;
 
+  // Resume token value used across several tests.
+  const std::string kResumeToken = "token";
+
   // PersonalizationAppWallpaperProviderImplTest:
   void SetUp() override {
     PersonalizationAppWallpaperProviderImplTest::SetUp();
@@ -421,12 +426,14 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
-  EXPECT_CALL(*google_photos_albums_fetcher, AddRequestAndStartIfNecessary)
+  EXPECT_CALL(*google_photos_albums_fetcher,
+              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+                                            ::testing::_))
       .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
   for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosAlbums(
-        /*resume_token=*/absl::nullopt,
+        kResumeToken,
         base::BindLambdaForTesting(
             [this](ash::personalization_app::mojom::
                        FetchGooglePhotosAlbumsResponsePtr response) {
@@ -468,12 +475,14 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
-  EXPECT_CALL(*google_photos_photos_fetcher, AddRequestAndStartIfNecessary)
+  EXPECT_CALL(*google_photos_photos_fetcher,
+              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+                                            ::testing::_))
       .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
   for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosPhotos(
-        /*resume_token=*/absl::nullopt,
+        kResumeToken,
         base::BindLambdaForTesting(
             [this](ash::personalization_app::mojom::
                        FetchGooglePhotosPhotosResponsePtr response) {
@@ -505,9 +514,9 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                 base::Value(base::Value::Type::DICTIONARY)));
 
   // Parse a response with a resume token and no albums.
-  EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(absl::nullopt, "token"),
+  EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(absl::nullopt, kResumeToken),
             google_photos_albums_fetcher->ParseResponse(
-                base::JSONReader::Read("{\"resumeToken\": \"token\"}")));
+                base::JSONReader::Read(kGooglePhotosResumeTokenOnlyResponse)));
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
@@ -529,7 +538,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
     auto& album = GetAlbumFromGooglePhotosAlbumsResponse(response);
     album.RemovePath(path);
     EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(
-                  std::vector<GooglePhotosAlbumPtr>(), "token"),
+                  std::vector<GooglePhotosAlbumPtr>(), kResumeToken),
               google_photos_albums_fetcher->ParseResponse(std::move(response)));
   }
 
@@ -545,7 +554,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
     auto& album = GetAlbumFromGooglePhotosAlbumsResponse(response);
     album.SetStringPath(kv.first, kv.second);
     EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(
-                  std::vector<GooglePhotosAlbumPtr>(), "token"),
+                  std::vector<GooglePhotosAlbumPtr>(), kResumeToken),
               google_photos_albums_fetcher->ParseResponse(std::move(response)));
   }
 }
@@ -568,7 +577,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   valid_albums_vector.push_back(GooglePhotosAlbum::New(
       "albumId", "title", 1, GURL("https://www.google.com/")));
   EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(
-                mojo::Clone(valid_albums_vector), "token"),
+                mojo::Clone(valid_albums_vector), kResumeToken),
             google_photos_albums_fetcher->ParseResponse(
                 base::JSONReader::Read(kGooglePhotosAlbumsFullResponse)));
 
@@ -635,9 +644,9 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                 base::Value(base::Value::Type::DICTIONARY)));
 
   // Parse a response with a resume token and no photos.
-  EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(absl::nullopt, "token"),
+  EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(absl::nullopt, kResumeToken),
             google_photos_photos_fetcher->ParseResponse(
-                base::JSONReader::Read("{\"resumeToken\": \"token\"}")));
+                base::JSONReader::Read(kGooglePhotosResumeTokenOnlyResponse)));
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
@@ -659,7 +668,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
     auto& photo = GetPhotoFromGooglePhotosPhotosResponse(response);
     photo.RemovePath(path);
     EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
-                  std::vector<GooglePhotosPhotoPtr>(), "token"),
+                  std::vector<GooglePhotosPhotoPtr>(), kResumeToken),
               google_photos_photos_fetcher->ParseResponse(std::move(response)));
   }
 
@@ -673,7 +682,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
     auto& photo = GetPhotoFromGooglePhotosPhotosResponse(response);
     photo.SetStringPath(kv.first, kv.second);
     EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
-                  std::vector<GooglePhotosPhotoPtr>(), "token"),
+                  std::vector<GooglePhotosPhotoPtr>(), kResumeToken),
               google_photos_photos_fetcher->ParseResponse(std::move(response)));
   }
 }
@@ -701,7 +710,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
       GooglePhotosPhoto::New("photoId", u"Thursday, January 1, 1970",
                              GURL("https://www.google.com/")));
   EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
-                mojo::Clone(valid_photos_vector), "token"),
+                mojo::Clone(valid_photos_vector), kResumeToken),
             google_photos_photos_fetcher->ParseResponse(
                 base::JSONReader::Read(kGooglePhotosPhotosFullResponse)));
 
