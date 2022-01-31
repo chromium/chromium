@@ -143,6 +143,12 @@ TESTS_REF = """
                             "testStatus": {
                               "_value": "Success"
                             },
+                            "duration" : {
+                              "_type" : {
+                                 "_name" : "Double"
+                              },
+                              "_value" : "35.38412606716156"
+                            },
                             "identifier": {
                               "_value": "PageStateTestCase/testMethod1"
                             },
@@ -159,6 +165,12 @@ TESTS_REF = """
                             "testStatus": {
                               "_value": "Failure"
                             },
+                            "duration" : {
+                              "_type" : {
+                                 "_name" : "Double"
+                              },
+                              "_value" : "45.258606716156"
+                            },
                             "identifier": {
                               "_value": "PageStateTestCase\/testZeroContentOffsetAfterLoad"
                             },
@@ -169,6 +181,12 @@ TESTS_REF = """
                           {
                             "testStatus": {
                               "_value": "Success"
+                            },
+                            "duration" : {
+                              "_type" : {
+                                 "_name" : "Double"
+                              },
+                              "_value" : "28.988606716156"
                             },
                             "identifier": {
                               "_value": "PageStateTestCase/testMethod2"
@@ -492,17 +510,25 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     self.assertEqual(expected_expected_tests, results.expected_tests())
     seen_failed_test = False
     for test_result in results.test_results:
-      if (test_result.name == 'PageStateTestCase/testZeroContentOffsetAfterLoad'
-         ):
+      if test_result.name == 'PageStateTestCase/testZeroContentOffsetAfterLoad':
         seen_failed_test = True
         self.assertEqual(test_result.test_log, expected_failure_log)
-        crash_file_name = 'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_1.crash'
-        jpeg_file_name = 'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_2.jpeg'
+        self.assertEqual(test_result.duration, 45258)
+        crash_file_name = (
+            'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_1.crash'
+        )
+        jpeg_file_name = (
+            'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_2.jpeg')
         self.assertDictEqual(
             {
                 crash_file_name: '/tmp/%s' % crash_file_name,
                 jpeg_file_name: '/tmp/%s' % jpeg_file_name,
             }, test_result.attachments)
+      if test_result.name == 'PageStateTestCase/testMethod1':
+        self.assertEqual(test_result.duration, 35384)
+      if test_result.name == 'PageStateTestCase/testMethod2':
+        self.assertEqual(test_result.duration, 28988)
+
     self.assertTrue(seen_failed_test)
 
   @mock.patch('file_util.zip_and_remove_folder')

@@ -11,7 +11,7 @@ from result_sink_util import ResultSinkClient
 
 _VALID_RESULT_COLLECTION_INIT_KWARGS = set(['test_results', 'crashed'])
 _VALID_TEST_RESULT_INIT_KWARGS = set(
-    ['attachments', 'expected_status', 'test_log'])
+    ['attachments', 'duration', 'expected_status', 'test_log'])
 _VALID_TEST_STATUSES = set(['PASS', 'FAIL', 'CRASH', 'ABORT', 'SKIP'])
 
 
@@ -64,6 +64,7 @@ class TestResult(object):
       status: (str) Outcome of the test.
       (Following are possible arguments in **kwargs):
       attachments: (dict): Dict of unique attachment name to abs path mapping.
+      duration: (int) Test duration in milliseconds or None if unknown.
       expected_status: (str) Expected test outcome for the run.
       test_log: (str) Logs of the test.
     """
@@ -75,6 +76,7 @@ class TestResult(object):
     self.status = status
 
     self.attachments = kwargs.get('attachments', {})
+    self.duration = kwargs.get('duration')
     self.expected_status = kwargs.get('expected_status', TestStatus.PASS)
     self.test_log = kwargs.get('test_log', '')
 
@@ -113,6 +115,7 @@ class TestResult(object):
           self.name,
           self.status,
           self.expected(),
+          duration=self.duration,
           test_log=self.test_log,
           tags=self._compose_result_sink_tags(),
           file_artifacts=self.attachments)

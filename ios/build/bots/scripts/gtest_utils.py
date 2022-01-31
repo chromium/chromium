@@ -345,6 +345,16 @@ class GTestLogParser(object):
     if not self.completed:
       self._result_collection.crashed = True
 
+  def _ParseDuration(self, line):
+    """Returns test duration in milliseconds, None if not present."""
+    # Test duration appears as suffix of status line like:
+    # "[       OK ] SomeTest.SomeTestName (539 ms)"
+    test_duration_regex = re.compile(r'\s+\(([0-9]+)\s+ms\)')
+    results = test_duration_regex.search(line)
+    if results:
+      return int(results.group(1))
+    return None
+
   def ProcessLine(self, line):
     """This is called once with each line of the test log."""
     # Track line number for error messages.
@@ -472,6 +482,7 @@ class GTestLogParser(object):
     if results:
       test_name = results.group(1)
       status = self._StatusOfTest(test_name)
+      duration = self._ParseDuration(line)
       if status != 'started':
         self._RecordError(line, 'success while in status %s' % status)
       if self.retrying_failed:
@@ -482,11 +493,12 @@ class GTestLogParser(object):
             TestResult(
                 test_name,
                 TestStatus.PASS,
+                duration=duration,
                 test_log='\n'.join(self._failure_description)))
       else:
         self._test_status[test_name] = ('OK', [])
         self._result_collection.add_test_result(
-            TestResult(test_name, TestStatus.PASS))
+            TestResult(test_name, TestStatus.PASS, duration=duration))
       self._failure_description = []
       self._current_test = ''
       return
@@ -515,6 +527,7 @@ class GTestLogParser(object):
     if results:
       test_name = results.group(1)
       status = self._StatusOfTest(test_name)
+      duration = self._ParseDuration(line)
       if status not in ('started', 'failed', 'timeout'):
         self._RecordError(line, 'failure while in status %s' % status)
       if self._current_test != test_name:
@@ -533,6 +546,7 @@ class GTestLogParser(object):
           TestResult(
               test_name,
               TestStatus.FAIL,
+              duration=duration,
               test_log='\n'.join(self._failure_description)))
       self._failure_description = []
       self._current_test = ''
@@ -545,13 +559,10 @@ class GTestLogParser(object):
       status = self._StatusOfTest(test_name)
       if status not in ('started', 'failed'):
         self._RecordError(line, 'timeout while in status %s' % status)
-      self._test_status[test_name] = (
-          'timeout', self._failure_description + ['Killed (timed out).'])
+      logs = self._failure_description + ['Killed (timed out).']
+      self._test_status[test_name] = ('timeout', logs)
       self._result_collection.add_test_result(
-          TestResult(
-              test_name,
-              TestStatus.ABORT,
-              test_log='\n'.join(self._failure_description)))
+          TestResult(test_name, TestStatus.ABORT, test_log='\n'.join(logs)))
       self._failure_description = []
       self._current_test = ''
       return

@@ -53,7 +53,8 @@ class UnitTest(unittest.TestCase):
         'TestCase/testSomething',
         'PASS',
         True,
-        short_log,
+        test_log=short_log,
+        duration=1233,
         file_artifacts={'name': '/path/to/name'})
     expected = {
         'testId': 'TestCase/testSomething',
@@ -69,6 +70,7 @@ class UnitTest(unittest.TestCase):
                 'filePath': '/path/to/name'
             },
         },
+        'duration': '1.233000000s',
         'tags': [],
         'testMetadata': {
             'name': 'TestCase/testSomething'
@@ -101,7 +103,7 @@ class UnitTest(unittest.TestCase):
         },
     }
     test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething', 'PASS', True, len_4128_str)
+        'TestCase/testSomething', 'PASS', True, test_log=len_4128_str)
     self.assertEqual(test_result, expected)
 
   def test_compose_test_result_assertions(self):

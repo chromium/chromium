@@ -236,6 +236,9 @@ class Xcode11LogParser(object):
           continue
         for test in test_suite['subtests']['_values']:
           test_name = _sanitize_str(test['identifier']['_value'])
+          # Raw duration is a str in seconds with decimals. Convert to
+          # milliseconds as int as used in |TestResult|.
+          duration = int(float(test['duration']['_value']) * 1000)
           if any(
               test_name.endswith(suffix)
               for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES):
@@ -247,7 +250,8 @@ class Xcode11LogParser(object):
           # |test| objects of it. Each |test| corresponds to an execution of the
           # test case.
           if test['testStatus']['_value'] == 'Success':
-            result.add_test_result(TestResult(test_name, TestStatus.PASS))
+            result.add_test_result(
+                TestResult(test_name, TestStatus.PASS, duration=duration))
           else:
             # Parse data for failed test by its id. See SINGLE_TEST_SUMMARY_REF
             # in xcode_log_parser_test.py for an example of |summary_ref|.
@@ -275,6 +279,7 @@ class Xcode11LogParser(object):
                 TestResult(
                     test_name,
                     TestStatus.FAIL,
+                    duration=duration,
                     test_log=failure_message,
                     attachments=attachments))
     return result

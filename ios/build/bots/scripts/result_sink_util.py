@@ -21,6 +21,7 @@ VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
 def _compose_test_result(test_id,
                          status,
                          expected,
+                         duration=None,
                          test_log=None,
                          tags=None,
                          file_artifacts=None):
@@ -29,6 +30,7 @@ def _compose_test_result(test_id,
   Args:
     test_id: (str) A unique identifier of the test in LUCI context.
     status: (str) Status of the test. Must be one in |VALID_STATUSES|.
+    duration: (int) Test duration in milliseconds or None if unknown.
     expected: (bool) Whether the status is expected.
     test_log: (str) Log of the test. Optional.
     tags: (list) List of tags. Each item in list should be a length 2 tuple of
@@ -88,6 +90,9 @@ def _compose_test_result(test_id,
   if not test_result['artifacts']:
     test_result.pop('artifacts')
 
+  if duration:
+    test_result['duration'] = '%.9fs' % (duration / 1000.0)
+
   return test_result
 
 
@@ -141,6 +146,7 @@ class ResultSinkClient(object):
       status: (str) Status of the test. Must be one in |VALID_STATUSES|.
       expected: (bool) Whether the status is expected.
       **kwargs: Optional keyword args. Namely:
+        duration: (int) Test duration in milliseconds or None if unknown.
         test_log: (str) Log of the test. Optional.
         tags: (list) List of tags. Each item in list should be a length 2 tuple
           of string as ("key", "value"). Optional.
