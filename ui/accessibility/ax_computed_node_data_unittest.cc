@@ -264,7 +264,7 @@ TEST_F(AXComputedNodeDataTest, HasOrCanComputeAttribute) {
       ax::mojom::IntListAttribute::kLabelledbyIds));
 }
 
-TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
+TEST_F(AXComputedNodeDataTest, DISABLED_GetOrComputeAttribute) {
   // Embedded object behavior is dependant on platform. We manually set it to a
   // specific value so that test results are consistent across platforms.
   testing::ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
@@ -446,7 +446,7 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
               SizeIs(0));
 }
 
-TEST_F(AXComputedNodeDataTest, GetOrComputeTextContent) {
+TEST_F(AXComputedNodeDataTest, DISABLED_GetOrComputeTextContent) {
   // Embedded object behavior is dependant on platform. We manually set it to a
   // specific value so that test results are consistent across platforms.
   testing::ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(

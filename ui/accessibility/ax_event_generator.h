@@ -299,7 +299,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
   void OnNodeWillBeReparented(AXTree* tree, AXNode* node) override;
   void OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) override;
-  void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override;
   void OnNodeReparented(AXTree* tree, AXNode* node) override;
   void OnNodeCreated(AXTree* tree, AXNode* node) override;
   void OnAtomicUpdateFinished(AXTree* tree,
@@ -318,11 +317,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 
   void FireLiveRegionEvents(AXNode* node);
   void FireActiveDescendantEvents();
-  // If the given target node is inside a text field and the node's modification
-  // could affect the field's value, generates an `VALUE_IN_TEXT_FIELD_CHANGED`
-  // on the text field that contains the node.
-  void FireValueInTextFieldChangedEventIfNecessary(AXTree* tree,
-                                                   AXNode* target_node);
+  void FireValueInTextFieldChangedEvent(AXTree* tree, AXNode* target_node);
   void FireRelationSourceEvents(AXTree* tree, AXNode* target_node);
   bool ShouldFireLoadEvents(AXNode* node);
 
