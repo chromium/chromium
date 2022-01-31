@@ -622,21 +622,8 @@ message SystemProfileProto {
       // The relevant plugin's information (name, etc.)
       optional Plugin plugin = 1;
 
-      // The number of times this plugin's process was launched.
-      optional int32 launch_count = 2;
-
-      // The number of times this plugin was instantiated on a web page.
-      // This will be >= |launch_count|.
-      // (A page load with multiple sections drawn by this plugin will
-      // increase this count multiple times.)
-      optional int32 instance_count = 3;
-
       // The number of times this plugin process crashed.
-      // This value will be <= |launch_count|.
       optional int32 crash_count = 4;
-
-      // The number of times this plugin could not be loaded.
-      optional int32 loading_error_count = 5;
     }
     repeated PluginStability plugin_stability = 22;
   }

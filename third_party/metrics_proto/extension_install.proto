@@ -141,12 +141,6 @@ message ExtensionInstallProto {
                                        // approval for a supervised user.
     BLOCKED_BY_POLICY = 13;  // The extension is disabled because it's blocked
                              // by enterprise policy.
-    // Deprecated: The extension is disabled because it's blocked due to mature
-    // content for supervised users.
-    DEPRECATED_BLOCKED_MATURE = 14;
-    // The extension is disabled due to having a malware attribute in the Omaha
-    // config.
-    DISABLE_REMOTELY_FOR_MALWARE = 15;
     // The extension is being reinstalled.
     REINSTALL = 16;
     // The extension has been disabled because it's not allowlisted and the Safe

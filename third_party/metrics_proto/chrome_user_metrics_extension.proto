@@ -60,6 +60,9 @@ message ChromeUserMetricsExtension {
   // For Chrome clients, this id is unique to a top-level (one level above the
   // "Default" directory) Chrome user data directory [1], and so is shared among
   // all Chrome user profiles contained in this user data directory.
+  // This client_id may not be unique across platforms. Notably, ChromeOS and
+  // Lacros are different platforms yet report the same client_id for the same
+  // device.
   // An id of 0 is reserved for test data (monitoring and internal testing) and
   // should normally be ignored in analysis of the data.
   // [1] http://www.chromium.org/user-experience/user-data-directory
