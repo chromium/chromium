@@ -60,9 +60,7 @@ void RecordBackForwardCacheRestoreMetric(
 
 }  // namespace
 
-ContentToVisibleTimeReporter::ContentToVisibleTimeReporter()
-    : is_tab_switch_metric2_feature_enabled_(
-          base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2)) {}
+ContentToVisibleTimeReporter::ContentToVisibleTimeReporter() = default;
 
 ContentToVisibleTimeReporter::~ContentToVisibleTimeReporter() = default;
 
@@ -119,6 +117,14 @@ void ContentToVisibleTimeReporter::TabWasHidden() {
   }
 }
 
+bool ContentToVisibleTimeReporter::IsTabSwitchMetric2FeatureEnabled() {
+  if (!is_tab_switch_metric2_feature_enabled_) {
+    is_tab_switch_metric2_feature_enabled_ =
+        base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2);
+  }
+  return *is_tab_switch_metric2_feature_enabled_;
+}
+
 void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     bool is_incomplete,
     bool show_reason_tab_switching,
@@ -168,7 +174,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   const char* suffix =
       GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_);
 
-  if (is_tab_switch_metric2_feature_enabled_) {
+  if (IsTabSwitchMetric2FeatureEnabled()) {
     // Record result histogram.
     base::UmaHistogramEnumeration(
         base::StrCat({"Browser.Tabs.TabSwitchResult2.", suffix}),
