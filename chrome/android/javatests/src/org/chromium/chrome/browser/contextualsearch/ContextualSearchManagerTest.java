@@ -2558,24 +2558,6 @@ public class ContextualSearchManagerTest {
     }
 
     /**
-     * Tests a bunch of taps in a row.
-     * We've had reliability problems with a sequence of simple taps, due to async dissolving
-     * of selection bounds, so this helps prevent a regression with that.
-     */
-    @Test
-    @LargeTest
-    @Feature({"ContextualSearch"})
-    @FlakyTest(message = "crbug.com/1036414, crbug.com/1039488")
-    public void testTapALot() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
-        for (int i = 0; i < 50; i++) {
-            clickToTriggerPrefetch();
-            assertSearchTermRequested();
-        }
-    }
-
-    /**
      * Tests ContextualSearchManager#shouldInterceptNavigation for a case that an external
      * navigation has a user gesture.
      */
