@@ -1140,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.PlayStoreLaunchWithinAWeek" enum="BooleanUsage"
     expires_after="2022-07-20">
-  <owner>tellier@google.com</owner>
+  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Whether the Play Store has been launched by the user within a week from the

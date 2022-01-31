@@ -1741,9 +1741,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
     enum="AuthMethodSwitchType" expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The count of auth method switching actions on ChromeOS lock screen.
   </summary>
@@ -1751,9 +1750,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.ClamShellMode"
     enum="AuthMethod" expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
     Fingerprint / Challenge response) on Chromebooks in clamshell mode and on
@@ -1763,9 +1761,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.TabletMode" enum="AuthMethod"
     expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
     Fingerprint / Challenge response) on Chromebooks in tablet mode.
@@ -1774,8 +1771,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilFailure"
     units="attempts" expires_after="2022-06-29">
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The number of incorrect passwords entered in Chrome OS login/lock screen
     until the user gives up (user signs out the current session or shuts down
@@ -1785,8 +1782,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilSuccess"
     units="attempts" expires_after="2022-06-29">
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The number of incorrect passwords entered in Chrome OS login/lock screen
     until a successful attempt.
@@ -1795,8 +1792,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.UserClicks" enum="LockScreenUserClickTarget"
     expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The numbers of times that users click on the shelf buttons, trays and lock
     screen note on the ChromeOS lock screen.
@@ -1805,9 +1802,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Login.AuthMethod.Switched"
     enum="AuthMethodSwitchType" expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The count of auth method switching actions on ChromeOS login screen.
   </summary>
@@ -1815,9 +1811,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Login.AuthMethod.Used.ClamShellMode"
     enum="AuthMethod" expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
     Fingerprint / Challenge response) on Chromebooks in clamshell mode and on
@@ -1827,9 +1822,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Login.AuthMethod.Used.TabletMode" enum="AuthMethod"
     expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
     Fingerprint / Challenge response) on Chromebooks in tablet mode.
@@ -1838,8 +1832,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Login.MigrationBanner" enum="BooleanShown"
     expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Whether the cryptohome migration banner was shown on the Chrome OS login
     screen.
@@ -1848,8 +1842,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Login.UserClicks" enum="LoginScreenUserClickTarget"
     expires_after="2022-06-29">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The numbers of times that users click on the shelf buttons and trays on the
     ChromeOS login screen.
@@ -1858,15 +1852,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.OOBE.UserClicks" enum="OobeUserClickTarget"
     expires_after="2022-06-29">
+  <owner>emaamari@google.com</owner>
   <owner>raleksandrov@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>What shelf buttons or trays are clicked in the OOBE.</summary>
 </histogram>
 
 <histogram name="Ash.Login.PinAutosubmit.Backfill"
     enum="PinAutosubmitBackfillEvent" expires_after="2022-06-29">
+  <owner>emaamari@google.com</owner>
   <owner>rrsilva@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The result of the PIN auto submit 'Backfill' operation. Users updating to
     M86 with an existing PIN will have their preference regarding auto submit
