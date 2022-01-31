@@ -167,7 +167,13 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest, DestroyWebContents) {
+// TODO(https://crbug.com/1289196): Flaky failures.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_DestroyWebContents DISABLED_DestroyWebContents
+#else
+#define MAYBE_DestroyWebContents DestroyWebContents
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest, MAYBE_DestroyWebContents) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* manager = TestAppBannerManagerDesktop::FromWebContents(web_contents);
