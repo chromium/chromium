@@ -39,12 +39,14 @@ import pipes
 import string
 import subprocess
 
+from pathlib import Path
+
 # Get variables and helpers from Clang update script
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
-                    LLVM_BUILD_DIR, RmTree)
+                    LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 
 # Trunk on 1/26/2021
 RUST_REVISION = 'a7f3757'
@@ -175,7 +177,14 @@ def main():
   parser.add_argument('--skip-install',
                       action='store_true',
                       help='do not install to RUST_TOOLCHAIN_OUT_DIR')
+  parser.add_argument(
+      '--fetch-llvm-libs',
+      action='store_true',
+      help='fetch Clang/LLVM libs and extract into LLVM_BUILD_DIR')
   args = parser.parse_args()
+
+  if args.fetch_llvm_libs:
+    UpdatePackage('clang-libs', GetDefaultHostOs())
 
   if not args.skip_checkout:
     CheckoutRust(RUST_REVISION, RUST_SRC_DIR)

@@ -555,8 +555,9 @@ def main():
   PackageInArchive(clang_tidy_dir, clang_tidy_dir + '.tgz')
   MaybeUpload(args.upload, clang_tidy_dir + '.tgz', gcs_platform)
 
-  # Zip up clang-libs for users who opt into it. We want the clang
-  # headers as well as the static libraries.
+  # Zip up clang-libs for users who opt into it. We want Clang and LLVM headers
+  # and libs, as well as a couple binaries. The LLVM parts are needed by the
+  # Rust build.
   clang_libs_dir = 'clang-libs-' + stamp
   shutil.rmtree(clang_libs_dir, ignore_errors=True)
   os.makedirs(os.path.join(clang_libs_dir, 'include'))
@@ -565,6 +566,24 @@ def main():
   # unless we see it's needed, and we can document why.
   shutil.copytree(os.path.join(LLVM_DIR, 'clang', 'include', 'clang'),
                   os.path.join(clang_libs_dir, 'include', 'clang'))
+
+  # Copy LLVM includes. The llvm source and build directory includes must be
+  # merged. llvm-c for C bindings is also included.
+  shutil.copytree(os.path.join(LLVM_DIR, 'llvm', 'include', 'llvm'),
+                  os.path.join(clang_libs_dir, 'include', 'llvm'))
+  shutil.copytree(os.path.join(LLVM_DIR, 'llvm', 'include', 'llvm-c'),
+                  os.path.join(clang_libs_dir, 'include', 'llvm-c'))
+  shutil.copytree(os.path.join(LLVM_RELEASE_DIR, 'include', 'llvm'),
+                  os.path.join(clang_libs_dir, 'include', 'llvm'),
+                  dirs_exist_ok=True)
+
+  # Copy llvm-config and FileCheck which the Rust build needs
+  os.makedirs(os.path.join(clang_libs_dir, 'bin'))
+  shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'llvm-config' + exe_ext),
+              os.path.join(clang_libs_dir, 'bin'))
+  shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'FileCheck' + exe_ext),
+              os.path.join(clang_libs_dir, 'bin'))
+
   os.makedirs(os.path.join(clang_libs_dir, 'lib'))
   if sys.platform == 'win32':
     clang_libs_want = [

@@ -36,7 +36,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-14-init-17086-g38e16e1c'
-CLANG_SUB_REVISION = 3
+CLANG_SUB_REVISION = 4
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '14.0.0'
@@ -290,7 +290,7 @@ def UpdatePackage(package_name, host_os):
   return 0
 
 
-def main():
+def GetDefaultHostOs():
   _PLATFORM_HOST_OS_MAP = {
       'darwin': 'mac',
       'cygwin': 'win',
@@ -300,7 +300,10 @@ def main():
   default_host_os = _PLATFORM_HOST_OS_MAP.get(sys.platform, sys.platform)
   if default_host_os == 'mac' and platform.machine() == 'arm64':
     default_host_os = 'mac-arm64'
+  return default_host_os
 
+
+def main():
   parser = argparse.ArgumentParser(description='Update clang.')
   parser.add_argument('--output-dir',
                       help='Where to extract the package.')
@@ -308,9 +311,9 @@ def main():
                       help='What package to update (default: clang)',
                       default='clang')
   parser.add_argument('--host-os',
-                      help='Which host OS to download for (default: %s)' %
-                      default_host_os,
-                      default=default_host_os,
+                      help=('Which host OS to download for '
+                            '(default: %(default)s)'),
+                      default=GetDefaultHostOs(),
                       choices=('linux', 'mac', 'mac-arm64', 'win'))
   parser.add_argument('--print-revision', action='store_true',
                       help='Print current clang revision and exit.')
