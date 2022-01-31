@@ -5,7 +5,7 @@
 // TODO(wnwen): Wrap calls.
 // TODO(anastasi): Change interface to remove unneeded promises.
 
-/** @typedef {string|number|boolean} */
+/** @typedef {CvdType|number|boolean} */
 let StoredValue;
 /** @typedef {{newValue: StoredValue, oldValue: StoredValue}} */
 let Change;
@@ -21,7 +21,7 @@ class Storage {
     /** @private {number} */
     this.defaultSeverity_ = Storage.DEFAULT_SEVERITY;
 
-    /** @private {string} */
+    /** @private {!CvdType} */
     this.defaultType_ = Storage.INVALID_TYPE_PLACEHOLDER;
 
     /** @private {boolean} */
@@ -221,11 +221,10 @@ class Storage {
    * @private
    */
   validType_(type) {
-    return type === 'PROTANOMALY' || type === 'DEUTERANOMALY' ||
-        type === 'TRITANOMALY';
+    return Object.values(CvdType).includes(type);
   }
 
-  /** @return {Promise<string>} */
+  /** @return {Promise<CvdType>} */
   getDefaultType() {
     return new Promise(resolve => {
       resolve(this.defaultType_);
@@ -233,7 +232,7 @@ class Storage {
   }
 
   /**
-   * @param {string} type
+   * @param {CvdType} type
    * @return {Promise}
    */
   setDefaultType(type) {

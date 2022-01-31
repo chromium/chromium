@@ -5,6 +5,13 @@
 // TODO(wnwen): Move most of these functions to their own page rather than
 //     common, which should be shared with content script.
 
+/** @enum {string} */
+const CvdType = {
+  PROTANOMALY: "PROTANOMALY",
+  DEUTERANOMALY: "DEUTERANOMALY",
+  TRITANOMALY: "TRITANOMALY",
+};
+
 /**
  * TODO(wnwen): Remove this and use actual web API.
  */
