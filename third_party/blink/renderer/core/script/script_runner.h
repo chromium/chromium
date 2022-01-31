@@ -72,9 +72,9 @@ class CORE_EXPORT ScriptRunner final
 
   Member<Document> document_;
 
-  // https://html.spec.whatwg.org/#list-of-scripts-that-will-execute-in-order-as-soon-as-possible
+  // https://html.spec.whatwg.org/C/#list-of-scripts-that-will-execute-in-order-as-soon-as-possible
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
-  // https://html.spec.whatwg.org/#set-of-scripts-that-will-execute-as-soon-as-possible
+  // https://html.spec.whatwg.org/C/#set-of-scripts-that-will-execute-as-soon-as-possible
   HeapHashSet<Member<PendingScript>> pending_async_scripts_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

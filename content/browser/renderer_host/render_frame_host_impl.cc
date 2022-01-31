@@ -6698,7 +6698,7 @@ void RenderFrameHostImpl::CreateNewWindow(
           kSameOriginAllowPopupsPlusCoep:
         break;
 
-      // See https://html.spec.whatwg.org/#browsing-context-names (step 8)
+      // See https://html.spec.whatwg.org/C/#browsing-context-names (step 8)
       // ```
       // If current's top-level browsing context's active document's
       // cross-origin opener policy's value is "same-origin" or

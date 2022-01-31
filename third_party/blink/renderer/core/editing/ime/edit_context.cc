@@ -211,7 +211,7 @@ void EditContext::updateSelection(uint32_t start,
                                   uint32_t end,
                                   ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setselectionrange
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
   if (start > end) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -260,7 +260,7 @@ void EditContext::updateText(uint32_t start,
                              const String& new_text,
                              ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setrangetext
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setrangetext
   if (start > end) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -289,7 +289,7 @@ uint32_t EditContext::selectionStart() const {
 void EditContext::setSelectionStart(uint32_t selection_start,
                                     ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setselectionrange
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
   selection_start_ = std::min(selection_end_, selection_start);
 }
 
@@ -304,7 +304,7 @@ uint32_t EditContext::characterBoundsRangeStart() const {
 void EditContext::setSelectionEnd(uint32_t selection_end,
                                   ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setselectionrange
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
   selection_end_ = std::min(selection_end, text_.length());
 }
 

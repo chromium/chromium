@@ -60,7 +60,7 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
 
   // Whether the document is a secure context.
   //
-  // See: https://html.spec.whatwg.org/#secure-contexts.
+  // See: https://html.spec.whatwg.org/C/#secure-contexts.
   //
   // See also:
   //  - |network::IsUrlPotentiallyTrustworthy()|

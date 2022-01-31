@@ -2525,8 +2525,8 @@ void RenderFrameHostManager::CreateProxiesForNewNamedFrame() {
   // If this is a top-level frame, create proxies for this node in the
   // SiteInstances of its opener's ancestors, which are allowed to discover
   // this frame by name (see https://crbug.com/511474 and part 4 of
-  // https://html.spec.whatwg.org/#the-rules-for-choosing-a-browsing-context-
-  // given-a-browsing-context-name).
+  // https://html.spec.whatwg.org/C/#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name
+  // ).
   FrameTreeNode* opener = frame_tree_node_->opener();
   if (!opener || !frame_tree_node_->IsMainFrame())
     return;

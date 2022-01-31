@@ -80,7 +80,7 @@ extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{
 
 // Enables Cross-Origin Opener Policy (COOP).
 // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
-// https://html.spec.whatwg.org/#cross-origin-opener-policy
+// https://html.spec.whatwg.org/C/#cross-origin-opener-policy
 // Currently this feature is enabled for all platforms except WebView.
 const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

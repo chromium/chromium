@@ -135,12 +135,12 @@ COMPONENT_EXPORT(NETWORK_CPP) bool IsForbiddenMethod(const std::string& name);
 COMPONENT_EXPORT(NETWORK_CPP) bool IsOkStatus(int status);
 
 // Returns true if |type| is a response type which makes a response
-// CORS-same-origin. See https://html.spec.whatwg.org/#cors-same-origin.
+// CORS-same-origin. See https://html.spec.whatwg.org/C/#cors-same-origin.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsCorsSameOriginResponseType(mojom::FetchResponseType type);
 
 // Returns true if |type| is a response type which makes a response
-// CORS-cross-origin. See https://html.spec.whatwg.org/#cors-cross-origin.
+// CORS-cross-origin. See https://html.spec.whatwg.org/C/#cors-cross-origin.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsCorsCrossOriginResponseType(mojom::FetchResponseType type);
 

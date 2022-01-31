@@ -20,7 +20,7 @@ namespace content {
 // 1.  Non-isolated contexts.
 //
 // 2.  Cross-origin isolation, as defined in
-//     https://html.spec.whatwg.org/#concept-settings-object-cross-origin-isolated-capability.
+//     https://html.spec.whatwg.org/C/#concept-settings-object-cross-origin-isolated-capability.
 //     This is computed purely by examining Cross-Origin-Opener-Policy and
 //     Cross-Origin-Embedder-Policy headers on a given response.
 //
