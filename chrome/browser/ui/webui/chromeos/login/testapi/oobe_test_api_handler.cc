@@ -51,6 +51,11 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
           StartupUtils::IsEulaAccepted() ||
           features::IsOobeConsolidatedConsentEnabled() ||
           !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+
+  dict->SetBoolean("testapi_shouldSkipGuestTos",
+                   StartupUtils::IsEulaAccepted() ||
+                       !features::IsOobeConsolidatedConsentEnabled() ||
+                       !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,

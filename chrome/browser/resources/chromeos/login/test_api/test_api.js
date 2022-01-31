@@ -404,6 +404,7 @@ class OobeApiProvider {
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),
       PinSetupScreen: new PinSetupScreenTester(),
       EnterpriseEnrollmentScreen: new EnterpriseEnrollmentScreenTester(),
+      GuestTosScreen: new GuestTosScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
@@ -417,6 +418,29 @@ class OobeApiProvider {
     this.skipPostLoginScreens = function() {
       chrome.send('OobeTestApi.skipPostLoginScreens');
     };
+  }
+}
+
+class GuestTosScreenTester extends ScreenElementApi {
+  constructor() {
+    super('guest-tos');
+    this.loadedStep = new PolymerElementApi(this, '#loaded');
+    this.nextButton = new PolymerElementApi(this, '#acceptButton');
+  }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipGuestTos');
+  }
+
+  /** @return {boolean} */
+  isReadyForTesting() {
+    return this.isVisible() && this.loadedStep.isVisible();
+  }
+
+  /** @return {string} */
+  getNextButtonName() {
+    return loadTimeData.getString('guestTosAccept');
   }
 }
 
