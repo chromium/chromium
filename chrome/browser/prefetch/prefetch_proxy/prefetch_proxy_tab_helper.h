@@ -235,6 +235,10 @@ class PrefetchProxyTabHelper
   static void SetServiceWorkerContextForTest(
       content::ServiceWorkerContext* context);
 
+  // Overrides the logic for determining which hostnames should not be proxied.
+  static void SetHostNonUniqueFilterForTest(bool (*filter)(base::StringPiece));
+  static void ResetHostNonUniqueFilterForTest();
+
  protected:
   // Exposed for testing.
   explicit PrefetchProxyTabHelper(content::WebContents* web_contents);

@@ -97,6 +97,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
@@ -512,6 +513,18 @@ class PrefetchProxyBrowserTest
     host_resolver()->AddRule("resolve-success.com", "127.0.0.1");
 
     host_resolver()->AddSimulatedFailure("resolve-fail.com");
+
+    PrefetchProxyTabHelper::SetHostNonUniqueFilterForTest(
+        [](base::StringPiece host) {
+          // Treat *.test as real public hostnames, even though they aren't.
+          return net::IsHostnameNonUnique(std::string{host}) &&
+                 !net::IsSubdomainOf(host, "test");
+        });
+  }
+
+  void TearDownOnMainThread() override {
+    PrefetchProxyTabHelper::ResetHostNonUniqueFilterForTest();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
