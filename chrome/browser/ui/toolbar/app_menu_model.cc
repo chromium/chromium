@@ -233,10 +233,7 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  if (browser->profile()->IsIncognitoProfile() ||
-      browser->profile()->IsGuestSession()) {
-    AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
-  }
+  AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
 
   AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
   AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
