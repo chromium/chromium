@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_ASH_H_
-#define CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_ASH_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_H_
+#define CHROME_BROWSER_ASH_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_H_
 
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-class SyncErrorNotifier;
 class Profile;
+
+namespace ash {
+
+class SyncErrorNotifier;
 
 // Singleton that owns all SyncErrorNotifiers and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
@@ -37,4 +40,6 @@ class SyncErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
 };
 
-#endif  // CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_ASH_H_
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_H_

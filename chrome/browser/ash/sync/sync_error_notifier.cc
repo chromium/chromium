@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/sync_error_notifier_ash.h"
+#include "chrome/browser/ash/sync/sync_error_notifier.h"
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
@@ -33,6 +33,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
+namespace ash {
 namespace {
 
 const char kProfileSyncNotificationId[] = "chrome://settings/sync/";
@@ -190,3 +191,5 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
                            /*metadata=*/nullptr);
   notification_displayed_ = true;
 }
+
+}  // namespace ash

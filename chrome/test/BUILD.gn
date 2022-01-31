@@ -6613,7 +6613,6 @@ test("unit_tests") {
       "../browser/sharesheet/share_action/share_action_unittest.cc",
       "../browser/speech/tts_chromeos_unittest.cc",
       "../browser/speech/tts_controller_delegate_impl_unittest.cc",
-      "../browser/sync/sync_error_notifier_ash_unittest.cc",
       "../browser/ui/app_list/app_context_menu_unittest.cc",
       "../browser/ui/app_list/app_list_sort_unittest.cc",
       "../browser/ui/app_list/app_list_syncable_service_unittest.cc",

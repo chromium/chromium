@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/sync_error_notifier_factory_ash.h"
+#include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 
+#include "chrome/browser/ash/sync/sync_error_notifier.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_error_notifier_ash.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+
+namespace ash {
 
 SyncErrorNotifierFactory::SyncErrorNotifierFactory()
     : BrowserContextKeyedServiceFactory(
@@ -17,7 +19,7 @@ SyncErrorNotifierFactory::SyncErrorNotifierFactory()
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-SyncErrorNotifierFactory::~SyncErrorNotifierFactory() {}
+SyncErrorNotifierFactory::~SyncErrorNotifierFactory() = default;
 
 // static
 SyncErrorNotifier* SyncErrorNotifierFactory::GetForProfile(Profile* profile) {
@@ -41,3 +43,5 @@ KeyedService* SyncErrorNotifierFactory::BuildServiceInstanceFor(
 
   return new SyncErrorNotifier(sync_service, profile);
 }
+
+}  // namespace ash

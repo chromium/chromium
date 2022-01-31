@@ -22,10 +22,10 @@
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_error_notifier_factory_ash.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
@@ -378,7 +378,7 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
         !profile->IsGuestSession()) {
       // Start the error notifier services to show auth/sync notifications.
       ash::SigninErrorNotifierFactory::GetForProfile(profile);
-      SyncErrorNotifierFactory::GetForProfile(profile);
+      ash::SyncErrorNotifierFactory::GetForProfile(profile);
     }
 
     if (ChromeShelfController::instance()) {

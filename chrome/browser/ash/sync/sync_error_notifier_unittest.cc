@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/sync_error_notifier_ash.h"
+#include "chrome/browser/ash/sync/sync_error_notifier.h"
 
 #include <memory>
 
@@ -18,6 +18,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
+
+namespace ash {
 
 namespace {
 
@@ -122,3 +124,4 @@ TEST_F(SyncErrorNotifierTest, NotificationShownOnce) {
 }
 
 }  // namespace
+}  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_ASH_H_
-#define CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_ASH_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_SYNC_ERROR_NOTIFIER_H_
+#define CHROME_BROWSER_ASH_SYNC_SYNC_ERROR_NOTIFIER_H_
 
 #include <string>
 
@@ -11,6 +11,8 @@
 #include "components/sync/driver/sync_service_observer.h"
 
 class Profile;
+
+namespace ash {
 
 // Shows sync-related errors as notifications in Ash.
 class SyncErrorNotifier : public syncer::SyncServiceObserver,
@@ -45,4 +47,6 @@ class SyncErrorNotifier : public syncer::SyncServiceObserver,
   std::string notification_id_;
 };
 
-#endif  // CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_ASH_H_
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_SYNC_SYNC_ERROR_NOTIFIER_H_
