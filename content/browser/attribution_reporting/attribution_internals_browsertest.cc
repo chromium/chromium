@@ -45,7 +45,7 @@ using ::testing::ElementsAre;
 using ::testing::IsNull;
 using ::testing::Return;
 
-const char kAttributionInternalsUrl[] = "chrome://conversion-internals/";
+const char kAttributionInternalsUrl[] = "chrome://attribution-internals/";
 
 const std::u16string kCompleteTitle = u"Complete";
 const std::u16string kCompleteTitle2 = u"Complete2";

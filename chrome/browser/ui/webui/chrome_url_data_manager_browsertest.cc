@@ -205,6 +205,7 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 // This list was derived from chrome://about. :)
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
+    "chrome://attribution-internals",
     "chrome://autofill-internals",
     "chrome://blob-internals",
     "chrome://bookmarks",
@@ -212,7 +213,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
-    "chrome://conversion-internals",
     "chrome://crashes",
     "chrome://credits",
     "chrome://device-log",

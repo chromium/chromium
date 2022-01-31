@@ -25,7 +25,7 @@ const char kAndroidAppScheme[] = "android-app";
 #endif
 const char kGoogleChromeScheme[] = "googlechrome";
 
-const char kChromeUIAttributionInternalsHost[] = "conversion-internals";
+const char kChromeUIAttributionInternalsHost[] = "attribution-internals";
 const char kChromeUIIndexedDBInternalsHost[] = "indexeddb-internals";
 const char kChromeUIBlobInternalsHost[] = "blob-internals";
 const char kChromeUIBrowserCrashHost[] = "inducebrowsercrashforrealz";
