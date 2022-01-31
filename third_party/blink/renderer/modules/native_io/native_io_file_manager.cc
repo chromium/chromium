@@ -91,7 +91,6 @@ void OnRenameResult(ScriptPromiseResolver* resolver,
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   if (rename_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
     blink::RejectNativeIOWithError(resolver, std::move(rename_error));
@@ -515,11 +514,6 @@ void NativeIOFileManager::DidCheckStorageAccessAllowed(
     return;
   }
 
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
   blink::RejectNativeIOWithError(resolver,
                                  mojom::blink::NativeIOError::New(
                                      mojom::blink::NativeIOErrorType::kUnknown,
@@ -697,7 +691,6 @@ void NativeIOFileManager::OnDeleteResult(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   if (delete_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
     blink::RejectNativeIOWithError(resolver, std::move(delete_error));
@@ -718,7 +711,7 @@ void NativeIOFileManager::OnRequestCapacityChangeResult(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
+
   // If `granted_capacity` < 0, the available capacity has already been released
   // prior to the IPC.
   if (granted_capacity > 0) {
@@ -867,7 +860,6 @@ void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   if (!backend_.is_bound()) {
     blink::RejectNativeIOWithError(

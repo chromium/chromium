@@ -637,7 +637,6 @@ void NativeIOFile::DidGetLength(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   if (get_length_error == base::File::FILE_OK) {
@@ -831,7 +830,6 @@ void NativeIOFile::DidRead(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;
@@ -966,7 +964,6 @@ void NativeIOFile::DidFlush(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;

@@ -45,9 +45,12 @@ DOMExceptionCode NativeIOErrorToDOMExceptionCode(NativeIOErrorType error) {
 
 void RejectNativeIOWithError(ScriptPromiseResolver* resolver,
                              NativeIOErrorPtr error) {
-  DCHECK(resolver->GetScriptState()->ContextIsValid())
-      << "The resolver's script state must be valid.";
   ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+  ScriptState::Scope scope(script_state);
+
   DOMExceptionCode exception_code =
       NativeIOErrorToDOMExceptionCode(error->type);
   resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
