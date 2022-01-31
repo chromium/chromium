@@ -616,11 +616,15 @@ const base::flat_set<std::string>& PolicyMap::GetDeviceAffiliationIds() const {
 void PolicyMap::UpdateStoredComputedMetapolicies() {
   cloud_policy_overrides_platform_policy_ =
       GetValue(key::kCloudPolicyOverridesPlatformPolicy) &&
-      GetValue(key::kCloudPolicyOverridesPlatformPolicy)->GetBool();
+      GetValue(key::kCloudPolicyOverridesPlatformPolicy)
+          ->GetIfBool()
+          .value_or(false);
 
   cloud_user_policy_overrides_cloud_machine_policy_ =
       GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy) &&
-      GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy)->GetBool();
+      GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+          ->GetIfBool()
+          .value_or(false);
 }
 
 void PolicyMap::UpdateStoredUserAffiliation() {

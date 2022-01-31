@@ -150,14 +150,16 @@ base::Value PolicyConversionsClient::GetPrecedenceOrder() {
   bool cloud_machine_precedence =
       chrome_policies.Get(key::kCloudPolicyOverridesPlatformPolicy)
           ? chrome_policies.GetValue(key::kCloudPolicyOverridesPlatformPolicy)
-                ->GetBool()
+                ->GetIfBool()
+                .value_or(false)
           : false;
   bool cloud_user_precedence =
       chrome_policies.Get(key::kCloudUserPolicyOverridesCloudMachinePolicy)
           ? chrome_policies.IsUserAffiliated() &&
                 chrome_policies
                     .GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy)
-                    ->GetBool()
+                    ->GetIfBool()
+                    .value_or(false)
           : false;
 
   std::vector<int> precedence_order(4);
