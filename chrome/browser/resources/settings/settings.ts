@@ -63,6 +63,7 @@ export {PrefsMixin, PrefsMixinInterface} from './prefs/prefs_mixin.js';
 export {CrSettingsPrefs} from './prefs/prefs_types.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page/privacy_page_browser_proxy.js';
+export {PrivacyReviewBrowserProxy, PrivacyReviewBrowserProxyImpl} from './privacy_page/privacy_review/privacy_review_browser_proxy.js';
 export {RelaunchMixin, RestartType} from './relaunch_mixin.js';
 export {ResetBrowserProxy, ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
 export {SettingsResetProfileBannerElement} from './reset_page/reset_profile_banner.js';

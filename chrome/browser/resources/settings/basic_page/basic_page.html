@@ -52,14 +52,13 @@
             <settings-autofill-page prefs="{{prefs}}"></settings-autofill-page>
           </settings-section>
         </template>
-        <template is="dom-if" if="[[showPrivacyReviewPromo_]]" restamp>
-          <settings-section page-title="" nest-under-section="privacy"
-              no-search>
-            <settings-privacy-review-promo id="privacyReviewPromo"
-                prefs="{{prefs}}">
-            </settings-privacy-review-promo>
-          </settings-section>
-        </template>
+        <settings-section id="privacyReviewPromoSection" page-title=""
+            hidden$="[[!showPrivacyReviewPromo_]]" nest-under-section="privacy"
+            no-search>
+          <settings-privacy-review-promo id="privacyReviewPromo"
+              prefs="{{prefs}}">
+          </settings-privacy-review-promo>
+        </settings-section>
         <template is="dom-if" if="[[showPage_(pageVisibility.safetyCheck)]]"
             restamp>
           <settings-section page-title="$i18n{safetyCheckSectionTitle}"
