@@ -37,7 +37,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Test suite for the bookmarks sync data type.
@@ -392,27 +391,19 @@ public class BookmarksTest {
     }
 
     private BookmarkId addClientBookmark(final String title, final GURL url) {
-        BookmarkId id =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
-                    @Override
-                    public BookmarkId call() {
-                        BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
-                        return mBookmarkBridge.addBookmark(parentId, 0, title, url);
-                    }
-                });
+        BookmarkId id = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
+            return mBookmarkBridge.addBookmark(parentId, 0, title, url);
+        });
         Assert.assertNotNull("Failed to create bookmark.", id);
         return id;
     }
 
     private BookmarkId addClientBookmarkFolder(final String title) {
-        BookmarkId id =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
-                    @Override
-                    public BookmarkId call() {
-                        BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
-                        return mBookmarkBridge.addFolder(parentId, 0, title);
-                    }
-                });
+        BookmarkId id = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
+            return mBookmarkBridge.addFolder(parentId, 0, title);
+        });
         Assert.assertNotNull("Failed to create bookmark folder.", id);
         return id;
     }

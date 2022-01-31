@@ -21,7 +21,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -39,36 +38,24 @@ public final class SyncTestUtil {
      * Returns whether sync is requested.
      */
     public static boolean isSyncRequested() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return SyncService.get().isSyncRequested();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> SyncService.get().isSyncRequested());
     }
 
     /**
      * Returns whether sync-the-feature can start.
      */
     public static boolean canSyncFeatureStart() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return SyncService.get().canSyncFeatureStart();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> SyncService.get().canSyncFeatureStart());
     }
 
     /**
      * Returns whether sync-the-feature is active.
      */
     public static boolean isSyncFeatureActive() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return SyncService.get().isSyncFeatureActive();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> SyncService.get().isSyncFeatureActive());
     }
 
     /**
@@ -142,12 +129,8 @@ public final class SyncTestUtil {
     }
 
     private static long getCurrentSyncTime() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Long>() {
-            @Override
-            public Long call() {
-                return SyncService.get().getLastSyncedTimeForDebugging();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> SyncService.get().getLastSyncedTimeForDebugging());
     }
 
     /**
