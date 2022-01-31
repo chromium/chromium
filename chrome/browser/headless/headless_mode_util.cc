@@ -6,10 +6,10 @@
 
 #include "build/build_config.h"
 
-// Native headless is currently available only on Linux and Windows platforms.
+// Native headless is currently available on Linux, Windows and Mac platforms.
 // More platforms will be added later, so avoid function level clutter by
 // providing stub implementations at the end of the file.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #include <cstdlib>
 #include <vector>
@@ -64,7 +64,7 @@ void SetUpCommandLine(const base::CommandLine* command_line) {
 
 }  // namespace headless
 
-#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace headless {
 
@@ -76,4 +76,4 @@ void SetUpCommandLine(const base::CommandLine* command_line) {}
 
 }  // namespace headless
 
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

@@ -393,6 +393,8 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->modal_type = widget->widget_delegate()->GetModalType();
     window_params->is_translucent =
         params.opacity == Widget::InitParams::WindowOpacity::kTranslucent;
+    window_params->is_headless_mode_window = params.headless_mode;
+    is_headless_mode_window_ = params.headless_mode;
 
     // OSX likes to put shadows on most things. However, frameless windows (with
     // styleMask = NSBorderlessWindowMask) default to no shadow. So change that.
@@ -541,10 +543,12 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
   compositor_->compositor()->SetRootLayer(layer());
 
   // The compositor is locked (prevented from producing frames) until the widget
-  // is made visible.
+  // is made visible unless the window was created in headless mode in which
+  // case it will never become visible but we want its compositor to produce
+  // frames for screenshooting and screencasting.
   UpdateCompositorProperties();
   layer()->SetVisible(is_visible_);
-  if (is_visible_)
+  if (is_visible_ || is_headless_mode_window_)
     compositor_->Unsuspend();
 
   // Register the CGWindowID (used to identify this window for video capture)

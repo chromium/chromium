@@ -390,6 +390,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If set, mouse events will be sent to the widget even if inactive.
     bool wants_mouse_events_when_inactive = false;
 
+    // If set, the widget was created in headless mode.
+    bool headless_mode = false;
+
     // Contains any properties with which the native widget should be
     // initialized prior to adding it to the window hierarchy. All the
     // properties in |init_properties_container| will be moved to the native

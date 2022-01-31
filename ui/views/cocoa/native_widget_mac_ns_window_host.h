@@ -490,6 +490,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool is_miniaturized_ = false;
   bool is_window_key_ = false;
   bool is_mouse_capture_active_ = false;
+  bool is_headless_mode_window_ = false;
   gfx::Rect window_bounds_before_fullscreen_;
 
   // Weak pointers to event monitors for this widget. The event monitors

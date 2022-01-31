@@ -328,6 +328,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   std::unique_ptr<CocoaWindowMoveLoop> window_move_loop_;
   ui::ModalType modal_type_ = ui::MODAL_TYPE_NONE;
   bool is_translucent_window_ = false;
+  bool is_headless_mode_window_ = false;
   id key_down_event_monitor_ = nil;
 
   // Intended for PWAs with window controls overlay display override. These two

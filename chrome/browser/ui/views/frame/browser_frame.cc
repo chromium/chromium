@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -92,6 +93,7 @@ void BrowserFrame::InitBrowserFrame() {
   views::Widget::InitParams params = native_browser_frame_->GetWidgetParams();
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
+  params.headless_mode = headless::IsChromeNativeHeadless();
 
   if (native_browser_frame_->ShouldRestorePreviousBrowserWidgetState()) {
     Browser* browser = browser_view_->browser();
