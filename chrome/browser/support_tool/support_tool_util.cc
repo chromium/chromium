@@ -25,6 +25,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
