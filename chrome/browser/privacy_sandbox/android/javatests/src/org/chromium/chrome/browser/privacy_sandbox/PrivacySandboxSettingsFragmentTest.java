@@ -10,12 +10,12 @@ import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -32,47 +32,42 @@ public final class PrivacySandboxSettingsFragmentTest {
     public SettingsActivityTestRule<PrivacySandboxSettingsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySandboxSettingsFragment.class);
 
-    @Before
-    public void setUp() {
+    @Rule
+    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
+
+    @BeforeClass
+    public static void beforeClass() {
+        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
     @Test
     @SmallTest
     public void testCreateActivityFromPrivacySettings() {
-        int oldTotal = RecordHistogram.getHistogramTotalCountForTesting(REFERRER_HISTOGRAM);
-        int oldPrivacy = RecordHistogram.getHistogramValueCountForTesting(
-                REFERRER_HISTOGRAM, PrivacySandboxReferrer.PRIVACY_SETTINGS);
-
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
                 PrivacySandboxReferrer.PRIVACY_SETTINGS);
         mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
 
-        int newTotal = RecordHistogram.getHistogramTotalCountForTesting(REFERRER_HISTOGRAM);
-        int newPrivacy = RecordHistogram.getHistogramValueCountForTesting(
-                REFERRER_HISTOGRAM, PrivacySandboxReferrer.PRIVACY_SETTINGS);
-        assertEquals("Total histogram count increased by wrong value", 1, newTotal - oldTotal);
-        assertEquals("Privacy referrer histogram count increased by wrong value", 1,
-                newPrivacy - oldPrivacy);
+        assertEquals("Total histogram count wrong", 1,
+                mHistogramTestRule.getHistogramTotalCount(REFERRER_HISTOGRAM));
+        assertEquals("Privacy referrer histogram count", 1,
+                mHistogramTestRule.getHistogramValueCount(
+                        REFERRER_HISTOGRAM, PrivacySandboxReferrer.PRIVACY_SETTINGS));
     }
 
     @Test
     @SmallTest
     public void testCreateActivityFromCookiesSnackbar() {
-        int oldTotal = RecordHistogram.getHistogramTotalCountForTesting(REFERRER_HISTOGRAM);
-        int oldSnackbar = RecordHistogram.getHistogramValueCountForTesting(
-                REFERRER_HISTOGRAM, PrivacySandboxReferrer.COOKIES_SNACKBAR);
-
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
                 PrivacySandboxReferrer.COOKIES_SNACKBAR);
         mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
-        int newTotal = RecordHistogram.getHistogramTotalCountForTesting(REFERRER_HISTOGRAM);
-        int newSnackbar = RecordHistogram.getHistogramValueCountForTesting(
-                REFERRER_HISTOGRAM, PrivacySandboxReferrer.COOKIES_SNACKBAR);
-        assertEquals("Total histogram count increased by wrong value", 1, newTotal - oldTotal);
-        assertEquals("Cookies snackbar referrer histogram count increased by wrong value", 1,
-                newSnackbar - oldSnackbar);
+
+        assertEquals("Total histogram count", 1,
+                mHistogramTestRule.getHistogramTotalCount(REFERRER_HISTOGRAM));
+        assertEquals("Cookies snackbar referrer histogram count wrong", 1,
+                mHistogramTestRule.getHistogramValueCount(
+                        REFERRER_HISTOGRAM, PrivacySandboxReferrer.COOKIES_SNACKBAR));
     }
 }

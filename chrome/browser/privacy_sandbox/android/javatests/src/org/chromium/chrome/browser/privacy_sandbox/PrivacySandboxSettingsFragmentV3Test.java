@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,10 +27,12 @@ import androidx.annotation.StringRes;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
@@ -49,6 +52,8 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
 public final class PrivacySandboxSettingsFragmentV3Test {
+    private static final String REFERRER_HISTOGRAM =
+            "Settings.PrivacySandbox.PrivacySandboxReferrer";
     @Rule
     public SettingsActivityTestRule<PrivacySandboxSettingsFragmentV3> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySandboxSettingsFragmentV3.class);
@@ -58,13 +63,21 @@ public final class PrivacySandboxSettingsFragmentV3Test {
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     @Rule
+    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
+
+    @Rule
     public JniMocker mocker = new JniMocker();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
+    @BeforeClass
+    public static void beforeClass() {
+        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
+
     @Before
     public void setUp() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
     }
@@ -154,5 +167,31 @@ public final class PrivacySandboxSettingsFragmentV3Test {
                 .perform(click());
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), hasItem("BlockedFoo"));
         assertThat(PrivacySandboxBridge.getBlockedTopics(), not(hasItem("BlockedFoo")));
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateActivityFromPrivacySettings() {
+        openPrivacySandboxSettings();
+        assertEquals("Total histogram count wrong", 1,
+                mHistogramTestRule.getHistogramTotalCount(REFERRER_HISTOGRAM));
+        assertEquals("Privacy referrer histogram count", 1,
+                mHistogramTestRule.getHistogramValueCount(
+                        REFERRER_HISTOGRAM, PrivacySandboxReferrer.PRIVACY_SETTINGS));
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateActivityFromCookiesSnackbar() {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
+                PrivacySandboxReferrer.COOKIES_SNACKBAR);
+        mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+
+        assertEquals("Total histogram count", 1,
+                mHistogramTestRule.getHistogramTotalCount(REFERRER_HISTOGRAM));
+        assertEquals("Cookies snackbar referrer histogram count wrong", 1,
+                mHistogramTestRule.getHistogramValueCount(
+                        REFERRER_HISTOGRAM, PrivacySandboxReferrer.COOKIES_SNACKBAR));
     }
 }
