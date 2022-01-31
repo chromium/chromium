@@ -110,11 +110,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "allow-sync-xhr-in-page-dismissal",
-    "owners": [ "kdillon@chromium.org" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "allow-touchpad-haptic-click-settings",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 101

@@ -3143,11 +3143,6 @@ const char kEnterpriseHardwarePlatformAPIEnabled[] =
 // Boolean that specifies whether Signed HTTP Exchange (SXG) loading is enabled.
 const char kSignedHTTPExchangeEnabled[] = "web_package.signed_exchange.enabled";
 
-// Boolean that allows a page to perform synchronous XHR requests during page
-// dismissal.
-// TODO(https://crbug.com/1003101): Remove this in Chrome 88.
-const char kAllowSyncXHRInPageDismissal[] = "allow_sync_xhr_in_page_dismissal";
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enum that specifies client certificate management permissions for user. It
 // can have one of the following values.

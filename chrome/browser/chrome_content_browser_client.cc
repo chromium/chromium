@@ -2346,11 +2346,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       MaybeAppendSecureOriginsAllowlistSwitch(command_line);
 
-      if (prefs->HasPrefPath(prefs::kAllowSyncXHRInPageDismissal) &&
-          prefs->GetBoolean(prefs::kAllowSyncXHRInPageDismissal)) {
-        command_line->AppendSwitch(switches::kAllowSyncXHRInPageDismissal);
-      }
-
       if (prefs->HasPrefPath(prefs::kScrollToTextFragmentEnabled) &&
           !prefs->GetBoolean(prefs::kScrollToTextFragmentEnabled)) {
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);

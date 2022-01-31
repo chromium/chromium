@@ -22,10 +22,6 @@ const char kAllowInsecureLocalhost[] = "allow-insecure-localhost";
 const char kAllowLoopbackInPeerConnection[] =
     "allow-loopback-in-peer-connection";
 
-// Allow a page to send synchronus XHR during its unloading.
-// TODO(https://crbug.com/1003101): Remove this in Chrome 88.
-const char kAllowSyncXHRInPageDismissal[] = "allow-sync-xhr-in-page-dimissal";
-
 // Uses the android SkFontManager on linux. The specified directory should
 // include the configuration xml file with the name "fonts.xml".
 // This is used in blimp to emulate android fonts on linux.

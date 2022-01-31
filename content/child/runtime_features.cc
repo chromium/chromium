@@ -209,8 +209,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kUseAXPositionForDocumentMarkers},
     {wf::EnableAllowActivationDelegationAttr,
      features::kAllowActivationDelegationAttr},
-    {wf::EnableAllowSyncXHRInPageDismissal,
-     blink::features::kAllowSyncXHRInPageDismissal},
     {wf::EnableAOMAriaRelationshipProperties,
      features::kEnableAriaElementReflection},
     {wf::EnableAutoplayIgnoresWebAudio, media::kAutoplayIgnoreWebAudio},
@@ -455,8 +453,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableTimerThrottlingForBackgroundTabs,
        switches::kDisableBackgroundTimerThrottling, false},
       // End of Stable Features
-      {wrf::EnableAllowSyncXHRInPageDismissal,
-       switches::kAllowSyncXHRInPageDismissal, true},
       {wrf::EnableAutomationControlled, switches::kEnableAutomation, true},
       {wrf::EnableAutomationControlled, switches::kHeadless, true},
       {wrf::EnableAutomationControlled, switches::kRemoteDebuggingPipe, true},

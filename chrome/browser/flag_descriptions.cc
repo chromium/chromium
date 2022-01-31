@@ -61,12 +61,6 @@ const char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
-const char kAllowSyncXHRInPageDismissalName[] =
-    "Allows synchronous XHR requests in page dismissal";
-const char kAllowSyncXHRInPageDismissalDescription[] =
-    "Allows synchronous XHR requests during page dismissal when the page is "
-    "being navigated away or closed by the user.";
-
 const char kWindowsFollowCursorName[] =
     "Windows open on the display with the cursor";
 const char kWindowsFollowCursorDescription[] =

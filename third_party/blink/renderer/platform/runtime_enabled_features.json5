@@ -177,10 +177,6 @@
       name: "AllowContentInitiatedDataUrlNavigations",
     },
     {
-      name: "AllowSyncXHRInPageDismissal",
-      origin_trial_feature_name: "AllowSyncXHRInPageDismissal",
-    },
-    {
       name: "AndroidDownloadableFontsMatching",
     },
     {

@@ -5918,12 +5918,6 @@ const FeatureEntry kFeatureEntries[] = {
          "AutofillUseMobileLabelDisambiguation")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"allow-sync-xhr-in-page-dismissal",
-     flag_descriptions::kAllowSyncXHRInPageDismissalName,
-     flag_descriptions::kAllowSyncXHRInPageDismissalDescription,
-     kOsAll | kDeprecated,
-     FEATURE_VALUE_TYPE(blink::features::kAllowSyncXHRInPageDismissal)},
-
     {"enable-sync-requires-policies-loaded",
      flag_descriptions::kEnableSyncRequiresPoliciesLoadedName,
      flag_descriptions::kEnableSyncRequiresPoliciesLoadedDescription, kOsAll,

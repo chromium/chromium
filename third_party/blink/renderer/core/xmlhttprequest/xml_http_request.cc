@@ -1125,9 +1125,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
               WebFeature::kXMLHttpRequestSynchronousInSameOriginSubframe);
         }
       }
-      if (PageDismissalScope::IsActive() &&
-          !RuntimeEnabledFeatures::AllowSyncXHRInPageDismissalEnabled(
-              &execution_context)) {
+      if (PageDismissalScope::IsActive()) {
         HandleNetworkError();
         ThrowForLoadFailureIfNeeded(exception_state,
                                     "Synchronous XHR in page dismissal. See "

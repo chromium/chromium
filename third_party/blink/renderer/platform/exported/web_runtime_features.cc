@@ -587,10 +587,6 @@ void WebRuntimeFeatures::EnableGetDisplayMedia(bool enable) {
   RuntimeEnabledFeatures::SetGetDisplayMediaEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableAllowSyncXHRInPageDismissal(bool enable) {
-  RuntimeEnabledFeatures::SetAllowSyncXHRInPageDismissalEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableSignedExchangeSubresourcePrefetch(bool enable) {
   RuntimeEnabledFeatures::SetSignedExchangeSubresourcePrefetchEnabled(enable);
 }

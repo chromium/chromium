@@ -1079,8 +1079,6 @@ extern const char kEnterpriseHardwarePlatformAPIEnabled[];
 
 extern const char kSignedHTTPExchangeEnabled[];
 
-extern const char kAllowSyncXHRInPageDismissal[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kUsageStatsEnabled[];
 #endif
