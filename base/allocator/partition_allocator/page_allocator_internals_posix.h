@@ -5,14 +5,15 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 
-#include <errno.h>
-#include <string.h>
+#include <algorithm>
+#include <cerrno>
+#include <cstdint>
+#include <cstring>
+
 #include <sys/mman.h>
 
-#include <algorithm>
-#include <cstdint>
-
 #include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/dcheck_is_on.h"
 #include "base/posix/eintr_wrapper.h"
@@ -33,8 +34,6 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/resource.h>
 #endif
-
-#include "base/allocator/partition_allocator/page_allocator.h"
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -58,7 +57,7 @@ uint32_t SecTaskGetCodeSignStatus(SecTaskRef task)
 
 #endif  // BUILDFLAG(IS_MAC)
 
-namespace base {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -92,7 +91,7 @@ const char* PageTagToName(PageTag tag) {
 // entitlement, returning whether MAP_JIT should be used to allocate regions
 // that will contain JIT-compiled executable code.
 bool UseMapJit() {
-  if (!mac::IsAtLeastOS10_14()) {
+  if (!base::mac::IsAtLeastOS10_14()) {
     // MAP_JIT existed before macOS 10.14, but had somewhat different semantics.
     // Only one MAP_JIT region was permitted per process, but calling code here
     // will very likely require more than one such region. Since MAP_JIT is not
@@ -109,7 +108,8 @@ bool UseMapJit() {
   // executable fails with EPERM. Although this is not enforced on x86_64,
   // MAP_JIT is harmless in that case.
 
-  ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(kCFAllocatorDefault));
+  base::ScopedCFTypeRef<SecTaskRef> task(
+      SecTaskCreateFromSelf(kCFAllocatorDefault));
   if (!task) {
     return true;
   }
@@ -126,12 +126,14 @@ bool UseMapJit() {
   // (EINVAL) to use MAP_JIT with the hardened runtime unless the JIT
   // entitlement is specified.
 
-  ScopedCFTypeRef<CFTypeRef> jit_entitlement(SecTaskCopyValueForEntitlement(
-      task.get(), CFSTR("com.apple.security.cs.allow-jit"), nullptr));
+  base::ScopedCFTypeRef<CFTypeRef> jit_entitlement(
+      SecTaskCopyValueForEntitlement(
+          task.get(), CFSTR("com.apple.security.cs.allow-jit"), nullptr));
   if (!jit_entitlement)
     return false;
 
-  return mac::CFCast<CFBooleanRef>(jit_entitlement.get()) == kCFBooleanTrue;
+  return base::mac::CFCast<CFBooleanRef>(jit_entitlement.get()) ==
+         kCFBooleanTrue;
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -258,7 +260,8 @@ void DecommitSystemPagesInternal(
   // pages in the region.
   DiscardSystemPages(address, length);
 
-  bool change_permissions = accessibility_disposition == PageUpdatePermissions;
+  bool change_permissions = accessibility_disposition ==
+                            PageAccessibilityDisposition::kUpdatePermissions;
 #if DCHECK_IS_ON()
   // This is not guaranteed, show that we're serious.
   //
@@ -285,7 +288,8 @@ void DecommitSystemPagesInternal(
   // operations in the opposite order resulted in PMF regression on Mac (see
   // crbug.com/1153021).
   if (change_permissions) {
-    SetSystemPagesAccess(address, length, PageInaccessible);
+    SetSystemPagesAccess(address, length,
+                         PageAccessibilityConfiguration::kInaccessible);
   }
 }
 
@@ -310,7 +314,8 @@ void RecommitSystemPagesInternal(
   // On POSIX systems, the caller needs to simply read the memory to recommit
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
-  if (accessibility_disposition == PageUpdatePermissions) {
+  if (accessibility_disposition ==
+      PageAccessibilityDisposition::kUpdatePermissions) {
     SetSystemPagesAccess(address, length, accessibility);
   }
 
@@ -329,7 +334,8 @@ bool TryRecommitSystemPagesInternal(
   // On POSIX systems, the caller needs to simply read the memory to recommit
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
-  if (accessibility_disposition == PageUpdatePermissions) {
+  if (accessibility_disposition ==
+      PageAccessibilityDisposition::kUpdatePermissions) {
     bool ok = TrySetSystemPagesAccess(address, length, accessibility);
     if (!ok)
       return false;
@@ -364,6 +370,6 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
 #endif
 }
 
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_POSIX_H_

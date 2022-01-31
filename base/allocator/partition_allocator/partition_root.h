@@ -1355,12 +1355,14 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer timer{this};
 
-  bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
-                                   accessibility_disposition);
+  bool ok = TryRecommitSystemPages(
+      address, length, PageAccessibilityConfiguration::kReadWriteTagged,
+      accessibility_disposition);
   if (UNLIKELY(!ok)) {
     // Decommit some memory and retry. The alternative is crashing.
     DecommitEmptySlotSpans();
-    RecommitSystemPages(address, length, PageReadWriteTagged,
+    RecommitSystemPages(address, length,
+                        PageAccessibilityConfiguration::kReadWriteTagged,
                         accessibility_disposition);
   }
 
@@ -1373,16 +1375,18 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer timer{this};
-  bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
-                                   accessibility_disposition);
+  bool ok = TryRecommitSystemPages(
+      address, length, PageAccessibilityConfiguration::kReadWriteTagged,
+      accessibility_disposition);
 #if defined(PA_COMMIT_CHARGE_IS_LIMITED)
   if (UNLIKELY(!ok)) {
     {
       ::partition_alloc::internal::ScopedGuard guard(lock_);
       DecommitEmptySlotSpans();
     }
-    ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
-                                accessibility_disposition);
+    ok = TryRecommitSystemPages(
+        address, length, PageAccessibilityConfiguration::kReadWriteTagged,
+        accessibility_disposition);
   }
 #endif  // defined(PA_COMMIT_CHARGE_IS_LIMITED)
 

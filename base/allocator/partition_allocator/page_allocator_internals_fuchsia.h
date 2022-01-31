@@ -22,7 +22,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/fuchsia/fuchsia_logging.h"
 
-namespace base {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -46,20 +46,20 @@ const char* PageTagToName(PageTag tag) {
 zx_vm_option_t PageAccessibilityToZxVmOptions(
     PageAccessibilityConfiguration accessibility) {
   switch (accessibility) {
-    case PageRead:
+    case PageAccessibilityConfiguration::kRead:
       return ZX_VM_PERM_READ;
-    case PageReadWrite:
-    case PageReadWriteTagged:
+    case PageAccessibilityConfiguration::kReadWrite:
+    case PageAccessibilityConfiguration::kReadWriteTagged:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
-    case PageReadExecuteProtected:
-    case PageReadExecute:
+    case PageAccessibilityConfiguration::kReadExecuteProtected:
+    case PageAccessibilityConfiguration::kReadExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_EXECUTE;
-    case PageReadWriteExecute:
+    case PageAccessibilityConfiguration::kReadWriteExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
     default:
       PA_NOTREACHED();
       [[fallthrough]];
-    case PageInaccessible:
+    case PageAccessibilityConfiguration::kInaccessible:
       return 0;
   }
 }
@@ -182,8 +182,10 @@ void DecommitSystemPagesInternal(
     uint64_t address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  if (accessibility_disposition == PageUpdatePermissions) {
-    SetSystemPagesAccess(address, length, PageInaccessible);
+  if (accessibility_disposition ==
+      PageAccessibilityDisposition::kUpdatePermissions) {
+    SetSystemPagesAccess(address, length,
+                         PageAccessibilityConfiguration::kInaccessible);
   }
 
   // TODO(https://crbug.com/1022062): Review whether this implementation is
@@ -193,7 +195,8 @@ void DecommitSystemPagesInternal(
 }
 
 void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
-  SetSystemPagesAccess(address, length, PageInaccessible);
+  SetSystemPagesAccess(address, length,
+                       PageAccessibilityConfiguration::kInaccessible);
 
   // TODO(https://crbug.com/1022062): this implementation will likely no longer
   // be appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
@@ -209,7 +212,8 @@ void RecommitSystemPagesInternal(
   // On Fuchsia systems, the caller needs to simply read the memory to recommit
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
-  if (accessibility_disposition == PageUpdatePermissions) {
+  if (accessibility_disposition ==
+      PageAccessibilityDisposition::kUpdatePermissions) {
     SetSystemPagesAccess(address, length, accessibility);
   }
 }
@@ -222,12 +226,13 @@ bool TryRecommitSystemPagesInternal(
   // On Fuchsia systems, the caller needs to simply read the memory to recommit
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
-  if (accessibility_disposition == PageUpdatePermissions) {
+  if (accessibility_disposition ==
+      PageAccessibilityDisposition::kUpdatePermissions) {
     return TrySetSystemPagesAccess(address, length, accessibility);
   }
   return true;
 }
 
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_

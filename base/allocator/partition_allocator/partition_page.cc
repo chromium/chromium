@@ -225,8 +225,9 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
 
   // Not decommitted slot span must've had at least 1 allocation.
   PA_DCHECK(size_to_decommit > 0);
-  root->DecommitSystemPagesForData(slot_span_start, size_to_decommit,
-                                   PageKeepPermissionsIfPossible);
+  root->DecommitSystemPagesForData(
+      slot_span_start, size_to_decommit,
+      PageAccessibilityDisposition::kKeepPermissionsIfPossible);
 
   // We actually leave the decommitted slot span in the active list. We'll sweep
   // it on to the decommitted list when we next walk the active list.

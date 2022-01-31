@@ -14,34 +14,37 @@
 namespace {
 
 // Maps the v8 page permissions into a page configuration from base.
-base::PageAccessibilityConfiguration GetPageConfig(
+::partition_alloc::PageAccessibilityConfiguration GetPageConfig(
     v8::PageAllocator::Permission permission) {
   switch (permission) {
     case v8::PageAllocator::Permission::kRead:
-      return base::PageRead;
+      return ::partition_alloc::PageAccessibilityConfiguration::kRead;
     case v8::PageAllocator::Permission::kReadWrite:
-      return base::PageReadWrite;
+      return ::partition_alloc::PageAccessibilityConfiguration::kReadWrite;
     case v8::PageAllocator::Permission::kReadWriteExecute:
       // at the moment bti-protection is not enabled for this path since some
       // projects may still be using non-bti compliant code.
-      return base::PageReadWriteExecute;
+      return ::partition_alloc::PageAccessibilityConfiguration::
+          kReadWriteExecute;
     case v8::PageAllocator::Permission::kReadExecute:
 #if defined(__ARM_FEATURE_BTI_DEFAULT)
       return base::CPU::GetInstanceNoAllocation().has_bti()
-                 ? base::PageReadExecuteProtected
-                 : base::PageReadExecute;
+                 ? ::partition_alloc::PageAccessibilityConfiguration::
+                       kReadExecuteProtected
+                 : ::partition_alloc::PageAccessibilityConfiguration::
+                       kReadExecute;
 #else
-      return base::PageReadExecute;
+      return ::partition_alloc::PageAccessibilityConfiguration::kReadExecute;
 #endif
     case v8::PageAllocator::Permission::kNoAccessWillJitLater:
       // We could use this information to conditionally set the MAP_JIT flag
       // on Mac-arm64; however this permissions value is intended to be a
       // short-term solution, so we continue to set MAP_JIT for all V8 pages
       // for now.
-      return base::PageInaccessible;
+      return ::partition_alloc::PageAccessibilityConfiguration::kInaccessible;
     default:
       DCHECK_EQ(v8::PageAllocator::Permission::kNoAccess, permission);
-      return base::PageInaccessible;
+      return ::partition_alloc::PageAccessibilityConfiguration::kInaccessible;
   }
 }
 
@@ -93,8 +96,9 @@ bool PageAllocator::ReleasePages(void* address,
   // On Windows, we can only de-commit the trailing pages. FreePages() will
   // still free all pages in the region including the released tail, so it's
   // safe to just decommit the tail.
-  base::DecommitSystemPages(release_base, release_size,
-                            base::PageUpdatePermissions);
+  base::DecommitSystemPages(
+      release_base, release_size,
+      ::partition_alloc::PageAccessibilityDisposition::kUpdatePermissions);
 #else
 #error Unsupported platform
 #endif
@@ -106,12 +110,13 @@ bool PageAllocator::SetPermissions(void* address,
                                    Permission permissions) {
   // If V8 sets permissions to none, we can discard the memory.
   if (permissions == v8::PageAllocator::Permission::kNoAccess) {
-    // Use PageKeepPermissionsIfPossible as an optimization, to avoid perf
-    // regression (see crrev.com/c/2563038 for details). This may cause the
-    // memory region to still be accessible on certain platforms, but at least
-    // the physical pages will be discarded.
+    // Use PageAccessibilityDisposition::kKeepPermissionsIfPossible as an
+    // optimization, to avoid perf regression (see crrev.com/c/2563038 for
+    // details). This may cause the memory region to still be accessible on
+    // certain platforms, but at least the physical pages will be discarded.
     base::DecommitSystemPages(address, length,
-                              base::PageKeepPermissionsIfPossible);
+                              ::partition_alloc::PageAccessibilityDisposition::
+                                  kKeepPermissionsIfPossible);
     return true;
   } else {
     return base::TrySetSystemPagesAccess(address, length,

@@ -1669,11 +1669,13 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   // with the goal of tripping up alignment of the next mapping.
   uintptr_t map1 = AllocPages(
       super_page - PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAllocationGranularity(), PageInaccessible, PageTag::kPartitionAlloc);
+      PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
   uintptr_t map2 = AllocPages(
       super_page + kSuperPageSize, PageAllocationGranularity(),
-      PageAllocationGranularity(), PageInaccessible, PageTag::kPartitionAlloc);
+      PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
   EXPECT_TRUE(map2);
 
   for (i = 0; i < num_partition_pages_needed; ++i)
@@ -1690,16 +1692,20 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(super_page - PageAllocationGranularity(),
                     PageAllocationGranularity(), PageAllocationGranularity(),
-                    PageReadWriteTagged, PageTag::kPartitionAlloc);
+                    PageAccessibilityConfiguration::kReadWriteTagged,
+                    PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
   map2 = AllocPages(super_page + kSuperPageSize, PageAllocationGranularity(),
-                    PageAllocationGranularity(), PageReadWriteTagged,
+                    PageAllocationGranularity(),
+                    PageAccessibilityConfiguration::kReadWriteTagged,
                     PageTag::kPartitionAlloc);
   EXPECT_TRUE(map2);
-  EXPECT_TRUE(TrySetSystemPagesAccess(map1, PageAllocationGranularity(),
-                                      PageInaccessible));
-  EXPECT_TRUE(TrySetSystemPagesAccess(map2, PageAllocationGranularity(),
-                                      PageInaccessible));
+  EXPECT_TRUE(
+      TrySetSystemPagesAccess(map1, PageAllocationGranularity(),
+                              PageAccessibilityConfiguration::kInaccessible));
+  EXPECT_TRUE(
+      TrySetSystemPagesAccess(map2, PageAllocationGranularity(),
+                              PageAccessibilityConfiguration::kInaccessible));
 
   auto* slot_span_in_third_super_page = GetFullSlotSpan(kTestAllocSize);
   FreePages(map1, PageAllocationGranularity());
@@ -3758,8 +3764,9 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
        pool_size /= 2) {
     DCHECK(bits::IsPowerOfTwo(pool_size));
     EXPECT_FALSE(IsConfigurablePoolAvailable());
-    uintptr_t pool_base = AllocPages(pool_size, pool_size, PageInaccessible,
-                                     PageTag::kPartitionAlloc);
+    uintptr_t pool_base = AllocPages(
+        pool_size, pool_size, PageAccessibilityConfiguration::kInaccessible,
+        PageTag::kPartitionAlloc);
     EXPECT_NE(0u, pool_base);
     PartitionAddressSpace::InitConfigurablePool(pool_base, pool_size);
 

@@ -748,17 +748,18 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   } else if (new_slot_size < current_slot_size) {
     // Shrink by decommitting unneeded pages and making them inaccessible.
     size_t decommit_size = current_slot_size - new_slot_size;
-    DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
-                               PageUpdatePermissions);
+    DecommitSystemPagesForData(
+        slot_start + new_slot_size, decommit_size,
+        PageAccessibilityDisposition::kUpdatePermissions);
     // Since the decommited system pages are still reserved, we don't need to
     // change the entries for decommitted pages in the reservation offset table.
   } else if (new_slot_size <= available_reservation_size) {
     // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPagesForData(slot_start + current_slot_size,
-                               recommit_slot_size_growth,
-                               PageUpdatePermissions);
+    RecommitSystemPagesForData(
+        slot_start + current_slot_size, recommit_slot_size_growth,
+        PageAccessibilityDisposition::kUpdatePermissions);
     // The recommited system pages had been already reserved and all the
     // entries in the reservation offset table (for entire reservation_size
     // region) have been already initialized.

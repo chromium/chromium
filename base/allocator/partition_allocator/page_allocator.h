@@ -5,8 +5,6 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_H_
 
-#include <stdint.h>
-
 #include <cstddef>
 #include <cstdint>
 
@@ -15,32 +13,34 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-namespace base {
+namespace partition_alloc {
 
-enum PageAccessibilityConfiguration {
-  PageInaccessible,
-  PageRead,
-  PageReadWrite,
-  // This flag is mapped to PageReadWrite on systems that
+enum class PageAccessibilityConfiguration {
+  kInaccessible,
+  kRead,
+  kReadWrite,
+  // This flag is mapped to kReadWrite on systems that
   // don't support MTE.
-  PageReadWriteTagged,
-  // This flag is mapped to PageReadExecute on systems
+  kReadWriteTagged,
+  // This flag is mapped to kReadExecute on systems
   // that don't support Arm's BTI.
-  PageReadExecuteProtected,
-  PageReadExecute,
+  kReadExecuteProtected,
+  kReadExecute,
   // This flag is deprecated and will go away soon.
   // TODO(bbudge) Remove this as soon as V8 doesn't need RWX pages.
-  PageReadWriteExecute,
+  kReadWriteExecute,
 };
 
 // Use for De/RecommitSystemPages API.
-enum PageAccessibilityDisposition {
-  // Enforces permission update (Decommit will set to PageInaccessible;
-  // Recommit will set to whatever was requested, other than PageInaccessible).
-  PageUpdatePermissions,
+enum class PageAccessibilityDisposition {
+  // Enforces permission update (Decommit will set to
+  // PageAccessibilityConfiguration::kInaccessible;
+  // Recommit will set to whatever was requested, other than
+  // PageAccessibilityConfiguration::kInaccessible).
+  kUpdatePermissions,
   // Will not update permissions, if the platform supports that (POSIX & Fuchsia
   // only).
-  PageKeepPermissionsIfPossible,
+  kKeepPermissionsIfPossible,
 };
 
 // macOS supports tagged memory regions, to help in debugging. On Android,
@@ -72,7 +72,7 @@ BASE_EXPORT uintptr_t NextAlignedWithOffset(uintptr_t ptr,
 // chosen automatically.
 //
 // |accessibility| controls the permission of the allocated pages.
-// PageInaccessible means uncommitted.
+// PageAccessibilityConfiguration::kInaccessible means uncommitted.
 //
 // |page_tag| is used on some platforms to identify the source of the
 // allocation. Use PageTag::kChromium as a catch-all category.
@@ -143,31 +143,33 @@ BASE_EXPORT void SetSystemPagesAccess(
 // boundary.
 //
 // |accessibility_disposition| allows to specify whether the pages should be
-// made inaccessible (PageUpdatePermissions), or left as is
-// (PageKeepPermissionsIfPossible, POSIX & Fuchsia only). The latter should only
-// be used as an optimization if you really know what you're doing.
-// TODO(bartekn): Ideally, all callers should use PageUpdatePermissions,
-// for better security, but that may lead to a perf regression. Tracked at
-// http://crbug.com/766882.
+// made inaccessible (PageAccessibilityDisposition::kUpdatePermissions), or left
+// as is (PageAccessibilityDisposition::kKeepPermissionsIfPossible, POSIX &
+// Fuchsia only). The latter should only be used as an optimization if you
+// really know what you're doing.
+// TODO(bartekn): Ideally, all callers should use
+// PageAccessibilityDisposition::kUpdatePermissions, for better security, but
+// that may lead to a perf regression. Tracked at http://crbug.com/766882.
 //
 // Decommitted means that physical resources (RAM or swap) backing the allocated
 // virtual address range may be released back to the system, but the address
 // space is still allocated to the process (possibly using up page table entries
 // or other accounting resources). There is no guarantee that the pages are
 // zeroed, see |DecommittedMemoryIsAlwaysZeroed()| for such a guarantee. Unless
-// PageKeepPermissionsIfPossible disposition is used, any access to a
-// decommitted region of memory is an error and will generate a fault.
+// PageAccessibilityDisposition::kKeepPermissionsIfPossible disposition is used,
+// any access to a decommitted region of memory is an error and will generate a
+// fault.
 //
 // This operation is not atomic on all platforms.
 //
 // Note: "Committed memory" is a Windows Memory Subsystem concept that ensures
 // processes will not fault when touching a committed memory region. There is
 // no analogue in the POSIX & Fuchsia memory API where virtual memory pages are
-// best-effort allocated resources on the first touch. If PageUpdatePermissions
-// disposition is used, this API behaves in a platform-agnostic way by
-// simulating the Windows "decommit" state by both discarding the region
-// (allowing the OS to avoid swap operations) *and* changing the page
-// protections so accesses fault.
+// best-effort allocated resources on the first touch. If
+// PageAccessibilityDisposition::kUpdatePermissions disposition is used, this
+// API behaves in a platform-agnostic way by simulating the Windows "decommit"
+// state by both discarding the region (allowing the OS to avoid swap
+// operations) *and* changing the page protections so accesses fault.
 //
 // This API will crash if the operation cannot be performed.
 BASE_EXPORT void DecommitSystemPages(
@@ -185,7 +187,7 @@ BASE_EXPORT void DecommitSystemPages(
 //
 // In contrast to |DecommitSystemPages|, this API guarantees that the pages are
 // zeroed and will always mark the region as inaccessible (the equivalent of
-// setting them to PageInaccessible).
+// setting them to PageAccessibilityConfiguration::kInaccessible).
 //
 // This API will crash if the operation cannot be performed.
 BASE_EXPORT void DecommitAndZeroSystemPages(uintptr_t address, size_t length);
@@ -203,16 +205,20 @@ constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {
 
 // Recommit one or more system pages, starting at |address| and continuing for
 // |length| bytes with the given |page_accessibility| (must not be
-// PageInaccsessible). |address| and |length| must be aligned to a system page
-// boundary.
+// PageAccessibilityConfiguration::kInaccessible). |address| and |length| must
+// be aligned to a system page boundary.
 //
 // |accessibility_disposition| allows to specify whether the page permissions
-// should be set to |page_accessibility| (PageUpdatePermissions), or left as is
-// (PageKeepPermissionsIfPossible, POSIX & Fuchsia only). The latter can only be
-// used if the pages were previously accessible and decommitted with
-// PageKeepPermissionsIfPossible. It is ok, however, to recommit with
-// PageUpdatePermissions even if pages were decommitted with
-// PageKeepPermissionsIfPossible (merely losing an optimization).
+// should be set to |page_accessibility|
+// (PageAccessibilityDisposition::kUpdatePermissions), or left as is
+// (PageAccessibilityDisposition::kKeepPermissionsIfPossible, POSIX & Fuchsia
+// only). The latter can only be used if the pages were previously accessible
+// and decommitted with
+// PageAccessibilityDisposition::kKeepPermissionsIfPossible. It is ok, however,
+// to recommit with PageAccessibilityDisposition::kUpdatePermissions even if
+// pages were decommitted with
+// PageAccessibilityDisposition::kKeepPermissionsIfPossible (merely losing an
+// optimization).
 //
 // This operation is not atomic on all platforms.
 //
@@ -258,29 +264,30 @@ BASE_EXPORT void DiscardSystemPages(void* address, size_t length);
 // 0 for an |address| of 0.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
 RoundUpToSystemPage(uintptr_t address) {
-  return (address + SystemPageOffsetMask()) & SystemPageBaseMask();
+  return (address + internal::SystemPageOffsetMask()) &
+         internal::SystemPageBaseMask();
 }
 
 // Rounds down |address| to the previous multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
 RoundDownToSystemPage(uintptr_t address) {
-  return address & SystemPageBaseMask();
+  return address & internal::SystemPageBaseMask();
 }
 
 // Rounds up |address| to the next multiple of |PageAllocationGranularity()|.
 // Returns 0 for an |address| of 0.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
 RoundUpToPageAllocationGranularity(uintptr_t address) {
-  return (address + PageAllocationGranularityOffsetMask()) &
-         PageAllocationGranularityBaseMask();
+  return (address + internal::PageAllocationGranularityOffsetMask()) &
+         internal::PageAllocationGranularityBaseMask();
 }
 
 // Rounds down |address| to the previous multiple of
 // |PageAllocationGranularity()|. Returns 0 for an |address| of 0.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
 RoundDownToPageAllocationGranularity(uintptr_t address) {
-  return address & PageAllocationGranularityBaseMask();
+  return address & internal::PageAllocationGranularityBaseMask();
 }
 
 // Reserves (at least) |size| bytes of address space, aligned to
@@ -306,6 +313,37 @@ BASE_EXPORT uint32_t GetAllocPageErrorCode();
 // PageAllocator. These pages may or may not be committed. This is mostly useful
 // to assess address space pressure.
 BASE_EXPORT size_t GetTotalMappedSize();
+
+}  // namespace partition_alloc
+
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::AllocPages;
+using ::partition_alloc::AllocPagesWithAlignOffset;
+using ::partition_alloc::DecommitAndZeroSystemPages;
+using ::partition_alloc::DecommitSystemPages;
+using ::partition_alloc::DecommittedMemoryIsAlwaysZeroed;
+using ::partition_alloc::DiscardSystemPages;
+using ::partition_alloc::FreePages;
+using ::partition_alloc::GetAllocPageErrorCode;
+using ::partition_alloc::GetTotalMappedSize;
+using ::partition_alloc::HasReservationForTesting;
+using ::partition_alloc::NextAlignedWithOffset;
+using ::partition_alloc::PageAccessibilityConfiguration;
+using ::partition_alloc::PageAccessibilityDisposition;
+using ::partition_alloc::PageTag;
+using ::partition_alloc::RecommitSystemPages;
+using ::partition_alloc::ReleaseReservation;
+using ::partition_alloc::ReserveAddressSpace;
+using ::partition_alloc::RoundDownToPageAllocationGranularity;
+using ::partition_alloc::RoundDownToSystemPage;
+using ::partition_alloc::RoundUpToPageAllocationGranularity;
+using ::partition_alloc::RoundUpToSystemPage;
+using ::partition_alloc::SetSystemPagesAccess;
+using ::partition_alloc::TryRecommitSystemPages;
+using ::partition_alloc::TrySetSystemPagesAccess;
 
 }  // namespace base
 

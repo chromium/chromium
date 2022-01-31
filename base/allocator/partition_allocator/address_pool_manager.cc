@@ -303,7 +303,8 @@ uintptr_t AddressPoolManager::Reserve(pool_handle handle,
                                       size_t length) {
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
   uintptr_t address = AllocPages(requested_address, length, kSuperPageSize,
-                                 PageInaccessible, PageTag::kPartitionAlloc);
+                                 PageAccessibilityConfiguration::kInaccessible,
+                                 PageTag::kPartitionAlloc);
   return address;
 }
 

@@ -8,39 +8,39 @@
 
 #include <sys/mman.h>
 
-// PROT_BTI requests a page that supports BTI landing pads.
-#define PROT_BTI 0x10
-// PROT_MTE requests a page that's suitable for memory tagging.
-#define PROT_MTE 0x20
+// PA_PROT_BTI requests a page that supports BTI landing pads.
+#define PA_PROT_BTI 0x10
+// PA_PROT_MTE requests a page that's suitable for memory tagging.
+#define PA_PROT_MTE 0x20
 
-namespace base {
+namespace partition_alloc::internal {
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
   switch (accessibility) {
-    case PageRead:
+    case PageAccessibilityConfiguration::kRead:
       return PROT_READ;
-    case PageReadWriteTagged:
+    case PageAccessibilityConfiguration::kReadWriteTagged:
 #if defined(ARCH_CPU_ARM64)
       return PROT_READ | PROT_WRITE |
-             (CPU::GetInstanceNoAllocation().has_mte() ? PROT_MTE : 0u);
+             (base::CPU::GetInstanceNoAllocation().has_mte() ? PA_PROT_MTE : 0);
 #else
       [[fallthrough]];
 #endif
-    case PageReadWrite:
+    case PageAccessibilityConfiguration::kReadWrite:
       return PROT_READ | PROT_WRITE;
-    case PageReadExecuteProtected:
+    case PageAccessibilityConfiguration::kReadExecuteProtected:
       return PROT_READ | PROT_EXEC |
-             (CPU::GetInstanceNoAllocation().has_bti() ? PROT_BTI : 0u);
-    case PageReadExecute:
+             (base::CPU::GetInstanceNoAllocation().has_bti() ? PA_PROT_BTI : 0);
+    case PageAccessibilityConfiguration::kReadExecute:
       return PROT_READ | PROT_EXEC;
-    case PageReadWriteExecute:
+    case PageAccessibilityConfiguration::kReadWriteExecute:
       return PROT_READ | PROT_WRITE | PROT_EXEC;
     default:
       PA_NOTREACHED();
       [[fallthrough]];
-    case PageInaccessible:
+    case PageAccessibilityConfiguration::kInaccessible:
       return PROT_NONE;
   }
 }
 
-}  // namespace base
+}  // namespace partition_alloc::internal

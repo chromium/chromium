@@ -22,7 +22,7 @@ class PageWithBitmap final {
   PageWithBitmap()
       : base_(base::AllocPages(kSuperPageSize,
                                kSuperPageAlignment,
-                               PageReadWrite,
+                               PageAccessibilityConfiguration::kReadWrite,
                                PageTag::kPartitionAlloc)),
         bitmap_(new (reinterpret_cast<void*>(base_)) TestBitmap) {}
 

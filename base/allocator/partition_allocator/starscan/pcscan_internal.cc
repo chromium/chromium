@@ -287,8 +287,9 @@ SimdSupport DetectSimdSupport() {
 void CommitCardTable() {
 #if PA_STARSCAN_USE_CARD_TABLE
   RecommitSystemPages(PartitionAddressSpace::RegularPoolBase(),
-                      sizeof(QuarantineCardTable), PageReadWrite,
-                      PageUpdatePermissions);
+                      sizeof(QuarantineCardTable),
+                      PageAccessibilityConfiguration::kReadWrite,
+                      PageAccessibilityDisposition::kUpdatePermissions);
 #endif
 }
 
@@ -1414,8 +1415,9 @@ PCScanInternal::SuperPages GetSuperPagesAndCommitStateBitmaps(
           PartitionSuperPageToMetadataArea<ThreadSafe>(super_page));
       *metadata;
       RecommitSystemPages(SuperPageStateBitmapAddr(super_page),
-                          state_bitmap_size_to_commit, PageReadWrite,
-                          PageUpdatePermissions);
+                          state_bitmap_size_to_commit,
+                          PageAccessibilityConfiguration::kReadWrite,
+                          PageAccessibilityDisposition::kUpdatePermissions);
       super_pages.push_back(super_page);
     }
   }

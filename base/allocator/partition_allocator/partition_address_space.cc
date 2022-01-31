@@ -73,9 +73,9 @@ void PartitionAddressSpace::Init() {
   if (IsInitialized())
     return;
 
-  setup_.regular_pool_base_address_ =
-      AllocPages(kRegularPoolSize, kRegularPoolSize, base::PageInaccessible,
-                 PageTag::kPartitionAlloc);
+  setup_.regular_pool_base_address_ = AllocPages(
+      kRegularPoolSize, kRegularPoolSize,
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
   if (!setup_.regular_pool_base_address_)
     HandleGigaCageAllocFailure();
   PA_DCHECK(!(setup_.regular_pool_base_address_ & (kRegularPoolSize - 1)));
@@ -96,8 +96,8 @@ void PartitionAddressSpace::Init() {
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
   uintptr_t base_address = AllocPagesWithAlignOffset(
       0, kBRPPoolSize + kForbiddenZoneSize, kBRPPoolSize,
-      kBRPPoolSize - kForbiddenZoneSize, base::PageInaccessible,
-      PageTag::kPartitionAlloc);
+      kBRPPoolSize - kForbiddenZoneSize,
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
   if (!base_address)
     HandleGigaCageAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;

@@ -14,7 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
-namespace base {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -33,20 +33,20 @@ std::atomic<int32_t> s_allocPageErrorCode{ERROR_SUCCESS};
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
   switch (accessibility) {
-    case PageRead:
+    case PageAccessibilityConfiguration::kRead:
       return PAGE_READONLY;
-    case PageReadWrite:
-    case PageReadWriteTagged:
+    case PageAccessibilityConfiguration::kReadWrite:
+    case PageAccessibilityConfiguration::kReadWriteTagged:
       return PAGE_READWRITE;
-    case PageReadExecute:
-    case PageReadExecuteProtected:
+    case PageAccessibilityConfiguration::kReadExecute:
+    case PageAccessibilityConfiguration::kReadExecuteProtected:
       return PAGE_EXECUTE_READ;
-    case PageReadWriteExecute:
+    case PageAccessibilityConfiguration::kReadWriteExecute:
       return PAGE_EXECUTE_READWRITE;
     default:
       PA_NOTREACHED();
       [[fallthrough]];
-    case PageInaccessible:
+    case PageAccessibilityConfiguration::kInaccessible:
       return PAGE_NOACCESS;
   }
 }
@@ -56,9 +56,10 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
                                    PageAccessibilityConfiguration accessibility,
                                    PageTag page_tag) {
   DWORD access_flag = GetAccessFlags(accessibility);
-  const DWORD type_flags = (accessibility != PageInaccessible)
-                               ? (MEM_RESERVE | MEM_COMMIT)
-                               : MEM_RESERVE;
+  const DWORD type_flags =
+      (accessibility != PageAccessibilityConfiguration::kInaccessible)
+          ? (MEM_RESERVE | MEM_COMMIT)
+          : MEM_RESERVE;
   void* ret = VirtualAlloc(reinterpret_cast<void*>(hint), length, type_flags,
                            access_flag);
   if (ret == nullptr) {
@@ -89,7 +90,7 @@ bool TrySetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   void* ptr = reinterpret_cast<void*>(address);
-  if (accessibility == PageInaccessible)
+  if (accessibility == PageAccessibilityConfiguration::kInaccessible)
     return VirtualFree(ptr, length, MEM_DECOMMIT) != 0;
   return nullptr !=
          VirtualAlloc(ptr, length, MEM_COMMIT, GetAccessFlags(accessibility));
@@ -100,7 +101,7 @@ void SetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   void* ptr = reinterpret_cast<void*>(address);
-  if (accessibility == PageInaccessible) {
+  if (accessibility == PageAccessibilityConfiguration::kInaccessible) {
     if (!VirtualFree(ptr, length, MEM_DECOMMIT)) {
       // We check `GetLastError` for `ERROR_SUCCESS` here so that in a crash
       // report we get the error number.
@@ -128,7 +129,8 @@ void DecommitSystemPagesInternal(
     PageAccessibilityDisposition accessibility_disposition) {
   // Ignore accessibility_disposition, because decommitting is equivalent to
   // making pages inaccessible.
-  SetSystemPagesAccess(address, length, PageInaccessible);
+  SetSystemPagesAccess(address, length,
+                       PageAccessibilityConfiguration::kInaccessible);
 }
 
 void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
@@ -192,6 +194,6 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
   }
 }
 
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_WIN_H_
