@@ -4101,6 +4101,11 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/webhid/idlharness.https.window.html [
 crbug.com/626703 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.worker.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/portals/external/wpt/portals/idlharness.window.html [ Failure ]
+crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Failure ]
+crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Failure ]
+crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Failure ]
+crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Failure ]
+
 
 # selectmenu timeouts
 crbug.com/1253971 [ Linux ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
