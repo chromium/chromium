@@ -32,6 +32,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -174,7 +175,6 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
     // the most common ratios to be the set 0.5, 44100/48000, and 48000/44100.
     // Other values are possible but seem unlikely.
     base::UmaHistogramSparse("WebAudio.AudioContextOptions.sampleRateRatio",
-
                              static_cast<int32_t>(100 * scale_factor + 0.5));
   }
 }
@@ -193,6 +193,18 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
                      prior_frames_skipped);
   CHECK_EQ(destination_data.size(), number_of_output_channels_);
   CHECK_EQ(number_of_frames, callback_buffer_size_);
+
+  if (!is_latency_metric_collected_ && delay != 0.0) {
+    // With the advanced distribution profile for a Bluetooth device
+    // (potentially devices with the largest latency), the known latency is
+    // around 100 ~ 150ms. Using a "linear" histogram where all buckets are
+    // exactly the same size (2ms).
+    base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+        "WebAudio.AudioDestination.HardwareOutputLatency",
+        0, 200, 100, base::HistogramBase::kUmaTargetedHistogramFlag);
+    histogram->Add(static_cast<int32_t>(delay * 1000));
+    is_latency_metric_collected_ = true;
+  }
 
   // Note that this method is called by AudioDeviceThread. If FIFO is not ready,
   // or the requested render size is greater than FIFO size return here.
