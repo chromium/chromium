@@ -129,6 +129,8 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
       shared_file_task_runner_(GetExtensionFileTaskRunner()),
       update_from_settings_page_(false),
       install_flags_(kInstallFlagNone) {
+  profile_observation_.Observe(profile_);
+
   if (!approval)
     return;
 
@@ -597,6 +599,12 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
 
 void CrxInstaller::OnStageChanged(InstallationStage stage) {
   ReportInstallationStage(stage);
+}
+
+void CrxInstaller::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_EQ(profile, profile_);
+  profile_keep_alive_.reset();
+  profile_observation_.Reset();
 }
 
 void CrxInstaller::CheckInstall() {

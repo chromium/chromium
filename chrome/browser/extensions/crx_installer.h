@@ -14,10 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/webstore_installer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
@@ -72,7 +74,7 @@ class PreloadCheckGroup;
 // terminating during the install. We can't listen for the app termination
 // notification here in this class because it can be destroyed on any thread
 // and won't safely be able to clean up UI thread notification listeners.
-class CrxInstaller : public SandboxedUnpackerClient {
+class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
  public:
   // A callback to be executed when the install finishes.
   using InstallerResultCallback = ExtensionSystem::InstallUpdateCallback;
@@ -302,6 +304,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
                            ruleset_install_prefs) override;
   void OnStageChanged(InstallationStage stage) override;
 
+  // ProfileObserver
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // Called on the UI thread to start the requirements, policy and blocklist
   // checks on the extension.
   void CheckInstall();
@@ -371,6 +376,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
 
   // Prevent Profile destruction until the CrxInstaller is done.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+  // ... but |profile_| could still get destroyed early, if Chrome shuts down
+  // completely. We need to perform some cleanup if that happens.
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // The extension being installed.
   scoped_refptr<const Extension> extension_;
