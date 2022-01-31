@@ -22,6 +22,7 @@ namespace blink {
 
 class ExecutionContext;
 class HIDDevice;
+class HIDDeviceFilter;
 class HIDDeviceRequestOptions;
 class Navigator;
 class ScriptPromiseResolver;
@@ -70,6 +71,16 @@ class HID : public EventTargetWithInlineData,
                device::mojom::blink::HidManager::ConnectCallback callback);
   void Forget(device::mojom::blink::HidDeviceInfoPtr device_info,
               mojom::blink::HidService::ForgetCallback callback);
+
+  // Converts a HID device `filter` into the equivalent Mojo type and returns
+  // it. CheckDeviceFilterValidity must be called first.
+  static mojom::blink::HidDeviceFilterPtr ConvertDeviceFilter(
+      const HIDDeviceFilter& filter);
+
+  // Checks the validity of the given HIDDeviceFilter. Returns nullopt when
+  // filter is valid or an error message when the filter is invalid.
+  static absl::optional<String> CheckDeviceFilterValidity(
+      const HIDDeviceFilter& filter);
 
   void Trace(Visitor*) const override;
 
