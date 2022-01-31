@@ -224,11 +224,6 @@ extern const base::Feature kDesktopPWAsTabStripSettings;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsWebBundles;
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kDisableHttpDiskCache;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int> kDisableHttpDiskCacheMemoryCacheSizeParam;
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsWebAppSettingsPage;

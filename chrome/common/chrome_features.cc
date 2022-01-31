@@ -330,15 +330,6 @@ const base::Feature kDesktopPWAsTabStripSettings{
 const base::Feature kDesktopPWAsWebBundles{"DesktopPWAsWebBundles",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Tries disabling the HTTP disk cache.
-const base::Feature kDisableHttpDiskCache{"DisableHttpDiskCache",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-// The size of the memory cache when the HTTP disk cache is disabled. 0 uses the
-// default size.
-const base::FeatureParam<int> kDisableHttpDiskCacheMemoryCacheSizeParam{
-    &kDisableHttpDiskCache, "MemoryCacheSize", 0};
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Serves web app settings at chrome://app-settings/<app-id>.
 const base::Feature kDesktopPWAsWebAppSettingsPage{
