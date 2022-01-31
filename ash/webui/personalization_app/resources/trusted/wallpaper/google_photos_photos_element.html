@@ -12,7 +12,7 @@
     align-items: center;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
   }
 
@@ -28,8 +28,8 @@
         <wallpaper-grid-item
           class="photo"
           colindex$="[[index]]"
-          image-src="[[photo.url]]"
-          tabindex="-1">    
+          image-src="[[photo.url.url]]"
+          tabindex="-1">
         </wallpaper-grid-item>
       </template>
     </div>

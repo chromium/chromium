@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {GooglePhotosAlbum} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {GooglePhotosCollection} from 'chrome://personalization/trusted/wallpaper/google_photos_collection_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function GooglePhotosCollectionTest() {
   let googlePhotosCollectionElement: GooglePhotosCollection|null;
-
   let personalizationStore: TestPersonalizationStore;
+  let wallpaperProvider: TestWallpaperProvider;
 
   /**
    * Returns the match for |selector| in |googlePhotosCollectionElement|'s
@@ -37,6 +38,8 @@ export function GooglePhotosCollectionTest() {
 
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
+    personalizationStore.setReducersEnabled(true);
+    wallpaperProvider = mocks.wallpaperProvider;
   });
 
   teardown(async () => {
@@ -46,11 +49,13 @@ export function GooglePhotosCollectionTest() {
 
   test('displays only photos content', async () => {
     // Tabs and albums content are not displayed if albums are absent.
-    personalizationStore.data.wallpaper.googlePhotos.albums = null;
-    personalizationStore.data.wallpaper.googlePhotos.photos =
-        Array.from({length: 1});
-    personalizationStore.data.wallpaper.loading.googlePhotos.albums = false;
-    personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
+    wallpaperProvider.setGooglePhotosAlbums(undefined);
+    wallpaperProvider.setGooglePhotosCount(1);
+    wallpaperProvider.setGooglePhotosPhotos([{
+      id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      date: {data: []},
+      url: {url: 'foo.com'}
+    }]);
 
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection, {hidden: false});
@@ -76,12 +81,19 @@ export function GooglePhotosCollectionTest() {
 
   test('displays tabs and content for photos and albums', async () => {
     // Tabs and albums content are only displayed if albums are present.
-    personalizationStore.data.wallpaper.googlePhotos.albums =
-        Array.from({length: 1});
-    personalizationStore.data.wallpaper.googlePhotos.photos =
-        Array.from({length: 1});
-    personalizationStore.data.wallpaper.loading.googlePhotos.albums = false;
-    personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
+    const albums: GooglePhotosAlbum[] = [{
+      id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      title: 'Album 0',
+      photoCount: 1,
+      preview: {url: 'foo.com'}
+    }];
+    wallpaperProvider.setGooglePhotosAlbums(albums);
+    wallpaperProvider.setGooglePhotosCount(1);
+    wallpaperProvider.setGooglePhotosPhotos([{
+      id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      date: {data: []},
+      url: {url: 'foo.com'}
+    }]);
 
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection, {hidden: false});
@@ -142,7 +154,7 @@ export function GooglePhotosCollectionTest() {
     // * photos by album id content to be visible.
     // * albums content to be hidden.
     // * photos content to be hidden.
-    googlePhotosCollectionElement.setAttribute('album-id', '1');
+    googlePhotosCollectionElement.setAttribute('album-id', albums[0]!.id);
     await waitAfterNextRender(googlePhotosCollectionElement);
     assertEquals(window.getComputedStyle(tabStrip).display, 'none');
     assertFalse(photosByAlbumIdContent.hidden);
@@ -178,10 +190,9 @@ export function GooglePhotosCollectionTest() {
   });
 
   test('displays zero state when there is no content', async () => {
-    personalizationStore.data.wallpaper.googlePhotos.albums = [];
-    personalizationStore.data.wallpaper.googlePhotos.photos = [];
-    personalizationStore.data.wallpaper.loading.googlePhotos.albums = false;
-    personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
+    wallpaperProvider.setGooglePhotosAlbums([]);
+    wallpaperProvider.setGooglePhotosCount(0);
+    wallpaperProvider.setGooglePhotosPhotos([]);
 
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection, {hidden: false});

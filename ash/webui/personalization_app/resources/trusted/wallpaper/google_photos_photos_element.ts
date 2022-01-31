@@ -11,14 +11,12 @@ import './styles.js';
 import '../../common/styles.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
+import {GooglePhotosPhoto} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-
-type PhotosRow = Array<Url|undefined>;
 
 export interface GooglePhotosPhotos {
   $: {grid: IronListElement;};
@@ -72,13 +70,13 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   private focusedColIndex_: number;
 
   /** The list of photos. */
-  private photos_: Url[]|null|undefined;
+  private photos_: GooglePhotosPhoto[]|null|undefined;
 
   /**
    * The list of |photos_| split into the appropriate number of |photosPerRow_|
    * so as to be rendered in a grid.
    */
-  private photosByRow_: PhotosRow[]|null;
+  private photosByRow_: GooglePhotosPhoto[][]|null;
 
   /** Whether the list of photos is currently loading. */
   private photosLoading_: boolean;
@@ -121,8 +119,9 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked on key down of a grid row. */
-  private onGridRowKeyDown_(e: KeyboardEvent&
-                            {model: {index: number, row: Url[]}}) {
+  private onGridRowKeyDown_(e: KeyboardEvent&{
+    model: {index: number, row: GooglePhotosPhoto[]}
+  }) {
     switch (normalizeKeyForRTL(e.key, this.i18n('textdirection') === 'rtl')) {
       case 'ArrowLeft':
         if (this.focusedColIndex_ > 0) {
@@ -166,7 +165,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked to compute |photosByRow_|. */
-  private computePhotosByRow_(): PhotosRow[]|null {
+  private computePhotosByRow_(): GooglePhotosPhoto[][]|null {
     if (this.photosLoading_ || !this.photosPerRow_) {
       return null;
     }
@@ -177,11 +176,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         {length: Math.ceil(this.photos_.length / this.photosPerRow_)},
         (_, i) => {
           i *= this.photosPerRow_;
-          const row: PhotosRow = this.photos_!.slice(i, i + this.photosPerRow_);
-          while (row.length < this.photosPerRow_) {
-            row.push(undefined);
-          }
-          return row;
+          return this.photos_!.slice(i, i + this.photosPerRow_);
         });
   }
 }

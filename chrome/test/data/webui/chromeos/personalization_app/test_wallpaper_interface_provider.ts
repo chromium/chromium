@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosPhoto, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -96,6 +96,7 @@ export class TestWallpaperProvider extends
   private images_: WallpaperImage[]|null;
   private googlePhotosAlbums_: GooglePhotosAlbum[]|undefined = [];
   private googlePhotosCount_: number = 0;
+  private googlePhotosPhotos_: GooglePhotosPhoto[]|undefined = [];
   localImages: FilePath[]|null;
   localImageData: Record<string, string>;
   currentWallpaper: CurrentWallpaper;
@@ -155,10 +156,10 @@ export class TestWallpaperProvider extends
   fetchGooglePhotosPhotos() {
     this.methodCalled('fetchGooglePhotosPhotos');
     const response = new FetchGooglePhotosPhotosResponse();
-    // TODO(b/216528919): Wire up with mojo API.
     response.photos =
-        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? [] :
-                                                                      undefined;
+        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ?
+        this.googlePhotosPhotos_ :
+        undefined;
     response.resumeToken = undefined;
     return Promise.resolve({response});
   }
@@ -237,6 +238,10 @@ export class TestWallpaperProvider extends
 
   setGooglePhotosCount(googlePhotosCount: number) {
     this.googlePhotosCount_ = googlePhotosCount;
+  }
+
+  setGooglePhotosPhotos(googlePhotosPhotos: GooglePhotosPhoto[]|undefined) {
+    this.googlePhotosPhotos_ = googlePhotosPhotos;
   }
 
   setImages(images: WallpaperImage[]) {

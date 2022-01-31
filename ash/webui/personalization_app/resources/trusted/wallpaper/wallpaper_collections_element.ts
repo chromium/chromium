@@ -11,13 +11,12 @@
 import './styles.js';
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../../common/constants.js';
 import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '../../common/utils.js';
 import {IFrameApi} from '../iframe_api.js';
-import {WallpaperCollection, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeBackdropData} from './wallpaper_controller.js';
@@ -108,7 +107,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   hidden: boolean;
   private collections_: WallpaperCollection[];
   private collectionsLoading_: boolean;
-  private googlePhotos_: unknown[]|null;
+  private googlePhotos_: GooglePhotosPhoto[]|null;
   private googlePhotosLoading_: boolean;
   private googlePhotosCount_: number|null;
   private googlePhotosCountLoading_: boolean;
@@ -249,14 +248,16 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   /** Invoked on changes to the list of Google Photos photos. */
   private async onGooglePhotosChanged_(
-      googlePhotos: Url[]|null, googlePhotosLoading: boolean) {
+      googlePhotos: GooglePhotosPhoto[]|null, googlePhotosLoading: boolean) {
     if (googlePhotosLoading || !isNullOrArray(googlePhotos)) {
       return;
     }
     const iframe = await this.iframePromise_;
     IFrameApi.getInstance().sendGooglePhotosPhotos(
         iframe.contentWindow!,
-        googlePhotos?.slice(0, kMaximumGooglePhotosPreviews) ?? null);
+        googlePhotos?.slice(0, kMaximumGooglePhotosPreviews)
+                ?.map(googlePhoto => googlePhoto.url) ??
+            null);
   }
 
   /** Invoked on changes to the count of Google Photos photos. */

@@ -4,6 +4,7 @@
 
 import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
 import {IFrameApi} from 'chrome://personalization/trusted/iframe_api.js';
+import {GooglePhotosPhoto} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -87,7 +88,7 @@ export function WallpaperCollectionsTest() {
 
     personalizationStore.data.wallpaper.googlePhotos.photos =
         Array.from({length: kMaximumGooglePhotosPreviews + 1})
-            .map((_, i) => `foo://${i}`);
+            .map((_, i) => ({url: {url: `foo://${i}`}}));
     personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
     personalizationStore.notifyObservers();
 
@@ -103,8 +104,9 @@ export function WallpaperCollectionsTest() {
 
     assertWindowObjectsEqual(iframe!.contentWindow, target);
     assertDeepEquals(
-        personalizationStore.data.wallpaper.googlePhotos.photos.slice(
-            0, kMaximumGooglePhotosPreviews),
+        personalizationStore.data.wallpaper.googlePhotos.photos
+            .slice(0, kMaximumGooglePhotosPreviews)
+            .map((googlePhoto: GooglePhotosPhoto) => googlePhoto.url),
         data);
   });
 

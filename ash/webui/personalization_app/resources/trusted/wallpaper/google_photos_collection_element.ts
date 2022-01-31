@@ -12,11 +12,10 @@ import './styles.js';
 import '/common/styles.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import {GooglePhotosAlbum, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeGooglePhotosData} from './wallpaper_controller.js';
@@ -76,7 +75,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   private albums_: GooglePhotosAlbum[]|null|undefined;
 
   /** The list of photos. */
-  private photos_: Url[]|null|undefined;
+  private photos_: GooglePhotosPhoto[]|null|undefined;
 
   /** The currently selected tab. */
   private tab_: Tab;
@@ -114,7 +113,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   }
 
   /** Invoked on tab selected. */
-  onTabSelected_(e: Event) {
+  private onTabSelected_(e: Event) {
     const currentTarget: HTMLElement = e.currentTarget as HTMLElement;
     switch (currentTarget.id) {
       case 'albumsTab':

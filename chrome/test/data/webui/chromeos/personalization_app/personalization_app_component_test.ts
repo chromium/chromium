@@ -10,6 +10,7 @@ import {AvatarListTest} from './avatar_list_element_test.js';
 import {GooglePhotosAlbumsTest} from './google_photos_albums_element_test.js';
 import {GooglePhotosCollectionTest} from './google_photos_collection_element_test.js';
 import {GooglePhotosPhotosByAlbumIdTest} from './google_photos_photos_by_album_id_element_test.js';
+import {GooglePhotosPhotosTest} from './google_photos_photos_element_test.js';
 import {LocalImagesTest} from './local_images_element_test.js';
 import {PersonalizationBreadcrumbTest} from './personalization_breadcrumb_element_test.js';
 import {PersonalizationMainTest} from './personalization_main_element_test.js';
@@ -36,6 +37,7 @@ const testCases = [
   GooglePhotosAlbumsTest,
   GooglePhotosCollectionTest,
   GooglePhotosPhotosByAlbumIdTest,
+  GooglePhotosPhotosTest,
   LocalImagesTest,
   PersonalizationBreadcrumbTest,
   PersonalizationMainTest,
