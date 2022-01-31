@@ -435,18 +435,35 @@ class ChromiumDepGraph {
 
         PROPERTY_OVERRIDES.each { id, fallbackProperties ->
             DependencyDescription dep = dependencies.get(id)
-            if (!dep) {
+            if (dep) {
+                // Null-check is required since isShipped is a boolean. This
+                // check must come after all the deps are resolved instead of in
+                // customizeDep, since otherwise it gets overwritten.
+                if (fallbackProperties?.isShipped != null) {
+                    dep.isShipped = fallbackProperties.isShipped
+                }
+                // if overrideLatest is truey, set it recursively on the dep and
+                // all its children. This makes it easier to manage since you do
+                // not have to set it on a whole set of old deps.
+                if (fallbackProperties?.overrideLatest) {
+                    recursivelyOverrideLatestVersion(dep)
+                }
+            } else {
                 logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
-            // Null-check is required since isShipped is a boolean. This check must come after all the deps are
-            // resolved instead of in customizeDep, since otherwise it gets overwritten.
-            } else if (fallbackProperties?.isShipped != null) {
-                dep.isShipped = fallbackProperties.isShipped
             }
         }
     }
 
     private static String sanitize(String input) {
         return input.replaceAll('[:.-]', '_')
+    }
+
+    private void recursivelyOverrideLatestVersion(DependencyDescription dep) {
+        dep.overrideLatest = true
+        dep.children.each { childID ->
+            DependencyDescription child = dependencies.get(childID)
+            recursivelyOverrideLatestVersion(child)
+        }
     }
 
     private void collectDependenciesInternal(ResolvedDependency dependency, boolean recurse = true) {
@@ -617,7 +634,6 @@ class ChromiumDepGraph {
                 description = fallbackProperties.description ?: description
                 url = fallbackProperties.url ?: url
                 cipdSuffix = fallbackProperties.cipdSuffix ?: cipdSuffix
-                overrideLatest = fallbackProperties.overrideLatest ?: false
                 // Boolean properties require explicit null checks instead of only when truish.
                 if (fallbackProperties.generateTarget != null) {
                     generateTarget = fallbackProperties.generateTarget
