@@ -98,6 +98,10 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
     ]
+    sources += [
+      "mirror_landing_account_reconcilor_delegate.cc",
+      "mirror_landing_account_reconcilor_delegate.h",
+    ]
   }
 
   if (!enable_dice_support) {
@@ -162,6 +166,7 @@ source_set("unit_tests") {
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
     ]
+    sources += [ "mirror_landing_account_reconcilor_delegate_unittest.cc" ]
   }
 
   if (!enable_dice_support) {

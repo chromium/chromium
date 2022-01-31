@@ -22,6 +22,7 @@
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/metrics/histogram_macros.h"
@@ -35,6 +36,10 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/core/browser/mirror_landing_account_reconcilor_delegate.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -188,6 +193,13 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
             IdentityManagerFactory::GetForProfile(profile));
       }
 
+      return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
+          IdentityManagerFactory::GetForProfile(profile));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+        return std::make_unique<
+            signin::MirrorLandingAccountReconcilorDelegate>();
+      }
       return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile));
 #else

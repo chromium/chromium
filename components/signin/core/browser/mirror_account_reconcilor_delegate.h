@@ -56,8 +56,6 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
 
-  void UpdateReconcilorStatus();
-
   raw_ptr<IdentityManager> identity_manager_;
   bool reconcile_enabled_;
 };
