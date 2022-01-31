@@ -462,6 +462,7 @@
       'desc': '''Policies related to integrated HTTP authentication.''',
       'policies': [
         'AuthSchemes',
+        'AllHttpAuthSchemesAllowedForOrigins',
         'DisableAuthNegotiateCnameLookup',
         'EnableAuthNegotiatePort',
         'BasicAuthOverHttpEnabled',
@@ -5058,6 +5059,25 @@
       * negotiate
 
       Note: Separate multiple values with commas.''',
+    },
+    {
+      'name': 'AllHttpAuthSchemesAllowedForOrigins',
+      'owners': ['file://components/policy/resources/OWNERS', 'ydago@chromium.org'],
+      'type': 'list',
+      'schema': { 'type': 'array', 'items': { 'type': 'string' } },
+      'supported_on': ['chrome.*:100-','android:100-','chrome_os:100-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': ['*.example.com'],
+      'id': 950,
+      'caption': '''List of origins allowing all HTTP authentication''',
+      'tags': [],
+      'desc': '''Setting the policy specifies for which origins to allow all the HTTP authentication schemes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> supports regardless of the <ph name="AUTH_SCHEMES_POLICY_NAME">AuthSchemes</ph> policy.
+
+      Format the origin pattern according to this format (<ph name="URL_SCHEME_FORMAT_LINK">https://www.chromium.org/administrators/url-blocklist-filter-format</ph>). Up to 1,000 exceptions can be defined in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME">AllHttpAuthSchemesAllowedForOrigins</ph>.
+      Wildcards are allowed for the whole origin or parts of the origin, either the scheme, host, port.''',
     },
     {
       'name': 'DisableAuthNegotiateCnameLookup',
@@ -30682,6 +30702,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 949,
+  'highest_id_currently_used': 950,
   'highest_atomic_group_id_currently_used': 41
 }

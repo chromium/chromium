@@ -114,6 +114,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 
   PrefService* local_state = g_browser_process->local_state();
 
@@ -128,6 +129,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 
   local_state->SetBoolean(prefs::kEnableAuthNegotiatePort, true);
   dynamic_params =
@@ -140,6 +142,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 
   local_state->SetBoolean(prefs::kBasicAuthOverHttpEnabled, false);
   dynamic_params =
@@ -152,6 +155,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 
   const char kServerAllowList[] = "foo";
   local_state->SetString(prefs::kAuthServerAllowlist, kServerAllowList);
@@ -164,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_FALSE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 
   const char kDelegateAllowList[] = "bar, baz";
   local_state->SetString(prefs::kAuthNegotiateDelegateAllowlist,
@@ -178,6 +183,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_FALSE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ(kDelegateAllowList, dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 
   local_state->SetString(prefs::kAuthSchemes, "basic");
   dynamic_params =
@@ -202,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
   EXPECT_EQ(kDelegateAllowList, dynamic_params->delegate_allowlist);
   EXPECT_TRUE(dynamic_params->delegate_by_kdc_policy);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -212,7 +219,25 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->allow_gssapi_library_load);
+  EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  base::Value patterns_allowed_to_use_all_schemes(base::Value::Type::LIST);
+  patterns_allowed_to_use_all_schemes.Append(
+      base::Value("*.allowed.google.com"));
+  patterns_allowed_to_use_all_schemes.Append(base::Value("*.youtube.com"));
+  local_state->Set(prefs::kAllHttpAuthSchemesAllowedForOrigins,
+                   std::move(patterns_allowed_to_use_all_schemes));
+  dynamic_params =
+      SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
+
+  EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_TRUE(dynamic_params->enable_negotiate_port);
+  EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
+  EXPECT_FALSE(dynamic_params->basic_over_http_enabled);
+  EXPECT_EQ(kDelegateAllowList, dynamic_params->delegate_allowlist);
+  EXPECT_EQ((std::vector<std::string>{"*.allowed.google.com", "*.youtube.com"}),
+            dynamic_params->patterns_allowed_to_use_all_schemes);
 }
 
 class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest

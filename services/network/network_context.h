@@ -99,6 +99,10 @@ namespace domain_reliability {
 class DomainReliabilityMonitor;
 }  // namespace domain_reliability
 
+namespace url_matcher {
+class URLMatcher;
+}
+
 namespace network {
 class CertVerifierWithTrustAnchors;
 class CookieManager;
@@ -655,6 +659,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void FinishConstructingTrustTokenStore(
       std::unique_ptr<SQLiteTrustTokenPersister> persister);
 
+  bool IsAllowedToUseAllHttpAuthSchemes(
+      const url::SchemeHostPort& scheme_host_port);
+
   const raw_ptr<NetworkService> network_service_;
 
   mojo::Remote<mojom::NetworkContextClient> client_;
@@ -859,6 +866,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
            base::UniquePtrComparator>
       url_loader_factories_;
+
+  std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 
   base::WeakPtrFactory<NetworkContext> weak_factory_{this};
 };

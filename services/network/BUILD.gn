@@ -247,6 +247,7 @@ component("network_service") {
     "//components/network_session_configurator/common",
     "//components/os_crypt",
     "//components/prefs",
+    "//components/url_matcher",
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
     "//mojo/public/cpp/bindings",

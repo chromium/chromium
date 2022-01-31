@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -92,6 +93,18 @@ TEST(HttpAuthPreferencesTest, DelegationType) {
   http_auth_preferences.SetDelegateAllowlist("");
   EXPECT_EQ(DelegationType::kNone, http_auth_preferences.GetDelegationType(
                                        url::SchemeHostPort(GURL("abc"))));
+}
+
+TEST(HttpAuthPreferencesTest, HttpAuthSchemesFilter) {
+  HttpAuthPreferences http_auth_preferences;
+  http_auth_preferences.set_http_auth_scheme_filter(
+      base::BindRepeating([](const url::SchemeHostPort& scheme_host_port) {
+        return scheme_host_port.GetURL() == GURL("https://www.google.com");
+      }));
+  EXPECT_TRUE(http_auth_preferences.IsAllowedToUseAllHttpAuthSchemes(
+      url::SchemeHostPort(GURL("https://www.google.com"))));
+  EXPECT_FALSE(http_auth_preferences.IsAllowedToUseAllHttpAuthSchemes(
+      url::SchemeHostPort(GURL("https://www.example.com"))));
 }
 
 }  // namespace net

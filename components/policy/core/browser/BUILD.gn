@@ -42,6 +42,8 @@ source_set("internal") {
     "url_blocklist_manager.h",
     "url_blocklist_policy_handler.cc",
     "url_blocklist_policy_handler.h",
+    "url_scheme_list_policy_handler.cc",
+    "url_scheme_list_policy_handler.h",
     "webui/json_generation.cc",
     "webui/json_generation.h",
     "webui/machine_level_user_cloud_policy_status_provider.cc",
@@ -140,6 +142,7 @@ source_set("unit_tests") {
     "url_allowlist_policy_handler_unittest.cc",
     "url_blocklist_manager_unittest.cc",
     "url_blocklist_policy_handler_unittest.cc",
+    "url_scheme_list_policy_handler_unittest.cc",
   ]
   deps = [
     ":browser",

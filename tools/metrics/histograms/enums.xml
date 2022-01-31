@@ -28452,6 +28452,7 @@ Called by update_document_policy_enum.py.-->
       label="ExemptDomainFileTypePairsFromFileTypeDownloadWarnings"/>
   <int value="948" label="FirstPartySetsEnabled"/>
   <int value="949" label="UserAgentForceMajorVersionToMinorPosition"/>
+  <int value="950" label="AllHttpAuthSchemesAllowedForOrigins"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

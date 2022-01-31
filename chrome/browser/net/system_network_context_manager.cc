@@ -126,6 +126,13 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
   auth_dynamic_params->allowed_schemes =
       base::SplitString(local_state->GetString(prefs::kAuthSchemes), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const base::Value& item :
+       local_state->GetList(prefs::kAllHttpAuthSchemesAllowedForOrigins)
+           ->GetList()) {
+    auth_dynamic_params->patterns_allowed_to_use_all_schemes.push_back(
+        item.GetString());
+  }
   auth_dynamic_params->server_allowlist =
       local_state->GetString(prefs::kAuthServerAllowlist);
   auth_dynamic_params->delegate_allowlist =
@@ -367,6 +374,8 @@ SystemNetworkContextManager::SystemNetworkContextManager(
                              auth_pref_callback);
   pref_change_registrar_.Add(prefs::kBasicAuthOverHttpEnabled,
                              auth_pref_callback);
+  pref_change_registrar_.Add(prefs::kAllHttpAuthSchemesAllowedForOrigins,
+                             auth_pref_callback);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_.Add(prefs::kAuthNegotiateDelegateByKdcPolicy,
@@ -420,6 +429,8 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
         // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Dynamic auth params.
+  registry->RegisterListPref(prefs::kAllHttpAuthSchemesAllowedForOrigins,
+                             base::Value(base::Value::Type::LIST));
   registry->RegisterBooleanPref(prefs::kDisableAuthNegotiateCnameLookup, false);
   registry->RegisterBooleanPref(prefs::kEnableAuthNegotiatePort, false);
   registry->RegisterBooleanPref(prefs::kBasicAuthOverHttpEnabled, true);

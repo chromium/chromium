@@ -94,7 +94,7 @@ HttpAuthHandlerRegistryFactory::~HttpAuthHandlerRegistryFactory() = default;
 void HttpAuthHandlerRegistryFactory::SetHttpAuthPreferences(
     const std::string& scheme,
     const HttpAuthPreferences* prefs) {
-  HttpAuthHandlerFactory* factory = GetRegisteredSchemeFactory(scheme);
+  HttpAuthHandlerFactory* factory = GetSchemeFactory(scheme);
   if (factory)
     factory->set_http_auth_preferences(prefs);
 }
@@ -109,16 +109,6 @@ void HttpAuthHandlerRegistryFactory::RegisterSchemeFactory(
   } else {
     factory_map_.erase(lower_scheme);
   }
-}
-
-HttpAuthHandlerFactory* HttpAuthHandlerRegistryFactory::GetSchemeFactory(
-    const std::string& scheme) const {
-  std::string lower_scheme = base::ToLowerASCII(scheme);
-  const auto& allowed_schemes = GetAllowedAuthSchemes();
-  if (allowed_schemes.find(lower_scheme) == allowed_schemes.end()) {
-    return nullptr;
-  }
-  return GetRegisteredSchemeFactory(scheme);
 }
 
 // static
@@ -213,12 +203,17 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
   auto scheme = challenge->auth_scheme();
 
   int net_error;
-
   if (scheme.empty()) {
     handler->reset();
     net_error = ERR_INVALID_RESPONSE;
   } else {
-    auto* factory = GetSchemeFactory(scheme);
+    bool all_schemes_allowed_for_origin =
+        http_auth_preferences() &&
+        http_auth_preferences()->IsAllowedToUseAllHttpAuthSchemes(
+            scheme_host_port);
+    auto* factory = all_schemes_allowed_for_origin || IsSchemeAllowed(scheme)
+                        ? GetSchemeFactory(scheme)
+                        : nullptr;
     if (!factory) {
       handler->reset();
       net_error = ERR_UNSUPPORTED_AUTH_SCHEME;
@@ -242,17 +237,33 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
   return net_error;
 }
 
-const std::set<std::string>&
-HttpAuthHandlerRegistryFactory::GetAllowedAuthSchemes() const {
-  if (http_auth_preferences() &&
-      http_auth_preferences()->allowed_schemes().has_value()) {
-    return *http_auth_preferences()->allowed_schemes();
-  }
-  return default_auth_schemes_;
+bool HttpAuthHandlerRegistryFactory::IsSchemeAllowedForTesting(
+    const std::string& scheme) const {
+  return IsSchemeAllowed(scheme);
 }
 
-HttpAuthHandlerFactory*
-HttpAuthHandlerRegistryFactory::GetRegisteredSchemeFactory(
+bool HttpAuthHandlerRegistryFactory::IsSchemeAllowed(
+    const std::string& scheme) const {
+  const std::set<std::string>& allowed_schemes =
+      http_auth_preferences() && http_auth_preferences()->allowed_schemes()
+          ? *http_auth_preferences()->allowed_schemes()
+          : default_auth_schemes_;
+  return allowed_schemes.find(scheme) != allowed_schemes.end();
+}
+
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)
+absl::optional<std::string>
+HttpAuthHandlerRegistryFactory::GetNegotiateLibraryNameForTesting() const {
+  if (!IsSchemeAllowed(kNegotiateAuthScheme))
+    return absl::nullopt;
+
+  return reinterpret_cast<net::HttpAuthHandlerNegotiate::Factory*>(
+             GetSchemeFactory(net::kNegotiateAuthScheme))
+      ->GetLibraryNameForTesting();  // IN-TEST
+}
+#endif
+
+HttpAuthHandlerFactory* HttpAuthHandlerRegistryFactory::GetSchemeFactory(
     const std::string& scheme) const {
   std::string lower_scheme = base::ToLowerASCII(scheme);
   auto it = factory_map_.find(lower_scheme);

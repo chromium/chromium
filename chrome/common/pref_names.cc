@@ -2142,6 +2142,11 @@ const char kTotalMemoryLimitMb[] = "total_memory_limit_mb";
 // String that lists supported HTTP authentication schemes.
 const char kAuthSchemes[] = "auth.schemes";
 
+// List of origin schemes that allow the supported HTTP authentication schemes
+// from "auth.schemes".
+const char kAllHttpAuthSchemesAllowedForOrigins[] =
+    "auth.http_auth_allowed_for_origins";
+
 // Boolean that specifies whether to disable CNAME lookups when generating
 // Kerberos SPN.
 const char kDisableAuthNegotiateCnameLookup[] =

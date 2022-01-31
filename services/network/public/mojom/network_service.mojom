@@ -60,6 +60,12 @@ struct HttpAuthDynamicParams {
   // List of allowed auth schemes. Unrecognized schemes are ignored.
   array<string>? allowed_schemes;
 
+  // List of origins patterns that are allowed the use of all the HTTP auth
+  // schemes recognized and supported by the browser regardless of
+  // `allowed_schemes`. The accepted format is documented at
+  // http://www.chromium.org/administrators/url-blocklist-filter-format.
+  array<string> patterns_allowed_to_use_all_schemes;
+
   // Comma / semi-colon delimited allowlist of server origins which the network
   // service may send the default credentials for NTLM or Negotiate
   // authentication.

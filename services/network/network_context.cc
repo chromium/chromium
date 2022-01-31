@@ -41,6 +41,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
@@ -122,6 +124,7 @@
 #include "services/network/url_request_context_builder_mojo.h"
 #include "services/network/web_transport.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
@@ -2113,6 +2116,14 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
   } else {
     http_auth_merged_preferences_.set_allowed_schemes(absl::nullopt);
   }
+
+  url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  url_matcher::util::AddAllowFilters(url_matcher_.get(),
+                                     http_auth_dynamic_network_service_params
+                                         ->patterns_allowed_to_use_all_schemes);
+  http_auth_merged_preferences_.set_http_auth_scheme_filter(
+      base::BindRepeating(&NetworkContext::IsAllowedToUseAllHttpAuthSchemes,
+                          base::Unretained(this)));
 }
 
 URLRequestContextOwner NetworkContext::MakeURLRequestContext(
@@ -2782,6 +2793,12 @@ void NetworkContext::FinishConstructingTrustTokenStore(
       std::move(persister),
       std::make_unique<ExpiryInspectingRecordExpiryDelegate>(
           network_service()->trust_token_key_commitments())));
+}
+
+bool NetworkContext::IsAllowedToUseAllHttpAuthSchemes(
+    const url::SchemeHostPort& scheme_host_port) {
+  DCHECK(url_matcher_);
+  return !url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
 }
 
 void NetworkContext::GetOriginPolicyManager(

@@ -31,10 +31,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
   std::unique_ptr<net::HttpAuthHandlerRegistryFactory> factory =
       net::HttpAuthHandlerFactory::CreateDefault();
-  net::HttpAuthHandlerFactory* scheme_factory =
-      factory->GetSchemeFactory(scheme);
 
-  if (!scheme_factory)
+  if (!factory->IsSchemeAllowedForTesting(scheme))
     return 0;
 
   std::string challenge = data_provider.ConsumeRandomLengthString(500);
@@ -45,7 +43,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto host_resolver = std::make_unique<net::MockHostResolver>();
   std::unique_ptr<net::HttpAuthHandler> handler;
 
-  scheme_factory->CreateAuthHandlerFromString(
+  factory->CreateAuthHandlerFromString(
       challenge, net::HttpAuth::AUTH_SERVER, null_ssl_info,
       net::NetworkIsolationKey(), scheme_host_port, net::NetLogWithSource(),
       host_resolver.get(), &handler);

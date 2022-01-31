@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
@@ -100,6 +101,13 @@ class NET_EXPORT HttpAuthPreferences {
     allowed_schemes_ = allowed_schemes;
   }
 
+  void set_http_auth_scheme_filter(
+      base::RepeatingCallback<bool(const url::SchemeHostPort&)>&& filter) {
+    http_auth_scheme_filter_ = std::move(filter);
+  }
+
+  bool IsAllowedToUseAllHttpAuthSchemes(const url::SchemeHostPort& url) const;
+
   void SetServerAllowlist(const std::string& server_allowlist);
 
   void SetDelegateAllowlist(const std::string& delegate_allowlist);
@@ -135,6 +143,9 @@ class NET_EXPORT HttpAuthPreferences {
 
   absl::optional<std::set<std::string>> allowed_schemes_;
   std::unique_ptr<URLSecurityManager> security_manager_;
+  base::RepeatingCallback<bool(const url::SchemeHostPort&)>
+      http_auth_scheme_filter_ =
+          base::RepeatingCallback<bool(const url::SchemeHostPort&)>();
 };
 
 }  // namespace net

@@ -68,6 +68,12 @@ void HttpAuthPreferences::SetAllowDefaultCredentials(DefaultCredentials creds) {
   allow_default_credentials_ = creds;
 }
 
+bool HttpAuthPreferences::IsAllowedToUseAllHttpAuthSchemes(
+    const url::SchemeHostPort& scheme_host_port) const {
+  return !http_auth_scheme_filter_ ||
+         http_auth_scheme_filter_.Run(scheme_host_port);
+}
+
 void HttpAuthPreferences::SetServerAllowlist(
     const std::string& server_allowlist) {
   std::unique_ptr<HttpAuthFilter> allowlist;

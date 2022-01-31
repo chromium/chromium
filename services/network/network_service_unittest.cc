@@ -154,20 +154,6 @@ TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Platforms where Negotiate can be used.
-#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
-// Returns the negotiate factory, if one exists, to query its configuration.
-net::HttpAuthHandlerNegotiate::Factory* GetNegotiateFactory(
-    NetworkContext* network_context) {
-  net::HttpAuthHandlerFactory* auth_factory =
-      network_context->url_request_context()->http_auth_handler_factory();
-  return reinterpret_cast<net::HttpAuthHandlerNegotiate::Factory*>(
-      reinterpret_cast<net::HttpAuthHandlerRegistryFactory*>(auth_factory)
-          ->GetSchemeFactory(net::kNegotiateAuthScheme));
-}
-
-#endif  // BUILDFLAG(USE_KERBEROS)
-
 TEST_F(NetworkServiceTest, AuthDefaultParams) {
   mojo::Remote<mojom::NetworkContext> network_context_remote;
   NetworkContext network_context(
@@ -180,15 +166,18 @@ TEST_F(NetworkServiceTest, AuthDefaultParams) {
 
   // These three factories should always be created by default.  Negotiate may
   // or may not be created, depending on other build flags.
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
+  EXPECT_TRUE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kBasicAuthScheme));
+  EXPECT_TRUE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kDigestAuthScheme));
+  EXPECT_TRUE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kNtlmAuthScheme));
 
 #if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
-  ASSERT_TRUE(GetNegotiateFactory(&network_context));
+  ASSERT_TRUE(auth_handler_factory->IsSchemeAllowedForTesting(
+      net::kNegotiateAuthScheme));
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ("",
-            GetNegotiateFactory(&network_context)->GetLibraryNameForTesting());
+  EXPECT_EQ("", auth_handler_factory->GetNegotiateLibraryNameForTesting());
 #endif
 #endif  // BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
 
@@ -217,15 +206,18 @@ TEST_F(NetworkServiceTest, AuthSchemesDynamicallyChanging) {
           network_context.url_request_context()->http_auth_handler_factory());
   ASSERT_TRUE(auth_handler_factory);
 
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
-#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(
-      auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kBasicAuthScheme));
+  EXPECT_TRUE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kDigestAuthScheme));
+  EXPECT_TRUE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kNtlmAuthScheme));
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(auth_handler_factory->IsSchemeAllowedForTesting(
+      net::kNegotiateAuthScheme));
 #else
-  EXPECT_FALSE(
-      auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+  EXPECT_FALSE(auth_handler_factory->IsSchemeAllowedForTesting(
+      net::kNegotiateAuthScheme));
 #endif
   {
     mojom::HttpAuthDynamicParamsPtr auth_params =
@@ -233,12 +225,14 @@ TEST_F(NetworkServiceTest, AuthSchemesDynamicallyChanging) {
     auth_params->allowed_schemes = std::vector<std::string>{};
     service()->ConfigureHttpAuthPrefs(std::move(auth_params));
 
-    EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
     EXPECT_FALSE(
-        auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
-    EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
+        auth_handler_factory->IsSchemeAllowedForTesting(net::kBasicAuthScheme));
+    EXPECT_FALSE(auth_handler_factory->IsSchemeAllowedForTesting(
+        net::kDigestAuthScheme));
     EXPECT_FALSE(
-        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+        auth_handler_factory->IsSchemeAllowedForTesting(net::kNtlmAuthScheme));
+    EXPECT_FALSE(auth_handler_factory->IsSchemeAllowedForTesting(
+        net::kNegotiateAuthScheme));
   }
   {
     mojom::HttpAuthDynamicParamsPtr auth_params =
@@ -247,26 +241,32 @@ TEST_F(NetworkServiceTest, AuthSchemesDynamicallyChanging) {
         std::vector<std::string>{net::kDigestAuthScheme, net::kNtlmAuthScheme};
     service()->ConfigureHttpAuthPrefs(std::move(auth_params));
 
-    EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
-    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
-    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
     EXPECT_FALSE(
-        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+        auth_handler_factory->IsSchemeAllowedForTesting(net::kBasicAuthScheme));
+    EXPECT_TRUE(auth_handler_factory->IsSchemeAllowedForTesting(
+        net::kDigestAuthScheme));
+    EXPECT_TRUE(
+        auth_handler_factory->IsSchemeAllowedForTesting(net::kNtlmAuthScheme));
+    EXPECT_FALSE(auth_handler_factory->IsSchemeAllowedForTesting(
+        net::kNegotiateAuthScheme));
   }
   {
     mojom::HttpAuthDynamicParamsPtr auth_params =
         mojom::HttpAuthDynamicParams::New();
     service()->ConfigureHttpAuthPrefs(std::move(auth_params));
 
-    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
-    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
-    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
-#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(
-        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+        auth_handler_factory->IsSchemeAllowedForTesting(net::kBasicAuthScheme));
+    EXPECT_TRUE(auth_handler_factory->IsSchemeAllowedForTesting(
+        net::kDigestAuthScheme));
+    EXPECT_TRUE(
+        auth_handler_factory->IsSchemeAllowedForTesting(net::kNtlmAuthScheme));
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
+    EXPECT_TRUE(auth_handler_factory->IsSchemeAllowedForTesting(
+        net::kNegotiateAuthScheme));
 #else
-    EXPECT_FALSE(
-        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+    EXPECT_FALSE(auth_handler_factory->IsSchemeAllowedForTesting(
+        net::kNegotiateAuthScheme));
 #endif
   }
 }
@@ -289,9 +289,12 @@ TEST_F(NetworkServiceTest, AuthSchemesNone) {
   auth_params->allowed_schemes = std::vector<std::string>{};
   service()->ConfigureHttpAuthPrefs(std::move(auth_params));
 
-  EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
-  EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
-  EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
+  EXPECT_FALSE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kBasicAuthScheme));
+  EXPECT_FALSE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kDigestAuthScheme));
+  EXPECT_FALSE(
+      auth_handler_factory->IsSchemeAllowedForTesting(net::kNtlmAuthScheme));
 }
 
 #if BUILDFLAG(USE_EXTERNAL_GSSAPI)
@@ -312,9 +315,13 @@ TEST_F(NetworkServiceTest, AuthGssapiLibraryName) {
   NetworkContext network_context(
       service(), network_context_remote.BindNewPipeAndPassReceiver(),
       CreateContextParams());
-  ASSERT_TRUE(GetNegotiateFactory(&network_context));
+  net::HttpAuthHandlerRegistryFactory* auth_handler_factory =
+      reinterpret_cast<net::HttpAuthHandlerRegistryFactory*>(
+          network_context.url_request_context()->http_auth_handler_factory());
+  ASSERT_TRUE(auth_handler_factory->IsSchemeAllowedForTesting(
+      net::kNegotiateAuthScheme));
   EXPECT_EQ(kGssapiLibraryName,
-            GetNegotiateFactory(&network_context)->GetLibraryNameForTesting());
+            auth_handler_factory->GetNegotiateLibraryNameForTesting());
 }
 #endif  // BUILDFLAG(USE_EXTERNAL_GSSAPI)
 

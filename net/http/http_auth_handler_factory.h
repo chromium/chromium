@@ -195,13 +195,6 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   void RegisterSchemeFactory(const std::string& scheme,
                              HttpAuthHandlerFactory* factory);
 
-  // Retrieve the factory for the specified |scheme|. If no factory exists
-  // for the |scheme|, nullptr is returned. The returned factory must not be
-  // deleted by the caller, and it is guaranteed to be valid until either
-  // a new factory is registered for the same scheme, or until this
-  // registry factory is destroyed.
-  HttpAuthHandlerFactory* GetSchemeFactory(const std::string& scheme) const;
-
   // Creates an HttpAuthHandlerRegistryFactory.
   //
   // |prefs| is a pointer to the (single) authentication preferences object.
@@ -241,16 +234,25 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
                         const NetLogWithSource& net_log,
                         HostResolver* host_resolver,
                         std::unique_ptr<HttpAuthHandler>* handler) override;
-  const std::set<std::string>& GetAllowedAuthSchemes() const;
+
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)
+  absl::optional<std::string> GetNegotiateLibraryNameForTesting() const;
+#endif
+
+  // Returns true if the scheme is allowed to be used for all origins. An auth
+  // handler may still be created for an origin if that origin is allowed by
+  // policy to use all supported auth handlers.
+  bool IsSchemeAllowedForTesting(const std::string& scheme) const;
 
  private:
+  bool IsSchemeAllowed(const std::string& scheme) const;
+
   // Retrieve the factory for the specified |scheme|. If no factory exists
   // for the |scheme|, nullptr is returned. The returned factory must not be
   // deleted by the caller, and it is guaranteed to be valid until either
   // a new factory is registered for the same scheme, or until this
   // registry factory is destroyed.
-  HttpAuthHandlerFactory* GetRegisteredSchemeFactory(
-      const std::string& scheme) const;
+  HttpAuthHandlerFactory* GetSchemeFactory(const std::string& scheme) const;
 
   using FactoryMap =
       std::map<std::string, std::unique_ptr<HttpAuthHandlerFactory>>;

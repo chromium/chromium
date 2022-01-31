@@ -820,6 +820,7 @@ extern const char kRegisteredBackgroundContents[];
 extern const char kTotalMemoryLimitMb[];
 
 extern const char kAuthSchemes[];
+extern const char kAllHttpAuthSchemesAllowedForOrigins[];
 extern const char kDisableAuthNegotiateCnameLookup[];
 extern const char kEnableAuthNegotiatePort[];
 extern const char kAuthServerAllowlist[];

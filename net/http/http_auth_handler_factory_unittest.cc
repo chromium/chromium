@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
@@ -214,6 +216,59 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
     EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
     EXPECT_TRUE(handler.get() == nullptr);
 #endif  // BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
+  }
+}
+
+TEST(HttpAuthHandlerFactoryTest, HttpAuthUrlFilter) {
+  std::unique_ptr<HostResolver> host_resolver(new MockHostResolver());
+
+  MockAllowHttpAuthPreferences http_auth_preferences;
+  // Set the Preference that blocks Basic Auth over HTTP on all of the
+  // factories. It shouldn't impact any behavior except for the Basic factory.
+  http_auth_preferences.set_basic_over_http_enabled(false);
+  // Set the preference that only allows "https://www.example.com" to use HTTP
+  // auth.
+  http_auth_preferences.set_http_auth_scheme_filter(
+      base::BindRepeating([](const url::SchemeHostPort& scheme_host_port) {
+        return scheme_host_port ==
+               url::SchemeHostPort(GURL("https://www.example.com"));
+      }));
+
+  std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
+      HttpAuthHandlerFactory::CreateDefault(&http_auth_preferences));
+
+  GURL nonsecure_origin("http://www.example.com");
+  GURL secure_origin("https://www.example.com");
+
+  SSLInfo null_ssl_info;
+  const HttpAuth::Target kTargets[] = {HttpAuth::AUTH_SERVER,
+                                       HttpAuth::AUTH_PROXY};
+  struct TestCase {
+    int expected_net_error;
+    const GURL origin;
+    const char* challenge;
+  } const kTestCases[] = {
+    {OK, secure_origin, "Basic realm=\"FooBar\""},
+    {ERR_UNSUPPORTED_AUTH_SCHEME, nonsecure_origin, "Basic realm=\"FooBar\""},
+    {OK, secure_origin, "Digest realm=\"FooBar\", nonce=\"xyz\""},
+    {OK, nonsecure_origin, "Digest realm=\"FooBar\", nonce=\"xyz\""},
+    {OK, secure_origin, "Ntlm"},
+    {OK, nonsecure_origin, "Ntlm"},
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
+    {OK, secure_origin, "Negotiate"},
+    {OK, nonsecure_origin, "Negotiate"},
+#endif
+  };
+
+  for (const auto target : kTargets) {
+    for (const TestCase& test_case : kTestCases) {
+      std::unique_ptr<HttpAuthHandler> handler;
+      int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
+          test_case.challenge, target, null_ssl_info, NetworkIsolationKey(),
+          url::SchemeHostPort(test_case.origin), NetLogWithSource(),
+          host_resolver.get(), &handler);
+      EXPECT_THAT(rv, IsError(test_case.expected_net_error));
+    }
   }
 }
 
