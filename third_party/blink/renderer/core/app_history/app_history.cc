@@ -604,7 +604,10 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   if (HasEntriesAndEventsDisabled()) {
     if (ongoing_navigation_) {
-      CleanupApiNavigation(*ongoing_navigation_);
+      // The spec only does the equivalent of CleanupApiNavigation() + resetting
+      // the state, but we need to detach promise resolvers for this case since
+      // we will never resolve the finished/committed promises.
+      ongoing_navigation_->CleanupForCrossDocument();
     }
     return DispatchResult::kContinue;
   }
