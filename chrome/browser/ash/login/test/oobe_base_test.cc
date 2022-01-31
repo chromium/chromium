@@ -106,12 +106,6 @@ void OobeBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
     command_line->AppendSwitch(::switches::kDisableBackgroundNetworking);
   command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
 
-  // Blink features are controlled via a command line switch. Disable HTML
-  // imports which are deprecated. OOBE uses a polyfill for imports that will
-  // be replaced once the migration to JS modules is complete.
-  command_line->AppendSwitchASCII(::switches::kDisableBlinkFeatures,
-                                  "HTMLImports");
-
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 }
 
