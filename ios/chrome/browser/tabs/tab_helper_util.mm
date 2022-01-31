@@ -216,16 +216,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
       web_state, ReadingListModelFactory::GetForBrowserState(browser_state));
   PermissionsTabHelper::CreateForWebState(web_state);
 
-  // The language detection helper accepts a callback from the translate
-  // client, so must be created after it.
-  // This will explode if the webState doesn't have a JS injection manager
-  // (this only comes up in unit tests), so check for that and bypass the
-  // init of the translation helpers if needed.
-  // TODO(crbug.com/785238): Remove the need for this check.
-  if (web_state->GetJSInjectionReceiver()) {
-    language::IOSLanguageDetectionTabHelper::CreateForWebState(
-        web_state,
-        UrlLanguageHistogramFactory::GetForBrowserState(browser_state));
-    ChromeIOSTranslateClient::CreateForWebState(web_state);
-  }
+  language::IOSLanguageDetectionTabHelper::CreateForWebState(
+      web_state,
+      UrlLanguageHistogramFactory::GetForBrowserState(browser_state));
+  ChromeIOSTranslateClient::CreateForWebState(web_state);
 }
