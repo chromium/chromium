@@ -104,6 +104,39 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   # => now conditionally disabled
   lines[test_name_index] = lines[test_name_index].replace(current_name, maybe)
 
+  # Keep track of the line numbers of the lines which have been modified. These
+  # line numbers will be fed to clang-format to ensure any modified lines are
+  # correctly formatted.
+  modified_lines = [test_name_index]
+
+  # Ensure that we update modified_lines upon inserting new lines into the file,
+  # as any lines after the insertion point will be shifted over.
+  def insert_lines(start_index, end_index, new_lines):
+    nonlocal lines
+    nonlocal modified_lines
+
+    prev_len = len(lines)
+    lines[start_index:end_index] = new_lines
+
+    len_diff = len(lines) - prev_len
+    i = 0
+    while i < len(modified_lines):
+      line_no = modified_lines[i]
+      if line_no >= start_index:
+        if line_no < end_index:
+          # Any existing lines with indices in [start_index, end_index) have
+          # been removed, so remove them from modified_lines too.
+          modified_lines.pop(i)
+          continue
+
+        modified_lines[i] += len_diff
+      i += 1
+
+    modified_lines += list(range(start_index, start_index + len(new_lines)))
+
+  def insert_line(index, new_line):
+    insert_lines(index, index, [new_line])
+
   condition_impl = cc_format_condition(merged)
 
   condition_block = [
@@ -114,22 +147,18 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
       '#endif',
   ]
 
-  modified_lines = []
-
   if src_range:
-    # Replace the existing condition, if there was one
-    lines[src_range[0]:src_range[1] + 1] = condition_block
-    modified_lines = list(
-        range(src_range[0], src_range[0] + len(condition_block)))
+    # Replace the existing condition.
+    insert_lines(src_range[0], src_range[1] + 1, condition_block)
   else:
-    # If not, find where to add a new one.
+    # No existing condition, so find where to add a new one.
     for i in range(test_name_index, -1, -1):
       if any(test_macro in lines[i] for test_macro in TEST_MACROS):
         break
     else:
       raise Exception("Couldn't find where to insert test conditions")
-    lines[i:i] = condition_block
-    modified_lines = list(range(i, i + len(condition_block)))
+
+    insert_lines(i, i, condition_block)
 
   # Insert includes.
   # First find the set of headers we need for the given condition.
@@ -197,10 +226,7 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   # higher to lower indices, so we don't need to adjust later positions to
   # account for previously-inserted lines.
   for path, i in sorted(to_insert.items(), key=lambda x: x[1], reverse=True):
-    lines.insert(i, f'#include "{path}"')
-
-  for i in range(len(modified_lines)):
-    modified_lines[i] += len(to_insert)
+    insert_line(i, f'#include "{path}"')
 
   return clang_format('\n'.join(lines), modified_lines)
 

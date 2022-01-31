@@ -43,8 +43,10 @@ class GtestTest(unittest.TestCase):
                        'TEST(Suite, Test) {}')
 
   def test_conditionally_disable_test(self):
+    # Include some bad formatting in the original TEST line, to make sure
+    # the set of modified lines passed to clang-format includes it.
     self.disabler_test(
-        'TEST(Suite, Test) {}', 'Suite.Test', ['linux', 'mac'], '''
+        'TEST ( Suite, Test) {}', 'Suite.Test', ['linux', 'mac'], '''
 #include "build/build_config.h"
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test
@@ -55,8 +57,10 @@ TEST(Suite, MAYBE_Test) {}
 ''')
 
   def test_conditionally_disable_already_disabled_test(self):
+    # Include some bad formatting in the original TEST line, to make sure
+    # the set of modified lines passed to clang-format includes it.
     self.disabler_test(
-        'TEST(Suite, DISABLED_Test) {}', 'Suite.Test', ['linux', 'mac'], '''
+        'TEST(Suite   , DISABLED_Test) {}', 'Suite.Test', ['linux', 'mac'], '''
 #include "build/build_config.h"
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test
