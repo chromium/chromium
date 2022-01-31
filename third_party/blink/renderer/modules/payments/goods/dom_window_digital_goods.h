@@ -27,11 +27,13 @@ class DOMWindowDigitalGoods final
   // IDL Interface:
   static ScriptPromise getDigitalGoodsService(ScriptState*,
                                               LocalDOMWindow&,
-                                              const String& payment_method);
+                                              const String& payment_method,
+                                              ExceptionState&);
 
   ScriptPromise GetDigitalGoodsService(ScriptState*,
                                        LocalDOMWindow&,
-                                       const String& payment_method);
+                                       const String& payment_method,
+                                       ExceptionState&);
   void Trace(Visitor* visitor) const override;
 
  private:

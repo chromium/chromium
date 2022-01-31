@@ -8,6 +8,6 @@
   ImplementedAs=DOMWindowDigitalGoods,
   RuntimeEnabled=DigitalGoods
 ] partial interface Window {
-  [CallWith=ScriptState, MeasureAs=DigitalGoodsGetDigitalGoodsService]
+  [CallWith=ScriptState, RaisesException, MeasureAs=DigitalGoodsGetDigitalGoodsService]
   Promise<DigitalGoodsService> getDigitalGoodsService(DOMString paymentMethod);
 };

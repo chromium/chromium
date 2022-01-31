@@ -144,7 +144,9 @@ digital_goods_test(async service => {
     await service.getDetails(['fail']);
     assert_unreached();
   } catch (error) {
-    assert_equals(error, 'error');
+    assert_true(error instanceof DOMException);
+    assert_equals(error.name, 'OperationError');
+    assert_equals(error.message, 'error');
   }
 }, {title: 'GetDetails internal error.'});
 
@@ -162,7 +164,9 @@ digital_goods_test(async service => {
     await service.consume('fail');
     assert_unreached();
   } catch (error) {
-    assert_equals(error, 'error');
+    assert_true(error instanceof DOMException);
+    assert_equals(error.name, 'OperationError');
+    assert_equals(error.message, 'error');
   }
 }, {title: 'Consume with bad purchase token should error.'});
 
