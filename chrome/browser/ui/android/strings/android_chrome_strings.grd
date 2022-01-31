@@ -5003,6 +5003,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Copy image
       </message>
 
+      <message name="IDS_SHARING_COPY_GIF" desc="Label for the Copy GIF button in the sharing hub.">
+        Copy GIF
+      </message>
+
       <message name="IDS_SHARING_LIGHTWEIGHT_REACTIONS" desc="Label for the Add emotion button in sharing hub.">
         Add emotion
       </message>
@@ -5065,6 +5069,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <message name="IDS_IMAGE_COPIED" desc="Text shown in the toast notification when Copy Image is selected in the sharing hub.">
         Image Copied
+      </message>
+
+      <message name="IDS_GIF_COPIED" desc="Text shown in the toast notification when Copy GIF is selected in the sharing hub.">
+        GIF Copied
       </message>
 
       <message name="IDS_QR_CODE_CAMERA_FRAMING_RECT_DESCRIPTION" desc="Text under the framing rectangle in QR Code camera preview.">

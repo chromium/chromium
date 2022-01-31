@@ -26150,6 +26150,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubAndroid.CopyGifSelected">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The &quot;Copy GIF&quot; option was selected in the sharing hub.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.CopyImageSelected">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>

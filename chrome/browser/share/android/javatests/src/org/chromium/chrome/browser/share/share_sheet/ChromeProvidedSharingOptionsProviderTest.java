@@ -431,7 +431,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_image)));
+                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_gif)));
     }
 
     @Test
