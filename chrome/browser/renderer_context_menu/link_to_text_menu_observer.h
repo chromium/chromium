@@ -104,7 +104,7 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   size_t get_frames_existing_selectors_counter_;
 
   // True when the context menu was opened with text selected.
-  bool link_needs_generation_ = false;
+  bool open_from_new_selection_ = false;
 
   absl::optional<std::string> generated_link_;
 

@@ -97,7 +97,7 @@ LinkToTextMenuObserver::~LinkToTextMenuObserver() = default;
 
 void LinkToTextMenuObserver::InitMenu(
     const content::ContextMenuParams& params) {
-  link_needs_generation_ = !params.selection_text.empty();
+  open_from_new_selection_ = !params.selection_text.empty();
   raw_url_ = params.page_url;
   if (params.page_url.has_ref()) {
     GURL::Replacements replacements;
@@ -107,23 +107,28 @@ void LinkToTextMenuObserver::InitMenu(
     url_ = params.page_url;
   }
 
-  proxy_->AddMenuItem(
-      IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
-  if (params.opened_from_highlight) {
+  // It is possible that there is a new text selection on top of a highlight, in
+  // which case, both open_from_new_selection_ and opened_from_highlight are
+  // true. Consequently, a context menu for new text selection is created.
+  if (open_from_new_selection_) {
+    proxy_->AddMenuItem(
+        IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+    RequestLinkGeneration();
+  } else if (params.opened_from_highlight) {
+    proxy_->AddMenuItem(
+        IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_RESHARELINKTOTEXT));
     proxy_->AddMenuItem(
         IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT,
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
-  }
-
-  if (link_needs_generation_) {
-    RequestLinkGeneration();
   }
 }
 
 bool LinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
   return command_id == IDC_CONTENT_CONTEXT_COPYLINKTOTEXT ||
-         command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT;
+         command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT ||
+         command_id == IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT;
 }
 
 bool LinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
@@ -132,7 +137,7 @@ bool LinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
 
   // If a link generation was needed, only enable the command if a link was
   // successfully generated.
-  if (link_needs_generation_) {
+  if (open_from_new_selection_) {
     return generated_link_.has_value();
   }
 
@@ -145,11 +150,9 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
   DCHECK(IsCommandIdSupported(command_id));
 
   if (command_id == IDC_CONTENT_CONTEXT_COPYLINKTOTEXT) {
-    if (!link_needs_generation_) {
-      ReshareLink();
-    } else {
-      CopyLinkToClipboard();
-    }
+    CopyLinkToClipboard();
+  } else if (command_id == IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT) {
+    ReshareLink();
   } else if (command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT) {
     RemoveHighlights();
   }

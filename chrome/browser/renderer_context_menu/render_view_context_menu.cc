@@ -415,13 +415,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, 114},
        {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 115},
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 116},
+       {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 117},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 117}});
+       {0, 118}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -450,13 +451,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, 21},
        {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 22},
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 23},
+       {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 24},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 24}});
+       {0, 25}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
