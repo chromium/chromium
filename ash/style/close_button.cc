@@ -129,11 +129,28 @@ void CloseButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   UpdateVectorIcon();
 }
 
+void CloseButton::SetBackgroundColor(const SkColor background_color) {
+  if (background_color_ == background_color)
+    return;
+
+  background_color_ = background_color;
+  DCHECK(background());
+  background()->SetNativeControlColor(background_color_.value());
+}
+
+void CloseButton::SetIconColor(const SkColor icon_color) {
+  if (icon_color_ == icon_color)
+    return;
+
+  icon_color_ = icon_color;
+  UpdateVectorIcon();
+}
+
 void CloseButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
-  if (!IsFloatingCloseButton(type_)) {
-    background()->SetNativeControlColor(
-        GetCloseButtonBackgroundColor(use_light_colors_));
+  if (background()) {
+    background()->SetNativeControlColor(background_color_.value_or(
+        GetCloseButtonBackgroundColor(use_light_colors_)));
   }
 
   UpdateVectorIcon();
@@ -167,12 +184,14 @@ void CloseButton::UpdateVectorIcon() {
   DCHECK(icon_);
 
   auto* color_provider = AshColorProvider::Get();
-  SkColor enabled_icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SkColor enabled_icon_color =
+      icon_color_.value_or(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
   if (use_light_colors_) {
     ScopedLightModeAsDefault scoped_light_mode_as_default;
-    enabled_icon_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
+    enabled_icon_color =
+        icon_color_.value_or(color_provider->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kButtonIconColor));
   }
   SetImage(
       views::Button::STATE_NORMAL,

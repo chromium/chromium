@@ -62,10 +62,12 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   int GetHeightForWidth(int width) const override;
   void OnThemeChanged() override;
 
-  // Sets the text's color for the button. Note, do this only when the button
-  // wants to have a different text color from the defined ones (E.g: the action
-  // buttons of notifications align their color with the app icon's color).
+  // Sets the button's background color, text's color or icon's color. Note, do
+  // this only when the button wants to have different colors from the default
+  // ones.
+  void SetBackgroundColor(const SkColor background_color);
   void SetButtonTextColor(const SkColor text_color);
+  void SetIconColor(const SkColor icon_color);
 
  private:
   // Get text's color depending on the type used.
@@ -82,8 +84,11 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // set as the default value.
   int horizontal_spacing_;
 
-  // Customized value for text's color.
+  // Customized value for the button's background color, text's color and icon's
+  // color.
+  absl::optional<SkColor> background_color_;
   absl::optional<SkColor> text_color_;
+  absl::optional<SkColor> icon_color_;
 };
 
 }  // namespace ash

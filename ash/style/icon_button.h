@@ -76,6 +76,10 @@ class IconButton : public views::ImageButton {
   // states.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
+  // Sets the button's background color. Note, do this only when the button
+  // wants to have different color from the default one.
+  void SetBackgroundColor(const SkColor background_color);
+
   // Sets the icon's color. If the button is togglable, this will be the color
   // when it's not toggled.
   void SetIconColor(const SkColor icon_color);
@@ -105,7 +109,8 @@ class IconButton : public views::ImageButton {
   // True if the button is currently toggled.
   bool toggled_ = false;
 
-  // Customized value for icon's color.
+  // Customized value for button's background color or icon's color.
+  absl::optional<SkColor> background_color_;
   absl::optional<SkColor> icon_color_;
 
   DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;

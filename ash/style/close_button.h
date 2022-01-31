@@ -53,6 +53,11 @@ class CloseButton : public views::ImageButton,
   // icon.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
+  // Sets the button's background color or icon's color. Note, do this only when
+  // the button wants to have different colors from the default ones.
+  void SetBackgroundColor(const SkColor background_color);
+  void SetIconColor(const SkColor icon_color);
+
  private:
   // views::ImageButton:
   void OnThemeChanged() override;
@@ -70,6 +75,10 @@ class CloseButton : public views::ImageButton,
   // True if the button wants to use light colors when the D/L mode feature is
   // not enabled. Note, can be removed when D/L mode feature is fully launched.
   const bool use_light_colors_;
+
+  // Customized value for the button's background color and icon's color.
+  absl::optional<SkColor> background_color_;
+  absl::optional<SkColor> icon_color_;
 };
 
 }  // namespace ash
