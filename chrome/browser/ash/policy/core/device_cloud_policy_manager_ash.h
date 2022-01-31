@@ -161,7 +161,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   void NotifyDisconnected();
 
   // Factory function to create the StatusUploader.
-  void CreateStatusUploader();
+  void CreateStatusUploader(ManagedSessionService* managed_session_service);
 
   // Points to the same object as the base CloudPolicyManager::store(), but with
   // actual device policy specific type.
@@ -185,7 +185,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
 
   // Object that monitors managed session related events used by reporting
   // services.
-  std::unique_ptr<policy::ManagedSessionService> managed_session_service_;
+  std::unique_ptr<ManagedSessionService> managed_session_service_;
 
   // Object that reports login/logout events to the server.
   std::unique_ptr<ash::reporting::LoginLogoutReporter> login_logout_reporter_;

@@ -137,7 +137,7 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
                             bool report_users,
                             bool report_crash_info,
                             bool report_app_info_and_activity)
-      : policy::DeviceStatusCollector(local_state, nullptr),
+      : policy::DeviceStatusCollector(local_state, nullptr, nullptr),
         report_activity_times_(report_activity_times),
         report_nics_(report_nics),
         report_hardware_data_(report_hardware_data),

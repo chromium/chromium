@@ -53,7 +53,7 @@ constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
 class MockDeviceStatusCollector : public policy::DeviceStatusCollector {
  public:
   explicit MockDeviceStatusCollector(PrefService* local_state)
-      : DeviceStatusCollector(local_state, nullptr) {}
+      : DeviceStatusCollector(local_state, nullptr, nullptr) {}
   MOCK_METHOD1(GetStatusAsync, void(policy::StatusCollectorCallback));
 
   MOCK_METHOD0(OnSubmittedSuccessfully, void());

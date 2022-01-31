@@ -344,11 +344,13 @@ class TestingDeviceStatusCollector : public policy::DeviceStatusCollector {
   TestingDeviceStatusCollector(
       PrefService* pref_service,
       chromeos::system::StatisticsProvider* provider,
+      policy::ManagedSessionService* managed_session_service,
       std::unique_ptr<TestingDeviceStatusCollectorOptions> options,
       base::SimpleTestClock* clock)
       : policy::DeviceStatusCollector(
             pref_service,
             provider,
+            managed_session_service,
             options->volume_info_fetcher,
             options->cpu_fetcher,
             options->cpu_temp_fetcher,
@@ -956,10 +958,15 @@ class DeviceStatusCollectorTest : public testing::Test {
         ash::kReportDeviceNetworkStatus, false);
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kReportDeviceNetworkConfiguration, false);
+    managed_session_service_ =
+        std::make_unique<policy::ManagedSessionService>();
     RestartStatusCollector();
   }
 
-  void TearDown() override { status_collector_.reset(); }
+  void TearDown() override {
+    status_collector_.reset();
+    managed_session_service_.reset();
+  }
 
  protected:
   void AddMountPoint(const std::string& mount_point) {
@@ -972,10 +979,9 @@ class DeviceStatusCollectorTest : public testing::Test {
   virtual void RestartStatusCollector(
       std::unique_ptr<TestingDeviceStatusCollectorOptions> options) {
     std::vector<em::VolumeInfo> expected_volume_info;
-    status_collector_.reset();
     status_collector_ = std::make_unique<TestingDeviceStatusCollector>(
-        &local_state_, &fake_statistics_provider_, std::move(options),
-        &test_clock_);
+        &local_state_, &fake_statistics_provider_,
+        managed_session_service_.get(), std::move(options), &test_clock_);
   }
 
   void DisableDefaultSettings() {
@@ -1215,6 +1221,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   em::SessionStatusReportRequest session_status_;
   bool got_session_status_;
   TestingPrefServiceSimple profile_pref_service_;
+  std::unique_ptr<policy::ManagedSessionService> managed_session_service_;
   std::unique_ptr<TestingDeviceStatusCollector> status_collector_;
   const policy::DeviceLocalAccount fake_kiosk_device_local_account_;
   const policy::ArcKioskAppBasicInfo fake_arc_kiosk_app_basic_info_;
@@ -3742,8 +3749,7 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   MockRegularUserWithAffiliation(account_id, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceAppInfo, true);
-  status_collector_->GetManagedSessionServiceForTesting()->OnUserProfileLoaded(
-      account_id);
+  managed_session_service_->OnUserProfileLoaded(account_id);
   auto* app_proxy =
       apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
   auto app1 = apps::mojom::App::New();

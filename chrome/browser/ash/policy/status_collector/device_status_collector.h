@@ -149,6 +149,7 @@ class DeviceStatusCollector : public StatusCollector,
   DeviceStatusCollector(
       PrefService* pref_service,
       chromeos::system::StatisticsProvider* provider,
+      ManagedSessionService* managed_session_service,
       const VolumeInfoFetcher& volume_info_fetcher,
       const CPUStatisticsFetcher& cpu_statistics_fetcher,
       const CPUTempFetcher& cpu_temp_fetcher,
@@ -164,7 +165,8 @@ class DeviceStatusCollector : public StatusCollector,
   // Blocking Pool. Caller is responsible for passing already initialized
   // |pref_service|.
   DeviceStatusCollector(PrefService* pref_service,
-                        chromeos::system::StatisticsProvider* provider);
+                        chromeos::system::StatisticsProvider* provider,
+                        ManagedSessionService* managed_session_service);
 
   DeviceStatusCollector(const DeviceStatusCollector&) = delete;
   DeviceStatusCollector& operator=(const DeviceStatusCollector&) = delete;
@@ -182,10 +184,6 @@ class DeviceStatusCollector : public StatusCollector,
   bool IsReportingAppInfoAndActivity() const override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  ManagedSessionService* GetManagedSessionServiceForTesting() {
-    return &managed_session_service_;
-  }
 
   // How often to poll to see if the user is idle.
   static constexpr base::TimeDelta kIdlePollInterval = base::Seconds(30);
@@ -479,8 +477,6 @@ class DeviceStatusCollector : public StatusCollector,
   base::CallbackListSubscription system_info_subscription_;
   base::CallbackListSubscription app_info_subscription_;
   base::CallbackListSubscription stats_reporting_pref_subscription_;
-
-  ManagedSessionService managed_session_service_;
 
   AppInfoGenerator app_info_generator_;
 

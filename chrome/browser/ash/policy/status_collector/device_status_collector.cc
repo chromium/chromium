@@ -1548,6 +1548,7 @@ SampledData::~SampledData() = default;
 DeviceStatusCollector::DeviceStatusCollector(
     PrefService* pref_service,
     chromeos::system::StatisticsProvider* provider,
+    ManagedSessionService* managed_session_service,
     const VolumeInfoFetcher& volume_info_fetcher,
     const CPUStatisticsFetcher& cpu_statistics_fetcher,
     const CPUTempFetcher& cpu_temp_fetcher,
@@ -1571,7 +1572,7 @@ DeviceStatusCollector::DeviceStatusCollector(
       graphics_status_fetcher_(graphics_status_fetcher),
       crash_report_info_fetcher_(crash_report_info_fetcher),
       power_manager_(chromeos::PowerManagerClient::Get()),
-      app_info_generator_(&managed_session_service_,
+      app_info_generator_(managed_session_service,
                           kMaxStoredPastActivityInterval,
                           clock_) {
   // protected fields of `StatusCollector`.
@@ -1718,10 +1719,12 @@ DeviceStatusCollector::DeviceStatusCollector(
 
 DeviceStatusCollector::DeviceStatusCollector(
     PrefService* pref_service,
-    chromeos::system::StatisticsProvider* provider)
+    chromeos::system::StatisticsProvider* provider,
+    ManagedSessionService* managed_session_service)
     : DeviceStatusCollector(
           pref_service,
           provider,
+          managed_session_service,
           DeviceStatusCollector::VolumeInfoFetcher(),
           DeviceStatusCollector::CPUStatisticsFetcher(),
           DeviceStatusCollector::CPUTempFetcher(),
