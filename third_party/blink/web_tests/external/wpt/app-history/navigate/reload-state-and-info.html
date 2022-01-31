@@ -30,7 +30,7 @@ async_test(t => {
         assert_true(onnavigate_called);
         assert_equals(i.contentWindow.location.href, start_url);
         assert_equals(i.contentWindow.appHistory.current.key, start_key);
-        assert_not_equals(i.contentWindow.appHistory.current.id, start_id);
+        assert_equals(i.contentWindow.appHistory.current.id, start_id);
         assert_equals(i.contentWindow.appHistory.current.getState().key2, "value2", "current.getState() after teh reload");
         assert_not_equals(i.contentWindow.appHistory.current.getState(), navState2);
       }));
