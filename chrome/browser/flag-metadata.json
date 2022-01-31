@@ -3356,6 +3356,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "fre-mobile-identity-consistency",
+    "owners": [ "jlebel", "chrome-signin-team" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "full-restore-for-lacros",
     "owners": [ "dominickn", "nancylingwang", "sammiequon", "xdai" ],
     "expiry_milestone": 105

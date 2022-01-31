@@ -262,6 +262,11 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+const char kFREMobileIdentityConsistencyName[] = "Display the MICe FRE";
+const char kFREMobileIdentityConsistencyDescription[] =
+    "When enabled, the FRE with MICe (the welcome screen and sign-in screen "
+    "are merged).";
+
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "

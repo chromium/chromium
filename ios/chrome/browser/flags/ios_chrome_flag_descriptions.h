@@ -226,6 +226,10 @@ extern const char kForceDisableExtendedSyncPromosDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+// Title and description for the flag to use MICe FRE.
+extern const char kFREMobileIdentityConsistencyName[];
+extern const char kFREMobileIdentityConsistencyDescription[];
+
 // Title and description for the flag to enable sign-in with a Unicorn account.
 extern const char kEnableUnicornAccountSupportName[];
 extern const char kEnableUnicornAccountSupportDescription[];
