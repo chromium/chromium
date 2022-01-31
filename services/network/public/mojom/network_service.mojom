@@ -324,6 +324,10 @@ interface NetworkService {
   [EnableIf=is_ct_supported]
   UpdateCtLogList(array<CTLogInfo> log_list, mojo_base.mojom.Time update_time);
 
+  // Updates the list of popular SCTs queried during CT hashdance auditing.
+  [EnableIf=is_ct_supported]
+  UpdateCtKnownPopularSCTs(array<array<uint8>> sct_hashes);
+
   // Disables or enables CT Enforcement.
   [EnableIf=is_ct_supported]
   SetCtEnforcementEnabled(bool enabled);

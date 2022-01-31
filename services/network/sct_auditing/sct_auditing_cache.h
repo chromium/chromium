@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   void set_enabled(bool enabled);
   void set_sampling_rate(double rate) { sampling_rate_ = rate; }
   void set_report_uri(const GURL& report_uri) { report_uri_ = report_uri; }
+  void set_popular_scts(std::vector<std::vector<uint8_t>> popular_scts) {
+    popular_scts_ = std::move(popular_scts);
+  }
   void set_traffic_annotation(
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
     traffic_annotation_ = traffic_annotation;
@@ -98,6 +101,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   base::LRUCache<net::HashValue, bool> dedupe_cache_;
   // Tracks high-water-mark of `dedupe_cache_.size()`.
   size_t dedupe_cache_size_hwm_ = 0;
+
+  // A list of hashes for popular SCTs that should not be scheduled for auditing
+  // as an optimization for hashdance clients.
+  std::vector<std::vector<uint8_t>> popular_scts_;
 
   bool enabled_ = false;
   double sampling_rate_ = 0;

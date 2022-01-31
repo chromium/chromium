@@ -721,6 +721,11 @@ void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
   }
 }
 
+void NetworkService::UpdateCtKnownPopularSCTs(
+    const std::vector<std::vector<uint8_t>>& sct_hashes) {
+  sct_auditing_cache_->set_popular_scts(std::move(sct_hashes));
+}
+
 void NetworkService::SetCtEnforcementEnabled(bool enabled) {
   DCHECK(base::FeatureList::IsEnabled(
       certificate_transparency::features::

@@ -187,6 +187,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
                                 traffic_annotation) override;
   void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
                        base::Time update_time) override;
+  void UpdateCtKnownPopularSCTs(
+      const std::vector<std::vector<uint8_t>>& sct_hashes) override;
   void SetCtEnforcementEnabled(bool enabled) override;
 #endif
 
