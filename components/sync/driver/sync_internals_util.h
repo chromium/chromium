@@ -23,51 +23,54 @@ namespace sync_ui_util {
 
 // These strings are used from logs to pull out specific data from sync; we
 // don't want these to ever go out of sync between the logs and sync util.
-extern const char kIdentityTitle[];
-extern const char kDetailsKey[];
+constexpr inline char kIdentityTitle[] = "Identity";
+constexpr inline char kDetailsKey[] = "details";
 
 // Resource paths.
 // Must match the resource file names.
-extern const char kAboutJS[];
-extern const char kChromeSyncJS[];
-extern const char kDataJS[];
-extern const char kEventsJS[];
-extern const char kSearchJS[];
-extern const char kSyncIndexJS[];
-extern const char kSyncLogJS[];
-extern const char kSyncNodeBrowserJS[];
-extern const char kSyncSearchJS[];
-extern const char kUserEventsJS[];
-extern const char kTrafficLogJS[];
-extern const char kInvalidationsJS[];
+constexpr inline char kAboutJS[] = "about.js";
+constexpr inline char kChromeSyncJS[] = "chrome_sync.js";
+constexpr inline char kDataJS[] = "data.js";
+constexpr inline char kEventsJS[] = "events.js";
+constexpr inline char kSearchJS[] = "search.js";
+constexpr inline char kSyncIndexJS[] = "sync_index.js";
+constexpr inline char kSyncLogJS[] = "sync_log.js";
+constexpr inline char kSyncNodeBrowserJS[] = "sync_node_browser.js";
+constexpr inline char kSyncSearchJS[] = "sync_search.js";
+constexpr inline char kUserEventsJS[] = "user_events.js";
+constexpr inline char kTrafficLogJS[] = "traffic_log.js";
+constexpr inline char kInvalidationsJS[] = "invalidations.js";
 
 // Message handlers.
 // Must match the constants used in the resource files.
-extern const char kGetAllNodes[];
-extern const char kRequestDataAndRegisterForUpdates[];
-extern const char kRequestIncludeSpecificsInitialState[];
-extern const char kRequestListOfTypes[];
-extern const char kRequestStart[];
-extern const char kRequestStopKeepData[];
-extern const char kRequestStopClearData[];
-extern const char kSetIncludeSpecifics[];
-extern const char kTriggerRefresh[];
-extern const char kWriteUserEvent[];
+constexpr inline char kGetAllNodes[] = "getAllNodes";
+constexpr inline char kRequestDataAndRegisterForUpdates[] =
+    "requestDataAndRegisterForUpdates";
+constexpr inline char kRequestIncludeSpecificsInitialState[] =
+    "requestIncludeSpecificsInitialState";
+constexpr inline char kRequestListOfTypes[] = "requestListOfTypes";
+constexpr inline char kRequestStart[] = "requestStart";
+constexpr inline char kRequestStopKeepData[] = "requestStopKeepData";
+constexpr inline char kRequestStopClearData[] = "requestStopClearData";
+constexpr inline char kSetIncludeSpecifics[] = "setIncludeSpecifics";
+constexpr inline char kTriggerRefresh[] = "triggerRefresh";
+constexpr inline char kWriteUserEvent[] = "writeUserEvent";
 
 // Other strings.
 // WARNING: Must match the property names used in the resource files.
-extern const char kEntityCounts[];
-extern const char kEntities[];
-extern const char kNonTombstoneEntities[];
-extern const char kIncludeSpecifics[];
-extern const char kModelType[];
-extern const char kOnAboutInfoUpdated[];
-extern const char kOnEntityCountsUpdated[];
-extern const char kOnProtocolEvent[];
-extern const char kOnReceivedIncludeSpecificsInitialState[];
-extern const char kOnReceivedListOfTypes[];
-extern const char kTypes[];
-extern const char kOnInvalidationReceived[];
+constexpr inline char kEntityCounts[] = "entityCounts";
+constexpr inline char kEntities[] = "entities";
+constexpr inline char kNonTombstoneEntities[] = "nonTombstoneEntities";
+constexpr inline char kIncludeSpecifics[] = "includeSpecifics";
+constexpr inline char kModelType[] = "modelType";
+constexpr inline char kOnAboutInfoUpdated[] = "onAboutInfoUpdated";
+constexpr inline char kOnEntityCountsUpdated[] = "onEntityCountsUpdated";
+constexpr inline char kOnProtocolEvent[] = "onProtocolEvent";
+constexpr inline char kOnReceivedIncludeSpecificsInitialState[] =
+    "onReceivedIncludeSpecificsInitialState";
+constexpr inline char kOnReceivedListOfTypes[] = "onReceivedListOfTypes";
+constexpr inline char kTypes[] = "types";
+constexpr inline char kOnInvalidationReceived[] = "onInvalidationReceived";
 
 using IncludeSensitiveData =
     base::StrongAlias<class IncludeSensitiveDataTag, bool>;

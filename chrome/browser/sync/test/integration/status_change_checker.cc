@@ -36,9 +36,6 @@ base::TimeDelta GetTimeoutFromCommandLineOrDefault() {
 
 }  // namespace
 
-const char switches::kStatusChangeCheckerTimeoutInSeconds[] =
-    "sync-status-change-checker-timeout";
-
 StatusChangeChecker::StatusChangeChecker()
     : timeout_(GetTimeoutFromCommandLineOrDefault()),
       run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}

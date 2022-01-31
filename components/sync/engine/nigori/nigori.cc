@@ -37,8 +37,6 @@ const size_t kHashSize = 32;
 
 namespace syncer {
 
-const char kNigoriKeyName[] = "nigori-key";
-
 namespace {
 
 // NigoriStream simplifies the concatenation operation of the Nigori protocol.

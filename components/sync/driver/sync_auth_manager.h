@@ -28,7 +28,10 @@ struct AccessTokenInfo;
 
 namespace syncer {
 
-extern const base::Feature kSyncRetryFirstCanceledTokenFetch;
+// Enables the retry of the token fetch without backoff on the first fetch
+// cancellation.
+constexpr inline base::Feature kSyncRetryFirstCanceledTokenFetch = {
+    "SyncRetryFirstCanceledTokenFetch", base::FEATURE_ENABLED_BY_DEFAULT};
 
 struct SyncCredentials;
 

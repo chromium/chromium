@@ -32,7 +32,8 @@
 
 namespace switches {
 
-extern const char kDisableFakeServerFailureOutput[];
+constexpr inline char kDisableFakeServerFailureOutput[] =
+    "disable-fake-server-failure-output";
 
 }  // namespace switches
 

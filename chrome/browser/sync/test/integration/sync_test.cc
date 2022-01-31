@@ -217,10 +217,6 @@ instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
 
 }  // namespace
 
-const char switches::kPasswordFileForTest[] = "password-file-for-test";
-const char switches::kSyncUserForTest[] = "sync-user-for-test";
-const char switches::kSyncPasswordForTest[] = "sync-password-for-test";
-
 SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id,
                                          gcm::GCMDriver* gcm_driver)
     : instance_id::InstanceID(app_id, gcm_driver),

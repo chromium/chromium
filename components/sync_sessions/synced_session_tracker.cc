@@ -16,11 +16,6 @@
 
 namespace sync_sessions {
 
-const base::Feature kDeferRecyclingOfSyncTabNodesIfUnsynced{
-    "DeferRecyclingOfSyncTabNodesIfUnsynced", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kSyncPopulateTabBrowserTypeInGetData{
-    "SyncPopulateTabBrowserTypeInGetData", base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 
 // Maximum time we allow a local tab stay unmapped (i.e. closed) but not freed

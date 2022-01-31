@@ -230,12 +230,6 @@ void GetModelTypeStateOnDBSequence(syncer::ModelType model_type,
 
 namespace wallet_helper {
 
-const char kDefaultCardID[] = "wallet card ID";
-const char kDefaultAddressID[] = "wallet address ID";
-const char kDefaultCustomerID[] = "deadbeef";
-const char kDefaultBillingAddressID[] = "billing address entity ID";
-const char kDefaultCreditCardCloudTokenDataID[] = "cloud token data ID";
-
 PersonalDataManager* GetPersonalDataManager(int index) {
   return autofill::PersonalDataManagerFactory::GetForProfile(
       test()->GetProfile(index));

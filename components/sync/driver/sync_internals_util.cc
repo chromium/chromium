@@ -34,52 +34,6 @@ namespace syncer {
 
 namespace sync_ui_util {
 
-const char kIdentityTitle[] = "Identity";
-const char kDetailsKey[] = "details";
-
-// Resource paths.
-const char kAboutJS[] = "about.js";
-const char kChromeSyncJS[] = "chrome_sync.js";
-const char kDataJS[] = "data.js";
-const char kEventsJS[] = "events.js";
-const char kSearchJS[] = "search.js";
-const char kSyncIndexJS[] = "sync_index.js";
-const char kSyncLogJS[] = "sync_log.js";
-const char kSyncNodeBrowserJS[] = "sync_node_browser.js";
-const char kSyncSearchJS[] = "sync_search.js";
-const char kUserEventsJS[] = "user_events.js";
-const char kTrafficLogJS[] = "traffic_log.js";
-const char kInvalidationsJS[] = "invalidations.js";
-
-// Message handlers.
-const char kGetAllNodes[] = "getAllNodes";
-const char kRequestDataAndRegisterForUpdates[] =
-    "requestDataAndRegisterForUpdates";
-const char kRequestIncludeSpecificsInitialState[] =
-    "requestIncludeSpecificsInitialState";
-const char kRequestListOfTypes[] = "requestListOfTypes";
-const char kRequestStart[] = "requestStart";
-const char kRequestStopKeepData[] = "requestStopKeepData";
-const char kRequestStopClearData[] = "requestStopClearData";
-const char kSetIncludeSpecifics[] = "setIncludeSpecifics";
-const char kTriggerRefresh[] = "triggerRefresh";
-const char kWriteUserEvent[] = "writeUserEvent";
-
-// Other strings.
-const char kEntityCounts[] = "entityCounts";
-const char kEntities[] = "entities";
-const char kNonTombstoneEntities[] = "nonTombstoneEntities";
-const char kIncludeSpecifics[] = "includeSpecifics";
-const char kModelType[] = "modelType";
-const char kOnAboutInfoUpdated[] = "onAboutInfoUpdated";
-const char kOnEntityCountsUpdated[] = "onEntityCountsUpdated";
-const char kOnProtocolEvent[] = "onProtocolEvent";
-const char kOnReceivedIncludeSpecificsInitialState[] =
-    "onReceivedIncludeSpecificsInitialState";
-const char kOnReceivedListOfTypes[] = "onReceivedListOfTypes";
-const char kTypes[] = "types";
-const char kOnInvalidationReceived[] = "onInvalidationReceived";
-
 namespace {
 
 const char kUninitialized[] = "Uninitialized";

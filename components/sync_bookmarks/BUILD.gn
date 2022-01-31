@@ -22,7 +22,6 @@ static_library("sync_bookmarks") {
     "bookmark_sync_service.h",
     "parent_guid_preprocessing.cc",
     "parent_guid_preprocessing.h",
-    "switches.cc",
     "switches.h",
     "synced_bookmark_tracker.cc",
     "synced_bookmark_tracker.h",

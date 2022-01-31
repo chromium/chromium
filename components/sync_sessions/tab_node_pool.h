@@ -29,7 +29,8 @@ namespace sync_sessions {
 
 // TODO(crbug.com/882489): Remove feature toggle during code cleanup when a
 // satisfying solution is found for closed tabs.
-extern const base::Feature kTabNodePoolImmediateDeletion;
+constexpr inline base::Feature kTabNodePoolImmediateDeletion{
+    "TabNodePoolImmediateDeletion", base::FEATURE_ENABLED_BY_DEFAULT};
 
 class TabNodePool {
  public:

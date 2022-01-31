@@ -52,11 +52,6 @@ std::string GetSystemString() {
 namespace syncer {
 namespace internal {
 
-const char* const kSyncServerUrl = "https://clients4.google.com/chrome-sync";
-
-const char* const kSyncDevServerUrl =
-    "https://clients4.google.com/chrome-sync/dev";
-
 std::string FormatUserAgentForSync(const std::string& system,
                                    version_info::Channel channel) {
   std::string product = STRINGIZE(SYNC_USER_AGENT_PRODUCT);

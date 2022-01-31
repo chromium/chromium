@@ -85,11 +85,6 @@ constexpr net::BackoffEntry::Policy
 
 }  // namespace
 
-// Enables the retry of the token fetch without backoff on the first fetch
-// cancellation.
-const base::Feature kSyncRetryFirstCanceledTokenFetch = {
-    "SyncRetryFirstCanceledTokenFetch", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the retry of the token fetch without backoff after the first failure.
 // TODO(crbug.com/1097054): remove once rolled out.
 const base::Feature kSyncRetryFirstTokenFetchAttemptImmediately = {

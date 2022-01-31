@@ -35,11 +35,12 @@ class ModelTypeState;
 
 namespace wallet_helper {
 
-extern const char kDefaultCardID[];
-extern const char kDefaultAddressID[];
-extern const char kDefaultCustomerID[];
-extern const char kDefaultBillingAddressID[];
-extern const char kDefaultCreditCardCloudTokenDataID[];
+constexpr inline char kDefaultCardID[] = "wallet card ID";
+constexpr inline char kDefaultAddressID[] = "wallet address ID";
+constexpr inline char kDefaultCustomerID[] = "deadbeef";
+constexpr inline char kDefaultBillingAddressID[] = "billing address entity ID";
+constexpr inline char kDefaultCreditCardCloudTokenDataID[] =
+    "cloud token data ID";
 
 // Used to access the personal data manager within a particular sync profile.
 [[nodiscard]] autofill::PersonalDataManager* GetPersonalDataManager(int index);

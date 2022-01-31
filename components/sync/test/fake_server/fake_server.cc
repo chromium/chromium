@@ -36,9 +36,6 @@ using syncer::LoopbackServerEntity;
 using syncer::ModelType;
 using syncer::ModelTypeSet;
 
-const char switches::kDisableFakeServerFailureOutput[] =
-    "disable-fake-server-failure-output";
-
 namespace fake_server {
 
 FakeServer::FakeServer()

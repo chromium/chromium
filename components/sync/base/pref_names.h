@@ -12,39 +12,82 @@ namespace syncer {
 
 namespace prefs {
 
-extern const char kSyncFirstSetupComplete[];
-extern const char kSyncKeepEverythingSynced[];
+// Boolean specifying whether the user finished setting up sync at least once.
+constexpr inline char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
+
+// Boolean specifying whether to automatically sync all data types (including
+// future ones, as they're added).  If this is true, the following preferences
+// (kSyncBookmarks, kSyncPasswords, etc.) can all be ignored.
+constexpr inline char kSyncKeepEverythingSynced[] =
+    "sync.keep_everything_synced";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kOsSyncPrefsMigrated[];
-extern const char kSyncAllOsTypes[];
-extern const char kSyncOsApps[];
-extern const char kSyncOsPreferences[];
+// Boolean pref that records whether OS sync preferences were migrated due to
+// SyncSettingsCategorization rollout.
+constexpr inline char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
+
+// Boolean specifying whether to automatically sync all Chrome OS specific data
+// types (including future ones). This includes types like printers, OS-only
+// settings, etc. If set, the individual type preferences can be ignored.
+constexpr inline char kSyncAllOsTypes[] = "sync.all_os_types";
+
+// Booleans specifying whether the user has selected to sync the following
+// OS user selectable types.
+constexpr inline char kSyncOsApps[] = "sync.os_apps";
+constexpr inline char kSyncOsPreferences[] = "sync.os_preferences";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-extern const char kSyncApps[];
-extern const char kSyncAutofill[];
-extern const char kSyncBookmarks[];
-extern const char kSyncExtensions[];
-extern const char kSyncPasswords[];
-extern const char kSyncPreferences[];
-extern const char kSyncReadingList[];
-extern const char kSyncTabs[];
-extern const char kSyncThemes[];
-extern const char kSyncTypedUrls[];
-extern const char kSyncWifiConfigurations[];
+// Booleans specifying whether the user has selected to sync the following
+// user selectable types.
+constexpr inline char kSyncApps[] = "sync.apps";
+constexpr inline char kSyncAutofill[] = "sync.autofill";
+constexpr inline char kSyncBookmarks[] = "sync.bookmarks";
+constexpr inline char kSyncExtensions[] = "sync.extensions";
+constexpr inline char kSyncPasswords[] = "sync.passwords";
+constexpr inline char kSyncPreferences[] = "sync.preferences";
+constexpr inline char kSyncReadingList[] = "sync.reading_list";
+constexpr inline char kSyncTabs[] = "sync.tabs";
+constexpr inline char kSyncThemes[] = "sync.themes";
+constexpr inline char kSyncTypedUrls[] = "sync.typed_urls";
+constexpr inline char kSyncWifiConfigurations[] = "sync.wifi_configurations";
 
-extern const char kSyncManaged[];
-extern const char kSyncRequested[];
+// Boolean used by enterprise configuration management in order to lock down
+// sync.
+constexpr inline char kSyncManaged[] = "sync.managed";
 
-extern const char kSyncEncryptionBootstrapToken[];
-extern const char kSyncPassphrasePromptMutedProductVersion[];
+// Boolean whether has requested sync to be enabled. This is set early in the
+// sync setup flow, after the user has pressed "turn on sync" but before they
+// have accepted the confirmation dialog (that maps to kSyncFirstSetupComplete).
+// This is also set to false when sync is disabled by the user in sync settings,
+// or when sync was reset from the dashboard.
+constexpr inline char kSyncRequested[] = "sync.requested";
 
-extern const char kEnableLocalSyncBackend[];
-extern const char kLocalSyncBackendDir[];
+// A string that can be used to restore sync encryption infrastructure on
+// startup so that the user doesn't need to provide credentials on each start.
+constexpr inline char kSyncEncryptionBootstrapToken[] =
+    "sync.encryption_bootstrap_token";
+
+// Stores whether a platform specific passphrase error prompt has been muted by
+// the user (e.g. an Android system notification). Specifically, it stores which
+// major product version was used to mute this error.
+constexpr inline char kSyncPassphrasePromptMutedProductVersion[] =
+    "sync.passphrase_prompt_muted_product_version";
+
+// Enabled the local sync backend implemented by the LoopbackServer.
+constexpr inline char kEnableLocalSyncBackend[] =
+    "sync.enable_local_sync_backend";
+
+// Specifies the local sync backend directory. The name is chosen to mimic
+// user-data-dir etc. This flag only matters if the enable-local-sync-backend
+// flag is present.
+constexpr inline char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kSyncDecoupledFromAndroidMasterSync[];
+// Stores whether sync should no longer respect the state of master toggle for
+// this user.
+// TODO(crbug.com/1107904): Clean pref when the decoupling logic is removed.
+constexpr inline char kSyncDecoupledFromAndroidMasterSync[] =
+    "sync.decoupled_from_master_sync";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace prefs

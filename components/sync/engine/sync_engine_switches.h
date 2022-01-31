@@ -10,12 +10,26 @@
 
 namespace switches {
 
-extern const base::Feature kSyncResetPollIntervalOnStart;
+constexpr inline base::Feature kSyncResetPollIntervalOnStart{
+    "SyncResetPollIntervalOnStart", base::FEATURE_DISABLED_BY_DEFAULT};
 
-extern const base::Feature kIgnoreSyncEncryptionKeysLongMissing;
-extern const base::FeatureParam<int> kMinGuResponsesToIgnoreKey;
+// Causes Sync to ignore updates encrypted with keys that have been missing for
+// too long from this client; Sync will proceed normally as if those updates
+// didn't exist.
+constexpr inline base::Feature kIgnoreSyncEncryptionKeysLongMissing{
+    "IgnoreSyncEncryptionKeysLongMissing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-extern const base::Feature kSyncExtensionTypesThrottling;
+// The threshold for kIgnoreSyncEncryptionKeysLongMissing to start ignoring keys
+// (measured in number of GetUpdatesResponses messages).
+constexpr inline base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
+    &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 50};
+
+// Causes the sync engine to count a quota for commits of data types that can
+// be committed by extension JS API. If the quota is depleted, an extra long
+// nudge delay is applied to that data type. As a result, more changes are
+// likely to get combined into one commit message.
+constexpr inline base::Feature kSyncExtensionTypesThrottling{
+    "SyncExtensionTypesThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace switches
 
