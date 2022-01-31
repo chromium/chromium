@@ -23,7 +23,6 @@
 #include "chromecast/browser/cast_session_id_map.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/common/mojom/activity_url_filter.mojom.h"
-#include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
 #include "chromecast/common/queryable_data.h"
 #include "chromecast/net/connectivity_checker.h"
@@ -510,28 +509,6 @@ void CastWebContentsImpl::RenderFrameCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_host);
 
-  auto* process = frame_host->GetProcess();
-  const int render_process_id = process->GetID();
-  const int render_frame_id = frame_host->GetRoutingID();
-
-  // Allow observers to use remote interfaces which are hosted by the new
-  // RenderFrame. Since the observer is potentially in a different process,
-  // we have to proxy requests through the browser. The easiest way to do this
-  // is to bind local mojo::Remote<> as the "implementation" for a
-  // mojo::ReceiverSet<> in this process.
-  identification_settings_proxies[frame_host] =
-      std::make_unique<IdentificationSettingsProxy>();
-  auto* proxy = identification_settings_proxies[frame_host].get();
-  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&(proxy->remote));
-  for (auto& observer : observers_) {
-    mojo::PendingAssociatedRemote<mojom::IdentificationSettingsManager>
-        settings_manager;
-    proxy->receivers.Add(proxy->remote.get(),
-                         settings_manager.InitWithNewEndpointAndPassReceiver());
-    observer->RenderFrameCreated(render_process_id, render_frame_id,
-                                 std::move(settings_manager));
-  }
-
   // TODO(b/187758538): Merge the two ConfigureFeatures() calls.
   mojo::Remote<chromecast::shell::mojom::FeatureManager> feature_manager_remote;
   frame_host->GetRemoteInterfaces()->GetInterface(
@@ -585,11 +562,6 @@ void CastWebContentsImpl::RenderFrameCreated(
           switches::kCastAppBackgroundColor, SK_ColorBLACK));
     }
   }
-}
-
-void CastWebContentsImpl::RenderFrameDeleted(
-    content::RenderFrameHost* frame_host) {
-  identification_settings_proxies.erase(frame_host);
 }
 
 std::vector<chromecast::shell::mojom::FeaturePtr>
@@ -842,11 +814,6 @@ void CastWebContentsImpl::DidFailLoad(
   Stop(error_code);
   DCHECK_EQ(PageState::ERROR, page_state_);
 }
-
-CastWebContentsImpl::IdentificationSettingsProxy::
-    IdentificationSettingsProxy() = default;
-CastWebContentsImpl::IdentificationSettingsProxy::
-    ~IdentificationSettingsProxy() = default;
 
 void CastWebContentsImpl::OnPageLoading() {
   closing_ = false;

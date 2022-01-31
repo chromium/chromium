@@ -7,7 +7,6 @@ module chromecast.mojom;
 import "chromecast/browser/webui/mojom/webui.mojom";
 import "chromecast/browser/mojom/cast_content_window.mojom";
 import "chromecast/browser/mojom/cast_web_contents.mojom";
-import "chromecast/common/mojom/identification_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 

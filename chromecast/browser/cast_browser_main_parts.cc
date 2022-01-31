@@ -56,7 +56,6 @@
 #include "chromecast/browser/service_manager_context.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/constants.mojom.h"
-#include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "chromecast/external_mojo/broker_service/broker_service.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/external_mojo/external_service_support/external_service.h"
@@ -711,9 +710,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       cast_browser_process_->browser_context(), window_manager_.get());
   browser_service_->AddInterface<::chromecast::mojom::CastWebService>(
       web_service_.get());
-  browser_service_
-      ->AddInterface<::chromecast::mojom::BrowserIdentificationSettingsManager>(
-          web_service_.get());
   connector()->RegisterService(::chromecast::mojom::kCastBrowserServiceName,
                                browser_service_.get());
 

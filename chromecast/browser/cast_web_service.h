@@ -18,8 +18,6 @@
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
-#include "chromecast/common/identification_settings_manager.h"
-#include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "chromecast/external_mojo/external_service_support/reconnecting_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/origin.h"
@@ -43,8 +41,7 @@ class LRURendererCache;
 // they go out of scope, allowing us to keep the pages alive for extra time if
 // needed. CastWebService allows us to synchronously destroy all pages when the
 // system is shutting down, preventing use of freed browser resources.
-class CastWebService : public mojom::CastWebService,
-                       public mojom::BrowserIdentificationSettingsManager {
+class CastWebService : public mojom::CastWebService {
  public:
   CastWebService(content::BrowserContext* browser_context,
                  CastWindowManager* window_manager);
@@ -84,28 +81,6 @@ class CastWebService : public mojom::CastWebService,
   void FlushDomLocalStorage() override;
   void ClearLocalStorage(ClearLocalStorageCallback callback) override;
 
-  // mojom::BrowserIdentificationSettingsManager implementation:
-  void CreateSessionWithSubstitutions(
-      const std::string& session_id,
-      std::vector<mojom::SubstitutableParameterPtr> params) override;
-  void SetClientAuthForSession(const std::string& session_id,
-                               mojo::PendingRemote<mojom::ClientAuthDelegate>
-                                   client_auth_delegate) override;
-  void UpdateAppSettingsForSession(const std::string& session_id,
-                                   mojom::AppSettingsPtr app_settings) override;
-  void UpdateDeviceSettingsForSession(
-      const std::string& session_id,
-      mojom::DeviceSettingsPtr device_settings) override;
-  void UpdateSubstitutableParamValuesForSession(
-      const std::string& session_id,
-      std::vector<mojom::IndexValuePairPtr> updated_values) override;
-  void UpdateBackgroundModeForSession(const std::string& session_id,
-                                      bool background_mode) override;
-  void OnSessionDestroyed(const std::string& session_id) override;
-
-  scoped_refptr<CastURLLoaderThrottle::Delegate>
-  GetURLLoaderThrottleDelegateForSession(const std::string& session_id);
-
   // Immediately deletes all owned CastWebViews. This should happen before
   // CastWebService is deleted, to prevent UAF of shared browser objects.
   void DeleteOwnedWebViews();
@@ -113,9 +88,6 @@ class CastWebService : public mojom::CastWebService,
  private:
   void OwnerDestroyed(CastWebView* web_view);
   void DeleteWebView(CastWebView* web_view);
-
-  IdentificationSettingsManager* GetSessionManager(
-      const std::string& session_id);
 
   content::BrowserContext* const browser_context_;
   // This is used on Aura platforms.
@@ -144,10 +116,6 @@ class CastWebService : public mojom::CastWebService,
 
   const std::unique_ptr<LRURendererCache> overlay_renderer_cache_;
   bool immediately_delete_webviews_ = false;
-
-  base::flat_map<std::string /* session_id */,
-                 scoped_refptr<IdentificationSettingsManager>>
-      settings_managers_;
 
   std::vector<std::string> cast_webui_hosts_;
 

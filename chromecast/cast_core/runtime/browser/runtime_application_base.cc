@@ -241,10 +241,6 @@ void RuntimeApplicationBase::StopApplication() {
     GetCastWebContents()->ClosePage();
   }
 
-  if (web_service_) {
-    web_service_->OnSessionDestroyed(cast_session_id());
-  }
-
   grpc_server_->Stop();
   grpc_server_.reset();
   LOG(INFO) << "Application is stopped: " << *this;

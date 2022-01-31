@@ -115,7 +115,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   // content::WebContentsObserver implementation:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
   void DidStartNavigation(
@@ -151,15 +150,6 @@ class CastWebContentsImpl : public CastWebContents,
       content::WebContentsObserver::MediaStoppedReason reason) override;
 
  private:
-  // Proxy allowing a client to communicate with IdentificationSettingsManager
-  // in a RenderFrame.
-  struct IdentificationSettingsProxy {
-    IdentificationSettingsProxy();
-    ~IdentificationSettingsProxy();
-    mojo::AssociatedRemote<mojom::IdentificationSettingsManager> remote;
-    mojo::AssociatedReceiverSet<mojom::IdentificationSettingsManager> receivers;
-  };
-
   // Constructor used to create inner CastWebContents. This allows inner
   // contents to share the same URL rewrite rules as the root.
   CastWebContentsImpl(content::WebContents* web_contents,
@@ -214,10 +204,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   on_load_script_injector::OnLoadScriptInjectorHost<uint64_t> script_injector_;
   mojo::Remote<mojom::ApiBindings> api_bindings_;
-
-  base::flat_map<content::RenderFrameHost*,
-                 std::unique_ptr<IdentificationSettingsProxy>>
-      identification_settings_proxies;
 
   // If |ConnectToBindingsService| is invoked, |bindings_received_| is set
   // false. Following |LoadUrl| will be stored in |pending_load_url_|, and

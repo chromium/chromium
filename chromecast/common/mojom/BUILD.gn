@@ -17,7 +17,6 @@ mojom("mojom") {
     "feature_manager.mojom",
     "feature_update.mojom",
     "gesture.mojom",
-    "identification_settings.mojom",
     "js_channel.mojom",
     "media_caps.mojom",
     "memory_pressure.mojom",

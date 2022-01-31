@@ -5,7 +5,6 @@
 module chromecast.mojom;
 
 import "chromecast/bindings/public/mojom/api_bindings.mojom";
-import "chromecast/common/mojom/identification_settings.mojom";
 import "chromecast/mojo/mojom/remote_interfaces.mojom";
 import "components/url_rewrite/mojom/url_request_rewrite.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -44,9 +43,7 @@ interface CastWebContentsObserver {
   // provided by the frame.
   RenderFrameCreated(
       int32 render_process_id,
-      int32 render_frame_id,
-      pending_associated_remote<chromecast.mojom.IdentificationSettingsManager>
-          settings_manager);
+      int32 render_frame_id);
 
   // A navigation has finished in the WebContents' main frame.
   MainFrameFinishedNavigation();
