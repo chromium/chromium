@@ -203,7 +203,7 @@ class V8ValueConverterImplTest : public testing::Test {
 
     if (expected_value) {
       ASSERT_TRUE(raw.get());
-      EXPECT_TRUE(expected_value->Equals(raw.get()));
+      EXPECT_TRUE(*expected_value == *raw);
       EXPECT_EQ(expected_type, raw->type());
     } else {
       EXPECT_FALSE(raw.get());
@@ -407,7 +407,7 @@ TEST_F(V8ValueConverterImplTest, BasicRoundTrip) {
   std::unique_ptr<base::Value> new_root(
       converter.FromV8Value(v8_object, context));
   EXPECT_NE(original_root.get(), new_root.get());
-  EXPECT_TRUE(original_root->Equals(new_root.get()));
+  EXPECT_TRUE(*original_root == *new_root);
 }
 
 TEST_F(V8ValueConverterImplTest, KeysWithDots) {
@@ -424,7 +424,7 @@ TEST_F(V8ValueConverterImplTest, KeysWithDots) {
   std::unique_ptr<base::Value> copy(converter.FromV8Value(
       converter.ToV8Value(original.get(), context), context));
 
-  EXPECT_TRUE(original->Equals(copy.get()));
+  EXPECT_TRUE(*original == *copy);
 }
 
 TEST_F(V8ValueConverterImplTest, ObjectExceptions) {
@@ -814,7 +814,7 @@ TEST_F(V8ValueConverterImplTest, WeirdProperties) {
       "  \"undefined\": \"oops\", \n"
       "}");
 
-  EXPECT_TRUE(expected->Equals(actual.get()));
+  EXPECT_TRUE(*expected == *actual);
 }
 
 TEST_F(V8ValueConverterImplTest, ArrayGetters) {
@@ -927,7 +927,7 @@ TEST_F(V8ValueConverterImplTest, ObjectsWithClashingIdentityHash) {
   std::unique_ptr<base::Value> value(converter.FromV8Value(root, context));
   ASSERT_TRUE(value.get());
 
-  EXPECT_TRUE(expected->Equals(value.get()));
+  EXPECT_TRUE(*expected == *value);
 }
 
 TEST_F(V8ValueConverterImplTest, DetectCycles) {
@@ -953,7 +953,7 @@ TEST_F(V8ValueConverterImplTest, DetectCycles) {
       converter.FromV8Value(recursive_array, context));
   ASSERT_TRUE(actual_list.get());
 
-  EXPECT_TRUE(expected_list.Equals(actual_list.get()));
+  EXPECT_TRUE(expected_list == *actual_list);
 
   // Now create a recursive object
   const std::string key("key");
@@ -976,7 +976,7 @@ TEST_F(V8ValueConverterImplTest, DetectCycles) {
       converter.FromV8Value(recursive_object, context));
   ASSERT_TRUE(actual_dictionary.get());
 
-  EXPECT_TRUE(expected_dictionary.Equals(actual_dictionary.get()));
+  EXPECT_TRUE(expected_dictionary == *actual_dictionary);
 }
 
 // Tests that reused object values with no cycles do not get nullified.
