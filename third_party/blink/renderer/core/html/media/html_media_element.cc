@@ -444,11 +444,6 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // anonymous namespace
 
-// TODO(https://crbug.com/752720): Remove this once C++17 is adopted (and hence,
-// `inline constexpr` is supported).
-constexpr double HTMLMediaElement::kMinPlaybackRate;
-constexpr double HTMLMediaElement::kMaxPlaybackRate;
-
 // static
 MIMETypeRegistry::SupportsType HTMLMediaElement::GetSupportsType(
     const ContentType& content_type) {
