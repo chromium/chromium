@@ -159,8 +159,7 @@ struct VectorTypeOperations {
 
       size_t bytes = reinterpret_cast<const char*>(src_end) -
                      reinterpret_cast<const char*>(src);
-      if constexpr (Allocator::kIsGarbageCollected &&
-                    IsTraceableInCollectionTrait<VectorTraits<T>>::value)
+      if constexpr (Allocator::kIsGarbageCollected)
         AtomicWriteMemcpy(dst, src, bytes);
       else
         memcpy(dst, src, bytes);
@@ -185,8 +184,7 @@ struct VectorTypeOperations {
       if (!LIKELY(src && dst))
         return;
 
-      if constexpr (Allocator::kIsGarbageCollected &&
-                    IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+      if constexpr (Allocator::kIsGarbageCollected) {
         if (dst < src) {
           for (T *s = src, *d = dst; s < src_end; ++s, ++d)
             AtomicWriteMemcpy<sizeof(T)>(d, s);
@@ -223,8 +221,7 @@ struct VectorTypeOperations {
   static void Swap(T* const src, T* const src_end, T* const dst) {
     if constexpr (!VectorTraits<T>::kCanMoveWithMemcpy) {
       std::swap_ranges(src, src_end, dst);
-    } else if constexpr (Allocator::kIsGarbageCollected &&
-                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+    } else if constexpr (Allocator::kIsGarbageCollected) {
       constexpr size_t boundary = std::max(alignof(T), sizeof(size_t));
       alignas(boundary) char buf[sizeof(T)];
       for (T *s = src, *d = dst; s < src_end; ++s, ++d) {
@@ -246,8 +243,7 @@ struct VectorTypeOperations {
   static void Copy(const T* src, const T* src_end, T* dst) {
     if constexpr (!VectorTraits<T>::kCanCopyWithMemcpy) {
       std::copy(src, src_end, dst);
-    } else if constexpr (Allocator::kIsGarbageCollected &&
-                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+    } else if constexpr (Allocator::kIsGarbageCollected) {
       AtomicWriteMemcpy(dst, src,
                         reinterpret_cast<const char*>(src_end) -
                             reinterpret_cast<const char*>(src));
