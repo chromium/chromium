@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/private_network_access_check_result.h"
 
+#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 
 namespace network {
@@ -11,6 +12,31 @@ namespace network {
 using mojom::CorsError;
 
 using Result = PrivateNetworkAccessCheckResult;
+
+base::StringPiece PrivateNetworkAccessCheckResultToStringPiece(Result result) {
+  switch (result) {
+    case Result::kAllowedMissingClientSecurityState:
+      return "allowed-missing-client-security-state";
+    case Result::kAllowedNoLessPublic:
+      return "allowed-no-less-public";
+    case Result::kAllowedByPolicyAllow:
+      return "allowed-by-policy-allow";
+    case Result::kAllowedByPolicyWarn:
+      return "allowed-by-policy-warn";
+    case Result::kAllowedByTargetIpAddressSpace:
+      return "allowed-by-target-ip-address-space";
+    case Result::kBlockedByLoadOption:
+      return "blocked-by-load-option";
+    case Result::kBlockedByPolicyBlock:
+      return "insecure-private-network";
+    case Result::kBlockedByTargetIpAddressSpace:
+      return "blocked-by-target-ip-address-space";
+    case Result::kBlockedByPolicyPreflightWarn:
+      return "blocked-by-policy-preflight-warn";
+    case Result::kBlockedByPolicyPreflightBlock:
+      return "blocked-by-policy-preflight-block";
+  }
+}
 
 absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     Result result) {

@@ -4065,6 +4065,26 @@ EVENT_TYPE(CORS_PREFLIGHT_URL_REQUEST)
 EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 
 // ------------------------------------------------------------------------
+// Private Network Access
+// ------------------------------------------------------------------------
+
+// This event is logged when a new connection is checked against Private
+// Network Access rules.
+//
+// It contains the following parameters:
+//  {
+//    "client_address_space": <the IP address space of the request client>,
+//    "resource_address_space": <the IP address space of the remote endpoint>,
+//    "result": <the result of the check>,
+//  }
+//
+// If the result is "unexpected-private-network", then the request is
+// interrupted and a preflight request is retried, this time with PNA headers
+// attached. If this second connection fails the check again, the request is
+// failed.
+EVENT_TYPE(PRIVATE_NETWORK_ACCESS_CHECK)
+
+// ------------------------------------------------------------------------
 // Initiator
 // ------------------------------------------------------------------------
 

@@ -9,6 +9,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/transport_info.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

@@ -17,6 +17,7 @@
 #include "net/base/transport_info.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "url/gurl.h"
 
@@ -267,6 +268,19 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
 }
 
 }  // namespace
+
+base::StringPiece IPAddressSpaceToStringPiece(IPAddressSpace space) {
+  switch (space) {
+    case IPAddressSpace::kUnknown:
+      return "unknown";
+    case IPAddressSpace::kPublic:
+      return "public";
+    case IPAddressSpace::kPrivate:
+      return "private";
+    case IPAddressSpace::kLocal:
+      return "local";
+  }
+}
 
 IPAddressSpace TransportInfoToIPAddressSpace(const net::TransportInfo& info) {
   switch (info.type) {

@@ -1115,6 +1115,24 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
       security_state, target_ip_address_space_, options_,
       resource_ip_address_space_);
 
+  url_request_->net_log().AddEvent(
+      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
+        auto client_address_space = mojom::IPAddressSpace::kUnknown;
+        if (security_state) {
+          client_address_space = security_state->ip_address_space;
+        }
+
+        base::Value dict(base::Value::Type::DICTIONARY);
+        dict.SetStringKey("client_address_space",
+                          IPAddressSpaceToStringPiece(client_address_space));
+        dict.SetStringKey(
+            "resource_address_space",
+            IPAddressSpaceToStringPiece(resource_ip_address_space_));
+        dict.SetStringKey("result",
+                          PrivateNetworkAccessCheckResultToStringPiece(result));
+        return dict;
+      });
+
   bool is_warning = false;
   switch (result) {
     case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:

@@ -7,7 +7,9 @@
 
 #include <vector>
 
-#include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,6 +23,10 @@ struct TransportInfo;
 }  // namespace net
 
 namespace network {
+
+// Returns a human-readable string representing `space`, suitable for logging.
+base::StringPiece COMPONENT_EXPORT(NETWORK_CPP)
+    IPAddressSpaceToStringPiece(mojom::IPAddressSpace space);
 
 // Returns the `IPAddressSpace` to which the endpoint of `transport` belongs.
 //

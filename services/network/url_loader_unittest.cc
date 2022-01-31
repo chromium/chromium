@@ -60,6 +60,8 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_transaction_test_util.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/test_net_log.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
@@ -82,6 +84,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -122,7 +125,10 @@ namespace {
 
 using ::net::test::IsError;
 using ::net::test::IsOk;
+using ::testing::Eq;
 using ::testing::Optional;
+using ::testing::Pointee;
+using ::testing::SizeIs;
 using ::testing::ValuesIn;
 
 // Returns a URLLoader::DeleteCallback that destroys |url_loader| and quits
@@ -1664,20 +1670,60 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightWarn) {
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
 }
 
-// This test verifies that if the request's TrustedParams field carries a client
-// security state indicating that the request initiator is not a secure context
-// and came from the public IP address space, requests to local IP addresses
-// are blocked.
-TEST_F(URLLoaderTest, NonSecurePublicToLocalTrustedParams) {
+TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  net::RecordingNetLogObserver net_log_observer;
+
+  std::ignore = Load(test_server()->GetURL("/empty.html"));
+
+  std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK);
+
+  ASSERT_THAT(entries, SizeIs(1));
+
+  const base::Value& params = entries[0].params;
+  ASSERT_EQ(params.type(), base::Value::Type::DICTIONARY);
+
+  EXPECT_THAT(params.FindStringKey("client_address_space"),
+              Pointee(Eq("local")));
+
+  EXPECT_THAT(params.FindStringKey("resource_address_space"),
+              Pointee(Eq("local")));
+
+  EXPECT_THAT(params.FindStringKey("result"),
+              Pointee(Eq("allowed-no-less-public")));
+}
+
+TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
   auto client_security_state = NewSecurityState();
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  set_request_client_security_state(std::move(client_security_state));
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
+  set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
-  EXPECT_THAT(client()->completion_status().cors_error_status,
-              Optional(InsecurePrivateNetworkCorsErrorStatus(
-                  mojom::IPAddressSpace::kLocal)));
+  net::RecordingNetLogObserver net_log_observer;
+
+  std::ignore = Load(test_server()->GetURL("/empty.html"));
+
+  std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK);
+
+  ASSERT_THAT(entries, SizeIs(1));
+
+  const base::Value& params = entries[0].params;
+  ASSERT_EQ(params.type(), base::Value::Type::DICTIONARY);
+
+  EXPECT_THAT(params.FindStringKey("client_address_space"),
+              Pointee(Eq("public")));
+
+  EXPECT_THAT(params.FindStringKey("resource_address_space"),
+              Pointee(Eq("local")));
+
+  EXPECT_THAT(params.FindStringKey("result"),
+              Pointee(Eq("blocked-by-policy-preflight-block")));
 }
 
 // Bundles together the inputs to a parameterized private network request test.
