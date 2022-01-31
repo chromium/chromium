@@ -1348,6 +1348,15 @@
        {}
       ]
      ],
+     "table": {
+      "balance-breakafter-before-table-section-crash.html": [
+       "119b44607eb977901c9f43b4e6871bc2efb03a30",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "toggle-spanner-float-crash.html": [
       "d5948b2dd67085108e22fde4ba7a7229b746c92b",
       [
@@ -82115,6 +82124,47 @@
        {}
       ]
      ],
+     "table": {
+      "table-caption-and-cells-fixed-width.html": [
+       "11984c3ea3f74e4506aaa41162451d2be72229b2",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-caption-and-cells-fixed-width-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-caption-and-cells.html": [
+       "365786f49ef9afc8a02e1f04b65ae62cfbc93b26",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-caption-and-cells-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-caption-with-block.html": [
+       "1d3aa3317ebdce4166255957ecdb025aa49790ea",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-caption-with-block-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "tall-break-inside-avoid-at-start.html": [
       "6e9ab8bd9f56502247a6d8c2c2045b8f3af3605d",
       [
@@ -136485,6 +136535,45 @@
         [
          [
           "/css/css-multicol/table/multicol-table-cell-vertical-align-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-as-multicol.html": [
+       "9df85f019286f753df6f1051b3e97d4fe9441c97",
+       [
+        null,
+        [
+         [
+          "/css/css-multicol/table/table-cell-as-multicol-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-content-change-000.html": [
+       "27227e96a9053048b24879befe1e9f453d0b40ff",
+       [
+        null,
+        [
+         [
+          "/css/css-multicol/table/table-cell-content-change-000-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-content-change-001.html": [
+       "5ecb7ec408787dd8224ae893a2f630cf79baa786",
+       [
+        null,
+        [
+         [
+          "/css/css-multicol/table/table-cell-content-change-001-ref.html",
           "=="
          ]
         ],
@@ -243320,6 +243409,20 @@
       "8c19f1cf4c6c0173b45face28d624368d365ec70",
       []
      ],
+     "table": {
+      "table-caption-and-cells-fixed-width-ref.html": [
+       "c41a4a515a829fcea236c3d242c0c629d312a307",
+       []
+      ],
+      "table-caption-and-cells-ref.html": [
+       "1ca93e64f7f9da9ffcb84ea42b233941674f139e",
+       []
+      ],
+      "table-caption-with-block-ref.html": [
+       "ca210636a94ccddfc86a01dc99f2f8db7b81d0f4",
+       []
+      ]
+     },
      "transform-006-ref.html": [
       "ffb859017da98baed10da8099979a069b34710cb",
       []
@@ -260757,6 +260860,18 @@
       ],
       "multicol-table-cell-vertical-align-ref.xht": [
        "6d20530b73bb6276fba3d2ac5c740aca1100e0b2",
+       []
+      ],
+      "table-cell-as-multicol-ref.html": [
+       "2e5a6ba4603854175b3555802ba1efce6b7e840c",
+       []
+      ],
+      "table-cell-content-change-000-ref.html": [
+       "f8f1c9e19f6f3779d6b14d7e0de2d75d2eaf606e",
+       []
+      ],
+      "table-cell-content-change-001-ref.html": [
+       "ad7ff706c98f2d7b0a0efc3ab40007764ad9835b",
        []
       ]
      }
@@ -369476,6 +369591,13 @@
        {}
       ]
      ],
+     "multicol-fill-balance-019.html": [
+      "ea8b1a5e230ba36583feddd4518c10e0f5eab7a2",
+      [
+       null,
+       {}
+      ]
+     ],
      "multicol-fill-balance-020.html": [
       "86d229fdde876918680c121990c558b599d903d4",
       [
@@ -369745,6 +369867,13 @@
       ]
      ],
      "table": {
+      "balance-table-with-border-spacing.html": [
+       "9a55737a51ae88ff46eebf0e9c05f1a080a43568",
+       [
+        null,
+        {}
+       ]
+      ],
       "balance-table-with-fractional-height-row.html": [
        "434dc52ea3d731bd1393270372294cd007382e59",
        [
@@ -495425,6 +495554,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "cross-origin-iframe.html": [
+     "69daebffaf2a245eae51872826bc04ff78b0a135",
+     [
+      null,
+      {}
      ]
     ],
     "cross-origin-redirects.html": [
