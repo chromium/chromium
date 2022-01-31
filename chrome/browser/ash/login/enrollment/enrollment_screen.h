@@ -51,8 +51,7 @@ class EnrollmentScreen
     BACK,
     SKIPPED_FOR_TESTS,
     TPM_ERROR,
-    TPM_DBUS_ERROR,
-    BACK_TO_AUTO_ENROLLMENT_CHECK,
+    TPM_DBUS_ERROR
   };
 
   static std::string GetResultString(Result result);

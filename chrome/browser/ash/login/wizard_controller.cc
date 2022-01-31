@@ -1435,11 +1435,12 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
           << EnrollmentScreen::GetResultString(result) << ").";
   switch (result) {
     case EnrollmentScreen::Result::COMPLETED:
+    case EnrollmentScreen::Result::SKIPPED_FOR_TESTS:
       OnEnrollmentDone();
       break;
     case EnrollmentScreen::Result::BACK:
-    case EnrollmentScreen::Result::SKIPPED_FOR_TESTS:
-      ShowPackagedLicenseScreen();
+      retry_auto_enrollment_check_ = true;
+      ShowAutoEnrollmentCheckScreen();
       break;
     case EnrollmentScreen::Result::TPM_ERROR:
       DCHECK(switches::IsTpmDynamic());
@@ -1450,10 +1451,6 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       DCHECK(switches::IsTpmDynamic());
       wizard_context_->tpm_dbus_error = true;
       AdvanceToScreen(TpmErrorView::kScreenId);
-      break;
-    case EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK:
-      retry_auto_enrollment_check_ = true;
-      ShowAutoEnrollmentCheckScreen();
       break;
   }
 }

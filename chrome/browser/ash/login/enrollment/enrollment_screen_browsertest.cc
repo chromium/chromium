@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(EnrollmentScreenDynamicTPMTest, TPMCheckCanceled) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepTPMChecking);
   test::OobeJS().TapOnPath(kEnrollmentTPMCheckCancelButton);
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(screen_result, EnrollmentScreen::Result::BACK);
+  EXPECT_EQ(screen_result, EnrollmentScreen::Result::COMPLETED);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestSuccess) {
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(AttestationAuthEnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollmentSpinner) {
@@ -256,8 +256,7 @@ IN_PROC_BROWSER_TEST_F(ForcedAttestationAuthEnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
-            screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 }
 
 class MultiAuthEnrollmentScreenTest : public EnrollmentScreenTest {
@@ -290,8 +289,7 @@ IN_PROC_BROWSER_TEST_F(MultiAuthEnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
-            screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 }
 
 class ProvisionedEnrollmentScreenTest : public EnrollmentScreenTest {
@@ -322,8 +320,7 @@ IN_PROC_BROWSER_TEST_F(ProvisionedEnrollmentScreenTest, TestBackButton) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
-            screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 }
 
 class OobeCompletedUnownedTest : public OobeBaseTest {
