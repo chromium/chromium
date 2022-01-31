@@ -560,7 +560,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   constexpr Time() : TimeBase(0) {}
 
   // Returns the time for epoch in Unix-like system (Jan 1, 1970).
-  static Time UnixEpoch();
+  static constexpr Time UnixEpoch() { return Time(kTimeTToMicrosecondsOffset); }
 
   // Returns the current time. Watch out, the system might adjust its clock
   // in which case time will actually go backwards. We don't guarantee that
@@ -593,7 +593,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   TimeDelta ToDeltaSinceWindowsEpoch() const;
 
   // Converts to/from time_t in UTC and a Time class.
-  static Time FromTimeT(time_t tt);
+  static constexpr Time FromTimeT(time_t tt);
   time_t ToTimeT() const;
 
   // Converts time to/from a double which is the number of seconds since epoch
@@ -937,6 +937,17 @@ constexpr TimeClass TimeBase<TimeClass>::operator-(TimeDelta delta) const {
 }
 
 }  // namespace time_internal
+
+// Time functions that must appear below the declarations of Time/TimeDelta
+
+// static
+constexpr Time Time::FromTimeT(time_t tt) {
+  if (tt == 0)
+    return Time();  // Preserve 0 so we can tell it doesn't exist.
+  return (tt == std::numeric_limits<time_t>::max())
+             ? Max()
+             : (UnixEpoch() + Seconds(tt));
+}
 
 // For logging use only.
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, Time time);

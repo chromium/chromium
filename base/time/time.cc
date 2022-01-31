@@ -163,15 +163,6 @@ TimeDelta Time::ToDeltaSinceWindowsEpoch() const {
   return Microseconds(us_);
 }
 
-// static
-Time Time::FromTimeT(time_t tt) {
-  if (tt == 0)
-    return Time();  // Preserve 0 so we can tell it doesn't exist.
-  return (tt == std::numeric_limits<time_t>::max())
-             ? Max()
-             : (UnixEpoch() + Seconds(tt));
-}
-
 time_t Time::ToTimeT() const {
   if (is_null())
     return 0;  // Preserve 0 so we can tell it doesn't exist.
@@ -237,11 +228,6 @@ int64_t Time::ToJavaTime() const {
     return (*this - UnixEpoch()).InMilliseconds();
   return (us_ < 0) ? std::numeric_limits<int64_t>::min()
                    : std::numeric_limits<int64_t>::max();
-}
-
-// static
-Time Time::UnixEpoch() {
-  return Time(kTimeTToMicrosecondsOffset);
 }
 
 Time Time::Midnight(bool is_local) const {
