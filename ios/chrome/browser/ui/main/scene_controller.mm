@@ -2748,7 +2748,9 @@ bool IsSigninForcedByPolicy() {
     (signin_ui::CompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   if (!signin::IsSigninAllowedByPolicy()) {
-    completion(/*success=*/NO);
+    if (completion) {
+      completion(/*success=*/NO);
+    }
     [self.signinCoordinator stop];
     id<PolicyChangeCommands> handler = HandlerForProtocol(
         self.signinCoordinator.browser->GetCommandDispatcher(),
