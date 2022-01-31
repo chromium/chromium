@@ -448,22 +448,6 @@ base::FilePath ContainerChromeOSBaseDirectory() {
   return base::FilePath("/mnt/chromeos");
 }
 
-void AddNewLxdContainerToPrefs(Profile* profile,
-                               const ContainerId& container_id) {
-  auto* pref_service = profile->GetPrefs();
-
-  base::Value new_container(base::Value::Type::DICTIONARY);
-  new_container.SetKey(prefs::kVmKey, base::Value(container_id.vm_name));
-  new_container.SetKey(prefs::kContainerKey,
-                       base::Value(container_id.container_name));
-  new_container.SetIntKey(prefs::kContainerOsVersionKey,
-                          static_cast<int>(ContainerOsVersion::kUnknown));
-  new_container.SetStringKey(prefs::kContainerOsPrettyNameKey, "");
-
-  ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
-  updater->Append(std::move(new_container));
-}
-
 namespace {
 
 bool MatchContainerDict(const base::Value& dict,
@@ -475,6 +459,27 @@ bool MatchContainerDict(const base::Value& dict,
 }
 
 }  // namespace
+
+void AddNewLxdContainerToPrefs(Profile* profile,
+                               const ContainerId& container_id) {
+  ListPrefUpdate updater(profile->GetPrefs(),
+                         crostini::prefs::kCrostiniContainers);
+  auto it = std::find_if(
+      updater->GetList().begin(), updater->GetList().end(),
+      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
+  if (it != updater->GetList().end()) {
+    return;
+  }
+
+  base::Value new_container(base::Value::Type::DICTIONARY);
+  new_container.SetKey(prefs::kVmKey, base::Value(container_id.vm_name));
+  new_container.SetKey(prefs::kContainerKey,
+                       base::Value(container_id.container_name));
+  new_container.SetIntKey(prefs::kContainerOsVersionKey,
+                          static_cast<int>(ContainerOsVersion::kUnknown));
+  new_container.SetStringKey(prefs::kContainerOsPrettyNameKey, "");
+  updater->Append(std::move(new_container));
+}
 
 void RemoveLxdContainerFromPrefs(Profile* profile,
                                  const ContainerId& container_id) {
