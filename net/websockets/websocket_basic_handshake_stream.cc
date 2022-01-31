@@ -159,6 +159,13 @@ bool ValidateConnection(const HttpResponseHeaders* headers,
   return true;
 }
 
+base::Value NetLogFailureParam(int net_error, const std::string& message) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("net_error", net_error);
+  dict.SetStringKey("message", message);
+  return dict;
+}
+
 }  // namespace
 
 WebSocketBasicHandshakeStream::WebSocketBasicHandshakeStream(
@@ -199,6 +206,7 @@ int WebSocketBasicHandshakeStream::InitializeStream(
     CompletionOnceCallback callback) {
   DCHECK(request_info->traffic_annotation.is_valid());
   url_ = request_info->url;
+  net_log_ = net_log;
   // The WebSocket may receive a socket in the early data state from
   // HttpNetworkTransaction, which means it must call ConfirmHandshake() for
   // requests that need replay protection. However, the first request on any
@@ -529,6 +537,8 @@ void WebSocketBasicHandshakeStream::OnFailure(
     const std::string& message,
     int net_error,
     absl::optional<int> response_code) {
+  net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_UPGRADE_FAILURE,
+                    [&] { return NetLogFailureParam(net_error, message); });
   // Avoid connection reuse if auth did not happen.
   state_.connection()->socket()->Disconnect();
   stream_request_->OnFailure(message, net_error, response_code);

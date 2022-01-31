@@ -4081,3 +4081,15 @@ EVENT_TYPE(CREATED_BY)
 //    "privacy_mode": <Privacy mode associated with the request>,
 // }
 EVENT_TYPE(COMPUTED_PRIVACY_MODE)
+
+// ------------------------------------------------------------------------
+// WebSocket
+// ------------------------------------------------------------------------
+
+// This event is logged when an error occurs during WebSocket handshake. It
+// contains the following parameters:
+// {
+//    "net_error": <The number showing network error type>,
+//    "message": <Failure message>,
+// }
+EVENT_TYPE(WEBSOCKET_UPGRADE_FAILURE)
