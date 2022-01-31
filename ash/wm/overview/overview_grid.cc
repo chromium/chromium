@@ -1744,15 +1744,18 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
 
   if (exit_overview && overview_session_->enter_exit_overview_type() ==
                            OverviewEnterExitType::kImmediateExit) {
-    // Since we're immediately exiting, we don't need to animate anything and
-    // can let the `desks_templates_grid_widget_` handle its own destruction.
+    // Since we're immediately exiting, we don't need to animate anything.
+    // Reshow the overview items and let the `desks_templates_grid_widget_`
+    // handle its own destruction.
+    for (auto& overview_mode_item : window_list_)
+      overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/false);
     return;
   }
 
   if (exit_overview) {
     // Un-hide the overview mode items.
     for (auto& overview_mode_item : window_list_)
-      overview_mode_item->RevertHideForDesksTemplatesGrid();
+      overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/true);
 
     // Disable the `desks_templates_grid_widget_`'s event targeting so it can't
     // get any events during the animation.
@@ -2354,7 +2357,7 @@ void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
 
 void OverviewGrid::OnDesksTemplatesGridFadedOut() {
   for (auto& overview_mode_item : window_list_)
-    overview_mode_item->RevertHideForDesksTemplatesGrid();
+    overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/true);
 
   desks_templates_grid_widget_->Hide();
 

@@ -86,8 +86,9 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // This shows overview items that were hidden by the desk templates grid.
   // Called when exiting the desk templates UI and going back to the overview
-  // grid.
-  void RevertHideForDesksTemplatesGrid();
+  // grid. Fades the overview items in if `animate` is true, otherwise shows
+  // them immediately.
+  void RevertHideForDesksTemplatesGrid(bool animate);
 
   // Dispatched before beginning window overview. This will do any necessary
   // one time actions such as restoring minimized windows.

@@ -2303,6 +2303,41 @@ TEST_F(DesksTemplatesTest, NoAnimationWhenRemovingDesk) {
   EXPECT_EQ(0.f, test_window->layer()->opacity());
 }
 
+// Tests that windows have their opacity reset after being hidden and then going
+// to a different desk. Regression test for https://crbug.com/1292174.
+TEST_F(DesksTemplatesTest, WindowOpacityResetAfterViewing) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  // Create and a new desk, and create a couple of test windows on the active
+  // desk.
+  DesksController* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  auto test_window1 = CreateAppWindow();
+  auto test_window2 = CreateAppWindow();
+  auto test_window3 = CreateAppWindow();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+  ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window1.get()));
+  ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window2.get()));
+  ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window3.get()));
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // All the windows are hidden to show the templates grid.
+  EXPECT_EQ(0.f, test_window1->layer()->opacity());
+  EXPECT_EQ(0.f, test_window2->layer()->opacity());
+  EXPECT_EQ(0.f, test_window3->layer()->opacity());
+
+  ui::ScopedAnimationDurationScaleMode animation(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Activate the second desk which has no windows. Test that all the windows
+  // have their opacity restored.
+  ActivateDesk(desks_controller->desks()[1].get());
+  EXPECT_EQ(1.f, test_window1->layer()->opacity());
+  EXPECT_EQ(1.f, test_window2->layer()->opacity());
+  EXPECT_EQ(1.f, test_window3->layer()->opacity());
+}
+
 // Tests that the desks templates name view can accept touch events and get
 // focused. Regression test for https://crbug.com/1291769.
 TEST_F(DesksTemplatesTest, TouchForNameView) {

@@ -234,14 +234,21 @@ void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
           item_widget_->GetNativeWindow());
 }
 
-void OverviewItem::RevertHideForDesksTemplatesGrid() {
+void OverviewItem::RevertHideForDesksTemplatesGrid(bool animate) {
   // `item_widget_` may be null during shutdown if the window is minimized.
-  if (item_widget_)
-    PerformFadeInLayer(item_widget_->GetLayer());
+  if (item_widget_) {
+    if (animate)
+      PerformFadeInLayer(item_widget_->GetLayer());
+    else
+      item_widget_->GetLayer()->SetOpacity(1.f);
+  }
 
   for (aura::Window* transient_child :
        GetTransientTreeIterator(transform_window_.window())) {
-    PerformFadeInLayer(transient_child->layer());
+    if (animate)
+      PerformFadeInLayer(transient_child->layer());
+    else
+      transient_child->layer()->SetOpacity(1.f);
   }
 
   item_widget_event_blocker_.reset();
