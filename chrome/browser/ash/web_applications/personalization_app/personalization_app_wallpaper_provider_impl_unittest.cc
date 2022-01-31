@@ -179,11 +179,21 @@ class TestWallpaperObserver
 
 }  // namespace
 
-class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
+class PersonalizationAppWallpaperProviderImplTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool /* google_photos_enabled */> {
  public:
   PersonalizationAppWallpaperProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    std::vector<base::Feature> features = {ash::features::kWallpaperWebUI};
+    if (GooglePhotosEnabled())
+      features.push_back(ash::features::kWallpaperGooglePhotosIntegration);
+    // Note: `scoped_feature_list_` should be initialized before `SetUp()`
+    // (see crbug.com/846380).
+    scoped_feature_list_.InitWithFeatures(features, /*disabled_features=*/{});
+  }
+
   PersonalizationAppWallpaperProviderImplTest(
       const PersonalizationAppWallpaperProviderImplTest&) = delete;
   PersonalizationAppWallpaperProviderImplTest& operator=(
@@ -193,7 +203,6 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kWallpaperWebUI);
     wallpaper_controller_client_ =
         std::make_unique<WallpaperControllerClientImpl>();
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
@@ -221,6 +230,10 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     wallpaper_provider_->image_asset_id_map_.insert({asset_id, image_info});
   }
 
+  // Returns true if the test should run with the Google Photos Wallpaper
+  // integration enabled, false otherwise.
+  bool GooglePhotosEnabled() const { return GetParam(); }
+
   TestWallpaperController* test_wallpaper_controller() {
     return &test_wallpaper_controller_;
   }
@@ -247,6 +260,9 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   }
 
  private:
+  // Note: `scoped_feature_list_` should be destroyed after `task_environment_`
+  // (see crbug.com/846380).
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   // Required for |ScopedTestCrosSettings|.
@@ -269,10 +285,13 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
       wallpaper_provider_remote_;
   TestWallpaperObserver test_wallpaper_observer_;
   std::unique_ptr<PersonalizationAppWallpaperProviderImpl> wallpaper_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PersonalizationAppWallpaperProviderImplTest,
+                         /*google_photos_enabled=*/::testing::Values(false));
+
+TEST_P(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
   const uint64_t asset_id = 1;
@@ -305,7 +324,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
             test_wallpaper_controller()->wallpaper_info().value());
 }
 
-TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
+TEST_P(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
   const uint64_t asset_id = 1;
@@ -338,7 +357,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
             test_wallpaper_controller()->wallpaper_info().value());
 }
 
-TEST_F(PersonalizationAppWallpaperProviderImplTest,
+TEST_P(PersonalizationAppWallpaperProviderImplTest,
        ObserveWallpaperFiresWhenBound) {
   // This will create the data url referenced below in expectation.
   test_wallpaper_controller()->ShowWallpaperImage(
@@ -385,30 +404,12 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
 }
 
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
-    : public PersonalizationAppWallpaperProviderImplTest,
-      public testing::WithParamInterface<bool /* google_photos_enabled */> {
- public:
-  // Returns true if the test should run with the Google Photos Wallpaper
-  // integration enabled, false otherwise.
-  bool GooglePhotosEnabled() const { return GetParam(); }
-
+    : public PersonalizationAppWallpaperProviderImplTest {
  protected:
   // The number of times to start each idempotent API query.
   static constexpr size_t kNumFetches = 2;
-
   // Resume token value used across several tests.
   const std::string kResumeToken = "token";
-
-  // PersonalizationAppWallpaperProviderImplTest:
-  void SetUp() override {
-    PersonalizationAppWallpaperProviderImplTest::SetUp();
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kWallpaperGooglePhotosIntegration,
-        GooglePhotosEnabled());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
