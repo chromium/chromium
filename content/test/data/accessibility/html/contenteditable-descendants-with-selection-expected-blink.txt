@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer editable multiline richlyEditable value='A contenteditable with a link and an  and a .<newline><newline>Always expose editable tables as tables.<newline>Editable list item.' nonAtomicTextFieldRoot=true TreeData.textSelStartOffset=0 TreeData.textSelEndOffset=3
+++++++genericContainer editable multiline richlyEditable value='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.' nonAtomicTextFieldRoot=true TreeData.textSelStartOffset=0 TreeData.textSelEndOffset=3
 ++++++++paragraph editable richlyEditable
 ++++++++++staticText editable richlyEditable name='A contenteditable with a '
 ++++++++++++inlineTextBox editable richlyEditable name='A contenteditable with a '

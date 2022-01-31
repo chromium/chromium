@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -29,7 +30,7 @@ MATCHER_P(HasAXNodeID, ax_node_data, "") {
 
 }  // namespace
 
-using testing::ElementsAre;
+using ::testing::ElementsAre;
 
 TEST(AXNodeTest, TreeWalking) {
   // ++kRootWebArea
@@ -393,11 +394,15 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
   EXPECT_EQ(root_node_1, root_node_2->GetUnignoredParentCrossingTreeBoundary());
 }
 
-TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
+TEST(AXNodeTest, GetValueForControlTextField) {
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kSuppressCharacter);
+
   // kRootWebArea
   // ++kTextField (contenteditable)
   // ++++kGenericContainer
   // ++++++kStaticText "Line 1"
+  // ++++++kImage
   // ++++++kLineBreak '\n'
   // ++++++kStaticText "Line 2"
 
@@ -409,10 +414,12 @@ TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
   rich_text_field_text_container.id = 3;
   AXNodeData rich_text_field_line_1;
   rich_text_field_line_1.id = 4;
+  AXNodeData rich_text_field_image;
+  rich_text_field_image.id = 5;
   AXNodeData rich_text_field_line_break;
-  rich_text_field_line_break.id = 5;
+  rich_text_field_line_break.id = 6;
   AXNodeData rich_text_field_line_2;
-  rich_text_field_line_2.id = 6;
+  rich_text_field_line_2.id = 7;
 
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {rich_text_field.id};
@@ -429,14 +436,19 @@ TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
   rich_text_field_text_container.AddState(ax::mojom::State::kIgnored);
   rich_text_field_text_container.AddState(ax::mojom::State::kEditable);
   rich_text_field_text_container.AddState(ax::mojom::State::kRichlyEditable);
-  rich_text_field_text_container.child_ids = {rich_text_field_line_1.id,
-                                              rich_text_field_line_break.id,
-                                              rich_text_field_line_2.id};
+  rich_text_field_text_container.child_ids = {
+      rich_text_field_line_1.id, rich_text_field_image.id,
+      rich_text_field_line_break.id, rich_text_field_line_2.id};
 
   rich_text_field_line_1.role = ax::mojom::Role::kStaticText;
   rich_text_field_line_1.AddState(ax::mojom::State::kEditable);
   rich_text_field_line_1.AddState(ax::mojom::State::kRichlyEditable);
   rich_text_field_line_1.SetName("Line 1");
+
+  rich_text_field_image.role = ax::mojom::Role::kImage;
+  rich_text_field_image.AddState(ax::mojom::State::kEditable);
+  rich_text_field_image.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_image.SetName(AXNode::kEmbeddedObjectCharacterUTF8);
 
   rich_text_field_line_break.role = ax::mojom::Role::kLineBreak;
   rich_text_field_line_break.AddState(ax::mojom::State::kEditable);
@@ -456,6 +468,7 @@ TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
                   rich_text_field,
                   rich_text_field_text_container,
                   rich_text_field_line_1,
+                  rich_text_field_image,
                   rich_text_field_line_break,
                   rich_text_field_line_2};
 
@@ -466,7 +479,9 @@ TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
     const AXNode* text_field_node =
         manager.GetTree()->GetFromId(rich_text_field.id);
     ASSERT_NE(nullptr, text_field_node);
-    EXPECT_EQ("Line 1\nLine 2", text_field_node->GetValueForControl());
+    // In the accessibility tree's text representation, there is an implicit
+    // line break before every embedded object, such as an image.
+    EXPECT_EQ("Line 1\n\nLine 2", text_field_node->GetValueForControl());
   }
 
   // Only rich text fields should have their value attribute automatically
@@ -492,7 +507,7 @@ TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
       ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
 
   // A node's data should override any computed node data.
-  rich_text_field.SetValue("Other value");
+  rich_text_field.SetValue("Line 1\nLine 2");
   AXTreeUpdate update_3;
   update_3.nodes = {rich_text_field};
 
@@ -502,7 +517,7 @@ TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
     const AXNode* text_field_node =
         manager.GetTree()->GetFromId(rich_text_field.id);
     ASSERT_NE(nullptr, text_field_node);
-    EXPECT_EQ("Other value", text_field_node->GetValueForControl());
+    EXPECT_EQ("Line 1\nLine 2", text_field_node->GetValueForControl());
   }
 }
 

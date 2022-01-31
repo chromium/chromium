@@ -1730,7 +1730,8 @@ bool AXNode::IsLeaf() const {
       // maps. Therefore, do not truncate descendants except in the case where
       // ARIA role=img or role=image because that's how we want to treat
       // ARIA-based images.
-      std::string role = GetStringAttribute(ax::mojom::StringAttribute::kRole);
+      const std::string role =
+          GetStringAttribute(ax::mojom::StringAttribute::kRole);
       return role == "img" || role == "image";
     }
     case ax::mojom::Role::kDocCover:
@@ -1879,10 +1880,11 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   // ancestor, its immediate descendant can have Role::kGenericContainer without
   // State::kEditable. Same with inline text boxes and placeholder text.
   // TODO(nektar): Fix all such inconsistencies in Blink.
-  for (AXNode* ancestor = const_cast<AXNode*>(this);
-       ancestor && (ancestor->HasState(ax::mojom::State::kEditable) ||
-                    ancestor->GetRole() == ax::mojom::Role::kGenericContainer ||
-                    ancestor->IsText());
+  //
+  // Also, ARIA text and search boxes may not have the contenteditable attribute
+  // set, but they should still be treated the same as all other text fields.
+  // (See `AXNodeData::IsAtomicTextField()` for more details.)
+  for (AXNode* ancestor = const_cast<AXNode*>(this); ancestor;
        ancestor = ancestor->GetUnignoredParent()) {
     if (ancestor->data().IsTextField())
       return ancestor;

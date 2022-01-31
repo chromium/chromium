@@ -1,5 +1,5 @@
 AXWebArea
-++AXTextArea AXValue='This is editable.<newline><newline>This is not editable.<newline><newline><newline>But this one is.<newline><newline>So is this one.'
+++AXTextArea AXValue='This is editable.<newline>This is not editable.<newline>But this one is.<newline>So is this one.'
 ++++AXGroup
 ++++++AXStaticText AXValue='This is editable.'
 ++++AXStaticText AXValue='This is not editable.'
