@@ -111,6 +111,16 @@ void FakeSamlIdpMixin::SetUpCommandLine(base::CommandLine* command_line) {
   html_template_dir_ = test_data_dir.Append("login");
   saml_response_dir_ = test_data_dir.Append("chromeos").Append("login");
 
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    std::string fake_saml_continue_response;
+    EXPECT_TRUE(base::ReadFileToString(
+        html_template_dir_.Append("gaia_finish_after_saml.html"),
+        &fake_saml_continue_response));
+    gaia_mixin_->fake_gaia()->SetFakeSamlContinueResponse(
+        fake_saml_continue_response);
+  }
+
   ASSERT_TRUE(saml_server_.Start());
   ASSERT_TRUE(saml_http_server_.Start());
 }

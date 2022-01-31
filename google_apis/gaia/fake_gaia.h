@@ -202,7 +202,12 @@ class FakeGaia {
 
   // Returns the fake server's URL that browser tests can visit to trigger a
   // RemoveLocalAccount event.
-  GURL GetDummyRemoveLocalAccountURL(const std::string& gaia_id) const;
+  GURL GetFakeRemoveLocalAccountURL(const std::string& gaia_id) const;
+
+  void SetFakeSamlContinueResponse(
+      const std::string& fake_saml_continue_response) {
+    fake_saml_continue_response_ = fake_saml_continue_response;
+  }
 
  protected:
   // HTTP handler for /MergeSession.
@@ -281,7 +286,7 @@ class FakeGaia {
       net::test_server::BasicHttpResponse* http_response);
   void HandleSSO(const net::test_server::HttpRequest& request,
                  net::test_server::BasicHttpResponse* http_response);
-  void HandleDummySAMLContinue(
+  void HandleFakeSAMLContinue(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
   void HandleAuthToken(const net::test_server::HttpRequest& request,
@@ -309,7 +314,7 @@ class FakeGaia {
   // HTTP handler for /OAuth/Multilogin.
   void HandleMultilogin(const net::test_server::HttpRequest& request,
                         net::test_server::BasicHttpResponse* http_response);
-  void HandleDummyRemoveLocalAccount(
+  void HandleFakeRemoveLocalAccount(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
 
@@ -336,6 +341,7 @@ class FakeGaia {
   RequestHandlerMap request_handlers_;
   ErrorResponseMap error_responses_;
   std::string embedded_setup_chromeos_response_;
+  std::string fake_saml_continue_response_;
   SamlAccountIdpMap saml_account_idp_map_;
   SamlDomainRedirectUrlMap saml_domain_url_map_;
   bool issue_oauth_code_cookie_;

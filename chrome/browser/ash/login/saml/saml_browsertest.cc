@@ -204,7 +204,7 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
 };
 
 SecretInterceptingFakeUserDataAuthClient::
-    SecretInterceptingFakeUserDataAuthClient() {}
+    SecretInterceptingFakeUserDataAuthClient() = default;
 
 void SecretInterceptingFakeUserDataAuthClient::AuthenticateAuthSession(
     const ::user_data_auth::AuthenticateAuthSessionRequest& request,
@@ -231,7 +231,7 @@ class SamlTestBase : public OobeBaseTest {
   SamlTestBase(const SamlTestBase&) = delete;
   SamlTestBase& operator=(const SamlTestBase&) = delete;
 
-  ~SamlTestBase() override {}
+  ~SamlTestBase() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeBaseTest::SetUpCommandLine(command_line);
@@ -533,6 +533,16 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, CredentialPassingAPI) {
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 1, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Provider", 1, 1);
   histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
 }
 
 // Tests the sign-in flow when the credentials passing API is used w/o 'confirm'
@@ -572,6 +582,16 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 1, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Provider", 1, 1);
   histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
 }
 
 // Tests the single password scraped flow.
@@ -614,6 +634,16 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedSingle) {
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
                                       1, 1);
   histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
 }
 
 // Tests password scraping from a dynamically created password field.
@@ -679,6 +709,16 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedMultiple) {
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
                                       2, 1);
   histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
 }
 
 // Tests the no password scraped flow.
@@ -715,6 +755,16 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedNone) {
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
                                       0, 1);
   histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
 }
 
 // Types the second user e-mail into the GAIA login form but then authenticates
@@ -907,7 +957,7 @@ SAMLEnrollmentTest::SAMLEnrollmentTest() {
   authenticator_id_ = "$('enterprise-enrollment').authenticator_";
 }
 
-SAMLEnrollmentTest::~SAMLEnrollmentTest() {}
+SAMLEnrollmentTest::~SAMLEnrollmentTest() = default;
 
 void SAMLEnrollmentTest::SetUpOnMainThread() {
   FakeGaia::AccessTokenInfo token_info;
@@ -1017,7 +1067,7 @@ SAMLPolicyTest::SAMLPolicyTest()
   device_state_.set_skip_initial_policy_setup(true);
 }
 
-SAMLPolicyTest::~SAMLPolicyTest() {}
+SAMLPolicyTest::~SAMLPolicyTest() = default;
 
 void SAMLPolicyTest::SetUpInProcessBrowserTestFixture() {
   SessionManagerClient::InitializeFakeInMemory();

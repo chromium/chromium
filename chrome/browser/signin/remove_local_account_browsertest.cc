@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAccountTest, ShouldNotifyObservers) {
   // Open a FakeGaia page that issues the desired HTTP response header with
   // Google-Accounts-RemoveLocalAccount.
   chrome::AddTabAt(browser(),
-                   fake_gaia_.GetDummyRemoveLocalAccountURL(kTestGaiaId),
+                   fake_gaia_.GetFakeRemoveLocalAccountURL(kTestGaiaId),
                    /*index=*/0,
                    /*foreground=*/true);
 

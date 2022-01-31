@@ -32,6 +32,9 @@ gaia.chromeOSLogin.registerHtml5Listener = function() {
         gaia.chromeOSLogin.parent_webview_ = e.source;
         gaia.chromeOSLogin.parent_webview_url_ = e.origin;
         if (!gaia.chromeOSLogin.initialized_) {
+            if (e.data.method != 'handshake') {
+              return
+            }
           gaia.chromeOSLogin.initialized_ = true;
           goFirstPage();
         } else if (e.data == 'primaryActionHit') {
