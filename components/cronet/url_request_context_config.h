@@ -150,8 +150,8 @@ struct URLRequestContextConfig {
   int host_cache_persistence_delay_ms = 60000;
 
   // Experimental options that are recognized by the config parser.
-  std::unique_ptr<base::DictionaryValue> effective_experimental_options;
-  std::unique_ptr<base::DictionaryValue> experimental_options;
+  base::Value::DictStorage effective_experimental_options;
+  base::Value::DictStorage experimental_options;
 
   // If set, forces NQE to return the set value as the effective connection
   // type.
@@ -239,8 +239,8 @@ struct URLRequestContextConfig {
       const std::string& accept_language,
       // User-Agent request header field.
       const std::string& user_agent,
-      // JSON encoded experimental options.
-      std::unique_ptr<base::DictionaryValue> experimental_options,
+      // Parsed experimental options.
+      base::Value::DictStorage experimental_options,
       // MockCertVerifier to use for testing purposes.
       std::unique_ptr<net::CertVerifier> mock_cert_verifier,
       // Enable network quality estimator.
@@ -255,12 +255,11 @@ struct URLRequestContextConfig {
 
   // Parses experimental options from their JSON format to the format used
   // internally.
-  // Returns null if the operation was unsuccessful.
-  static std::unique_ptr<base::DictionaryValue> ParseExperimentalOptions(
+  // Returns an empty optional if the operation was unsuccessful.
+  static absl::optional<base::Value::DictStorage> ParseExperimentalOptions(
       std::string unparsed_experimental_options);
 
   // Makes appropriate changes to settings in |this|.
-  // Returns whether the operation was successful.
   void SetContextConfigExperimentalOptions();
 
   // Makes appropriate changes to settings in the URLRequestContextBuilder.

@@ -183,7 +183,8 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_FALSE(config->effective_experimental_options->HasKey("UnknownOption"));
+  EXPECT_FALSE(
+      config->effective_experimental_options.contains("UnknownOption"));
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1455,7 +1456,7 @@ TEST(URLRequestContextConfigTest, WrongSpdyGoAwayOnIPChangeValue) {
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_FALSE(config->effective_experimental_options->HasKey(
+  EXPECT_FALSE(config->effective_experimental_options.contains(
       "spdy_go_away_on_ip_change"));
 }
 
@@ -1487,7 +1488,7 @@ TEST(URLRequestContextConfigTest, BidiStreamDetectBrokenConnection) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"bidi_stream_detect_broken_connection\": 10}",
+          "{\"bidi_stream_detect_broken_connection\":10}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -1499,7 +1500,7 @@ TEST(URLRequestContextConfigTest, BidiStreamDetectBrokenConnection) {
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_TRUE(config->effective_experimental_options->HasKey(
+  EXPECT_TRUE(config->effective_experimental_options.contains(
       "bidi_stream_detect_broken_connection"));
   EXPECT_TRUE(config->bidi_stream_detect_broken_connection);
   EXPECT_EQ(config->heartbeat_interval, base::Seconds(10));
@@ -1545,7 +1546,7 @@ TEST(URLRequestContextConfigTest, WrongBidiStreamDetectBrokenConnectionValue) {
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_FALSE(config->effective_experimental_options->HasKey(
+  EXPECT_FALSE(config->effective_experimental_options.contains(
       "bidi_stream_detect_broken_connection"));
 }
 

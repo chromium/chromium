@@ -277,7 +277,7 @@ class CronetURLRequestContext {
     std::unique_ptr<URLRequestContextConfig> context_config_;
 
     // Effective experimental options. Kept for NetLog.
-    std::unique_ptr<base::DictionaryValue> effective_experimental_options_;
+    base::Value effective_experimental_options_;
 
     // A queue of tasks that need to be run after context has been initialized.
     base::queue<base::OnceClosure> tasks_waiting_for_context_;

@@ -304,7 +304,7 @@ void CronetURLRequestContext::NetworkTasks::Initialize(
 
   config->ConfigureURLRequestContextBuilder(&context_builder);
   effective_experimental_options_ =
-      std::move(config->effective_experimental_options);
+      base::Value(config->effective_experimental_options);
 
   if (config->enable_network_quality_estimator) {
     DCHECK(!network_quality_estimator_);
@@ -707,9 +707,9 @@ void CronetURLRequestContext::NetworkTasks::StopNetLogCompleted() {
 
 base::Value CronetURLRequestContext::NetworkTasks::GetNetLogInfo() const {
   base::Value net_info = net::GetNetInfo(context_.get());
-  if (effective_experimental_options_) {
+  if (!effective_experimental_options_.DictEmpty()) {
     net_info.SetKey("cronetExperimentalParams",
-                    effective_experimental_options_->Clone());
+                    effective_experimental_options_.Clone());
   }
   return net_info;
 }
