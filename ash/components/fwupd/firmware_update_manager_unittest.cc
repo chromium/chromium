@@ -644,9 +644,13 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   dbus_responses_.push_back(dbus::Response::CreateEmpty());
+  // Add dbus response for RequestAllUpdates() call made after an install
+  // is completed.
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
-  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1, update_observer.num_times_notified());
 
   std::string fake_url = "https://faketesturl/";
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
@@ -674,6 +678,9 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
 
   EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kSuccess,
             update_progress_observer.GetLatestUpdate()->state);
+  // Expect RequestAllUpdates() to have been called after an install to refresh
+  // the update list.
+  ASSERT_EQ(2, update_observer.num_times_notified());
 }
 
 TEST_F(FirmwareUpdateManagerTest, OnPropertiesChangedResponse) {

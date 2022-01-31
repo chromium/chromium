@@ -528,6 +528,8 @@ void FirmwareUpdateManager::OnInstallResponse(bool success) {
 
   devices_already_notified_.erase(inflight_update_->device_id);
   inflight_update_.reset();
+  // Request all updates to refresh the update list after an install.
+  RequestAllUpdates();
 }
 
 void FirmwareUpdateManager::BindInterface(
