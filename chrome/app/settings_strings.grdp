@@ -2546,6 +2546,9 @@
   <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL" desc="Label for allow all cookies radio toggle">
     Allow all cookies
   </message>
+  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of allowing all cookies. Only visible by screen reader software.">
+    Show details about allowing all cookies
+  </message>
   <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_ONE" desc="Description for the first bullet of allow all cookies radio toggle">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
   </message>
@@ -2554,6 +2557,9 @@
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO" desc="Label for block third party cookies in Incognito radio toggle">
     Block third-party cookies in Incognito
+  </message>
+  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies in Incognito. Only visible by screen reader software.">
+    Show details about blocking third-party cookies in Incognito
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_ONE" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
@@ -2564,6 +2570,9 @@
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY" desc="Label for block third party cookies radio toggle">
     Block third-party cookies
   </message>
+  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies. Only visible by screen reader software.">
+    Show details about blocking third-party cookies
+  </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_ONE" desc="Description for the first bullet of block third party cookies radio toggle">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
   </message>
@@ -2572,6 +2581,9 @@
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL" desc="Label for block all cookies radio toggle">
     Block all cookies (not recommended)
+  </message>
+  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking all cookies. Only visible by screen reader software.">
+    Show details about blocking all cookies
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_ONE" desc="Description for the first bullet of block all cookies radio toggle">
     Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
