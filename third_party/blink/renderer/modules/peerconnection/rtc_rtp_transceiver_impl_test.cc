@@ -138,7 +138,7 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
     return RtpTransceiverState(
         main_task_runner_, signaling_task_runner(), webrtc_transceiver.get(),
         blink::RtpSenderState(main_task_runner_, signaling_task_runner(),
-                              webrtc_transceiver->sender().get(),
+                              webrtc_transceiver->sender(),
                               std::move(sender_track_ref),
                               webrtc_transceiver->sender()->stream_ids()),
         blink::RtpReceiverState(main_task_runner_, signaling_task_runner(),

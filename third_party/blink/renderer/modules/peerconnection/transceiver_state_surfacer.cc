@@ -104,7 +104,7 @@ void TransceiverStateSurfacer::Initialize(
         CHECK(sender_track_ref);
       }
       sender_state = blink::RtpSenderState(
-          main_task_runner_, signaling_task_runner_, webrtc_sender.get(),
+          main_task_runner_, signaling_task_runner_, webrtc_sender,
           std::move(sender_track_ref), webrtc_sender->stream_ids());
     }
     // Create the receiver state.

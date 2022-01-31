@@ -92,8 +92,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
     }
     RtpSenderState sender_state(
         main_thread_, dependency_factory_->GetWebRtcSignalingTaskRunner(),
-        mock_webrtc_sender_.get(), std::move(track_ref),
-        std::vector<std::string>());
+        mock_webrtc_sender_, std::move(track_ref), std::vector<std::string>());
     sender_state.Initialize();
     return std::make_unique<RTCRtpSenderImpl>(
         peer_connection_.get(), track_map_, std::move(sender_state),

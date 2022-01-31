@@ -2037,7 +2037,7 @@ RTCPeerConnectionHandler::RemoveTrackUnifiedPlan(
   RunSynchronousOnceClosureOnSignalingThread(
       base::BindOnce(
           &RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread,
-          base::Unretained(this), base::RetainedRef(webrtc_sender),
+          base::Unretained(this), base::RetainedRef(webrtc_sender.get()),
           base::Unretained(&transceiver_state_surfacer),
           base::Unretained(&result)),
       "RemoveTrackUnifiedPlanOnSignalingThread");
@@ -2074,7 +2074,8 @@ void RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread(
     webrtc::RtpSenderInterface* sender,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
     absl::optional<webrtc::RTCError>* result) {
-  *result = native_peer_connection_->RemoveTrackOrError(sender);
+  *result = native_peer_connection_->RemoveTrackOrError(
+      rtc::scoped_refptr<webrtc::RtpSenderInterface>(sender));
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
   if ((*result)->ok()) {
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver_for_sender =
