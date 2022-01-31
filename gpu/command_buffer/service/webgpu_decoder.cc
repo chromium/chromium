@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(USE_DAWN)
@@ -20,11 +21,12 @@ WebGPUDecoder* WebGPUDecoder::Create(
     SharedImageManager* shared_image_manager,
     MemoryTracker* memory_tracker,
     gles2::Outputter* outputter,
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    scoped_refptr<SharedContextState> shared_context_state) {
 #if BUILDFLAG(USE_DAWN)
-  return CreateWebGPUDecoderImpl(client, command_buffer_service,
-                                 shared_image_manager, memory_tracker,
-                                 outputter, gpu_preferences);
+  return CreateWebGPUDecoderImpl(
+      client, command_buffer_service, shared_image_manager, memory_tracker,
+      outputter, gpu_preferences, std::move(shared_context_state));
 #else
   NOTREACHED();
   return nullptr;

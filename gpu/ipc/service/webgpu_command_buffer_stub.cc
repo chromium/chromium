@@ -101,6 +101,16 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
     return ContextResult::kFatalFailure;
   }
 
+  ContextResult result;
+  scoped_refptr<SharedContextState> shared_context_state =
+      manager->GetSharedContextState(&result);
+  if (!shared_context_state) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: "
+                  "Failed to create WebGPU decoder state.";
+    DCHECK_NE(result, gpu::ContextResult::kSuccess);
+    return result;
+  }
+
   share_group_ = manager->share_group();
   use_virtualized_gl_context_ = false;
 
@@ -110,13 +120,14 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
       std::make_unique<CommandBufferService>(this, memory_tracker_.get());
   std::unique_ptr<webgpu::WebGPUDecoder> decoder(webgpu::WebGPUDecoder::Create(
       this, command_buffer_.get(), manager->shared_image_manager(),
-      memory_tracker_.get(), manager->outputter(), manager->gpu_preferences()));
+      memory_tracker_.get(), manager->outputter(), manager->gpu_preferences(),
+      std::move(shared_context_state)));
 
   sync_point_client_state_ =
       channel_->sync_point_manager()->CreateSyncPointClientState(
           CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
 
-  ContextResult result = decoder->Initialize();
+  result = decoder->Initialize();
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;

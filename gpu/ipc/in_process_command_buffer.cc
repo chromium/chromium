@@ -496,7 +496,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         webgpu::WebGPUDecoder::Create(
             this, command_buffer_.get(), task_executor_->shared_image_manager(),
             gpu_dependency_->memory_tracker(), task_executor_->outputter(),
-            task_executor_->gpu_preferences()));
+            task_executor_->gpu_preferences(), context_state_));
     gpu::ContextResult result = webgpu_decoder->Initialize();
     if (result != gpu::ContextResult::kSuccess) {
       DestroyOnGpuThread();

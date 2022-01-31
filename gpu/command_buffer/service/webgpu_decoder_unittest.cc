@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ class WebGPUDecoderTest : public ::testing::Test {
     command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
     decoder_.reset(WebGPUDecoder::Create(
         decoder_client_.get(), command_buffer_service_.get(), nullptr, nullptr,
-        &outputter_, GpuPreferences()));
+        &outputter_, GpuPreferences(), nullptr));
     ASSERT_EQ(decoder_->Initialize(), ContextResult::kSuccess);
 
     constexpr uint32_t kAdapterClientID = 0;
