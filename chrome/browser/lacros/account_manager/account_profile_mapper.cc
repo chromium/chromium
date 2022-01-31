@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "components/account_manager_core/account.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 
@@ -611,11 +612,9 @@ void AccountProfileMapper::MigrateOldProfiles() {
         entry->SetGaiaIds(gaia_ids);
     }
 
-    // Delete non-syncing profiles.
-    // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles
-    // are allowed.
     base::FilePath profile_path = entry->GetPath();
-    if (!entry->IsAuthenticated() &&
+    if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
+        !entry->IsAuthenticated() &&
         !Profile::IsMainProfilePath(profile_path)) {
       DeleteProfile(
           profile_path,

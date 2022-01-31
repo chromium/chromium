@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -27,6 +28,7 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -857,6 +859,30 @@ TEST_F(AccountProfileMapperTest,
       .WaitForProfileBeingDeleted(second_path);
 }
 
+// Local profiles are not deleted.
+TEST_F(AccountProfileMapperTest, LocalProfileNotRemoved) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath third_path = GetProfilePath("Third");
+  AccountProfileMapper* mapper = CreateMapper(
+      {{main_path(), {"A"}}, {second_path, {"B"}}, {third_path, {}}});
+  SetPrimaryAccountForProfile(second_path, "B");
+  TestMapperUpdateGaia(mapper,
+                       /*accounts_in_facade=*/{"A"},
+                       /*expected_accounts_upserted=*/{},
+                       /*expected_accounts_removed=*/{{second_path, {"B"}}},
+                       /*expected_accounts_in_prefs=*/
+                       {{main_path(), {"A"}}, {third_path, {}}});
+
+  // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles are
+  // allowed.
+  // Second profile was deleted because it lost its primary account.
+  ProfileAttributesStorageTestObserver(attributes_storage())
+      .WaitForProfileBeingDeleted(second_path);
+
+  // Third profile was not deleted as it was already a local profile.
+  EXPECT_TRUE(attributes_storage()->GetProfileAttributesWithPath(third_path));
+}
+
 // Tests that a secondary profile gets deleted after its primary account was
 // removed from the system before startup.
 // A secondary account of the deleted profile gets moved to the primary profile
@@ -1359,6 +1385,10 @@ TEST_F(AccountProfileMapperTest, CreateNewProfileWithAccount) {
 // there, which can allow keeping the profile if the account exists in the
 // facade.
 TEST_F(AccountProfileMapperTest, FixProfilesAtStartup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kLacrosNonSyncingProfiles);
+
   base::FilePath syncing_path = GetProfilePath("Syncing");
   base::FilePath signed_out_path = GetProfilePath("SignedOut");
   base::FilePath unconsented_path = GetProfilePath("Unconsented");
@@ -1387,8 +1417,45 @@ TEST_F(AccountProfileMapperTest, FixProfilesAtStartup) {
   // allowed.
   // The main profile is not deleted, even though it does not have an account.
   // The syncing profile was fixed, by adding the sync account in Gaia Ids.
-  // The other profiles (non-main and non-syncing) were deleted.
+  // The other profiles (signed-out and non-syncing) were deleted.
   VerifyAccountsInStorage({{main_path(), {}}, {syncing_path, {"A"}}});
+}
+
+TEST_F(AccountProfileMapperTest, FixProfilesAtStartupWithLocalProfiles) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
+
+  base::FilePath syncing_path = GetProfilePath("Syncing");
+  base::FilePath signed_out_path = GetProfilePath("SignedOut");
+  base::FilePath unconsented_path = GetProfilePath("Unconsented");
+
+  // Create profiles without gaia ids.
+  CreateProfilesAndSetAccountsInPrefs({{main_path(), {}},
+                                       {syncing_path, {}},
+                                       {unconsented_path, {}},
+                                       {signed_out_path, {}}});
+  // Set profiles in various signin states.
+  attributes_storage()
+      ->GetProfileAttributesWithPath(syncing_path)
+      ->SetAuthInfo(
+          /*gaia_id=*/"A", /*user_name=*/u"A",
+          /*is_consented_primary_account=*/true);
+  attributes_storage()
+      ->GetProfileAttributesWithPath(unconsented_path)
+      ->SetAuthInfo(
+          /*gaia_id=*/"B", /*user_name=*/u"B",
+          /*is_consented_primary_account=*/false);
+
+  auto mapper = std::make_unique<AccountProfileMapper>(
+      mock_facade(), attributes_storage(), local_state());
+
+  // The main profile is not deleted, even though it does not have an account.
+  // Other profiles are not deleted either. The missing gaia IDs are added to
+  // the storage.
+  VerifyAccountsInStorage({{main_path(), {}},
+                           {syncing_path, {"A"}},
+                           {unconsented_path, {"B"}},
+                           {signed_out_path, {}}});
 }
 
 // Checks that profiles are correctly imported from Ash-based Chrome.
