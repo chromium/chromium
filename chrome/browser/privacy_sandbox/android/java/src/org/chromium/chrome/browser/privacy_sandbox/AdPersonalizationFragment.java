@@ -36,34 +36,29 @@ public class AdPersonalizationFragment
         mTopicsCategory = findPreference(TOPICS_CATEGORY_PREFERENCE);
         assert mTopicsCategory != null;
 
-        ImageButtonPreference lastPreference = null;
-        for (String interest : getTopicInterests()) {
+        for (String interest : getCurrentTopics()) {
             ImageButtonPreference interestPreference = new ImageButtonPreference(getContext());
-            lastPreference = interestPreference;
             interestPreference.setTitle(interest);
             interestPreference.setImage(R.drawable.btn_close,
                     R.string.privacy_sandbox_remove_interest_button_description);
-            interestPreference.setDividerAllowedBelow(false);
+            interestPreference.setDividerAllowedAbove(false);
             interestPreference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(interestPreference);
         }
-        if (lastPreference != null) {
-            lastPreference.setDividerAllowedBelow(true);
-        }
     }
 
-    private List<String> getTopicInterests() {
+    private List<String> getCurrentTopics() {
         return PrivacySandboxBridge.getCurrentTopTopics();
     }
 
-    private void removeTopicInterest(String topic) {
+    private void blockTopic(String topic) {
         PrivacySandboxBridge.setTopicAllowed(topic, false);
     }
 
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof ImageButtonPreference) {
-            removeTopicInterest(preference.getTitle().toString());
+            blockTopic(preference.getTitle().toString());
             mTopicsCategory.removePreference(preference);
         }
         return true;

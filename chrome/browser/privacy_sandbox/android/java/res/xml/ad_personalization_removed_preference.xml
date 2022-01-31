@@ -6,8 +6,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+    <Preference
         android:summary="@string/privacy_sandbox_description_placeholder"
-        app:allowDividerBelow="false"/>
+        android:selectable="false"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:key="topic_interests"
+        android:title="@string/privacy_sandbox_topic_interests_category" />
 
 </PreferenceScreen>
