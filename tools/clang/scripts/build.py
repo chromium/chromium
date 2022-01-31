@@ -704,6 +704,8 @@ def main():
 
   if sys.platform == 'win32':
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
+    # TODO(crbug.com/1292528): We need Visual Studio 19.27 or later.
+    base_cmake_args.append('-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON')
 
     # Require zlib compression.
     zlib_dir = AddZlibToPath()
