@@ -225,7 +225,8 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(bool do_raster) {
   if (!LayerTreeHost()->IsVisible())
     return;
 
-  if (base::FeatureList::IsEnabled(blink::features::kNoForcedFrameUpdates) &&
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoForcedFrameUpdatesForWebTests) &&
       LayerTreeHost()->MainFrameUpdatesAreDeferred()) {
     return;
   }

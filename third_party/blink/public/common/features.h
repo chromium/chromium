@@ -599,7 +599,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kDefaultStyleSheetsEarlyInit;
 BLINK_COMMON_EXPORT extern const base::Feature kSystemColorChooser;
 
 // Disables forced frame updates for web tests. Used by web test runner only.
-BLINK_COMMON_EXPORT extern const base::Feature kNoForcedFrameUpdates;
+BLINK_COMMON_EXPORT extern const base::Feature kNoForcedFrameUpdatesForWebTests;
 
 }  // namespace features
 }  // namespace blink

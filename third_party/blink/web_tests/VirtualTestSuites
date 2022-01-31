@@ -1079,7 +1079,7 @@
   },
   {
     "prefix": "no-forced-frame-updates",
-    "bases": ["external/wpt/html/dom/render-blocking-mechanism"],
-    "args": ["--enable-features=NoForcedFrameUpdates"]
+    "bases": ["external/wpt/html/dom/render-blocking"],
+    "args": ["--enable-features=NoForcedFrameUpdatesForWebTests"]
   }
 ]

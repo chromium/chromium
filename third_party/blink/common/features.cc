@@ -1205,7 +1205,7 @@ const base::Feature kDefaultStyleSheetsEarlyInit{
 const base::Feature kSystemColorChooser{"SystemColorChooser",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kNoForcedFrameUpdates{"NoForcedFrameUpdates",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNoForcedFrameUpdatesForWebTests{
+    "NoForcedFrameUpdatesForWebTests", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink
