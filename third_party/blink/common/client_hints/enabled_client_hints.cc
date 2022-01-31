@@ -30,6 +30,7 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
     case WebClientHintsType::kUAMobile:
     case WebClientHintsType::kUAFullVersion:
     case WebClientHintsType::kUABitness:
+    case WebClientHintsType::kUAWoW64:
       if (!base::FeatureList::IsEnabled(features::kUserAgentClientHint))
         return true;
       break;

@@ -104,6 +104,10 @@ void NavigatorUAData::SetBitness(const String& bitness) {
   bitness_ = bitness;
 }
 
+void NavigatorUAData::SetWoW64(bool wow64) {
+  is_wow64_ = wow64;
+}
+
 bool NavigatorUAData::mobile() const {
   if (GetExecutionContext()) {
     return is_mobile_;
@@ -176,6 +180,10 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
                         execution_context);
     } else if (hint == "fullVersionList") {
       values->setFullVersionList(full_version_list_);
+    } else if (hint == "wow64") {
+      values->setWow64(is_wow64_);
+      MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
+                        execution_context);
     }
   }
 

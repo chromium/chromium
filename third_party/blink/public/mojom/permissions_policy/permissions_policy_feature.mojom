@@ -192,6 +192,9 @@ enum PermissionsPolicyFeature {
   // UA reduction rolls out.
   kClientHintUAFull = 94,
 
+  // Client Hint for Sec-CH-UA-WoW64.
+  kClientHintUAWoW64 = 95,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

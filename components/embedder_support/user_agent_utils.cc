@@ -541,6 +541,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
   // set number. For more information, see the respective headers.
   metadata.architecture = content::GetLowEntropyCpuArchitecture();
   metadata.bitness = content::GetLowEntropyCpuBitness();
+  metadata.wow64 = content::IsWoW64();
 
   return metadata;
 }  // namespace embedder_support
@@ -564,6 +565,7 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
   // CPU architecture and bitness.`
   spoofed_ua.ua_metadata_override->architecture = "x86";
   spoofed_ua.ua_metadata_override->bitness = "64";
+  spoofed_ua.ua_metadata_override->wow64 = false;
 
   web_contents->SetUserAgentOverride(spoofed_ua, override_in_new_tabs);
 }

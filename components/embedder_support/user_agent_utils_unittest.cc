@@ -560,6 +560,7 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.architecture, content::GetLowEntropyCpuArchitecture());
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
   EXPECT_EQ(metadata.bitness, content::GetLowEntropyCpuBitness());
+  EXPECT_EQ(metadata.wow64, content::IsWoW64());
 }
 
 TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {

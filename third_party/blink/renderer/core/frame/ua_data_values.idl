@@ -14,4 +14,5 @@ dictionary UADataValues {
   DOMString uaFullVersion;
   DOMString bitness;
   sequence<NavigatorUABrandVersion> fullVersionList;
+  boolean wow64;
 };

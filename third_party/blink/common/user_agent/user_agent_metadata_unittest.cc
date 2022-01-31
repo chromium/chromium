@@ -27,6 +27,7 @@ blink::UserAgentMetadata MakeToEncode() {
   to_encode.model = "unofficial";
   to_encode.mobile = false;
   to_encode.bitness = "8";
+  to_encode.wow64 = true;
   return to_encode;
 }
 

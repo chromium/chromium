@@ -30,6 +30,7 @@ NavigatorUAData* NavigatorUA::userAgentData() {
   ua_data->SetUAFullVersion(String::FromUTF8(metadata.full_version));
   ua_data->SetBitness(String::FromUTF8(metadata.bitness));
   ua_data->SetFullVersionList(metadata.brand_full_version_list);
+  ua_data->SetWoW64(metadata.wow64);
 
   MaybeRecordMetrics(*ua_data);
 

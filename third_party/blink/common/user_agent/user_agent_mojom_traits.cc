@@ -61,6 +61,7 @@ bool StructTraits<blink::mojom::UserAgentMetadataDataView,
   if (!data.ReadBitness(&string))
     return false;
   out->bitness = string;
+  out->wow64 = data.wow64();
 
   return true;
 }

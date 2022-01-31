@@ -226,11 +226,12 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (!cpu_type.empty())
+  if (!cpu_type.empty()) {
     base::StringAppendF(&os_cpu, "Windows NT %s; %s", os_version.c_str(),
                         cpu_type.c_str());
-  else
+  } else {
     base::StringAppendF(&os_cpu, "Windows NT %s", os_version.c_str());
+  }
 #else
   base::StringAppendF(&os_cpu,
 #if BUILDFLAG(IS_MAC)
@@ -347,6 +348,15 @@ std::string BuildUserAgentFromOSAndProduct(const std::string& os_info,
                       "%s Safari/537.36",
                       os_info.c_str(), product.c_str());
   return user_agent;
+}
+
+bool IsWoW64() {
+#if BUILDFLAG(IS_WIN)
+  base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
+  return os_info->IsWowX86OnAMD64();
+#else
+  return false;
+#endif
 }
 
 }  // namespace content

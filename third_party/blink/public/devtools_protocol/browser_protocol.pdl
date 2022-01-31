@@ -6881,6 +6881,7 @@ domain Page
       ch-ua-full-version-list
       ch-ua-platform-version
       ch-ua-reduced
+      ch-ua-wow64
       ch-viewport-height
       ch-viewport-width
       ch-width

@@ -36973,6 +36973,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4148" label="AbortSignalThrowIfAborted"/>
   <int value="4149" label="ClientHintsUAFull"/>
   <int value="4150" label="PrivateNetworkAccessWithinWorker"/>
+  <int value="4151" label="ClientHintsUAWoW64"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -37087,6 +37088,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="92" label="JoinAdInterestGroup"/>
   <int value="93" label="ClientHintUAFullVersionList"/>
   <int value="94" label="ClientHintUAFull"/>
+  <int value="95" label="ClientHintUAWoW64"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

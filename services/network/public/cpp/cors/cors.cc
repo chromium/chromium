@@ -381,6 +381,7 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // some period, once UA reduction rolls out.
       "sec-ch-ua-full",
 
+      "sec-ch-ua-wow64",
   });
 
   if (!base::Contains(safe_names, lower_name))

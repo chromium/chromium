@@ -751,6 +751,10 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       AddUAHeader(headers, WebClientHintsType::kUABitness,
                   SerializeHeaderString(ua_metadata->bitness));
     }
+    if (ShouldAddClientHint(data, WebClientHintsType::kUAWoW64)) {
+      AddUAHeader(headers, WebClientHintsType::kUAWoW64,
+                  SerializeHeaderString(ua_metadata->wow64));
+    }
     if (ShouldAddClientHint(data, WebClientHintsType::kUAReduced)) {
       AddUAHeader(headers, WebClientHintsType::kUAReduced,
                   SerializeHeaderString(true));
@@ -770,6 +774,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     RemoveClientHintHeader(WebClientHintsType::kUABitness, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAReduced, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAFullVersionList, headers);
+    RemoveClientHintHeader(WebClientHintsType::kUAWoW64, headers);
   }
 }
 
@@ -880,7 +885,7 @@ void AddRequestClientHintsHeaders(
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kFullUserAgent ==
+      network::mojom::WebClientHintsType::kUAWoW64 ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 

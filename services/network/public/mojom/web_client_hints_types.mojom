@@ -50,6 +50,7 @@ enum WebClientHintsType {
   // A client hint which, if set, signifies to the origin that the User-Agent
   // header contains the full user agent string.
   kFullUserAgent = 24,
+  kUAWoW64 = 25,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

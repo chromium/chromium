@@ -91,10 +91,10 @@ using ::testing::Key;
 using ::testing::Not;
 using ::testing::Optional;
 
-constexpr unsigned expected_client_hints_number = 17u;
+constexpr unsigned expected_client_hints_number = 18u;
 constexpr unsigned expected_default_third_party_client_hints_number = 3u;
-constexpr unsigned expected_requested_third_party_client_hints_number = 20u;
-constexpr unsigned expected_pre_merge_third_party_client_hints_number = 12u;
+constexpr unsigned expected_requested_third_party_client_hints_number = 21u;
+constexpr unsigned expected_pre_merge_third_party_client_hints_number = 13u;
 
 // An interceptor that records count of fetches and client hint headers for
 // requests to https://{foo|bar}.com/non-existing-{image.jpg|iframe.html}.

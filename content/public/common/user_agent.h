@@ -110,6 +110,10 @@ CONTENT_EXPORT std::string BuildUserAgentFromOSAndProduct(
     const std::string& os_info,
     const std::string& product);
 
+// Returns true if the binary was built in 32-bit mode and is running on 64-bit
+// Windows; returns false otherwise.
+CONTENT_EXPORT bool IsWoW64();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_COMMON_USER_AGENT_H_
