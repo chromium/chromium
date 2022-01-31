@@ -145,17 +145,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
        * @private
        */
       chromeVoxHintGiven_: Boolean,
-
-      /**
-       * Whether the subtitle for the language section should be shown.
-       */
-      shouldShowLanguageSectionSubtitle_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.valueExists('languagePacksEnabled') &&
-              loadTimeData.getBoolean('languagePacksEnabled');
-        },
-      },
     };
   }
 

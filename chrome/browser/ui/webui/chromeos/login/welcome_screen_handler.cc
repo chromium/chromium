@@ -299,10 +299,6 @@ void WelcomeScreenHandler::GetAdditionalParameters(
           application_locale, selected_input_method, input_method_manager));
   dict->SetKey("timezoneList", GetTimezoneList());
   dict->SetKey("demoModeCountryList", DemoSession::GetCountryList());
-
-  dict->SetKey("languagePacksEnabled",
-               base::Value(base::FeatureList::IsEnabled(
-                   ash::features::kLanguagePacksHandwriting)));
 }
 
 void WelcomeScreenHandler::Initialize() {

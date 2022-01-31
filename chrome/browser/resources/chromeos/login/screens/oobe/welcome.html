@@ -105,13 +105,11 @@
         [[i18nDynamic(locale, 'languageSectionTitle')]]
       </h1>
       <p slot="subtitle">
-        <template is="dom-if" if="[[shouldShowLanguageSectionSubtitle_]]">
-          [[i18nDynamic(locale, 'languageSectionHint')]]
-          <a id="languagesLearnMore" class="oobe-local-link" is="action-link"
-              on-click="onLanguageLearnMoreLinkClicked_">
-            [[i18nDynamic(locale, 'learnMore')]]
-          </a>
-        </template>
+        [[i18nDynamic(locale, 'languageSectionHint')]]
+        <a id="languagesLearnMore" class="oobe-local-link" is="action-link"
+            on-click="onLanguageLearnMoreLinkClicked_">
+          [[i18nDynamic(locale, 'learnMore')]]
+        </a>
       </p>
       <div id="setup-container" slot="content" class="landscape-header-aligned">
         <div id="languageDropdownContainer"
