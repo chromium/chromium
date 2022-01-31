@@ -15,6 +15,8 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/clamped_math.h"
+#include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -432,6 +434,20 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
       !gpu_prefs.disable_accelerated_video_decode;
   sandbox_options.accelerated_video_encode_enabled =
       !gpu_prefs.disable_accelerated_video_encode;
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
+  // Increase the FD limit by 512 on VA-API Chrome OS devices in order to
+  // avoid running out of FDs in cases where many decoders are running
+  // concurrently. See b/215553848.
+  // TODO(b/195769334): revisit the need for this once out-of-process video
+  // decoding has been fully implemented.
+  const auto current_max_fds =
+      base::saturated_cast<unsigned int>(base::GetMaxFds());
+  constexpr unsigned int kMaxFDsDelta = 1u << 9;
+  const auto new_max_fds =
+      static_cast<int>(base::ClampAdd(current_max_fds, kMaxFDsDelta));
+  base::IncreaseFdLimitTo(base::checked_cast<unsigned int>(new_max_fds));
+#endif
 
   bool res = sandbox::policy::SandboxLinux::GetInstance()->InitializeSandbox(
       sandbox::policy::SandboxTypeFromCommandLine(
