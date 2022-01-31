@@ -51,6 +51,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "url/android/gurl_android.h"
 #include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -172,7 +173,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       env, ConvertUTF8ToJavaString(env, item->GetGuid()),
       ConvertUTF8ToJavaString(env, item->GetFileNameToReportUser().value()),
       ConvertUTF8ToJavaString(env, item->GetTargetFilePath().value()),
-      ConvertUTF8ToJavaString(env, item->GetURL().spec()),
+      url::GURLAndroid::FromNativeGURL(env, item->GetURL()),
       ConvertUTF8ToJavaString(env, item->GetMimeType()),
       item->GetReceivedBytes(), item->GetTotalBytes(), otr_profile_id,
       item->GetState(), item->PercentComplete(), item->IsPaused(),

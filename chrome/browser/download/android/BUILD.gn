@@ -101,6 +101,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   srcjar_deps = [ "//chrome:download_enum_javagen" ]

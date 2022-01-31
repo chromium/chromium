@@ -14,6 +14,7 @@ import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
  * Java counterpart of android DownloadController. Owned by native.
@@ -142,7 +143,7 @@ public class DownloadController {
      * @param referrer Referrer to use.
      */
     @CalledByNative
-    private static void enqueueAndroidDownloadManagerRequest(String url, String userAgent,
+    private static void enqueueAndroidDownloadManagerRequest(GURL url, String userAgent,
             String fileName, String mimeType, String cookie, String referrer) {
         DownloadInfo downloadInfo = new DownloadInfo.Builder()
                 .setUrl(url)

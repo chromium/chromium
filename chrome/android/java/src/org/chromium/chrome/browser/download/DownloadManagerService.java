@@ -701,7 +701,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
 
         DownloadEnqueueRequest request = new DownloadEnqueueRequest();
-        request.url = item.getDownloadInfo().getUrl();
+        request.url = item.getDownloadInfo().getUrl().getSpec();
         request.fileName = item.getDownloadInfo().getFileName();
         request.description = item.getDownloadInfo().getDescription();
         request.mimeType = item.getDownloadInfo().getMimeType();

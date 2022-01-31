@@ -56,6 +56,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/page_transition_types.h"
+#include "url/android/gurl_android.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
@@ -372,8 +373,8 @@ void DownloadController::StartAndroidDownloadInternal(
                                 std::string(),  // referrer_charset
                                 std::string(),  // suggested_name
                                 info.original_mime_type, default_file_name_);
-  ScopedJavaLocalRef<jstring> jurl =
-      ConvertUTF8ToJavaString(env, info.url.spec());
+  ScopedJavaLocalRef<jobject> jurl =
+      url::GURLAndroid::FromNativeGURL(env, info.url);
   ScopedJavaLocalRef<jstring> juser_agent =
       ConvertUTF8ToJavaString(env, info.user_agent);
   ScopedJavaLocalRef<jstring> jmime_type =

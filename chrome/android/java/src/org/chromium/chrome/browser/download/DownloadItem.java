@@ -164,7 +164,7 @@ public class DownloadItem {
         offlineItem.totalSizeBytes = downloadInfo.getBytesTotalSize();
         offlineItem.receivedBytes = downloadInfo.getBytesReceived();
         offlineItem.isResumable = downloadInfo.isResumable();
-        offlineItem.url = downloadInfo.getUrl();
+        offlineItem.url = downloadInfo.getUrl() == null ? null : downloadInfo.getUrl().getSpec();
         offlineItem.originalUrl = downloadInfo.getOriginalUrl();
         offlineItem.isOffTheRecord = downloadInfo.isOffTheRecord();
         offlineItem.otrProfileId = OTRProfileID.serialize(downloadInfo.getOTRProfileId());
@@ -197,7 +197,7 @@ public class DownloadItem {
             case DownloadState.INTERRUPTED:
                 @ResumeMode
                 int resumeMode = DownloadUtils.getResumeMode(
-                        downloadInfo.getUrl(), downloadInfo.getFailState());
+                        downloadInfo.getUrl().getSpec(), downloadInfo.getFailState());
                 if (resumeMode == ResumeMode.INVALID || resumeMode == ResumeMode.USER_RESTART) {
                     // Fail but can restart from the beginning. The UI should let the user to retry.
                     offlineItem.state = OfflineItemState.INTERRUPTED;

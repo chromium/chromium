@@ -51,6 +51,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.NetworkTrafficAnnotationTag;
+import org.chromium.url.GURL;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -738,12 +739,12 @@ public class OMADownloadHandler extends BroadcastReceiver {
             fileName = URLUtil.guessFileName(url, null, mimeType);
         }
         DownloadInfo newInfo = DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
-                .setFileName(fileName)
-                .setUrl(url)
-                .setMimeType(mimeType)
-                .setDescription(omaInfo.getValue(OMA_DESCRIPTION))
-                .setBytesReceived(getSize(omaInfo))
-                .build();
+                                       .setFileName(fileName)
+                                       .setUrl(new GURL(url))
+                                       .setMimeType(mimeType)
+                                       .setDescription(omaInfo.getValue(OMA_DESCRIPTION))
+                                       .setBytesReceived(getSize(omaInfo))
+                                       .build();
         // If installNotifyURI is not empty, the downloaded content cannot
         // be used until the PostStatusTask gets a 200-series response.
         // Don't show complete notification until that happens.
