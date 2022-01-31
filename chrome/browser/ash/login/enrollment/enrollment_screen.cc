@@ -113,8 +113,6 @@ std::string EnrollmentScreen::GetResultString(Result result) {
       return "TpmError";
     case Result::TPM_DBUS_ERROR:
       return "TpmDbusError";
-    case Result::BACK_TO_AUTO_ENROLLMENT_CHECK:
-      return "BackToAutoEnrollmentCheck";
   }
 }
 
@@ -484,10 +482,8 @@ void EnrollmentScreen::OnCancel() {
   // The callback passed to ClearAuth is called either immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
-  ClearAuth(base::BindRepeating(exit_callback_,
-                                config_.is_forced()
-                                    ? Result::BACK_TO_AUTO_ENROLLMENT_CHECK
-                                    : Result::BACK));
+  ClearAuth(base::BindRepeating(
+      exit_callback_, config_.is_forced() ? Result::BACK : Result::COMPLETED));
 }
 
 void EnrollmentScreen::OnConfirmationClosed() {
