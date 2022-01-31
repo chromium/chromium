@@ -91,7 +91,10 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 // Need TLS support.
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+// Disabled on iOS, as PartitionAlloc is not used as malloc() (yet), and thread
+// cache unit tests are flaky. See crbug.com/1291885.
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_FUCHSIA)
 #define PA_THREAD_CACHE_SUPPORTED
 #endif
 
