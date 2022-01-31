@@ -394,33 +394,36 @@ void ResolveLanguageListInThreadPool(
 void AdjustUILanguageList(const std::string& selected,
                           base::ListValue* languages_list) {
   for (size_t i = 0; i < languages_list->GetList().size(); ++i) {
-    base::DictionaryValue* language_info = NULL;
-    if (!languages_list->GetDictionary(i, &language_info))
+    base::Value& language_info = languages_list->GetList()[i];
+    if (!language_info.is_dict())
       NOTREACHED();
 
-    std::string value;
-    language_info->GetString("code", &value);
-    std::string display_name;
-    language_info->GetString("displayName", &display_name);
-    std::string native_name;
-    language_info->GetString("nativeDisplayName", &native_name);
+    std::string value = language_info.FindStringKey("code")
+                            ? *language_info.FindStringKey("code")
+                            : "";
+    std::string display_name = language_info.FindStringKey("displayName")
+                                   ? *language_info.FindStringKey("displayName")
+                                   : "";
+    std::string native_name =
+        language_info.FindStringKey("nativeDisplayName")
+            ? *language_info.FindStringKey("nativeDisplayName")
+            : "";
 
     // If it's an option group divider, add field name.
     if (value == kMostRelevantLanguagesDivider) {
-      language_info->SetString(
+      language_info.SetStringKey(
           "optionGroupName",
           l10n_util::GetStringUTF16(IDS_OOBE_OTHER_LANGUAGES));
     }
     if (display_name != native_name) {
-      display_name = base::StringPrintf("%s - %s",
-                                        display_name.c_str(),
+      display_name = base::StringPrintf("%s - %s", display_name.c_str(),
                                         native_name.c_str());
     }
 
-    language_info->SetString("value", value);
-    language_info->SetString("title", display_name);
+    language_info.SetStringKey("value", value);
+    language_info.SetStringKey("title", display_name);
     if (value == selected)
-      language_info->SetBoolean("selected", true);
+      language_info.SetBoolKey("selected", true);
   }
 }
 
