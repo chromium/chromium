@@ -11,9 +11,6 @@ function injectContentScripts() {
         if (url.startsWith('chrome') || url.startsWith('about'))
           continue;
 
-        chrome.tabs.insertCSS(
-            tabs[j].id,
-            {file: 'highcontrast.css', allFrames: true});
         chrome.tabs.executeScript(
             tabs[j].id,
             {file: 'highcontrast.js', allFrames: true});
