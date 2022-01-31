@@ -269,10 +269,10 @@ TEST(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
             "topic_4_3": {"handler": "handler_4", "is_public": false}
       }})";
 
-  absl::optional<base::Value> stored_topics =
-      base::JSONReader::Read(kStoredTopicsJson);
-  ASSERT_TRUE(stored_topics);
-  pref_service.Set(kTopicsToHandler, std::move(*stored_topics));
+  auto stored_topics =
+      base::JSONReader::ReadAndReturnValueWithError(kStoredTopicsJson);
+  ASSERT_TRUE(stored_topics.value) << stored_topics.error_message;
+  pref_service.Set(kTopicsToHandler, std::move(*stored_topics.value));
 
   // Create an invalidator and make sure it correctly restored state from the
   // pref.
@@ -286,6 +286,80 @@ TEST(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
   };
 
   EXPECT_EQ(expected_subscribed_topics, invalidator->GetAllSubscribedTopics());
+}
+
+TEST(InvalidatorRegistrarWithMemoryTest,
+     ClearsTopicsWithObsoleteOwnerNamesWhenPrefIsEmpty) {
+  constexpr char kTopicsToHandler[] =
+      "invalidation.per_sender_topics_to_handler";
+
+  TestingPrefServiceSimple pref_service;
+  InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
+  ASSERT_EQ(base::Value(base::Value::Type::DICTIONARY),
+            *pref_service.Get(kTopicsToHandler));
+
+  InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
+      &pref_service);
+
+  EXPECT_EQ(base::Value(base::Value::Type::DICTIONARY),
+            *pref_service.Get(kTopicsToHandler));
+}
+
+TEST(InvalidatorRegistrarWithMemoryTest, ClearsTopicsWithObsoleteOwnerNames) {
+  constexpr char kTopicsToHandler[] =
+      "invalidation.per_sender_topics_to_handler";
+
+  TestingPrefServiceSimple pref_service;
+  InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
+
+  // Set up some previously-registered topics in the pref.
+  constexpr char kInitialStoredTopics[] =
+      R"({"sender_without_cloud": {
+            "topic_1": {"handler": "NonCloud_1", "is_public": true},
+            "topic_2": {"handler": "NonCloud_2", "is_public": true},
+            "topic_3": {"handler": "NonCloud_3", "is_public": true}
+          },
+          "sender_with_cloud": {
+            "topic_4": {"handler": "NonCloud_4", "is_public": true},
+            "topic_5": {"handler": "Cloud", "is_public": true},
+            "topic_6": "NonCloud_5",
+            "topic_7": "RemoteCommand"
+          },
+          "sender_full_of_cloud": {
+            "topic_8": {"handler": "Cloud", "is_public": true},
+            "topic_9": {"handler": "RemoteCommand", "is_public": true},
+            "topic_10": {"handler": "Cloud", "is_public": true}
+        }})";
+  auto initial_stored_topics =
+      base::JSONReader::ReadAndReturnValueWithError(kInitialStoredTopics);
+  ASSERT_TRUE(initial_stored_topics.value)
+      << initial_stored_topics.error_message;
+
+  pref_service.Set(kTopicsToHandler, initial_stored_topics.value->Clone());
+
+  ASSERT_EQ(*initial_stored_topics.value, *pref_service.Get(kTopicsToHandler));
+
+  InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
+      &pref_service);
+
+  // Topics 5, 7, 8, 9 and 10 are expected to be gone.
+  constexpr char kExpectedStoredTopics[] =
+      R"({"sender_without_cloud": {
+            "topic_1": {"handler": "NonCloud_1", "is_public": true},
+            "topic_2": {"handler": "NonCloud_2", "is_public": true},
+            "topic_3": {"handler": "NonCloud_3", "is_public": true}
+          },
+          "sender_with_cloud": {
+            "topic_4": {"handler": "NonCloud_4", "is_public": true},
+            "topic_6": "NonCloud_5"
+          },
+          "sender_full_of_cloud": {}})";
+  auto expected_stored_topics =
+      base::JSONReader::ReadAndReturnValueWithError(kExpectedStoredTopics);
+  ASSERT_TRUE(expected_stored_topics.value)
+      << expected_stored_topics.error_message;
+
+  EXPECT_EQ(*expected_stored_topics.value, *pref_service.Get(kTopicsToHandler));
 }
 
 }  // namespace

@@ -1622,6 +1622,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kStabilityIncompleteSessionEndCount);
   local_state->ClearPref(kStabilitySessionEndCompleted);
 
+  // Added 01/2022.
+  invalidation::InvalidatorRegistrarWithMemory::
+      ClearTopicsWithObsoleteOwnerNames(local_state);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 }
@@ -1887,6 +1891,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kLastWeekServicesDownstreamForegroundKB);
   profile_prefs->ClearPref(kThisWeekUserTrafficContentTypeDownstreamKB);
   profile_prefs->ClearPref(kLastWeekUserTrafficContentTypeDownstreamKB);
+
+  // Added 01/2022.
+  invalidation::InvalidatorRegistrarWithMemory::
+      ClearTopicsWithObsoleteOwnerNames(profile_prefs);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -54,8 +54,6 @@ INVALIDATION_EXPORT bool operator==(const TopicMetadata&, const TopicMetadata&);
 
 using Topics = std::map<std::string, TopicMetadata>;
 
-HandlerOwnerType OwnerNameToHandlerType(const std::string& owner_name);
-
 }  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_UTIL_H_

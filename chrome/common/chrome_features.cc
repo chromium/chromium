@@ -667,11 +667,6 @@ const base::Feature kIncognitoClearBrowsingDataDialogForDesktop{
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, CloudPolicyInvalidator and RemoteCommandInvalidator instances
-// will have unique owner name.
-const base::Feature kInvalidatorUniqueOwnerName{
-    "InvalidatorUniqueOwnerName", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, shows a demo of in-product help in a WebUI context.
 const base::Feature kIPHInWebUIDemo{"IPHInWebUIDemo",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

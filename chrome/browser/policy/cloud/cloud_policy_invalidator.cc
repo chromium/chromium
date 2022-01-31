@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
-#include "chrome/common/chrome_features.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -87,10 +86,6 @@ void RecordPolicyInvalidationMetric(PolicyInvalidationScope scope,
 
 std::string ComposeOwnerName(PolicyInvalidationScope scope,
                              const std::string& device_local_account_id) {
-  if (!base::FeatureList::IsEnabled(features::kInvalidatorUniqueOwnerName)) {
-    return "Cloud";
-  }
-
   switch (scope) {
     case PolicyInvalidationScope::kUser:
       return "CloudPolicy.User";

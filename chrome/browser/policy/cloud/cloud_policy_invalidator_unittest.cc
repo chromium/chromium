@@ -18,7 +18,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -27,7 +26,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator.h"
-#include "chrome/common/chrome_features.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -882,15 +880,10 @@ TEST_F(CloudPolicyInvalidatorTest, Disconnect) {
 class CloudPolicyInvalidatorOwnerNameTest
     : public CloudPolicyInvalidatorTestBase {
  protected:
-  CloudPolicyInvalidatorOwnerNameTest() {
-    features_.InitAndEnableFeature(::features::kInvalidatorUniqueOwnerName);
-  }
-
   PolicyInvalidationScope GetPolicyInvalidationScope() const override {
     return scope_;
   }
 
-  base::test::ScopedFeatureList features_;
   PolicyInvalidationScope scope_;
 };
 
