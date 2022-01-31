@@ -2820,6 +2820,32 @@
             ]
         }
     ],
+    "FeatureNotificationGuide": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_low_engaged_7_days",
+                    "params": {
+                        "enable_feature_default_browser": "false",
+                        "enable_feature_incognito_tab": "true",
+                        "enable_feature_ntp_suggestion_card": "true",
+                        "enable_feature_sign_in": "false",
+                        "enable_feature_voice_search": "true",
+                        "feature_notification_repeat_count": "1",
+                        "feature_notification_tracking_only": "false",
+                        "notification_interval_days": "7",
+                        "segment_selection_ttl_days": "28"
+                    },
+                    "enable_features": [
+                        "FeatureNotificationGuide"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedLoadingPlaceholderStudy": [
         {
             "platforms": [
