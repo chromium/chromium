@@ -463,6 +463,8 @@ extern const base::Feature kSystemExtensions;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemJapanesePhysicalTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kSystemTransliterationPhysicalTyping;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemProxyForSystemServices;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kTabClusterUI;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kTelemetryExtension;

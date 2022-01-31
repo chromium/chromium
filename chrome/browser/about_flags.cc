@@ -4236,6 +4236,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemJapanesePhysicalTypingName,
      flag_descriptions::kSystemJapanesePhysicalTypingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kSystemJapanesePhysicalTyping)},
+    {"enable-cros-system-transliteration-physical-typing",
+     flag_descriptions::kSystemTransliterationPhysicalTypingName,
+     flag_descriptions::kSystemTransliterationPhysicalTypingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kSystemTransliterationPhysicalTyping)},
     {"enable-cros-virtual-keyboard-bordered-key",
      flag_descriptions::kVirtualKeyboardBorderedKeyName,
      flag_descriptions::kVirtualKeyboardBorderedKeyDescription, kOsCrOS,

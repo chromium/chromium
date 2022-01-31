@@ -5146,6 +5146,12 @@ const char kSystemJapanesePhysicalTypingDescription[] =
     "Use the system input engine instead of the Chrome extension for physical "
     "typing in Japanese.";
 
+const char kSystemTransliterationPhysicalTypingName[] =
+    "Use system IME for Transliteration typing";
+const char kSystemTransliterationPhysicalTypingDescription[] =
+    "Use the system input engine instead of the Chrome extension for physical "
+    "typing in transliteration input methods.";
+
 const char kQuickSettingsNetworkRevampName[] =
     "Enables the Quick Settings Network revamp.";
 const char kQuickSettingsNetworkRevampDescription[] =

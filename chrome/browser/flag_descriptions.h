@@ -2953,6 +2953,9 @@ extern const char kSystemChinesePhysicalTypingDescription[];
 extern const char kSystemJapanesePhysicalTypingName[];
 extern const char kSystemJapanesePhysicalTypingDescription[];
 
+extern const char kSystemTransliterationPhysicalTypingName[];
+extern const char kSystemTransliterationPhysicalTypingDescription[];
+
 extern const char kQuickSettingsNetworkRevampName[];
 extern const char kQuickSettingsNetworkRevampDescription[];
 

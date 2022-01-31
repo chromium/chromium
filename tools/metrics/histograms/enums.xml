@@ -52941,6 +52941,7 @@ from previous Chrome versions.
       label="AutofillImportNonFocusableCreditCardForms:disabled"/>
   <int value="-734067604"
       label="notification-scheduler-immediate-background-task"/>
+  <int value="-733934949" label="SystemTransliterationPhysicalTyping:disabled"/>
   <int value="-733210914"
       label="AutofillEnableMerchantBoundVirtualCards:disabled"/>
   <int value="-731502579" label="CupsPrintersUiOverhaul:disabled"/>
@@ -55106,6 +55107,7 @@ from previous Chrome versions.
   <int value="849980462" label="RemoveNtpFakebox:disabled"/>
   <int value="850779988" label="allow-popups-during-page-unload"/>
   <int value="851085848" label="enable-settings-window"/>
+  <int value="851114149" label="SystemTransliterationPhysicalTyping:enabled"/>
   <int value="851238417" label="VirtualKeyboardFloatingResizable:enabled"/>
   <int value="851616920" label="EnableTLS13EarlyData:disabled"/>
   <int value="852313529" label="RTCUnifiedPlanByDefault:disabled"/>
