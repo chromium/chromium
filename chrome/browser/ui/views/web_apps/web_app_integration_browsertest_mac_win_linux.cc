@@ -14,17 +14,20 @@ using WebAppIntegrationBrowserTestMacWinLinux = WebAppIntegrationBrowserTest;
 // Manual tests:
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckAppShortcutExists) {
+                       CheckPlatformShortcutAndIcon) {
+  helper_.CheckPlatformShortcutNotExists("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteB");
   helper_.InstallCreateShortcutWindowed("SiteA");
-  helper_.CheckAppShortcutExists("SiteA");
+  helper_.CheckPlatformShortcutAndIcon("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteB");
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckPolicyAppUninstallWorks) {
   helper_.InstallPolicyAppWindowedShortcut("SiteA");
-  helper_.CheckAppShortcutExists("SiteA");
+  helper_.CheckPlatformShortcutAndIcon("SiteA");
   helper_.UninstallPolicyApp("SiteA");
-  helper_.CheckAppShortcutNotExists("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteA");
 }
 
 // Generated tests:

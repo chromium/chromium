@@ -95,8 +95,10 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include <ImageIO/ImageIO.h>
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "skia/ext/skia_utils_mac.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -141,6 +143,22 @@ const base::flat_map<std::string, std::string>
                                          {"SiteC", "site_c"},
                                          {"SiteAFoo", "site_a/foo"},
                                          {"SiteABar", "site_a/bar"}};
+
+const base::flat_map<std::string, std::string> g_site_mode_to_app_name = {
+    {"SiteA", "Site A"},
+    {"SiteB", "Site B"},
+    {"SiteC", "Site C"},
+    {"SiteAFoo", "Site A Foo"},
+    {"SiteABar", "Site A Bar"}};
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const base::flat_map<std::string, SkColor> g_app_name_icon_color = {
+    {"Site A", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site B", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site C", SkColorSetARGB(0x00, 0x00, 0x00, 0x00)},
+    {"Site A Foo", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site A Bar", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)}};
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class TestAppLauncherHandler : public AppLauncherHandler {
@@ -201,11 +219,11 @@ base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
   return shortcut_profile;
 }
 
-bool IsShortcutFoundForProfile(Profile* profile,
-                               const std::string& name,
-                               base::FilePath shortcut_dir) {
+SkColor IsShortcutAndIconFoundForProfile(Profile* profile,
+                                         const std::string& name,
+                                         base::FilePath shortcut_dir,
+                                         SkColor expected_icon_pixel_color) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-
   base::FileEnumerator enumerator(shortcut_dir, false,
                                   base::FileEnumerator::FILES);
   while (!enumerator.Next().empty()) {
@@ -213,8 +231,10 @@ bool IsShortcutFoundForProfile(Profile* profile,
     if (re2::RE2::FullMatch(converter.to_bytes(shortcut_filename),
                             name + "(.*).lnk")) {
       base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
-      if (GetShortcutProfile(shortcut_path) == profile->GetBaseName())
-        return true;
+      if (GetShortcutProfile(shortcut_path) == profile->GetBaseName()) {
+        SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
+        return (icon_pixel_color == expected_icon_pixel_color);
+      }
     }
   }
   return false;
@@ -1016,7 +1036,7 @@ void WebAppIntegrationTestDriver::CheckAppNotInList(
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckAppShortcutExists(
+void WebAppIntegrationTestDriver::CheckPlatformShortcutAndIcon(
     const std::string& site_mode) {
   BeforeStateCheckAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -1026,8 +1046,12 @@ void WebAppIntegrationTestDriver::CheckAppShortcutExists(
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckAppShortcutNotExists(
+void WebAppIntegrationTestDriver::CheckPlatformShortcutNotExists(
     const std::string& site_mode) {
+  // This is to handle if the check happens at the very beginning of the test,
+  // when no web app is installed (or any other action has happened yet).
+  if (!before_state_change_action_state_ && !after_state_change_action_state_)
+    return;
   BeforeStateCheckAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), site_mode);
@@ -1035,10 +1059,17 @@ void WebAppIntegrationTestDriver::CheckAppShortcutNotExists(
     app_state = GetAppBySiteMode(before_state_change_action_state_.get(),
                                  profile(), site_mode);
   }
-  ASSERT_TRUE(app_state)
-      << "App has to be installed now or before last state change action";
-
-  EXPECT_FALSE(IsShortcutCreated(profile(), app_state->name, app_state->id));
+  std::string app_name;
+  AppId app_id;
+  // If app_state is still nullptr, the site_mode is manually mapped to get an
+  // app_name and app_id remains empty.
+  if (!app_state) {
+    app_name = g_site_mode_to_app_name.find(site_mode)->second;
+  } else {
+    app_name = app_state->name;
+    app_id = app_state->id;
+  }
+  EXPECT_FALSE(IsShortcutAndIconCreated(profile(), app_name, app_id));
   AfterStateCheckAction();
 }
 
@@ -1377,8 +1408,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
                    registrar.GetAppEffectiveDisplayMode(app_id),
                    registrar.GetAppUserDisplayMode(app_id),
                    registrar.IsLocallyInstalled(app_id),
-                   IsShortcutCreated(profile, registrar.GetAppShortName(app_id),
-                                     app_id)));
+                   IsShortcutAndIconCreated(
+                       profile, registrar.GetAppShortName(app_id), app_id)));
     }
     profile_state_map.emplace(
         profile, ProfileState(std::move(browser_state), std::move(app_state)));
@@ -1558,38 +1589,53 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
   return LaunchWebAppBrowserAndWait(profile(), app_state->id);
 }
 
-bool WebAppIntegrationTestDriver::IsShortcutCreated(Profile* profile,
-                                                    const std::string& name,
-                                                    const AppId& id) {
+bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
+    Profile* profile,
+    const std::string& name,
+    const AppId& id) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  bool shortcut_exists = false;
+  bool shortcut_correct = false;
 
 #if BUILDFLAG(IS_WIN)
-  shortcut_exists =
-      (IsShortcutFoundForProfile(profile, name,
-                                 shortcut_override_->desktop.GetPath()) &&
-       IsShortcutFoundForProfile(
-           profile, name, shortcut_override_->application_menu.GetPath()));
+  shortcut_correct =
+      (IsShortcutAndIconFoundForProfile(
+           profile, name, shortcut_override_->desktop.GetPath(),
+           g_app_name_icon_color.find(name)->second) &&
+       IsShortcutAndIconFoundForProfile(
+           profile, name, shortcut_override_->application_menu.GetPath(),
+           g_app_name_icon_color.find(name)->second));
 #elif BUILDFLAG(IS_MAC)
   std::string shortcut_filename = name + ".app";
   base::FilePath app_shortcut_path =
       shortcut_override_->chrome_apps_folder.GetPath().Append(
           shortcut_filename);
   AppShimRegistry* registry = AppShimRegistry::Get();
+  bool is_app_profile_found = false;
+  // Exits early if the app id is empty because the verification won't work.
+  // TODO(crbug.com/1289865): Figure a way to find the profile that has the app
+  //                          installed without using app ID.
+  if (id.empty())
+    return false;
   std::set<base::FilePath> app_installed_profiles =
       registry->GetInstalledProfilesForApp(id);
-  shortcut_exists = (base::PathExists(app_shortcut_path) &&
-                     app_installed_profiles.find(profile->GetPath()) !=
-                         app_installed_profiles.end());
+  is_app_profile_found = (app_installed_profiles.find(profile->GetPath()) !=
+                          app_installed_profiles.end());
+  bool shortcut_exists =
+      (base::PathExists(app_shortcut_path) && is_app_profile_found);
+  if (shortcut_exists) {
+    SkColor icon_pixel_color = GetIconTopLeftColor(app_shortcut_path);
+    shortcut_correct =
+        (icon_pixel_color == g_app_name_icon_color.find(name)->second);
+  }
 #elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =
       "chrome-" + id + "-" + profile->GetBaseName().value() + ".desktop";
   base::FilePath desktop_shortcut_path =
       shortcut_override_->desktop.GetPath().Append(shortcut_filename);
-  shortcut_exists = base::PathExists(desktop_shortcut_path);
+  shortcut_correct = base::PathExists(desktop_shortcut_path);
 #endif
 
-  return shortcut_exists;
+  return shortcut_correct;
 }
 
 Browser* WebAppIntegrationTestDriver::browser() {
