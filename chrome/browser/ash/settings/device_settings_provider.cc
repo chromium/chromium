@@ -318,8 +318,8 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   DecodeAllowedUsers(policy, new_values_cache);
 
   bool user_allowlist_enforced =
-      ((policy.has_user_whitelist() &&
-        policy.user_whitelist().user_whitelist_size() > 0) ||
+      ((policy.has_user_whitelist() &&                         // nocheck
+        policy.user_whitelist().user_whitelist_size() > 0) ||  // nocheck
        (policy.has_user_allowlist() &&
         policy.user_allowlist().user_allowlist_size() > 0));
   new_values_cache->SetBoolean(
@@ -358,10 +358,11 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       list.push_back(base::Value(value));
     }
   } else {
-    const em::UserWhitelistProto& whitelist_proto = policy.user_whitelist();
-    const RepeatedPtrField<std::string>& whitelist =
-        whitelist_proto.user_whitelist();
-    for (const std::string& value : whitelist) {
+    const em::UserWhitelistProto& whitelist_proto =   // nocheck
+        policy.user_whitelist();                      // nocheck
+    const RepeatedPtrField<std::string>& whitelist =  // nocheck
+        whitelist_proto.user_whitelist();             // nocheck
+    for (const std::string& value : whitelist) {      // nocheck
       list.push_back(base::Value(value));
     }
   }
@@ -1076,7 +1077,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
   new_values_cache->SetInteger(kDevicePrintersAccessMode, access_mode);
 
-  // Use Blocklist policy if present, otherwise Blacklist version.
+  // Use Blocklist policy if present, otherwise Blacklist version.  // nocheck
   if (policy.has_device_printers_blocklist()) {
     base::Value list(base::Value::Type::LIST);
     const em::DevicePrintersBlocklistProto& proto(
@@ -1084,16 +1085,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     for (const auto& id : proto.blocklist())
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersBlocklist, std::move(list));
-  } else if (policy.has_native_device_printers_blacklist()) {
+  } else if (policy.has_native_device_printers_blacklist()) {  // nocheck
     base::Value list(base::Value::Type::LIST);
-    const em::DeviceNativePrintersBlacklistProto& proto(
-        policy.native_device_printers_blacklist());
-    for (const auto& id : proto.blacklist())
+    const em::DeviceNativePrintersBlacklistProto& proto(  // nocheck
+        policy.native_device_printers_blacklist());       // nocheck
+    for (const auto& id : proto.blacklist())              // nocheck
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersBlocklist, std::move(list));
   }
 
-  // Use Allowlist policy if present, otherwise Whitelist version.
+  // Use Allowlist policy if present, otherwise Whitelist version.  // nocheck
   if (policy.has_device_printers_allowlist()) {
     base::Value list(base::Value::Type::LIST);
     const em::DevicePrintersAllowlistProto& proto(
@@ -1101,11 +1102,11 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     for (const auto& id : proto.allowlist())
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersAllowlist, std::move(list));
-  } else if (policy.has_native_device_printers_whitelist()) {
+  } else if (policy.has_native_device_printers_whitelist()) {  // nocheck
     base::Value list(base::Value::Type::LIST);
-    const em::DeviceNativePrintersWhitelistProto& proto(
-        policy.native_device_printers_whitelist());
-    for (const auto& id : proto.whitelist())
+    const em::DeviceNativePrintersWhitelistProto& proto(  // nocheck
+        policy.native_device_printers_whitelist());       // nocheck
+    for (const auto& id : proto.whitelist())              // nocheck
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersAllowlist, std::move(list));
   }
@@ -1196,9 +1197,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       allowlist.Append(std::move(ids));
     }
     new_values_cache->SetValue(kUsbDetachableAllowlist, std::move(allowlist));
-  } else if (policy.has_usb_detachable_whitelist()) {
-    const em::UsbDetachableWhitelistProto& container =
-        policy.usb_detachable_whitelist();
+  } else if (policy.has_usb_detachable_whitelist()) {   // nocheck
+    const em::UsbDetachableWhitelistProto& container =  // nocheck
+        policy.usb_detachable_whitelist();              // nocheck
     base::Value allowlist(base::Value::Type::LIST);
     for (const auto& entry : container.id()) {
       base::Value ids(base::Value::Type::DICTIONARY);

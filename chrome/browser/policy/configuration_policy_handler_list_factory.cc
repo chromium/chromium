@@ -1719,15 +1719,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      std::make_unique<SimplePolicyHandler>(key::kAuthServerWhitelist,
-                                            prefs::kAuthServerAllowlist,
-                                            base::Value::Type::STRING),
+      std::make_unique<SimplePolicyHandler>(
+          key::kAuthServerWhitelist,  // nocheck
+          prefs::kAuthServerAllowlist, base::Value::Type::STRING),
       std::make_unique<SimplePolicyHandler>(key::kAuthServerAllowlist,
                                             prefs::kAuthServerAllowlist,
                                             base::Value::Type::STRING)));
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(
-          key::kAuthNegotiateDelegateWhitelist,
+          key::kAuthNegotiateDelegateWhitelist,  // nocheck
           prefs::kAuthNegotiateDelegateAllowlist, base::Value::Type::STRING),
       std::make_unique<SimplePolicyHandler>(
           key::kAuthNegotiateDelegateAllowlist,

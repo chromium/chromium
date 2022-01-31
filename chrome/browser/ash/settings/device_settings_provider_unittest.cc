@@ -390,11 +390,13 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_access_mode(access_mode);
   }
 
-  void SetNativeDevicePrintersBlacklist(std::vector<std::string>& values) {
-    em::DeviceNativePrintersBlacklistProto* proto =
-        device_policy_->payload().mutable_native_device_printers_blacklist();
+  void SetNativeDevicePrintersBlacklist(  // nocheck
+      std::vector<std::string>& values) {
+    em::DeviceNativePrintersBlacklistProto* proto =  // nocheck
+        device_policy_->payload()
+            .mutable_native_device_printers_blacklist();  // nocheck
     for (auto const& value : values) {
-      proto->add_blacklist(value);
+      proto->add_blacklist(value);  // nocheck
     }
   }
 
@@ -406,11 +408,13 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     }
   }
 
-  void SetNativeDevicePrintersWhitelist(std::vector<std::string>& values) {
-    em::DeviceNativePrintersWhitelistProto* proto =
-        device_policy_->payload().mutable_native_device_printers_whitelist();
+  void SetNativeDevicePrintersWhitelist(  // nocheck
+      std::vector<std::string>& values) {
+    em::DeviceNativePrintersWhitelistProto* proto =  // nocheck
+        device_policy_->payload()
+            .mutable_native_device_printers_whitelist();  // nocheck
     for (auto const& value : values) {
-      proto->add_whitelist(value);
+      proto->add_whitelist(value);  // nocheck
     }
   }
 
@@ -1087,9 +1091,9 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_empty) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_native) {
-  // WHITELIST => ALLOWLIST
-  SetNativeDevicePrinterAccessMode(
-      em::DeviceNativePrintersAccessModeProto::ACCESS_MODE_WHITELIST);
+  // WHITELIST => ALLOWLIST  // nocheck
+  SetNativeDevicePrinterAccessMode(em::DeviceNativePrintersAccessModeProto::
+                                       ACCESS_MODE_WHITELIST);  // nocheck
   BuildAndInstallDevicePolicy();
   base::Value expected_value(
       em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
@@ -1107,8 +1111,8 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_accessmode) {
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_both) {
   // If both are set use the DevicePrintersAccessMode
-  SetNativeDevicePrinterAccessMode(
-      em::DeviceNativePrintersAccessModeProto::ACCESS_MODE_BLACKLIST);
+  SetNativeDevicePrinterAccessMode(em::DeviceNativePrintersAccessModeProto::
+                                       ACCESS_MODE_BLACKLIST);  // nocheck
   SetDevicePrinterAccessMode(
       em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
   BuildAndInstallDevicePolicy();
@@ -1122,11 +1126,12 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_empty) {
   VerifyPolicyValue(kDevicePrintersBlocklist, nullptr);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_blacklist) {
+TEST_F(DeviceSettingsProviderTest,
+       DevicePrintersBlocklist_blacklist) {  // nocheck
   std::vector<std::string> values = {"foo", "bar"};
 
-  // If the blacklist only is set, use that.
-  SetNativeDevicePrintersBlacklist(values);
+  // If the blacklist only is set, use that.  // nocheck
+  SetNativeDevicePrintersBlacklist(values);  // nocheck
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersBlocklist, values);
 }
@@ -1145,7 +1150,7 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_both) {
   std::vector<std::string> other_values = {"baz"};
 
   // If both are set use the blocklist
-  SetNativeDevicePrintersBlacklist(other_values);
+  SetNativeDevicePrintersBlacklist(other_values);  // nocheck
   SetDevicePrintersBlocklist(values);
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersBlocklist, values);
@@ -1156,11 +1161,12 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_empty) {
   VerifyPolicyValue(kDevicePrintersAllowlist, nullptr);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_whitelist) {
+TEST_F(DeviceSettingsProviderTest,
+       DevicePrintersAllowlist_whitelist) {  // nocheck
   std::vector<std::string> values = {"foo", "bar"};
 
-  // If the blacklist only is set, use that.
-  SetNativeDevicePrintersWhitelist(values);
+  // If the whitelist only is set, use that.  // nocheck
+  SetNativeDevicePrintersWhitelist(values);  // nocheck
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
 }
@@ -1168,7 +1174,7 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_whitelist) {
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_allowlist) {
   std::vector<std::string> values = {"foo", "bar"};
 
-  // If the blocklist only is set, use that.
+  // If the allowlist only is set, use that.
   SetDevicePrintersAllowlist(values);
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
@@ -1178,8 +1184,8 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_both) {
   std::vector<std::string> values = {"foo", "bar"};
   std::vector<std::string> other_values = {"baz"};
 
-  // If both are set use the blocklist
-  SetNativeDevicePrintersWhitelist(other_values);
+  // If both are set use the allowlist
+  SetNativeDevicePrintersWhitelist(other_values);  // nocheck
   SetDevicePrintersAllowlist(values);
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersAllowlist, values);

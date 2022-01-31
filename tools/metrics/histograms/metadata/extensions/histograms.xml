@@ -1355,15 +1355,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ForceInstalledAndBlackListed" units="count"
+<histogram name="Extensions.ForceInstalledAndBlockListed" units="count"
     expires_after="2022-06-12">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of enterprise policy forced extensions that are blacklisted and thus
-    not loaded after 5 minutes if at least one of policy forced extensions is
-    not yet enabled.
+    not loaded 5 minutes after profile creation if at least one of policy forced
+    extensions is not yet enabled.
   </summary>
 </histogram>
 

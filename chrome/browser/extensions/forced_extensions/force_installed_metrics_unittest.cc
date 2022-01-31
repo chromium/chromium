@@ -123,7 +123,7 @@ constexpr char kPossibleNonMisconfigurationFailures[] =
     "Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured";
 constexpr char kDisableReason[] =
     "Extensions.ForceInstalledNotLoadedDisableReason";
-constexpr char kBlocklisted[] = "Extensions.ForceInstalledAndBlackListed";
+constexpr char kBlocklisted[] = "Extensions.ForceInstalledAndBlockListed";
 constexpr char kWebStoreExtensionManifestInvalid[] =
     "Extensions.WebStore_ForceInstalledFailureManifestInvalidErrorDetail2";
 constexpr char kOffStoreExtensionManifestInvalid[] =

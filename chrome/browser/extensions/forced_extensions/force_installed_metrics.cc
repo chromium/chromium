@@ -475,7 +475,7 @@ void ForceInstalledMetrics::ReportMetrics() {
   base::UmaHistogramCounts100(
       "Extensions.ForceInstalledTimedOutAndNotInstalledCount",
       installed_missing_count);
-  base::UmaHistogramCounts100("Extensions.ForceInstalledAndBlackListed",
+  base::UmaHistogramCounts100("Extensions.ForceInstalledAndBlockListed",
                               blocklisted_count);
   LOG(WARNING) << "Failed to install " << installed_missing_count
                << " forced extensions.";

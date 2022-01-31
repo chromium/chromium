@@ -44,7 +44,7 @@ constexpr char kWallpaperUrlPropertyValue[] =
     "https://example.com/device_wallpaper.jpg";
 constexpr char kWallpaperHashPropertyName[] = "hash";
 constexpr char kWallpaperHashPropertyValue[] = "examplewallpaperhash";
-const char kUserWhitelist[] = "*@test-domain.com";
+const char kUserAllowlist[] = "*@test-domain.com";
 constexpr char kValidBluetoothServiceUUID4[] = "0x1124";
 constexpr char kValidBluetoothServiceUUID8[] = "0000180F";
 constexpr char kValidBluetoothServiceUUID32[] =
@@ -180,31 +180,35 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeSuccess) {
   EXPECT_TRUE(error.empty());
 }
 
-TEST_F(DevicePolicyDecoderTest, UserWhitelistWarning) {
+// Test checks that deprecation warning is shown for non-COIL policy.
+TEST_F(DevicePolicyDecoderTest, UserWhitelistWarning) {  // nocheck
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
 
   base::WeakPtr<ExternalDataManager> external_data_manager;
 
   em::ChromeDeviceSettingsProto device_policy;
-  device_policy.mutable_user_whitelist()->add_user_whitelist()->assign(
-      kUserWhitelist);
+  device_policy
+      .mutable_user_whitelist()  // nocheck
+      ->add_user_whitelist()     // nocheck
+      ->assign(kUserAllowlist);
 
   DecodeDevicePolicy(device_policy, external_data_manager, &policies);
 
-  EXPECT_TRUE(policies.GetValue(key::kDeviceUserWhitelist));
+  EXPECT_TRUE(policies.GetValue(key::kDeviceUserWhitelist));  // nocheck
 
   std::vector<base::Value> list;
-  list.emplace_back(base::Value(kUserWhitelist));
+  list.emplace_back(base::Value(kUserAllowlist));
   EXPECT_EQ(base::ListValue(list),
-            *policies.GetValue(key::kDeviceUserWhitelist));
+            *policies.GetValue(key::kDeviceUserWhitelist));  // nocheck
 
   base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);
 
   // Should have a deprecation warning.
   EXPECT_FALSE(
-      policies.Get(key::kDeviceUserWhitelist)
+      policies
+          .Get(key::kDeviceUserWhitelist)  // nocheck
           ->GetLocalizedMessages(PolicyMap::MessageType::kError, l10nlookup)
           .empty());
 }

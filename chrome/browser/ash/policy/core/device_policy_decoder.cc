@@ -237,16 +237,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
   }
-  if (policy.has_user_whitelist()) {
-    const em::UserWhitelistProto& container(policy.user_whitelist());
+  if (policy.has_user_whitelist()) {          // nocheck
+    const em::UserWhitelistProto& container(  // nocheck
+        policy.user_whitelist());             // nocheck
     base::Value list(base::Value::Type::LIST);
-    for (const auto& entry : container.user_whitelist())
+    for (const auto& entry : container.user_whitelist())  // nocheck
       list.Append(entry);
-    policies->Set(key::kDeviceUserWhitelist, POLICY_LEVEL_MANDATORY,
+    policies->Set(key::kDeviceUserWhitelist, POLICY_LEVEL_MANDATORY,  // nocheck
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list),
                   nullptr);
-    AddDeprecationWarning(key::kDeviceUserWhitelist, key::kDeviceUserAllowlist,
-                          policies);
+    AddDeprecationWarning(key::kDeviceUserWhitelist,  // nocheck
+                          key::kDeviceUserAllowlist, policies);
   }
 
   if (policy.has_family_link_accounts_allowed()) {
@@ -1545,9 +1546,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
   }
-  if (policy.has_usb_detachable_whitelist()) {
-    const em::UsbDetachableWhitelistProto& container(
-        policy.usb_detachable_whitelist());
+  if (policy.has_usb_detachable_whitelist()) {         // nocheck
+    const em::UsbDetachableWhitelistProto& container(  // nocheck
+        policy.usb_detachable_whitelist());            // nocheck
     base::Value list(base::Value::Type::LIST);
     for (const auto& entry : container.id()) {
       base::Value ids(base::Value::Type::DICTIONARY);
@@ -1559,9 +1560,11 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       }
       list.Append(std::move(ids));
     }
-    policies->Set(key::kUsbDetachableWhitelist, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list),
-                  nullptr);
+    policies->Set(
+        key::kUsbDetachableWhitelist, POLICY_LEVEL_MANDATORY,  // nocheck
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+    AddDeprecationWarning(key::kUsbDetachableWhitelist,  // nocheck
+                          key::kUsbDetachableAllowlist, policies);
   }
 
   if (policy.has_quirks_download_enabled()) {
@@ -1630,8 +1633,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  // Use DevicePrintersBlocklist if present, fallback to
-  // DeviceNativePrintersBlacklist.
   if (policy.has_device_printers_blocklist()) {
     const em::DevicePrintersBlocklistProto& container(
         policy.device_printers_blocklist());
@@ -1642,20 +1643,21 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     policies->Set(key::kDevicePrintersBlocklist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(blocklist), nullptr);
-  } else if (policy.has_native_device_printers_blacklist()) {
-    const em::DeviceNativePrintersBlacklistProto& container(
-        policy.native_device_printers_blacklist());
+  }
+  if (policy.has_native_device_printers_blacklist()) {        // nocheck
+    const em::DeviceNativePrintersBlacklistProto& container(  // nocheck
+        policy.native_device_printers_blacklist());           // nocheck
     base::Value list(base::Value::Type::LIST);
     for (const auto& entry : container.blacklist())  // nocheck
       list.Append(entry);
 
-    policies->Set(key::kDevicePrintersBlocklist, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list),
-                  nullptr);
+    policies->Set(
+        key::kDeviceNativePrintersBlacklist, POLICY_LEVEL_MANDATORY,  // nocheck
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+    AddDeprecationWarning(key::kDeviceNativePrintersBlacklist,  // nocheck
+                          key::kDevicePrintersBlocklist, policies);
   }
 
-  // Use DevicePrintersAllowlist if present, fallback to
-  // DeviceNativePrintersWhitelist.
   if (policy.has_device_printers_allowlist()) {
     const em::DevicePrintersAllowlistProto& container(
         policy.device_printers_allowlist());
@@ -1666,16 +1668,19 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     policies->Set(key::kDevicePrintersAllowlist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
-  } else if (policy.has_native_device_printers_whitelist()) {
-    const em::DeviceNativePrintersWhitelistProto& container(
-        policy.native_device_printers_whitelist());
+  }
+  if (policy.has_native_device_printers_whitelist()) {        // nocheck
+    const em::DeviceNativePrintersWhitelistProto& container(  // nocheck
+        policy.native_device_printers_whitelist());           // nocheck
     base::Value list(base::Value::Type::LIST);
     for (const auto& entry : container.whitelist())  // nocheck
       list.Append(entry);
 
-    policies->Set(key::kDevicePrintersAllowlist, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list),
-                  nullptr);
+    policies->Set(
+        key::kDeviceNativePrintersWhitelist, POLICY_LEVEL_MANDATORY,  // nocheck
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+    AddDeprecationWarning(key::kDeviceNativePrintersWhitelist,  // nocheck
+                          key::kDevicePrintersAllowlist, policies);
   }
 
   if (policy.has_external_print_servers_allowlist()) {
