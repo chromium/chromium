@@ -238,9 +238,6 @@ TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Extensions.ManifestIconSetIconWasVisibleForPacked"),
               testing::ElementsAre(base::Bucket(0, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.ManifestIconSetIconWasVisibleForPackedRendered"),
-              testing::ElementsAre(base::Bucket(0, 1)));
 
   // Reset the flag for testing.
   ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(true);

@@ -276,9 +276,6 @@ TEST(DeclarativeContentActionTest, SetIcon) {
     EXPECT_THAT(histogram_tester.GetAllSamples(
                     "Extensions.DeclarativeSetIconWasVisible"),
                 testing::ElementsAre(base::Bucket(1, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "Extensions.DeclarativeSetIconWasVisibleRendered"),
-                testing::ElementsAre(base::Bucket(1, 1)));
     histogram_tester.ExpectUniqueSample(
         "Extensions.DeclarativeContentActionCreated",
         ContentActionType::kSetIcon, 1);
@@ -337,9 +334,6 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Extensions.DeclarativeSetIconWasVisible"),
       testing::ElementsAre(base::Bucket(0, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.DeclarativeSetIconWasVisibleRendered"),
-              testing::ElementsAre(base::Bucket(0, 1)));
   histogram_tester.ExpectTotalCount(
       "Extensions.DeclarativeContentActionCreated", 0);
 }

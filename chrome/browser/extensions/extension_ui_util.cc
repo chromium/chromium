@@ -67,15 +67,5 @@ std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
                    : std::u16string();
 }
 
-bool IsRenderedIconSufficientlyVisibleForBrowserContext(
-    const SkBitmap& bitmap,
-    content::BrowserContext* browser_context) {
-  Profile* const profile = Profile::FromBrowserContext(browser_context);
-  const ui::ThemeProvider& provider =
-      ThemeService::GetThemeProviderForProfile(profile);
-  return extensions::image_util::IsRenderedIconSufficientlyVisible(
-      bitmap, provider.GetColor(ThemeProperties::COLOR_TOOLBAR));
-}
-
 }  // namespace ui_util
 }  // namespace extensions

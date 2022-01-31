@@ -420,11 +420,6 @@ std::unique_ptr<ContentAction> SetIcon::Create(
       extensions::image_util::IsIconSufficientlyVisible(bitmap);
   base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisible",
                             is_sufficiently_visible);
-  const bool is_sufficiently_visible_rendered =
-      extensions::ui_util::IsRenderedIconSufficientlyVisibleForBrowserContext(
-          bitmap, browser_context);
-  base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisibleRendered",
-                            is_sufficiently_visible_rendered);
   if (!is_sufficiently_visible && !g_allow_invisible_icons_content_action) {
     *error = kIconNotSufficientlyVisible;
     return nullptr;
