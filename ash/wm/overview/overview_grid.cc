@@ -1709,6 +1709,13 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->HideForDesksTemplatesGrid(/*animate=*/true);
 
+  // There may be an existing animation in progress triggered by
+  // `HideDeskTemplatesGrid()` below, which animates a widget to 0.f before
+  // calling `OnDesksTemplatesGridFadedOut()` to hide the widget on animation
+  // end. Stop animating so that the callbacks associated get fired, otherwise
+  // we may end up trying to show a widget that's already shown.
+  // `StopAnimating()` is a no-op if there is no animation in progress.
+  desks_templates_grid_widget_->GetLayer()->GetAnimator()->StopAnimating();
   desks_templates_grid_widget_->Show();
 
   // Fade in the widget from its current opacity.
@@ -1858,6 +1865,14 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
             &OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
             weak_ptr_factory_.GetWeakPtr())));
   }
+
+  // There may be an existing animation in progress triggered by
+  // `PerformFadeOutLayer()` above, which animates a widget to 0.f before
+  // calling `OnSaveDeskAsTemplateButtonFadedOut()` to hide the widget on
+  // animation end. Stop animating so that the callbacks associated get fired,
+  // otherwise we may end up trying to show a widget that's already shown.
+  // `StopAnimating()` is a no-op if there is no animation in progress.
+  save_desk_as_template_widget_->GetLayer()->GetAnimator()->StopAnimating();
   save_desk_as_template_widget_->Show();
   PerformFadeInLayer(save_desk_as_template_widget_->GetLayer());
 

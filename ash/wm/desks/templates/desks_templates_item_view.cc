@@ -517,7 +517,7 @@ views::View* DesksTemplatesItemView::TargetForRect(views::View* root,
   // we needed to make `this` a `ViewTargeterDelegate` for the view event
   // targeter in order to allow the `name_view_` to be specifically targeted and
   // focused. Use the centerpoint for `rect` as parts of `rect` may be outside
-  // the `name_view_bounds` for touch event
+  // the `name_view_bounds` for touch events.
   if (root == this &&
       gfx::ToRoundedRect(name_view_bounds).Contains(rect.CenterPoint())) {
     return name_view_;
