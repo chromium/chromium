@@ -704,7 +704,6 @@
     "type": "console_test_launcher",
   },
   "content_shell_crash_test": {
-    "python3": False,
     "label": "//content/shell:content_shell_crash_test",
     "script": "//testing/scripts/content_shell_crash_test.py",
     "type": "script",

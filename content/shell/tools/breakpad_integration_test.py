@@ -171,7 +171,7 @@ def run_test(options, crash_dir, symbols_dir, platform,
     dmp_dir = crash_dir
     # TODO(crbug.com/782923): This test should not reach directly into the
     # Crashpad database, but instead should use crashpad_database_util.
-    if platform == 'darwin' or platform == 'linux2':
+    if platform == 'darwin' or platform.startswith('linux'):
       dmp_dir = os.path.join(dmp_dir, 'pending')
     elif platform == 'win32':
       dmp_dir = os.path.join(dmp_dir, 'reports')
