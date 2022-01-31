@@ -529,7 +529,7 @@ bool ClientCertResolver::IsAnyResolveTaskRunning() const {
 bool ClientCertResolver::ResolveClientCertificateSync(
     const client_cert::ConfigType client_cert_type,
     const client_cert::ClientCertConfig& client_cert_config,
-    base::DictionaryValue* shill_properties) {
+    base::Value* shill_properties) {
   if (!ShouldResolveCert(client_cert_config))
     return false;
 
@@ -811,7 +811,7 @@ void ClientCertResolver::ConfigureCertificates(
     NET_LOG(EVENT) << "Configuring certificate for network: "
                    << GetNetworkIdWithGuid(network_state);
 
-    base::DictionaryValue shill_properties;
+    base::Value shill_properties{base::Value::Type::DICTIONARY};
     if (match.matching_cert.has_value()) {
       const MatchingCert& matching_cert = match.matching_cert.value();
       client_cert::SetShillProperties(

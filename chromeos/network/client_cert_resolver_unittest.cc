@@ -341,12 +341,9 @@ class ClientCertResolverTest : public testing::Test,
             test_onc_pattern, base::JSON_ALLOW_TRAILING_COMMAS);
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
-    base::DictionaryValue* onc_pattern_dict;
-    parsed_json.value->GetAsDictionary(&onc_pattern_dict);
-
     client_cert_config->onc_source = onc_source;
     client_cert_config->client_cert_type = ::onc::client_cert::kPattern;
-    client_cert_config->pattern.ReadFromONCDictionary(*onc_pattern_dict);
+    client_cert_config->pattern.ReadFromONCDictionary(*(parsed_json.value));
   }
 
   // Sets up a policy with a certificate pattern that matches any client cert
@@ -389,7 +386,7 @@ class ClientCertResolverTest : public testing::Test,
         onc_source == ::onc::ONC_SOURCE_USER_POLICY ? kUserHash : "";
     managed_config_handler_->SetPolicy(
         onc_source, user_hash, *parsed_json.value,
-        base::DictionaryValue() /* no global network config */);
+        /*global_network_config=*/base::Value(base::Value::Type::DICTIONARY));
   }
 
   void SetWifiState(const std::string& state) {
@@ -727,7 +724,7 @@ TEST_F(ClientCertResolverTest, UserPolicyUsesSystemTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_USER_POLICY,
                                          &client_cert_config);
 
-  base::DictionaryValue shill_properties;
+  base::Value shill_properties(base::Value::Type::DICTIONARY);
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
   std::string pkcs11_id =
@@ -766,7 +763,7 @@ TEST_F(ClientCertResolverTest, DevicePolicyUsesSystemTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          &client_cert_config);
 
-  base::DictionaryValue shill_properties;
+  base::Value shill_properties(base::Value::Type::DICTIONARY);
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
   std::string pkcs11_id =
@@ -807,7 +804,7 @@ TEST_F(ClientCertResolverTest, DevicePolicyDoesNotUseUserTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          &client_cert_config);
 
-  base::DictionaryValue shill_properties;
+  base::Value shill_properties(base::Value::Type::DICTIONARY);
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
   std::string pkcs11_id =
