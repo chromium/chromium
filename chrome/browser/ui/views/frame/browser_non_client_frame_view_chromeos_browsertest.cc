@@ -214,8 +214,14 @@ IN_PROC_BROWSER_TEST_F(
 // fullscreen.
 // This test does not make sense for the webUI tabstrip, since the frame is not
 // painted in that case.
+// Disable for lacros due to flakiness. crbug.com/1292412
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_NonImmersiveFullscreen DISABLED_NonImmersiveFullscreen
+#else
+#define MAYBE_NonImmersiveFullscreen NonImmersiveFullscreen
+#endif
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
-                       NonImmersiveFullscreen) {
+                       MAYBE_NonImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
   BrowserNonClientFrameViewChromeOS* frame_view =
