@@ -130,8 +130,14 @@ INSTANTIATE_TEST_SUITE_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER));
 
+// TODO(https://crbug.com/1289161): Flaky failures.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Navigation DISABLED_Navigation
+#else
+#define MAYBE_Navigation Navigation
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Navigation) {
+                       MAYBE_Navigation) {
   static const struct {
     std::string url_navigated_to;
     bool bubble_should_be_visible;
