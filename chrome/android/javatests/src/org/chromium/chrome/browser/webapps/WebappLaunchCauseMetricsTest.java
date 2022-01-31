@@ -27,7 +27,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
@@ -73,7 +72,6 @@ public final class WebappLaunchCauseMetricsTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "https://crbug.com/1292239")
     public void testHomescreenLaunch() throws Throwable {
         int otherCount = histogramCountForValue(LaunchCause.WEBAPK_OTHER_DISTRIBUTOR);
         int chromeCount = histogramCountForValue(LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
@@ -111,7 +109,6 @@ public final class WebappLaunchCauseMetricsTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "https://crbug.com/1287572")
     public void testViewIntentLaunch() throws Throwable {
         int count = histogramCountForValue(LaunchCause.EXTERNAL_VIEW_INTENT);
         Mockito.when(mWebappInfo.isLaunchedFromHomescreen()).thenReturn(false);

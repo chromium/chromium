@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -47,6 +48,7 @@ public class PersistedTabDataTest {
     @SmallTest
     @UiThreadTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1292239")
     public void testCacheCallbacks() throws InterruptedException {
         Tab tab = MockTab.createAndInitialize(1, false);
         tab.setIsTabSaveEnabled(true);
