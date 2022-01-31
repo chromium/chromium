@@ -4105,8 +4105,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)webStateList:(WebStateList*)webStateList
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
-  webState->WasHidden();
-  webState->SetKeepRenderProcessAlive(false);
+  if (webState->IsRealized()) {
+    webState->WasHidden();
+    webState->SetKeepRenderProcessAlive(false);
+  }
 
   if (IsSingleNtpEnabled()) {
     [self stopNTPIfNeeded];

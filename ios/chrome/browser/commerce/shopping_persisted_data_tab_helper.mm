@@ -129,6 +129,10 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
 void ShoppingPersistedDataTabHelper::LogMetrics(PriceDropLogId log_id) {
   // Approximate time the Tab was last accessed based on the last committed
   // NavigationEntry
+  // TODO(crbug.com/1291626): Remove this once timestamp can be accessed
+  // without realizing the web state.
+  if (!web_state_->IsRealized())
+    return;
   web::NavigationItem* navigation_item =
       web_state_->GetNavigationManager()->GetLastCommittedItem();
   if (!navigation_item)
