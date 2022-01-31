@@ -2936,11 +2936,6 @@
       },
     },
   },
-  'system_webview_shell_layout_test_apk': {
-    'remove_from': [
-      'android-11-x86-rel', # crbug.com/1165280
-    ],
-  },
   'system_webview_wpt': {
     'modifications': {
       'android-webview-pie-x86-wpt-fyi-rel': {
