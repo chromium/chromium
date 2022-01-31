@@ -770,6 +770,68 @@ TEST_F(RawPtrTest, FunctionParameters_Copy) {
                               &x);
 }
 
+TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
+  std::set<CountingRawPtr<int>> set;
+  int x = 123;
+  CountingRawPtr<int> ptr(&x);
+
+  ClearCounters();
+  set.emplace(&x);
+  EXPECT_EQ(1, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(0, g_get_for_comparison_cnt);
+  EXPECT_EQ(0, g_get_for_extraction_cnt);
+  EXPECT_EQ(0, g_get_for_dereference_cnt);
+
+  ClearCounters();
+  set.count(&x);
+  EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_NE(0, g_get_for_comparison_cnt);
+  EXPECT_EQ(0, g_get_for_extraction_cnt);
+  EXPECT_EQ(0, g_get_for_dereference_cnt);
+
+  ClearCounters();
+  set.count(ptr);
+  EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_NE(0, g_get_for_comparison_cnt);
+  EXPECT_EQ(0, g_get_for_extraction_cnt);
+  EXPECT_EQ(0, g_get_for_dereference_cnt);
+}
+
+TEST_F(RawPtrTest, ComparisonOperatorUsesGetForComparison) {
+  int x = 123;
+  CountingRawPtr<int> ptr(&x);
+
+  ClearCounters();
+  EXPECT_FALSE(ptr < ptr);
+  EXPECT_FALSE(ptr > ptr);
+  EXPECT_TRUE(ptr <= ptr);
+  EXPECT_TRUE(ptr >= ptr);
+  EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(8, g_get_for_comparison_cnt);
+  EXPECT_EQ(0, g_get_for_extraction_cnt);
+  EXPECT_EQ(0, g_get_for_dereference_cnt);
+
+  ClearCounters();
+  EXPECT_FALSE(ptr < &x);
+  EXPECT_FALSE(ptr > &x);
+  EXPECT_TRUE(ptr <= &x);
+  EXPECT_TRUE(ptr >= &x);
+  EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(4, g_get_for_comparison_cnt);
+  EXPECT_EQ(0, g_get_for_extraction_cnt);
+  EXPECT_EQ(0, g_get_for_dereference_cnt);
+
+  ClearCounters();
+  EXPECT_FALSE(&x < ptr);
+  EXPECT_FALSE(&x > ptr);
+  EXPECT_TRUE(&x <= ptr);
+  EXPECT_TRUE(&x >= ptr);
+  EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(4, g_get_for_comparison_cnt);
+  EXPECT_EQ(0, g_get_for_extraction_cnt);
+  EXPECT_EQ(0, g_get_for_dereference_cnt);
+}
+
 // This test checks how the std library handles collections like
 // std::vector<raw_ptr<T>>.
 //
