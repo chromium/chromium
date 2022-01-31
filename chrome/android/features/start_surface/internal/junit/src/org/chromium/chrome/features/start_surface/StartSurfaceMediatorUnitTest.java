@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.INSTANT_START;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
@@ -1119,6 +1120,8 @@ public class StartSurfaceMediatorUnitTest {
                 resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin);
         int tabSwitcherTitleTopMargin =
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
+        int fakeSearchBoxTopMargin =
+                resources.getDimensionPixelSize(R.dimen.fake_search_box_top_margin);
 
         createStartSurfaceMediatorWithoutInit(/* isStartSurfaceEnabled= */ true,
                 /* excludeMVTiles= */ false,
@@ -1129,6 +1132,7 @@ public class StartSurfaceMediatorUnitTest {
                 equalTo(mvTilesContainerTopMargin));
         assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
                 equalTo(tabSwitcherTitleTopMargin));
+        assertThat(mPropertyModel.get(FAKE_SEARCH_BOX_TOP_MARGIN), equalTo(fakeSearchBoxTopMargin));
     }
 
     @Test

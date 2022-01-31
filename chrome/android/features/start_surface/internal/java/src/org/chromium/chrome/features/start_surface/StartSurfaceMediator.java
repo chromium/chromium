@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
@@ -307,6 +308,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
                     resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
             mPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN,
                     resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin));
+            mPropertyModel.set(FAKE_SEARCH_BOX_TOP_MARGIN,
+                    resources.getDimensionPixelSize(R.dimen.fake_search_box_top_margin));
         }
 
         mController.addOverviewModeObserver(this);

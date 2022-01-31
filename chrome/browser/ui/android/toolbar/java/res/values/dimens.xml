@@ -34,6 +34,7 @@
     <!-- Start surface toolbar dimensions -->
     <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>
     <dimen name="start_surface_toolbar_button_padding_to_edge">16dp</dimen>
+    <dimen name="identity_disc_button_margin_start">16dp</dimen>
 
     <!-- Navigation history popup dimensions -->
     <dimen name="navigation_popup_width">312dp</dimen>
