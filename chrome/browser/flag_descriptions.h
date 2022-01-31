@@ -1779,6 +1779,10 @@ extern const char kExploreSitesDescription[];
 extern const char kFeatureNotificationGuideName[];
 extern const char kFeatureNotificationGuideDescription[];
 
+extern const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersName[];
+extern const char
+    kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription[];
+
 extern const char kFeedBackToTopName[];
 extern const char kFeedBackToTopDescription[];
 

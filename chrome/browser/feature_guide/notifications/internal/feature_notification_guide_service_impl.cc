@@ -85,13 +85,19 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
 
 void FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform(
     const segmentation_platform::SegmentSelectionResult& result) {
-  if (!result.is_ready || !result.segment.has_value())
-    return;
-  if (result.segment.value() !=
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT) {
+  if (base::FeatureList::IsEnabled(
+          feature_guide::features::kSkipCheckForLowEngagedUsers)) {
+    StartCheckingForEligibleFeatures();
     return;
   }
+
+  bool is_low_engaged_user =
+      result.is_ready && result.segment.has_value() &&
+      result.segment.value() ==
+          optimization_guide::proto::OptimizationTarget::
+              OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+  if (!is_low_engaged_user)
+    return;
 
   StartCheckingForEligibleFeatures();
 }

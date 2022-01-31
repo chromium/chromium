@@ -3130,6 +3130,11 @@ const char kFeatureNotificationGuideName[] = "Feature notification guide";
 const char kFeatureNotificationGuideDescription[] =
     "Enables notifications about chrome features.";
 
+const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersName[] =
+    "Feature notification guide - Skip check for low engaged users";
+const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription[] =
+    "Skips check for low engaged users.";
+
 const char kFeedBackToTopName[] = "Back to top of the feeds";
 const char kFeedBackToTopDescription[] =
     "Enables showing a callout to help users return to the top of the feeds "

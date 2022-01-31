@@ -3939,6 +3939,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFeatureNotificationGuideName,
      flag_descriptions::kFeatureNotificationGuideDescription, kOsAll,
      FEATURE_VALUE_TYPE(feature_guide::features::kFeatureNotificationGuide)},
+    {"feature-notification-guide-skip-check-for-low-engaged-users",
+     flag_descriptions::
+         kFeatureNotificationGuideSkipCheckForLowEngagedUsersName,
+     flag_descriptions::
+         kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(feature_guide::features::kSkipCheckForLowEngagedUsers)},
     {"offline-pages-live-page-sharing",
      flag_descriptions::kOfflinePagesLivePageSharingName,
      flag_descriptions::kOfflinePagesLivePageSharingDescription, kOsAndroid,
