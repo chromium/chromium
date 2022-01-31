@@ -145,6 +145,12 @@ struct CrossThreadCopier<base::OnceCallback<void(base::TimeTicks)>>
   STATIC_ONLY(CrossThreadCopier);
 };
 
+template <>
+struct CrossThreadCopier<base::OnceCallback<void(gfx::CALayerResult)>>
+    : public CrossThreadCopierByValuePassThrough<
+          base::OnceCallback<void(gfx::CALayerResult)>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
 }  // namespace WTF
 
 namespace blink {
@@ -2848,10 +2854,14 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   ReportTimeSwapPromise(
       base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
       base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
+      base::OnceCallback<void(gfx::CALayerResult)>
+          core_animation_error_code_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       WebFrameWidgetImpl* widget)
       : swap_time_callback_(std::move(swap_time_callback)),
         presentation_time_callback_(std::move(presentation_time_callback)),
+        core_animation_error_code_callback_(
+            std::move(core_animation_error_code_callback)),
         task_runner_(std::move(task_runner)),
         widget_(widget) {}
 
@@ -2876,13 +2886,15 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
         CrossThreadBindOnce(
             &RunCallbackAfterSwap, widget_, base::TimeTicks::Now(),
             std::move(swap_time_callback_),
-            std::move(presentation_time_callback_), frame_token_));
+            std::move(presentation_time_callback_),
+            std::move(core_animation_error_code_callback_), frame_token_));
   }
 
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
     ReportSwapAndPresentationFailureOnTaskRunner(
         task_runner_, std::move(swap_time_callback_),
-        std::move(presentation_time_callback_), base::TimeTicks::Now());
+        std::move(presentation_time_callback_),
+        std::move(core_animation_error_code_callback_), base::TimeTicks::Now());
     return DidNotSwapAction::BREAK_PROMISE;
   }
 
@@ -2894,6 +2906,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
       base::TimeTicks swap_time,
       base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
       base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
+      base::OnceCallback<void(gfx::CALayerResult)>
+          core_animation_error_code_callback,
       int frame_token) {
     // If the widget was collected or the widget wasn't collected yet, but
     // it was closed don't schedule a presentation callback.
@@ -2903,9 +2917,18 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
           WTF::Bind(&RunCallbackAfterPresentation,
                     std::move(presentation_time_callback), swap_time));
       ReportTime(std::move(swap_time_callback), swap_time);
+
+#if BUILDFLAG(IS_MAC)
+      if (core_animation_error_code_callback) {
+        widget->widget_base_->AddCoreAnimationErrorCodeCallback(
+            frame_token, std::move(core_animation_error_code_callback));
+      }
+#endif
     } else {
       ReportTime(std::move(swap_time_callback), swap_time);
       ReportTime(std::move(presentation_time_callback), swap_time);
+      ReportErrorCode(std::move(core_animation_error_code_callback),
+                      gfx::kCALayerUnknownNoWidget);
     }
   }
 
@@ -2933,11 +2956,19 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
     if (callback)
       std::move(callback).Run(time);
   }
+  static void ReportErrorCode(
+      base::OnceCallback<void(gfx::CALayerResult)> callback,
+      gfx::CALayerResult error_code) {
+    if (callback)
+      std::move(callback).Run(error_code);
+  }
 
   static void ReportSwapAndPresentationFailureOnTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
       base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
+      base::OnceCallback<void(gfx::CALayerResult)>
+          core_animation_error_code_callback,
       base::TimeTicks failure_time) {
     if (!task_runner->BelongsToCurrentThread()) {
       PostCrossThreadTask(
@@ -2945,16 +2976,21 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
           CrossThreadBindOnce(&ReportSwapAndPresentationFailureOnTaskRunner,
                               task_runner, std::move(swap_time_callback),
                               std::move(presentation_time_callback),
+                              std::move(core_animation_error_code_callback),
                               failure_time));
       return;
     }
 
     ReportTime(std::move(swap_time_callback), failure_time);
     ReportTime(std::move(presentation_time_callback), failure_time);
+    ReportErrorCode(std::move(core_animation_error_code_callback),
+                    gfx::kCALayerUnknownDidNotSwap);
   }
 
   base::OnceCallback<void(base::TimeTicks)> swap_time_callback_;
   base::OnceCallback<void(base::TimeTicks)> presentation_time_callback_;
+  base::OnceCallback<void(gfx::CALayerResult)>
+      core_animation_error_code_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   CrossThreadWeakPersistent<WebFrameWidgetImpl> widget_;
   uint32_t frame_token_ = 0;
@@ -2964,29 +3000,44 @@ void WebFrameWidgetImpl::NotifySwapAndPresentationTimeForTesting(
     base::OnceCallback<void(base::TimeTicks)> swap_callback,
     base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
   NotifySwapAndPresentationTime(std::move(swap_callback),
-                                std::move(presentation_callback));
+                                std::move(presentation_callback),
+                                base::NullCallback());
 }
 
 void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(
     base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
   NotifySwapAndPresentationTime(base::NullCallback(),
-                                std::move(presentation_callback));
+                                std::move(presentation_callback),
+                                base::NullCallback());
 }
 
 void WebFrameWidgetImpl::NotifyPresentationTime(
     base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
   NotifySwapAndPresentationTime(base::NullCallback(),
-                                std::move(presentation_callback));
+                                std::move(presentation_callback),
+                                base::NullCallback());
 }
+
+#if BUILDFLAG(IS_MAC)
+void WebFrameWidgetImpl::NotifyCoreAnimationErrorCode(
+    base::OnceCallback<void(gfx::CALayerResult)>
+        core_animation_error_code_callback) {
+  NotifySwapAndPresentationTime(base::NullCallback(), base::NullCallback(),
+                                std::move(core_animation_error_code_callback));
+}
+#endif
 
 void WebFrameWidgetImpl::NotifySwapAndPresentationTime(
     base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
-    base::OnceCallback<void(base::TimeTicks)> presentation_time_callback) {
+    base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
+    base::OnceCallback<void(gfx::CALayerResult)>
+        core_animation_error_code_callback) {
   if (!View()->does_composite())
     return;
   widget_base_->LayerTreeHost()->QueueSwapPromise(
       std::make_unique<ReportTimeSwapPromise>(
           std::move(swap_time_callback), std::move(presentation_time_callback),
+          std::move(core_animation_error_code_callback),
           widget_base_->LayerTreeHost()
               ->GetTaskRunnerProvider()
               ->MainThreadTaskRunner(),

@@ -835,6 +835,15 @@ void WidgetBase::AddPresentationCallback(
   layer_tree_view_->AddPresentationCallback(frame_token, std::move(callback));
 }
 
+#if BUILDFLAG(IS_MAC)
+void WidgetBase::AddCoreAnimationErrorCodeCallback(
+    uint32_t frame_token,
+    base::OnceCallback<void(gfx::CALayerResult)> callback) {
+  layer_tree_view_->AddCoreAnimationErrorCodeCallback(frame_token,
+                                                      std::move(callback));
+}
+#endif
+
 void WidgetBase::SetCursor(const ui::Cursor& cursor) {
   if (input_handler_.DidChangeCursor(cursor)) {
     widget_host_->SetCursor(cursor);

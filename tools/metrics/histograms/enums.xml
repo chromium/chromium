@@ -11402,6 +11402,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="31" label="Has copy requests"/>
   <int value="32" label="Overlay disabled"/>
   <int value="33" label="Video capture enabled"/>
+  <int value="34" label="Did not swap (Not for histogram)"/>
+  <int value="35" label="No widget (Not for histogram)"/>
 </enum>
 
 <enum name="CalendarEventFetchApiError">

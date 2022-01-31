@@ -452,6 +452,10 @@ source_set("blink_headers") {
     "//url",
   ]
 
+  if (is_mac) {
+    public_deps += [ "//ui/gfx" ]
+  }
+
   deps = [
     "//base:base",
     "//cc:cc",

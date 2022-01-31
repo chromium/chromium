@@ -379,6 +379,11 @@ _CONFIG = [
             # Range type.
             'gfx::Range',
 
+            # Mac CALayer result (error code)
+            'gfx::CALayerResult',
+            'gfx::kCALayerUnknownDidNotSwap',
+            'gfx::kCALayerUnknownNoWidget',
+
             # Wrapper of SkRegion used in Chromium.
             'cc::Region',
 

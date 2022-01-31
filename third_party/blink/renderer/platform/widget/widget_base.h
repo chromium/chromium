@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace cc {
 class AnimationHost;
@@ -109,6 +110,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void AddPresentationCallback(
       uint32_t frame_token,
       base::OnceCallback<void(base::TimeTicks)> callback);
+
+#if BUILDFLAG(IS_MAC)
+  void AddCoreAnimationErrorCodeCallback(
+      uint32_t frame_token,
+      base::OnceCallback<void(gfx::CALayerResult)> callback);
+#endif
 
   // mojom::blink::Widget overrides:
   void ForceRedraw(mojom::blink::Widget::ForceRedrawCallback callback) override;

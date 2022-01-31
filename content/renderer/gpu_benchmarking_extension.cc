@@ -66,6 +66,7 @@
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/ca_layer_result.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-function.h"
@@ -254,38 +255,46 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
   v8::Persistent<v8::Context> context_;
 };
 
-void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
-                               base::Value result) {
-  v8::Isolate* isolate = callback_and_context->isolate();
-  v8::HandleScope scope(isolate);
-  v8::Local<v8::Context> context = callback_and_context->GetContext();
-  v8::Context::Scope context_scope(context);
-  WebLocalFrame* frame = WebLocalFrame::FrameForContext(context);
-  if (frame) {
-    v8::Local<v8::Value> value =
-        V8ValueConverter::Create()->ToV8Value(&result, context);
-    v8::Local<v8::Value> argv[] = {value};
-
-    frame->CallFunctionEvenIfScriptDisabled(callback_and_context->GetCallback(),
-                                            v8::Object::New(isolate), 1, argv);
-  }
-}
-
-void RunCallbackHelper(CallbackAndContext* callback_and_context) {
+void RunCallbackHelper(CallbackAndContext* callback_and_context,
+                       absl::optional<base::Value> value) {
   v8::Isolate* isolate = callback_and_context->isolate();
   v8::HandleScope scope(isolate);
   v8::Local<v8::Context> context = callback_and_context->GetContext();
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> callback = callback_and_context->GetCallback();
   WebLocalFrame* frame = WebLocalFrame::FrameForContext(context);
+
   if (frame && !callback.IsEmpty()) {
-    frame->CallFunctionEvenIfScriptDisabled(callback, v8::Object::New(isolate),
-                                            0, nullptr);
+    if (value.has_value()) {
+      v8::Local<v8::Value> v8_value =
+          V8ValueConverter::Create()->ToV8Value(&value.value(), context);
+      v8::Local<v8::Value> argv[] = {v8_value};
+      frame->CallFunctionEvenIfScriptDisabled(
+          callback, v8::Object::New(isolate), /*argc=*/1, argv);
+    } else {
+      frame->CallFunctionEvenIfScriptDisabled(
+          callback, v8::Object::New(isolate), 0, nullptr);
+    }
   }
 }
 
+void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
+                               base::Value result) {
+  RunCallbackHelper(callback_and_context,
+                    absl::optional<base::Value>(std::move(result)));
+}
+
+#if BUILDFLAG(IS_MAC)
+void OnSwapCompletedWithCoreAnimationErrorCode(
+    CallbackAndContext* callback_and_context,
+    gfx::CALayerResult error_code) {
+  RunCallbackHelper(callback_and_context,
+                    absl::optional<base::Value>((base::Value(error_code))));
+}
+#endif
+
 void OnSyntheticGestureCompleted(CallbackAndContext* callback_and_context) {
-  RunCallbackHelper(callback_and_context);
+  RunCallbackHelper(callback_and_context, /*value=*/{});
 }
 
 bool ThrowIfPointOutOfBounds(GpuBenchmarkingContext* context,
@@ -547,7 +556,7 @@ static void PrintDocumentTofile(v8::Isolate* isolate,
 
 void OnSwapCompletedHelper(CallbackAndContext* callback_and_context,
                            base::TimeTicks) {
-  RunCallbackHelper(callback_and_context);
+  RunCallbackHelper(callback_and_context, /*value=*/{});
 }
 
 // This function is only used for correctness testing of this experimental
@@ -669,6 +678,10 @@ gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
       .SetMethod("startProfiling", &GpuBenchmarking::StartProfiling)
       .SetMethod("stopProfiling", &GpuBenchmarking::StopProfiling)
       .SetMethod("freeze", &GpuBenchmarking::Freeze)
+#if BUILDFLAG(IS_MAC)
+      .SetMethod("addCoreAnimationStatusEventListener",
+                 &GpuBenchmarking::AddCoreAnimationStatusEventListener)
+#endif
       .SetMethod("addSwapCompletionEventListener",
                  &GpuBenchmarking::AddSwapCompletionEventListener);
 }
@@ -1437,5 +1450,25 @@ bool GpuBenchmarking::AddSwapCompletionEventListener(gin::Arguments* args) {
   context.layer_tree_host()->SetNeedsAnimateIfNotInsideMainFrame();
   return true;
 }
+
+#if BUILDFLAG(IS_MAC)
+int GpuBenchmarking::AddCoreAnimationStatusEventListener(gin::Arguments* args) {
+  v8::Local<v8::Function> callback;
+  if (!GetArg(args, &callback))
+    return false;
+  GpuBenchmarkingContext context(render_frame_.get());
+
+  auto callback_and_context = base::MakeRefCounted<CallbackAndContext>(
+      args->isolate(), callback, context.web_frame()->MainWorldScriptContext());
+  context.web_frame()->FrameWidget()->NotifyCoreAnimationErrorCode(
+      base::BindOnce(&OnSwapCompletedWithCoreAnimationErrorCode,
+                     base::RetainedRef(callback_and_context)));
+  // Request a begin frame explicitly, as the test-api expects a 'swap' to
+  // happen for the above queued swap promise even if there is no actual update.
+  context.layer_tree_host()->SetNeedsAnimateIfNotInsideMainFrame();
+
+  return true;
+}
+#endif
 
 }  // namespace content

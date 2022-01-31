@@ -301,6 +301,10 @@ component("core") {
     "//v8",
   ]
 
+  if (is_mac) {
+    public_deps += [ "//ui/gfx" ]
+  }
+
   deps = [
     ":generated_settings_macros",
     "//build:chromeos_buildflags",

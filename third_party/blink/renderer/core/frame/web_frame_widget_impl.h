@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace gfx {
 class Point;
@@ -313,6 +314,10 @@ class CORE_EXPORT WebFrameWidgetImpl
       mojom::blink::ViewportIntersectionStatePtr intersection_state);
   void NotifyPresentationTime(
       base::OnceCallback<void(base::TimeTicks)> callback) override;
+#if BUILDFLAG(IS_MAC)
+  void NotifyCoreAnimationErrorCode(
+      base::OnceCallback<void(gfx::CALayerResult)> callback) override;
+#endif
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       override;
   void WaitForDebuggerWhenShown() override;
@@ -636,7 +641,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void NotifySwapAndPresentationTime(
       base::OnceCallback<void(base::TimeTicks)> swap_callback,
-      base::OnceCallback<void(base::TimeTicks)> presentation_callback);
+      base::OnceCallback<void(base::TimeTicks)> presentation_callback,
+      base::OnceCallback<void(gfx::CALayerResult)>
+          core_animation_error_code_callback);
 
   // WidgetBaseClient overrides.
   void BeginCommitCompositorFrame() override;

@@ -328,6 +328,17 @@ void LayerTreeView::DidPresentCompositorFrame(
       std::move(callback).Run(feedback.timestamp);
     presentation_callbacks_.erase(front);
   }
+
+#if BUILDFLAG(IS_MAC)
+  while (!core_animation_error_code_callbacks_.empty()) {
+    const auto& front = core_animation_error_code_callbacks_.begin();
+    if (viz::FrameTokenGT(front->first, frame_token))
+      break;
+    for (auto& callback : front->second)
+      std::move(callback).Run(feedback.ca_layer_error_code);
+    core_animation_error_code_callbacks_.erase(front);
+  }
+#endif
 }
 
 void LayerTreeView::RecordStartOfFrameMetrics() {
@@ -404,9 +415,27 @@ void LayerTreeView::ScheduleAnimationForWebTests() {
 void LayerTreeView::AddPresentationCallback(
     uint32_t frame_token,
     base::OnceCallback<void(base::TimeTicks)> callback) {
+  AddCallback(frame_token, std::move(callback), presentation_callbacks_);
+}
+
+#if BUILDFLAG(IS_MAC)
+void LayerTreeView::AddCoreAnimationErrorCodeCallback(
+    uint32_t frame_token,
+    base::OnceCallback<void(gfx::CALayerResult)> callback) {
+  AddCallback(frame_token, std::move(callback),
+              core_animation_error_code_callbacks_);
+}
+#endif
+
+template <typename Callback>
+void LayerTreeView::AddCallback(
+    uint32_t frame_token,
+    Callback callback,
+    base::circular_deque<std::pair<uint32_t, std::vector<Callback>>>&
+        callbacks) {
   DCHECK(delegate_);
-  if (!presentation_callbacks_.empty()) {
-    auto& previous = presentation_callbacks_.back();
+  if (!callbacks.empty()) {
+    auto& previous = callbacks.back();
     uint32_t previous_frame_token = previous.first;
     if (previous_frame_token == frame_token) {
       previous.second.push_back(std::move(callback));
@@ -415,10 +444,10 @@ void LayerTreeView::AddPresentationCallback(
     }
     DCHECK(viz::FrameTokenGT(frame_token, previous_frame_token));
   }
-  std::vector<base::OnceCallback<void(base::TimeTicks)>> callbacks;
-  callbacks.push_back(std::move(callback));
-  presentation_callbacks_.emplace_back(frame_token, std::move(callbacks));
-  DCHECK_LE(presentation_callbacks_.size(),
+  std::vector<Callback> new_callbacks;
+  new_callbacks.push_back(std::move(callback));
+  callbacks.emplace_back(frame_token, std::move(new_callbacks));
+  DCHECK_LE(callbacks.size(),
             cc::PresentationTimeCallbackBuffer::kMaxBufferSize);
 }
 

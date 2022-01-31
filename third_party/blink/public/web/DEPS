@@ -49,6 +49,7 @@ include_rules = [
     "+ui/base/ime/ime_text_span.h",
     "+ui/display/mojom",
     "+ui/events/types",
+    "+ui/gfx/ca_layer_result.h",
     "+ui/gfx/geometry",
     "+ui/gfx/range/range.h",
     # Enforce to use mojom-shared.h in blink/public so that it can compile
