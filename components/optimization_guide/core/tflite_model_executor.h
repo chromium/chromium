@@ -78,26 +78,26 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
   }
 
   // Should be called on the same sequence as the ctor, but once called |this|
-  // must only be used from a background thread/sequence.
-  void InitializeAndMoveToBackgroundThread(
+  // must only be used from the |execution_task_runner| thread/sequence.
+  void InitializeAndMoveToExecutionThread(
       proto::OptimizationTarget optimization_target,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
-    DCHECK(!background_task_runner_);
+    DCHECK(!execution_task_runner_);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_NE(optimization_target,
               proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
 
     DETACH_FROM_SEQUENCE(sequence_checker_);
     optimization_target_ = optimization_target;
-    background_task_runner_ = background_task_runner;
+    execution_task_runner_ = execution_task_runner;
     reply_task_runner_ = reply_task_runner;
   }
 
   // Called when a model file is available to load. Depending on feature flags,
   // the model may or may not be immediately loaded.
   void UpdateModelFile(const base::FilePath& file_path) override {
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     UnloadModel();
@@ -120,7 +120,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
   // called. False is the default behavior (see class comment).
   void SetShouldUnloadModelOnComplete(
       bool should_unload_model_on_complete) override {
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     should_unload_model_on_complete_ = should_unload_model_on_complete;
   }
@@ -132,21 +132,21 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
                  "OptimizationTarget",
                  optimization_guide::GetStringNameForOptimizationTarget(
                      optimization_target_));
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     loaded_model_.reset();
     model_fb_.reset();
   }
 
-  // Starts the execution of the model. When complete, |ui_callback_on_complete|
-  // will be run on the UI thread with the output of the model.
+  // Starts the execution of the model. When complete, |callback_on_complete|
+  // will be run via |reply_task_runner_| with the output of the model.
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
-  void SendForExecution(ExecutionCallback ui_callback_on_complete,
+  void SendForExecution(ExecutionCallback callback_on_complete,
                         base::TimeTicks start_time,
                         InputTypes... args) override {
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(reply_task_runner_);
 
@@ -165,7 +165,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     if (!loaded_model_ && !LoadModelFile(status_recorder.mutable_status())) {
       reply_task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(ui_callback_on_complete), absl::nullopt));
+          base::BindOnce(std::move(callback_on_complete), absl::nullopt));
       // Some error status is expected, and derived classes should have set the
       // status.
       DCHECK_NE(status_recorder.status(), ExecutionStatus::kUnknown);
@@ -203,17 +203,11 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
           base::TimeTicks::Now() - execute_start_time);
     }
 
-    DCHECK(ui_callback_on_complete);
+    DCHECK(callback_on_complete);
     reply_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(ui_callback_on_complete), output));
+        FROM_HERE, base::BindOnce(std::move(callback_on_complete), output));
 
     OnExecutionComplete();
-  }
-
-  // IMPORTANT: These WeakPointers must only be dereferenced on the background
-  // thread.
-  base::WeakPtr<TFLiteModelExecutor> GetBackgroundWeakPtr() {
-    return background_weak_ptr_factory_.GetWeakPtr();
   }
 
   TFLiteModelExecutor(const TFLiteModelExecutor&) = delete;
@@ -242,7 +236,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
                  "OptimizationTarget",
                  optimization_guide::GetStringNameForOptimizationTarget(
                      optimization_target_));
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     UnloadModel();
@@ -290,7 +284,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
   }
 
   void OnExecutionComplete() {
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (should_unload_model_on_complete_) {
       UnloadModel();
@@ -302,7 +296,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
 
   bool should_unload_model_on_complete_ = true;
 
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
 
   scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
 
@@ -329,8 +323,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<TFLiteModelExecutor> background_weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide

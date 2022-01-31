@@ -15,7 +15,7 @@ class TestModelExecutor
   TestModelExecutor() = default;
   ~TestModelExecutor() override = default;
 
-  void InitializeAndMoveToBackgroundThread(
+  void InitializeAndMoveToExecutionThread(
       proto::OptimizationTarget,
       scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
@@ -28,7 +28,7 @@ class TestModelExecutor
 
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<std::vector<float>>&)>;
-  void SendForExecution(ExecutionCallback ui_callback_on_complete,
+  void SendForExecution(ExecutionCallback callback_on_complete,
                         base::TimeTicks start_time,
                         const std::vector<float>& args) override;
 };

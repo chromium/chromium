@@ -25,32 +25,33 @@
 
 namespace optimization_guide {
 
-// This class owns and handles the execution of models on the UI thread. Derived
-// classes must provide an implementation of |ModelExecutor|
-// (see above) which is then owned by |this|. The passed executor will be called
-// and destroyed on a background thread, which is all handled by this class.
+// This class owns and handles the execution of models on the UI thread.
+// Derived classes must provide an implementation of |ModelExecutor|
+// which is then owned by |this|. The passed executor will be called
+// and destroyed on the thread specified by |model_executor_task_runner|,
+// which is all handled by this class.
 template <class OutputType, class... InputTypes>
 class ModelHandler : public OptimizationTargetModelObserver {
  public:
-  ModelHandler(OptimizationGuideModelProvider* model_provider,
-               scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-               std::unique_ptr<ModelExecutor<OutputType, InputTypes...>>
-                   background_executor,
-               proto::OptimizationTarget optimization_target,
-               const absl::optional<proto::Any>& model_metadata)
+  ModelHandler(
+      OptimizationGuideModelProvider* model_provider,
+      scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
+      std::unique_ptr<ModelExecutor<OutputType, InputTypes...>> model_executor,
+      proto::OptimizationTarget optimization_target,
+      const absl::optional<proto::Any>& model_metadata)
       : model_provider_(model_provider),
         optimization_target_(optimization_target),
-        background_executor_(std::move(background_executor)),
-        background_task_runner_(background_task_runner) {
+        model_executor_(std::move(model_executor)),
+        model_executor_task_runner_(model_executor_task_runner) {
     DCHECK(model_provider_);
-    DCHECK(background_executor_);
+    DCHECK(model_executor_);
     DCHECK_NE(optimization_target_,
               proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
 
     model_provider_->AddObserverForOptimizationTargetModel(
         optimization_target_, model_metadata, this);
-    background_executor_->InitializeAndMoveToBackgroundThread(
-        optimization_target_, background_task_runner_,
+    model_executor_->InitializeAndMoveToExecutionThread(
+        optimization_target_, model_executor_task_runner_,
         base::SequencedTaskRunnerHandle::Get());
   }
   ~ModelHandler() override {
@@ -59,10 +60,10 @@ class ModelHandler : public OptimizationTargetModelObserver {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         optimization_target_, this);
 
-    // |background_executor_|'s  WeakPtrs are used on the background thread, so
+    // |model_executor_|'s  WeakPtrs are used on the model thread, so
     // that is also where the class must be destroyed.
-    background_task_runner_->DeleteSoon(FROM_HERE,
-                                        std::move(background_executor_));
+    model_executor_task_runner_->DeleteSoon(FROM_HERE,
+                                            std::move(model_executor_));
   }
   ModelHandler(const ModelHandler&) = delete;
   ModelHandler& operator=(const ModelHandler&) = delete;
@@ -80,32 +81,33 @@ class ModelHandler : public OptimizationTargetModelObserver {
     ExecutionCallback on_complete_callback =
         base::BindOnce(&ModelHandler::OnExecutionCompleted, std::move(callback),
                        optimization_target_, now);
-    background_task_runner_->PostTask(
+    model_executor_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ModelExecutor<OutputType, InputTypes...>::SendForExecution,
-            background_executor_->GetBackgroundWeakPtr(),
+            model_executor_->GetWeakPtrForExecutionThread(),
             std::move(on_complete_callback), now, input...));
   }
 
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    background_task_runner_->PostTask(
+    model_executor_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ModelExecutor<OutputType,
                            InputTypes...>::SetShouldUnloadModelOnComplete,
-            background_executor_->GetBackgroundWeakPtr(), should_auto_unload));
+            model_executor_->GetWeakPtrForExecutionThread(),
+            should_auto_unload));
   }
 
   // Requests that the model executor unload the model from memory, if it is
   // currently loaded.
   void UnloadModel() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    background_task_runner_->PostTask(
+    model_executor_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ModelExecutor<OutputType, InputTypes...>::UnloadModel,
-                       background_executor_->GetBackgroundWeakPtr()));
+                       model_executor_->GetWeakPtrForExecutionThread()));
   }
 
   // OptimizationTargetModelObserver:
@@ -119,16 +121,16 @@ class ModelHandler : public OptimizationTargetModelObserver {
     model_info_ = model_info;
     model_available_ = true;
 
-    background_task_runner_->PostTask(
+    model_executor_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ModelExecutor<OutputType, InputTypes...>::UpdateModelFile,
-            background_executor_->GetBackgroundWeakPtr(),
+            model_executor_->GetWeakPtrForExecutionThread(),
             model_info.GetModelFilePath()));
 
     // Run any observing callbacks after the model file is posted to the
-    // background thread so that any model execution requests are posted to the
-    // background thread after the model update.
+    // model executor thread so that any model execution requests are posted to
+    // the model executor thread after the model update.
     on_model_updated_callbacks_.Notify();
   }
 
@@ -169,7 +171,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   }
 
  private:
-  // This is called by |background_executor_|. This method does not have to be
+  // This is called by |model_executor_|. This method does not have to be
   // static, but because it is stateless we've made it static so that we don't
   // have to have this class support WeakPointers.
   static void OnExecutionCompleted(
@@ -199,15 +201,14 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   const proto::OptimizationTarget optimization_target_;
 
-  // The owned background executor.
-  std::unique_ptr<ModelExecutor<OutputType, InputTypes...>>
-      background_executor_;
+  // The owned model executor.
+  std::unique_ptr<ModelExecutor<OutputType, InputTypes...>> model_executor_;
 
-  // The background task runner. Note that whenever a task is posted here, the
-  // task takes a reference to the TaskRunner (in a cyclic dependency) so
+  // The model executor task runner. Note that whenever a task is posted here,
+  // the task takes a reference to the TaskRunner (in a cyclic dependency) so
   // |base::Unretained| is not safe anywhere in this class or the
-  // |background_executor_|.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+  // |model_executor_|.
+  scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
 
   // Set in |OnModelUpdated|.
   absl::optional<ModelInfo> model_info_ GUARDED_BY_CONTEXT(sequence_checker_);

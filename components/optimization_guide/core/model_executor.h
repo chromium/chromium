@@ -17,7 +17,7 @@
 namespace optimization_guide {
 
 // This class handles the execution, loading, unloading, and associated metrics
-// of machine learning models in Optimization Guide on a background thread. This
+// of machine learning models in Optimization Guide on a specified thread. This
 // class is meant to be used and owned by an instance of |ModelHandler|. A
 // ModelExecutor must be passed to a ModelHandler's constructor, this design
 // allows the implementer of a ModelExecutor to define how the model is built
@@ -25,21 +25,21 @@ namespace optimization_guide {
 // base_model_executor_helpers.h in this directory for helpful derived classes.
 //
 // Lifetime: This class can be constructed on any thread but cannot do anything
-// useful until |InitializeAndMoveToBackgroundThread| is called. After that
+// useful until |InitializeAndMoveToExecutionThread| is called. After that
 // method is called, all subsequent calls to this class must be made through the
-// |background_task_runner| that was passed to initialize. Furthermore, all
-// WeakPointers of this class must only be dereferenced on the background thread
-// as well. This in turn means that this class must be destroyed on the
-// background thread as well.
+// |execution_task_runner| that was passed to initialize. Furthermore, all
+// WeakPointers of this class must only be dereferenced on the
+// |execution_task_runner| thread as well. This in turn means that this class
+// must be destroyed on the |execution_task_runner| thread as well.
 template <class OutputType, class... InputTypes>
 class ModelExecutor {
  public:
   ModelExecutor() = default;
   virtual ~ModelExecutor() = default;
 
-  virtual void InitializeAndMoveToBackgroundThread(
+  virtual void InitializeAndMoveToExecutionThread(
       proto::OptimizationTarget optimization_target,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) = 0;
 
   virtual void UpdateModelFile(const base::FilePath& file_path) = 0;
@@ -53,21 +53,21 @@ class ModelExecutor {
 
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
-  virtual void SendForExecution(ExecutionCallback ui_callback_on_complete,
+  virtual void SendForExecution(ExecutionCallback callback_on_complete,
                                 base::TimeTicks start_time,
                                 InputTypes... args) = 0;
 
-  // IMPORTANT: These WeakPointers must only be dereferenced on the background
-  // thread.
-  base::WeakPtr<ModelExecutor> GetBackgroundWeakPtr() {
-    return background_weak_ptr_factory_.GetWeakPtr();
+  // IMPORTANT: These WeakPointers must only be dereferenced on the
+  // |execution_task_runner| thread.
+  base::WeakPtr<ModelExecutor> GetWeakPtrForExecutionThread() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   ModelExecutor(const ModelExecutor&) = delete;
   ModelExecutor& operator=(const ModelExecutor&) = delete;
 
  private:
-  base::WeakPtrFactory<ModelExecutor> background_weak_ptr_factory_{this};
+  base::WeakPtrFactory<ModelExecutor> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide
