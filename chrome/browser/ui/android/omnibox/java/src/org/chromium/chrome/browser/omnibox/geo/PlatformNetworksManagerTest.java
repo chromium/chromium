@@ -46,6 +46,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.Callback;
@@ -66,6 +67,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 29, manifest = Config.NONE, shadows = {ShadowBuildInfo.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class PlatformNetworksManagerTest {
     private static final VisibleWifi CONNECTED_WIFI =
             VisibleWifi.create("ssid1", "11:11:11:11:11:11", -1, 10L);

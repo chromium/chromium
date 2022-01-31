@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,6 +50,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
  * This class tests the {@link WebSigninAccountPickerDelegate}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class WebSigninAccountPickerDelegateTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
     private static final String TEST_EMAIL = "test.account@gmail.com";

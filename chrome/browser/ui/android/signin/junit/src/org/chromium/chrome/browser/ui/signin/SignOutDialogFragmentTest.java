@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,6 +44,7 @@ import org.chromium.components.signin.GAIAServiceType;
 
 /** Tests for {@link SignOutDialogFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class SignOutDialogFragmentTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
