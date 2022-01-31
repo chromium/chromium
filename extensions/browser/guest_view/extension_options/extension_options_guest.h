@@ -67,7 +67,7 @@ class ExtensionOptionsGuest
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) final;
 
   // content::WebContentsObserver implementation.

@@ -10997,7 +10997,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
             navigation_request->frame_tree_node()
                 ->frame_tree()
                 ->controller()
-                .GetSessionStorageNamespace(GetSiteInstance()->GetSiteInfo())
+                .GetSessionStorageNamespace(
+                    GetSiteInstance()->GetStoragePartitionConfig())
                 ->id();
         partition->BindSessionStorageAreaForProcess(
             process_id, commit_params->storage_key, namespace_id,

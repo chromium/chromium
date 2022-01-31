@@ -56,7 +56,6 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class RenderProcessHost;
-class SiteInfo;
 class TimeoutMonitor;
 
 // A callback which will be called immediately before EnterBackForwardCache
@@ -382,14 +381,10 @@ class CONTENT_EXPORT RenderViewHostImpl
   // by frames with SiteInstances that generate an ID that matches this field.
   FrameTree::RenderViewHostMapId render_view_host_map_id_;
 
-  // SiteInfo taken from the SiteInstance passed into the constructor. It is
-  // used to determine if this is a guest view and provides information for
-  // selecting the session storage namespace for this view.
-  //
-  // TODO(acolwell): Replace this with StoragePartitionConfig once we no longer
-  // need a StoragePartitionId and StoragePartitionConfig to lookup a
-  // SessionStorageNamespace.
-  SiteInfo site_info_;
+  // StoragePartitionConfig taken from the SiteInstance passed into the
+  // constructor. It provides information for selecting the session storage
+  // namespace for this view.
+  const StoragePartitionConfig storage_partition_config_;
 
   // Routing ID for this RenderViewHost.
   const int routing_id_;

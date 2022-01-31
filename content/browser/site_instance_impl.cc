@@ -449,12 +449,8 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
            browsing_instance_->web_exposed_isolation_info());
 
   if (verify_storage_partition_info_) {
-    auto* browser_context = browsing_instance_->GetBrowserContext();
-    auto old_partition_id = site_info_.GetStoragePartitionId(browser_context);
     auto old_partition_config = site_info_.storage_partition_config();
-    auto new_partition_id = site_info.GetStoragePartitionId(browser_context);
     auto new_partition_config = site_info.storage_partition_config();
-    CHECK_EQ(old_partition_id, new_partition_id);
     CHECK_EQ(old_partition_config, new_partition_config);
   }
   // Remember that this SiteInstance has been used to load a URL, even if the
@@ -571,19 +567,6 @@ const GURL& SiteInstanceImpl::GetSiteURL() {
 }
 
 const SiteInfo& SiteInstanceImpl::GetSiteInfo() {
-  return site_info_;
-}
-
-const SiteInfo& SiteInstanceImpl::GetSiteInfoForRenderViewHost() {
-  if (!has_site_) {
-    // Note: `site_info_` has not been set yet. When the RenderViewHost uses
-    // this SiteInfo to generate a partition ID it will be using an empty
-    // SiteInfo. This is ok as long as the ID does not change when `site_info_`
-    // is actually set. Enable the verification code in SetSiteInfoInternal() to
-    // verify that the partition info does not change.
-    verify_storage_partition_info_ = true;
-  }
-
   return site_info_;
 }
 

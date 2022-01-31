@@ -259,12 +259,9 @@ class CONTENT_EXPORT SiteInfo {
   // RenderProcessHost per site for the entire browser context.
   bool ShouldUseProcessPerSite(BrowserContext* browser_context) const;
 
-  // Get the partition ID or StoragePartitionConfig for this object given a
-  // specific `browser_context`. The BrowserContext will affect whether the
-  // partition is forced to be in memory based on whether it is off-the-record
-  // or not.
-  StoragePartitionId GetStoragePartitionId(
-      BrowserContext* browser_context) const;
+  // Get the StoragePartitionConfig, which describes the StoragePartition this
+  // SiteInfo is associated with.  For example, this will correspond to a
+  // non-default StoragePartition for <webview> guests.
   const StoragePartitionConfig& storage_partition_config() const {
     return storage_partition_config_;
   }

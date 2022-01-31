@@ -1772,11 +1772,11 @@ WebContents* Browser::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   BackgroundContents* background_contents = CreateBackgroundContents(
       source_site_instance, opener, opener_url, is_new_browsing_instance,
-      frame_name, target_url, partition_id, session_storage_namespace);
+      frame_name, target_url, partition_config, session_storage_namespace);
   if (background_contents) {
     return background_contents->web_contents();
   }
@@ -2999,7 +2999,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
     bool is_new_browsing_instance,
     const std::string& frame_name,
     const GURL& target_url,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   BackgroundContentsService* service =
       BackgroundContentsServiceFactory::GetForProfile(profile_);
@@ -3025,7 +3025,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
   if (allow_js_access) {
     return service->CreateBackgroundContents(
         source_site_instance, opener, is_new_browsing_instance, frame_name,
-        extension->id(), partition_id, session_storage_namespace);
+        extension->id(), partition_config, session_storage_namespace);
   }
 
   // If script access is not allowed, create the the background contents in a
@@ -3035,7 +3035,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
   BackgroundContents* contents = service->CreateBackgroundContents(
       content::SiteInstance::Create(source_site_instance->GetBrowserContext()),
       nullptr, is_new_browsing_instance, frame_name, extension->id(),
-      partition_id, session_storage_namespace);
+      partition_config, session_storage_namespace);
 
   // When a separate process is used, the original renderer cannot access the
   // new window later, thus we need to navigate the window now.

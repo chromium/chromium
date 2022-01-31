@@ -33,7 +33,7 @@ BackgroundContents::BackgroundContents(
     content::RenderFrameHost* opener,
     bool is_new_browsing_instance,
     Delegate* delegate,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace)
     : delegate_(delegate),
       extension_host_delegate_(extensions::ExtensionsBrowserClient::Get()
@@ -51,7 +51,7 @@ BackgroundContents::BackgroundContents(
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;
     session_storage_namespace_map.insert(
-        std::make_pair(partition_id, session_storage_namespace));
+        std::make_pair(partition_config, session_storage_namespace));
     web_contents_ = WebContents::CreateWithSessionStorage(
         create_params, session_storage_namespace_map);
   } else {

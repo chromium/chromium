@@ -294,8 +294,7 @@ RenderViewHostImpl::RenderViewHostImpl(
       delegate_(delegate),
       render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(
           static_cast<SiteInstanceImpl*>(instance)->group())),
-      site_info_(static_cast<SiteInstanceImpl*>(instance)
-                     ->GetSiteInfoForRenderViewHost()),
+      storage_partition_config_(instance->GetStoragePartitionConfig()),
       routing_id_(routing_id),
       main_frame_routing_id_(main_frame_routing_id),
       frame_tree_(frame_tree) {
@@ -479,7 +478,9 @@ bool RenderViewHostImpl::CreateRenderView(
   }
 
   params->session_storage_namespace_id =
-      frame_tree_->controller().GetSessionStorageNamespace(site_info_)->id();
+      frame_tree_->controller()
+          .GetSessionStorageNamespace(storage_partition_config_)
+          ->id();
   params->hidden = frame_tree_->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_opened_by_another_window =

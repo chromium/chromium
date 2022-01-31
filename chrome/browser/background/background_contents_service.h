@@ -132,7 +132,7 @@ class BackgroundContentsService
       bool is_new_browsing_instance,
       const std::string& frame_name,
       const std::string& application_id,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   // Removes |contents| from |contents_map_|, deleting it.

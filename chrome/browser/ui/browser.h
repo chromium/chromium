@@ -813,7 +813,7 @@ class Browser : public TabStripModelObserver,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) override;
   void WebContentsCreated(content::WebContents* source_contents,
                           int opener_render_process_id,
@@ -1094,7 +1094,7 @@ class Browser : public TabStripModelObserver,
       bool is_new_browsing_instance,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   // Data members /////////////////////////////////////////////////////////////

@@ -105,42 +105,6 @@ class CONTENT_EXPORT StoragePartitionConfig {
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
                                         const StoragePartitionConfig& config);
 
-// Represents the storage partition ID that is used as the key for the
-// SessionStorageNamespaceMap. This type is to help facilitate migrating the
-// map key away from a string to a StoragePartitionConfig.
-class CONTENT_EXPORT StoragePartitionId {
- public:
-  explicit StoragePartitionId(BrowserContext* browser_context);
-  StoragePartitionId(const std::string& partition_id,
-                     const StoragePartitionConfig& config);
-  StoragePartitionId(const StoragePartitionId&) = default;
-  StoragePartitionId& operator=(const StoragePartitionId&) = default;
-
-  const StoragePartitionConfig& config() const { return config_; }
-
-  bool operator==(const StoragePartitionId& rhs) const {
-    return config_ == rhs.config_;
-  }
-  bool operator!=(const StoragePartitionId& rhs) const {
-    return config_ != rhs.config_;
-  }
-  bool operator<(const StoragePartitionId& rhs) const {
-    return config_ < rhs.config_;
-  }
-
-  // String representation of this object for debug logging purposes.
-  std::string ToString() const;
-
- private:
-  std::string id_;
-
-  // Config generated with the same information used to generate |id_|.
-  // Currently this field is being used to determine if we can replace the
-  // string representation with a StoragePartitionConfig, and |id_| is ignored
-  // in favor of |config_|, but the results are expected to be equivalent.
-  StoragePartitionConfig config_;
-};
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_STORAGE_PARTITION_CONFIG_H_

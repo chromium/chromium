@@ -81,7 +81,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) override {
     // The HaTS Next WebDialog runs with a non-primary OTR profile. This profile
     // cannot open new browser windows, so they are instead opened in the

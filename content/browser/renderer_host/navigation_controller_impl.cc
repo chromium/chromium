@@ -2317,7 +2317,6 @@ void NavigationControllerImpl::CopyStateFrom(NavigationController* temp,
     SessionStorageNamespaceImpl* source_namespace =
         static_cast<SessionStorageNamespaceImpl*>(it.second.get());
     session_storage_namespace_map_[it.first] = source_namespace->Clone();
-    OnStoragePartitionIdAdded(it.first);
   }
 
   FinishRestore(source->last_committed_entry_index_, RestoreType::kRestored);
@@ -2736,7 +2735,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
 }
 
 void NavigationControllerImpl::SetSessionStorageNamespace(
-    const StoragePartitionId& partition_id,
+    const StoragePartitionConfig& partition_config,
     SessionStorageNamespace* session_storage_namespace) {
   if (!session_storage_namespace)
     return;
@@ -2746,12 +2745,11 @@ void NavigationControllerImpl::SetSessionStorageNamespace(
   // so die hard on an error.
   bool successful_insert =
       session_storage_namespace_map_
-          .insert(std::make_pair(partition_id,
+          .insert(std::make_pair(partition_config,
                                  static_cast<SessionStorageNamespaceImpl*>(
                                      session_storage_namespace)))
           .second;
   CHECK(successful_insert) << "Cannot replace existing SessionStorageNamespace";
-  OnStoragePartitionIdAdded(partition_id);
 }
 
 bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
@@ -2762,33 +2760,18 @@ bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
 }
 
 SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
-    const SiteInfo& site_info) {
-  // TODO(acolwell): Remove partition_id logic once we have successfully
-  // migrated the implementation to be a StoragePartitionConfig. At that point
-  // |site_info| can be replaced with a StoragePartitionConfig.
-  const StoragePartitionId partition_id =
-      site_info.GetStoragePartitionId(browser_context_);
-  const StoragePartitionConfig partition_config =
-      site_info.storage_partition_config();
-
+    const StoragePartitionConfig& partition_config) {
   StoragePartition* partition =
       browser_context_->GetStoragePartition(partition_config);
   DOMStorageContextWrapper* context_wrapper =
       static_cast<DOMStorageContextWrapper*>(partition->GetDOMStorageContext());
 
   SessionStorageNamespaceMap::const_iterator it =
-      session_storage_namespace_map_.find(partition_id);
+      session_storage_namespace_map_.find(partition_config);
   if (it != session_storage_namespace_map_.end()) {
     // Ensure that this namespace actually belongs to this partition.
     DCHECK(static_cast<SessionStorageNamespaceImpl*>(it->second.get())
                ->IsFromContext(context_wrapper));
-
-    // Verify that the config we generated now matches the one that
-    // was generated when the namespace was added to the map.
-    if (partition_config != it->first.config()) {
-      LogStoragePartitionIdCrashKeys(it->first, partition_id);
-    }
-    CHECK_EQ(partition_config, it->first.config());
 
     return it->second.get();
   }
@@ -2798,16 +2781,16 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
       SessionStorageNamespaceImpl::Create(context_wrapper);
   SessionStorageNamespaceImpl* session_storage_namespace_ptr =
       session_storage_namespace.get();
-  session_storage_namespace_map_[partition_id] =
+  session_storage_namespace_map_[partition_config] =
       std::move(session_storage_namespace);
-  OnStoragePartitionIdAdded(partition_id);
 
   return session_storage_namespace_ptr;
 }
 
 SessionStorageNamespace*
 NavigationControllerImpl::GetDefaultSessionStorageNamespace() {
-  return GetSessionStorageNamespace(SiteInfo(GetBrowserContext()));
+  return GetSessionStorageNamespace(
+      StoragePartitionConfig::CreateDefault(GetBrowserContext()));
 }
 
 const SessionStorageNamespaceMap&
@@ -4292,31 +4275,6 @@ void NavigationControllerImpl::UpdateStateForFrame(
 
   frame_entry->SetPageState(page_state);
   NotifyEntryChanged(entry);
-}
-
-void NavigationControllerImpl::OnStoragePartitionIdAdded(
-    const StoragePartitionId& partition_id) {
-  auto it = partition_config_to_id_map_.insert(
-      std::make_pair(partition_id.config(), partition_id));
-  bool successful_insert = it.second;
-  if (!successful_insert) {
-    LogStoragePartitionIdCrashKeys(it.first->second, partition_id);
-  }
-  CHECK(successful_insert);
-}
-
-void NavigationControllerImpl::LogStoragePartitionIdCrashKeys(
-    const StoragePartitionId& original_partition_id,
-    const StoragePartitionId& new_partition_id) {
-  base::debug::SetCrashKeyString(
-      base::debug::AllocateCrashKeyString("original_partition_id",
-                                          base::debug::CrashKeySize::Size256),
-      original_partition_id.ToString());
-
-  base::debug::SetCrashKeyString(
-      base::debug::AllocateCrashKeyString("new_partition_id",
-                                          base::debug::CrashKeySize::Size256),
-      new_partition_id.ToString());
 }
 
 std::vector<blink::mojom::AppHistoryEntryPtr>

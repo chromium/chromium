@@ -3802,9 +3802,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   auto* source_site_instance =
       static_cast<SiteInstanceImpl*>(opener->GetSiteInstance());
 
-  const auto& partition_id =
-      source_site_instance->GetSiteInfo().GetStoragePartitionId(
-          GetBrowserContext());
+  const auto& partition_config =
+      source_site_instance->GetStoragePartitionConfig();
 
   {
     StoragePartition* partition =
@@ -3825,7 +3824,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         static_cast<WebContentsImpl*>(delegate_->CreateCustomWebContents(
             opener, source_site_instance, is_new_browsing_instance,
             opener->GetLastCommittedURL(), params.frame_name, params.target_url,
-            partition_id, session_storage_namespace));
+            partition_config, session_storage_namespace));
     if (!web_contents_impl)
       return nullptr;
     return &web_contents_impl->GetPrimaryFrameTree();
@@ -3872,7 +3871,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   auto* new_contents_impl = new_contents.get();
 
   new_contents_impl->GetController().SetSessionStorageNamespace(
-      partition_id, session_storage_namespace);
+      partition_config, session_storage_namespace);
 
   // If the new frame has a name, make sure any SiteInstances that can find
   // this named frame have proxies for it.  Must be called after

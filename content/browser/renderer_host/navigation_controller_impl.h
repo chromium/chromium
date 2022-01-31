@@ -43,7 +43,6 @@ class FrameTree;
 class FrameTreeNode;
 class NavigationRequest;
 class RenderFrameHostImpl;
-class SiteInfo;
 class SiteInstance;
 struct LoadCommittedDetails;
 
@@ -241,9 +240,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool IsUnmodifiedBlankTab();
 
   // The session storage namespace that all child RenderViews associated with
-  // |site_info| should use.
+  // |partition_config| should use.
   SessionStorageNamespace* GetSessionStorageNamespace(
-      const SiteInfo& site_info);
+      const StoragePartitionConfig& partition_config);
 
   // Returns the index of the specified entry, or -1 if entry is not contained
   // in this NavigationController.
@@ -318,7 +317,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // so that we know to load URLs that were pending as "lazy" loads.
   void SetActive(bool is_active);
 
-  // Sets the SessionStorageNamespace for the given |partition_id|. This is
+  // Sets the SessionStorageNamespace for the given |partition_config|. This is
   // used during initialization of a new NavigationController to allow
   // pre-population of the SessionStorageNamespace objects. Session restore,
   // prerendering, and the implementation of window.open() are the primary users
@@ -327,7 +326,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Calling this function when a SessionStorageNamespace has already been
   // associated with a |partition_id| will CHECK() fail.
   void SetSessionStorageNamespace(
-      const StoragePartitionId& partition_id,
+      const StoragePartitionConfig& partition_config,
       SessionStorageNamespace* session_storage_namespace);
 
   // Random data ---------------------------------------------------------------
@@ -723,22 +722,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // GetLastCommittedEntryIndex() and length is GetEntryCount().
   void BroadcastHistoryOffsetAndLength();
 
-  // Helper functions used to determine if it is safe to change the internal
-  // representation of StoragePartitionId.
-  //
-  // Called when a new StoragePartitionId is added to
-  // `session_storage_namespace_map_` and adds an entry to
-  // `partition_config_to_id_map_`.
-  void OnStoragePartitionIdAdded(const StoragePartitionId& partition_id);
-  // Called to log a crash dump when unique string representations result in
-  // the same StoragePartitionConfig, or an ID used to lookup a namespace
-  // contains a different config than the one used when the namespace was
-  // added to the map. Both situations imply that there is not a 1:1 mapping
-  // between representations.
-  void LogStoragePartitionIdCrashKeys(
-      const StoragePartitionId& original_partition_id,
-      const StoragePartitionId& new_partition_id);
-
   // Used by PopulateAppHistoryEntryVectors to initialize a single vector.
   enum class Direction { kForward, kBack };
   std::vector<blink::mojom::AppHistoryEntryPtr>
@@ -844,15 +827,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // NavigationController, only entries in the same StoragePartition may
   // share session storage state with one another.
   SessionStorageNamespaceMap session_storage_namespace_map_;
-
-  // Temporary map that is being used to verify that there is a 1:1
-  // relationship between the string representation used as the key in
-  // `session_storage_namespace_map_` and the StoragePartitionConfig
-  // representation that we plan to migrate the map key to.
-  // TODO(acolwell): Remove this map once we have enough data to determine if
-  // it is safe to change representations or not.
-  std::map<StoragePartitionConfig, StoragePartitionId>
-      partition_config_to_id_map_;
 
   // The maximum number of entries that a navigation controller can store.
   static size_t max_entry_count_for_testing_;

@@ -253,18 +253,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // GetSiteURL().
   const SiteInfo& GetSiteInfo();
 
-  // Called when a RenderViewHost was created with this object. It returns the
-  // same information as GetSiteInfo(), but also enables extra checks to ensure
-  // that the StoragePartition info for this object does not change when
-  // |site_info_| is set. This is important to verify if the SiteInfo has not
-  // been explicitly set at the time of this call (e.g. first navigation in a
-  // new tab).
-  // TODO(acolwell) : Remove once RenderViewHost no longer needs to store a
-  // SiteInfo and can store a StoragePartitionConfig instead. Extra verification
-  // should be enabled when the config is fetched and |site_info_| has not been
-  // set yet.
-  const SiteInfo& GetSiteInfoForRenderViewHost();
-
   // Derives a new SiteInfo based on this SiteInstance's current state, and
   // the information provided in `url_info`. This function is slightly different
   // than SiteInfo::Create() because it takes into account information

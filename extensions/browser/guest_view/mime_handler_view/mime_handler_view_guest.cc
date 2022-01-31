@@ -400,7 +400,7 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   content::OpenURLParams open_params(target_url, content::Referrer(),
                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,

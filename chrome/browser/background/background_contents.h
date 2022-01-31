@@ -64,7 +64,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
       content::RenderFrameHost* opener,
       bool is_new_browsing_instance,
       Delegate* delegate,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   BackgroundContents(const BackgroundContents&) = delete;

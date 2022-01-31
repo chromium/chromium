@@ -92,15 +92,14 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
                       /*main_frame_name=*/"", /*opener=*/nullptr,
                       /*frame_policy=*/blink::FramePolicy());
 
-    const auto& site_info =
-        static_cast<SiteInstanceImpl*>(site_instance.get())->GetSiteInfo();
     // Use the same SessionStorageNamespace as the primary page for the
     // prerendering page.
     frame_tree_->controller().SetSessionStorageNamespace(
-        site_info.GetStoragePartitionId(site_instance->GetBrowserContext()),
+        site_instance->GetStoragePartitionConfig(),
         web_contents_.GetPrimaryFrameTree()
             .controller()
-            .GetSessionStorageNamespace(site_info));
+            .GetSessionStorageNamespace(
+                site_instance->GetStoragePartitionConfig()));
 
     // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(
