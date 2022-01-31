@@ -1545,7 +1545,7 @@
       'linux-ash-chromium-generator-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-          'gen_linux_ash_chromium_cipd_yaml',
+          'test_ash_chrome_cipd_yaml',
         ],
       },
       'linux-cfm-rel': {
