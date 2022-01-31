@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>dialog focusing delegation with autofocus plus delegatesFocus inside the dialog</title>
+<title>dialog focusing delegation: with two nested shadow trees</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
 
 <dialog>
-  <template class="turn-into-shadow-tree">
+  <template class="turn-into-shadow-tree delegates-focus">
     <button disabled>Non-focusable</button>
     <template class="turn-into-shadow-tree delegates-focus">
       <button tabindex="-1">Focusable</button>

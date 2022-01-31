@@ -1,49 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Test the sequence of events when reporting image timing.</title>
+<title>Test the sequence of events when reporting iframe timing.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/frame-timing.js"></script>
 <body>
 <script>
-  promise_test(async t => {
-    const delay = 500;
-    const iframe = document.createElement('iframe');
-    t.add_cleanup(() => iframe.remove());
-    await new Promise(resolve => {
-      iframe.addEventListener('load', resolve);
-      iframe.src = `resources/iframe-with-delay.sub.html?delay=${delay}`;
-      document.body.appendChild(iframe);
-    });
-
-    const entries = performance.getEntriesByName(iframe.src);
-    const navigationEntry = iframe.contentWindow.performance.getEntriesByType('navigation')[0];
-    assert_equals(entries.length, 1);
-    assert_greater_than(performance.now(), entries[0].responseEnd + delay);
-    const domContentLoadedEventAbsoluteTime = navigationEntry.domContentLoadedEventStart + iframe.contentWindow.performance.timeOrigin;
-    const iframeResponseEndAbsoluteTime = entries[0].responseEnd + performance.timeOrigin;
-    assert_greater_than(domContentLoadedEventAbsoluteTime, iframeResponseEndAbsoluteTime);
-  }, "An iframe should report its RT entry when the response is done and before it is completely loaded");
-
-  promise_test(async t => {
-    const iframe = document.createElement('iframe');
-    t.add_cleanup(() => iframe.remove());
-    await new Promise(resolve => {
-      const done = () => {
-        resolve();
-        iframe.removeEventListener('load', done);
-      }
-      iframe.addEventListener('load', done);
-      iframe.src = 'resources/green.html?1';
-      document.body.appendChild(iframe);
-    });
-
-    await new Promise(resolve => {
-      iframe.addEventListener('load', resolve);
-      iframe.src = 'resources/green.html?2';
-    });
-
-    const entries = performance.getEntries().filter(e => e.name.includes('green.html'));
-    assert_equals(entries.length, 2);
-  }, "An iframe should report separate RT entries if src changed");
-
-  </script>
+  test_frame_timing_before_load_event('iframe');
+  test_frame_timing_change_src('iframe');
+</script>
+</body>
