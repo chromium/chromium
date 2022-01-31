@@ -7074,6 +7074,21 @@
             ]
         }
     ],
+    "WebViewEmptyComponentLoaderPolicy": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewEmptyComponentLoaderPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewLogFirstPartyPageTimeSpent": [
         {
             "platforms": [
