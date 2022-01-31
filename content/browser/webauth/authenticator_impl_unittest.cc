@@ -8080,7 +8080,8 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
               std::move(ble_advert_callback_), &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/absl::nullopt);
+          /*contact_id=*/absl::nullopt,
+          /*use_new_crypter_construction=*/false);
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 0u);
@@ -8107,7 +8108,8 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairingGetAssertion) {
               std::move(ble_advert_callback_), &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/absl::nullopt);
+          /*contact_id=*/absl::nullopt,
+          /*use_new_crypter_construction=*/false);
 
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
@@ -8118,6 +8120,34 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairingGetAssertion) {
 
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(pairings_.size(), 0u);
+}
+
+TEST_F(CableV2AuthenticatorImplTest, QRBasedNewCrypterConstruction) {
+  // The new Crypter construction should be transparently supported by the
+  // client code.
+  auto discovery = std::make_unique<device::cablev2::Discovery>(
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
+      qr_generator_key_, std::move(ble_advert_events_),
+      /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
+      /*contact_device_stream=*/nullptr,
+      /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
+      GetPairingCallback());
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+  std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
+      device::cablev2::authenticator::TransactFromQRCode(
+          device::cablev2::authenticator::NewMockPlatform(
+              std::move(ble_advert_callback_), &virtual_device_),
+          network_context_.get(), root_secret_, "Test Authenticator",
+          zero_qr_secret_, peer_identity_x962_,
+          /*contact_id=*/absl::nullopt,
+          /*use_new_crypter_construction=*/true);
+
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 0u);
 }
 
@@ -8141,7 +8171,8 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
           device::cablev2::authenticator::NewMockPlatform(
               std::move(ble_advert_callback_), &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
-          zero_qr_secret_, peer_identity_x962_, contact_id);
+          zero_qr_secret_, peer_identity_x962_, contact_id,
+          /*use_new_crypter_construction=*/false);
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 1u);

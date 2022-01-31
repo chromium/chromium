@@ -86,6 +86,9 @@ TEST(CableV2Encoding, QRs) {
                    &qr_key[qr_key.size() - decoded->secret.size()],
                    decoded->secret.size()),
             0);
+  // There are two registered domains at the time of writing the test. That
+  // number should only grow over time.
+  EXPECT_GE(decoded->num_known_domains, 2u);
 
   url[0] ^= 4;
   EXPECT_FALSE(qr::Parse(url));

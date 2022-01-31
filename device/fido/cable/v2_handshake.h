@@ -108,6 +108,11 @@ namespace qr {
 struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
   std::array<uint8_t, device::kP256X962Length> peer_identity;
   std::array<uint8_t, 16> secret;
+  // num_known_domains is the number of registered tunnel server domains known
+  // to the device showing the QR code. Authenticators can use this to fallback
+  // to a hashed domain if their registered domain isn't going to work with this
+  // client.
+  int64_t num_known_domains;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -213,6 +218,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
   // less likely that other code will forget to check that.)
   bool Decrypt(base::span<const uint8_t> ciphertext,
                std::vector<uint8_t>* out_plaintext);
+
+  // Encrypt and decrypt with big-endian nonces and no additional data. This
+  // is the format in the spec and that we want to transition to.
+  void UseNewConstruction();
 
   // IsCounterpartyOfForTesting returns true if |other| is the mirror-image of
   // this object. (I.e. read/write keys are equal but swapped.)

@@ -406,8 +406,18 @@ absl::optional<Components> Parse(const std::string& qr_url) {
     FIDO_LOG(ERROR) << "Invalid compressed public key in QR data";
     return absl::nullopt;
   }
-
   ret.peer_identity = *peer_identity;
+
+  const auto it = qr_contents_map.find(cbor::Value(2));
+  if (it != qr_contents_map.end()) {
+    if (!it->second.is_integer()) {
+      return absl::nullopt;
+    }
+    ret.num_known_domains = it->second.GetInteger();
+  } else {
+    ret.num_known_domains = 0;
+  }
+
   return ret;
 }
 
@@ -815,6 +825,10 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
 
   out_plaintext->swap(*plaintext);
   return true;
+}
+
+void Crypter::UseNewConstruction() {
+  new_construction_ = true;
 }
 
 bool Crypter::IsCounterpartyOfForTesting(const Crypter& other) const {
