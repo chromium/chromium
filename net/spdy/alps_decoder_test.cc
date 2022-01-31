@@ -96,6 +96,33 @@ TEST(AlpsDecoderTest, ParseSettingsAndAcceptChFrames) {
   EXPECT_EQ(1, decoder.settings_frame_count());
 }
 
+TEST(AlpsDecoderTest, ParseLargeAcceptChFrame) {
+  std::string frame = HexDecode(
+      // ACCEPT_CH frame
+      "0001ab"                    // length: 427 total bytes
+      "89"                        // type ACCEPT_CH
+      "00"                        // flags
+      "00000000"                  // stream ID
+      "0017"                      // origin length
+      "68747470733a2f2f7777772e"  //
+      "6578616d706c652e636f6d"    // origin "https://www.example.com"
+      "0190"                      // value length (400 in hex)
+  );
+
+  // The Accept-CH tokens payload is a string of 400 'x' characters.
+  const std::string accept_ch_tokens(400, 'x');
+  // Append the value bytes to the frame.
+  frame += accept_ch_tokens;
+
+  AlpsDecoder decoder;
+  AlpsDecoder::Error error = decoder.Decode(frame);
+
+  EXPECT_EQ(AlpsDecoder::Error::kNoError, error);
+  EXPECT_THAT(decoder.GetAcceptCh(),
+              ElementsAre(AcceptChOriginValuePair{"https://www.example.com",
+                                                  accept_ch_tokens}));
+}
+
 TEST(AlpsDecoderTest, IncompleteFrame) {
   AlpsDecoder decoder;
   AlpsDecoder::Error error =
