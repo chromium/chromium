@@ -430,7 +430,8 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
 }
 
 // TODO(crbug.com/1291093): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1291093): Flaky on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_EnsureQueryIsCleared DISABLED_EnsureQueryIsCleared
 #else
 #define MAYBE_EnsureQueryIsCleared EnsureQueryIsCleared
