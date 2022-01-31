@@ -2097,6 +2097,7 @@ void AccessibilityControllerImpl::SwitchAccessDisableDialogClosed(
   // could interact with the dialog.
   DeactivateSwitchAccess();
   if (disable_dialog_accepted) {
+    RemoveAccessibilityNotification();
     NotifyAccessibilityStatusChanged();
     SyncSwitchAccessPrefsToSignInProfile();
   } else {
@@ -2366,7 +2367,6 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kSwitchAccess:
       if (!enabled) {
-        RemoveAccessibilityNotification();
         if (no_switch_access_disable_confirmation_dialog_for_testing_) {
           SwitchAccessDisableDialogClosed(true);
         } else {
