@@ -123,14 +123,22 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
           component_install_dir_.GetPath())));
 
   base::RunLoop run_loop;
-  FirstPartySetsComponentInstallerPolicy(
+  int callback_calls = 0;
+  FirstPartySetsComponentInstallerPolicy policy(
       base::BindLambdaForTesting([&](base::File file) {
         EXPECT_FALSE(file.IsValid());
+        callback_calls++;
         run_loop.Quit();
-      }))
-      .OnRegistrationComplete();
+      }));
+  policy.OnRegistrationComplete();
 
   run_loop.Run();
+  EXPECT_EQ(callback_calls, 1);
+
+  // Only one call has any effect.
+  policy.OnRegistrationComplete();
+  env_.RunUntilIdle();
+  EXPECT_EQ(callback_calls, 1);
 }
 
 TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,

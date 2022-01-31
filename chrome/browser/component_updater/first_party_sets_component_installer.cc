@@ -202,14 +202,19 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
   GetConfigPathInstance().clear();
 }
 
+// static
+void FirstPartySetsComponentInstallerPolicy::SendFileToNetworkService(
+    base::File sets_file) {
+  VLOG(1) << "Received First-Party Sets";
+  content::GetNetworkService()->SetFirstPartySets(std::move(sets_file));
+}
+
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering First-Party Sets component.";
 
   auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
-      /*on_sets_ready=*/base::BindOnce([](base::File sets_file) {
-        VLOG(1) << "Received First-Party Sets";
-        content::GetNetworkService()->SetFirstPartySets(std::move(sets_file));
-      }));
+      /*on_sets_ready=*/base::BindOnce(
+          &FirstPartySetsComponentInstallerPolicy::SendFileToNetworkService));
 
   FirstPartySetsComponentInstallerPolicy* raw_policy = policy.get();
   // Dereferencing `raw_policy` this way is safe because the closure is invoked

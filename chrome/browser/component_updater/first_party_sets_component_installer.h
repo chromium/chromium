@@ -46,6 +46,10 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void ReconfigureAfterNetworkRestart(
       SetsReadyOnceCallback on_sets_ready);
 
+  // Sends the given file to the NetworkService to initialize the FirstPartySets
+  // instance. Should only be called once at runtime.
+  static void SendFileToNetworkService(base::File sets_file);
+
   void OnRegistrationComplete();
 
   // Resets static state. Should only be used to clear state during testing.

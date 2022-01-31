@@ -18,8 +18,10 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/test_launcher_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/network_service_instance.h"
@@ -230,9 +232,18 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
                                  GetComponentContents());
   }
 
-  bool UseV2Format() const { return GetParam(); }
+ protected:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
+    SystemNetworkContextManagerBrowsertest::SetUpDefaultCommandLine(
+        &default_command_line);
+    test_launcher_utils::RemoveCommandLineSwitch(
+        default_command_line, switches::kDisableComponentUpdate, command_line);
+  }
 
  private:
+  bool UseV2Format() const { return GetParam(); }
+
   std::string GetComponentContents() const {
     if (UseV2Format()) {
       // Use the V2 format of the component.

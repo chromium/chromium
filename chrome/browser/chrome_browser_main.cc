@@ -63,6 +63,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/first_party_sets/first_party_sets_util.h"
@@ -1610,6 +1611,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // called inside PostProfileInit and depends on it.
   if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate();
+  } else {
+    component_updater::FirstPartySetsComponentInstallerPolicy::
+        SendFileToNetworkService(base::File());
   }
 
   // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.
