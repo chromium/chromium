@@ -38,7 +38,6 @@ namespace blink {
 class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
  public:
   String ExtraDefaultStyleSheet() override;
-  String ExtraQuirksStyleSheet() override;
 
   Color PlatformActiveSelectionBackgroundColor(
       mojom::blink::ColorScheme color_scheme) const override;

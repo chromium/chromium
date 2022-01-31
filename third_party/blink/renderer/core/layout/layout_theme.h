@@ -78,7 +78,6 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // These methods return the theme's extra style sheets rules, to let each
   // platform adjust the default CSS rules in html.css or quirks.css
   virtual String ExtraDefaultStyleSheet();
-  virtual String ExtraQuirksStyleSheet();
   virtual String ExtraFullscreenStyleSheet();
 
   // Whether or not the control has been styled enough by the author to disable

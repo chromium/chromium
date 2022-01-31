@@ -103,9 +103,7 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
   default_style_sheet_ = ParseUASheet(default_rules);
 
   // Quirks-mode rules.
-  String quirks_rules =
-      UncompressResourceAsASCIIString(IDR_UASTYLE_QUIRKS_CSS) +
-      LayoutTheme::GetTheme().ExtraQuirksStyleSheet();
+  String quirks_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_QUIRKS_CSS);
   quirks_style_sheet_ = ParseUASheet(quirks_rules);
 
   InitializeDefaultStyles();

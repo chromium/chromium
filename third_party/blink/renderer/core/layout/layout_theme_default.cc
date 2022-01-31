@@ -71,10 +71,6 @@ String LayoutThemeDefault::ExtraDefaultStyleSheet() {
   return builder.ToString();
 }
 
-String LayoutThemeDefault::ExtraQuirksStyleSheet() {
-  return UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_WIN_QUIRKS_CSS);
-}
-
 Color LayoutThemeDefault::PlatformActiveSelectionBackgroundColor(
     mojom::blink::ColorScheme color_scheme) const {
   return active_selection_background_color_;
