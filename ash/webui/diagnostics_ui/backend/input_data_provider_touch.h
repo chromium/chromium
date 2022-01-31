@@ -6,7 +6,6 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_TOUCH_H_
 
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
-#include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ash {
 namespace diagnostics {

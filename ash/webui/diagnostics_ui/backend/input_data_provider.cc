@@ -8,23 +8,16 @@
 #include <linux/input.h>
 #include <vector>
 
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
-#include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/message_loop/message_pump_for_ui.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "chromeos/system/statistics_provider.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/current_thread.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ash {
 namespace diagnostics {
@@ -49,7 +42,165 @@ bool IsTouchInputDevice(InputDeviceInformation* device_info) {
            !device_info->event_device_info.HasStylus()));
 }
 
+const int kKeyReleaseValue = 0;
+
 }  // namespace
+
+// Class for dispatching relevant events from evdev to the input_data_provider.
+// While it would be nice to re-use EventConverterEvdevImpl for this purpose,
+// it has a lot of connections (ui::Cursor, full ui::DeviceEventDispatcherEvdev
+// interface) that take more room to stub out rather than just implementing
+// another evdev FdWatcher from scratch.
+class InputDataEventWatcherImpl : public InputDataEventWatcher,
+                                  base::MessagePumpForUI::FdWatcher {
+ public:
+  InputDataEventWatcherImpl(
+      uint32_t id,
+      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher);
+  ~InputDataEventWatcherImpl() override;
+  void ConvertKeyEvent(uint32_t key_code,
+                       uint32_t key_state,
+                       uint32_t scan_code);
+  void ProcessEvent(const input_event& input);
+  void Start();
+  void Stop();
+
+ protected:
+  // base::MessagePumpForUI::FdWatcher:
+  void OnFileCanReadWithoutBlocking(int fd) override;
+  void OnFileCanWriteWithoutBlocking(int fd) override;
+
+  // Device id
+  const uint32_t id_;
+
+  // Path to input device.
+  const base::FilePath path_;
+
+  // File descriptor to read.
+  const int fd_;
+
+  // Scoped auto-closer for FD.
+  const base::ScopedFD input_device_fd_;
+
+  // Whether we're polling for input on the device.
+  bool watching_ = false;
+
+  // EV_ information pending for SYN_REPORT to dispatch.
+  uint32_t pending_scan_code_;
+  uint32_t pending_key_code_;
+  uint32_t pending_key_state_;
+
+  base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher_;
+
+  // Controller for watching the input fd.
+  base::MessagePumpForUI::FdWatchController controller_;
+};
+
+class InputDataEventWatcherFactoryImpl : public InputDataEventWatcher::Factory {
+ public:
+  InputDataEventWatcherFactoryImpl() = default;
+  InputDataEventWatcherFactoryImpl(const InputDataEventWatcherFactoryImpl&) =
+      delete;
+  InputDataEventWatcherFactoryImpl& operator=(
+      const InputDataEventWatcherFactoryImpl&) = delete;
+  ~InputDataEventWatcherFactoryImpl() override = default;
+
+  std::unique_ptr<InputDataEventWatcher> MakeWatcher(
+      uint32_t id,
+      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher) override {
+    return std::make_unique<InputDataEventWatcherImpl>(id,
+                                                       std::move(dispatcher));
+  }
+};
+
+InputDataEventWatcher::~InputDataEventWatcher() = default;
+InputDataEventWatcher::Factory::~Factory() = default;
+
+InputDataEventWatcherImpl::InputDataEventWatcherImpl(
+    uint32_t id,
+    base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher)
+    : id_(id),
+      path_(base::FilePath(base::StringPrintf("/dev/input/event%d", id_))),
+      fd_(open(path_.value().c_str(), O_RDWR | O_NONBLOCK)),
+      input_device_fd_(fd_),
+      dispatcher_(dispatcher),
+      controller_(FROM_HERE) {
+  if (fd_ == -1) {
+    PLOG(ERROR) << "Unable to open event device " << id_
+                << ", not forwarding events for input diagnostics.";
+    // Leave un-Started(), so we never enable the fd watcher.
+    return;
+  }
+
+  Start();
+}
+
+InputDataEventWatcherImpl::~InputDataEventWatcherImpl() = default;
+
+void InputDataEventWatcherImpl::Start() {
+  base::CurrentUIThread::Get()->WatchFileDescriptor(
+      fd_, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);
+  watching_ = true;
+}
+
+void InputDataEventWatcherImpl::Stop() {
+  controller_.StopWatchingFileDescriptor();
+  watching_ = false;
+}
+
+void InputDataEventWatcherImpl::OnFileCanReadWithoutBlocking(int fd) {
+  while (true) {
+    input_event input;
+    ssize_t read_size = read(fd, &input, sizeof(input));
+    if (read_size != sizeof(input)) {
+      if (errno == EINTR || errno == EAGAIN)
+        return;
+      if (errno != ENODEV)
+        PLOG(ERROR) << "error reading device " << path_.value();
+      Stop();
+      return;
+    }
+
+    ProcessEvent(input);
+  }
+}
+
+void InputDataEventWatcherImpl::OnFileCanWriteWithoutBlocking(int fd) {}
+
+// Once we have an entire keypress/release, dispatch it.
+void InputDataEventWatcherImpl::ConvertKeyEvent(uint32_t key_code,
+                                                uint32_t key_state,
+                                                uint32_t scan_code) {
+  bool down = key_state != kKeyReleaseValue;
+  if (dispatcher_)
+    dispatcher_->SendInputKeyEvent(id_, key_code, scan_code, down);
+}
+
+// Process evdev event structures directly from the kernel.
+void InputDataEventWatcherImpl::ProcessEvent(const input_event& input) {
+  // Accumulate relevant data about an event until a SYN_REPORT event releases
+  // the full report. For more information, see kernel documentation for
+  // input/event-codes.rst.
+  switch (input.type) {
+    case EV_MSC:
+      if (input.code == MSC_SCAN)
+        pending_scan_code_ = input.value;
+      break;
+    case EV_KEY:
+      pending_key_code_ = input.code;
+      pending_key_state_ = input.value;
+      break;
+    case EV_SYN:
+      if (input.code == SYN_REPORT)
+        ConvertKeyEvent(pending_key_code_, pending_key_state_,
+                        pending_scan_code_);
+
+      pending_key_code_ = 0;
+      pending_key_state_ = 0;
+      pending_scan_code_ = 0;
+      break;
+  }
+}
 
 // All blockings calls for identifying hardware need to go here: both
 // EventDeviceInfo::Initialize and ui::GetInputPathInSys can block in
@@ -59,14 +210,14 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
     base::FilePath path) {
   base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
   if (fd.get() < 0) {
-    LOG(ERROR) << "Couldn't open device path " << path;
+    PLOG(ERROR) << "Couldn't open device path " << path << ".";
     return nullptr;
   }
 
   auto info = std::make_unique<InputDeviceInformation>();
 
   if (!info->event_device_info.Initialize(fd.get(), path)) {
-    LOG(ERROR) << "Failed to get device info for " << path;
+    LOG(ERROR) << "Failed to get device info for " << path << ".";
     return nullptr;
   }
 
@@ -91,19 +242,24 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
   return info;
 }
 
-InputDataProvider::InputDataProvider()
-    : device_manager_(ui::CreateDeviceManager()) {
-  Initialize();
+InputDataProvider::InputDataProvider(aura::Window* window)
+    : device_manager_(ui::CreateDeviceManager()),
+      watcher_factory_(std::make_unique<InputDataEventWatcherFactoryImpl>()) {
+  Initialize(window);
 }
 
 InputDataProvider::InputDataProvider(
-    std::unique_ptr<ui::DeviceManager> device_manager_for_test)
-    : device_manager_(std::move(device_manager_for_test)) {
-  Initialize();
+    aura::Window* window,
+    std::unique_ptr<ui::DeviceManager> device_manager_for_test,
+    std::unique_ptr<InputDataEventWatcher::Factory> watcher_factory)
+    : device_manager_(std::move(device_manager_for_test)),
+      watcher_factory_(std::move(watcher_factory)) {
+  Initialize(window);
 }
 
 InputDataProvider::~InputDataProvider() {
   device_manager_->RemoveObserver(this);
+  widget_->RemoveObserver(this);
 }
 
 // static
@@ -121,9 +277,15 @@ mojom::ConnectionType InputDataProvider::ConnectionTypeFromInputDeviceType(
   }
 }
 
-void InputDataProvider::Initialize() {
+void InputDataProvider::Initialize(aura::Window* window) {
+  // Window and widget are needed for security enforcement.
+  CHECK(window);
+  widget_ = views::Widget::GetWidgetForNativeWindow(window);
+  CHECK(widget_);
   device_manager_->AddObserver(this);
   device_manager_->ScanDevices(this);
+  widget_->AddObserver(this);
+  UpdateMaySendEvents();
 }
 
 void InputDataProvider::BindInterface(
@@ -174,12 +336,135 @@ void InputDataProvider::GetKeyboardVisualLayout(
     GetKeyboardVisualLayoutCallback callback) {
   if (!keyboards_.contains(id)) {
     LOG(ERROR) << "Couldn't find keyboard with ID " << id
-               << "when retrieving visual layout.";
+               << " when retrieving visual layout.";
     return;
   }
 
-  keyboard_helper_.GetKeyboardVisualLayout(keyboards_[id]->Clone(),
-                                           std::move(callback));
+  keyboard_helper_.GetKeyboardVisualLayout(keyboards_[id], std::move(callback));
+}
+
+void InputDataProvider::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                  bool visible) {
+  UpdateEventObservers();
+}
+
+void InputDataProvider::OnWidgetActivationChanged(views::Widget* widget,
+                                                  bool active) {
+  UpdateEventObservers();
+}
+
+void InputDataProvider::UpdateMaySendEvents() {
+  const bool widget_open = !widget_->IsClosed();
+  const bool widget_active = widget_->IsActive();
+  const bool widget_visible = widget_->IsVisible();
+
+  may_send_events_ = widget_open && widget_visible && widget_active;
+}
+
+void InputDataProvider::UpdateEventObservers() {
+  const bool previous = may_send_events_;
+  UpdateMaySendEvents();
+
+  if (previous != may_send_events_) {
+    if (!may_send_events_)
+      SendPauseEvents();
+    else
+      SendResumeEvents();
+  }
+}
+
+void InputDataProvider::ForwardKeyboardInput(uint32_t id) {
+  if (!keyboards_.contains(id)) {
+    LOG(ERROR) << "Couldn't find keyboard with ID " << id
+               << " when trying to forward input.";
+    return;
+  }
+
+  keyboard_watchers_[id] =
+      watcher_factory_->MakeWatcher(id, weak_factory_.GetWeakPtr());
+}
+
+void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
+  if (!keyboards_.contains(id)) {
+    LOG(ERROR) << "Couldn't find keyboard with ID " << id
+               << " when trying to unforward input.";
+  }
+  if (!keyboard_watchers_.erase(id)) {
+    LOG(ERROR) << "Couldn't find keyboard watcher with ID " << id
+               << " when trying to unforward input.";
+  }
+}
+
+void InputDataProvider::OnObservedKeyboardInputDisconnect(
+    uint32_t id,
+    mojo::RemoteSetElementId) {
+  if (!keyboard_observers_.contains(id)) {
+    LOG(ERROR) << "received keyboard observer disconnect for ID " << id
+               << " without observer.";
+    return;
+  }
+
+  // When the last observer has been disconnected, stop forwarding events.
+  if (keyboard_observers_[id]->empty()) {
+    UnforwardKeyboardInput(id);
+
+    // The observer RemoteSet remains empty at this point; if a new
+    // observer comes in, we will Forward it again.
+  }
+}
+
+void InputDataProvider::ObserveKeyEvents(
+    uint32_t id,
+    mojo::PendingRemote<mojom::KeyboardObserver> observer) {
+  CHECK(widget_) << "Observing Key Events for input diagnostics not allowed "
+                    "without widget to track focus.";
+
+  if (!keyboards_.contains(id)) {
+    LOG(ERROR) << "Couldn't find keyboard with ID " << id
+               << " when trying to receive input.";
+    return;
+  }
+
+  // When keyboard observer remote set is constructed, establish the disconnect
+  // handler.
+  if (!keyboard_observers_.contains(id)) {
+    keyboard_observers_[id] =
+        std::make_unique<mojo::RemoteSet<mojom::KeyboardObserver>>();
+    keyboard_observers_[id]->set_disconnect_handler(base::BindRepeating(
+        &InputDataProvider::OnObservedKeyboardInputDisconnect,
+        base::Unretained(this), id));
+  }
+
+  auto& observers = *keyboard_observers_[id];
+
+  const auto observer_id = observers.Add(std::move(observer));
+
+  // Ensure first callback is 'Paused' if we do not currently have focus
+  if (!may_send_events_)
+    observers.Get(observer_id)->OnKeyEventsPaused();
+
+  // When we are adding the first observer, start forwarding events.
+  if (observers.size() == 1)
+    ForwardKeyboardInput(id);
+}
+
+void InputDataProvider::SendPauseEvents() {
+  for (const auto& keyboard : keyboard_observers_) {
+    for (const auto& observer : *keyboard.second) {
+      observer->OnKeyEventsPaused();
+    }
+  }
+
+  // Re-arm our log message for future events.
+  logged_not_dispatching_key_events_ = false;
+}
+
+void InputDataProvider::SendResumeEvents() {
+  for (const auto& keyboard : keyboard_observers_) {
+    for (const auto& observer : *keyboard.second) {
+      observer->OnKeyEventsResumed();
+    }
+  }
 }
 
 void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
@@ -203,13 +488,21 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
   } else {
     DCHECK(event.action_type() == ui::DeviceEvent::ActionType::REMOVE);
     if (keyboards_.contains(id)) {
+      if (keyboard_observers_.erase(id)) {
+        // Unref'ing the observers does not trigger their
+        // OnObservedKeyboardInputDisconnect handlers (which would normally
+        // clean up any watchers), so we must explicitly release the watchers
+        // here.
+        keyboard_watchers_.erase(id);
+      }
       keyboards_.erase(id);
-      for (auto& observer : connected_devices_observers_) {
+      keyboard_aux_data_.erase(id);
+      for (const auto& observer : connected_devices_observers_) {
         observer->OnKeyboardDisconnected(id);
       }
     } else if (touch_devices_.contains(id)) {
       touch_devices_.erase(id);
-      for (auto& observer : connected_devices_observers_) {
+      for (const auto& observer : connected_devices_observers_) {
         observer->OnTouchDeviceDisconnected(id);
       }
     }
@@ -237,18 +530,54 @@ void InputDataProvider::AddTouchDevice(
   touch_devices_[device_info->evdev_id] =
       touch_helper_.ConstructTouchDevice(device_info);
 
-  for (auto& observer : connected_devices_observers_) {
+  for (const auto& observer : connected_devices_observers_) {
     observer->OnTouchDeviceConnected(
         touch_devices_[device_info->evdev_id]->Clone());
   }
 }
 
 void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
-  keyboards_[device_info->evdev_id] =
-      keyboard_helper_.ConstructKeyboard(device_info);
+  auto aux_data = std::make_unique<InputDataProviderKeyboard::AuxData>();
 
-  for (auto& observer : connected_devices_observers_) {
+  keyboards_[device_info->evdev_id] =
+      keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
+  keyboard_aux_data_[device_info->evdev_id] = std::move(aux_data);
+
+  for (const auto& observer : connected_devices_observers_) {
     observer->OnKeyboardConnected(keyboards_[device_info->evdev_id]->Clone());
+  }
+}
+
+void InputDataProvider::SendInputKeyEvent(uint32_t id,
+                                          uint32_t key_code,
+                                          uint32_t scan_code,
+                                          bool down) {
+  CHECK(widget_) << "Sending Key Events for input diagnostics not allowed "
+                    "without widget to track focus.";
+
+  if (!keyboard_observers_.contains(id)) {
+    LOG(ERROR) << "Couldn't find keyboard observer with ID " << id
+               << " when trying to dispatch key.";
+    return;
+  }
+
+  if (!may_send_events_) {
+    if (!logged_not_dispatching_key_events_) {
+      // Note: this will be common if the input diagnostics window is opened,
+      // but not focused, so just log once.
+      LOG(ERROR) << "Will not dispatch keys when diagnostics window does not "
+                    "have focus.";
+      logged_not_dispatching_key_events_ = true;
+    }
+    return;
+  }
+
+  mojom::KeyEventPtr event = keyboard_helper_.ConstructInputKeyEvent(
+      keyboards_[id], keyboard_aux_data_[id].get(), key_code, scan_code, down);
+
+  const auto& observers = *keyboard_observers_[id];
+  for (const auto& observer : observers) {
+    observer->OnKeyEvent(event->Clone());
   }
 }
 

@@ -521,6 +521,33 @@ export const ConnectedDevicesObserverInterface =
 export const ConnectedDevicesObserverReceiver =
     ash.diagnostics.mojom.ConnectedDevicesObserverReceiver;
 
+/**
+ * Type alias for KeyboardObserver.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserver}
+ */
+export const KeyboardObserver = ash.diagnostics.mojom.CpuUsageObserver;
+
+/**
+ * Type alias for KeyboardObserverRemote.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserverRemote}
+ */
+export const KeyboardObserverRemote =
+    ash.diagnostics.mojom.KeyboardObserverRemote;
+
+/**
+ * Type alias for KeyboardObserverInterface.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserverInterface}
+ */
+export const KeyboardObserverInterface =
+    ash.diagnostics.mojom.KeyboardObserverInterface;
+
+/**
+ * Type alias for KeyboardObserverReceiver.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserverReceiver}
+ */
+export const KeyboardObserverReceiver =
+    ash.diagnostics.mojom.KeyboardObserverReceiver;
+
 
 /**
  * Type alias for the the response from InputDataProvider.GetConnectedDevices.

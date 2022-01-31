@@ -27,6 +27,7 @@ class HoldingSpaceClient;
 
 namespace diagnostics {
 class DiagnosticsManager;
+class InputDataProvider;
 }  // namespace diagnostics
 
 // The WebDialogUI for chrome://diagnostics.
@@ -67,6 +68,7 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
   std::unique_ptr<diagnostics::DiagnosticsManager> diagnostics_manager_;
   std::unique_ptr<diagnostics::metrics::DiagnosticsMetrics>
       diagnostics_metrics_;
+  std::unique_ptr<diagnostics::InputDataProvider> input_data_provider_;
 };
 
 }  // namespace ash
