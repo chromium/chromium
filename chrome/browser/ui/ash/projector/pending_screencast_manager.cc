@@ -85,16 +85,12 @@ int64_t GetScreencastContainerSize(const base::FilePath& absolute_path) {
 ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
     const std::vector<drivefs::mojom::ItemEvent>&
         pending_webm_or_projector_events,
-    drive::DriveIntegrationService* drivefs_integration) {
+    const base::FilePath drivefs_mounted_point) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  const base::FilePath drivefs_mounted_point =
-      drivefs_integration->GetMountPointPath();
   // The valid screencasts set.
   ash::PendingScreencastSet screencasts;
-  if (!drivefs_integration->IsMounted() ||
-      !base::PathExists(drivefs_mounted_point)) {
+  if (!base::PathExists(drivefs_mounted_point))
     return screencasts;
-  }
 
   // A map of container directory path to pending screencast. Each screencast
   // has a unique container directory path in DriveFS.
@@ -186,6 +182,10 @@ void PendingSreencastManager::OnUnmounted() {
 // download event. Find a way to filter out the upload event.
 void PendingSreencastManager::OnSyncingStatusUpdate(
     const drivefs::mojom::SyncingStatus& status) {
+  drive::DriveIntegrationService* drivefs_integration =
+      GetDriveIntegrationServiceForActiveProfile();
+  if (!drivefs_integration->IsMounted())
+    return;
   std::vector<drivefs::mojom::ItemEvent> pending_webm_or_projector_events;
 
   for (const auto& event : status.item_events) {
@@ -207,7 +207,7 @@ void PendingSreencastManager::OnSyncingStatusUpdate(
       FROM_HERE,
       base::BindOnce(ProcessAndGenerateNewScreencasts,
                      std::move(pending_webm_or_projector_events),
-                     GetDriveIntegrationServiceForActiveProfile()),
+                     drivefs_integration->GetMountPointPath()),
       base::BindOnce(
           &PendingSreencastManager::OnProcessAndGenerateNewScreencastsFinished,
           weak_ptr_factory_.GetWeakPtr()));
