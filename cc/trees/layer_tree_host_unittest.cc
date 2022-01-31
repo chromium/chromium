@@ -10163,6 +10163,193 @@ class LayerTreeHostTestClearCaches : public LayerTreeHostTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestClearCaches);
 
+class LayerTreeHostTestWithHelper : public LayerTreeHostTest {
+ public:
+  scoped_refptr<FakePictureLayer> CreateAndAddFakePictureLayer(
+      const gfx::Size& size,
+      Layer* parent = nullptr) {
+    if (!parent)
+      parent = layer_tree_host()->root_layer();
+    std::unique_ptr<FakeRecordingSource> recording_source =
+        FakeRecordingSource::CreateFilledRecordingSource(size);
+    recording_source->set_fill_with_nonsolid_color(true);
+    recording_source->set_has_draw_text_op();
+    recording_source->Rerecord();
+    scoped_refptr<FakePictureLayer> picture_layer =
+        FakePictureLayer::CreateWithRecordingSource(
+            &client_, std::move(recording_source));
+    picture_layer->SetBounds(size);
+    picture_layer->SetIsDrawable(true);
+    parent->AddChild(picture_layer);
+    client_.set_bounds(size);
+    return picture_layer;
+  }
+
+ protected:
+  FakeContentLayerClient client_;
+};
+
+class LayerTreeHostTestHideLayerAndSubtree
+    : public LayerTreeHostTestWithHelper {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->release_tile_resources_for_hidden_layers = true;
+  }
+
+  void BeginTest() override {
+    layer_tree_host()->SetViewportRectAndScale(gfx::Rect(10, 10), 1.f,
+                                               viz::LocalSurfaceId());
+    layer_tree_host()->root_layer()->SetBounds(gfx::Size(10, 10));
+
+    picture_layer_ = CreateAndAddFakePictureLayer(gfx::Size(10, 10));
+
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
+    ++num_commits_;
+    FakePictureLayerImpl* picture_layer_impl =
+        static_cast<FakePictureLayerImpl*>(
+            impl->sync_tree()->LayerById(picture_layer_->id()));
+    switch (num_commits_) {
+      case 1:
+        ASSERT_EQ(1u, picture_layer_impl->num_tilings());
+        break;
+      case 2:
+        ASSERT_EQ(0u, picture_layer_impl->num_tilings());
+        EndTest();
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  void DidCommit() override { picture_layer_->SetHideLayerAndSubtree(true); }
+
+ private:
+  scoped_refptr<FakePictureLayer> picture_layer_;
+  int num_commits_ = 0;
+};
+
+SINGLE_THREAD_TEST_F(LayerTreeHostTestHideLayerAndSubtree);
+
+class LayerTreeHostTestHideLayerAndSubtreeOnParent
+    : public LayerTreeHostTestWithHelper {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->release_tile_resources_for_hidden_layers = true;
+  }
+
+  void BeginTest() override {
+    layer_tree_host()->SetViewportRectAndScale(gfx::Rect(10, 10), 1.f,
+                                               viz::LocalSurfaceId());
+    layer_tree_host()->root_layer()->SetBounds(gfx::Size(10, 10));
+
+    parent_layer_ = Layer::Create();
+    parent_layer_->SetBounds(gfx::Size(10, 10));
+    parent_layer_->SetPosition(gfx::PointF(0.f, 0.f));
+    parent_layer_->SetIsDrawable(true);
+    layer_tree_host()->root_layer()->AddChild(parent_layer_);
+
+    picture_layer_ =
+        CreateAndAddFakePictureLayer(gfx::Size(10, 10), parent_layer_.get());
+
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
+    ++num_commits_;
+    FakePictureLayerImpl* picture_layer_impl =
+        static_cast<FakePictureLayerImpl*>(
+            impl->sync_tree()->LayerById(picture_layer_->id()));
+    switch (num_commits_) {
+      case 1:
+        ASSERT_EQ(1u, picture_layer_impl->num_tilings());
+        break;
+      case 2:
+        ASSERT_EQ(0u, picture_layer_impl->num_tilings());
+        EndTest();
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  void DidCommit() override { parent_layer_->SetHideLayerAndSubtree(true); }
+
+ private:
+  scoped_refptr<FakePictureLayer> picture_layer_;
+  scoped_refptr<Layer> parent_layer_;
+  int num_commits_ = 0;
+};
+
+SINGLE_THREAD_TEST_F(LayerTreeHostTestHideLayerAndSubtreeOnParent);
+
+class LayerTreeHostTestOccludedTileReleased
+    : public LayerTreeHostTestWithHelper {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->memory_policy.priority_cutoff_when_visible =
+        gpu::MemoryAllocation::CUTOFF_ALLOW_REQUIRED_ONLY;
+    settings->use_occlusion_for_tile_prioritization = true;
+    settings->minimum_occlusion_tracking_size = gfx::Size(60, 60);
+  }
+
+  void BeginTest() override {
+    layer_tree_host()->SetViewportRectAndScale(gfx::Rect(100, 100), 1.f,
+                                               viz::LocalSurfaceId());
+    layer_tree_host()->root_layer()->SetBounds(gfx::Size(100, 100));
+
+    picture_layer_ = CreateAndAddFakePictureLayer(gfx::Size(100, 100));
+
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void AfterTest() override {
+    EXPECT_TRUE(got_commit_after_added_obscuring_layer_);
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
+    if (added_obscuring_layer_ && !got_commit_after_added_obscuring_layer_) {
+      got_commit_after_added_obscuring_layer_ = true;
+      FakePictureLayerImpl* picture_layer_impl =
+          static_cast<FakePictureLayerImpl*>(
+              impl->sync_tree()->LayerById(picture_layer_->id()));
+      EXPECT_EQ(0u, picture_layer_impl->GetNumberOfTilesWithResources());
+      EndTest();
+    }
+  }
+
+  void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
+                                      const Tile* tile) override {
+    FakePictureLayerImpl* picture_layer_impl =
+        static_cast<FakePictureLayerImpl*>(
+            host_impl->sync_tree()->LayerById(picture_layer_->id()));
+    EXPECT_EQ(1u, picture_layer_impl->GetNumberOfTilesWithResources());
+    MainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&LayerTreeHostTestOccludedTileReleased::
+                                      AddLayerThatObscuresPictureLayer,
+                                  base::Unretained(this)));
+  }
+
+ protected:
+  void AddLayerThatObscuresPictureLayer() {
+    auto covering_layer = SolidColorLayer::Create();
+    covering_layer->SetBounds(gfx::Size(100, 100));
+    covering_layer->SetBackgroundColor(SK_ColorRED);
+    covering_layer->SetIsDrawable(true);
+    layer_tree_host()->root_layer()->AddChild(covering_layer);
+    added_obscuring_layer_ = true;
+  }
+
+ private:
+  scoped_refptr<FakePictureLayer> picture_layer_;
+  bool added_obscuring_layer_ = false;
+  bool got_commit_after_added_obscuring_layer_ = false;
+};
+
+SINGLE_THREAD_TEST_F(LayerTreeHostTestOccludedTileReleased);
+
 class LayerTreeHostTestNoCommitDeadlock : public LayerTreeHostTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
   void WillCommit(const CommitState& commit_state) override {

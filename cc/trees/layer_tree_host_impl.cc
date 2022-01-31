@@ -81,6 +81,7 @@
 #include "cc/tiles/eviction_tile_priority_queue.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
+#include "cc/tiles/occluded_tile_iterator.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/raster_tile_priority_queue.h"
 #include "cc/tiles/software_image_decode_cache.h"
@@ -1878,6 +1879,13 @@ LayerTreeHostImpl::BuildEvictionQueue(TreePriority tree_priority) {
                              : std::vector<PictureLayerImpl*>(),
                tree_priority);
   return queue;
+}
+
+std::unique_ptr<OccludedTileIterator>
+LayerTreeHostImpl::CreateOccludedTileIterator() {
+  return std::make_unique<OccludedTileIterator>(
+      pending_tree_ ? pending_tree_->picture_layers()
+                    : active_tree_->picture_layers());
 }
 
 void LayerTreeHostImpl::SetIsLikelyToRequireADraw(

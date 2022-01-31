@@ -298,6 +298,8 @@ cc_component("cc") {
     "tiles/image_decode_cache_utils.h",
     "tiles/mipmap_util.cc",
     "tiles/mipmap_util.h",
+    "tiles/occluded_tile_iterator.cc",
+    "tiles/occluded_tile_iterator.h",
     "tiles/picture_layer_tiling.cc",
     "tiles/picture_layer_tiling.h",
     "tiles/picture_layer_tiling_set.cc",

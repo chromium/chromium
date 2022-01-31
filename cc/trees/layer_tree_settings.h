@@ -201,6 +201,12 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether it is a LayerTree for ui.
   bool is_layer_tree_for_ui = false;
+
+  // Whether tile resources are dropped for hidden layers. In terms of code,
+  // this uses PictureLayerImpl::HasValidTilePriorities(), which may return true
+  // even if the layer is not drawn. For example, if the layer is occluded it is
+  // still considered drawn and will not be impacted by this feature.
+  bool release_tile_resources_for_hidden_layers = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

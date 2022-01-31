@@ -4,7 +4,7 @@
 
 #include "cc/test/fake_tile_manager_client.h"
 
-#include <vector>
+#include "cc/tiles/occluded_tile_iterator.h"
 
 namespace cc {
 
@@ -20,6 +20,11 @@ FakeTileManagerClient::BuildRasterQueue(TreePriority tree_priority,
 
 std::unique_ptr<EvictionTilePriorityQueue>
 FakeTileManagerClient::BuildEvictionQueue(TreePriority tree_priority) {
+  return nullptr;
+}
+
+std::unique_ptr<OccludedTileIterator>
+FakeTileManagerClient::CreateOccludedTileIterator() {
   return nullptr;
 }
 

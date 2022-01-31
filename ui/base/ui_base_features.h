@@ -189,6 +189,12 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSwipeToMoveCursorEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kRawDraw;
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingRawDraw();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers;
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kUiCompositorRequiredTilesOnly;
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

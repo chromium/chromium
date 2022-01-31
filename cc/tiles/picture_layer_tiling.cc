@@ -959,4 +959,22 @@ gfx::Rect PictureLayerTiling::EnclosingLayerRectFromContentsRect(
       raster_transform_.InverseMapRect(gfx::RectF(contents_rect)));
 }
 
+PictureLayerTiling::TileIterator::TileIterator(PictureLayerTiling* tiling)
+    : tiling_(tiling), iter_(tiling->tiles_.begin()) {}
+
+PictureLayerTiling::TileIterator::~TileIterator() = default;
+
+Tile* PictureLayerTiling::TileIterator::GetCurrent() {
+  return AtEnd() ? nullptr : iter_->second.get();
+}
+
+void PictureLayerTiling::TileIterator::Next() {
+  if (!AtEnd())
+    ++iter_;
+}
+
+bool PictureLayerTiling::TileIterator::AtEnd() const {
+  return iter_ == tiling_->tiles_.end();
+}
+
 }  // namespace cc

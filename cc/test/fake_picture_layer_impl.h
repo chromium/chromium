@@ -76,6 +76,8 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   PictureLayerTiling* LowResTiling() const;
   size_t num_tilings() const { return tilings_->num_tilings(); }
 
+  size_t GetNumberOfTilesWithResources() const;
+
   PictureLayerTilingSet* tilings() { return tilings_.get(); }
   RasterSource* raster_source() { return raster_source_.get(); }
   void SetRasterSource(scoped_refptr<RasterSource> raster_source,

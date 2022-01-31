@@ -328,4 +328,11 @@ bool IsUsingRawDraw() {
   return base::FeatureList::IsEnabled(kRawDraw);
 }
 
+const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers{
+    "UiCompositorReleaseTileResourcesForHiddenLayers",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kUiCompositorRequiredTilesOnly{
+    "UiCompositorRequiredTilesOnly", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

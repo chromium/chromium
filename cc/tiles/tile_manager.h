@@ -45,6 +45,7 @@ class TracedValue;
 
 namespace cc {
 class ImageDecodeCache;
+class OccludedTileIterator;
 
 class CC_EXPORT TileManagerClient {
  public:
@@ -77,6 +78,10 @@ class CC_EXPORT TileManagerClient {
   // Note if the queue was previously built, Reset must be called on it.
   virtual std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) = 0;
+
+  // Returns an iterator of the occluded tiles.
+  virtual std::unique_ptr<OccludedTileIterator>
+  CreateOccludedTileIterator() = 0;
 
   // Informs the client that due to the currently rasterizing (or scheduled to
   // be rasterized) tiles, we will be in a position that will likely require a
@@ -377,6 +382,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
     CheckerImageTracker::ImageDecodeQueue checker_image_decode_queue;
   };
 
+  // Frees the resources of all occluded tiles.
+  void FreeResourcesForOccludedTiles();
   void FreeResourcesForTile(Tile* tile);
   void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
   scoped_refptr<TileTask> CreateRasterTask(
@@ -438,6 +445,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void IssueSignals();
   void ScheduleCheckRasterFinishedQueries();
   void CheckRasterFinishedQueries();
+
+  bool ShouldRasterOccludedTiles() const;
 
   raw_ptr<TileManagerClient> client_;
   raw_ptr<base::SequencedTaskRunner> task_runner_;

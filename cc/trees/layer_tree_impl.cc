@@ -1641,9 +1641,14 @@ bool LayerTreeImpl::UpdateDrawProperties(
         "IsActive", IsActiveTree(), "SourceFrameNumber", source_frame_number_);
     size_t layers_updated_count = 0;
     bool tile_priorities_updated = false;
+    const bool release_tile_resources_for_hidden_layers =
+        settings().release_tile_resources_for_hidden_layers;
     for (PictureLayerImpl* layer : picture_layers_) {
-      if (!layer->HasValidTilePriorities())
+      if (!layer->HasValidTilePriorities()) {
+        if (release_tile_resources_for_hidden_layers)
+          layer->ReleaseResources();
         continue;
+      }
       ++layers_updated_count;
       tile_priorities_updated |= layer->UpdateTiles();
     }

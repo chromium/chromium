@@ -532,6 +532,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) override;
   void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) override;
+  std::unique_ptr<OccludedTileIterator> CreateOccludedTileIterator() override;
   gfx::ColorSpace GetRasterColorSpace(
       gfx::ContentColorUsage content_color_usage) const override;
   float GetSDRWhiteLevel() const override;

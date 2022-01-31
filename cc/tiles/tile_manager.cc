@@ -28,6 +28,7 @@
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/task_category.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
+#include "cc/tiles/occluded_tile_iterator.h"
 #include "cc/tiles/tile.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -578,6 +579,9 @@ bool TileManager::PrepareTiles(
     did_check_for_completed_tasks_since_last_schedule_tasks_ = true;
   }
 
+  if (!ShouldRasterOccludedTiles())
+    FreeResourcesForOccludedTiles();
+
   PrioritizedWorkToSchedule prioritized_work = AssignGpuMemoryToTiles();
 
   // Inform the client that will likely require a draw if the highest priority
@@ -724,6 +728,7 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
                                 RasterTilePriorityQueue::Type::ALL));
   std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue;
   PrioritizedWorkToSchedule work_to_schedule;
+  const bool raster_occluded_tiles = ShouldRasterOccludedTiles();
   for (; !raster_priority_queue->IsEmpty(); raster_priority_queue->Pop()) {
     const PrioritizedTile& prioritized_tile = raster_priority_queue->Top();
     Tile* tile = prioritized_tile.tile();
@@ -735,6 +740,8 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
           TRACE_EVENT_SCOPE_THREAD);
       break;
     }
+
+    DCHECK(!prioritized_tile.is_occluded() || raster_occluded_tiles);
 
     bool tile_is_needed_now = priority.priority_bin == TilePriority::NOW;
     if (!tile->is_solid_color_analysis_performed() &&
@@ -913,6 +920,13 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
                    had_enough_memory_to_schedule_tiles_needed_now);
   image_controller_.cache()->RecordStats();
   return work_to_schedule;
+}
+
+void TileManager::FreeResourcesForOccludedTiles() {
+  std::unique_ptr<OccludedTileIterator> iterator =
+      client_->CreateOccludedTileIterator();
+  for (; !iterator->AtEnd(); iterator->Next())
+    FreeResourcesForTile(iterator->GetCurrent());
 }
 
 void TileManager::FreeResourcesForTile(Tile* tile) {
@@ -1852,6 +1866,11 @@ void TileManager::ActivationStateAsValueInto(
     state->EndDictionary();
   }
   state->EndArray();
+}
+
+bool TileManager::ShouldRasterOccludedTiles() const {
+  return (global_state_.memory_limit_policy != ALLOW_NOTHING &&
+          global_state_.memory_limit_policy != ALLOW_ABSOLUTE_MINIMUM);
 }
 
 TileManager::MemoryUsage::MemoryUsage()
