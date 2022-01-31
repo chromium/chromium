@@ -150,7 +150,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_HIGHLIGHTING_AMP)
-                    || !LinkToTextBridge.isAmpUrl(new GURL(mShareUrl))) {
+                    || !LinkToTextBridge.supportsLinkGenerationInIframe(new GURL(mShareUrl))) {
                 completeRequestWithFailure(LinkGenerationError.I_FRAME);
                 return;
             }

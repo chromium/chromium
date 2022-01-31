@@ -267,10 +267,11 @@ bool TextFragmentHandler::ShouldPreemptivelyGenerateFor(LocalFrame* frame) {
   // Main frames always have a handler.
   DCHECK(!frame->IsMainFrame());
 
-  // Generate for iframes only if it's an AMP url and the AMP urls are allowed
+  // Only generate for iframe urls if they are supported
   return base::FeatureList::IsEnabled(
              shared_highlighting::kSharedHighlightingAmp) &&
-         shared_highlighting::IsAmpUrl(frame->GetDocument()->Url());
+         shared_highlighting::SupportsLinkGenerationInIframe(
+             frame->GetDocument()->Url());
 }
 
 // static

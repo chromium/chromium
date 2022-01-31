@@ -56,35 +56,36 @@ TEST(DisabledSitesTest, AmpFeatureEnabled) {
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://google.com/amp/foo")));
 }
 
-TEST(DisabledSitesTest, IsAmpUrl) {
-  EXPECT_TRUE(IsAmpUrl(
+TEST(DisabledSitesTest, SupportsLinkGenerationInIframe) {
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
       GURL("https://www.google.com/amp/www.nyt.com/ampthml/blogs.html")));
-  EXPECT_FALSE(IsAmpUrl(GURL("https://www.example.com/")));
+  EXPECT_FALSE(
+      SupportsLinkGenerationInIframe(GURL("https://www.example.com/")));
 
-  EXPECT_TRUE(IsAmpUrl(
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
       GURL("https://mobile.google.com/amp/www.nyt.com/ampthml/blogs.html")));
-  EXPECT_FALSE(IsAmpUrl(GURL("https://mobile.foo.com")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://mobile.foo.com")));
 
-  EXPECT_TRUE(IsAmpUrl(
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
       GURL("https://m.google.com/amp/www.nyt.com/ampthml/blogs.html")));
-  EXPECT_FALSE(IsAmpUrl(GURL("https://m.foo.com")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://m.foo.com")));
 
-  EXPECT_TRUE(IsAmpUrl(
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
       GURL("https://www.bing.com/amp/www.nyt.com/ampthml/blogs.html")));
-  EXPECT_FALSE(IsAmpUrl(GURL("https://www.nyt.com")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://www.nyt.com")));
 
-  EXPECT_TRUE(IsAmpUrl(
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
       GURL("https://mobile.bing.com/amp/www.nyt.com/ampthml/blogs.html")));
-  EXPECT_FALSE(IsAmpUrl(GURL("https://mobile.nyt.com")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://mobile.nyt.com")));
 
-  EXPECT_TRUE(
-      IsAmpUrl(GURL("https://m.bing.com/amp/www.nyt.com/ampthml/blogs.html")));
-  EXPECT_FALSE(IsAmpUrl(GURL("https://m.nyt.com")));
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
+      GURL("https://m.bing.com/amp/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://m.nyt.com")));
 
-  EXPECT_FALSE(
-      IsAmpUrl(GURL("https://www.google.com/www.nyt.com/ampthml/blogs.html")));
-  EXPECT_FALSE(
-      IsAmpUrl(GURL("https://m.bing.com/a/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(
+      GURL("https://www.google.com/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(
+      GURL("https://m.bing.com/a/www.nyt.com/ampthml/blogs.html")));
 }
 
 }  // namespace
