@@ -55,15 +55,11 @@ async function testPopupOnScreen(popupTest, screen) {
   popup.initialScreenX = popup.screenX;
   popup.initialScreenY = popup.screenY;
 
-  // Wait for asynchronous window creation and clamped placement before checking
-  // resolved window.screenX|Y values. In practice, window.screenX|Y may change
-  // even after waiting for Window.onload and Window.requestAnimationFrame().
-  const eventWatcher = new EventWatcher(popupTest, popup, ['load']);
-  await eventWatcher.wait_for('load');
-  await new Promise(window.requestAnimationFrame);
-  await new Promise(resolve => {
-    step_timeout(resolve, 300);
-  });
+  // Await document.visibilitychange to check resolved Window.screenX|Y values
+  // after asynchronous window creation and clamped placement has occurred.
+  const visibilitychangeWatcher =
+      new EventWatcher(popupTest, popup.document, ['visibilitychange']);
+  await visibilitychangeWatcher.wait_for('visibilitychange');
   popup.document.write(`Expected: (${left}, ${top}) <br> \
        Initial: (${popup.initialScreenX}, ${popup.initialScreenY}) <br> \
        Resolved: (${popup.screenX}, ${popup.screenY}) `);
