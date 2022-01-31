@@ -241,6 +241,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathBase) {
   RunTypedTest<kMacAttributes>("ax-math-base.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXIsMultiSelectable) {
+  RunTypedTest<kMacAttributes>("ax-is-multi-selectable.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathFractionDenominator) {
   RunTypedTest<kMacAttributes>("ax-math-fraction-denominator.html");
 }

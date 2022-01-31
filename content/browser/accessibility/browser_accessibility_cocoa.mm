@@ -72,8 +72,6 @@ NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
 NSString* const NSAccessibilityHighestEditableAncestorAttribute =
     @"AXHighestEditableAncestor";
-NSString* const NSAccessibilityIsMultiSelectableAttribute =
-    @"AXIsMultiSelectable";
 NSString* const NSAccessibilityLoadingProgressAttribute = @"AXLoadingProgress";
 NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
 NSString* const
@@ -641,7 +639,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityIndexAttribute, @"index"},
       {NSAccessibilityInsertionPointLineNumberAttribute,
        @"insertionPointLineNumber"},
-      {NSAccessibilityIsMultiSelectableAttribute, @"isMultiSelectable"},
       {NSAccessibilityLanguageAttribute, @"language"},
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
       {NSAccessibilityLoadingProgressAttribute, @"loadingProgress"},
@@ -1145,12 +1142,6 @@ bool content::IsNSRange(id value) {
 
   return [[self role] isEqualToString:NSAccessibilityUnknownRole] ||
          _owner->IsInvisibleOrIgnored();
-}
-
-- (NSNumber*)isMultiSelectable {
-  if (![self instanceActive])
-    return nil;
-  return @(GetState(_owner, ax::mojom::State::kMultiselectable));
 }
 
 - (NSString*)language {

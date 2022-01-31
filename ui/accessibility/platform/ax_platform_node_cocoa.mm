@@ -1132,6 +1132,12 @@ bool IsAXSetter(SEL selector) {
   }
 }
 
+- (NSNumber*)AXIsMultiSelectable {
+  if (![self instanceActive])
+    return nil;
+  return @(_node->HasState(ax::mojom::State::kMultiselectable));
+}
+
 - (NSString*)AXPopupValue {
   if (![self instanceActive])
     return nil;
