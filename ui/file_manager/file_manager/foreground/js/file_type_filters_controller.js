@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
+import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -75,6 +77,29 @@ export class FileTypeFiltersController {
   }
 
   /**
+   * @param {chrome.fileManagerPrivate.RecentFileType} fileType File type filter
+   *     which needs to be recorded.
+   * @private
+   */
+  recordFileTypeFilterUMA_(fileType) {
+    /**
+     * Keep the order of this in sync with FileManagerRecentFilterType in
+     * tools/metrics/histograms/enums.xml.
+     * The array indices will be recorded in UMA as enum values. The index for
+     * each filter type should never be renumbered nor reused in this array.
+     */
+    const FileTypeFiltersForUMA =
+        /** @type {!Array<!chrome.fileManagerPrivate.RecentFileType>} */ ([
+          chrome.fileManagerPrivate.RecentFileType.ALL,    // 0
+          chrome.fileManagerPrivate.RecentFileType.AUDIO,  // 1
+          chrome.fileManagerPrivate.RecentFileType.IMAGE,  // 2
+          chrome.fileManagerPrivate.RecentFileType.VIDEO,  // 3
+        ]);
+    Object.freeze(FileTypeFiltersForUMA);
+    metrics.recordEnum('Recent.FilterByType', fileType, FileTypeFiltersForUMA);
+  }
+
+  /**
    * Creates filter button's UI element.
    * @param {string} label Label of the filter button.
    * @param {chrome.fileManagerPrivate.RecentFileType} fileType File type filter
@@ -100,8 +125,10 @@ export class FileTypeFiltersController {
    * @private
    */
   onCurrentDirectoryChanged_(event) {
+    const directoryChangeEvent = /** @type {!DirectoryChangeEvent} */ (event);
     // We show filter buttons only in Recents view at this moment.
-    this.container_.hidden = !(event.newDirEntry == this.recentEntry_);
+    this.container_.hidden =
+        !(directoryChangeEvent.newDirEntry == this.recentEntry_);
   }
 
   /**
@@ -110,7 +137,7 @@ export class FileTypeFiltersController {
    * @private
    */
   onFilterButtonClicked_(event) {
-    const {target} = event;
+    const target = /** @type {HTMLButtonElement} */ (event.target);
     // At least one filter button should be selected, so we don't allow user to
     // unselect a filter button by clicking it, e.g. do nothing if an active
     // filter button is clicked.
@@ -124,6 +151,7 @@ export class FileTypeFiltersController {
     // Refresh current directory with the updated Recent setting.
     // We don't need to invalidate the cached metadata for this rescan.
     this.directoryModel_.rescan(false);
+    this.recordFileTypeFilterUMA_(newFilter);
   }
 
   /**

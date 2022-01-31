@@ -792,7 +792,9 @@ js_unittest("file_transfer_controller_unittest.m") {
 js_library("file_type_filters_controller") {
   deps = [
     ":directory_model",
+    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/externs:directory_change_event",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
 }
@@ -803,7 +805,10 @@ js_unittest("file_type_filters_controller_unittest.m") {
     ":file_type_filters_controller",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:directory_change_event",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr:event_target.m",

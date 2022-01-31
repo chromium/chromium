@@ -7,8 +7,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -38,6 +40,14 @@ let myFilesEntry;
  * @type {!FileTypeFiltersController}
  */
 let fileTypeFiltersController;
+
+/**
+ * Mock metrics.
+ * @param {string} name
+ * @param {*} value
+ * @param {Array<*>|number=} opt_validValues
+ */
+metrics.recordEnum = function(name, value, opt_validValues) {};
 
 export function setUp() {
   // Mock loadTimeData strings.
@@ -87,7 +97,7 @@ export function setUp() {
       this.currentDirEntry = dirEntry;
 
       // Emit 'directory-changed' event synchronously to simplify testing.
-      const event = new Event('directory-changed');
+      const event = new DirectoryChangeEvent('directory-changed');
       event.previousDirEntry = previousDirEntry;
       event.newDirEntry = this.currentDirEntry;
       this.dispatchEvent(event);

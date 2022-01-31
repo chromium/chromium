@@ -38540,6 +38540,17 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Selection menu"/>
 </enum>
 
+<enum name="FileManagerRecentFilterType">
+  <summary>
+    The filter type for Recent view, the types here should be in sync with the
+    enumFileType from chrome/browser/chromeos/fileapi/recent_source.h.
+  </summary>
+  <int value="0" label="All"/>
+  <int value="1" label="Audio"/>
+  <int value="2" label="Images"/>
+  <int value="3" label="Videos"/>
+</enum>
+
 <enum name="FileManagerRootType">
   <int value="0" label="DOWNLOADS"/>
   <int value="1" label="ARCHIVE"/>

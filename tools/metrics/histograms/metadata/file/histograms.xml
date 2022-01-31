@@ -472,6 +472,15 @@ chromium-metrics-reviews@google.com.
   <summary>How quick view was opened.</summary>
 </histogram>
 
+<histogram name="FileBrowser.Recent.FilterByType"
+    enum="FileManagerRecentFilterType" expires_after="2022-07-20">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    This is recorded when different filter buttons in Recent view are clicked.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.Recent.LoadArcMedia" units="ms"
     expires_after="2022-04-10">
   <owner>simmonsjosh@google.com</owner>
