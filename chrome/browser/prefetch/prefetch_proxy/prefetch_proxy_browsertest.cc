@@ -769,6 +769,31 @@ class PrefetchProxyBrowserTest
     EXPECT_EQ(paths.size(), verified_url_count);
   }
 
+  // Verifies that the "Sec-Purpose" header with the expected value
+  // ("prefetch;anonymous-client-ip" for requests that go through the proxy, and
+  // "prefetch" for non-private prefetches) was included on all requests for
+  // main resources. Subresources are fetched using NSP which does not add the
+  // "Sec-Purpose" header.
+  void VerifyPrefetchRequestsSecPurposeHeader(
+      const std::set<std::string>& main_resource_paths,
+      bool are_requests_anonymous_client_ip) {
+    size_t verified_header_count = 0;
+    for (const auto& request : origin_server_requests()) {
+      const GURL& url = request.GetURL();
+      if (main_resource_paths.find(url.path()) == main_resource_paths.end()) {
+        continue;
+      }
+
+      SCOPED_TRACE(request.GetURL().spec());
+      EXPECT_EQ(request.headers.find("Sec-Purpose")->second,
+                are_requests_anonymous_client_ip
+                    ? "prefetch;anonymous-client-ip"
+                    : "prefetch");
+      verified_header_count++;
+    }
+    EXPECT_EQ(main_resource_paths.size(), verified_header_count);
+  }
+
   size_t OriginServerRequestCount() const {
     base::RunLoop().RunUntilIdle();
     return origin_server_request_count_;
@@ -823,7 +848,11 @@ class PrefetchProxyBrowserTest
 
     bool is_prefetch =
         request.headers.find("Purpose") != request.headers.end() &&
-        request.headers.find("Purpose")->second == "prefetch";
+        request.headers.find("Purpose")->second == "prefetch" &&
+        request.headers.find("Sec-Purpose") != request.headers.end() &&
+        (request.headers.find("Sec-Purpose")->second == "prefetch" ||
+         request.headers.find("Sec-Purpose")->second ==
+             "prefetch;anonymous-client-ip");
 
     if (request.relative_url == "/404_on_prefetch") {
       std::unique_ptr<net::test_server::BasicHttpResponse> resp =
@@ -1362,6 +1391,9 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   VerifyOriginRequestsAreIsolated({prefetch_url.path()});
+  VerifyPrefetchRequestsSecPurposeHeader(
+      {prefetch_url.path()},
+      /*are_requests_anonymous_client_ip=*/true);
 
   // The origin server should not have served this request.
   EXPECT_EQ(starting_origin_request_count, OriginServerRequestCount());
@@ -1428,6 +1460,14 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
       eligible_link_2.path(),
       eligible_link_3.path(),
   });
+
+  VerifyPrefetchRequestsSecPurposeHeader(
+      {
+          eligible_link_1.path(),
+          eligible_link_2.path(),
+          eligible_link_3.path(),
+      },
+      /*are_requests_anonymous_client_ip=*/true);
 
   using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
   auto expected_entries = std::vector<UkmEntry>{
@@ -2997,6 +3037,9 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
       "/prefetch/prefetch_proxy/prefetch.js",
       eligible_link.path(),
   });
+  VerifyPrefetchRequestsSecPurposeHeader(
+      {eligible_link.path()},
+      /*are_requests_anonymous_client_ip=*/true);
 
   // Verify the resource load was reported to the subresource manager.
   PrefetchProxyService* service =
@@ -4149,6 +4192,9 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
       "/prefetch/prefetch_proxy/prefetch.js",
       eligible_link.path(),
   });
+  VerifyPrefetchRequestsSecPurposeHeader(
+      {eligible_link.path()},
+      /*are_requests_anonymous_client_ip=*/true);
 
   // Verify the resource load was reported to the subresource manager.
   PrefetchProxyService* service =
@@ -4270,6 +4316,9 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   VerifyOriginRequestsAreIsolated({prefetch_url.path()});
+  VerifyPrefetchRequestsSecPurposeHeader(
+      {prefetch_url.path()},
+      /*are_requests_anonymous_client_ip=*/true);
 
   // The origin server should not have served this request.
   EXPECT_EQ(starting_origin_request_count, OriginServerRequestCount());
@@ -4702,6 +4751,10 @@ IN_PROC_BROWSER_TEST_F(
             content::GetCookies(
                 browser()->profile(), eligible_link,
                 net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+
+  VerifyPrefetchRequestsSecPurposeHeader(
+      {eligible_link.path()},
+      /*are_requests_anonymous_client_ip=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4742,7 +4795,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // The prefetch requests shouldn't use the proxy and should  go directly to
   // the origin server.
-  EXPECT_EQ(proxy_server_requests().size(), (unsigned int)0);
+  EXPECT_EQ(proxy_server_requests().size(), 0U);
 
   // The prefetch should be made using the default network context, so the
   // cookie should be present once the prefetch is complete.
@@ -4765,4 +4818,8 @@ IN_PROC_BROWSER_TEST_F(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 0, 1);
+
+  VerifyPrefetchRequestsSecPurposeHeader(
+      {eligible_link.path()},
+      /*are_requests_anonymous_client_ip=*/false);
 }

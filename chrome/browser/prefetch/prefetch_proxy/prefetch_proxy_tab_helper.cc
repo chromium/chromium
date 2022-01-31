@@ -20,6 +20,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context_client.h"
@@ -836,6 +837,11 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
   request->load_flags = net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH;
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   request->headers.SetHeader(content::kCorsExemptPurposeHeaderName, "prefetch");
+  request->headers.SetHeader(
+      prefetch::headers::kSecPurposeHeaderName,
+      prefetch_container->GetPrefetchType().IsProxyRequired()
+          ? prefetch::headers::kSecPurposePrefetchAnonymousClientIpHeaderValue
+          : prefetch::headers::kSecPurposePrefetchHeaderValue);
   // Remove the user agent header if it was set so that the network context's
   // default is used.
   request->headers.RemoveHeader("User-Agent");

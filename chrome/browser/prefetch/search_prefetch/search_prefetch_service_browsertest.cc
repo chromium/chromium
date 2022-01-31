@@ -455,7 +455,9 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
     bool is_prefetch =
         request.headers.find("Purpose") != request.headers.end() &&
-        request.headers.find("Purpose")->second == "prefetch";
+        request.headers.find("Purpose")->second == "prefetch" &&
+        request.headers.find("Sec-Purpose") != request.headers.end() &&
+        request.headers.find("Sec-Purpose")->second == "prefetch";
 
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,

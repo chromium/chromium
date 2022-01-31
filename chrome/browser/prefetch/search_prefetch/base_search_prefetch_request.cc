@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -188,6 +189,9 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       GetUserAgentValue(resource_request->headers));
   resource_request->headers.SetHeader(content::kCorsExemptPurposeHeaderName,
                                       "prefetch");
+  resource_request->headers.SetHeader(
+      prefetch::headers::kSecPurposeHeaderName,
+      prefetch::headers::kSecPurposePrefetchHeaderValue);
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAccept,
       content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
