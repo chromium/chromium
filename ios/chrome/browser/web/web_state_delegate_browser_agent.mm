@@ -15,6 +15,8 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
@@ -66,6 +68,7 @@ WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
     : web_state_list_(browser->GetWebStateList()),
       tab_insertion_agent_(tab_insertion_agent) {
   DCHECK(tab_insertion_agent_);
+  browser_ = browser;
   browser_observation_.Observe(browser);
   web_state_list_observation_.Observe(web_state_list_);
 
@@ -282,7 +285,12 @@ void WebStateDelegateBrowserAgent::ContextMenuConfiguration(
 void WebStateDelegateBrowserAgent::ContextMenuWillCommitWithAnimator(
     web::WebState* source,
     id<UIContextMenuInteractionCommitAnimating> animator) {
-  // Do nothing is the user taps on the preview.
+  GURL url_to_load = [context_menu_provider_ URLToLoad];
+  if (!url_to_load.is_valid())
+    return;
+
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(url_to_load);
+  UrlLoadingBrowserAgent::FromBrowser(browser_)->Load(params);
 }
 
 id<CRWResponderInputView> WebStateDelegateBrowserAgent::GetResponderInputView(

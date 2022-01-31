@@ -683,6 +683,38 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:1];
 }
 
+// Tests that tapping on the preview loads the page pointed by the destination
+// URL.
+- (void)testTappingOnPreview {
+  if (![ChromeEarlGrey isContextMenuInWebViewEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test for the new implementation of context menu");
+  }
+
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
+                                              base::SysUTF8ToNSString(
+                                                  destinationURL.spec())),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Verify url.
+  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
+      assertWithMatcher:grey_notNil()];
+}
+
 // Checks that JavaScript links only have the "copy" option.
 - (void)testJavaScriptLinks {
   const GURL initialURL = self.testServer->GetURL(kJavaScriptPageUrl);

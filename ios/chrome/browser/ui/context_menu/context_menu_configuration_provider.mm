@@ -99,6 +99,9 @@ const CGFloat kFaviconWidthHeight = 24;
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params {
+  // Reset the URL.
+  _URLToLoad = GURL();
+
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
   if (webState != self.currentWebState) {
@@ -135,6 +138,7 @@ const CGFloat kFaviconWidthHeight = 24;
                                            scenario:menuScenario];
 
   if (isLink) {
+    _URLToLoad = linkURL;
     base::RecordAction(
         base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
     if (web::UrlHasWebScheme(linkURL)) {
