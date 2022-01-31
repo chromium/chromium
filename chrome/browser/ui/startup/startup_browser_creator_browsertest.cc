@@ -3567,19 +3567,27 @@ class StartupBrowserCreatorInfobarsTest
       : flag_type_(std::get<0>(GetParam())), policy_(std::get<1>(GetParam())) {}
 
  protected:
-  infobars::ContentInfoBarManager* LaunchBrowserAndGetCreatedInfoBarManager(
+  std::pair<Browser*, infobars::ContentInfoBarManager*>
+  LaunchBrowserAndGetCreatedInfoBarManager(
       const base::CommandLine& command_line) {
-    Profile* profile = browser()->profile();
-    StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
-                                     chrome::startup::IsFirstRun::kNo);
-    launch.Launch(profile, chrome::startup::IsProcessStartup::kYes, nullptr);
+    BrowserAddedObserver added_observer;
 
-    // This should have created a new browser window.
-    Browser* new_browser = FindOneOtherBrowser(browser());
+    EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+        command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+        {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+
+    // Wait until the new browser window has been created. Using
+    // `FindOneOtherBrowser` is not sufficient here, because the window may be
+    // created asynchronously.
+    Browser* new_browser = added_observer.Wait();
     EXPECT_TRUE(new_browser);
 
-    return infobars::ContentInfoBarManager::FromWebContents(
-        new_browser->tab_strip_model()->GetWebContentsAt(0));
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(
+            new_browser->tab_strip_model()->GetWebContentsAt(0));
+    EXPECT_TRUE(infobar_manager);
+
+    return std::make_pair(new_browser, infobar_manager);
   }
 
   const StartupBrowserCreatorFlagTypeValue flag_type_;
@@ -3616,9 +3624,9 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest, CheckInfobar) {
   // passed to StartupBrowserCreator. In browser tests, this references the
   // browser test's instead of the new process.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
-  infobars::ContentInfoBarManager* infobar_manager =
+  auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  ASSERT_TRUE(infobar_manager);
+  EXPECT_TRUE(browser->is_type_normal());
 
   EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
             policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
@@ -3641,9 +3649,9 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
 
-  infobars::ContentInfoBarManager* infobar_manager =
+  auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  ASSERT_TRUE(infobar_manager);
+  EXPECT_TRUE(browser->is_type_app());
 
   EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
             policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
@@ -3668,9 +3676,9 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
       base::FilePath(FILE_PATH_LITERAL("title2.html")));
   command_line.AppendSwitchASCII(switches::kApp, url.spec());
 
-  infobars::ContentInfoBarManager* infobar_manager =
+  auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  ASSERT_TRUE(infobar_manager);
+  EXPECT_TRUE(browser->is_type_app());
 
   EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
             policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
@@ -3691,10 +3699,10 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   // The flag should not result in an infobar when not set on the process
   // command line via CommandLine::ForCurrentProcess.
-  command_line.AppendArg(flag_type_.flag);
-  infobars::ContentInfoBarManager* infobar_manager =
+  command_line.AppendSwitch(flag_type_.flag);
+  auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  ASSERT_TRUE(infobar_manager);
+  EXPECT_TRUE(browser->is_type_normal());
 
   EXPECT_FALSE(HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
 }
