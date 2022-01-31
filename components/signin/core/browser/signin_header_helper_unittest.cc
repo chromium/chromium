@@ -19,6 +19,7 @@
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -153,6 +154,14 @@ class SigninHeaderHelperTest : public testing::Test {
   }
 #endif
 
+  std::string consistency_enabled_by_default_value() const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    return "true";
+#else
+    return "false";
+#endif
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   bool sync_enabled_ = false;
@@ -164,6 +173,8 @@ class SigninHeaderHelperTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kLacrosNonSyncingProfiles};
   std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
       scoped_lacros_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -180,10 +191,12 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
       GURL("https://docs.google.com"), /*gaia_id=*/"",
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
-      "consistency_enabled_by_default=false");
+      "consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
   CheckMirrorCookieRequest(GURL("https://docs.google.com"), /*gaia_id=*/"",
                            "mode=0:enable_account_consistency=true:"
-                           "consistency_enabled_by_default=false");
+                           "consistency_enabled_by_default=" +
+                               consistency_enabled_by_default_value());
 }
 #else  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_ANDROID)
@@ -257,10 +270,12 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleTLD) {
       GURL("https://google.fr"), "0123456789",
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
-      "consistency_enabled_by_default=false");
+      "consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
   CheckMirrorCookieRequest(GURL("https://google.de"), "0123456789",
                            "mode=0:enable_account_consistency=true:"
-                           "consistency_enabled_by_default=false");
+                           "consistency_enabled_by_default=" +
+                               consistency_enabled_by_default_value());
 }
 
 // Tests that the Mirror request is returned when the target is the domain
@@ -271,10 +286,12 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleCom) {
       GURL("https://www.google.com"), "0123456789",
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
-      "consistency_enabled_by_default=false");
+      "consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
   CheckMirrorCookieRequest(GURL("https://www.google.com"), "0123456789",
                            "mode=0:enable_account_consistency=true:"
-                           "consistency_enabled_by_default=false");
+                           "consistency_enabled_by_default=" +
+                               consistency_enabled_by_default_value());
 }
 
 // Tests that no header sent when mirror account consistency is nor requested.
@@ -305,7 +322,8 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComProfileConsistency) {
   CheckAccountConsistencyHeaderRequest(
       request_adapter.GetFinalHeaders(), kChromeConnectedHeader,
       "source=TestSource,mode=0,enable_account_consistency=true,"
-      "consistency_enabled_by_default=false");
+      "consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
 }
 
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComSupervised) {
@@ -314,17 +332,20 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComSupervised) {
       GURL("https://www.google.com"), "0123456789",
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
-      "consistency_enabled_by_default=false");
+      "consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
   CheckMirrorHeaderRequest(
       GURL("https://www.google.com"), "0123456789",
       /*is_child_account=*/Tribool::kTrue,
       "source=TestSource,mode=0,enable_account_consistency=true,"
-      "supervised=true,consistency_enabled_by_default=false");
+      "supervised=true,consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
   CheckMirrorHeaderRequest(
       GURL("https://www.google.com"), "0123456789",
       /*is_child_account=*/Tribool::kFalse,
       "source=TestSource,mode=0,enable_account_consistency=true,"
-      "supervised=false,consistency_enabled_by_default=false");
+      "supervised=false,consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
 }
 
 // Mirror is always enabled on Android and iOS, so these tests are only relevant

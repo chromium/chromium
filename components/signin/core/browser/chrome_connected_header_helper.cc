@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -246,8 +247,19 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
       // Do not add the supervised parameter.
       break;
   }
-  parts.push_back(base::StringPrintf(
-      "%s=%s", kConsistencyEnabledByDefaultAttrName, "false"));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::string consistency_enabled_by_default =
+      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)
+          ? "true"
+          : "false";
+#else
+  std::string consistency_enabled_by_default = "false";
+#endif
+
+  parts.push_back(base::StringPrintf("%s=%s",
+                                     kConsistencyEnabledByDefaultAttrName,
+                                     consistency_enabled_by_default.c_str()));
 
   return base::JoinString(parts, is_header_request ? "," : ":");
 }
