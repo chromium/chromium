@@ -71,9 +71,6 @@ constexpr int kTitleFontSize = 16;
 // The line height of the title.
 constexpr int kTitleLineHeight = 24;
 
-// The width of the dialog.
-constexpr int kDialogWidth = 360;
-
 // The line height of the confidential content title label.
 constexpr int kConfidentialContentLineHeight = 20;
 
@@ -208,7 +205,6 @@ void AddGeneralInformation(views::View* upper_panel,
   message->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
                                      kBodyFontSize, gfx::Font::Weight::NORMAL));
   message->SetLineHeight(kBodyLineHeight);
-  message->SizeToFit(kDialogWidth);
 }
 
 // Adds icon and title pair of the |confidential_content| to the container.
@@ -243,7 +239,6 @@ void AddConfidentialContentRow(
   title->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
                                    kBodyFontSize, gfx::Font::Weight::NORMAL));
   title->SetLineHeight(kConfidentialContentLineHeight);
-  title->SizeToFit(kDialogWidth);
 }
 
 // Adds a scrollable child view to |parent| that lists the information from
@@ -262,7 +257,7 @@ void MaybeAddConfidentialContent(
   views::BoxLayout* layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, kConfidentialListInsets,
-          kBetweenChildSpacing));
+          /*between_child_spacing=*/0));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
@@ -314,7 +309,8 @@ DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  GetDialogButtonCancelLabel(options.restriction));
 
-  set_fixed_width(kDialogWidth);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_corner_radius(kDialogCornerRadius);
   set_margins(kMarginInsets);
 
