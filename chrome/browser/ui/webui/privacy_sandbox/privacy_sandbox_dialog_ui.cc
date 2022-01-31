@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -29,7 +30,17 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
 
 PrivacySandboxDialogUI::~PrivacySandboxDialogUI() = default;
 
-void PrivacySandboxDialogUI::Initialize(base::OnceClosure close_callback) {
+void PrivacySandboxDialogUI::Initialize(
+    Profile* profile,
+    base::OnceClosure close_callback,
+    PrivacySandboxService::DialogType dialog_type) {
+  std::unique_ptr<base::DictionaryValue> update =
+      std::make_unique<base::DictionaryValue>();
+  update->SetBoolean(
+      "isConsent", dialog_type == PrivacySandboxService::DialogType::kConsent);
+  content::WebUIDataSource::Update(
+      profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
+
   auto handler =
       std::make_unique<PrivacySandboxDialogHandler>(std::move(close_callback));
   web_ui()->AddMessageHandler(std::move(handler));

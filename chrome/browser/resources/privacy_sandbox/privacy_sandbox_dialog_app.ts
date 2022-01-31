@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxDialogBrowserProxy} from './privacy_sandbox_dialog_browser_proxy.js';
@@ -19,6 +21,19 @@ export class PrivacySandboxDialogAppElement extends
   static get template() {
     return html`{__html_template__}`;
   }
+
+  static get properties() {
+    return {
+      isConsent_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isConsent');
+        },
+      },
+    };
+  }
+
+  isConsent_: boolean;
 
   private onClose_() {
     PrivacySandboxDialogBrowserProxy.getInstance().closeDialog();

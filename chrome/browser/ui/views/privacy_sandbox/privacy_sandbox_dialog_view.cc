@@ -47,8 +47,6 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
       views::LayoutProvider::Get()->GetSnappedDialogWidth(kDialogWidth);
   web_view->SetPreferredSize({width, kDialogHeight});
 
-  // TODO(crbug.com/1286276): Provide dialog type to WebUI so it can present
-  // the correct content.
   PrivacySandboxDialogUI* web_ui = web_view->GetWebContents()
                                        ->GetWebUI()
                                        ->GetController()
@@ -57,7 +55,9 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   DCHECK(web_ui);
   // Unretained is fine because this outlives the inner web UI.
   web_ui->Initialize(
-      base::BindOnce(&PrivacySandboxDialogView::Close, base::Unretained(this)));
+      browser->profile(),
+      base::BindOnce(&PrivacySandboxDialogView::Close, base::Unretained(this)),
+      dialog_type);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetModalType(ui::MODAL_TYPE_WINDOW);
