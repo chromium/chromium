@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include <limits>
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
@@ -5367,6 +5368,68 @@ TEST_F(StyleEngineTest, CSSComparisonFunctionsUseCount) {
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
   ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+}
+
+TEST_F(StyleEngineTest, MathDepthOverflow) {
+  css_test_helpers::RegisterProperty(
+      GetDocument(), "--int16-max", "<integer>",
+      String::Format("%i", std::numeric_limits<int16_t>::max()), false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #parent1 {
+        math-style: compact;
+        math-depth: var(--int16-max);
+      }
+      #parent2 {
+        math-style: compact;
+        math-depth: 1;
+      }
+      #child1, #control1 {
+        math-depth: add(1);
+      }
+      #child2, #control2 {
+        math-depth: auto-add;
+      }
+      #child3 {
+        math-depth: calc(var(--int16-max) + 1);
+      }
+    </style>
+    <div id=parent1>
+      <div id=child1></div>
+      <div id=child2></div>
+      <div id=child3></div>
+    </div>
+    <div id=parent2>
+      <div id=control1></div>
+      <div id=control2></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* control1 = GetDocument().getElementById("control1");
+  Element* control2 = GetDocument().getElementById("control2");
+
+  ASSERT_TRUE(control1 && control1->GetComputedStyle());
+  ASSERT_TRUE(control2 && control2->GetComputedStyle());
+
+  EXPECT_EQ(2, control1->GetComputedStyle()->MathDepth());
+  EXPECT_EQ(2, control2->GetComputedStyle()->MathDepth());
+
+  Element* child1 = GetDocument().getElementById("child1");
+  Element* child2 = GetDocument().getElementById("child2");
+  Element* child3 = GetDocument().getElementById("child3");
+
+  ASSERT_TRUE(child1 && child1->GetComputedStyle());
+  ASSERT_TRUE(child2 && child2->GetComputedStyle());
+  ASSERT_TRUE(child3 && child3->GetComputedStyle());
+
+  EXPECT_EQ(std::numeric_limits<int16_t>::max(),
+            child1->GetComputedStyle()->MathDepth());
+  EXPECT_EQ(std::numeric_limits<int16_t>::max(),
+            child2->GetComputedStyle()->MathDepth());
+  EXPECT_EQ(std::numeric_limits<int16_t>::max(),
+            child3->GetComputedStyle()->MathDepth());
 }
 
 }  // namespace blink

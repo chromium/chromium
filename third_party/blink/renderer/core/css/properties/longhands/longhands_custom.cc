@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -4782,16 +4783,18 @@ void MathDepth::ApplyValue(StyleResolverState& state,
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 1U);
     const auto& relative_value = To<CSSPrimitiveValue>(list->Item(0));
-    state.Style()->SetMathDepth(state.ParentStyle()->MathDepth() +
-                                relative_value.GetIntValue());
+    state.Style()->SetMathDepth(base::ClampAdd(state.ParentStyle()->MathDepth(),
+                                               relative_value.GetIntValue()));
   } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kAutoAdd);
-    unsigned depth = 0;
+    int16_t depth = 0;
     if (state.ParentStyle()->MathStyle() == EMathStyle::kCompact)
       depth += 1;
-    state.Style()->SetMathDepth(state.ParentStyle()->MathDepth() + depth);
+    state.Style()->SetMathDepth(
+        base::ClampAdd(state.ParentStyle()->MathDepth(), depth));
   } else if (DynamicTo<CSSPrimitiveValue>(value)) {
-    state.Style()->SetMathDepth(To<CSSPrimitiveValue>(value).GetIntValue());
+    state.Style()->SetMathDepth(
+        ClampTo<int16_t>(To<CSSPrimitiveValue>(value).GetIntValue()));
   }
 }
 
