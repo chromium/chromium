@@ -545,14 +545,14 @@
     'modifications': {
       'CrWinAsan': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 40,
         },
       },
       'CrWinAsan(dll)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 40,
         },
@@ -564,7 +564,7 @@
       },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 40,
           'quickrun_shards': 80
@@ -577,9 +577,9 @@
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
-          'shards': 40,
+          'shards': 50,
         },
       },
       'Linux ChromiumOS MSan Tests': {
@@ -788,7 +788,7 @@
       },
       'win-asan': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 40,
         },
@@ -1138,14 +1138,14 @@
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 5,
         },
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 5,
         },
@@ -1457,7 +1457,7 @@
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 2,
         },
@@ -1898,7 +1898,7 @@
         },
       },
       'Linux ASan LSan Tests (1)': {
-        # These are slow on the ASan trybot for some reason, crbug.com/794372
+        # These are slow on the ASan trybot for some reason, crbug.com/1257927
         'swarming': {
           'shards': 6,
           'quickrun_shards': 12,
@@ -1912,7 +1912,7 @@
         },
       },
       'Linux TSan Tests': {
-        # These are slow on the TSan bots for some reason, crbug.com/794372
+        # These are slow on the TSan bots for some reason, crbug.com/1257927
         'swarming': {
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
@@ -1935,7 +1935,7 @@
         'experiment_percentage': 100,
       },
       'ToTLinuxTSan': {
-        # These are slow on the TSan bots for some reason, crbug.com/794372
+        # These are slow on the TSan bots for some reason, crbug.com/1257927
         'swarming': {
           'shards': 6,
         },
@@ -2282,27 +2282,27 @@
   'net_unittests': {
     'modifications': {
       'CrWinAsan': {
-        # TODO(crbug.com/794372): net_unittests is slow under ASan.
+        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
       },
       'CrWinAsan(dll)': {
-        # TODO(crbug.com/794372): net_unittests is slow under ASan.
+        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
       },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 16,
         },
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 8,
         }
@@ -2326,7 +2326,7 @@
         },
       },
       'ToTLinuxASan': {
-        # TODO(crbug.com/794372): net_unittests is slow under ASan.
+        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
@@ -2410,7 +2410,7 @@
         'experiment_percentage': 0,
       },
       'win-asan': {
-        # TODO(crbug.com/794372): net_unittests is slow under ASan.
+        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
@@ -3116,14 +3116,14 @@
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 4,
         },
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 2,
         },
@@ -3499,7 +3499,7 @@
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
+        # crbug.com/1257927
         'swarming': {
           'shards': 5,
         },
