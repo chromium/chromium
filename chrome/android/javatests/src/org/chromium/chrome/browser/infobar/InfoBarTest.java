@@ -263,7 +263,7 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    public void testInfoBarForGeolocationDisappearsOnBack() throws TimeoutException {
+    public void testInfoBarForPopUpDisappearsOnBack() throws TimeoutException {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         sActivityTestRule.loadUrl(HELLO_WORLD_URL);
         sActivityTestRule.loadUrl(sTestServer.getURL(POPUP_PAGE));
