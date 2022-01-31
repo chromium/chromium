@@ -38,6 +38,12 @@ static jlong JNI_PageInfoController_Init(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
 
+  // Important to use GetVisibleEntry to match what's showing in the omnibox.
+  content::NavigationEntry* nav_entry =
+      web_contents->GetController().GetVisibleEntry();
+  if (!nav_entry || nav_entry->IsInitialEntry())
+    return 0;
+
   return reinterpret_cast<intptr_t>(
       new PageInfoControllerAndroid(env, obj, web_contents));
 }
@@ -46,11 +52,8 @@ PageInfoControllerAndroid::PageInfoControllerAndroid(
     JNIEnv* env,
     jobject java_page_info_pop,
     content::WebContents* web_contents) {
-  // Important to use GetVisibleEntry to match what's showing in the omnibox.
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetVisibleEntry();
-  if (!nav_entry || nav_entry->IsInitialEntry())
-    return;
 
   url_ = nav_entry->GetURL();
   web_contents_ = web_contents;
