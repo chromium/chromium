@@ -33,7 +33,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -150,16 +149,9 @@ const NetworkContextType kNetworkContextTypes[] = {
     NetworkContextType::kOnDiskAppWithIncognitoProfile,
 };
 
-enum class ForceDiskCache {
-  kDontForce,
-  kForceEnable,
-  kForceDisable,
-};
-
 struct TestCase {
   NetworkServiceState network_service_state;
   NetworkContextType network_context_type;
-  ForceDiskCache force_disk_cache;
 };
 
 // Waits for the network connection type to be the specified value.
@@ -230,12 +222,6 @@ class NetworkContextConfigurationBrowserTest
     // the test server here.
     EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
     EXPECT_TRUE(https_server()->InitializeAndListen());
-
-    if (GetParam().force_disk_cache == ForceDiskCache::kForceEnable) {
-      feature_list_.InitAndEnableFeature(features::kDisableHttpDiskCache);
-    } else if (GetParam().force_disk_cache == ForceDiskCache::kForceDisable) {
-      feature_list_.InitAndDisableFeature(features::kDisableHttpDiskCache);
-    }
   }
 
   // Returns a cacheable response (10 hours) that is some random text.
@@ -1093,8 +1079,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, DiskCache) {
   simple_loader_helper.WaitForCallback();
 
   // The request should only succeed if there is an on-disk cache.
-  if (GetHttpCacheType() != StorageType::kDisk ||
-      base::FeatureList::IsEnabled(features::kDisableHttpDiskCache)) {
+  if (GetHttpCacheType() != StorageType::kDisk) {
     EXPECT_FALSE(simple_loader_helper.response_body());
   } else {
     DCHECK_NE(GetParam().network_service_state,
@@ -2187,29 +2172,24 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
 // Instantiates tests with a prefix indicating which NetworkContext is being
 // tested, and a suffix of "/0" if the network service is enabled, "/1" if it's
 // enabled and restarted.
-#define TEST_CASES(network_context_type, force_disk_cache)              \
-  TestCase({NetworkServiceState::kEnabled, network_context_type,        \
-            force_disk_cache}),                                         \
-      TestCase({NetworkServiceState::kRestarted, network_context_type,  \
-               force_disk_cache})
+#define TEST_CASES(network_context_type)                           \
+  TestCase({NetworkServiceState::kEnabled, network_context_type}), \
+      TestCase({NetworkServiceState::kRestarted, network_context_type})
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #define INSTANTIATE_EXTENSION_TESTS(TestFixture)                        \
   INSTANTIATE_TEST_SUITE_P(                                             \
       OnDiskApp, TestFixture,                                           \
-      ::testing::Values(TEST_CASES(NetworkContextType::kOnDiskApp,      \
-                                   ForceDiskCache::kDontForce)));       \
+      ::testing::Values(TEST_CASES(NetworkContextType::kOnDiskApp)));   \
                                                                         \
   INSTANTIATE_TEST_SUITE_P(                                             \
       InMemoryApp, TestFixture,                                         \
-      ::testing::Values(TEST_CASES(NetworkContextType::kInMemoryApp,    \
-                                   ForceDiskCache::kDontForce)));       \
+      ::testing::Values(TEST_CASES(NetworkContextType::kInMemoryApp))); \
                                                                         \
   INSTANTIATE_TEST_SUITE_P(                                             \
       OnDiskAppWithIncognitoProfile, TestFixture,                       \
       ::testing::Values(                                                \
-          TEST_CASES(NetworkContextType::kOnDiskAppWithIncognitoProfile,\
-                     ForceDiskCache::kDontForce)));
+          TEST_CASES(NetworkContextType::kOnDiskAppWithIncognitoProfile)));
 #else  // !BUILDFLAG(ENABLE_EXTENSIONS)
 #define INSTANTIATE_EXTENSION_TESTS(TestFixture)
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
@@ -2218,27 +2198,19 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
   INSTANTIATE_EXTENSION_TESTS(TestFixture)                               \
   INSTANTIATE_TEST_SUITE_P(                                              \
       SystemNetworkContext, TestFixture,                                 \
-      ::testing::Values(TEST_CASES(NetworkContextType::kSystem,          \
-                                   ForceDiskCache::kDontForce)));        \
+      ::testing::Values(TEST_CASES(NetworkContextType::kSystem)));       \
                                                                          \
   INSTANTIATE_TEST_SUITE_P(                                              \
       SafeBrowsingNetworkContext, TestFixture,                           \
-      ::testing::Values(TEST_CASES(NetworkContextType::kSafeBrowsing,    \
-                                   ForceDiskCache::kDontForce)));        \
+      ::testing::Values(TEST_CASES(NetworkContextType::kSafeBrowsing))); \
                                                                          \
   INSTANTIATE_TEST_SUITE_P(                                              \
       ProfileMainNetworkContext, TestFixture,                            \
-      ::testing::Values(TEST_CASES(NetworkContextType::kProfile,         \
-                                   ForceDiskCache::kDontForce),          \
-                        TEST_CASES(NetworkContextType::kProfile,         \
-                                   ForceDiskCache::kForceEnable),        \
-                        TEST_CASES(NetworkContextType::kProfile,         \
-                                   ForceDiskCache::kForceDisable)));     \
+      ::testing::Values(TEST_CASES(NetworkContextType::kProfile)));      \
                                                                          \
   INSTANTIATE_TEST_SUITE_P(                                              \
       IncognitoProfileMainNetworkContext, TestFixture,                   \
-      ::testing::Values(TEST_CASES(NetworkContextType::kIncognitoProfile,\
-                                   ForceDiskCache::kDontForce)))
+      ::testing::Values(TEST_CASES(NetworkContextType::kIncognitoProfile)))
 
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(NetworkContextConfigurationBrowserTest);
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
