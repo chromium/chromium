@@ -35,8 +35,11 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
     //  Once a new source of test data is established, enable
     //  the `kOmniboxPedalsTranslationConsole` feature here.
     features.push_back(omnibox::kOmniboxPedalsTranslationConsole);
+    feature_list.InitWithFeatures(features, {});
+  } else {
+    feature_list.InitWithFeatures(features,
+                                  {omnibox::kOmniboxPedalsTranslationConsole});
   }
-  feature_list.InitWithFeatures(features, {});
 
   struct TestCase {
     std::string locale;
