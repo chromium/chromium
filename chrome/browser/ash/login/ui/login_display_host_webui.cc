@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
-#include "chrome/browser/ash/first_run/drive_first_run_controller.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -513,12 +512,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
   views::FocusManager::set_arrow_key_traversal_enabled(false);
   ResetLoginWindowAndView();
 
-  // TODO(tengs): This should be refactored. See crbug.com/314934.
-  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
-    // DriveOptInController will delete itself when finished.
-    (new DriveFirstRunController(ProfileManager::GetActiveUserProfile()))
-        ->EnableOfflineMode();
-  }
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
