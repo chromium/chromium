@@ -2819,11 +2819,11 @@ int LayerTreeHostImpl::RequestedMSAASampleCount() const {
 void LayerTreeHostImpl::GetGpuRasterizationCapabilities(
     bool* gpu_rasterization_enabled,
     bool* gpu_rasterization_supported,
-    int* max_msaa_samples,
+    bool* can_use_msaa,
     bool* supports_disable_msaa) {
   *gpu_rasterization_enabled = false;
   *gpu_rasterization_supported = false;
-  *max_msaa_samples = 0;
+  *can_use_msaa = false;
   *supports_disable_msaa = false;
 
   if (settings_.gpu_rasterization_disabled)
@@ -2844,42 +2844,10 @@ void LayerTreeHostImpl::GetGpuRasterizationCapabilities(
   if (!*gpu_rasterization_enabled)
     return;
 
-  bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-
-  if (can_use_oop_rasterization_) {
-    *gpu_rasterization_supported = true;
-    *supports_disable_msaa = caps.multisample_compatibility;
-    // For OOP raster, the gpu service side will disable msaa if the
-    // requested samples are not enough.  GPU raster does this same
-    // logic below client side.
-    if (use_msaa)
-      *max_msaa_samples = RequestedMSAASampleCount();
-    return;
-  }
-
-  if (!context_provider->ContextSupport()->HasGrContextSupport())
-    return;
-
-  // Do not check GrContext above. It is lazy-created, and we only want to
-  // create it if it might be used.
-  GrDirectContext* gr_context = context_provider->GrContext();
-  *gpu_rasterization_supported = !!gr_context;
-  if (!*gpu_rasterization_supported)
-    return;
-
+  DCHECK(caps.supports_oop_raster);
+  *gpu_rasterization_supported = true;
+  *can_use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
   *supports_disable_msaa = caps.multisample_compatibility;
-  if (use_msaa) {
-    // Skia may block MSAA independently of Chrome. Query Skia for its max
-    // supported sample count. Assume gpu compositing + gpu raster for this, as
-    // that is what we are hoping to use.
-    viz::ResourceFormat tile_format = TileRasterBufferFormat(
-        settings_, layer_tree_frame_sink_->context_provider(),
-        /*use_gpu_rasterization=*/true);
-    SkColorType color_type = ResourceFormatToClosestSkColorType(
-        /*gpu_compositing=*/true, tile_format);
-    *max_msaa_samples =
-        gr_context->maxSurfaceSampleCountForColorType(color_type);
-  }
 }
 
 bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
@@ -2894,18 +2862,15 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
   if (!layer_tree_frame_sink_)
     return false;
 
-  int requested_msaa_samples = RequestedMSAASampleCount();
-  int max_msaa_samples = 0;
   bool gpu_rasterization_enabled = false;
   bool gpu_rasterization_supported = false;
+  bool can_use_msaa = false;
   bool supports_disable_msaa = false;
   GetGpuRasterizationCapabilities(&gpu_rasterization_enabled,
-                                  &gpu_rasterization_supported,
-                                  &max_msaa_samples, &supports_disable_msaa);
+                                  &gpu_rasterization_supported, &can_use_msaa,
+                                  &supports_disable_msaa);
 
   bool use_gpu = false;
-  bool can_use_msaa =
-      requested_msaa_samples > 0 && max_msaa_samples >= requested_msaa_samples;
 
   if (!gpu_rasterization_enabled) {
     if (gpu_rasterization_supported)
@@ -3489,7 +3454,7 @@ void LayerTreeHostImpl::OnMemoryPressure(
     // TODO(crbug.com/1189208): Unlocking decoded-image-tracker images causes
     // flickering in visible trees if Out-Of-Process rasterization is enabled.
 #if BUILDFLAG(IS_FUCHSIA)
-  if (use_oop_rasterization() && visible())
+  if (use_gpu_rasterization() && visible())
     return;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -3614,15 +3579,14 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
   if (use_gpu_rasterization_) {
     image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
         layer_tree_frame_sink_->worker_context_provider(),
-        can_use_oop_rasterization_,
+        /*use_transfer_cache=*/true,
         viz::ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true,
                                                 tile_format),
         settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
         paint_image_generator_client_id_, dark_mode_filter_);
 
     pending_raster_queries_ = std::make_unique<RasterQueryQueue>(
-        layer_tree_frame_sink_->worker_context_provider(),
-        can_use_oop_rasterization_);
+        layer_tree_frame_sink_->worker_context_provider());
 
   } else {
     bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
@@ -3646,7 +3610,7 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
 
   tile_manager_.SetResources(resource_pool_.get(), image_decode_cache_.get(),
                              task_graph_runner, raster_buffer_provider_.get(),
-                             use_gpu_rasterization_, use_oop_rasterization(),
+                             use_gpu_rasterization_,
                              pending_raster_queries_.get());
   tile_manager_.SetCheckerImagingForceDisabled(
       settings_.only_checker_images_with_gpu_raster && !use_gpu_rasterization_);
@@ -3678,7 +3642,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
         settings_.resource_settings.use_gpu_memory_buffer_resources,
         tile_format, settings_.max_gpu_raster_tile_size,
         settings_.unpremultiply_and_dither_low_bit_depth_tiles,
-        can_use_oop_rasterization_, pending_raster_queries_.get());
+        pending_raster_queries_.get());
   }
 
   bool use_zero_copy = settings_.use_zero_copy;
@@ -3917,15 +3881,6 @@ bool LayerTreeHostImpl::InitializeFrameSink(
       &resource_provider_, context_provider, GetTaskRunner(),
       ResourcePool::kDefaultExpirationDelay,
       settings_.disallow_non_exact_resource_reuse);
-
-  auto* context = layer_tree_frame_sink_->worker_context_provider();
-  if (context) {
-    viz::RasterContextProvider::ScopedRasterContextLock hold(context);
-    can_use_oop_rasterization_ =
-        context->ContextCapabilities().supports_oop_raster;
-  } else {
-    can_use_oop_rasterization_ = false;
-  }
 
   // Since the new context may support GPU raster or be capable of MSAA, update
   // status here. We don't need to check the return value since we are

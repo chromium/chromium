@@ -39,7 +39,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
       viz::ResourceFormat tile_format,
       const gfx::Size& max_tile_size,
       bool unpremultiply_and_dither_low_bit_depth_tiles,
-      bool enable_oop_rasterization,
       RasterQueryQueue* const pending_raster_queries,
       float raster_metric_probability = kRasterMetricProbability);
   GpuRasterBufferProvider(const GpuRasterBufferProvider&) = delete;
@@ -69,7 +68,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
   gpu::SyncToken PlaybackOnWorkerThread(
       gpu::Mailbox* mailbox,
-      GLenum texture_target,
       bool texture_is_overlay_candidate,
       const gpu::SyncToken& sync_token,
       const gfx::Size& resource_size,
@@ -129,7 +127,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
     const bool depends_on_hardware_accelerated_jpeg_candidates_;
     const bool depends_on_hardware_accelerated_webp_candidates_;
     const gpu::SyncToken before_raster_sync_token_;
-    const GLenum texture_target_;
     const bool texture_is_overlay_candidate_;
 
     gpu::Mailbox mailbox_;
@@ -143,7 +140,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   bool ShouldUnpremultiplyAndDitherResource(viz::ResourceFormat format) const;
   gpu::SyncToken PlaybackOnWorkerThreadInternal(
       gpu::Mailbox* mailbox,
-      GLenum texture_target,
       bool texture_is_overlay_candidate,
       const gpu::SyncToken& sync_token,
       const gfx::Size& resource_size,
@@ -165,7 +161,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   const bool use_gpu_memory_buffer_resources_;
   const viz::ResourceFormat tile_format_;
   const gfx::Size max_tile_size_;
-  const bool enable_oop_rasterization_;
 
   const raw_ptr<RasterQueryQueue> pending_raster_queries_;
 

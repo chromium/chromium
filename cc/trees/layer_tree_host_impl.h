@@ -596,13 +596,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void GetGpuRasterizationCapabilities(bool* gpu_rasterization_enabled,
                                        bool* gpu_rasterization_supported,
-                                       int* max_msaa_samples,
+                                       bool* can_use_msaa,
                                        bool* supports_disable_msaa);
   bool use_gpu_rasterization() const { return use_gpu_rasterization_; }
-  bool can_use_oop_rasterization() const { return can_use_oop_rasterization_; }
-  bool use_oop_rasterization() const {
-    return use_gpu_rasterization_ && can_use_oop_rasterization_;
-  }
 
   GpuRasterizationStatus gpu_rasterization_status() const {
     return gpu_rasterization_status_;
@@ -1086,7 +1082,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool need_update_gpu_rasterization_status_ = false;
   bool use_gpu_rasterization_ = false;
-  bool can_use_oop_rasterization_ = false;
   GpuRasterizationStatus gpu_rasterization_status_ =
       GpuRasterizationStatus::OFF_DEVICE;
   std::unique_ptr<RasterBufferProvider> raster_buffer_provider_;

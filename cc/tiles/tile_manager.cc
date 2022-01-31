@@ -407,7 +407,6 @@ TileManager::TileManager(
       scheduled_raster_task_limit_(scheduled_raster_task_limit),
       tile_manager_settings_(tile_manager_settings),
       use_gpu_rasterization_(false),
-      use_oop_rasterization_(false),
       all_tiles_that_need_to_be_rasterized_are_scheduled_(true),
       did_check_for_completed_tasks_since_last_schedule_tasks_(true),
       did_oom_on_last_assign_(false),
@@ -478,13 +477,11 @@ void TileManager::SetResources(ResourcePool* resource_pool,
                                TaskGraphRunner* task_graph_runner,
                                RasterBufferProvider* raster_buffer_provider,
                                bool use_gpu_rasterization,
-                               bool use_oop_rasterization,
                                RasterQueryQueue* pending_raster_queries) {
   DCHECK(!tile_task_manager_);
   DCHECK(task_graph_runner);
 
   use_gpu_rasterization_ = use_gpu_rasterization;
-  use_oop_rasterization_ = use_oop_rasterization;
   pending_raster_queries_ = pending_raster_queries;
   resource_pool_ = resource_pool;
   image_controller_.SetImageDecodeCache(image_decode_cache);
@@ -1326,10 +1323,8 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
     settings->images_to_skip = std::move(images_to_skip);
     settings->image_to_current_frame_index =
         std::move(image_id_to_current_frame_index);
-    if (use_oop_rasterization_) {
+    if (use_gpu_rasterization_) {
       settings->raster_mode = PlaybackImageProvider::RasterMode::kOop;
-    } else if (use_gpu_rasterization_) {
-      settings->raster_mode = PlaybackImageProvider::RasterMode::kGpu;
     }
   }
 

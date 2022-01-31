@@ -47,8 +47,7 @@ FakeTileManager::FakeTileManager(TileManagerClient* client,
           PaintImage::kDefaultGeneratorClientId) {
   SetResources(resource_pool, &image_decode_cache_, GetGlobalTaskGraphRunner(),
                GetGlobalRasterBufferProvider(),
-               false /* use_gpu_rasterization */,
-               false /* use_oop_rasterization */, nullptr);
+               /*use_gpu_rasterization=*/false, nullptr);
   SetTileTaskManagerForTesting(std::make_unique<FakeTileTaskManagerImpl>());
 }
 

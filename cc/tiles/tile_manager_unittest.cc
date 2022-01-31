@@ -3661,8 +3661,8 @@ TEST_F(HdrImageTileManagerTest, DecodeHdrImagesToSdrP3) {
 class TileManagerCheckRasterQueriesTest : public TileManagerTest {
  public:
   TileManagerCheckRasterQueriesTest()
-      : pending_raster_queries_(viz::TestContextProvider::CreateWorker().get(),
-                                /*oop_rasterization_enabled=*/false) {}
+      : pending_raster_queries_(
+            viz::TestContextProvider::CreateWorker().get()) {}
   ~TileManagerCheckRasterQueriesTest() override {
     // Ensure that the host impl doesn't outlive |raster_buffer_provider_|.
     TakeHostImpl();
@@ -3676,11 +3676,9 @@ class TileManagerCheckRasterQueriesTest : public TileManagerTest {
  protected:
   class MockRasterQueryQueue : public FakeRasterQueryQueue {
    public:
-    MockRasterQueryQueue(
-        viz::RasterContextProvider* const worker_context_provider,
-        bool oop_rasterization_enabled)
-        : FakeRasterQueryQueue(worker_context_provider,
-                               oop_rasterization_enabled) {}
+    explicit MockRasterQueryQueue(
+        viz::RasterContextProvider* const worker_context_provider)
+        : FakeRasterQueryQueue(worker_context_provider) {}
     MOCK_METHOD0(CheckRasterFinishedQueries, bool());
   };
 

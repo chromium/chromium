@@ -67,7 +67,6 @@ enum RasterBufferProviderType {
   RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY,
   RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY,
   RASTER_BUFFER_PROVIDER_TYPE_GPU,
-  RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR,
   RASTER_BUFFER_PROVIDER_TYPE_BITMAP
 };
 
@@ -151,49 +150,6 @@ class BlockingTestRasterTaskImpl : public TestRasterTaskImpl {
   raw_ptr<base::Lock> lock_;
 };
 
-class RasterImplementationForOOPR
-    : public gpu::raster::RasterImplementationGLES {
- public:
-  explicit RasterImplementationForOOPR(gpu::gles2::GLES2Interface* gl,
-                                       gpu::ContextSupport* support)
-      : gpu::raster::RasterImplementationGLES(gl, support) {}
-  ~RasterImplementationForOOPR() override = default;
-
-  void GetQueryObjectui64vEXT(GLuint id,
-                              GLenum pname,
-                              GLuint64* params) override {
-    // This is used for testing GL_COMMANDS_ISSUED_TIMESTAMP_QUERY, so we return
-    // the maximum that base::TimeDelta()::InMicroseconds() could return.
-    if (pname == GL_QUERY_RESULT_EXT) {
-      static_assert(std::is_same<decltype(base::TimeDelta().InMicroseconds()),
-                                 int64_t>::value,
-                    "Expected the return type of "
-                    "base::TimeDelta()::InMicroseconds() to be int64_t");
-      *params = std::numeric_limits<int64_t>::max();
-    } else {
-      NOTREACHED();
-    }
-  }
-  void BeginRasterCHROMIUM(GLuint sk_color,
-                           GLboolean needs_clear,
-                           GLuint msaa_sample_count,
-                           gpu::raster::MsaaMode msaa_mode,
-                           GLboolean can_use_lcd_text,
-                           const gfx::ColorSpace& color_space,
-                           const GLbyte* mailbox) override {}
-  void RasterCHROMIUM(const DisplayItemList* list,
-                      ImageProvider* provider,
-                      const gfx::Size& content_size,
-                      const gfx::Rect& full_raster_rect,
-                      const gfx::Rect& playback_rect,
-                      const gfx::Vector2dF& post_translate,
-                      const gfx::Vector2dF& post_scale,
-                      bool requires_clear,
-                      size_t* max_op_size_hint,
-                      bool preserve_recording = true) override {}
-  void EndRasterCHROMIUM() override {}
-};
-
 class RasterBufferProviderTest
     : public TestRasterTaskCompletionHandler,
       public testing::TestWithParam<RasterBufferProviderType> {
@@ -237,15 +193,8 @@ class RasterBufferProviderTest
         Create3dResourceProvider();
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             context_provider_.get(), worker_context_provider_.get(), false,
-            viz::RGBA_8888, gfx::Size(), true, false,
-            pending_raster_queries_.get(), 1);
-        break;
-      case RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR:
-        Create3dResourceProvider();
-        raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
-            context_provider_.get(), worker_context_provider_.get(), false,
-            viz::RGBA_8888, gfx::Size(), true, true,
-            pending_raster_queries_.get(), 1);
+            viz::RGBA_8888, gfx::Size(), true, pending_raster_queries_.get(),
+            1);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();
@@ -388,28 +337,14 @@ class RasterBufferProviderTest
     context_provider_ = viz::TestContextProvider::Create(std::move(gl_owned));
     context_provider_->BindToCurrentThread();
 
-    bool oop_rasterization_enabled = false;
-    if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR) {
-      oop_rasterization_enabled = true;
-      auto worker_gl_owned = std::make_unique<viz::TestGLES2Interface>();
-      auto worker_support_owned = std::make_unique<viz::TestContextSupport>();
-      auto worker_ri_owned = std::make_unique<RasterImplementationForOOPR>(
-          worker_gl_owned.get(), worker_support_owned.get());
-      worker_context_provider_ = base::MakeRefCounted<viz::TestContextProvider>(
-          std::move(worker_support_owned), std::move(worker_gl_owned),
-          std::move(worker_ri_owned), nullptr /* sii */,
-          true /* support_locking */);
-      worker_context_provider_->BindToCurrentThread();
-    } else {
-      worker_context_provider_ = viz::TestContextProvider::CreateWorker();
-      DCHECK(worker_context_provider_);
-    }
+    worker_context_provider_ = viz::TestContextProvider::CreateWorker();
+    DCHECK(worker_context_provider_);
 
     layer_tree_frame_sink_ = FakeLayerTreeFrameSink::Create3d();
     resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
-    pending_raster_queries_ = std::make_unique<RasterQueryQueue>(
-        worker_context_provider_.get(), oop_rasterization_enabled);
+    pending_raster_queries_ =
+        std::make_unique<RasterQueryQueue>(worker_context_provider_.get());
   }
 
   void CreateSoftwareResourceProvider() {
@@ -523,7 +458,6 @@ TEST_P(RasterBufferProviderTest, ReadyToDrawCallback) {
       array, run_loop.QuitClosure(), 0);
 
   if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU ||
-      GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR ||
       GetParam() == RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY) {
     EXPECT_TRUE(callback_id);
   }
@@ -554,7 +488,6 @@ TEST_P(RasterBufferProviderTest, ReadyToDrawCallbackNoDuplicate) {
   EXPECT_EQ(callback_id, callback_id_2);
 
   if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU ||
-      GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR ||
       GetParam() == RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY) {
     EXPECT_TRUE(callback_id);
   }
@@ -562,7 +495,6 @@ TEST_P(RasterBufferProviderTest, ReadyToDrawCallbackNoDuplicate) {
 
 TEST_P(RasterBufferProviderTest, WaitOnSyncTokenAfterReschedulingTask) {
   if (GetParam() != RASTER_BUFFER_PROVIDER_TYPE_GPU &&
-      GetParam() != RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR &&
       GetParam() != RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY) {
     return;
   }
@@ -603,8 +535,7 @@ TEST_P(RasterBufferProviderTest, WaitOnSyncTokenAfterReschedulingTask) {
 }
 
 TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
-  if (GetParam() != RASTER_BUFFER_PROVIDER_TYPE_GPU &&
-      GetParam() != RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR) {
+  if (GetParam() != RASTER_BUFFER_PROVIDER_TYPE_GPU) {
     return;
   }
 
@@ -652,9 +583,8 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
 
   // Poll the task and make sure histograms are logged.
   base::HistogramTester histogram_tester;
-  std::string duration_histogram("Renderer4.Renderer.RasterTaskTotalDuration.");
-  duration_histogram +=
-      GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR ? "Oop" : "Gpu";
+  std::string duration_histogram(
+      "Renderer4.Renderer.RasterTaskTotalDuration.Oop");
   std::string delay_histogram_all_tiles(
       "Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes.All");
   std::string delay_histogram_jpeg_tiles(
@@ -672,13 +602,13 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
   EXPECT_FALSE(has_pending_queries);
   histogram_tester.ExpectTotalCount(duration_histogram, 9);
 
-  // Only in Chrome OS with OOP-R, we should be measuring raster scheduling
-  // delay (and only for tasks that don't depend on at-raster image decodes).
+  // Only in Chrome OS, we should be measuring raster scheduling delay (and only
+  // for tasks that don't depend on at-raster image decodes).
   base::HistogramBase::Count expected_delay_histogram_all_tiles_count = 0;
   base::HistogramBase::Count expected_delay_histogram_jpeg_tiles_count = 0;
   base::HistogramBase::Count expected_delay_histogram_webp_tiles_count = 0;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR) {
+  if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU) {
     expected_delay_histogram_all_tiles_count = 5;
     expected_delay_histogram_jpeg_tiles_count = 3;
     expected_delay_histogram_webp_tiles_count = 2;
@@ -698,7 +628,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY,
                       RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY,
                       RASTER_BUFFER_PROVIDER_TYPE_GPU,
-                      RASTER_BUFFER_PROVIDER_TYPE_GPU_OOPR,
                       RASTER_BUFFER_PROVIDER_TYPE_BITMAP));
 
 }  // namespace

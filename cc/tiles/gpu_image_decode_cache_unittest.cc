@@ -3605,19 +3605,17 @@ TEST_P(GpuImageDecodeCacheTest, ClippedAndScaledDrawImageRemovesCacheEntry) {
 
 SkColorType test_color_types[] = {kN32_SkColorType, kARGB_4444_SkColorType,
                                   kRGBA_F16_SkColorType};
-bool false_array[] = {false};
-bool true_array[] = {true};
 
 INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsInProcessRaster,
     GpuImageDecodeCacheTest,
     testing::Combine(
         testing::ValuesIn(test_color_types),
-        testing::ValuesIn(false_array) /* use_transfer_cache */,
+        testing::Values(false) /* use_transfer_cache */,
         testing::Bool() /* do_yuv_decode */,
-        testing::ValuesIn(false_array) /* allow_accelerated_jpeg_decoding */,
-        testing::ValuesIn(false_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */,
+        testing::Values(false) /* allow_accelerated_jpeg_decoding */,
+        testing::Values(false) /* allow_accelerated_webp_decoding */,
+        testing::Values(false) /* advertise_accelerated_decoding */,
         testing::Bool() /* enable_clipped_image_scaling */));
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3625,12 +3623,12 @@ INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTest,
     testing::Combine(
         testing::ValuesIn(test_color_types),
-        testing::ValuesIn(true_array) /* use_transfer_cache */,
+        testing::Values(true) /* use_transfer_cache */,
         testing::Bool() /* do_yuv_decode */,
-        testing::ValuesIn(false_array) /* allow_accelerated_jpeg_decoding */,
-        testing::ValuesIn(false_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */,
-        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
+        testing::Values(false) /* allow_accelerated_jpeg_decoding */,
+        testing::Values(false) /* allow_accelerated_webp_decoding */,
+        testing::Values(false) /* advertise_accelerated_decoding */,
+        testing::Values(false) /* enable_clipped_image_scaling */));
 
 class GpuImageDecodeCacheWithAcceleratedDecodesTest
     : public GpuImageDecodeCacheTest {
@@ -3941,12 +3939,12 @@ INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheWithAcceleratedDecodesTest,
     testing::Combine(
         testing::ValuesIn(test_color_types),
-        testing::ValuesIn(true_array) /* use_transfer_cache */,
+        testing::Values(true) /* use_transfer_cache */,
         testing::Bool() /* do_yuv_decode */,
-        testing::ValuesIn(true_array) /* allow_accelerated_jpeg_decoding */,
-        testing::ValuesIn(true_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(true_array) /* advertise_accelerated_decoding */,
-        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
+        testing::Values(true) /* allow_accelerated_jpeg_decoding */,
+        testing::Values(true) /* allow_accelerated_webp_decoding */,
+        testing::Values(true) /* advertise_accelerated_decoding */,
+        testing::Values(false) /* enable_clipped_image_scaling */));
 
 class GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest
     : public GpuImageDecodeCacheWithAcceleratedDecodesTest {};
@@ -4084,12 +4082,12 @@ INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
     testing::Combine(
         testing::Values(kN32_SkColorType),
-        testing::ValuesIn(true_array) /* use_transfer_cache */,
+        testing::Values(true) /* use_transfer_cache */,
         testing::Bool() /* do_yuv_decode */,
         testing::Bool() /* allow_accelerated_jpeg_decoding */,
         testing::Bool() /* allow_accelerated_webp_decoding */,
         testing::Bool() /* advertise_accelerated_decoding */,
-        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
+        testing::Values(false) /* enable_clipped_image_scaling */));
 
 #undef EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE
 #undef EXPECT_FALSE_IF_NOT_USING_TRANSFER_CACHE

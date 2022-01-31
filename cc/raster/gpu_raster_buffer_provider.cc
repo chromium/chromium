@@ -23,14 +23,11 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/raster/raster_source.h"
-#include "cc/raster/scoped_gpu_raster.h"
-#include "cc/raster/scoped_grcontext_access.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -38,7 +35,6 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "url/gurl.h"
@@ -46,12 +42,10 @@
 namespace cc {
 namespace {
 
-static void RasterizeSourceOOP(
+static void RasterizeSource(
     const RasterSource* raster_source,
-    bool resource_has_previous_content,
     gpu::Mailbox* mailbox,
     const gpu::SyncToken& sync_token,
-    GLenum texture_target,
     bool texture_is_overlay_candidate,
     const gfx::Size& resource_size,
     viz::ResourceFormat resource_format,
@@ -117,77 +111,6 @@ static void RasterizeSourceOOP(
   // https://crbug.com/789153
 }
 
-static void RasterizeSource(
-    const RasterSource* raster_source,
-    bool resource_has_previous_content,
-    gpu::Mailbox* mailbox,
-    const gpu::SyncToken& sync_token,
-    GLenum texture_target,
-    bool texture_is_overlay_candidate,
-    const gfx::Size& resource_size,
-    viz::ResourceFormat resource_format,
-    const gfx::ColorSpace& color_space,
-    const gfx::Rect& raster_full_rect,
-    const gfx::Rect& playback_rect,
-    const gfx::AxisTransform2d& transform,
-    const RasterSource::PlaybackSettings& playback_settings,
-    viz::RasterContextProvider* context_provider,
-    const gfx::Size& max_tile_size) {
-  gpu::raster::RasterInterface* ri = context_provider->RasterInterface();
-  if (mailbox->IsZero()) {
-    auto* sii = context_provider->SharedImageInterface();
-    uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY |
-                     gpu::SHARED_IMAGE_USAGE_GLES2 |
-                     gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-    if (texture_is_overlay_candidate)
-      flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    *mailbox = sii->CreateSharedImage(
-        resource_format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  } else {
-    // Wait on the SyncToken that was created on the compositor thread after
-    // making the mailbox. This ensures that the mailbox we consume here is
-    // valid by the time the consume command executes.
-    ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  }
-  GLuint texture_id = ri->CreateAndConsumeForGpuRaster(*mailbox);
-  ri->BeginSharedImageAccessDirectCHROMIUM(
-      texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  {
-    ScopedGrContextAccess gr_context_access(context_provider);
-    SkSurface* surface;
-    sk_sp<SkColorSpace> sk_color_space = color_space.ToSkColorSpace();
-    viz::ClientResourceProvider::ScopedSkSurface scoped_surface(
-        context_provider->GrContext(), sk_color_space, texture_id,
-        texture_target, resource_size, resource_format,
-        skia::LegacyDisplayGlobals::ComputeSurfaceProps(
-            playback_settings.use_lcd_text),
-        playback_settings.msaa_sample_count);
-    surface = scoped_surface.surface();
-
-    // Allocating an SkSurface will fail after a lost context.  Pretend we
-    // rasterized, as the contents of the resource don't matter anymore.
-    if (!surface) {
-      DLOG(ERROR) << "Failed to allocate raster surface";
-      return;
-    }
-
-    SkCanvas* canvas = surface->getCanvas();
-
-    // As an optimization, inform Skia to discard when not doing partial raster.
-    if (raster_full_rect == playback_rect)
-      canvas->discard();
-
-    gfx::Size content_size = raster_source->GetContentSize(transform.scale());
-    raster_source->PlaybackToCanvas(canvas, content_size, raster_full_rect,
-                                    playback_rect, transform,
-                                    playback_settings);
-  }
-  ri->EndSharedImageAccessDirectCHROMIUM(texture_id);
-  ri->DeleteGpuRasterTexture(texture_id);
-}
-
 }  // namespace
 
 // Subclass for InUsePoolResource that holds ownership of a gpu-rastered backing
@@ -242,19 +165,16 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       depends_on_hardware_accelerated_webp_candidates_(
           depends_on_hardware_accelerated_webp_candidates),
       before_raster_sync_token_(backing->returned_sync_token),
-      texture_target_(backing->texture_target),
       texture_is_overlay_candidate_(backing->overlay_candidate),
       mailbox_(backing->mailbox) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Only do this in Chrome OS with OOP-R because:
+  // Only do this in Chrome OS because:
   //   1) We will use this timestamp to measure raster scheduling delay and we
   //      only need to collect that data to assess the impact of hardware
-  //      acceleration of image decodes which works only on Chrome OS with
-  //      OOP-R.
+  //      acceleration of image decodes which works only on Chrome OS.
   //   2) We use CLOCK_MONOTONIC in that OS to get timestamps, so we can assert
   //      certain assumptions.
-  if (client_->enable_oop_rasterization_)
-    creation_time_ = base::TimeTicks::Now();
+  creation_time_ = base::TimeTicks::Now();
 #endif
 }
 
@@ -284,8 +204,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::Playback(
   // returns another SyncToken generated on the worker thread to synchronize
   // with after the raster is complete.
   after_raster_sync_token_ = client_->PlaybackOnWorkerThread(
-      &mailbox_, texture_target_, texture_is_overlay_candidate_,
-      before_raster_sync_token_, resource_size_, resource_format_, color_space_,
+      &mailbox_, texture_is_overlay_candidate_, before_raster_sync_token_,
+      resource_size_, resource_format_, color_space_,
       resource_has_previous_content_, raster_source, raster_full_rect,
       raster_dirty_rect, new_content_id, transform, playback_settings, url,
       creation_time_, depends_on_at_raster_decodes_,
@@ -305,7 +225,6 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
     viz::ResourceFormat tile_format,
     const gfx::Size& max_tile_size,
     bool unpremultiply_and_dither_low_bit_depth_tiles,
-    bool enable_oop_rasterization,
     RasterQueryQueue* const pending_raster_queries,
     float raster_metric_probability)
     : compositor_context_provider_(compositor_context_provider),
@@ -313,7 +232,6 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
       tile_format_(tile_format),
       max_tile_size_(max_tile_size),
-      enable_oop_rasterization_(enable_oop_rasterization),
       pending_raster_queries_(pending_raster_queries),
       random_generator_(static_cast<uint32_t>(base::RandUint64())),
       bernoulli_distribution_(raster_metric_probability),
@@ -323,8 +241,7 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
   DCHECK(worker_context_provider);
 }
 
-GpuRasterBufferProvider::~GpuRasterBufferProvider() {
-}
+GpuRasterBufferProvider::~GpuRasterBufferProvider() = default;
 
 std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     const ResourcePool::InUsePoolResource& resource,
@@ -407,12 +324,10 @@ uint64_t GpuRasterBufferProvider::SetReadyToDrawCallback(
   return callback_id;
 }
 
-void GpuRasterBufferProvider::Shutdown() {
-}
+void GpuRasterBufferProvider::Shutdown() {}
 
 gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThread(
     gpu::Mailbox* mailbox,
-    GLenum texture_target,
     bool texture_is_overlay_candidate,
     const gpu::SyncToken& sync_token,
     const gfx::Size& resource_size,
@@ -436,11 +351,10 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThread(
   query.depends_on_hardware_accelerated_webp_candidates =
       depends_on_hardware_accelerated_webp_candidates;
   gpu::SyncToken raster_finished_token = PlaybackOnWorkerThreadInternal(
-      mailbox, texture_target, texture_is_overlay_candidate, sync_token,
-      resource_size, resource_format, color_space,
-      resource_has_previous_content, raster_source, raster_full_rect,
-      raster_dirty_rect, new_content_id, transform, playback_settings, url,
-      depends_on_at_raster_decodes, &query);
+      mailbox, texture_is_overlay_candidate, sync_token, resource_size,
+      resource_format, color_space, resource_has_previous_content,
+      raster_source, raster_full_rect, raster_dirty_rect, new_content_id,
+      transform, playback_settings, url, depends_on_at_raster_decodes, &query);
 
   if (query.raster_duration_query_id) {
     if (query.raster_start_query_id)
@@ -459,7 +373,6 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThread(
 
 gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
     gpu::Mailbox* mailbox,
-    GLenum texture_target,
     bool texture_is_overlay_candidate,
     const gpu::SyncToken& sync_token,
     const gfx::Size& resource_size,
@@ -493,15 +406,14 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Use a query to detect when the GPU side is ready to start issuing raster
     // work to the driver. We will use the resulting timestamp to measure raster
-    // scheduling delay. We only care about this in Chrome OS and when OOP-R is
-    // enabled because we will use this timestamp to measure raster scheduling
-    // delay and we only need to collect that data to assess the impact of
-    // hardware acceleration of image decodes which work only in Chrome OS with
-    // OOP-R. Furthermore, we don't count raster work that depends on at-raster
-    // image decodes. This is because we want the delay to always include
-    // image decoding and uploading time, and at-raster decodes should be
-    // relatively rare.
-    if (enable_oop_rasterization_ && !depends_on_at_raster_decodes) {
+    // scheduling delay. We only care about this in Chrome OS because we will
+    // use this timestamp to measure raster scheduling delay and we only need to
+    // collect that data to assess the impact of hardware acceleration of image
+    // decodes which work only in Chrome OS. Furthermore, we don't count raster
+    // work that depends on at-raster image decodes. This is because we want the
+    // delay to always include image decoding and uploading time, and at-raster
+    // decodes should be relatively rare.
+    if (!depends_on_at_raster_decodes) {
       ri->GenQueriesEXT(1, &query->raster_start_query_id);
       DCHECK_GT(query->raster_start_query_id, 0u);
       ri->QueryCounterEXT(query->raster_start_query_id,
@@ -520,21 +432,11 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
     absl::optional<base::ElapsedTimer> timer;
     if (measure_raster_metric)
       timer.emplace();
-    if (enable_oop_rasterization_) {
-      RasterizeSourceOOP(raster_source, resource_has_previous_content, mailbox,
-                         sync_token, texture_target,
-                         texture_is_overlay_candidate, resource_size,
-                         resource_format, color_space, raster_full_rect,
-                         playback_rect, transform, playback_settings,
-                         worker_context_provider_, is_using_raw_draw_);
-    } else {
-      RasterizeSource(raster_source, resource_has_previous_content, mailbox,
-                      sync_token, texture_target, texture_is_overlay_candidate,
-                      resource_size, resource_format, color_space,
-                      raster_full_rect, playback_rect, transform,
-                      playback_settings, worker_context_provider_,
-                      max_tile_size_);
-    }
+    RasterizeSource(raster_source, mailbox, sync_token,
+                    texture_is_overlay_candidate, resource_size,
+                    resource_format, color_space, raster_full_rect,
+                    playback_rect, transform, playback_settings,
+                    worker_context_provider_, is_using_raw_draw_);
     if (measure_raster_metric) {
       query->worker_raster_duration = timer->Elapsed();
       ri->EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);

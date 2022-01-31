@@ -187,7 +187,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
                     TaskGraphRunner* task_graph_runner,
                     RasterBufferProvider* raster_buffer_provider,
                     bool use_gpu_rasterization,
-                    bool use_oop_rasterization,
                     RasterQueryQueue* pending_raster_queries);
 
   // This causes any completed raster work to finalize, so that tiles get up to
@@ -458,7 +457,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   const TileManagerSettings tile_manager_settings_;
   bool use_gpu_rasterization_;
-  bool use_oop_rasterization_;
   raw_ptr<RasterQueryQueue> pending_raster_queries_ = nullptr;
 
   std::unordered_map<Tile::Id, Tile*> tiles_;
