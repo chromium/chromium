@@ -38,7 +38,8 @@ NSString* GetFocusedElementId() {
   NSString* js = @"(function() {"
                   "  return document.activeElement.id;"
                   "})();";
-  return [ChromeEarlGrey executeJavaScript:js];
+  base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
+  return result.is_string() ? base::SysUTF8ToNSString(result.GetString()) : @"";
 }
 
 // Verifies that |elementId| is the selected element in the web page.

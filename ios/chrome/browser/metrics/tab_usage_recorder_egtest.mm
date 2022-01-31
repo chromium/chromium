@@ -247,7 +247,7 @@ void SwitchToNormalMode() {
   for (NSUInteger i = 0; i < numberOfTabs; i++) {
     [ChromeEarlGrey selectTabAtIndex:i];
     // Clear the page so that we can check when page reload is complete.
-    [ChromeEarlGrey executeJavaScript:kClearPageScript];
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:kClearPageScript];
 
     [ChromeEarlGrey reload];
     [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];

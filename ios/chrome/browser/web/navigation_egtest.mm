@@ -516,7 +516,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
                      "});",
                     kNoHashChangeText, content.c_str()];
 
-  [ChromeEarlGrey executeJavaScript:script];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
 }
 
 - (void)verifyBackAndForwardAfterRedirect:(std::string)redirectLabel {

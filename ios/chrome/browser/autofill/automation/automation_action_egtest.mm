@@ -46,11 +46,12 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
   AutomationAction* action = [AutomationAction actionWithValueDictionary:dict];
   [action execute];
 
-  id result = [ChromeEarlGrey
-      executeJavaScript:
+  base::Value result = [ChromeEarlGrey
+      evaluateJavaScript:
           @"document.getElementsByName(\"name_address\")[0].value == \"John "
           @"Smith\""];
-  GREYAssert([result boolValue],
+  GREYAssertTrue(result.is_bool(), @"The output is not a boolean.");
+  GREYAssert(result.GetBool(),
              @"Click automation action did not populate the name field.");
 }
 
@@ -86,10 +87,11 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
       [AutomationAction actionWithValueDictionary:selectDict];
   [selectAction execute];
 
-  id result = [ChromeEarlGrey
-      executeJavaScript:
+  base::Value result = [ChromeEarlGrey
+      evaluateJavaScript:
           @"document.getElementsByName(\"cc_month_exp\")[0].value == \"6\""];
-  GREYAssert([result boolValue],
+  GREYAssertTrue(result.is_bool(), @"The result is not a boolean");
+  GREYAssert(result.GetBool(),
              @"Select automation action did not change the dropdown.");
 }
 

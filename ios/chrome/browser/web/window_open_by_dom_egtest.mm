@@ -90,9 +90,9 @@ id<GREYMatcher> PopupBlocker() {
 // Tests executing script that clicks a link with target="_blank".
 - (void)testLinkWithBlankTargetWithoutUserGesture {
   [ChromeEarlGrey setContentSettings:CONTENT_SETTING_BLOCK];
-  [ChromeEarlGrey
-      executeJavaScript:@"document.getElementById('"
-                        @"webScenarioWindowOpenRegularLink').click()"];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('"
+                      @"webScenarioWindowOpenRegularLink').click()"];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:PopupBlocker()];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
