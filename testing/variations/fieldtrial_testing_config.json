@@ -1,21 +1,4 @@
 {
-    "AccountPoliciesLoadedWithoutSync": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AccountPoliciesLoadedWithoutSync",
-                    "enable_features": [
-                        "AccountPoliciesLoadedWithoutSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccuracyTips": [
         {
             "platforms": [
