@@ -7613,3 +7613,6 @@ crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/br
 # Flaky test on mac.
 crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipboard/async-custom-formats-write-read.tentative.https.html [ Failure Pass ]
 crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipboard/async-custom-format-write-read.tentative.https.html [ Failure Pass ]
+
+# Sheriff 2022-01-25
+crbug.com/1289992 virtual/document-transition/document-transition/paint-order.html [ Skip ]
