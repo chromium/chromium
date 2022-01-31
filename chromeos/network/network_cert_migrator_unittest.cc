@@ -163,7 +163,7 @@ class NetworkCertMigratorTest : public testing::Test {
                           const std::string& slot_id,
                           const std::string& pkcs11_id) {
     AddService(shill_profile, kVPNStub, shill::kTypeVPN, shill::kStateIdle);
-    base::DictionaryValue provider;
+    base::Value provider(base::Value::Type::DICTIONARY);
     if (open_vpn) {
       provider.SetKey(shill::kTypeProperty,
                       base::Value(shill::kProviderOpenVpn));
