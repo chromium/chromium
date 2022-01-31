@@ -4,11 +4,17 @@
 
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 
+#import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
+#import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/web/public/deprecated/crw_web_controller_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,6 +32,9 @@
 
   // Other tab helper dependencies.
   PrerenderService* _prerenderService;
+  __weak SideSwipeController* _sideSwipeController;
+  __weak SadTabCoordinator* _sadTabCoordinator;
+  __weak DownloadManagerCoordinator* _downloadManagerCoordinator;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -33,6 +42,9 @@
                         dependencies:(TabLifecycleDependencies)dependencies {
   if (self = [super init]) {
     _prerenderService = dependencies.prerenderService;
+    _sideSwipeController = dependencies.sideSwipeController;
+    _sadTabCoordinator = dependencies.sadTabCoordinator;
+    _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
 
     // Set the delegate before any of the dependency observers, because they
     // will do delegate installation on creation.
@@ -61,6 +73,14 @@
   DCHECK(webState->IsRealized());
 
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+
+  web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
+  SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
+
+  // DownloadManagerTabHelper cannot function without its delegate.
+  DCHECK(_downloadManagerCoordinator);
+  DownloadManagerTabHelper::CreateForWebState(webState,
+                                              _downloadManagerCoordinator);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
@@ -70,6 +90,7 @@
   // Remove delegates for tab helpers which may otherwise do bad things during
   // shutdown.
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+  web_deprecated::SetSwipeRecognizerProvider(webState, nil);
 }
 
 @end

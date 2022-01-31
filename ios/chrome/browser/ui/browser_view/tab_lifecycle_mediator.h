@@ -9,10 +9,16 @@
 
 #import "ios/chrome/browser/ui/browser_view/common_tab_helper_delegate.h"
 
+@class DownloadManagerCoordinator;
 class PrerenderService;
+@class SadTabCoordinator;
+@class SideSwipeController;
 class WebStateList;
 
 typedef struct {
+  SideSwipeController* sideSwipeController;
+  SadTabCoordinator* sadTabCoordinator;
+  DownloadManagerCoordinator* downloadManagerCoordinator;
   PrerenderService* prerenderService;
 } TabLifecycleDependencies;
 

@@ -584,6 +584,10 @@
   TabLifecycleDependencies dependencies;
   dependencies.prerenderService =
       PrerenderServiceFactory::GetForBrowserState(browserState);
+  dependencies.sideSwipeController = browserViewController.sideSwipeController;
+  dependencies.sadTabCoordinator = browserViewController.sadTabCoordinator;
+  dependencies.downloadManagerCoordinator =
+      browserViewController.downloadManagerCoordinator;
 
   self.tabLifecycleMediator = [[TabLifecycleMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()

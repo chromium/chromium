@@ -199,6 +199,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
     [viewController.delegate
         downloadManagerViewControllerDidStartDownload:viewController];
 
+    [coordinator_ stop];
     // Destroy coordinator before destroying the download task.
     coordinator_ = nil;
   }

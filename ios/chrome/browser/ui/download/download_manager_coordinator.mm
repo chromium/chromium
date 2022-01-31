@@ -175,6 +175,8 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   DownloadManagerMediator _mediator;
   StoreKitCoordinator* _storeKitCoordinator;
   UnopenedDownloadsTracker _unopenedDownloads;
+  // YES after _stop has been called.
+  BOOL _stopped;
 }
 @end
 
@@ -186,8 +188,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 @synthesize bottomMarginHeightAnchor = _bottomMarginHeightAnchor;
 
 - (void)dealloc {
-  [self stop];
-  [[InstallationNotifier sharedInstance] unregisterForNotifications:self];
+  DCHECK(_stopped);
 }
 
 - (void)start {
@@ -226,6 +227,9 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
   [_storeKitCoordinator stop];
   _storeKitCoordinator = nil;
+
+  [[InstallationNotifier sharedInstance] unregisterForNotifications:self];
+  _stopped = YES;
 }
 
 - (UIViewController*)viewController {

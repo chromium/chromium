@@ -32,7 +32,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
@@ -171,7 +170,6 @@
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
-#import "ios/web/public/deprecated/crw_web_controller_util.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -347,6 +345,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   AlertCoordinator* _alertCoordinatorForNetExport;
 
   // Coordinator for displaying Sad Tab.
+  // TODO(crbug.com/1272494): Move SadTabCoordinator to BrowserCoordinator.
   SadTabCoordinator* _sadTabCoordinator;
 
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
@@ -364,6 +363,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 
   // Coordinator for the Download Manager UI.
+  // TODO(crbug.com/1272495): Move DownloadManagerCoordinator to
+  // BrowserCoordinator.
   DownloadManagerCoordinator* _downloadManagerCoordinator;
 
   // A map associating webStates with their NTP coordinators.
@@ -411,8 +412,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     BrowserContainerViewController* browserContainerViewController;
 // Invisible button used to dismiss the keyboard.
 @property(nonatomic, strong) UIButton* typingShield;
-// The browser's side swipe controller.  Lazily instantiated on the first call.
-@property(nonatomic, strong, readonly) SideSwipeController* sideSwipeController;
 // The object that manages keyboard commands on behalf of the BVC.
 @property(nonatomic, strong, readonly) KeyCommandsProvider* keyCommandsProvider;
 // Whether the controller's view is currently available.
@@ -666,6 +665,38 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self updateOverlayContainerOrder];
 }
 
+#pragma mark - Delegates Category Properties
+
+// Lazily creates the SideSwipeController on first access.
+- (SideSwipeController*)sideSwipeController {
+  if (!_sideSwipeController) {
+    _sideSwipeController =
+        [[SideSwipeController alloc] initWithBrowser:self.browser];
+    [_sideSwipeController setSnapshotDelegate:self];
+    _sideSwipeController.toolbarInteractionHandler = self.toolbarInterface;
+    _sideSwipeController.primaryToolbarSnapshotProvider =
+        self.primaryToolbarCoordinator;
+    _sideSwipeController.secondaryToolbarSnapshotProvider =
+        self.secondaryToolbarCoordinator;
+    [_sideSwipeController setSwipeDelegate:self];
+    if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+      [_sideSwipeController setTabStripDelegate:self.legacyTabStripCoordinator];
+    }
+  }
+  return _sideSwipeController;
+}
+
+// TODO(crbug.com/1272494): Move SadTabCoordinator to BrowserCoordinator.
+- (SadTabCoordinator*)sadTabCoordinator {
+  return _sadTabCoordinator;
+}
+
+// TODO(crbug.com/1272495): Move DownloadManagerCoordinator to
+// BrowserCoordinator.
+- (DownloadManagerCoordinator*)downloadManagerCoordinator {
+  return _downloadManagerCoordinator;
+}
+
 #pragma mark - Private Properties
 
 - (void)ensureBrowserViewHiderCoordinatorStarted {
@@ -687,24 +718,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [panHandler addAnimatee:browserViewHiderCoordinator.animatee];
   browserViewHiderCoordinator.panGestureHandler = panHandler;
   self.browserViewHiderCoordinator = browserViewHiderCoordinator;
-}
-
-- (SideSwipeController*)sideSwipeController {
-  if (!_sideSwipeController) {
-    _sideSwipeController =
-        [[SideSwipeController alloc] initWithBrowser:self.browser];
-    [_sideSwipeController setSnapshotDelegate:self];
-    _sideSwipeController.toolbarInteractionHandler = self.toolbarInterface;
-    _sideSwipeController.primaryToolbarSnapshotProvider =
-        self.primaryToolbarCoordinator;
-    _sideSwipeController.secondaryToolbarSnapshotProvider =
-        self.secondaryToolbarCoordinator;
-    [_sideSwipeController setSwipeDelegate:self];
-    if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-      [_sideSwipeController setTabStripDelegate:self.legacyTabStripCoordinator];
-    }
-  }
-  return _sideSwipeController;
 }
 
 - (KeyCommandsProvider*)keyCommandsProvider {
@@ -1778,6 +1791,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (self.currentWebState) {
     self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
   }
+
+  // TODO(crbug.com/1272494): Move SadTabCoordinator to BrowserCoordinator.
+  _sadTabCoordinator = [[SadTabCoordinator alloc]
+      initWithBaseViewController:self.browserContainerViewController
+                         browser:self.browser];
+  _sadTabCoordinator.overscrollDelegate = self;
 }
 
 // On iOS7, iPad should match iOS6 status bar.  Install a simple black bar under
@@ -2116,14 +2135,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
 
-  _sadTabCoordinator = [[SadTabCoordinator alloc]
-      initWithBaseViewController:self.browserContainerViewController
-                         browser:self.browser];
-  _sadTabCoordinator.overscrollDelegate = self;
-
   // If there are any existing SadTabHelpers in
   // |self.browser->GetWebStateList()|, update the helpers delegate with the new
   // |_sadTabCoordinator|.
+  // TODO(crbug.com/1272496) : Move this update into TabLifecycleMediator.
   DCHECK(_sadTabCoordinator);
   WebStateList* webStateList = self.browser->GetWebStateList();
   for (int i = 0; i < webStateList->count(); i++) {
@@ -2603,16 +2618,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(self);
   }
 
-  web_deprecated::SetSwipeRecognizerProvider(webState,
-                                             self.sideSwipeController);
-  SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
   NetExportTabHelper::CreateForWebState(webState, self);
   CaptivePortalTabHelper::CreateForWebState(webState, self);
-
-  // DownloadManagerTabHelper cannot function without delegate.
-  DCHECK(_downloadManagerCoordinator);
-  DownloadManagerTabHelper::CreateForWebState(webState,
-                                              _downloadManagerCoordinator);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
 
@@ -2632,7 +2639,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!webState->IsRealized())
     return;
 
-  // TODO(crbug.com/1069763): do not pass the browser to PasswordTabHelper.
   if (PasswordTabHelper* passwordTabHelper =
           PasswordTabHelper::FromWebState(webState)) {
     passwordTabHelper->SetBaseViewController(nil);
@@ -2644,7 +2650,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
   }
 
-  web_deprecated::SetSwipeRecognizerProvider(webState, nil);
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
               self.browserState)) {

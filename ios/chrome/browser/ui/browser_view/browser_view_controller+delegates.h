@@ -8,13 +8,27 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/common_tab_helper_delegate.h"
 
-// Category on BrowserViewController that
-// declares the BVC's conformance to several tab helper delegate protocols
+@class DownloadManagerCoordinator;
+@class SadTabCoordinator;
+@class SideSwipeController;
+
+// Category on BrowserViewController that that exposes some internal controllers
+// and coordinators that are used to set up tab helper delegates. This category
+// also declares the BVC's conformance to several tab helper delegate protocols
 // (enumerated in common_tab_helper_delegate.h) which are used to set up tab
 // helpers. This category is scaffolding for refactoring these delegate
 // responsibilities out of the BVC; its use should be limited, and the goal is
 // to remove properties and protocols from it (and from the BVC).
 @interface BrowserViewController (Delegates) <CommonTabHelperDelegate>
+
+@property(nonatomic, strong, readonly) SideSwipeController* sideSwipeController;
+
+// TODO(crbug.com/1272494): Move this to BrowserCoordinator.
+@property(nonatomic, strong, readonly) SadTabCoordinator* sadTabCoordinator;
+
+// TODO(crbug.com/1272495): Move this to BrowserCoordinator.
+@property(nonatomic, strong, readonly)
+    DownloadManagerCoordinator* downloadManagerCoordinator;
 
 @end
 
