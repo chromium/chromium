@@ -5,6 +5,7 @@
 package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.input.InputManager;
@@ -47,6 +48,13 @@ public final class ApiHelperForR {
      */
     public static VerifiedInputEvent verifyInputEvent(InputManager manager, InputEvent inputEvent) {
         return manager.verifyInputEvent(inputEvent);
+    }
+
+    /**
+     * See {@link android.app.ActivityManager#setProcessStateSummary(byte[])}
+     */
+    public static void setProcessStateSummary(ActivityManager am, byte[] bytes) {
+        am.setProcessStateSummary(bytes);
     }
 
     /**

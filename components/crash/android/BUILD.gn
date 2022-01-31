@@ -56,9 +56,14 @@ java_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/crash/LogcatCrashExtractorTest.java",
+    "junit/src/org/chromium/components/crash/anr/AnrCollectorTest.java",
   ]
   deps = [
+    ":anr_collector_java",
+    ":anr_data_proto_java",
     ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
@@ -111,4 +116,26 @@ static_library("crashpad_main") {
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/handler",
   ]
+}
+
+source_set("anr_skipped_reason") {
+  sources = [ "anr_skipped_reason.h" ]
+}
+java_cpp_enum("anr_skipped_reason_enum") {
+  sources = [ "anr_skipped_reason.h" ]
+}
+
+proto_java_library("anr_data_proto_java") {
+  proto_path = "."
+  sources = [ "anr_data.proto" ]
+}
+
+android_library("anr_collector_java") {
+  deps = [
+    ":anr_data_proto_java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  srcjar_deps = [ ":anr_skipped_reason_enum" ]
+  sources = [ "java/src/org/chromium/components/crash/anr/AnrCollector.java" ]
 }

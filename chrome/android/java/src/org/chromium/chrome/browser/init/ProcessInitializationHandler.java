@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.init;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -22,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -93,6 +95,9 @@ import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.version_info.Channel;
+import org.chromium.components.version_info.VersionConstants;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.viz.common.VizSwitches;
 import org.chromium.components.viz.common.display.DeJellyUtils;
 import org.chromium.components.webapps.AppBannerManager;
@@ -189,6 +194,21 @@ public class ProcessInitializationHandler {
         // default AccountManagerDelegate.
         AccountManagerFacadeProvider.setInstance(
                 new AccountManagerFacadeImpl(AppHooks.get().createAccountManagerDelegate()));
+
+        // For ANR uploading - we set the version number so that when we ask Android for our ANRs,
+        // it can also give us the version it happened on. This helps in the case that before we can
+        // report the ANR, our app gets updated.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ActivityManager am =
+                    (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
+                            Context.ACTIVITY_SERVICE);
+            // We can only do 128 bytes in ProcessStateSummary, so only storing the most important
+            // thing that could change between the ANR happening and upload (when the rest of the
+            // metadata is gathered) - the version number. Other fields either won't change (eg.
+            // which channel) or don't matter as much (eg. what experiments are running).
+            String productVersion = VersionInfo.getProductVersion();
+            ApiHelperForR.setProcessStateSummary(am, productVersion.getBytes());
+        }
 
         // De-jelly can also be controlled by a system property. As sandboxed processes can't
         // read this property directly, convert it to the equivalent command line flag.
@@ -531,6 +551,12 @@ public class ProcessInitializationHandler {
                         new CrashFileManager(ContextUtils.getApplicationContext().getCacheDir());
                 crashFileManager.cleanOutAllNonFreshMinidumpFiles();
 
+                // Restricting ANR collection to Canary until we are totally happy with it.
+                // ANR collection is only available on R+.
+                if (VersionConstants.CHANNEL == Channel.CANARY
+                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    crashFileManager.collectAndWriteAnrs();
+                }
                 // Next, identify any minidumps that lack logcat output, and are too old to add
                 // logcat output to. Mark these as ready for upload. If there is a fresh minidump
                 // that still needs logcat output to be attached, stash it for now.

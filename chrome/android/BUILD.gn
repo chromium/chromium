@@ -1061,6 +1061,7 @@ junit_binary("chrome_junit_tests") {
     "//components/commerce/core:proto_java",
     "//components/content_capture/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/crash/android:junit",
     "//components/dom_distiller/core/android:dom_distiller_core_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:context_menu_java",

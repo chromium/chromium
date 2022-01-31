@@ -2838,6 +2838,12 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="Review"/>
 </enum>
 
+<enum name="AnrSkippedReason">
+  <int value="0" label="Filesystem Read Failure"/>
+  <int value="1" label="Filesystem Write Failure"/>
+  <int value="2" label="Missing Version"/>
+</enum>
+
 <enum name="AntiVirusMetricsProviderResult">
   <int value="0" label="RESULT_SUCCESS"/>
   <int value="1" label="RESULT_GENERIC_FAILURE"/>

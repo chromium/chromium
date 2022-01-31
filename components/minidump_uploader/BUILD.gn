@@ -17,6 +17,9 @@ static_library("minidump_uploader") {
   deps = [
     ":minidump_uploader_jni_headers",
     "//base",
+    "//components/crash/android:anr_skipped_reason",
+    "//components/version_info",
+    "//components/version_info/android:channel_getter",
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/handler",
     "//third_party/crashpad/crashpad/snapshot",
@@ -28,6 +31,7 @@ static_library("minidump_uploader") {
 android_library("minidump_uploader_java") {
   deps = [
     "//base:base_java",
+    "//components/crash/android:anr_collector_java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

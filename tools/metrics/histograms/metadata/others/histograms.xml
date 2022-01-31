@@ -3778,6 +3778,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Crashpad.AnrUpload.Skipped" enum="AnrSkippedReason"
+    expires_after="2022-06-15">
+  <owner>smaier@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>The reason that an ANR upload was skipped.</summary>
+</histogram>
+
 <histogram name="Crashpad.CrashReportPending" enum="CrashpadReportPending"
     expires_after="M85">
   <owner>jperaza@chromium.org</owner>
