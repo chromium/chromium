@@ -3176,6 +3176,7 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-014.https.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-content/quotes-030.html [ Failure ]
