@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3"
+<histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3{Phase}"
     units="janks" expires_after="2022-09-05">
 <!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
 
@@ -388,12 +388,16 @@ chromium-metrics-reviews@google.com.
     in that it doesn't start recording until the first 30 seconds window *after*
     the main message loop first reached idle. This avoids considering all tasks
     queued during startup as janky and makes for a more accurate ongoing jank
-    metric.
+    metric. {Phase}
   </summary>
+  <token key="Phase">
+    <variant name=""/>
+    <variant name=".Initial" summary="The first interval after OnFirstIdle()."/>
+    <variant name=".Periodic" summary="All intervals but .Initial"/>
+  </token>
 </histogram>
 
-<histogram
-    name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds{JankyIntervalsPerThirtySeconds}"
+<histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds{Phase}"
     units="janks" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
@@ -422,16 +426,15 @@ chromium-metrics-reviews@google.com.
     It only measures jankiness as individual tasks taking a long time to run.
     Given that it's a long-standing bug, this metric will not be modified. We
     are testing a new metric
-    Browser.Responsiveness.JankyIntervalsPerThirtySeconds2 that correctly
+    Browser.Responsiveness.JankyIntervalsPerThirtySeconds3 that correctly
     accounts for queueing time. See
     https://groups.google.com/a/google.com/forum/#!topic/chrome-scheduler/X32gKl6fW2A
     for more details.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
-    {JankyIntervalsPerThirtySeconds}
+    change its semantics or retire it without talking to them first. {Phase}
   </summary>
-  <token key="JankyIntervalsPerThirtySeconds">
+  <token key="Phase">
     <variant name=""/>
     <variant name=".Initial"
         summary="The first 30 seconds interval after the message loop starts."/>
