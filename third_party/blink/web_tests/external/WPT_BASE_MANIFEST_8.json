@@ -230386,7 +230386,7 @@
       []
      ],
      "echo-ua-client-hints-received.py": [
-      "ea295ab210ab793e03e7c311578f958a59dd12c0",
+      "124932276f2bd32fce0dd52113b948427b8d99a5",
       []
      ],
      "expect-client-hints-headers-iframe.py": [
@@ -338662,6 +338662,20 @@
        {}
       ]
      ],
+     "navigate-from-initial-about-blank-src.html": [
+      "83cd77678a544f7356a283911aa17931a1e40350",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigate-from-initial-about-blank.html": [
+      "fd163ddf8ceb26ae705dc0be254e4921fedf6880",
+      [
+       null,
+       {}
+      ]
+     ],
      "navigate-history-state-replace.html": [
       "b4b9559fb56cb782941210eefbaef379afdb7e5a",
       [
@@ -347181,7 +347195,7 @@
      ]
     ],
     "sec-ch-quotes.https.html": [
-     "6a15b07276abec365acaa46ee26773bad4d0f08e",
+     "9d822df2d80110a1c150764d4cd44127dcd9d155",
      [
       null,
       {}
@@ -455522,7 +455536,7 @@
         ]
        ],
        "cloning-steps.html": [
-        "52cd57705e4b998e1f7a002206f923a2ee801b84",
+        "fe468509e843f6880ac77575fb1915321b22c1a0",
         [
          null,
          {}

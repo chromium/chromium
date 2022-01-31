@@ -3426,7 +3426,6 @@ crbug.com/626703 [ Mac10.15 ] virtual/split-http-cache/external/wpt/signed-excha
 crbug.com/626703 [ Mac10.15 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/CaretPosition-001.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/css/css-animations/computed-style-animation-parsing.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/css/css-backgrounds/background-repeat/background-repeat-space.xht [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/046.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/049.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/139.html [ Timeout ]
