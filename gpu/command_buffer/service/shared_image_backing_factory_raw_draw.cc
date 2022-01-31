@@ -157,6 +157,9 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
       cc::PlaybackParams playback_params(nullptr, SkM44());
       paint_op_buffer_->Playback(surface->getCanvas(), playback_params);
     }
+
+    surface->flush();
+
     return true;
   }
 
