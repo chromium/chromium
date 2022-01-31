@@ -983,14 +983,16 @@ Status WebViewImpl::PrintToPDF(const base::DictionaryValue& params,
 }
 
 Status WebViewImpl::GetNodeIdByElement(const std::string& frame,
-                                       const base::DictionaryValue& element,
+                                       const base::Value& element,
                                        int* node_id) {
+  if (!element.is_dict())
+    return Status(kUnknownError, "'element' is not a dictionary");
   int context_id;
   Status status = GetContextIdForFrame(this, frame, &context_id);
   if (status.IsError())
     return status;
   base::ListValue args;
-  args.Append(element.CreateDeepCopy());
+  args.Append(element.Clone());
   bool found_node;
   status = internal::GetNodeIdFromFunction(
       client_.get(), context_id, "function(element) { return element; }", args,
@@ -1003,9 +1005,11 @@ Status WebViewImpl::GetNodeIdByElement(const std::string& frame,
 }
 
 Status WebViewImpl::SetFileInputFiles(const std::string& frame,
-                                      const base::DictionaryValue& element,
+                                      const base::Value& element,
                                       const std::vector<base::FilePath>& files,
                                       const bool append) {
+  if (!element.is_dict())
+    return Status(kUnknownError, "'element' is not a dictionary");
   WebViewImpl* target = GetTargetForFrame(this, frame);
   if (target != nullptr && target != this) {
     if (target->IsDetached())

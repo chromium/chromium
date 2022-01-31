@@ -612,8 +612,8 @@ Status ExecuteSendKeysToElement(Session* session,
       return Status(kInvalidArgument,
                     "the element can not hold multiple files");
 
-    std::unique_ptr<base::DictionaryValue> element(CreateElement(element_id));
-    return web_view->SetFileInputFiles(session->GetCurrentFrameId(), *element,
+    base::Value element = CreateElement(element_id);
+    return web_view->SetFileInputFiles(session->GetCurrentFrameId(), element,
                                        paths, multiple);
   } else if (session->w3c_compliant && is_input && is_nontypeable) {
     // Special handling for non-typeable inputs is only included in W3C Spec

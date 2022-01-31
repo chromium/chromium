@@ -159,7 +159,7 @@ class WebViewImpl : public WebView {
   Status PrintToPDF(const base::DictionaryValue& params,
                     std::string* pdf) override;
   Status SetFileInputFiles(const std::string& frame,
-                           const base::DictionaryValue& element,
+                           const base::Value& element,
                            const std::vector<base::FilePath>& files,
                            const bool append) override;
   Status TakeHeapSnapshot(std::unique_ptr<base::Value>* snapshot) override;
@@ -174,7 +174,7 @@ class WebViewImpl : public WebView {
                                  int xoffset,
                                  int yoffset) override;
   Status GetNodeIdByElement(const std::string& frame,
-                            const base::DictionaryValue& element,
+                            const base::Value& element,
                             int* node_id) override;
 
   bool IsNonBlocking() const override;

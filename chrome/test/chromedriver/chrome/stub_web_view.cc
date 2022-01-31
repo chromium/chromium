@@ -227,7 +227,7 @@ Status StubWebView::PrintToPDF(const base::DictionaryValue& params,
 }
 
 Status StubWebView::SetFileInputFiles(const std::string& frame,
-                                      const base::DictionaryValue& element,
+                                      const base::Value& element,
                                       const std::vector<base::FilePath>& files,
                                       const bool append) {
   return Status(kOk);
@@ -282,7 +282,7 @@ std::unique_ptr<base::Value> StubWebView::GetCastIssueMessage() {
 void StubWebView::SetFrame(const std::string& new_frame_id) {}
 
 Status StubWebView::GetNodeIdByElement(const std::string& frame,
-                                       const base::DictionaryValue& element,
+                                       const base::Value& element,
                                        int* node_id) {
   return Status(kOk);
 }

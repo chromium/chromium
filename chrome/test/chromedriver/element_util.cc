@@ -334,21 +334,18 @@ Status CheckElement(const std::string& element_id) {
   return Status(kOk);
 }
 
-std::unique_ptr<base::DictionaryValue> CreateElementCommon(
-    const std::string& key,
-    const std::string& value) {
-  std::unique_ptr<base::DictionaryValue> element(new base::DictionaryValue());
-  element->SetString(key, value);
+base::Value CreateElementCommon(const std::string& key,
+                                const std::string& value) {
+  base::Value element(base::Value::Type::DICTIONARY);
+  element.SetStringPath(key, value);
   return element;
 }
 
-std::unique_ptr<base::DictionaryValue> CreateElement(
-    const std::string& element_id) {
+base::Value CreateElement(const std::string& element_id) {
   return CreateElementCommon(GetElementKey(), element_id);
 }
 
-std::unique_ptr<base::DictionaryValue> CreateShadowRoot(
-    const std::string& shadow_root_id) {
+base::Value CreateShadowRoot(const std::string& shadow_root_id) {
   return CreateElementCommon(kShadowRootKey, shadow_root_id);
 }
 
@@ -515,8 +512,8 @@ Status IsElementFocused(
   status = GetActiveElement(session, web_view, &result);
   if (status.IsError())
     return status;
-  std::unique_ptr<base::Value> element_dict(CreateElement(element_id));
-  *is_focused = *result == *element_dict;
+  base::Value element_dict = CreateElement(element_id);
+  *is_focused = *result == element_dict;
   return Status(kOk);
 }
 
@@ -995,8 +992,8 @@ Status GetAXNodeByElementId(Session* session,
     return status;
 
   int node_id;
-  std::unique_ptr<base::DictionaryValue> element(CreateElement(element_id));
-  status = web_view->GetNodeIdByElement(session->GetCurrentFrameId(), *element,
+  base::Value element(CreateElement(element_id));
+  status = web_view->GetNodeIdByElement(session->GetCurrentFrameId(), element,
                                         &node_id);
 
   if (status.IsError())

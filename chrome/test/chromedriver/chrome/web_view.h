@@ -239,7 +239,7 @@ class WebView {
   // Set files in a file input element.
   // |element| is the WebElement JSON Object of the input element.
   virtual Status SetFileInputFiles(const std::string& frame,
-                                   const base::DictionaryValue& element,
+                                   const base::Value& element,
                                    const std::vector<base::FilePath>& files,
                                    const bool append) = 0;
 
@@ -280,7 +280,7 @@ class WebView {
   virtual void SetFrame(const std::string& new_frame_id) = 0;
 
   virtual Status GetNodeIdByElement(const std::string& frame,
-                                    const base::DictionaryValue& element,
+                                    const base::Value& element,
                                     int* node_id) = 0;
 };
 

@@ -111,7 +111,7 @@ class StubWebView : public WebView {
   Status PrintToPDF(const base::DictionaryValue& params,
                     std::string* pdf) override;
   Status SetFileInputFiles(const std::string& frame,
-                           const base::DictionaryValue& element,
+                           const base::Value& element,
                            const std::vector<base::FilePath>& files,
                            const bool append) override;
   Status TakeHeapSnapshot(std::unique_ptr<base::Value>* snapshot) override;
@@ -132,7 +132,7 @@ class StubWebView : public WebView {
   std::unique_ptr<base::Value> GetCastIssueMessage() override;
   void SetFrame(const std::string& new_frame_id) override;
   Status GetNodeIdByElement(const std::string& frame,
-                            const base::DictionaryValue& element,
+                            const base::Value& element,
                             int* node_id) override;
 
  private:
