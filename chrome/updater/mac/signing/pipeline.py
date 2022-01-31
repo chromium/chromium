@@ -80,7 +80,7 @@ def _package_dmg(paths, config):
         '--copy',
         '{}:/'.format(app_path),
         '--copy',
-        '{}/chrome/updater/.install:/'.format(paths.input),
+        '{}/chrome/updater/.install:/.keystone_install'.format(paths.input),
     ]
     commands.run_command(pkg_dmg)
     return dmg_path
