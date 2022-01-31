@@ -15,6 +15,7 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
   Back/forward cache
@@ -49,6 +50,7 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
   Back/forward cache
@@ -83,6 +85,7 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
   Back/forward cache
@@ -117,6 +120,7 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
   Back/forward cache
