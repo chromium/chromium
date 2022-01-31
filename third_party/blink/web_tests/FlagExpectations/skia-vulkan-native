@@ -14,6 +14,7 @@ crbug.com/1009718 images/huge-image-viewport-scale.html [ Skip ]
 # Need Intel and NVIDIA specific baselines.
 crbug.com/1243824 compositing/masks/mask-with-added-filters.html [ Skip ]
 crbug.com/1243824 compositing/masks/mask-with-removed-filters.html [ Skip ]
+crbug.com/1243824 images/yuv-decode-eligible/color-profile-filter.html [ Skip ]
 
 # Flakily crashing.
 crbug.com/1245420 compositing/geometry/vertical-scroll-composited.html [ Crash Pass ]
@@ -32,6 +33,7 @@ crbug.com/1245420 virtual/android/fullscreen/model/fully-exit-fullscreen-single.
 # Flakily producing a slightly different but visually identical image.
 crbug.com/1245445 images/color-profile-image-canvas-pattern.html [ Failure Pass ]
 crbug.com/1245445 images/color-profile-mask-image-svg.html [ Failure Pass ]
+crbug.com/1245445 images/color-profile-object.html [ Failure Pass ]
 
 # Flakily timing out.
 crbug.com/1245752 css3/blending/background-blend-mode-crossfade-image-gradient.html [ Pass Timeout ]
