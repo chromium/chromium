@@ -118,6 +118,8 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
   ui::ResourceBundle::InitSharedInstanceWithLocale(
       locale, nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   // Otherwise, load resources.pak, chrome_100 and chrome_200.
+  base::FilePath resources_pak =
+      resource_dir.Append(FILE_PATH_LITERAL("resources.pak"));
   base::FilePath chrome_100_pak =
       resource_dir.Append(FILE_PATH_LITERAL("chrome_100_percent.pak"));
   base::FilePath chrome_200_pak =
@@ -126,7 +128,9 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_MAC) && !defined(COMPONENT_BUILD)
   // In non component builds, check if fall back in Resources/ folder is
   // available.
-  if (!base::PathExists(chrome_100_pak)) {
+  if (!base::PathExists(resources_pak)) {
+    resources_pak =
+        resource_dir.Append(FILE_PATH_LITERAL("Resources/resources.pak"));
     chrome_100_pak = resource_dir.Append(
         FILE_PATH_LITERAL("Resources/chrome_100_percent.pak"));
     chrome_200_pak = resource_dir.Append(
@@ -134,6 +138,8 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
   }
 #endif
 
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      resources_pak, ui::kScaleFactorNone);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(chrome_100_pak,
                                                               ui::k100Percent);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(chrome_200_pak,
