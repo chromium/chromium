@@ -29232,6 +29232,64 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       '''
     },
     {
+      'name': 'ForceMajorVersionToMinorPositionInUserAgent',
+      'owners': ['eliason@chromium.org', 'abeyad@chromium.org', 'miketaylr@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [0,1,2],
+      },
+      'items': [
+        {
+          'name': 'Default',
+          'value': 0,
+          'caption': '''Default to browser settings for User-Agent string version.''',
+        },
+        {
+          'name': 'ForceDisabled',
+          'value': 1,
+          'caption': '''The User-Agent string will not freeze the major version.''',
+        },
+        {
+          'name': 'ForceEnabled',
+          'value': 2,
+          'caption': '''The User-Agent string will freeze the major version as 99 and include the browser's major version in the minor position.''',
+        },
+      ],
+      'supported_on': ['chrome_os:99-', 'chrome.*:99-', 'android:99-', 'webview_android:99-'],
+      'default': 0,
+      'example_value': 0,
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': True,
+      },
+      'id': 949,
+      'tags': ['website-sharing'],
+      'caption': '''Freeze User-Agent string major version at 99''',
+      'desc': '''This policy controls whether the User-Agent string major
+      version should be frozen at 99.
+
+      The User-Agent request header lets websites identify the application,
+      operating system, vendor, and/or version of the requesting user agent.
+      Some websites make assumptions about how this header is formatted and may
+      encounter issues with version strings that include three digits in the
+      major position (e.g. 100.0.0.0).
+
+      Setting the policy to 'Default' or leaving it unset will default to
+      browser settings for the User-Agent string major version.
+      If set to 'ForceDisabled', the User-Agent string will not freeze the
+      major version.
+      If set to 'ForceEnabled', the User-Agent string will always report the
+      major version as 99 and include the browser's major version in the minor
+      position. For example, browser version 101.0.0.0 would send a User-Agent
+      request header that reports version 99.101.0.0.
+
+      This policy is temporary and will be deprecated in the future. Note that
+      if this policy and
+      <ph name="USER_AGENT_REDUCTION_POLICY_NAME">User-Agent Reduction</ph> are
+      both enabled, the User-Agent version string will always be 99.0.0.0.''',
+    },
+    {
       'name': 'OriginAgentClusterDefaultEnabled',
       'owners': [
         'vogelheim@chromium.org',
@@ -30384,8 +30442,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872, 943, 944, 945, 946, 947, 948],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 942,
+  'highest_id_currently_used': 949,
   'highest_atomic_group_id_currently_used': 41
 }

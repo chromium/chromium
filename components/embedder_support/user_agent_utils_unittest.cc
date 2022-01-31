@@ -398,6 +398,35 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
                                 content::GetUnifiedPlatform().c_str(), "99",
                                 device_compat.c_str()));
   }
+
+  // Ensure that the ForceMajorVersionToMinorPosition policy is applied even
+  // when it contradicts Blink feature status values.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+       blink::features::kForceMajorVersion100InUserAgent},
+      {blink::features::kForceMajorVersionInMinorPositionInUserAgent});
+  {
+    std::string buffer = GetReducedUserAgent(kForceEnabled);
+    std::string device_compat = "Mobile ";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                 content::GetUnifiedPlatform().c_str(), "99",
+                                 device_compat.c_str()));
+  }
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {});
+  {
+    std::string buffer = GetReducedUserAgent(kForceDisabled);
+    std::string device_compat = "Mobile ";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                 content::GetUnifiedPlatform().c_str(),
+                                 major_version, device_compat.c_str()));
+  }
 #else
   {
     std::string buffer = GetUserAgent();
@@ -420,6 +449,20 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
     EXPECT_EQ(buffer,
               base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
                                 content::GetUnifiedPlatform().c_str(), "99"));
+  }
+
+  // Ensure that the ForceMajorVersionToMinorPosition policy is applied even
+  // when it contradicts Blink feature status values.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+       blink::features::kForceMajorVersion100InUserAgent},
+      {blink::features::kForceMajorVersionInMinorPositionInUserAgent});
+  {
+    std::string buffer = GetReducedUserAgent(kForceEnabled);
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
+                                 content::GetUnifiedPlatform().c_str(), "99"));
   }
 #endif
 
@@ -790,6 +833,10 @@ TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
 }
 
 TEST_P(UserAgentUtilsTest, GetProduct) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kForceMajorVersionInMinorPositionInUserAgent);
+
   std::string product = GetProduct(/*allow_override=*/false);
   std::string major_version;
   EXPECT_TRUE(
@@ -808,6 +855,34 @@ TEST_P(UserAgentUtilsTest, GetProduct) {
   } else {
     EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   }
+
+  // Ensure the policy is ignored if allow_override is false
+  product = GetProduct(/*allow_override=*/false,
+                       /*force_major_to_minor=*/kForceEnabled);
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+
+  // Ensure policy is respected if ForcemajorToMinor enabled, possibly
+  // ignoring ForceMajorVersion100.
+  product = GetProduct(/*allow_override=*/true,
+                       /*force_major_to_minor=*/kForceEnabled);
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  EXPECT_EQ(major_version, "99");
+
+  // Ensure policy is respected if ForcemajorToMinor is force disabled, even if
+  // the respective Blink feature is enabled.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {blink::features::kForceMajorVersion100InUserAgent});
+  product = GetProduct(/*allow_override=*/true,
+                       /*force_major_to_minor=*/kForceDisabled);
+
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
 }
 
 TEST_P(UserAgentUtilsTest, GetUserAgent) {

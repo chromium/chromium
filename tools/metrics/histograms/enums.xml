@@ -28362,6 +28362,7 @@ Called by update_document_policy_enum.py.-->
   <int value="940" label="DeviceRunAutomaticCleanupOnLogin"/>
   <int value="941" label="NTPMiddleSlotAnnouncementVisible"/>
   <int value="942" label="CloudProfileReportingEnabled"/>
+  <int value="949" label="UserAgentForceMajorVersionToMinorPosition"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

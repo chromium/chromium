@@ -17705,5 +17705,53 @@
   },
   "DeviceRunAutomaticCleanupOnLogin": {
     "reason_for_missing_test": "Chrome OS device policy used by cryptohome only, not used in Chrome."
+  },
+  "ForceMajorVersionToMinorPositionInUserAgent": {
+    "os": [
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "mac",
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "force_major_version_to_minor_position_in_user_agent": {
+            "location": "user_profile",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {"ForceMajorVersionToMinorPositionInUserAgent": 0},
+        "prefs": {
+          "force_major_version_to_minor_position_in_user_agent": {
+            "location": "user_profile",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {"ForceMajorVersionToMinorPositionInUserAgent": 1},
+        "prefs": {
+          "force_major_version_to_minor_position_in_user_agent": {
+            "location": "user_profile",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {"ForceMajorVersionToMinorPositionInUserAgent": 2},
+        "prefs": {
+          "force_major_version_to_minor_position_in_user_agent": {
+            "location": "user_profile",
+            "value": 2
+          }
+        }
+      }
+    ]
   }
 }

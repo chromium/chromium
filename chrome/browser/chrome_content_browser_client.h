@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -868,6 +869,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   UserAgentReductionEnterprisePolicyState
   GetUserAgentReductionEnterprisePolicyState(content::BrowserContext* context);
+
+  embedder_support::ForceMajorVersionToMinorPosition
+  GetForceMajorVersionToMinorPosition(content::BrowserContext* context);
 
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.

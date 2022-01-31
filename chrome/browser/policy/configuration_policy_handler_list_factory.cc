@@ -1578,6 +1578,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kLoginScreenWebUILazyLoading,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  { key::kForceMajorVersionToMinorPositionInUserAgent,
+    prefs::kForceMajorVersionToMinorPositionInUserAgent,
+    base::Value::Type::INTEGER},
 };
 // clang-format on
 
