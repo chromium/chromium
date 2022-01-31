@@ -284,15 +284,14 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   if (shared_worker_context_provider_) {
     // Note: If context is lost, delete reference after releasing the lock.
     base::AutoLock lock(*shared_worker_context_provider_->GetLock());
-    if (shared_worker_context_provider_->ContextGL()
+    if (shared_worker_context_provider_->RasterInterface()
             ->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
       shared_worker_context_provider_lost = true;
     }
   }
   if (!shared_worker_context_provider_ || shared_worker_context_provider_lost) {
-    constexpr bool support_locking = true;
     shared_worker_context_provider_ = InProcessContextProvider::CreateOffscreen(
-        &gpu_memory_buffer_manager_, &image_factory_, support_locking);
+        &gpu_memory_buffer_manager_, &image_factory_, /*is_worker=*/true);
     auto result = shared_worker_context_provider_->BindToCurrentThread();
     if (result != gpu::ContextResult::kSuccess)
       shared_worker_context_provider_ = nullptr;

@@ -7,18 +7,22 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
+#include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/ipc/gl_in_process_context.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "ipc/common/surface_handle.h"
+#include "ipc/raster_in_process_context.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 
@@ -42,7 +46,7 @@ scoped_refptr<InProcessContextProvider>
 InProcessContextProvider::CreateOffscreen(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
-    bool support_locking) {
+    bool is_worker) {
   gpu::ContextCreationAttribs attribs;
   attribs.alpha_size = 8;
   attribs.blue_size = 8;
@@ -54,9 +58,12 @@ InProcessContextProvider::CreateOffscreen(
   attribs.sample_buffers = 0;
   attribs.fail_if_major_perf_caveat = false;
   attribs.bind_generates_resource = false;
+  attribs.enable_raster_interface = true;
+  attribs.enable_gles2_interface = !is_worker;
+  attribs.enable_oop_rasterization = is_worker;
   return new InProcessContextProvider(attribs, gpu_memory_buffer_manager,
                                       image_factory, gpu::kNullSurfaceHandle,
-                                      "Offscreen", support_locking);
+                                      "Offscreen", is_worker);
 }
 
 InProcessContextProvider::InProcessContextProvider(
@@ -97,62 +104,87 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentThread() {
     return bind_result_;
   bind_tried_ = true;
 
-  context_ = std::make_unique<gpu::GLInProcessContext>();
-  bind_result_ = context_->Initialize(
-      viz::TestGpuServiceHolder::GetInstance()->task_executor(),
-      /*surface=*/nullptr,
-      /*is_offscreen=*/window_ == gpu::kNullSurfaceHandle, window_, attribs_,
-      gpu::SharedMemoryLimits(), gpu_memory_buffer_manager_, image_factory_,
-      /*gpu_task_scheduler=*/nullptr,
-      /*display_controller_on_gpu=*/nullptr,
-      base::ThreadTaskRunnerHandle::Get());
+  auto* holder = viz::TestGpuServiceHolder::GetInstance();
+
+  if (attribs_.enable_oop_rasterization) {
+    DCHECK_EQ(window_, gpu::kNullSurfaceHandle);
+    DCHECK(!attribs_.enable_gles2_interface);
+    DCHECK(!attribs_.enable_grcontext);
+
+    raster_context_ = std::make_unique<gpu::RasterInProcessContext>();
+    bind_result_ = raster_context_->Initialize(
+        holder->task_executor(), attribs_, gpu::SharedMemoryLimits(),
+        gpu_memory_buffer_manager_, image_factory_,
+        /*gpu_channel_manager_delegate=*/nullptr,
+        holder->gpu_service()->gr_shader_cache(), nullptr);
+
+    impl_base_ = raster_context_->GetImplementation();
+  } else {
+    gles2_context_ = std::make_unique<gpu::GLInProcessContext>();
+    bind_result_ = gles2_context_->Initialize(
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(),
+        /*surface=*/nullptr,
+        /*is_offscreen=*/window_ == gpu::kNullSurfaceHandle, window_, attribs_,
+        gpu::SharedMemoryLimits(), gpu_memory_buffer_manager_, image_factory_,
+        /*gpu_task_scheduler=*/nullptr,
+        /*display_controller_on_gpu=*/nullptr,
+        base::ThreadTaskRunnerHandle::Get());
+
+    impl_base_ = gles2_context_->GetImplementation();
+  }
 
   if (bind_result_ != gpu::ContextResult::kSuccess)
     return bind_result_;
 
   cache_controller_ = std::make_unique<viz::ContextCacheController>(
-      context_->GetImplementation(), base::ThreadTaskRunnerHandle::Get());
+      impl_base_, base::ThreadTaskRunnerHandle::Get());
   if (support_locking_)
     cache_controller_->SetLock(GetLock());
 
-  std::string unique_context_name =
-      base::StringPrintf("%s-%p", debug_name_.c_str(), context_.get());
-  context_->GetImplementation()->TraceBeginCHROMIUM(
-      "gpu_toplevel", unique_context_name.c_str());
-
-  raster_context_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
-      context_->GetImplementation(), context_->GetImplementation());
+  if (gles2_context_) {
+    gles2_raster_impl_ =
+        std::make_unique<gpu::raster::RasterImplementationGLES>(
+            ContextGL(), ContextSupport());
+  }
 
   return bind_result_;
 }
 
 const gpu::Capabilities& InProcessContextProvider::ContextCapabilities() const {
   CheckValidThreadOrLockAcquired();
-  return context_->GetImplementation()->capabilities();
+  return impl_base_->capabilities();
 }
 
 const gpu::GpuFeatureInfo& InProcessContextProvider::GetGpuFeatureInfo() const {
   CheckValidThreadOrLockAcquired();
-  return context_->GetGpuFeatureInfo();
+
+  return gles2_context_ ? gles2_context_->GetGpuFeatureInfo()
+                        : raster_context_->GetGpuFeatureInfo();
 }
 
 gpu::gles2::GLES2Interface* InProcessContextProvider::ContextGL() {
   CheckValidThreadOrLockAcquired();
-  return context_->GetImplementation();
+  if (!gles2_context_)
+    return nullptr;
+
+  return gles2_context_->GetImplementation();
 }
 
 gpu::raster::RasterInterface* InProcessContextProvider::RasterInterface() {
   CheckValidThreadOrLockAcquired();
-
-  return raster_context_.get();
+  return raster_context_ ? raster_context_->GetImplementation()
+                         : gles2_raster_impl_.get();
 }
 
 gpu::ContextSupport* InProcessContextProvider::ContextSupport() {
-  return context_->GetImplementation();
+  return impl_base_;
 }
 
 class GrDirectContext* InProcessContextProvider::GrContext() {
   CheckValidThreadOrLockAcquired();
+
+  if (attribs_.enable_oop_rasterization)
+    return nullptr;
 
   if (gr_context_)
     return gr_context_->get();
@@ -170,7 +202,8 @@ class GrDirectContext* InProcessContextProvider::GrContext() {
 }
 
 gpu::SharedImageInterface* InProcessContextProvider::SharedImageInterface() {
-  return context_->GetSharedImageInterface();
+  return gles2_context_ ? gles2_context_->GetSharedImageInterface()
+                        : raster_context_->GetSharedImageInterface();
 }
 
 viz::ContextCacheController* InProcessContextProvider::CacheController() {
@@ -204,6 +237,16 @@ uint32_t InProcessContextProvider::GetCopyTextureInternalFormat() {
 void InProcessContextProvider::SendOnContextLost() {
   for (auto& observer : observers_)
     observer.OnContextLost();
+}
+
+void InProcessContextProvider::CheckValidThreadOrLockAcquired() const {
+#if DCHECK_IS_ON()
+  if (support_locking_) {
+    context_lock_.AssertAcquired();
+  } else {
+    DCHECK(context_thread_checker_.CalledOnValidThread());
+  }
+#endif
 }
 
 }  // namespace ui

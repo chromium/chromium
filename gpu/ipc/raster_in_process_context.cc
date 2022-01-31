@@ -13,7 +13,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/raster_cmd_helper.h"
-#include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
@@ -108,7 +107,7 @@ const GpuFeatureInfo& RasterInProcessContext::GetGpuFeatureInfo() const {
   return command_buffer_->GetGpuFeatureInfo();
 }
 
-raster::RasterInterface* RasterInProcessContext::GetImplementation() {
+raster::RasterImplementation* RasterInProcessContext::GetImplementation() {
   return raster_implementation_.get();
 }
 
