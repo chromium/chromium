@@ -124,15 +124,9 @@ void AnimatedAuthFactorsLabelWrapper::SetLabelTextAndAccessibleName(
   current_label_->SetText(l10n_util::GetStringUTF16(label_id));
   current_label_->SetAccessibleName(
       l10n_util::GetStringUTF16(accessible_name_id));
-
-  // Add margin to the bottom of the label to ensure that the total height of
-  // the label and margin is always |kLabelMaxLines| lines.
-  DCHECK(current_label_->GetRequiredLines() <= kLabelMaxLines);
-  int bottom_margin = (kLabelMaxLines - current_label_->GetRequiredLines()) *
-                      current_label_->GetLineHeight();
   SetProperty(views::kMarginsKey,
               gfx::Insets(/*top=*/kSpacingBetweenIconsAndLabelDp, /*left=*/0,
-                          /*bottom=*/std::max(bottom_margin, 0),
+                          /*bottom=*/0,
                           /*right=*/0));
 
   // If |previous_text_| is empty, then this is the first time the text is
