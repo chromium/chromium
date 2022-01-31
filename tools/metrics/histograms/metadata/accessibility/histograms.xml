@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ChromeVox.PerformGestureType"
-    enum="ChromeVoxGestureType" expires_after="2022-02-06">
+    enum="ChromeVoxGestureType" expires_after="2023-02-06">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
