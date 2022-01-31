@@ -619,8 +619,24 @@ void RenderThreadImpl::Init() {
   if (base::FeatureList::IsEnabled(features::kEarlyEstablishGpuChannel)) {
     gpu_->EstablishGpuChannel(
         base::BindOnce([](scoped_refptr<gpu::GpuChannelHost> host) {
-          if (host)
-            GetContentClient()->SetGpuInfo(host->gpu_info());
+          if (!host)
+            return;
+          GetContentClient()->SetGpuInfo(host->gpu_info());
+          const bool create_compositor_worker_context =
+              base::GetFieldTrialParamByFeatureAsBool(
+                  features::kEarlyEstablishGpuChannel,
+                  "CreateCompositorWorkerContext", false);
+          if (create_compositor_worker_context) {
+            // Similarly, establish the SharedCompositorWorkerContextProvider as
+            // it involves a sync call. PostTask() is used as this may be called
+            // from within SharedCompositorWorkerContextProvider(), in which
+            // case we don't want to trigger reeentrancy.
+            g_main_task_runner.Get()->PostTask(
+                FROM_HERE, base::BindOnce([] {
+                  RenderThreadImpl::current()
+                      ->SharedCompositorWorkerContextProvider();
+                }));
+          }
         }));
   }
 
