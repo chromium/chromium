@@ -8,8 +8,9 @@ import 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
 import {BookmarkFolderElement} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {BookmarksListElement} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {down, keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -121,11 +122,21 @@ suite('SidePanelBookmarksListInteractiveUITest', () => {
   test('CutsCopyPastesBookmark', async () => {
     const folderElement = getFolderElements(bookmarksList)[0]!;
     const bookmarkElement = getBookmarkElements(folderElement)[0]!;
+
+    // Hide focus states and focus.
+    FocusOutlineManager.forDocument(document).visible = false;
     bookmarkElement.focus();
     assertEquals(bookmarkElement, folderElement.shadowRoot!.activeElement);
 
+    // When focus is hidden, keyboard shortcuts should not be allowed.
+    keyDownOn(bookmarkElement, 0, ['ctrl'], 'x');
+    assertEquals(0, bookmarksApi.getCallCount('cutBookmark'));
+
+    // Show focus states, which should allow keyboard shortcuts.
+    FocusOutlineManager.forDocument(document).visible = true;
     keyDownOn(bookmarkElement, 0, ['ctrl'], 'x');
     const cutId = await bookmarksApi.whenCalled('cutBookmark');
+    assertEquals(1, bookmarksApi.getCallCount('cutBookmark'));
     assertEquals('3', cutId);
 
     keyDownOn(bookmarkElement, 0, ['ctrl'], 'c');
@@ -137,5 +148,21 @@ suite('SidePanelBookmarksListInteractiveUITest', () => {
         await bookmarksApi.whenCalled('pasteToBookmark');
     assertEquals('0', pastedId);
     assertEquals('3', pastedDestinationId);
+  });
+
+  test('ShowsFocusStateOnDrop', () => {
+    const focusOutlineManager = FocusOutlineManager.forDocument(document);
+
+    // Mousedown to hide focus state initially.
+    down(bookmarksList, {x: 0, y: 0});
+    assertFalse(focusOutlineManager.visible);
+
+    // Perform a drop and assert that focus state is visible.
+    bookmarksList.onFinishDrop([folders[0]!.children![0]!]);
+    assertTrue(focusOutlineManager.visible);
+
+    // Make sure on the next mouse event, the focus state gets rehidden.
+    down(bookmarksList, {x: 0, y: 0});
+    assertFalse(focusOutlineManager.visible);
   });
 });

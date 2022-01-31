@@ -27,14 +27,22 @@
     width: 100%;
   }
 
-  :host-context([hover-visible]) .row:not([empty]):hover,
+  :host-context([hover-visible]) .row:not([empty]):hover {
+    background-color: var(--mwb-list-item-hover-background-color);
+  }
+
+  :host-context(.focus-outline-visible) .row:focus,
+  :host-context(.focus-outline-visible) .row:focus:hover {
+    background-color: var(--mwb-list-item-selected-background-color);
+    outline: none;
+  }
+
   .row:focus-visible:focus {
-    background-color: var(--cr-hover-background-color);
     outline: none;
   }
 
   :host-context([hover-visible]) .row:not([empty]):active,
-  .row:not([empty]):focus-visible:active {
+  :host-context(.focus-outline-visible) .row:not([empty]):active {
     background-color: var(--cr-active-background-color);
   }
 
