@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">စကင်လုပ်မည့်နေရာနှင့် ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="1387854245479784695">၎င်းသည် core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
+<translation id="1394661041439318933">ဘူးတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="1397738625398125236">ကွန်ရက်ဂိတ်ဝကို ဆက်သွယ်နိုင်ပါသည်</translation>
 <translation id="1398634363027580500">HTTPS တုံ့ပြန်ချိန် အလွန်မြင့်သည်</translation>
 <translation id="1413240736185167732">မအောင်မြင်ပါ - ဆန်ခါ ရပ်သွားသည်</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ကျွန်ုပ်တွင် ကီးအတွဲရှိသည်</translation>
+<translation id="1451536289672181509">ကိရိယာသည် ကီးဘုတ်ဖြစ်သည်။</translation>
 <translation id="1468664791493211953">ကမ်းလှမ်းချက်များ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် သင်၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်ပါသည်။</translation>
 <translation id="1478594628797167447">စကင်ဖတ်စနစ်</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ဆက်တင်များ ပိုမိုပြရန်</translation>
 <translation id="2104796393919810494">ပြင်ဆင်မှု ပြီးပြီ</translation>
+<translation id="2105810540595158374">ကိရိယာသည် ဂိမ်းခလုတ်ဖြစ်သည်။</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />၊ ဗားရှင်း <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB အနက် <ph name="AVAILABLE_MEMORY" /> GB ရနိုင်သည်</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
+<translation id="3031560714565892478">ကိရိယာသည် ဗီဒီယိုကင်မရာ ဖြစ်သည်။</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">အဆုံးမှတ်</translation>
 <translation id="3069085583900247081">စစ်ဆေးမှု မအောင်မြင်ပါ</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">ကိရိယာနှင့် ချိတ်ဆက်ထားသည်။</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{စာမျက်နှာ ဖယ်ရှားမလား။}=1{စာမျက်နှာ {PAGE_NUMBER} ဖယ်ရှားမလား။}other{စာမျက်နှာ {PAGE_NUMBER} ဖယ်ရှားမလား။}}</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
 <translation id="3156846309055100599">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို သိသာစွာကျော်နေသည်</translation>
 <translation id="3328783797891415197">စစ်ဆေးနေသည်</translation>
+<translation id="3340011300870565703">ညာနားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3369013195428705271">ပုံနှိပ်မှတ်တမ်း အားလုံးကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။ ပုံနှိပ်ထုတ်နေသော ဖိုင်များကို ရှင်းထုတ်မည်မဟုတ်ပါ။</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">စာမျက်နှာ <ph name="PAGE_NUM" /> ကို စကင်ဖတ်နေသည်။ <ph name="PERCENTAGE_VALUE" />% ပြီးသွားပါပြီ။</translation>
 <translation id="3459509316159669723">ပုံနှိပ်နေသည်</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ကိုအပ်ဒိတ်လုပ်နေသည်</translation>
+<translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">ချိတ်ဆက်ထားသော စက်မရှိပါ</translation>
 <translation id="3941014780699102620">ဆာဗာပင်ရင်းကို မဖြေရှင်းနိုင်ပါ</translation>
 <translation id="3942420633017001071">အမှားရှာဖွေမှုများ</translation>
+<translation id="3954678691475912818">ကိရိယာအမျိုးအစား မသိပါ။</translation>
 <translation id="3966286471246132217">ပိုမိုတိကျသော ရလဒ်များအတွက် စစ်ဆေးမှုပြီးသည်အထိ အက်ပ်အားလုံးကို ပိတ်ပါ။</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
 <translation id="4891842000192098784">ဖိအား</translation>
+<translation id="4897058166682006107">ဘယ်နားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားသွင်းထားသည်။</translation>
@@ -321,6 +330,7 @@
 <translation id="5346687412805619883">အိမ်တွင်းသုံးကွန်ရက်</translation>
 <translation id="5358174242040570474">တစ်ခုခုမှားသွားသည်။ နောက်ခံကို ထပ်မံရွေးချယ်ကြည့်ပါ သို့မဟုတ် အက်ပ်ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
+<translation id="5400907029458559844">ကိရိယာ ချိတ်ဆက်နေသည်။</translation>
 <translation id="5401938042319910061">'ပုံမှန်အစီအစဉ်" အားလုံး အသုံးပြုရန်</translation>
 <translation id="5423849171846380976">အသက်သွင်းပြီး</translation>
 <translation id="5430931332414098647">အမြန်ချိတ်ဆက်မျှဝေခြင်း</translation>
@@ -382,6 +392,7 @@
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
 <translation id="6340526405444716530">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း</translation>
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
@@ -414,6 +425,7 @@
 <translation id="6704062477274546131">DNS ဖြေရှင်းချက်</translation>
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
 <translation id="6749473226660745022">ဓာတ်ပုံများ</translation>
+<translation id="6753452347192452143">ကိရိယာသည် ကွန်ပျူတာဖြစ်သည်။</translation>
 <translation id="6756731097889387912">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်၍မရပါ</translation>
 <translation id="6766275201586212568">DNS ဖြေရှင်းချက်များ မအောင်မြင်ပါ</translation>
 <translation id="6768237774506518020">DNS ဖြေရှင်းချက် ကျရှုံးမှုနှုန်း မြင့်သည်</translation>
@@ -431,12 +443,14 @@
 <translation id="6992266763844448459">စက်ပိုင်ဆိုင်မှု ပြောင်းလဲခြင်းမရှိပါက ၎င်းကိုရွေးပါ။ ဥပမာအားဖြင့် စက်ကို အဖွဲ့အစည်းအတွင်းရှိ အခြားပုဂ္ဂိုလ်ထံသို့ လွှဲပြောင်းခြင်း။</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="7041549558901442110">ကိရိယာကို ကွန်ရက်ချိတ်မထားပါ။</translation>
 <translation id="7058278511608979688">သိမ်းပြီး အဆုံးသတ်ရန်</translation>
 <translation id="7059230779847288458">အားသွင်းနေသည် (အားပြည့်ရန် <ph name="TIME_VALUE" /> ကျန်သည်)</translation>
 <translation id="7068619307603204412">သင့်စက်ကို အသင့်ပြင်ခြင်း</translation>
 <translation id="708426984172631313">ရပ်ထားသည်</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">မအောင်မြင်ပါ - ခွင့်ပြုချက်ပေး၍ မရပါ</translation>
+<translation id="7103252855940681301">ကိရိယာသည် <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /> ခုမြောက်ဖြစ်ပြီး <ph name="NAME" /> ဟု အမည်ပေးထားသည်။</translation>
 <translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
@@ -471,6 +485,7 @@
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">အမှားရှာဖွေမှု ပုံမှန်အစီအစဉ်များ</translation>
+<translation id="7551123448725492271">ကိရိယာသည် အသံစက်ပစ္စည်းဖြစ်သည်။</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB တို့ထိမျက်နှာပြင်</translation>
@@ -478,6 +493,7 @@
 <translation id="7620771111601174153">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="763165478673169849">နောက်ဆုံး ပြင်ဆင်သတ်မှတ်ထားချိန်</translation>
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>
+<translation id="7656388927906093505">ကိရိယာသည် မောက်စ်ဖြစ်သည်။</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7701040980221191251">မရှိ</translation>
@@ -574,6 +590,7 @@
 <translation id="8855781559874488009">HTTP ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="8863888432376731307">“<ph name="QUERY" />” စသည်တို့အတွက် <ph name="INTENT" /> ရယူပါ</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">ကိရိယာသည် တက်ဘလက်ဖြစ်သည်</translation>
 <translation id="8881098542468797602">စစ်ဆေးမှု အောင်မြင်သည်</translation>
 <translation id="8898840733695078011">လိုင်းဆွဲအား</translation>
 <translation id="8910721771319628100">တုံ့ပြန်ချိန် သတ်မှတ်ကာလအထက်ရှိနေသော မူလကွန်ရက်</translation>
@@ -584,11 +601,13 @@
 <translation id="8930622219860340959">ကြိုးမဲ့</translation>
 <translation id="8936793075252196307">ကလိုင်းယင့် အိုင်ပီ (IP) လိပ်စာ</translation>
 <translation id="8945750210906526975">အတွင်းပိုင်း တာ့ချ်ပက်</translation>
+<translation id="894617464444543719">ကိရိယာသည် ဖုန်းဖြစ်သည်။</translation>
 <translation id="8968751544471797276">အားသွင်းနှုန်း</translation>
 <translation id="8970109610781093811">ထပ်လုပ်ဆောင်ရန်</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{စကင်ဖတ်ရန်}=1{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}other{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}}</translation>
 <translation id="8994273342647807496">ထည့်သွင်းနေသည် - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">ကိရိယာတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="9003704114456258138">ကြိမ်နှုန်း</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ဖြေရှင်းမှုသည် တုံ့ပြန်ချိန်မြင့်သည်</translation>

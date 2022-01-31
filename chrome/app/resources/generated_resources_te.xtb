@@ -107,7 +107,7 @@
     Google Home యాప్‌<ph name="END_LINK" />లో చూడగలుగుతున్నారా?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> నుండి కాపీ చేసిన ఇమేజ్</translation>
 <translation id="1100504063505580045">ప్రస్తుత చిహ్నం</translation>
-<translation id="1103523840287552314">ఎల్లప్పుడూ <ph name="LANGUAGE" />ను అనువదించు</translation>
+<translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
 <translation id="1108600514891325577">&amp;ఆపు</translation>
 <translation id="1108938384783527433">హిస్టరీ సింక్</translation>
 <translation id="1110155001042129815">వేచి ఉండండి</translation>
@@ -780,6 +780,7 @@
 <translation id="176587472219019965">&amp;కొత్త విండో</translation>
 <translation id="1766575458646819543">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించారు</translation>
 <translation id="1766957085594317166">పాస్‌వర్డ్‌లను మీ Google ఖాతాలో సురక్షితంగా సేవ్ చేయండి, మీరు ఇంకెప్పుడూ మళ్లీ టైప్ చేయవలసిన అవసరం ఉండదు</translation>
+<translation id="1767043563165955993">Android యాప్‌లతో ఉపయోగించండి</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> కోసం ఫీడ్‌బ్యాక్‌ను పంపండి.</translation>
 <translation id="1768278914020124551">అయ్యో!  లాగాన్ సర్వర్‌ను సంప్రదించడంలో సమస్య ఉంది. దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను మరియు డొమైన్ పేరును తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="1769104665586091481">లింక్‌ను కొత్త &amp;విండోలో తెరువు</translation>
@@ -1118,6 +1119,7 @@
 <translation id="2113479184312716848">ఫైల్‌ను &amp;తెరువు...</translation>
 <translation id="2113921862428609753">అధికార సమాచార ప్రాప్తి</translation>
 <translation id="2114326799768592691">&amp;ఫ్రేమ్‌ను మళ్లీ లోడ్ చేయి</translation>
+<translation id="2114413269775311385">Android యాప్‌లతో ఈ ఖాతాను ఉపయోగించండి. మీరు Android యాప్‌లకు అనుమతులను <ph name="LINK_BEGIN" />యాప్‌ల సెట్టింగ్‌లు<ph name="LINK_END" /> లింక్‌లో కంట్రోల్ చేయవచ్చు.</translation>
 <translation id="2114896190328250491">ఫోటో తీసినది <ph name="NAME" /></translation>
 <translation id="2114995631896158695">ఎలాంటి SIM కార్డ్ ఇన్‌సర్ట్ చేయబడలేదు</translation>
 <translation id="2116619964159595185">తక్కువ శక్తి గల బీకాన్, ఆరోగ్యం లేదా ఫిట్‌నెస్ ట్రాకర్, లేదా స్మార్ట్ లైట్ బల్బ్‌లను సెటప్ చేయడం లేదా సింక్ చేయడం వంటి ఫీచర్‌ల కోసం సైట్‌లు సాధారణంగా బ్లూటూత్ పరికరాలకు కనెక్ట్ అవుతాయి</translation>
@@ -1913,6 +1915,7 @@
 <translation id="287205682142673348">పోర్ట్ ఫార్వర్డింగ్</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />ని జోడించు...</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
+<translation id="2873995907777332853">అన్ని కుక్కీలను బ్లాక్ చేయడం గురించి వివరాలను చూపు</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
 <translation id="2875698561019555027">(Chrome ఎర్రర్ పేజీలు)</translation>
 <translation id="2876336351874743617">రెండో వేలు</translation>
@@ -2219,6 +2222,7 @@
 <translation id="3189187154924005138">పెద్ద కర్సర్</translation>
 <translation id="3190558889382726167">పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>
 <translation id="3192947282887913208">ఆడియో  ఫైళ్ళు</translation>
+<translation id="3194786596445804250">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం గురించి వివరాలను చూపు</translation>
 <translation id="3197453258332670132">కుడి క్లిక్ ద్వారా లేదా ఎక్కువసేపు నొక్కి, ఉంచడం ద్వారా, మీ టెక్స్ట్ ఎంపికకు సంబంధించిన సమాచారాన్ని చూపండి</translation>
 <translation id="3199127022143353223">సర్వర్‌లు</translation>
 <translation id="3200061262156232574">మీ షాపింగ్ కార్ట్‌లో</translation>
@@ -2966,6 +2970,7 @@
 <translation id="3943582379552582368">&amp;వెనుకకు</translation>
 <translation id="3943857333388298514">అతికించు</translation>
 <translation id="3945513714196326460">చిన్న పేరును ట్రై చేయండి</translation>
+<translation id="3947643756376959257">Chromecast లేదా టీవీలో చూపిన యాక్సెస్ కోడ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="3948027458879361203">హోస్ట్‌పేరును మార్చండి</translation>
 <translation id="3948116654032448504">చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3948507072814225786">కింది ఫోల్డర్‌లలోని ఫైళ్లను <ph name="ORIGIN" /> సవరించగలదు</translation>
@@ -3207,12 +3212,14 @@
 <translation id="4210048056321123003">వర్చువల్ మెషిన్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="421182450098841253"> &amp;బుక్‌మార్క్‌ల బార్‌ను చూపు</translation>
 <translation id="4211851069413100178">వినియోగం &amp; విశ్లేషణల డేటాను పంపండి. సమస్య విశ్లేషణ, పరికరం, యాప్ వినియోగ డేటాను Googleకి ఆటోమేటిక్‌గా పంపడం ద్వారా మీ Android అనుభవాన్ని మెరుగుపరచడంలో సహాయపడండి. ఇది సిస్టమ్, యాప్ స్థిరత్వానికి, అలాగే ఇతర మెరుగుదలలకు సహాయపడుతుంది. కొంత సముదాయ డేటా కూడా Google యాప్‌లకు, అలాగే Android డెవలపర్‌ల లాంటి భాగస్వాములకు సహాయపడుతుంది. ఈ <ph name="BEGIN_LINK1" />సెట్టింగ్‌<ph name="END_LINK1" />ని యజమాని అమలు చేశారు. ఈ పరికరానికి సంబంధించిన విశ్లేషణ, వినియోగ డేటాను Googleకి పంపేలా యజమాని ఎంచుకోవచ్చు. మీ అదనపు వెబ్ &amp; యాప్ యాక్టివిటీ సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, ఈ డేటా మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. <ph name="BEGIN_LINK2" />మరింత తెలుసుకోండి<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Android యాప్‌లతో ఉపయోగించడాన్ని ఆపివేయండి</translation>
 <translation id="42126664696688958">ఎగుమతి చేయి</translation>
 <translation id="42137655013211669">సర్వర్ ఈ వనరుకు యాక్సెస్‌ను నిషేధించింది.</translation>
 <translation id="4217571870635786043">డిక్టేషన్</translation>
 <translation id="4219558185499589032">పెట్టె</translation>
 <translation id="4220648711404560261">యాక్టివేషన్ సమయంలో ఎర్రర్ సంభవించింది.</translation>
 <translation id="4225397296022057997">అన్ని సైట్‌లలో</translation>
+<translation id="4227605727325220318">కొత్త Android ఫోన్‌ను జోడించండి</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ఈ ఎక్స్‌టెన్షన్ అనుమతించబడదు}other{కొన్ని ఎక్స్‌టెన్షన్‌లు అనుమతించబడవు}}</translation>
 <translation id="4231095370974836764">మీ <ph name="DEVICE_TYPE" />లో Google Play నుండి యాప్‌లు, గేమ్‌లను ఇన్‌స్టాల్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosను కాన్ఫిగర్ చేయండి</translation>
@@ -4207,7 +4214,7 @@
 <translation id="5286194356314741248">స్కాన్ చేస్తోంది</translation>
 <translation id="5287425679749926365">మీ ఖాతాలు</translation>
 <translation id="5288678174502918605">మూసిన టాబ్‌ను మళ్లీ &amp;తెరువు</translation>
-<translation id="52895863590846877">పేజీ <ph name="LANGUAGE" />లో లేదు</translation>
+<translation id="52895863590846877">పేజీ <ph name="LANGUAGE" />‌లో లేదు</translation>
 <translation id="52912272896845572">వ్యక్తిగతమైన కీ ఫైల్ చెల్లదు.</translation>
 <translation id="5291739252352359682">Chrome బ్రౌజర్‌లోని మీడియా కోసం క్యాప్షన్‌లను ఆటోమేటిక్‌గా క్రియేట్ చేస్తుంది (ప్రస్తుతం ఇంగ్లీష్‌లో అందుబాటులో ఉంది). అన్ని ఆడియోలు, క్యాప్షన్‌లు లోకల్‌గానే ప్రాసెస్ చేయబడతాయి, అవి ఎప్పుడూ మీ పరికరాన్ని దాటిపోవు.</translation>
 <translation id="529175790091471945">ఈ పరికరాన్ని ఫార్మాట్ చేయి</translation>
@@ -4751,6 +4758,7 @@
 <translation id="5862109781435984885">అరలో స్టైలస్ సాధనాలను చూపుతుంది</translation>
 <translation id="5862319196656206789">కనెక్ట్ చేయబడిన పరికరాలను సెటప్ చేయండి</translation>
 <translation id="5863445608433396414">డీబగ్గింగ్ ఫీచ‌ర్‌లను ప్రారంభించు</translation>
+<translation id="5864147196375746035">మేనేజ్ చేయబడిన పరికరంలో ప్రసారం చేయండి</translation>
 <translation id="5864195618110239517">డేటా నియంత్రణ ఉన్న కనెక్షన్‌ను ఉపయోగించండి</translation>
 <translation id="5864754048328252126">ఛార్జింగ్‌లో ఉన్నప్పుడు ఇన్‌యాక్టివ్ చర్య</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> త్వరలో పాజ్ అవుతుంది</translation>
@@ -5321,6 +5329,7 @@
 <translation id="6455264371803474013">కొన్ని నిర్దిష్ట సైట్‌లలో మాత్రమే</translation>
 <translation id="6455894534188563617">&amp;కొత్త ఫోల్డర్</translation>
 <translation id="645705751491738698">JavaScriptను నిరోధించడాన్ని కొనసాగించు</translation>
+<translation id="6458347417133445570">అన్ని కుక్కీలను అనుమతించడం గురించి వివరాలను చూపు</translation>
 <translation id="6458701200018867744">అప్‌లోడ్ విఫలమైంది (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">కనుగొనడానికి ఎంపికను ఉపయోగించండి</translation>
 <translation id="6459799433792303855">యాక్టివ్ విండో మరో డిస్‌ప్లే‌కు తరలించబడింది.</translation>
@@ -5717,7 +5726,7 @@
 <translation id="6860427144121307915">ట్యాబ్‌లో తెరువు</translation>
 <translation id="686366188661646310">పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="6865313869410766144">ఆటో-ఫిల్ ఫారమ్ డేటా</translation>
-<translation id="6865598234501509159">పేజీ <ph name="LANGUAGE" />లో లేదు</translation>
+<translation id="6865598234501509159">పేజీ <ph name="LANGUAGE" />‌లో లేదు</translation>
 <translation id="6865708901122695652">WebRTC ఈవెంట్ లాగ్‌లు (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">నిశ్శబ్దం</translation>
 <translation id="686664946474413495">రంగు ఉష్ణోగ్రత</translation>
@@ -5936,6 +5945,7 @@
 <translation id="7086672505018440886">ఆర్కైవ్‌లో Chrome లాగ్ ఫైళ్లను చేర్చండి.</translation>
 <translation id="7088434364990739311">అప్‌డేట్‌ తనిఖీ ప్రారంభం విఫలమైంది (ఎర్ర‌ర్‌ కోడ్ <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">నిర్వాహకులు, ఈ పరికరాన్ని కేటాయించబడని స్థితిలో ఉంచారు. దీనిని నమోదు కోసం ప్రారంభించడానికి, ఈ పరికరాన్ని పెండింగ్ స్థితిలో ఉంచమని దయచేసి మీ నిర్వాహకులను కోరండి.</translation>
+<translation id="7090160970140261931">వెబ్‌సైట్‌లు, Android యాప్‌లతో ఉపయోగించడానికి మీరు మీ <ph name="DEVICE_TYPE" />కు అదనపు ఖాతాలను జోడించవచ్చు. Android యాప్‌లతో ఏ ఖాతాలను ఉపయోగించాలో కూడా మీరు కంట్రోల్ చేయవచ్చు.</translation>
 <translation id="7093220653036489319">క్విక్ ఆన్సర్స్</translation>
 <translation id="7093416310351037609">డేటా భద్రత, సెక్యూరిటీ కోసం, మీ సంస్థ అవసరాల ప్రకారం అర్హత ఉన్న డౌన్‌లోడ్‌లు సంస్థకు సంబంధించిన <ph name="WEB_DRIVE" />లో సేవ్ అవ్వాలి.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6403,7 +6413,7 @@
 <translation id="7598466960084663009">కంప్యూటర్‌ని పునఃప్రారంభించు</translation>
 <translation id="7599527631045201165">పరికరం పేరు చాలా పొడవుగా ఉంది. చిన్న పేరును నమోదు చేసి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="7600054753482800821">సెర్చ్ ఇంజిన్‌లను, సైట్ సెర్చ్‌ను &amp;మేనేజ్ చేయండి</translation>
-<translation id="7600965453749440009"><ph name="LANGUAGE" />ను ఎప్పటికీ అనువదించవద్దు</translation>
+<translation id="7600965453749440009"><ph name="LANGUAGE" />‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="760197030861754408">కనెక్ట్ చేయడానికి <ph name="LANDING_PAGE" />కి వెళ్లండి.</translation>
 <translation id="7602079150116086782">ఇతర పరికరాల నుండి ట్యాబ్‌లు లేవు</translation>
 <translation id="7602173054665172958">ప్రింట్ మేనేజ్‌మెంట్</translation>
@@ -6756,6 +6766,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />సె</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" />ను చూడగలదు</translation>
 <translation id="7920482456679570420">మీరు వేటికి స్పెల్ చెక్‌ను స్కిప్ చేయాలనుకుంటారో ఆ పదాలను జోడించండి</translation>
+<translation id="7922935920104868876">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం గురించి వివరాలను చూపు</translation>
 <translation id="7924358170328001543">పోర్ట్‌ను ఫార్వర్డ్ చేయడంలో ఎర్రర్ ఏర్పడింది</translation>
 <translation id="7925108652071887026">స్వీయపూర్తి డేటా</translation>
 <translation id="792514962475806987">డాక్ చేయబడిన జూమ్ స్థాయి:</translation>
@@ -6918,6 +6929,7 @@
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8076835018653442223">మీ నిర్వాహకులు మీ పరికరంలోని స్థానిక ఫైళ్లకు యాక్సెస్‌ను నిలిపివేసారు</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Android యాప్‌లతో ఉపయోగించడానికి అందుబాటులో ఉన్న ఖాతాలు</translation>
 <translation id="8081989000209387414">ADB డీబగ్గింగ్‌ను డిజేబుల్ చేయాలా?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />"తో పెయిర్ చేయాలా?</translation>
 <translation id="8082390128630131497">ADB డీబగ్గింగ్‌ను డిజేబుల్ చేస్తే, ఈ <ph name="DEVICE_TYPE" />ను ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేస్తుంది. అన్ని యూజర్ ఖాతాలు, స్థానిక డేటా తొలగించబడతాయి.</translation>
@@ -6992,6 +7004,7 @@
 <translation id="8147900440966275470"><ph name="NUM" /> ట్యాబ్ కనుగొనబడింది</translation>
 <translation id="8148760431881541277">సైన్ ఇన్‌ను పరిమితం చేయండి</translation>
 <translation id="8149564499626272569">USB కేబుల్‌తో మీ ఫోన్ ద్వారా వెరిఫై చేయండి</translation>
+<translation id="815114315010033526">బదులుగా QR కోడ్‌ను ఉపయోగించండి</translation>
 <translation id="8151638057146502721">కాన్ఫిగర్ చేయి</translation>
 <translation id="8154790740888707867">ఫైల్ లేదు</translation>
 <translation id="8154912474061769055">చాలా సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు</translation>
@@ -7017,6 +7030,7 @@
 <translation id="8176332201990304395">గులాబీ రంగు మరియు తెలుపు</translation>
 <translation id="8177196903785554304">నెట్‌వర్క్ వివరాలు</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ట్యాబ్‌ను కొత్త విండోకు తరలించు}other{ట్యాబ్‌లను కొత్త విండోకు తరలించు}}</translation>
+<translation id="8179188928355984576">Android యాప్‌లతో ఉపయోగించబడలేదు</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" ఎంచుకున్న స్థానాల్లోని చిత్రాలను, వీడియోను, సౌండ్ ఫైల్స్‌ను చదవగలదు. తొలగించగలదు.</translation>
 <translation id="8181215761849004992">డొమైన్‌కు చేర్చడం సాధ్యపడలేదు. పరికరాలను జోడించడానికి తగిన అధికారాలు మీకు ఉన్నాయో లేదో మీ ఖాతాలో తనిఖీ చేయండి.</translation>
@@ -7176,6 +7190,7 @@
 <translation id="8342861492835240085">సేకరణను ఎంచుకోండి</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="834785183489258869">అజ్ఞాతం మోడ్‌లో ఉండగా, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం. కొన్ని సైట్‌లలోని ఫీచర్‌లు సరిగ్గా పని చేయకపోవచ్చు.</translation>
+<translation id="8349499562373871073">Android యాప్‌లతో ఉపయోగించడానికి మీరు ఇప్పటికే ఉన్న ఖాతాను ఉపయోగించవచ్చు లేదా కొత్త Google ఖాతాను జోడించవచ్చు. మీరు Android యాప్‌నకు సైన్ ఇన్ చేసిన తర్వాత, మీ ఖాతాను ఇతర Android యాప్‌లతో ఉపయోగించవచ్చు. మీరు Android యాప్‌ల యాక్సెస్‌ను <ph name="LINK_BEGIN" />సెట్టింగ్‌లు &gt; ఖాతాలు<ph name="LINK_END" /> లింక్‌లో మార్చవచ్చు.</translation>
 <translation id="8350789879725387295">డాక్‌లో స్టైలస్ టూల్స్</translation>
 <translation id="8351316842353540018">ఎల్లప్పుడూ a11y ఆప్షన్‌లను చూపించు</translation>
 <translation id="8351419472474436977">ఈ ఎక్సటెన్షన్ మీ ప్రాక్సీ సెట్టింగ్‌లను దాని నియంత్రణలోకి తీసుకుంది, అది మీరు ఆన్‌లైన్‌లో ఏదైనా చేస్తుంటే దాన్ని మార్చడం, అంతరాయం కలిగించడం లేదా రహస్యంగా గమనించడం వంటివి చేయగలదని దీనర్థం. ఈ మార్పు ఎందుకు సంభవించిందో మీకు ఖచ్చితంగా తెలియలేదంటే బహుశా మీరు దాన్ని కోరుకొని ఉండకపోవచ్చు.</translation>

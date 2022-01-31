@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">დეტალების ნახვა</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ითხოვს თქვენს მოწყობილობაზე დიდი მოცულობის მონაცემების სამუდამოდ შენახვის ნებართვას</translation>
 <translation id="1032854598605920125">საათის ისრის მიმართულებით შემოტრიალება</translation>
+<translation id="1033329911862281889">ინკოგნიტო რეჟიმი იმას არ ნიშნავს, რომ უჩინარი იქნებით ონლაინ:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />საიტებს და სერვისებს ეცოდინებათ მათი მონახულების ან მათით სარგებლობის შესახებ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />დამსაქმებლებს ან სასწავლებლებს შეუძლიათ ვების დათვალიერების აქტივობის გაკონტროლება<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ინტერნეტ-პროვაიდერებს შეუძლიათ ვებტრაფიკის მონიტორინგი<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1036982837258183574">სრულეკრანიანი რეჟიმიდან გამოსასვლელად, დააჭირეთ კლავიშზე |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">შეთავაზებების ჩვენება</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">წესის ქეში OK</translation>
 <translation id="1130564665089811311">გვერდის თარგმნის ღილაკი, ამ გვერდის Google Translate-ით სათარგმნად დააჭირეთ კლავიშს Enter</translation>
 <translation id="1131264053432022307">თქვენ მიერ კოპირებული სურათი</translation>
+<translation id="1142846828089312304">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა ინკოგნიტო რეჟიმში</translation>
 <translation id="1150979032973867961">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი არ ენდობა თქვენი კომპიუტერის ოპერაციულ სისტემას. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="1151972924205500581">საჭიროა პაროლი</translation>
 <translation id="1156303062776767266">თქვენ ათვალიერებთ ადგილობრივ ან გაზიარებულ ფაილს</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">გაგზავნა</translation>
 <translation id="1484290072879560759">მიწოდების მისამართის არჩევა</translation>
 <translation id="1492194039220927094">წესების გადმოტანა:</translation>
+<translation id="149293076951187737">Chrome-ის ყველა ინკოგნიტო ჩანართის დახურვის შემდეგ თქვენი აქტივობა ამ ჩანართებში ამ მოწყობილობიდან წაიშლება:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />დათვალიერების აქტივობა<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ძიების ისტორია<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ფორმებში მითითებული ინფორმაცია<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ჩანართზე დაბრუნება</translation>
 <translation id="1501859676467574491">Google ანგარიშში შენახული ბარათების ჩვენება</translation>
 <translation id="1507202001669085618">&lt;p&gt;ამ ტიპის შეცდომის შესახებ შეტყობინებას დაინახავთ იმ შემთხვევაში, თუ ისეთ Wi-Fi პორტალს იყენებთ, რომელიც მოითხოვს სისტემაში შესვლას ინტერნეტ-კავშირის უზრუნველსაყოფად.&lt;/p&gt;
@@ -281,6 +294,7 @@
 <translation id="1763864636252898013">ეს ს ერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი არ ენდობა თქვენი მოწყობილობის ოპერაციულ სისტემას. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />სცადეთ Windows-ის ქსელის დიაგნოსტიკის ხელსაწყოს გაშვება<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">სერვერმა, რომელზე გადასვლასაც ცდილობთ (<ph name="ORIGIN" />), დააყენა სათაური, რომლისადმი ყველა მიმართვაც საჭიროებს წყაროს წესების გამოყენებას. სამწუხაროდ, სათაური არასწორად ფორმულირებულია, რის გამოც ბრაუზერი <ph name="SITE" />-თან დაკავშირებულ თქვენს მოთხოვნას ვერ ასრულებს. წყაროს წესების მეშვეობით საიტების ოპერატორებს შეუძლიათ ამა თუ იმ საიტის უსაფრთხოებისა და სხვა მახასიათებლების კონფიგურაცია.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი ინკოგნიტო რეჟიმის შესახებ Chromium-ში<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">აქ გამოჩნდება თქვენი გახსნილი ჩანართები</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -523,6 +537,12 @@
 <translation id="2597378329261239068">ეს დოკუმენტი დაცულია პაროლით. შეიყვანეთ პაროლი.</translation>
 <translation id="2609632851001447353">ვარიაციები</translation>
 <translation id="2610561535971892504">დააწკაპუნეთ დასაკოპირებლად</translation>
+<translation id="2617988307566202237">Chrome-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" /> შემდეგი ინფორმაცია:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />დათვალიერების ისტორია
+            <ph name="LIST_ITEM" />ქუქი-ჩანაწერები და საიტების მონაცემები
+            <ph name="LIST_ITEM" />ფორმებში მითითებული ინფორმაცია
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (კონვერტი)</translation>
 <translation id="2623663032199728144">შეიძლება გთხოვოთ თქვენი ეკრანების შესახებ ინფრმაციის გამოყენება</translation>
 <translation id="2625385379895617796">თქვენი საათი წინაა</translation>
@@ -589,6 +609,7 @@
 <translation id="2850739647070081192">Invite (კონვერტი)</translation>
 <translation id="2856444702002559011">თავდამსხმელები შეიძლება ცადონ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-დან თქვენი ინფორმაციის მოპარვა (მაგალითად, პაროლების, შეტყობინებების ან საკრედიტო ბარათების მონაცემების). <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ამ საიტზე ნაჩვენებია მომაბეზრებელი ან შეცდომაში შემყვანი რეკლამა.</translation>
+<translation id="286512204874376891">ვირტუალური ბარათი შენიღბავს თქვენს რეალურ ბარათს, რაც დაგიცავთ თაღლითობის პოტენციური შემთხვევებისგან. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">მეგობრული</translation>
 <translation id="2876489322757410363">გარე აპლიკაციით გადახდის შემთხვევაში, ინკოგნიტო რეჟიმიდან გახვალთ. გსურთ გაგრძელება?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Safe Browsing-ისა და სხვა ფუნქციების Chrome-ის პარამეტრებიდან სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -709,6 +730,7 @@
 <translation id="3252266817569339921">ფრანგული</translation>
 <translation id="3257954757204451555">ვის დგას ამ ინფორმაციის უკან?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-ში ახალი მოვლენის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
+<translation id="3261488570342242926">შეიტყვეთ ვირტუალური ბარათების შესახებ</translation>
 <translation id="3264837738038045344">Chrome-ის პარამეტრების მართვის ღილაკი, Chrome პარამეტრებზე გადასასვლელად დააჭირეთ კლავიშს Enter</translation>
 <translation id="3266793032086590337">მნიშვნელობა (კონფლიქტში)</translation>
 <translation id="3268451620468152448">გახსნილი ჩანართები</translation>
@@ -1148,6 +1170,7 @@
 <translation id="4628948037717959914">ფოტო</translation>
 <translation id="4631649115723685955">ქეშბექი მიბმულია</translation>
 <translation id="4636930964841734540">ინფორმაცია</translation>
+<translation id="4638670630777875591">ინკოგნიტო რეჟიმი Chromium-ში</translation>
 <translation id="464342062220857295">ძიების ფუნქციები</translation>
 <translation id="4644670975240021822">უკუმიმდევრობა ნაბეჭდი მხარით დაღმა</translation>
 <translation id="4646534391647090355">ახლავე გადასვლა</translation>
@@ -1243,6 +1266,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" />-დან</translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, მოსაძიებლად დააჭირეთ Tab-ს, შემდეგ Enter-ს</translation>
 <translation id="4930153903256238152">დიდი მოცულობის</translation>
+<translation id="4940163644868678279">ინკოგნიტო რეჟიმი Chrome-ში</translation>
 <translation id="4943872375798546930">შედეგები არ არის</translation>
 <translation id="4950898438188848926">ჩანართის გადართვის ღილაკი, ამ ჩანართზე გადასართველად დააჭირეთ კლავიშს „Enter“, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">ქმედებები</translation>
@@ -1603,6 +1627,7 @@
 <translation id="6120179357481664955">გსურთ თქვენი UPI ID-ს დამახსოვრება?</translation>
 <translation id="6124432979022149706">Chrome Enterprise მაერთებლები</translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი ინკოგნიტო რეჟიმის შესახებ Chrome-ში<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">შეამოწმეთ კაბელები და გადატვირთეთ ყველა როუტერი, მოდემი ან
     სხვა ქსელური მოწყობილობა, რომელსაც იყენებთ.</translation>
 <translation id="614940544461990577">ცადეთ:</translation>
@@ -1877,6 +1902,12 @@
 <translation id="7111012039238467737">(სწორია)</translation>
 <translation id="7118618213916969306">გაცვლის ბუფერში URL-ის ძიება, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">სხვა ჩანართების ან პროგრამების დახურვა</translation>
+<translation id="7129355289156517987">Chromium-ის ყველა ინკოგნიტო ჩანართის დახურვის შემდეგ თქვენი აქტივობა ამ ჩანართებში ამ მოწყობილობიდან წაიშლება:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />დათვალიერების აქტივობა<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ძიების ისტორია<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ფორმებში მითითებული ინფორმაცია<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ამ მისამართზე გაგზავნა ვერ მოხერხდება. აირჩიეთ სხვა მისამართი.</translation>
 <translation id="7132939140423847331">თქვენი ადმინისტრატორი კრძალავს ამ მონაცემთა კოპირებას.</translation>
 <translation id="7135130955892390533">სტატუსის ჩვენება</translation>
@@ -1995,6 +2026,12 @@
 <translation id="7485870689360869515">მონაცემები ვერ მოიძებნა.</translation>
 <translation id="7495528107193238112">ეს კონტენტი დაბლოკილია. დაუკავშირდით საიტის მფლობელს ამ პრობლემის მოსაგვარებლად.</translation>
 <translation id="7497998058912824456">დოკუმენტის შექმნის ღილაკი, ახალი Google Doc-ის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Enter</translation>
+<translation id="7506488012654002225">Chromium-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" /> შემდეგი ინფორმაცია:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />დათვალიერების ისტორია
+            <ph name="LIST_ITEM" />ქუქი-ჩანაწერები და საიტების მონაცემები
+            <ph name="LIST_ITEM" />ფორმებში მითითებული ინფორმაცია
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">წესების დაბრუნებული მოწყობილობის ID ცარიელია ან ამჟამინდელ მოწყობილობის ID-ს არ ემთხვევა</translation>
 <translation id="7508870219247277067">ავოკადოსფერი</translation>
 <translation id="7511955381719512146">Wi-Fi-მ, რომელსაც თქვენ იყენებთ შეიძლება მოითხოვოს თქვენ სტუმრობა <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2214,6 +2251,7 @@
 <translation id="8202370299023114387">კონფლიქტი</translation>
 <translation id="8206978196348664717">Prc4 (კონვერტი)</translation>
 <translation id="8211406090763984747">კავშირი დაცულია</translation>
+<translation id="8217240300496046857">საიტები ვერ გამოიყენებს ქუქი-ჩანაწერებს ვებში თქვენთვის თვალის მისადევნებლად. ზოგიერთი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს.</translation>
 <translation id="8218327578424803826">მიმაგრებული მდებარეობა:</translation>
 <translation id="8220146938470311105">C7/C6 (კონვერტი)</translation>
 <translation id="8225771182978767009">პიროვნებამ, რომელმაც ეს კომპიუტერი გამართა, ამ საიტის დაბლოკვა აირჩია.</translation>

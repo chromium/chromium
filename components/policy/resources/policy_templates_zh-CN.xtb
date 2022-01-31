@@ -91,6 +91,7 @@
 <translation id="1082802595100075771">允许用户选择使用匿名 Google 服务为无标签图片提供自动说明</translation>
 <translation id="1087437665304381368">此政策仅用于控制 <ph name="PRODUCT_OS_NAME" />开发者模式。如果您想阻止对 Android 开发者选项的访问，则需设置 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome 企业版政策列表迁址了！请更新您的书签以改用 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
+<translation id="1091765729282771296">允许网站请求用户授予对 HID 设备的访问权限</translation>
 <translation id="1095209545735032039">禁止在这些网站上使用 Serial API</translation>
 <translation id="1096105751829466145">默认搜索服务提供商</translation>
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
@@ -1294,6 +1295,7 @@
 <translation id="2435052056904485763">Kerberos 委派服务器许可名单</translation>
 <translation id="2435232509335686514">与<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />对所下载文件的处理方式有关的配置政策</translation>
 <translation id="2436302465999055995">将 <ph name="LACROS_NAME" /> 设为唯一可用的浏览器（尚未实施）</translation>
+<translation id="2439187682308339104">不允许任何网站通过 WebHID API 请求对 HID 设备的访问权限</translation>
 <translation id="2448315169529769573">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />便会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果此政策已停用，系统会关闭指标和诊断数据报告功能。
 
        如果此政策未设置，在不受管理的设备上，指标和诊断数据报告功能会保持关闭状态；但在受管理的设备上，该功能会保持开启状态。</translation>
@@ -2777,6 +2779,7 @@
 
           如果此政策未设置，“插入符号突出显示”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
 <translation id="4183229833636799228">默认 <ph name="FLASH_PLUGIN_NAME" /> 设置</translation>
+<translation id="4187576366596772431">禁止在这些网站上使用 WebHID API</translation>
 <translation id="4192388905594723944">验证远程访问客户端身份验证令牌时使用的网址</translation>
 <translation id="4203643479966921607">如果此政策已启用或未设置，系统将会开启 <ph name="PRODUCT_NAME" /> 以供用户从以下位置启动：应用菜单、页面上下文菜单、支持 Cast 的网站上的媒体控件，以及（如果显示的话）Cast 工具栏图标。
 
@@ -4495,6 +4498,21 @@
 
       如果此政策未设置或列表为空，则意味着所有协议在 <ph name="PRODUCT_NAME" /> 中都可用。</translation>
 <translation id="6338982178236723271">报告系统信息</translation>
+<translation id="6352714113109004581">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以请求用户授权其访问 HID 设备。
+
+      如果您未设置此政策，那么，倘若 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
+
+      对于不符合此政策的网址格式，系统会依序优先应用政策：
+
+        * <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />（若包含匹配项）、
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />（若已设置）或
+
+        * 用户的个人设置。
+
+      网址格式不得与 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任一项政策。
+
+      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="6353890097388312479">如果此政策设为“All (0)”或未设置，用户便可修改所有 CA 证书的信任设置、移除用户导入的证书并使用证书管理器导入证书。如果此政策设为“UserOnly (1)”，用户将仅能管理用户导入的证书，但无法更改内置证书的信任设置。如果此政策设为“None (2)”，用户可以查看（但无法管理）CA 证书。</translation>
 <translation id="6362856770865555544">如果此政策已启用或未设置，系统会在 <ph name="PRODUCT_NAME" /> 中开启 WPAD（网络代理自动发现）优化设置。
 
@@ -5900,6 +5918,11 @@
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
+<translation id="7946350455013548764">如果此政策设为 3，系统会允许网站请求对 HID 设备的访问权限。如果此政策设为 2，系统会禁止网站访问 HID 设备。
+
+      如果此政策未设置，系统会允许网站请求获取访问权限，但用户可以更改此设置。
+
+      您可通过在 <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策中设置特定<ph name="URL_LABEL" />格式来覆盖此政策。</translation>
 <translation id="7951605113561734721">指定应使用设备管理协议注册的设备级客户端证书。</translation>
 <translation id="7952007677054834789">在 <ph name="PRODUCT_NAME" /> 中配置启动时加载的页面、默认主页和默认新标签页，并禁止用户更改它们。
 
@@ -6130,6 +6153,7 @@
 <translation id="8220023426952118761">所需的下载速率，以 kb/s 为单位。</translation>
 <translation id="8220156281401380422">配置本地消息传递主机许可名单</translation>
 <translation id="822055204938220476">可在不显示通知的情况下保持全屏模式的网址的列表</translation>
+<translation id="8225579382697740712">控制对 WebHID API 的使用</translation>
 <translation id="8229912067600517877">启用开发者工具</translation>
 <translation id="8238421250255592181">一个布尔值标记，用于表明屏幕键盘能否提供自动填充功能。</translation>
 <translation id="8239109177194627162">禁止使用“自动填充”功能填写信用卡信息</translation>
@@ -6455,6 +6479,21 @@
 <translation id="8543108307976719751">禁止与这台计算机建立远程访问连接</translation>
 <translation id="8544375438507658205">默认 HTML 呈现器为“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="8544465954173828789">允许将短信从手机同步到 Chromebook。</translation>
+<translation id="8553955290407912156">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法请求用户授权其访问 HID 设备。
+
+      如果您未设置此政策，那么，倘若 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
+
+      对于不符合此政策的网址格式，系统会依序优先应用政策：
+
+        * <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />（若包含匹配项）、
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />（若已设置）或
+
+        * 用户的个人设置。
+
+      网址格式不能与 <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任一项政策。
+
+      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="8566842294717252664">在“打开新的标签页”页面和应用启动器中不显示网上应用店</translation>
 <translation id="8571314270766672278">版本降级过程中，回滚并重置设备，在这一过程中让设备保留已注册状态</translation>
 <translation id="8571871284943706125">报告已注册的设备上的 CRD 会话事件（仅限已关联的用户）。
@@ -6545,6 +6584,7 @@
 
       如果此政策已停用或未设置，远程访问主机便能与任何本地用户关联。</translation>
 <translation id="867708016260789630">强制使用级别至少为“中等”的 YouTube 受限模式</translation>
+<translation id="8677853537025397834">允许在这些网站上使用 WebHID API</translation>
 <translation id="8685024486845674965">重复使用密码可触发密码保护服务警告功能</translation>
 <translation id="8685680544554917389">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 将会自动播放媒体。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 不会自动播放媒体。
 

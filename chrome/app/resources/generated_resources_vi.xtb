@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">Thiết bị USB-C (cổng bên trái)</translation>
 <translation id="1293556467332435079">Tệp</translation>
 <translation id="1294807885394205587">Quá trình này có thể mất vài phút. Đang khởi động dịch vụ quản lý vùng chứa.</translation>
+<translation id="1296046226918222533">Đã xảy ra lỗi và không nâng cấp được Linux. Bạn có thể xem thêm thông tin về lỗi này trong nhật ký. Nhật ký đã được lưu vào <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Ghim thẻ đã chọn</translation>
 <translation id="1297175357211070620">Máy in đích</translation>
 <translation id="129770436432446029">Gửi ý kiến phản hồi về <ph name="EXPERIMENT_NAME" /></translation>
@@ -2802,6 +2803,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3799128412641261490">Cài đặt tính năng Tiếp cận bằng công tắc</translation>
 <translation id="3800806661949714323">Hiển thị tất cả (được đề xuất)</translation>
 <translation id="3800828618615365228">Các điều khoản bổ sung của Google Chrome và Chrome OS</translation>
+<translation id="3802486193901166966">Tiện ích này không yêu cầu quyền đặc biệt nào cũng như không có thêm quyền truy cập nào vào trang web</translation>
 <translation id="380329542618494757">Tên</translation>
 <translation id="3803345858388753269">Chất lượng video</translation>
 <translation id="380408572480438692">Việc bật tính năng thu thập dữ liệu hoạt động sẽ giúp Google liên tục cải thiện hệ thống. Không dữ liệu nào được gửi cho tới khi bạn gửi báo cáo phản hồi (Alt-Shift-I) và cung cấp dữ liệu hoạt động. Bạn có thể quay lại màn hình này để tắt tính năng thu thập bất kỳ lúc nào.</translation>
@@ -3832,6 +3834,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4883436287898674711">Tất cả trang web <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Trình quản lý Tác vụ</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Tiện ích này không có thêm quyền truy cập nào vào trang web</translation>
 <translation id="4887424188275796356">Mở bằng trình xem hệ thống</translation>
 <translation id="488785315393301722">Hiển thị chi tiết</translation>
 <translation id="4890773143211625964">Hiển thị tùy chọn máy in nâng cao</translation>
@@ -4006,6 +4009,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5075910247684008552">Theo mặc định, các trang web an toàn sẽ chặn nội dung không an toàn</translation>
 <translation id="5078638979202084724">Đánh dấu trang tất cả các thẻ</translation>
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
+<translation id="5079010647467150187">Thêm VPN tích hợp sẵn...</translation>
 <translation id="5079950360618752063">Sử dụng mật khẩu đề xuất</translation>
 <translation id="508059534790499809">Làm mới vé Kerberos</translation>
 <translation id="5084230410268011727">Cho phép các trang web sử dụng cảm biến chuyển động và ánh sáng</translation>
@@ -5558,6 +5562,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6709133671862442373">Tin tức</translation>
 <translation id="6709357832553498500">Kết nối bằng <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Trước</translation>
+<translation id="6710973041022512889">Đã nâng cấp thành công. Bạn có thể xem thông tin chi tiết về lần nâng cấp này trong nhật ký lưu tại <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Liên kết với tài khoản <ph name="WEB_DRIVE" /> cho mục Tải xuống</translation>
 <translation id="6712943853047024245">Bạn đã lưu mật khẩu cho tên người dùng này trên <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Thêm hồ sơ công việc</translation>

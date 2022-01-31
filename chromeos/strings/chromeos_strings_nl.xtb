@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1387854245479784695">Dit is het totaal voor alle kernen</translation>
+<translation id="1394661041439318933">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in de case.</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
 <translation id="1398634363027580500">Zeer lange HTTPS-latentie</translation>
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ik heb een sleutelpaar</translation>
+<translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2104796393919810494">Reparatie afgerond</translation>
+<translation id="2105810540595158374">Apparaat is een gamecontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beschikbaar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
+<translation id="3031560714565892478">Apparaat is een videocamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3069085583900247081">Test mislukt</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
 <translation id="3102119246920354026">Cachegeheugen</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Apparaat is verbonden.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pagina verwijderen?}=1{Pagina {PAGE_NUMBER} verwijderen?}other{Pagina {PAGE_NUMBER} verwijderen?}}</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Pagina <ph name="PAGE_NUMBER" /> scannen…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
+<translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Pagina <ph name="PAGE_NUM" /> scannen. <ph name="PERCENTAGE_VALUE" />% voltooid.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> updaten</translation>
+<translation id="3484914941826596830">Koppel dit externe apparaat niet los en zet je computer niet uit terwijl de firmware wordt geüpdatet. Je kunt dit venster minimaliseren. Deze update kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens het updaten.</translation>
 <translation id="3486220673238053218">definitie</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
 <translation id="3942420633017001071">Diagnose</translation>
+<translation id="3954678691475912818">Apparaattype is onbekend.</translation>
 <translation id="3966286471246132217">Sluit voor nauwkeurigere resultaten alle apps totdat de test is afgerond.</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="397105322502079400">Berekenen...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4891842000192098784">Stress</translation>
+<translation id="4897058166682006107">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het linkeroordopje.</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
@@ -322,6 +331,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5346687412805619883">Lokaal netwerk</translation>
 <translation id="5358174242040570474">Er is iets misgegaan. Probeer nog een keer een achtergrond te kiezen of open de app opnieuw.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
+<translation id="5400907029458559844">Apparaat maakt verbinding.</translation>
 <translation id="5401938042319910061">Alle routines uitvoeren</translation>
 <translation id="5423849171846380976">Geactiveerd</translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
@@ -383,6 +393,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
+<translation id="6319207335391420837">Firmware updaten op <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Mislukt</translation>
 <translation id="6340526405444716530">Personalisatie</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
@@ -415,6 +426,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
 <translation id="6749473226660745022">Foto's</translation>
+<translation id="6753452347192452143">Apparaat is een computer.</translation>
 <translation id="6756731097889387912">Kan scannen niet annuleren</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
@@ -432,12 +444,14 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6992266763844448459">Selecteer deze optie als het eigendom van het apparaat niet verandert. Het apparaat wordt bijvoorbeeld overgedragen aan een andere persoon binnen een organisatie.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7041549558901442110">Apparaat is niet verbonden.</translation>
 <translation id="7058278511608979688">Stoppen en opslaan</translation>
 <translation id="7059230779847288458">Opladen, vol over <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Je apparaat voorbereiden</translation>
 <translation id="708426984172631313">GESTOPT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mislukt: autorisatie mislukt</translation>
+<translation id="7103252855940681301">Apparaat <ph name="INDEX" /> van <ph name="COUNT" /> met de naam <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
@@ -472,6 +486,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostische routines</translation>
+<translation id="7551123448725492271">Apparaat is een audioapparaat.</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchscreen</translation>
@@ -479,6 +494,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
 <translation id="763165478673169849">Laatste resettijd</translation>
 <translation id="7648838807254605802">Lage HTTPS-latentie</translation>
+<translation id="7656388927906093505">Apparaat is een muis.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7701040980221191251">Geen</translation>
@@ -575,6 +591,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8855781559874488009">Kan geen verbinding maken met HTTP-websites via een firewall</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> ophalen voor <ph name="QUERY" /> en meer</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Apparaat is een tablet.</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>
 <translation id="8898840733695078011">Signaalsterkte</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>
@@ -585,11 +602,13 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8930622219860340959">Draadloos</translation>
 <translation id="8936793075252196307">IP-adres van client</translation>
 <translation id="8945750210906526975">Interne touchpad</translation>
+<translation id="894617464444543719">Apparaat is een telefoon.</translation>
 <translation id="8968751544471797276">Oplaadsnelheid</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Pagina {NUMBER_OF_PAGES} scannen}other{Pagina {NUMBER_OF_PAGES} scannen}}</translation>
 <translation id="8994273342647807496">Installeren: <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading.</translation>
 <translation id="9003704114456258138">Frequentie</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-omzetting heeft een lange vertraging</translation>

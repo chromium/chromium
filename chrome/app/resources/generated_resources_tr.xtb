@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">USB-C cihaz (sol bağlantı noktası)</translation>
 <translation id="1293556467332435079">Dosyalar</translation>
 <translation id="1294807885394205587">Bu işlem birkaç dakika sürebilir. Kapsayıcı yöneticisi başlatılıyor.</translation>
+<translation id="1296046226918222533">Bir sorun oluştuğu için Linux'u yeni sürüme geçirme işlemi başarısız oldu. Başarısız işlemle ilgili daha fazla bilgiye günlüklerden ulaşabilirsiniz. Günlükler <ph name="LOG_FILE" /> dosyasına kaydedildi</translation>
 <translation id="1296911687402551044">Seçili Sekmeyi Sabitle</translation>
 <translation id="1297175357211070620">Hedef</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> için geri bildirim gönderin</translation>
@@ -2786,6 +2787,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3799128412641261490">Anahtar erişimi ayarları</translation>
 <translation id="3800806661949714323">Tümünü göster (önerilen)</translation>
 <translation id="3800828618615365228">Google Chrome ve ChromeOS Ek Şartları</translation>
+<translation id="3802486193901166966">Bu uzantı herhangi bir özel izin gerektirmiyor ve uzantının ek site erişimi yok.</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803345858388753269">Video Kalitesi</translation>
 <translation id="380408572480438692">Performans verilerinin toplanmasını etkinleştirmek, Google'ın zaman içinde sistemi iyileştirmesine yardımcı olur. Siz bir geri bildirim raporu oluşturup (Alt-ÜstKrktr-I) performans verilerini ekleyene kadar hiçbir veri gönderilmez. Veri toplamayı devre dışı bırakmak için istediğiniz zaman bu ekrana dönebilirsiniz.</translation>
@@ -3199,6 +3201,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> cihazınıza Google Play'den uygulama ve oyunlar yükleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos'u yapılandırın</translation>
 <translation id="4235965441080806197">Oturum açmayı iptal et</translation>
+<translation id="4236163961381003811">Daha fazla uzantı keşfedin</translation>
 <translation id="4241182343707213132">Kuruluşun uygulamalarını güncellemek için yeniden başlatın</translation>
 <translation id="4242145785130247982">Birden fazla istemci sertifikası desteklenmiyor</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
@@ -3815,6 +3818,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4883436287898674711">Tüm <ph name="WEBSITE_1" /> siteleri</translation>
 <translation id="48838266408104654">&amp;Görev Yöneticisi</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Bu uzantının ek site erişimi yok</translation>
 <translation id="4887424188275796356">Sistem Görüntüleyici ile Aç</translation>
 <translation id="488785315393301722">Ayrıntıları Göster</translation>
 <translation id="4890773143211625964">Gelişmiş yazıcı seçeneklerini göster</translation>
@@ -3989,6 +3993,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5075910247684008552">Güvenli sitelerde güvenli olmayan içerik varsayılan olarak engellenir</translation>
 <translation id="5078638979202084724">Tüm sekmelere yer işareti koy</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
+<translation id="5079010647467150187">Yerleşik VPN ekleyin...</translation>
 <translation id="5079950360618752063">Önerilen şifreyi kullan</translation>
 <translation id="508059534790499809">Kerberos biletini yenile</translation>
 <translation id="5084230410268011727">Sitelerin hareket ve ışık sensörlerini kullanmasına izin ver</translation>
@@ -5542,6 +5547,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6709133671862442373">Haberler</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> uzantısını kullanarak bağlan</translation>
 <translation id="6710213216561001401">Önceki</translation>
+<translation id="6710973041022512889">Yeni sürüme geçme işlemi başarıyla tamamlandı. Günlükler, yeni sürüme geçme işlemi hakkında ayrıntılı bilgi için <ph name="LOG_FILE" /> dosyasına kaydedildi</translation>
 <translation id="6711146141291425900">İndirilenler için <ph name="WEB_DRIVE" /> hesabını bağlayın</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> için bu kullanıcı adıyla zaten bir şifre kaydettiniz</translation>
 <translation id="6713233729292711163">Çalışma Profili ekle</translation>

@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1387854245479784695">Tämä on kaikkien ytimien yhteissumma</translation>
+<translation id="1394661041439318933">Laitteen kotelon akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
 <translation id="1398634363027580500">Erittäin suuri HTTPS-viive</translation>
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Minulla on avainpari</translation>
+<translation id="1451536289672181509">Laite on näppäimistö.</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ylläpitää tätä laitetta ja voi ehkä seurata toimintaasi.</translation>
 <translation id="1478594628797167447">Skanneri</translation>
@@ -81,6 +83,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2104796393919810494">Korjaus valmis</translation>
+<translation id="2105810540595158374">Laite on peliohjain.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versio <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> Gt / <ph name="TOTAL_MEMORY" /> Gt saatavilla</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -134,6 +137,7 @@
 <translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
+<translation id="3031560714565892478">Laite on videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3069085583900247081">Testi epäonnistui</translation>
@@ -141,6 +145,7 @@
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
 <translation id="3102119246920354026">Välimuisti</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
+<translation id="3124039320086536031">Laite on yhdistetty.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Poistetaanko sivu?}=1{Poistetaanko sivu {PAGE_NUMBER}?}other{Poistetaanko sivu {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobiilitiedonsiirto</translation>
 <translation id="3156846309055100599">Skannataan sivu <ph name="PAGE_NUMBER" />…</translation>
@@ -156,6 +161,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS-viive merkittävästi yli sallitun rajan</translation>
 <translation id="3328783797891415197">Testi käynnissä</translation>
+<translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -164,6 +170,7 @@
 <translation id="345898999683440380">Skannataan sivu <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % valmis.</translation>
 <translation id="3459509316159669723">Tulostaminen</translation>
 <translation id="3462187165860821523">Päivitetään: <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laiteohjelmisto päivittyy. Voit pienentää ikkunan. Päivityksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
 <translation id="3486220673238053218">määritelmä</translation>
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
@@ -193,6 +200,7 @@
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
 <translation id="3942420633017001071">Diagnostiikka</translation>
+<translation id="3954678691475912818">Laitetyyppi on tuntematon.</translation>
 <translation id="3966286471246132217">Jos haluat tarkempia tuloksia, sulje kaikki sovellukset, kunnes testi on suoritettu.</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
@@ -274,6 +282,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
 <translation id="4891842000192098784">Rasitus</translation>
+<translation id="4897058166682006107">Laitteen vasemman kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
@@ -321,6 +330,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5346687412805619883">Paikallinen verkko</translation>
 <translation id="5358174242040570474">Jotain meni pieleen. Kokeile valita taustakuva uudelleen tai avaa sovellus.</translation>
 <translation id="5372659122375744710">Wi-Fi-verkko ei ole suojattu</translation>
+<translation id="5400907029458559844">Laite muodostaa yhteyttä.</translation>
 <translation id="5401938042319910061">Suorita kaikki ohjelmat</translation>
 <translation id="5423849171846380976">Aktivoitu</translation>
 <translation id="5430931332414098647">Yhteyden pikajakaminen</translation>
@@ -382,6 +392,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
+<translation id="6319207335391420837">Päivitä laiteohjelmisto: <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="6340526405444716530">Personointi</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
@@ -414,6 +425,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
 <translation id="6749473226660745022">Kuvat</translation>
+<translation id="6753452347192452143">Laite on tietokone.</translation>
 <translation id="6756731097889387912">Skannausta ei voitu perua</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
@@ -431,12 +443,14 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6992266763844448459">Valitse tämä vaihtoehto, jos laitteen omistajuus ei vaihdu, esimerkiksi jos laite siirretään toiselle henkilölle organisaation sisällä.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
+<translation id="7041549558901442110">Laitetta ei ole yhdistetty.</translation>
 <translation id="7058278511608979688">Lopeta ja tallenna</translation>
 <translation id="7059230779847288458">Ladataan, täynnä <ph name="TIME_VALUE" /> päästä</translation>
 <translation id="7068619307603204412">Valmistele laite</translation>
 <translation id="708426984172631313">LOPETETTU</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Epäonnistui – Valtuutus epäonnistui</translation>
+<translation id="7103252855940681301">Laite <ph name="INDEX" />/<ph name="COUNT" /> nimeltä <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimipalvelin}other{Nimipalvelimet}}</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
@@ -471,6 +485,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7502658306369382406">IPv6-osoite</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
+<translation id="7551123448725492271">Laite on audiolaite.</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-kosketusnäyttö</translation>
@@ -478,6 +493,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
 <translation id="763165478673169849">Edellinen nollausaika</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
+<translation id="7656388927906093505">Laite on hiiri.</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
@@ -574,6 +590,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8855781559874488009">HTTP-sivustoihin ei voi yhdistää palomuurin läpi</translation>
 <translation id="8863888432376731307">Hae <ph name="INTENT" />: "<ph name="QUERY" />" ja muita</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Laite on tabletti.</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>
 <translation id="8898840733695078011">Signaalin vahvuus</translation>
 <translation id="8910721771319628100">Oletusverkko yli viiverajan</translation>
@@ -584,11 +601,13 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8930622219860340959">Langaton</translation>
 <translation id="8936793075252196307">Asiakkaan IP-osoite</translation>
 <translation id="8945750210906526975">Sisäinen kosketuslevy</translation>
+<translation id="894617464444543719">Laite on puhelin.</translation>
 <translation id="8968751544471797276">Latausnopeus</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skannaa}=1{Skannaa sivu {NUMBER_OF_PAGES}}other{Skannaa sivu {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Asennetaan – <ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="8997710128084572139">Laitteen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Taajuus</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-selvityksen viive on pitkä</translation>

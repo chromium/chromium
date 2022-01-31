@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">USB-C 设备（左侧端口）</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1294807885394205587">此过程可能需要几分钟的时间。正在启动容器管理器。</translation>
+<translation id="1296046226918222533">出了点问题，Linux 升级失败。您可以查看日志，了解升级失败的详细信息。这些日志已保存在 <ph name="LOG_FILE" /> 中</translation>
 <translation id="1296911687402551044">固定所选标签页</translation>
 <translation id="1297175357211070620">目标打印机</translation>
 <translation id="129770436432446029">针对实验“<ph name="EXPERIMENT_NAME" />”发送反馈</translation>
@@ -2784,6 +2785,7 @@
 <translation id="3799128412641261490">开关控制设置</translation>
 <translation id="3800806661949714323">显示全部（推荐）</translation>
 <translation id="3800828618615365228">Google Chrome 和 Chrome 操作系统附加条款</translation>
+<translation id="3802486193901166966">此扩展程序无需任何特殊权限，并且无权访问其他网站</translation>
 <translation id="380329542618494757">名称</translation>
 <translation id="3803345858388753269">视频画质</translation>
 <translation id="380408572480438692">启用性能数据收集功能有助于 Google 逐步改进系统。除非您提交反馈报告 (Alt-Shift-I) 并在其中包含性能数据，否则，系统不会发送任何数据。您随时可以返回此页停用性能数据收集功能。</translation>
@@ -3196,6 +3198,7 @@
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4235965441080806197">取消登录</translation>
+<translation id="4236163961381003811">探索更多扩展程序</translation>
 <translation id="4241182343707213132">重启即可更新贵单位的应用</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -3812,6 +3815,7 @@
 <translation id="4883436287898674711">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="48838266408104654">任务管理器(&amp;T)</translation>
 <translation id="4884987973312178454">6 倍</translation>
+<translation id="4885692421645694729">此扩展程序无权访问其他网站</translation>
 <translation id="4887424188275796356">使用系统查看器打开</translation>
 <translation id="488785315393301722">显示详细信息</translation>
 <translation id="4890773143211625964">显示高级打印机选项</translation>
@@ -3986,6 +3990,7 @@
 <translation id="5075910247684008552">默认情况下，安全网站会拦截不安全内容</translation>
 <translation id="5078638979202084724">为所有标签页添加书签</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
+<translation id="5079010647467150187">添加内置 VPN…</translation>
 <translation id="5079950360618752063">使用建议的密码</translation>
 <translation id="508059534790499809">刷新 Kerberos 票据</translation>
 <translation id="5084230410268011727">允许网站使用动态传感器和光传感器</translation>
@@ -5538,6 +5543,7 @@
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6709357832553498500">使用“<ph name="EXTENSIONNAME" />”连接</translation>
 <translation id="6710213216561001401">上一项</translation>
+<translation id="6710973041022512889">升级成功完成。如需了解详细的升级信息，请参阅已保存在 <ph name="LOG_FILE" /> 中的日志</translation>
 <translation id="6711146141291425900">关联“<ph name="WEB_DRIVE" />”帐号以保存下载内容</translation>
 <translation id="6712943853047024245">您已经保存过此用户名在 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="6713233729292711163">添加工作资料</translation>

@@ -298,6 +298,7 @@
 <translation id="1293264513303784526">‏دستگاه USB-C (درگاه سمت چپ)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">این پردازش ممکن است چند دقیقه طول بکشد. راه‌اندازی مدیر محتوی.</translation>
+<translation id="1296046226918222533">‏مشکلی پیش آمد و ارتقای Linux انجام نشد. می‌توانید اطلاعات بیشتر درباره این عملیات ناموفق را در گزارش‌ها پیدا کنید. این گزارش‌ها در <ph name="LOG_FILE" /> ذخیره شده است</translation>
 <translation id="1296911687402551044">سنجاق کردن برگه انتخاب‌شده</translation>
 <translation id="1297175357211070620">مقصد</translation>
 <translation id="129770436432446029">ارسال بازخورد برای <ph name="EXPERIMENT_NAME" /></translation>
@@ -2799,6 +2800,7 @@
 <translation id="3799128412641261490">تنظیمات دسترسی کلیدی</translation>
 <translation id="3800806661949714323">نمایش همه موارد (توصیه می‌شود)</translation>
 <translation id="3800828618615365228">‏شرایط تکمیلی Google Chrome و ChromeOS</translation>
+<translation id="3802486193901166966">این افزونه به اجازه خاصی نیاز ندارد و هیچ‌گونه دسترسی اضافی به سایت ندارد</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803345858388753269">کیفیت ویدیو</translation>
 <translation id="380408572480438692">‏فعال کردن جمع‌آوری داده‌های عملکرد به Google کمک می‌کند به تدریج سیستم را بهبود ببخشد. تا وقتی‌که شما گزارش بازخورد ارائه ندهید (Alt-Shift-I) و داده‌های عملکرد را اضافه نکنید، هیچ داده‌ای ارسال نخواهد شد. هر زمان که بخواهید می‌توانید به این صفحه بازگردید و جمع‌آوری را غیرفعال کنید.</translation>
@@ -3830,6 +3832,7 @@
 <translation id="4883436287898674711">همه سایت‌های <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">مدیر &amp;فعالیت ها</translation>
 <translation id="4884987973312178454">۶ برابر</translation>
+<translation id="4885692421645694729">این افزونه هیچ‌گونه دسترسی اضافی به سایت ندارد</translation>
 <translation id="4887424188275796356">‏باز کردن با System Viewer</translation>
 <translation id="488785315393301722">نمایش جزئیات</translation>
 <translation id="4890773143211625964">نمایش گزینه‌های چاپگر پیشرفته</translation>
@@ -4004,6 +4007,7 @@
 <translation id="5075910247684008552">محتوای ناامن به‌طور پیش‌فرض در سایت‌های ایمن مسدود می‌شود</translation>
 <translation id="5078638979202084724">نشانک گذاری همه برگه‌ها</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
+<translation id="5079010647467150187">‏افزودن VPN داخلی…</translation>
 <translation id="5079950360618752063">استفاده از گذرواژه پیشنهادی</translation>
 <translation id="508059534790499809">‏بازخوانی بلیت Kerberos</translation>
 <translation id="5084230410268011727">استفاده از حسگرهای نوری و حرکتی توسط سایت‌ها مجاز شود</translation>
@@ -5556,6 +5560,7 @@
 <translation id="6709133671862442373">اخبار</translation>
 <translation id="6709357832553498500">اتصال با استفاده از <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">قبلی</translation>
+<translation id="6710973041022512889">ارتقا باموفقیت انجام شد. برای حفظ اطلاعات دقیق ارتقا، گزارش‌های مربوط به آن در <ph name="LOG_FILE" /> ذخیره شده است</translation>
 <translation id="6711146141291425900">برای دسترسی به «بارگیری‌ها»، حساب <ph name="WEB_DRIVE" /> را پیوند دهید</translation>
 <translation id="6712943853047024245">قبلاً گذرواژه‌ای با این نام کاربری برای <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="6713233729292711163">افزودن نمایه کاری</translation>

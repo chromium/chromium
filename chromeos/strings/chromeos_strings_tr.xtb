@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tarama alanına sığdır</translation>
 <translation id="1387854245479784695">Bu değer tüm çekirdeklerin toplamıdır</translation>
+<translation id="1394661041439318933">Cihazın kılıf pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="1397738625398125236">Ağ geçidi için Ping Testi çalıştırılabilir</translation>
 <translation id="1398634363027580500">Çok yüksek HTTPS gecikmesi</translation>
 <translation id="1413240736185167732">İşlem başarısız - Filtre başarısız</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Anahtar çiftim var</translation>
+<translation id="1451536289672181509">Cihazın türü klavye.</translation>
 <translation id="1468664791493211953">Teklifler</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bu cihazı yönetiyor ve etkinliklerinizi izleyebilir.</translation>
 <translation id="1478594628797167447">Tarayıcı</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Duvar kağıdı resmini günlük olarak değiştir</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
+<translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
 <translation id="1715359911173058521">Tarayıcı ile iletişimde bir sorun var. Ağ veya USB bağlantısını kontrol edip tekrar deneyin.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2104796393919810494">Onarım tamamlandı</translation>
+<translation id="2105810540595158374">Cihazın türü oyun kumandası.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, sürüm <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB kullanılabilir</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Kullanıcı adınızı ve şifrenizi girin ya da QR kodunuzu tarayın</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
+<translation id="3031560714565892478">Cihazın türü video kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Uç nokta</translation>
 <translation id="3069085583900247081">Test başarısız oldu</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3102119246920354026">Önbellek</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Cihaz bağlandı.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Sayfa kaldırılsın mı?}=1{{PAGE_NUMBER}. sayfa kaldırılsın mı?}other{{PAGE_NUMBER}. sayfa kaldırılsın mı?}}</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. sayfa taranıyor...</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
+<translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. sayfa taranıyor %<ph name="PERCENTAGE_VALUE" /> tamamlandı</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> güncelleniyor</translation>
+<translation id="3484914941826596830">Donanım yazılımı güncellenirken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
 <translation id="3942420633017001071">Teşhis</translation>
+<translation id="3954678691475912818">Cihazın türü bilinmiyor.</translation>
 <translation id="3966286471246132217">Daha doğru sonuçlar için test tamamlanana kadar tüm uygulamaları kapatın.</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4891842000192098784">Stres</translation>
+<translation id="4897058166682006107">Cihazın sol kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyede <ph name="RATE" /> şarj oldu</translation>
@@ -321,6 +331,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5346687412805619883">Yerel Ağ</translation>
 <translation id="5358174242040570474">Bir sorun oldu. Tekrar bir duvar kağıdı seçmeyi deneyin veya uygulamayı yeniden açın.</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
+<translation id="5400907029458559844">Cihaz bağlanıyor.</translation>
 <translation id="5401938042319910061">Tüm Rutinleri Çalıştır</translation>
 <translation id="5423849171846380976">Etkin</translation>
 <translation id="5430931332414098647">Anında Tethering</translation>
@@ -382,6 +393,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="6340526405444716530">Kişiselleştirme</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
@@ -414,6 +426,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
 <translation id="6747215703636344499">Durduruldu - Çıkış tepsisi dolu</translation>
 <translation id="6749473226660745022">Fotoğraflar</translation>
+<translation id="6753452347192452143">Cihazın türü bilgisayar.</translation>
 <translation id="6756731097889387912">Tarama iptal edilemedi</translation>
 <translation id="6766275201586212568">Başarısız DNS çözümlemeleri</translation>
 <translation id="6768237774506518020">DNS çözümleme hata oranı yüksek</translation>
@@ -431,12 +444,14 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6992266763844448459">Cihazın sahibi değişmiyorsa, örneğin cihaz aynı kuruluştaki başka bir kişiye devrediliyorsa bu seçeneği belirleyin.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7040230719604914234">Operatör</translation>
+<translation id="7041549558901442110">Cihaz bağlı değil.</translation>
 <translation id="7058278511608979688">Bitir ve kaydet</translation>
 <translation id="7059230779847288458">Şarj oluyor. Tamamen dolmasına <ph name="TIME_VALUE" /> var</translation>
 <translation id="7068619307603204412">Cihazınızı hazırlayın</translation>
 <translation id="708426984172631313">DURDURULDU</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Başarısız - Yetkilendirme Başarısız Oldu</translation>
+<translation id="7103252855940681301"><ph name="COUNT" /> cihazdan <ph name="INDEX" />. sıradakinin adı <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad sunucusu}other{Ad sunucuları}}</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
@@ -471,6 +486,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7502658306369382406">IPv6 adresi</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Teşhis Rutinleri</translation>
+<translation id="7551123448725492271">Cihazın türü ses sistemi.</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dokunmatik ekran</translation>
@@ -478,6 +494,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7620771111601174153">Yardım Merkezi'nde daha fazla bilgi edinin</translation>
 <translation id="763165478673169849">Son Sıfırlanma Zamanı</translation>
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>
+<translation id="7656388927906093505">Cihazın türü fare.</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
 <translation id="7701040980221191251">Yok</translation>
@@ -574,6 +591,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8855781559874488009">HTTP web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" için <ph name="INTENT" /> ve daha fazlasını alın</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Cihazın türü tablet.</translation>
 <translation id="8881098542468797602">Test başarılı oldu</translation>
 <translation id="8898840733695078011">Sinyal gücü</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>
@@ -584,11 +602,13 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8930622219860340959">WiFi (Kablosuz)</translation>
 <translation id="8936793075252196307">İstemci IP adresleri</translation>
 <translation id="8945750210906526975">Dahili dokunmatik alan</translation>
+<translation id="894617464444543719">Cihazın türü telefon.</translation>
 <translation id="8968751544471797276">Şarj olma hızı</translation>
 <translation id="8970109610781093811">Yeniden çalıştır</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Tara}=1{Taranacak sayfa: {NUMBER_OF_PAGES}}other{Taranacak sayfa: {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Yükleniyor - %<ph name="PERCENTAGE_VALUE" /></translation>
+<translation id="8997710128084572139">Cihazın pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="9003704114456258138">Frekans</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS çözümleme, yüksek gecikme süresine sahip</translation>

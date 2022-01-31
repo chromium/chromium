@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ஸ்கேன் செய்யும் பகுதிக்கு ஏற்பப் பொருத்து</translation>
 <translation id="1387854245479784695">அனைத்துக் கோர்களுக்குமானது</translation>
+<translation id="1394661041439318933">சாதனத்தின் கேஸ் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">கேட்வேயிற்குப் பிங் செய்வது</translation>
 <translation id="1398634363027580500">HTTPS கோரிக்கைகள் மிகவும் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="1413240736185167732">ஃபில்டர் வேலை செய்யாததால் அச்சிட முடியவில்லை</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">என்னிடம் குறியீட்டு இணை உள்ளது</translation>
+<translation id="1451536289672181509">சாதனம் ஒரு கீபோர்டு.</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
 <translation id="1476467821656042872">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது உங்கள் செயல்பாட்டையும் கண்காணிக்கக்கூடும்.</translation>
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2104796393919810494">ரிப்பேர் நிறைவடைந்தது</translation>
+<translation id="2105810540595158374">சாதனம் ஒரு கேம் கண்ட்ரோலர்.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ஜி.பை. உள்ளது</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="3031560714565892478">சாதனம் ஒரு வீடியோ கேமரா.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">எண்ட்பாயிண்ட்</translation>
 <translation id="3069085583900247081">சோதனை தோல்வியடைந்தது</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3102119246920354026">தற்காலிகச் சேமிப்பு</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">சாதனம் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{பக்கத்தை அகற்றவா?}=1{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}other{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}}</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />வது பக்கம் ஸ்கேன் செய்யப்படுகிறது...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடக் குறிப்பிடத்தக்க அளவு அதிகமாக உள்ளது</translation>
 <translation id="3328783797891415197">சோதனை நடைபெறுகிறது</translation>
+<translation id="3340011300870565703">வலதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% முடிந்தது.</translation>
 <translation id="3459509316159669723">அச்சிடல்</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கிறது</translation>
+<translation id="3484914941826596830">நிலைபொருளைப் புதுப்பிக்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3488065109653206955">பகுதியளவு செயலாக்கப்பட்டது</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
 <translation id="3942420633017001071">கண்டறிதல்</translation>
+<translation id="3954678691475912818">சாதனத்தின் வகை தெரியவில்லை.</translation>
 <translation id="3966286471246132217">மிகவும் துல்லியமான முடிவுகளைப் பெற சோதனை முடியும் வரை ஆப்ஸ் அனைத்தையும் மூடவும்.</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="4891842000192098784">ஸ்டிரெஸ்</translation>
+<translation id="4897058166682006107">இடதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் செய்யப்பட்டது.</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">அக நெட்வொர்க்</translation>
 <translation id="5358174242040570474">ஏதோ தவறாகிவிட்டது. வால்பேப்பரை மீண்டும் தேர்வுசெய்யவும் அல்லது ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
 <translation id="5372659122375744710">வைஃபை நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
+<translation id="5400907029458559844">சாதனம் இணைக்கப்படுகிறது.</translation>
 <translation id="5401938042319910061">எல்லாச் சோதனைகளையும் இயக்கு</translation>
 <translation id="5423849171846380976">செயலாக்கப்பட்டது</translation>
 <translation id="5430931332414098647">உடனடி இணைப்பு முறை</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">தீம்</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> சோதனை ரத்துசெய்யப்பட்டது</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> இல் நிலைபொருளைப் புதுப்பியுங்கள்</translation>
 <translation id="6325525973963619867">தோல்வி</translation>
 <translation id="6340526405444716530">பிரத்தியேகமாக்குதல்</translation>
 <translation id="636850387210749493">நிறுவனப் பதிவு</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
 <translation id="6747215703636344499">பிரிண்ட் வெளியே வரும் டிரே நிரம்பிவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6749473226660745022">படங்கள்</translation>
+<translation id="6753452347192452143">சாதனம் ஒரு கம்ப்யூட்டர்.</translation>
 <translation id="6756731097889387912">ஸ்கேன் செய்வதை ரத்துசெய்ய முடியவில்லை</translation>
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">சாதனத்தின் உரிமையாளர் மாறவில்லை எனில் இந்த விருப்பத்தைத் தேர்ந்தெடுக்கவும். உதாரணமாக, ஒரே நிறுவனத்தில் உள்ள வேறொருவருக்குச் சாதனம் மாற்றப்படும்போது.</translation>
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
 <translation id="7040230719604914234">ஆபரேட்டர்</translation>
+<translation id="7041549558901442110">சாதனம் இணைக்கப்படவில்லை.</translation>
 <translation id="7058278511608979688">நிறுத்திவிட்டுச் சேமி</translation>
 <translation id="7059230779847288458">சார்ஜ் ஆகிறது, முழுமையாகச் சார்ஜ் ஏற <ph name="TIME_VALUE" /> ஆகும்</translation>
 <translation id="7068619307603204412">சாதனத்தைத் தயார்ப்படுத்துதல்</translation>
 <translation id="708426984172631313">நிறுத்தப்பட்டது</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
+<translation id="7103252855940681301"><ph name="COUNT" /> சாதனங்களில் <ph name="INDEX" />வது சாதனத்தின் பெயர் <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">பிழை கண்டறிதலுக்கான வழக்கங்கள்</translation>
+<translation id="7551123448725492271">சாதனம் ஒரு ஆடியோ சாதனம்.</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB டச்ஸ்கிரீன்</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">உதவி மையத்தில் மேலும் அறிக</translation>
 <translation id="763165478673169849">கடைசியாக மீட்டமைத்த நேரம்</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
+<translation id="7656388927906093505">சாதனம் ஒரு மவுஸ்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">HTTP இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />", மேலும் பலவற்றுக்கான <ph name="INTENT" /> பெறுங்கள்</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">சாதனம் ஒரு டேப்லெட்.</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">கம்பியில்லா</translation>
 <translation id="8936793075252196307">கிளையண்ட் IP முகவரி</translation>
 <translation id="8945750210906526975">சாதனத்தில் உள்ள டச்பேட்</translation>
+<translation id="894617464444543719">சாதனம் ஒரு மொபைல்.</translation>
 <translation id="8968751544471797276">சார்ஜிங் விகிதம்</translation>
 <translation id="8970109610781093811">மீண்டும் இயக்கு</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ஸ்கேன் செய்}=1{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}other{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}}</translation>
 <translation id="8994273342647807496">நிறுவுகிறது (<ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="8997710128084572139">சாதனத்தின் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">அதிர்வெண்</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ரெசல்யூஷனில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>

@@ -299,6 +299,7 @@
 <translation id="1293264513303784526">‏מכשיר עם יציאת USB-C (יציאה שמאלית)</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1294807885394205587">התהליך הזה עשוי להימשך מספר דקות. המערכת מפעילה את מנהל המאגר.</translation>
+<translation id="1296046226918222533">‏משהו השתבש והשדרוג של Linux נכשל. ביומנים מפורט מידע נוסף על הבעיה. היומנים שמורים בקובץ <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">הצמדה של הכרטיסייה שנבחרה</translation>
 <translation id="1297175357211070620">יעד</translation>
 <translation id="129770436432446029">שליחת משוב לגבי <ph name="EXPERIMENT_NAME" /></translation>
@@ -2803,6 +2804,7 @@
 <translation id="3799128412641261490">הגדרות גישה באמצעות מתג</translation>
 <translation id="3800806661949714323">הצגת הכול (מומלץ)</translation>
 <translation id="3800828618615365228">‏תנאים נוספים של Google Chrome ו-ChromeOS</translation>
+<translation id="3802486193901166966">אין צורך בהרשאות מיוחדות או הרשאות גישה נוספות לאתרים כדי להשתמש בתוסף הזה</translation>
 <translation id="380329542618494757">שם</translation>
 <translation id="3803345858388753269">איכות הווידאו</translation>
 <translation id="380408572480438692">‏הפעלת האפשרות לאיסוף נתוני ביצועים תסייע ל-Google לשפר את המערכת עם הזמן. הנתונים נשלחים רק לאחר שמגישים דוח משוב (Alt-Shift-I) וכוללים את נתוני הביצועים. ניתן לחזור למסך זה כדי להשבית את איסוף הנתונים בכל עת.</translation>
@@ -3833,6 +3835,7 @@
 <translation id="4883436287898674711">כל אתרי <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;מנהל המשימות</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">לתוסף הזה אין הרשאות גישה נוספות לאתרים</translation>
 <translation id="4887424188275796356">פתיחה באמצעות מציג המערכת</translation>
 <translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="4890773143211625964">הצגת אפשרויות מדפסת מתקדמות</translation>
@@ -4007,6 +4010,7 @@
 <translation id="5075910247684008552">תוכן לא מאובטח נחסם כברירת מחדל באתרים מאובטחים</translation>
 <translation id="5078638979202084724">יצירת סימנייה לכל הכרטיסיות</translation>
 <translation id="5078796286268621944">‏PIN שגוי</translation>
+<translation id="5079010647467150187">‏הוספת רשת VPN מובנית…</translation>
 <translation id="5079950360618752063">שימוש בסיסמה המוצעת</translation>
 <translation id="508059534790499809">‏רענון של כרטיס Kerberos</translation>
 <translation id="5084230410268011727">מתן הרשאה לאתרים להשתמש בחיישני תנועה ואור</translation>
@@ -5559,6 +5563,7 @@
 <translation id="6709133671862442373">חדשות</translation>
 <translation id="6709357832553498500">התחברות באמצעות <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">הקודם</translation>
+<translation id="6710973041022512889">השדרוג הושלם בהצלחה. ביומנים ששמורים בקובץ <ph name="LOG_FILE" /> מפורט מידע על השדרוג</translation>
 <translation id="6711146141291425900">קישור של חשבון <ph name="WEB_DRIVE" /> לצורך הורדות</translation>
 <translation id="6712943853047024245">כבר שמרת סיסמה עם שם המשתמש הזה לאתר <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">הוספת פרופיל עבודה</translation>

@@ -296,6 +296,7 @@
 <translation id="1293264513303784526">Dispositivo USB-C (porta a sinistra)</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1294807885394205587">Questa procedura potrebbe richiedere alcuni minuti. Avvio del gestore di container.</translation>
+<translation id="1296046226918222533">Si è verificato un problema e l'upgrade di Linux non è andato a buon fine. Puoi trovare maggiori informazioni sull'errore nei log. I log sono stati salvati in <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Blocca scheda selezionata</translation>
 <translation id="1297175357211070620">Destinazione</translation>
 <translation id="129770436432446029">Invia feedback su <ph name="EXPERIMENT_NAME" /></translation>
@@ -2789,6 +2790,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3799128412641261490">Impostazioni Switch Access</translation>
 <translation id="3800806661949714323">Mostra tutto (opzione consigliata)</translation>
 <translation id="3800828618615365228">Termini aggiuntivi di Google Chrome e Chrome OS</translation>
+<translation id="3802486193901166966">Questa estensione non richiede autorizzazioni speciali e non ha accesso a siti aggiuntivi</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Qualità video</translation>
 <translation id="380408572480438692">Se attivi la raccolta dei dati sul rendimento, consenti a Google di migliorare il sistema nel tempo. I dati vengono inviati soltanto quando presenti un rapporto di feedback (Alt+Maiusc+I) e includi dati sul rendimento. Puoi tornare in qualsiasi momento in questa schermata per disattivare la raccolta.</translation>
@@ -3818,6 +3820,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4883436287898674711">Tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">L'estensione non ha accesso a siti aggiuntivi</translation>
 <translation id="4887424188275796356">Apri con visualizzatore di sistema</translation>
 <translation id="488785315393301722">Mostra dettagli</translation>
 <translation id="4890773143211625964">Mostra impostazioni avanzate della stampante</translation>
@@ -3992,6 +3995,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5075910247684008552">I contenuti non sicuri vengono bloccati per impostazione predefinita sui siti protetti</translation>
 <translation id="5078638979202084724">Aggiungi tutte le schede ai Preferiti</translation>
 <translation id="5078796286268621944">PIN errato</translation>
+<translation id="5079010647467150187">Aggiungi VPN integrata…</translation>
 <translation id="5079950360618752063">Utilizza la password suggerita</translation>
 <translation id="508059534790499809">Aggiorna una richiesta di Kerberos</translation>
 <translation id="5084230410268011727">Consenti ai siti di usare i sensori di movimento e della luce</translation>
@@ -5544,6 +5548,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6709133671862442373">Notizie</translation>
 <translation id="6709357832553498500">Connettiti utilizzando <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Precedente</translation>
+<translation id="6710973041022512889">L'upgrade è stato completato correttamente. Per informazioni dettagliate sull'upgrade, i log sono stati salvati in <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Collega l'account <ph name="WEB_DRIVE" /> per effettuare i download</translation>
 <translation id="6712943853047024245">Hai già salvato una password con questo nome utente per <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Aggiungi profilo di lavoro</translation>

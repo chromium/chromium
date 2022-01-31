@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">USB-C デバイス（左側面のポート）</translation>
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1294807885394205587">この処理には数分かかることがあります。コンテナ マネージャーを起動しています。</translation>
+<translation id="1296046226918222533">問題が発生したため、Linux をアップグレードできませんでした。この問題に関する詳しい情報はログで確認できます。ログは <ph name="LOG_FILE" /> に保存されています</translation>
 <translation id="1296911687402551044">選択したタブを固定</translation>
 <translation id="1297175357211070620">送信先</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />についてのフィードバックを送信</translation>
@@ -2785,6 +2786,7 @@
 <translation id="3799128412641261490">スイッチ アクセスの設定</translation>
 <translation id="3800806661949714323">すべてを表示（推奨）</translation>
 <translation id="3800828618615365228">Google Chrome および Chrome OS 追加利用規約</translation>
+<translation id="3802486193901166966">この拡張機能では、特別な権限は必要なく、追加のサイトアクセスは行われません</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803345858388753269">画質</translation>
 <translation id="380408572480438692">パフォーマンス データの収集を有効にすると、Google によるシステムの改善に役立てることができます。フィードバック レポートを作成（Alt-Shift-I）してパフォーマンス データを追加するまでは、データは送信されません。いつでもこの画面に戻って、データの収集を無効にできます。</translation>
@@ -3808,6 +3810,7 @@
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="48838266408104654">タスク マネージャ(&amp;T)</translation>
 <translation id="4884987973312178454">6 倍</translation>
+<translation id="4885692421645694729">この拡張機能では、追加のサイトアクセスは行われません</translation>
 <translation id="4887424188275796356">システム ビューアで開く</translation>
 <translation id="488785315393301722">詳細を表示</translation>
 <translation id="4890773143211625964">プリンタの詳細オプションを表示</translation>
@@ -3982,6 +3985,7 @@
 <translation id="5075910247684008552">保護されているサイトでは、保護されていないコンテンツはデフォルトでブロックされます。</translation>
 <translation id="5078638979202084724">すべてのタブをブックマークに追加する</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
+<translation id="5079010647467150187">組み込みの VPN を追加...</translation>
 <translation id="5079950360618752063">提案されたパスワードを使用</translation>
 <translation id="508059534790499809">Kerberos チケットの更新</translation>
 <translation id="5084230410268011727">サイトによるモーション センサーと光センサーの使用を許可する</translation>
@@ -5528,6 +5532,7 @@
 <translation id="6709133671862442373">ニュース</translation>
 <translation id="6709357832553498500">「<ph name="EXTENSIONNAME" />」を使用して接続</translation>
 <translation id="6710213216561001401">前へ</translation>
+<translation id="6710973041022512889">アップグレードが完了しました。アップグレードに関する詳しい情報は、<ph name="LOG_FILE" /> に保存されているログで確認できます</translation>
 <translation id="6711146141291425900">ダウンロードするには <ph name="WEB_DRIVE" /> アカウントをリンクしてください</translation>
 <translation id="6712943853047024245">このユーザー名で <ph name="WEBSITE" /> のパスワードはすでに保存されています</translation>
 <translation id="6713233729292711163">仕事用プロファイルを追加</translation>

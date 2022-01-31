@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">Perangkat USB-C (port sebelah kiri)</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1294807885394205587">Proses ini mungkin memerlukan waktu beberapa menit. Memulai pengelola penampung.</translation>
+<translation id="1296046226918222533">Terjadi error dan upgrade Linux gagal. Informasi selengkapnya terkait kegagalan ini dapat ditemukan di log. Log telah disimpan di <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Pasang Pin pada Tab Terpilih</translation>
 <translation id="1297175357211070620">Tujuan</translation>
 <translation id="129770436432446029">Kirim masukan untuk <ph name="EXPERIMENT_NAME" /></translation>
@@ -2803,6 +2804,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3799128412641261490">Setelan tombol akses</translation>
 <translation id="3800806661949714323">Tampilkan semua (disarankan)</translation>
 <translation id="3800828618615365228">Persyaratan Tambahan Google Chrome dan ChromeOS</translation>
+<translation id="3802486193901166966">Ekstensi ini tidak memerlukan izin khusus dan tidak memiliki akses situs tambahan</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803345858388753269">Kualitas Video</translation>
 <translation id="380408572480438692">Mengaktifkan koleksi data kinerja akan membantu meningkatkan sistem sepanjang waktu. Tidak ada data yang terkirim hingga mengajukan laporan masukan (Alt-Shift-I) dan menyertakan data kinerja. Anda dapat kembali ke layar ini untuk menonaktifkan koleksi kapan saja.</translation>
@@ -3833,6 +3835,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4883436287898674711">Semua situs <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Pengelola &amp;Tugas</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Ekstensi ini tidak memiliki akses situs tambahan</translation>
 <translation id="4887424188275796356">Buka Dengan Penampil Sistem</translation>
 <translation id="488785315393301722">Tampilkan Detail</translation>
 <translation id="4890773143211625964">Tampilkan opsi printer lanjutan</translation>
@@ -4007,6 +4010,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5075910247684008552">Konten yang tidak aman akan diblokir secara default di situs aman</translation>
 <translation id="5078638979202084724">Bookmark semua tab</translation>
 <translation id="5078796286268621944">PIN salah</translation>
+<translation id="5079010647467150187">Tambahkan VPN bawaan ...</translation>
 <translation id="5079950360618752063">Gunakan sandi yang disarankan</translation>
 <translation id="508059534790499809">Perbarui tiket Kerberos</translation>
 <translation id="5084230410268011727">Izinkan situs menggunakan sensor gerakan dan cahaya</translation>
@@ -5559,6 +5563,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6709133671862442373">Berita</translation>
 <translation id="6709357832553498500">Sambungkan menggunakan <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
+<translation id="6710973041022512889">Upgrade berhasil diselesaikan. Untuk informasi mendetail tentang upgrade, log telah disimpan di <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Tautkan akun <ph name="WEB_DRIVE" /> untuk Hasil Download</translation>
 <translation id="6712943853047024245">Anda sudah menyimpan sandi dengan nama pengguna ini untuk <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Tambahkan Profil Kerja</translation>

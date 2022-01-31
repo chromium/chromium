@@ -782,6 +782,7 @@
 <translation id="176587472219019965">&amp;নতুন উইন্ডো</translation>
 <translation id="1766575458646819543">ফুল-স্ক্রিন থেকে বেরিয়ে আসা হয়েছে</translation>
 <translation id="1766957085594317166">পাসওয়ার্ডগুলি Google অ্যাকাউন্টে নিরাপদে সেভ করুন এবং আপনাকে এগুলি আর কখনও টাইপ করতে হবে না</translation>
+<translation id="1767043563165955993">Android অ্যাপের সাথে ব্যবহার করুন</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" />-এর জন্য মতামত জানান।</translation>
 <translation id="1768278914020124551">ওহো! লগ-অন সার্ভারের সাথে যোগাযোগ করার সময় একটি সমস্যা হয়েছে। আপনার নেটওয়ার্ক সংযোগ এবং ডোমেন নাম পরীক্ষা করে আবার চেষ্টা করুন।</translation>
 <translation id="1769104665586091481">নতুন &amp;উইন্ডোতে লিঙ্ক খুলুন</translation>
@@ -1120,6 +1121,7 @@
 <translation id="2113479184312716848">Open &amp;File...</translation>
 <translation id="2113921862428609753">কর্তৃপক্ষ তথ্য অ্যাক্সেস</translation>
 <translation id="2114326799768592691">রিলোড ও ফ্রেম করুন</translation>
+<translation id="2114413269775311385">Android অ্যাপের সাথে এই অ্যাকাউন্ট ব্যবহার করুন। আপনি <ph name="LINK_BEGIN" />অ্যাপ সেটিংস<ph name="LINK_END" /> থেকে Android অ্যাপের অনুমতি নিয়ন্ত্রণ করতে পারবেন।</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> এর থেকে পাওয়া ফটো</translation>
 <translation id="2114995631896158695">কোনও সিম কার্ড যোগ করা হয়নি</translation>
 <translation id="2116619964159595185">সাইটগুলি সাধারণত লো-এনার্জি বিকন, স্বাস্থ্য বা ফিটনেস ট্র্যাকার অথবা স্মার্ট আলোর বাল্বের মতো ফিচার সেট আপ অথবা সিঙ্ক করতে ব্লুটুথ ডিভাইস কানেক্ট করে</translation>
@@ -2966,6 +2968,7 @@
 <translation id="3943582379552582368">&amp;ফিরুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3945513714196326460">আরও ছোট নাম লিখে দেখুন</translation>
+<translation id="3947643756376959257">Chromecast বা টিভিতে দেখানো অ্যাক্সেস কোড লিখুন।</translation>
 <translation id="3948027458879361203">হোস্টনেম পরিবর্তন করুন</translation>
 <translation id="3948116654032448504">&amp;ইমেজের জন্য <ph name="SEARCH_ENGINE" /> সার্চ করুন</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>
@@ -3207,12 +3210,14 @@
 <translation id="4210048056321123003">ভার্চুয়াল মেশিন ডাউনলোড করা হচ্ছে</translation>
 <translation id="421182450098841253">ও বুকমার্ক বার দেখান</translation>
 <translation id="4211851069413100178">ব্যবহার এবং ডায়াগনস্টিক ডেটা পাঠান। Google-এ নিজে থেকে ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা পাঠিয়ে, আপনার Android অভিজ্ঞতাকে উন্নত করতে সাহায্য করুন। এটি সিস্টেম ও অ্যাপের স্থিতিশীলতা এবং অন্যান্য উন্নতিতে সাহায্য করে। ব্যবহারকারীদের কিছু সম্মিলিত ডেটা Google অ্যাপ এবং Android ডেভেলপারদের মতো পার্টনারদের কাজে লাগবে। এই <ph name="BEGIN_LINK1" />সেটিং<ph name="END_LINK1" /> মালিকের নিয়ন্ত্রণে রয়েছে। এই ডিভাইসের জন্য Google-কে ডায়গনস্টিক এবং ব্যবহারের ডেটা পাঠানোর বিষয়টি মালিক বেছে নিতে পারেন। আপনার অতিরিক্ত ওয়েব ও অ্যাপ অ্যাক্টিভিটি সেটিং চালু থাকলে, এই ডেটা আপনার Google অ্যাকাউন্টে সেভ করা হতে পারে। <ph name="BEGIN_LINK2" />আরও জানুন<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Android অ্যাপের সাথে ব্যবহার করা বন্ধ করুন</translation>
 <translation id="42126664696688958">রপ্তানি</translation>
 <translation id="42137655013211669">এই সম্পদে অ্যাক্সেস করা সার্ভার দ্বারা নিষিদ্ধ ছিল।</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4219558185499589032">বক্স</translation>
 <translation id="4220648711404560261">অ্যাক্টিভেট করার সময় কোনও সমস্যা হয়েছে।</translation>
 <translation id="4225397296022057997">সমস্ত সাইটে</translation>
+<translation id="4227605727325220318">নতুন Android ফোন যোগ করুন</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশনের অনুমতি নেই}one{কিছু এক্সটেনশনের অনুমতি নেই}other{কিছু এক্সটেনশনের অনুমতি নেই}}</translation>
 <translation id="4231095370974836764">আপনার <ph name="DEVICE_TYPE" />-এ Google Play থেকে অ্যাপ ও গেম ইনস্টল করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos কনফিগার করুন</translation>
@@ -4752,6 +4757,7 @@
 <translation id="5862109781435984885">শেল্ফে স্টাইলাস টুল দেখান</translation>
 <translation id="5862319196656206789">কানেক্ট থাকা ডিভাইসগুলি সেট আপ করুন</translation>
 <translation id="5863445608433396414">ডিবাগিং বৈশিষ্ট্যাবলী চালু করুন</translation>
+<translation id="5864147196375746035">ম্যানেজ করা ডিভাইসে কাস্ট করা</translation>
 <translation id="5864195618110239517">মিটার্ড ইন্টারনেট কানেকশন ব্যবহার করুন</translation>
 <translation id="5864754048328252126">চার্জ করার সময়ে ফোন ইনঅ্যাক্টিভ স্ট্যাটাসে রাখা</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> শীঘ্রই পজ করা হবে</translation>
@@ -5937,6 +5943,7 @@
 <translation id="7086672505018440886">আর্কাইভে Chrome লগ ফাইল অন্তর্ভুক্ত করুন।</translation>
 <translation id="7088434364990739311">আপডেট চেক শুরু করা যায়নি (এরর কোড <ph name="ERROR" />)৷</translation>
 <translation id="7088674813905715446">প্রশাসকের দ্বারা এই ডিভাইসটি অ্যাক্সেসহীন অবস্থায় রাখা হয়েছে। নথীভুক্তের জন্য এটি সক্ষম করতে, দয়া করে একটি মুলতুবি স্থিতিতে আপনার প্রশাসককে ডিভাইসটি রাখতে দিন।</translation>
+<translation id="7090160970140261931">ওয়েবসাইট ও Android অ্যাপের সাথে ব্যবহার করার জন্য আপনার <ph name="DEVICE_TYPE" />-এ অতিরিক্ত অ্যাকাউন্ট যোগ করতে পারবেন। Android অ্যাপের সাথে কোন অ্যাকাউন্ট ব্যবহার করা হবে তাও নিয়ন্ত্রণ করতে পারবেন।</translation>
 <translation id="7093220653036489319">দ্রুত উত্তর</translation>
 <translation id="7093416310351037609">ডেটার সুরক্ষা ও নিরাপত্তার জন্য আপনার সংস্থার যা প্রয়োজন তা হল, সমস্ত উপযুক্ত ডাউনলোড আপনার সংস্থার <ph name="WEB_DRIVE" /> অ্যাকাউন্টে সেভ করতে হবে।</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6996,6 +7003,7 @@
 <translation id="8147900440966275470"><ph name="NUM" />টি ট্যাব পাওয়া গেছে</translation>
 <translation id="8148760431881541277">সাইন-ইন করা সীমিত করুন</translation>
 <translation id="8149564499626272569">ইউএসবি কেবেল দিয়ে আপনার ফোন কানেক্ট করে যাচাই করুন</translation>
+<translation id="815114315010033526">এর পরিবর্তে QR কোড ব্যবহার করুন</translation>
 <translation id="8151638057146502721">কনফিগার করুন</translation>
 <translation id="8154790740888707867">কোনো ফাইল নেই</translation>
 <translation id="8154912474061769055">একাধিক সাইটের ফিচার কাজ নাও করতে পারে</translation>
@@ -7021,6 +7029,7 @@
 <translation id="8176332201990304395">গোলাপি ও সাদা</translation>
 <translation id="8177196903785554304">নেটওয়ার্কের বিশদ বিবরণ</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ট্যাবটি নতুন উইন্ডোতে খুলুন}one{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}other{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}}</translation>
+<translation id="8179188928355984576">Android অ্যাপের সাথে ব্যবহার করা হচ্ছে না</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" উল্লিখিত অবস্থানগুলিতে ছবি, ভিডিও এবং শব্দের ফাইলগুলি পড়তে ও মুছতে পারে৷</translation>
 <translation id="8181215761849004992">ডোমেনে যোগ করা যাবে না। আপনার অ্যাকাউন্টে ডিভাইস যোগ করার সুবিধাগুলি যথাযথ আছে কিনা তা যাচাই করুন।</translation>

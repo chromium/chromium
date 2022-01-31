@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">الملاءمة مع منطقة المسح الضوئي</translation>
 <translation id="1387854245479784695">هذه بيانات مجمّعة عن كل النوى.</translation>
+<translation id="1394661041439318933">مستوى شحن بطارية الحافظة هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">يمكن فحص اتصال البوابة</translation>
 <translation id="1398634363027580500">‏وقت استجابة بروتوكول HTTPS طويل جدًا.</translation>
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">يتوفّر لديّ مفتاحا تشفير</translation>
+<translation id="1451536289672181509">الجهاز هو لوحة مفاتيح.</translation>
 <translation id="1468664791493211953">العروض</translation>
 <translation id="1476467821656042872">يدير <ph name="MANAGER" /> هذا الجهاز، وقد يتمكَّن من مراقبة نشاطك.</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
@@ -81,6 +83,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2104796393919810494">اكتملت عملية الإصلاح</translation>
+<translation id="2105810540595158374">الجهاز هو ذراع تحكّم في الألعاب.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، الإصدار <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">يتبقّى <ph name="AVAILABLE_MEMORY" /> غيغابايت من إجمالي <ph name="TOTAL_MEMORY" /> غيغابايت.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +137,7 @@
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
+<translation id="3031560714565892478">الجهاز هو كاميرا فيديو.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
 <translation id="3056720590588772262">نقطة النهاية</translation>
 <translation id="3069085583900247081">تعذّر إجراء اختبار</translation>
@@ -141,6 +145,7 @@
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
 <translation id="3102119246920354026">ذاكرة التخزين المؤقت</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
+<translation id="3124039320086536031">الجهاز متصل.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{هل تريد إزالة الصفحة؟}=1{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}two{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}few{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}many{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}other{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}}</translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
 <translation id="3156846309055100599">جارٍ مسح الصفحة <ph name="PAGE_NUMBER" /> ضوئيًا...</translation>
@@ -156,6 +161,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> غيغاهرتز</translation>
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
+<translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +170,7 @@
 <translation id="345898999683440380">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUM" />. اكتمل المسح الضوئي بنسبة <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">الطباعة</translation>
 <translation id="3462187165860821523">جارٍ تحديث <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
@@ -193,6 +200,7 @@
 <translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
 <translation id="3942420633017001071">بيانات التشخيص</translation>
+<translation id="3954678691475912818">نوع الجهاز غير معروف.</translation>
 <translation id="3966286471246132217">للحصول على نتائج أكثر دقة، عليك إغلاق كل التطبيقات إلى أن يكتمل الاختبار.</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
@@ -274,6 +282,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4891842000192098784">الإجهاد</translation>
+<translation id="4897058166682006107">مستوى شحن بطارية السماعة اليسرى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
@@ -321,6 +330,7 @@
 <translation id="5346687412805619883">الشبكة المحلية</translation>
 <translation id="5358174242040570474">حدث خطأ. يُرجى اختيار خلفية مرة أخرى أو إعادة فتح التطبيق.</translation>
 <translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
+<translation id="5400907029458559844">جارٍ توصيل الجهاز</translation>
 <translation id="5401938042319910061">تشغيل جميع سلاسل الإجراءات</translation>
 <translation id="5423849171846380976">نشطة</translation>
 <translation id="5430931332414098647">التوصيل الفوري</translation>
@@ -382,6 +392,7 @@
 <translation id="6278428485366576908">مظهر</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
+<translation id="6319207335391420837">تحديث البرامج الثابتة على <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">إخفاق</translation>
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
@@ -414,6 +425,7 @@
 <translation id="6704062477274546131">دقة نظام أسماء النطاقات</translation>
 <translation id="6747215703636344499">توقّفت الطابعة - دُرج الإخراج ممتلئ</translation>
 <translation id="6749473226660745022">الصور</translation>
+<translation id="6753452347192452143">الجهاز هو كمبيوتر.</translation>
 <translation id="6756731097889387912">تعذّر إلغاء عملية المسح الضوئي.</translation>
 <translation id="6766275201586212568">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
@@ -431,12 +443,14 @@
 <translation id="6992266763844448459">حدِّد هذا الخيار في حال عدم تغيير ملكية الجهاز، على سبيل المثال عند نقل الجهاز إلى مستخدم آخر داخل المؤسسة.</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
+<translation id="7041549558901442110">الجهاز غير متصل.</translation>
 <translation id="7058278511608979688">إنهاء وحفظ</translation>
 <translation id="7059230779847288458">جارٍ الشحن. تتبقَّى <ph name="TIME_VALUE" /> حتى اكتمال الشحن.</translation>
 <translation id="7068619307603204412">تحضير جهازك لإجراء التحديث</translation>
 <translation id="708426984172631313">متوقّف</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">تعذَّر التفويض: تعذَّر إتمام عملية التفويض.</translation>
+<translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
@@ -471,6 +485,7 @@
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
+<translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏شاشة USB تعمل باللمس</translation>
@@ -478,6 +493,7 @@
 <translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
 <translation id="763165478673169849">وقت آخر عملية إعادة ضبط</translation>
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>
+<translation id="7656388927906093505">الجهاز هو ماوس.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
@@ -574,6 +590,7 @@
 <translation id="8855781559874488009">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP.</translation>
 <translation id="8863888432376731307">الحصول على <ph name="INTENT" /> للطلب المتعلّق بـ "<ph name="QUERY" />" وغير ذلك</translation>
 <translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
+<translation id="8876270629542503161">الجهاز هو جهاز لوحي.</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
 <translation id="8898840733695078011">قوة الإشارة</translation>
 <translation id="8910721771319628100">وقت استجابة الشبكة التلقائية أعلى من الحدّ الأقصى.</translation>
@@ -584,11 +601,13 @@
 <translation id="8930622219860340959">شبكة لاسلكية</translation>
 <translation id="8936793075252196307">‏عنوان IP للعميل</translation>
 <translation id="8945750210906526975">لوحة لمس مدمَجة</translation>
+<translation id="894617464444543719">الجهاز هو هاتف.</translation>
 <translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
 <translation id="8994273342647807496">جارٍ التثبيت: %<ph name="PERCENTAGE_VALUE" /></translation>
+<translation id="8997710128084572139">مستوى شحن بطارية الجهاز هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏يستغرق التحويل باستخدام نظام أسماء النطاقات (DNS) وقت استجابة طويلاً.</translation>

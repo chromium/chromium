@@ -298,6 +298,7 @@
 <translation id="1293264513303784526">Устройство USB-C (порт слева)</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1294807885394205587">Это может занять несколько минут. Запуск менеджера контейнеров…</translation>
+<translation id="1296046226918222533">Произошла ошибка. Не удалось обновить Linux. Дополнительные сведения можно посмотреть в журналах в файле <ph name="LOG_FILE" />.</translation>
 <translation id="1296911687402551044">Закрепить выбранную вкладку</translation>
 <translation id="1297175357211070620">Принтер</translation>
 <translation id="129770436432446029">Оставить отзыв об эксперименте "<ph name="EXPERIMENT_NAME" />"</translation>
@@ -2789,6 +2790,7 @@
 <translation id="3799128412641261490">Настройки функции Switch Access</translation>
 <translation id="3800806661949714323">Показать все (рекомендуется)</translation>
 <translation id="3800828618615365228">Дополнительные условия использования Google Chrome и Chrome OS</translation>
+<translation id="3802486193901166966">Расширению не требуются особые разрешения и у него нет дополнительного доступа к сайтам</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803345858388753269">Качество видео</translation>
 <translation id="380408572480438692">Сбор данных о производительности помогает Google улучшать работу системы. Данные отправляются только тогда, когда пользователь отправляет отзыв (Alt-Shift-I) и решает приложить к нему данные о производительности. В любое время можно вернуться на эту страницу и отключить сбор данных.</translation>
@@ -3819,6 +3821,7 @@
 <translation id="4883436287898674711">Все сайты <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Диспетчер задач</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">У этого расширения нет дополнительного доступа к сайтам</translation>
 <translation id="4887424188275796356">Открыть в программе просмотра по умолчанию</translation>
 <translation id="488785315393301722">Показать сведения</translation>
 <translation id="4890773143211625964">Показать дополнительные настройки принтера</translation>
@@ -3993,6 +3996,7 @@
 <translation id="5075910247684008552">На защищенных сайтах небезопасный контент блокируется по умолчанию.</translation>
 <translation id="5078638979202084724">Добавить все вкладки в закладки</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
+<translation id="5079010647467150187">Добавить встроенную VPN</translation>
 <translation id="5079950360618752063">Использовать предложенный пароль</translation>
 <translation id="508059534790499809">Обновить билет Kerberos</translation>
 <translation id="5084230410268011727">Разрешить сайтам использовать датчики движения и освещенности</translation>
@@ -5545,6 +5549,7 @@
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6709357832553498500">Подключиться через <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Назад</translation>
+<translation id="6710973041022512889">Обновление завершено. Дополнительные сведения можно посмотреть в журналах в файле <ph name="LOG_FILE" />.</translation>
 <translation id="6711146141291425900">Привязать аккаунт <ph name="WEB_DRIVE" /> для скачиваний</translation>
 <translation id="6712943853047024245">Для этого имени пользователя на сайте <ph name="WEBSITE" /> уже сохранен пароль.</translation>
 <translation id="6713233729292711163">Добавить рабочий профиль</translation>

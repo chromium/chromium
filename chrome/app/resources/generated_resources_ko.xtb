@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">USB-C 기기(왼쪽 포트)</translation>
 <translation id="1293556467332435079">파일</translation>
 <translation id="1294807885394205587">이 과정은 몇 분 정도 걸릴 수 있습니다. 컨테이너 관리자를 시작합니다.</translation>
+<translation id="1296046226918222533">문제가 발생하여 Linux 업그레이드가 실패했습니다. 로그에서 자세한 실패 관련 정보를 확인할 수 있습니다. 로그는 <ph name="LOG_FILE" />에 저장되었습니다.</translation>
 <translation id="1296911687402551044">선택한 탭 고정</translation>
 <translation id="1297175357211070620">대상</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />에 관한 의견 보내기</translation>
@@ -2803,6 +2804,7 @@
 <translation id="3799128412641261490">스위치 제어 설정</translation>
 <translation id="3800806661949714323">모두 표시(권장)</translation>
 <translation id="3800828618615365228">Chrome 및 ChromeOS 추가 약관</translation>
+<translation id="3802486193901166966">이 확장 프로그램은 추가적인 사이트 액세스 권한이 없고 특별한 권한이 필요하지 않습니다.</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803345858388753269">동영상 품질</translation>
 <translation id="380408572480438692">성능 데이터를 수집하도록 설정하면 시간이 지남에 따라 Google에서 시스템을 개선하는 데 도움이 됩니다. 데이터는 사용자가 피드백 보고서를 제출하고(Alt-Shift-I) 성능 데이터를 포함할 때까지 전송되지 않습니다. 언제든지 이 화면으로 돌아와 데이터 수집을 중지할 수 있습니다.</translation>
@@ -3831,6 +3833,7 @@
 <translation id="4883436287898674711">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="48838266408104654">작업 관리자(&amp;T)</translation>
 <translation id="4884987973312178454">6배</translation>
+<translation id="4885692421645694729">이 확장 프로그램에는 추가적인 사이트 액세스 권한이 없습니다.</translation>
 <translation id="4887424188275796356">시스템 뷰어로 열기</translation>
 <translation id="488785315393301722">세부정보 표시</translation>
 <translation id="4890773143211625964">고급 프린터 옵션 표시</translation>
@@ -4005,6 +4008,7 @@
 <translation id="5075910247684008552">보안 사이트에서는 안전하지 않은 콘텐츠가 기본적으로 차단됩니다.</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
+<translation id="5079010647467150187">기본 제공 VPN 추가...</translation>
 <translation id="5079950360618752063">추천 비밀번호 사용</translation>
 <translation id="508059534790499809">Kerberos 티켓 새로고침</translation>
 <translation id="5084230410268011727">사이트에서 모션 및 조도 센서 사용 허용</translation>
@@ -5557,6 +5561,7 @@
 <translation id="6709133671862442373">뉴스</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />을(를) 사용하여 연결</translation>
 <translation id="6710213216561001401">이전</translation>
+<translation id="6710973041022512889">업그레이드가 완료되었습니다. 자세한 업그레이드 정보는 <ph name="LOG_FILE" />에 저장된 로그를 참고하세요.</translation>
 <translation id="6711146141291425900">다운로드용 <ph name="WEB_DRIVE" /> 계정 연결</translation>
 <translation id="6712943853047024245">이미 <ph name="WEBSITE" />의 사용자 이름과 비밀번호를 저장했습니다.</translation>
 <translation id="6713233729292711163">직장 프로필 추가</translation>

@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">USB-C-Gerät (Port links)</translation>
 <translation id="1293556467332435079">Dateien</translation>
 <translation id="1294807885394205587">Der Vorgang kann einige Minuten dauern. Container-Manager wird gestartet.</translation>
+<translation id="1296046226918222533">Ein Fehler ist aufgetreten. Das Linux-Upgrade ist fehlgeschlagen. Weitere Informationen zu dem Fehler finden Sie in den Protokollen. Die Protokolle wurden in <ph name="LOG_FILE" /> gespeichert.</translation>
 <translation id="1296911687402551044">Ausgewählten Tab anpinnen</translation>
 <translation id="1297175357211070620">Ziel</translation>
 <translation id="129770436432446029">Feedback geben zu „<ph name="EXPERIMENT_NAME" />“</translation>
@@ -2785,6 +2786,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
 <translation id="3800806661949714323">Alle anzeigen (empfohlen)</translation>
 <translation id="3800828618615365228">Google Chrome und Chrome OS – zusätzliche Nutzungsbedingungen</translation>
+<translation id="3802486193901166966">Diese Erweiterung erfordert keine speziellen Berechtigungen und ermöglicht keinen zusätzlichen Websitezugriff</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803345858388753269">Videoqualität</translation>
 <translation id="380408572480438692">Bei Aktivierung der Erfassung von Leistungsdaten kann Google das System mit der Zeit verbessern. Daten werden erst gesendet, wenn Sie mittels Alt+Umschalttaste+I einen Feedback-Bericht mit Leistungsdaten einreichen. Sie können jederzeit zu diesem Bildschirm zurückkehren, um die Datenerfassung zu deaktivieren.</translation>
@@ -3198,6 +3200,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4231095370974836764">Apps und Spiele von Google Play auf dem <ph name="DEVICE_TYPE" /> installieren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4235965441080806197">Anmeldung abbrechen</translation>
+<translation id="4236163961381003811">Mehr Erweiterungen entdecken</translation>
 <translation id="4241182343707213132">Neu starten, um die Apps der Organisation zu aktualisieren</translation>
 <translation id="4242145785130247982">Mehrere Clientzertifikate werden nicht unterstützt</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
@@ -3814,6 +3817,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-Websites</translation>
 <translation id="48838266408104654">&amp;Taskmanager</translation>
 <translation id="4884987973312178454">6-fach</translation>
+<translation id="4885692421645694729">Diese Erweiterung ermöglicht keinen zusätzlichen Websitezugriff.</translation>
 <translation id="4887424188275796356">Mit System Viewer öffnen</translation>
 <translation id="488785315393301722">Details ansehen</translation>
 <translation id="4890773143211625964">Erweiterte Druckereinstellungen anzeigen</translation>
@@ -3986,6 +3990,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5075910247684008552">Unsichere Inhalte werden auf sicheren Websites standardmäßig blockiert</translation>
 <translation id="5078638979202084724">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
+<translation id="5079010647467150187">Integriertes VPN hinzufügen…</translation>
 <translation id="5079950360618752063">Vorgeschlagenes Passwort verwenden</translation>
 <translation id="508059534790499809">Kerberos-Ticket aktualisieren</translation>
 <translation id="5084230410268011727">Verwendung von Bewegungs- und Lichtsensoren für Websites zulassen</translation>
@@ -5538,6 +5543,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6709133671862442373">Nachrichten</translation>
 <translation id="6709357832553498500">Über <ph name="EXTENSIONNAME" /> verbinden</translation>
 <translation id="6710213216561001401">Zurück</translation>
+<translation id="6710973041022512889">Das Upgrade ist abgeschlossen. Detaillierte Informationen zum Upgrade finden Sie in den Protokollen, die in <ph name="LOG_FILE" /> gespeichert wurden.</translation>
 <translation id="6711146141291425900"><ph name="WEB_DRIVE" />-Konto für Downloads verknüpfen</translation>
 <translation id="6712943853047024245">Sie haben bereits ein Passwort zu diesem Nutzernamen für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="6713233729292711163">Arbeitsprofil hinzufügen</translation>

@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
 <translation id="1387854245479784695">Jedná se o agregaci všech jader</translation>
+<translation id="1394661041439318933">Stav baterie pouzdra je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Pingnutí brány</translation>
 <translation id="1398634363027580500">Velmi vysoká latence HTTPS</translation>
 <translation id="1413240736185167732">Tisk selhal – selhal filtr</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Mám dvojici klíčů</translation>
+<translation id="1451536289672181509">Zařízení je klávesnice.</translation>
 <translation id="1468664791493211953">Nabídky</translation>
 <translation id="1476467821656042872">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která také může sledovat vaši aktivitu.</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2104796393919810494">Oprava dokončena</translation>
+<translation id="2105810540595158374">Zařízení je herní ovladač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">K dispozici je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
+<translation id="3031560714565892478">Zařízení je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Koncový bod</translation>
 <translation id="3069085583900247081">Test se nezdařil</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Tisk selhal – zastaveno</translation>
 <translation id="3102119246920354026">Mezipaměť</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Zařízení je připojeno.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Odstranit stránku?}=1{Odstranit stránku {PAGE_NUMBER}?}few{Odstranit stránku {PAGE_NUMBER}?}many{Odstranit stránku {PAGE_NUMBER}?}other{Odstranit stránku {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
 <translation id="3156846309055100599">Skenování stránky <ph name="PAGE_NUMBER" />…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
+<translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Skenování stránky <ph name="PAGE_NUM" />. Hotovo <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tisk</translation>
 <translation id="3462187165860821523">Aktualizace zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Během aktualizace firmwaru neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="3486220673238053218">definice</translation>
 <translation id="3488065109653206955">Částečně aktivováno</translation>
 <translation id="3527036260304016759">Tisk selhal – neznámá chyba</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3954678691475912818">Typ zařízení je neznámý.</translation>
 <translation id="3966286471246132217">Pokud chcete přesnější výsledky, zavřete všechny aplikace, dokud test nebude dokončen.</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4891842000192098784">Zátěž</translation>
+<translation id="4897058166682006107">Stav baterie levého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
@@ -322,6 +331,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5346687412805619883">Místní síť</translation>
 <translation id="5358174242040570474">Došlo k chybě. Zkuste tapetu vybrat znovu nebo znovu otevřít aplikaci.</translation>
 <translation id="5372659122375744710">Síť Wi-Fi není zabezpečena</translation>
+<translation id="5400907029458559844">Zařízení se připojuje.</translation>
 <translation id="5401938042319910061">Spustit všechny rutiny</translation>
 <translation id="5423849171846380976">Aktivováno</translation>
 <translation id="5430931332414098647">Dynamický tethering</translation>
@@ -383,6 +393,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6278428485366576908">Motiv</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
+<translation id="6319207335391420837">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Došlo k selhání</translation>
 <translation id="6340526405444716530">Personalizace</translation>
 <translation id="636850387210749493">Registrace podniku</translation>
@@ -415,6 +426,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
 <translation id="6747215703636344499">Zastaveno – výstupní zásobník je plný</translation>
 <translation id="6749473226660745022">Fotky</translation>
+<translation id="6753452347192452143">Zařízení je počítač.</translation>
 <translation id="6756731097889387912">Skenování se nepodařilo zrušit</translation>
 <translation id="6766275201586212568">Neúspěšné překlady DNS</translation>
 <translation id="6768237774506518020">Vysoká míra selhání překladu DNS</translation>
@@ -432,12 +444,14 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6992266763844448459">Tuto možnost vyberte v případě, že se nemění vlastník zařízení. Jako příklad lze uvést předání jiné osobě v rámci organizace.</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="7040230719604914234">Operátor</translation>
+<translation id="7041549558901442110">Zařízení není připojeno.</translation>
 <translation id="7058278511608979688">Ukončit a uložit</translation>
 <translation id="7059230779847288458">Nabíjení, <ph name="TIME_VALUE" /> do úplného nabití</translation>
 <translation id="7068619307603204412">Připravte zařízení</translation>
 <translation id="708426984172631313">ZASTAVENO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nezdařilo se – autorizace selhala</translation>
+<translation id="7103252855940681301">Zařízení <ph name="INDEX" /> z <ph name="COUNT" /> s názvem <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
@@ -472,6 +486,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostické rutiny</translation>
+<translation id="7551123448725492271">Zařízení je audiozařízení.</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Dotyková obrazovka USB</translation>
@@ -479,6 +494,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
 <translation id="763165478673169849">Čas posledního resetování</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
+<translation id="7656388927906093505">Zařízení je myš.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7701040980221191251">Žádné</translation>
@@ -575,6 +591,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8855781559874488009">Přes firewall se nelze připojit k webům HTTP</translation>
 <translation id="8863888432376731307">Získejte <ph name="INTENT" /> na dotaz „<ph name="QUERY" />“ a mnohem víc</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Zařízení je tablet.</translation>
 <translation id="8881098542468797602">Test byl úspěšný</translation>
 <translation id="8898840733695078011">Síla signálu</translation>
 <translation id="8910721771319628100">Výchozí síť má latenci nad prahovou hodnotou</translation>
@@ -585,11 +602,13 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8930622219860340959">Bezdrátové připojení</translation>
 <translation id="8936793075252196307">IP adresa klienta</translation>
 <translation id="8945750210906526975">Interní touchpad</translation>
+<translation id="894617464444543719">Zařízení je telefon.</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Naskenovat}=1{Naskenovat {NUMBER_OF_PAGES} stránek}few{Naskenovat {NUMBER_OF_PAGES} stránky}many{Naskenovat {NUMBER_OF_PAGES} stránky}other{Naskenovat {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="8994273342647807496">Instalace – <ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="8997710128084572139">Stav baterie zařízení je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Překlad záznamů DNS má vysokou latenci</translation>

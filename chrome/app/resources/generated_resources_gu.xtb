@@ -1897,6 +1897,7 @@
 <translation id="287205682142673348">પોર્ટ ફૉરવર્ડિંગ</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> ઉમેરો...</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
+<translation id="2873995907777332853">તમામ કુકીને બ્લૉક કરવા વિશેની વિગતો બતાવો</translation>
 <translation id="2874939134665556319">પાછલું ટ્રૅક</translation>
 <translation id="2875698561019555027">(Chrome ભૂલના પેજ)</translation>
 <translation id="2876336351874743617">આંગળી 2</translation>
@@ -2203,6 +2204,7 @@
 <translation id="3189187154924005138">મોટું કર્સર</translation>
 <translation id="3190558889382726167">પાસવર્ડ સાચવ્યો</translation>
 <translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
+<translation id="3194786596445804250">ત્રીજા પક્ષની કુકીને બ્લૉક કરવા વિશેની વિગતો બતાવો</translation>
 <translation id="3197453258332670132">તમારી ટેક્સ્ટની પસંદગી માટે, રાઇટ ક્લિક વડે અથવા થોડીવાર દબાવી રાખીને સંબંધિત માહિતી બતાવો</translation>
 <translation id="3199127022143353223">સર્વર્સ</translation>
 <translation id="3200061262156232574">તમારા શૉપિંગ કાર્ટમાં</translation>
@@ -5306,6 +5308,7 @@ USB ડિવાઇસ</translation>
 <translation id="6455264371803474013">વિશિષ્ટ સાઇટ પર</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
 <translation id="645705751491738698">JavaScript ને અવરોધિત કરવાનું ચાલુ રાખો</translation>
+<translation id="6458347417133445570">તમામ કુકીને મંજૂરી આપવા વિશેની વિગતો બતાવો</translation>
 <translation id="6458701200018867744">અપલોડ નિષ્ફળ થયું (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">શોધવા માટે પસંદગીનો ઉપયોગ કરો</translation>
 <translation id="6459799433792303855">સક્રિય વિંડો બીજા ડિસ્પ્લેમાં ખસેડી છે.</translation>
@@ -6741,6 +6744,7 @@ USB ડિવાઇસ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />સેકન્ડ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> જોઈ શકે છે <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">જોડણીની તપાસમાં તમે છોડવા માગતા હો તે શબ્દો ઉમેરો</translation>
+<translation id="7922935920104868876">છૂપા મોડમાં ત્રીજા પક્ષની કુકીને બ્લૉક કરવા વિશેની વિગતો બતાવો</translation>
 <translation id="7924358170328001543">પોર્ટ ફૉરવર્ડ કરવામાં ભૂલ આવી</translation>
 <translation id="7925108652071887026">સ્વત:ભરણ ડેટા</translation>
 <translation id="792514962475806987">ડૉક કરેલ ઝૂમ લેવલ:</translation>
@@ -6901,6 +6905,7 @@ USB ડિવાઇસ</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8076835018653442223">તમારા ઍડમિનિસ્ટ્રેટરે તમારા ડિવાઇસ પર સ્થાનિક ફાઇલોનો ઍક્સેસ બંધ કરેલો છે</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Android ઍપ સાથે ઉપયોગમાં લેવા માટે ઉપલબ્ધ એકાઉન્ટ</translation>
 <translation id="8081989000209387414">ADB ડિબગીંગ બંધ કરીએ?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" સાથે જોડી બનાવીએ?</translation>
 <translation id="8082390128630131497">ADB ડિબગીંગ બંધ કરવાથી આ <ph name="DEVICE_TYPE" />ને ફેક્ટરી સેટિંગ પર રીસેટ કરવામાં આવશે. બધા વપરાશકર્તા એકાઉન્ટ અને સ્થાનિક ડેટા કાઢી નાખવામાં આવશે.</translation>
@@ -7159,6 +7164,7 @@ USB ડિવાઇસ</translation>
 <translation id="8342861492835240085">સંગ્રહ પસંદ કરો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
 <translation id="834785183489258869">જ્યારે છૂપા મોડમાં હો, ત્યારે અલગ-અલગ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને વ્યક્તિગત બનાવવા માટે. અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં.</translation>
+<translation id="8349499562373871073">તમે Android ઍપ સાથે ઉપયોગમાં લેવા માટે વર્તમાન એકાઉન્ટ પસંદ કરી શકો છો અથવા નવું Google એકાઉન્ટ ઉમેરી શકો છો. એકવાર તમે Android ઍપમાં સાઇન ઇન કરો, તે પછી અન્ય Android ઍપ સાથે તમારું એકાઉન્ટ ઉપયોગમાં લેવામાં આવી શકે છે. તમે <ph name="LINK_BEGIN" />સેટિંગ &gt; એકાઉન્ટ<ph name="LINK_END" />માં જઈને Android ઍપના ઍક્સેસમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="8350789879725387295">ડૉકમાં સ્ટાયલસના સાધનો બતાવો</translation>
 <translation id="8351316842353540018">હંમેશાં ઍક્સેસિબિલિટીનાં વિકલ્પો બતાવો</translation>
 <translation id="8351419472474436977">આ એક્સ્ટેન્શને તમારા પ્રૉક્સી સેટિંગનું નિયંત્રણ લઈ લીધું છે, એનો અર્થ છે કે તમે જે કંઈ પણ ઓનલાઇન કરો છો એને એ બદલી, ભંગ કરી કે છુપાઈને પારકી વાતો સાંભળી શકે છે. આ ફેરફાર કેમ થયો એ અંગે જો તમને ખાતરી નથી, તો સંભવિત રૂપે એ તમને જોઈતું નહિ હોય.</translation>

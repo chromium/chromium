@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1387854245479784695">此指标是所有核心的汇总数据</translation>
+<translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
 <translation id="1398634363027580500">HTTPS 延迟非常高</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">我有一个密钥对</translation>
+<translation id="1451536289672181509">设备类型是键盘。</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 负责管理此设备，而且也许能够监控您的活动。</translation>
 <translation id="1478594628797167447">扫描器</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">每天更改一次壁纸图片</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
+<translation id="1668469839109562275">内置 VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
 <translation id="1715359911173058521">与扫描仪通信时出问题了。请检查网络或 USB 连接，然后重试。</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2104796393919810494">已修复完毕</translation>
+<translation id="2105810540595158374">设备类型是游戏控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用内存为 <ph name="AVAILABLE_MEMORY" /> GB，总共 <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
+<translation id="3031560714565892478">设备类型是摄像机。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端点</translation>
 <translation id="3069085583900247081">测试失败</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">失败 - 已停止</translation>
 <translation id="3102119246920354026">缓存</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">设备已连接。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{移除页面？}=1{移除第 {PAGE_NUMBER} 页？}other{移除第 {PAGE_NUMBER} 页？}}</translation>
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3156846309055100599">正在扫描第 <ph name="PAGE_NUMBER" /> 页…</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
+<translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380">正在扫描第 <ph name="PAGE_NUM" /> 页。已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3462187165860821523">正在更新“<ph name="DEVICE_NAME" />”</translation>
+<translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>
 <translation id="3488065109653206955">部分激活</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3941014780699102620">未能解析主机</translation>
 <translation id="3942420633017001071">诊断</translation>
+<translation id="3954678691475912818">设备类型未知。</translation>
 <translation id="3966286471246132217">为了获得更准确的结果，请关闭所有应用，直到测试完成为止。</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="397105322502079400">正在计算...</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4891842000192098784">压力</translation>
+<translation id="4897058166682006107">设备左侧耳机的剩余电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
@@ -321,6 +331,7 @@
 <translation id="5346687412805619883">本地网络</translation>
 <translation id="5358174242040570474">出了点问题。请再次尝试选择一种壁纸，或者重新打开该应用。</translation>
 <translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
+<translation id="5400907029458559844">设备正在连接。</translation>
 <translation id="5401938042319910061">运行所有例程</translation>
 <translation id="5423849171846380976">已激活</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
@@ -382,6 +393,7 @@
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
+<translation id="6319207335391420837">更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="6325525973963619867">失败</translation>
 <translation id="6340526405444716530">个性化</translation>
 <translation id="636850387210749493">企业注册</translation>
@@ -414,6 +426,7 @@
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
 <translation id="6749473226660745022">照片</translation>
+<translation id="6753452347192452143">设备类型是计算机。</translation>
 <translation id="6756731097889387912">无法取消扫描</translation>
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
@@ -431,12 +444,14 @@
 <translation id="6992266763844448459">如果设备的所有权未变，请选择此选项。例如，将这部设备转给同一单位内的另一个人。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
+<translation id="7041549558901442110">设备未连接。</translation>
 <translation id="7058278511608979688">结束并保存</translation>
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
 <translation id="7068619307603204412">准备设备</translation>
 <translation id="708426984172631313">已停止</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失败 - 授权失败</translation>
+<translation id="7103252855940681301">第 <ph name="INDEX" /> 部设备（共 <ph name="COUNT" /> 部），名称为“<ph name="NAME" />”。</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
@@ -471,6 +486,7 @@
 <translation id="7502658306369382406">IPv6 地址</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">诊断例程</translation>
+<translation id="7551123448725492271">设备类型是音频设备。</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 触摸屏</translation>
@@ -478,6 +494,7 @@
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="763165478673169849">上次重置时间</translation>
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
+<translation id="7656388927906093505">设备类型是鼠标。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7701040980221191251">无</translation>
@@ -574,6 +591,7 @@
 <translation id="8855781559874488009">无法通过防火墙连接到 HTTP 网站</translation>
 <translation id="8863888432376731307">获取“<ph name="QUERY" />”的<ph name="INTENT" />，等等</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">设备类型是平板电脑。</translation>
 <translation id="8881098542468797602">测试成功</translation>
 <translation id="8898840733695078011">信号强度</translation>
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
@@ -584,11 +602,13 @@
 <translation id="8930622219860340959">无线</translation>
 <translation id="8936793075252196307">客户端 IP 地址</translation>
 <translation id="8945750210906526975">内部触控板</translation>
+<translation id="894617464444543719">设备类型是手机。</translation>
 <translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{扫描}=1{扫描 {NUMBER_OF_PAGES} 个页面}other{扫描 {NUMBER_OF_PAGES} 个页面}}</translation>
 <translation id="8994273342647807496">正在安装 - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">设备电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="9003704114456258138">频率</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS 解析延迟时间较长</translation>

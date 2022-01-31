@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
 <translation id="1387854245479784695">És una agregació de tots els nuclis</translation>
+<translation id="1394661041439318933">La funda del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
 <translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tinc un parell de claus</translation>
+<translation id="1451536289672181509">El dispositiu és un teclat.</translation>
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona aquest dispositiu i és possible que pugui monitorar la teva activitat.</translation>
 <translation id="1478594628797167447">Escàners</translation>
@@ -81,6 +83,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2104796393919810494">Reparació completada</translation>
+<translation id="2105810540595158374">El dispositiu és un comandament de joc.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +137,7 @@
 <translation id="2926057806159140518">Introdueix el nom d'usuari i la contrasenya o bé escaneja el codi QR</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
+<translation id="3031560714565892478">El dispositiu és una càmera de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punt final</translation>
 <translation id="3069085583900247081">La prova no s'ha superat</translation>
@@ -141,6 +145,7 @@
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
 <translation id="3102119246920354026">Memòria cau</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">El dispositiu està connectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vols suprimir la pàgina?}=1{Vols suprimir la pàgina {PAGE_NUMBER}?}other{Vols suprimir les pàgines {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dades mòbils</translation>
 <translation id="3156846309055100599">S'està escanejant la pàgina <ph name="PAGE_NUMBER" />...</translation>
@@ -156,6 +161,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
+<translation id="3340011300870565703">L'auricular dret del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +170,7 @@
 <translation id="345898999683440380">S'està escanejant la pàgina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completat.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
 <translation id="3462187165860821523">S'està actualitzant <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Mentre el microprogramari s'actualitza, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquesta actualització pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
@@ -193,6 +200,7 @@
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
+<translation id="3954678691475912818">El tipus de dispositiu és desconegut.</translation>
 <translation id="3966286471246132217">Per obtenir uns resultats més precisos, tanca totes les aplicacions fins que la prova hagi finalitzat.</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
@@ -274,6 +282,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="4891842000192098784">Estrès</translation>
+<translation id="4897058166682006107">L'auricular esquerre del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
@@ -321,6 +330,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5346687412805619883">Xarxa local</translation>
 <translation id="5358174242040570474">S'ha produït un error. Prova novament de triar un fons de pantalla o d'obrir l'aplicació.</translation>
 <translation id="5372659122375744710">La xarxa Wi-Fi no és segura</translation>
+<translation id="5400907029458559844">El dispositiu s'està connectant.</translation>
 <translation id="5401938042319910061">S'han executat totes les rutines</translation>
 <translation id="5423849171846380976">Activat</translation>
 <translation id="5430931332414098647">Compartició de xarxa instantània</translation>
@@ -382,6 +392,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
+<translation id="6319207335391420837">Actualitza el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Error</translation>
 <translation id="6340526405444716530">Personalització</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
@@ -414,6 +425,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
 <translation id="6749473226660745022">Fotos</translation>
+<translation id="6753452347192452143">El dispositiu és un ordinador.</translation>
 <translation id="6756731097889387912">No s'ha pogut cancel·lar l'escaneig</translation>
 <translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
 <translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
@@ -431,12 +443,14 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6992266763844448459">Selecciona aquesta opció si la propietat del dispositiu no canvia. Per exemple, si el dispositiu s'està transferint a una altra persona dins d'una organització.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="7041549558901442110">El dispositiu no està connectat.</translation>
 <translation id="7058278511608979688">Finalitza i desa</translation>
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
 <translation id="7068619307603204412">Prepara el dispositiu</translation>
 <translation id="708426984172631313">ATURAT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
+<translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
@@ -471,6 +485,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7502658306369382406">Adreça IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
+<translation id="7551123448725492271">El dispositiu és un dispositiu d'àudio.</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla tàctil USB</translation>
@@ -478,6 +493,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
 <translation id="763165478673169849">Hora del darrer restabliment</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
+<translation id="7656388927906093505">El dispositiu és un ratolí.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
 <translation id="7701040980221191251">Cap</translation>
@@ -574,6 +590,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8855781559874488009">No es pot establir la connexió amb llocs web HTTP a través del tallafoc</translation>
 <translation id="8863888432376731307">Obtén la <ph name="INTENT" /> per a "<ph name="QUERY" />" i més</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">El dispositiu és una tauleta.</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
 <translation id="8898840733695078011">Intensitat del senyal</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
@@ -584,11 +601,13 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8930622219860340959">Sense fil</translation>
 <translation id="8936793075252196307">Adreça IP del client</translation>
 <translation id="8945750210906526975">Ratolí tàctil intern</translation>
+<translation id="894617464444543719">El dispositiu és un telèfon.</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escaneja}=1{Escaneja {NUMBER_OF_PAGES} pàgina}other{Escaneja {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="8994273342647807496">S'està instal·lant (<ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="8997710128084572139">El dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="9003704114456258138">Freqüència</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">La resolució de DNS té una latència alta</translation>

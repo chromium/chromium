@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">USB-C սարք (ձախ միացք)</translation>
 <translation id="1293556467332435079">Ֆայլեր</translation>
 <translation id="1294807885394205587">Սա կարող է մի քանի րոպե տևել։ Կոնտեյներների կառավարիչը գործարկվում է։</translation>
+<translation id="1296046226918222533">Սխալի պատճառով չհաջողվեց նորացնել Linux-ը։ Ավելին իմանալու համար դիտեք <ph name="LOG_FILE" /> ֆայլում պահված մատյանները։</translation>
 <translation id="1296911687402551044">Ամրացնել այս ներդիրը</translation>
 <translation id="1297175357211070620">Նպատակակետ</translation>
 <translation id="129770436432446029">Կարծիք հայտնել «<ph name="EXPERIMENT_NAME" />» գործառույթի մասին</translation>
@@ -2789,6 +2790,7 @@
 <translation id="3799128412641261490">Switch Access-ի կարգավորումներ</translation>
 <translation id="3800806661949714323">Ցույց տալ բոլորը (հանձնարարելի)</translation>
 <translation id="3800828618615365228">Google Chrome-ի և ChromeOS-ի լրացուցիչ պայմաններ</translation>
+<translation id="3802486193901166966">Այս ընդլայնումը հատուկ թույլտվություն չի պահանջում և չունի կայքերի լրացուցիչ հասանելիություն</translation>
 <translation id="380329542618494757">Անուն</translation>
 <translation id="3803345858388753269">Տեսանյութի որակը</translation>
 <translation id="380408572480438692">Միացնելով կատարողականության տվյալների հավաքումը՝ Google-ին կօգնեք ժամանակի ընթացքում բարելավել համակարգը: Ոչ մի տվյալ չի ուղարկվի, մինչև դուք չուղարկեք արձագանքը (Alt-Shift-I) և չներառեք կատարողականության տվյալները: Ցանկացած պահի կարող եք վերադառնալ այս էկրանին և անջատել տվյալների հավաքումը:</translation>
@@ -3820,6 +3822,7 @@
 <translation id="4883436287898674711">Բոլոր <ph name="WEBSITE_1" /> կայքերը</translation>
 <translation id="48838266408104654">&amp;Խնդիրների կառավարիչ</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Այս ընդլայնումը չունի կայքերի լրացուցիչ հասանելիություն</translation>
 <translation id="4887424188275796356">Բացել կանխադրված դիտակով</translation>
 <translation id="488785315393301722">Ցույց տալ մանրամասները</translation>
 <translation id="4890773143211625964">Ցուցադրել տպիչի լրացուցիչ ընտրանքները</translation>
@@ -3994,6 +3997,7 @@
 <translation id="5075910247684008552">Պաշտպանված կայքերում վտանգավոր բովանդակությունն արգելափակվում է ըստ կանխադրման:</translation>
 <translation id="5078638979202084724">Էջանշել բոլոր ներդիրները</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
+<translation id="5079010647467150187">Ավելացնել ներկառուցված VPN…</translation>
 <translation id="5079950360618752063">Օգտագործել առաջարկված գաղտնաբառը</translation>
 <translation id="508059534790499809">Թարմացնել Kerberos տոմսը</translation>
 <translation id="5084230410268011727">Թույլատրել կայքերին օգտագործել շարժման և լուսավորության սենսորները</translation>
@@ -5548,6 +5552,7 @@
 <translation id="6709133671862442373">Նորություններ</translation>
 <translation id="6709357832553498500">Միանալ՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
+<translation id="6710973041022512889">Նորացումն ավարտվեց։ Նորացման մանրամասն տեղեկությունները դիտեք <ph name="LOG_FILE" /> ֆայլի մատյաններում։</translation>
 <translation id="6711146141291425900">Կապեք <ph name="WEB_DRIVE" /> հաշիվը ներբեռնումների համար</translation>
 <translation id="6712943853047024245">Դուք այս օգտանվան հետ արդեն գաղտնաբառ պահել եք <ph name="WEBSITE" /> կայքի համար</translation>
 <translation id="6713233729292711163">Ավելացնել աշխատանքային պրոֆիլ</translation>

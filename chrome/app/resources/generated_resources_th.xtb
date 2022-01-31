@@ -770,6 +770,7 @@
 <translation id="176587472219019965">&amp;หน้าต่างใหม่</translation>
 <translation id="1766575458646819543">ออกจากโหมดเต็มหน้าจอแล้ว</translation>
 <translation id="1766957085594317166">บันทึกรหัสผ่านอย่างปลอดภัยในบัญชี Google แล้วไม่ต้องพิมพ์รหัสผ่านอีกต่อไป</translation>
+<translation id="1767043563165955993">ใช้กับแอป Android</translation>
 <translation id="1768212860412467516">ส่งความคิดเห็นสำหรับ <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1768278914020124551">อ๊ะ! เกิดปัญหาในการติดต่อเซิร์ฟเวอร์เข้าสู่ระบบ โปรดตรวจสอบการเชื่อมต่อเครือข่ายและชื่อโดเมนแล้วลองอีกครั้ง</translation>
 <translation id="1769104665586091481">เปิดลิงก์ใน&amp;หน้าต่างใหม่</translation>
@@ -1107,6 +1108,7 @@
 <translation id="2113479184312716848">เปิดไ&amp;ฟล์...</translation>
 <translation id="2113921862428609753">การเข้าถึงข้อมูลผู้ออกใบรับรอง</translation>
 <translation id="2114326799768592691">โหลดเ&amp;ฟรมซ้ำ</translation>
+<translation id="2114413269775311385">ใช้บัญชีนี้กับแอป Android คุณควบคุมสิทธิ์สำหรับแอป Android ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป<ph name="LINK_END" />ได้</translation>
 <translation id="2114896190328250491">รูปภาพจาก <ph name="NAME" /></translation>
 <translation id="2114995631896158695">ไม่ได้ใส่ซิมการ์ด</translation>
 <translation id="2116619964159595185">โดยปกติเว็บไซต์จะเชื่อมต่ออุปกรณ์บลูทูธเพื่อดำเนินการตามฟีเจอร์อย่างการตั้งค่าหรือซิงค์บีคอนที่ใช้พลังงานต่ำ ตัวติดตามสุขภาพและการออกกำลังกาย หรือหลอดไฟอัจฉริยะ</translation>
@@ -2951,6 +2953,7 @@
 <translation id="3943582379552582368">&amp;กลับ</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3945513714196326460">ลองใช้ชื่อที่สั้นกว่านี้</translation>
+<translation id="3947643756376959257">ป้อนรหัสการเข้าถึงใน Chromecast หรือทีวี</translation>
 <translation id="3948027458879361203">เปลี่ยนชื่อโฮสต์</translation>
 <translation id="3948116654032448504">ค้นหา&amp;รูปภาพด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> แก้ไขไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
@@ -3192,12 +3195,14 @@
 <translation id="4210048056321123003">กำลังดาวน์โหลดเครื่องเสมือน</translation>
 <translation id="421182450098841253">&amp;แสดงแถบบุ๊กมาร์ก</translation>
 <translation id="4211851069413100178">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของคุณให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ ซึ่งจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android เจ้าของเป็นผู้บังคับใช้<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" />นี้ เจ้าของอาจเลือกที่จะส่งข้อมูลการวินิจฉัยและการใช้งานสำหรับอุปกรณ์นี้ไปยัง Google หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปไว้ ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของคุณ <ph name="BEGIN_LINK2" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">หยุดใช้กับแอป Android</translation>
 <translation id="42126664696688958">ส่งออก</translation>
 <translation id="42137655013211669">เซิร์ฟเวอร์ได้ห้ามการเข้าถึงทรัพยากรนี้</translation>
 <translation id="4217571870635786043">การพิมพ์ตามคำบอก</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">เกิดข้อผิดพลาดขณะเปิดใช้งาน</translation>
 <translation id="4225397296022057997">ในเว็บไซต์ทั้งหมด</translation>
+<translation id="4227605727325220318">เพิ่มโทรศัพท์ Android เครื่องใหม่</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ไม่อนุญาตส่วนขยายนี้}other{ไม่อนุญาตส่วนขยายบางรายการ}}</translation>
 <translation id="4231095370974836764">ติดตั้งแอปและเกมจาก Google Play ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">กำหนดค่า Kerberos</translation>
@@ -4734,6 +4739,7 @@
 <translation id="5862109781435984885">แสดงเครื่องมือสไตลัสในชั้นวาง</translation>
 <translation id="5862319196656206789">ตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5863445608433396414">เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่อง</translation>
+<translation id="5864147196375746035">แคสต์ไปยังอุปกรณ์ที่มีการจัดการ</translation>
 <translation id="5864195618110239517">ใช้การเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="5864754048328252126">การทำงานสำหรับการไม่ใช้งานขณะที่ชาร์จ</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> จะหยุดชั่วคราวเร็วๆ นี้</translation>
@@ -5919,6 +5925,7 @@
 <translation id="7086672505018440886">รวมไฟล์บันทึกของ Chrome ในที่เก็บถาวร</translation>
 <translation id="7088434364990739311">การเริ่มต้นการตรวจสอบการอัปเดตล้มเหลว (รหัสข้อผิดพลาด <ph name="ERROR" />)</translation>
 <translation id="7088674813905715446">ผู้ดูแลระบบนำอุปกรณ์นี้ไปไว้ในสถานะถูกยกเลิกการเตรียมใช้งาน หากต้องการเปิดใช้สำหรับการลงทะเบียน โปรดขอให้ผู้ดูแลระบบนำอุปกรณ์ไปไว้ในสถานะรอดำเนินการ</translation>
+<translation id="7090160970140261931">คุณเพิ่มบัญชีเสริมใน <ph name="DEVICE_TYPE" /> เพื่อใช้กับเว็บไซต์และแอป Android นอกจากนี้ยังควบคุมได้ว่าจะใช้บัญชีใดกับแอป Android</translation>
 <translation id="7093220653036489319">คำตอบด่วน</translation>
 <translation id="7093416310351037609">องค์กรของคุณกำหนดให้บันทึกไฟล์ดาวน์โหลดที่มีสิทธิ์ทั้งหมดลงในบัญชี <ph name="WEB_DRIVE" /> ขององค์กร เพื่อความปลอดภัยของข้อมูลและการรักษาความปลอดภัย</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6977,6 +6984,7 @@
 <translation id="8147900440966275470">พบ <ph name="NUM" /> แท็บ</translation>
 <translation id="8148760431881541277">จำกัดการลงชื่อเข้าใช้</translation>
 <translation id="8149564499626272569">ยืนยันผ่านโทรศัพท์ด้วยสาย USB</translation>
+<translation id="815114315010033526">ใช้คิวอาร์โค้ดแทน</translation>
 <translation id="8151638057146502721">กำหนดค่า</translation>
 <translation id="8154790740888707867">ไม่มีไฟล์</translation>
 <translation id="8154912474061769055">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
@@ -7002,6 +7010,7 @@
 <translation id="8176332201990304395">สีชมพูและสีขาว</translation>
 <translation id="8177196903785554304">รายละเอียดเครือข่าย</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายแท็บไปที่หน้าต่างใหม่}}</translation>
+<translation id="8179188928355984576">ไม่ได้ใช้กับแอป Android</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" สามารถอ่านและลบรูปภาพ วิดีโอ และไฟล์เสียงในตำแหน่งที่เลือก</translation>
 <translation id="8181215761849004992">เข้าร่วมโดเมนไม่ได้ ตรวจสอบบัญชีว่าคุณมีสิทธิ์เพียงพอที่จะเพิ่มอุปกรณ์ไหม</translation>

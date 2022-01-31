@@ -91,6 +91,7 @@
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
 <translation id="1087707496788636333">De Chrome Enterprise-beleidslijst wordt verplaatst. Update je bookmarks naar <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
+<translation id="1091765729282771296">Sites toestaan om gebruikers toegang te vragen tot een HID-apparaat</translation>
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
@@ -1292,6 +1293,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2435052056904485763">Toelatingslijst voor Kerberos-delegatieserver</translation>
 <translation id="2435232509335686514">Configuratiebeleid voor de verwerking van gedownloade bestanden door de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2436302465999055995">Van <ph name="LACROS_NAME" /> de enige beschikbare browser maken (nog niet geïmplementeerd)</translation>
+<translation id="2439187682308339104">Geen enkele site toestemming geven om toegang te vragen tot HID-apparaten via de WebHID API</translation>
 <translation id="2448315169529769573">Als je het beleid toepast, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid niet toepast, worden er geen statistieken en diagnostische gegevens gerapporteerd.
 
        Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
@@ -2778,6 +2780,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
           Als dit beleid niet is ingesteld, staat de markering van het caret-teken in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="4183229833636799228">Standaardinstelling voor <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="4187576366596772431">De WebHID API op deze sites blokkeren</translation>
 <translation id="4192388905594723944">URL voor het valideren van verificatietoken voor client voor externe toegang</translation>
 <translation id="4203643479966921607">Als je het beleid toepast of niet instelt, wordt <ph name="PRODUCT_NAME" /> aangezet en kunnen gebruikers dit starten via het app-menu, de paginacontextmenu's, mediabediening op websites die werken met Cast en (als dit zichtbaar is) het Cast-icoon op de werkbalk.
 
@@ -4494,6 +4497,21 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 
       Als dit beleid niet is ingesteld of als de lijst leeg is, zijn alle schema's toegankelijk in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Systeemgegevens rapporteren</translation>
+<translation id="6352714113109004581">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om toegang tot een HID-apparaat.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
+
+      Als URL-patronen niet overeenkomen met het beleid, krijgen de volgende voorrang, in deze volgorde:
+
+* <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> (als er een overeenkomst is),
+
+* <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) of
+
+* de persoonlijke instellingen van gebruikers.
+
+      URL-patronen mogen geen conflict vormen met <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="6353890097388312479">Als je het beleid instelt op All (0) of niet instelt, kunnen gebruikers vertrouwensinstellingen bewerken voor alle CA-certificaten, door de gebruiker geïmporteerde certificaten verwijderen en certificaten importeren met Certificaatbeheer. Als je het beleid instelt op UserOnly (1), kunnen gebruikers alleen door de gebruiker geïmporteerde certificaten beheren, maar niet de vertrouwensinstellingen van ingebouwde certificaten wijzigen. Als je het beleid instelt op None (2), kunnen gebruikers CA-certificaten bekijken (maar niet beheren).</translation>
 <translation id="6362856770865555544">Als je het beleid toepast of niet instelt, staat WPAD-optimalisatie (Web Proxy Auto-Discovery) aan in <ph name="PRODUCT_NAME" />.
 
@@ -5898,6 +5916,11 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
+<translation id="7946350455013548764">Als je het beleid instelt op 3, kunnen websites toegang vragen tot HID-apparaten. Als je het beleid instelt op 2, wordt toegang tot HID-apparaten geweigerd.
+
+      Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.
+
+      Dit beleid kan via het beleid <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> worden overschreven voor specifieke <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="7951605113561734721">Specificeert clientcertificaten voor het hele apparaat die moeten worden ingeschreven via het protocol voor apparaatbeheer.</translation>
 <translation id="7952007677054834789">Hiermee wordt geconfigureerd welke pagina's worden geladen bij het opstarten, wat de standaard homepage is en welke pagina standaard wordt gebruikt voor nieuwe tabbladen in <ph name="PRODUCT_NAME" />. Ook verhinder je hiermee dat gebruikers deze pagina's kunnen wijzigen.
 
@@ -6133,6 +6156,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8220023426952118761">Gewenste downloadsnelheid in kbits/s.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>
 <translation id="822055204938220476">Lijst met URL's die in de modus voor volledig scherm mogen blijven zonder een melding te tonen</translation>
+<translation id="8225579382697740712">Het gebruik van de WebHID API beheren</translation>
 <translation id="8229912067600517877">Developer Tools aanzetten</translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
 <translation id="8239109177194627162">Automatisch invullen uitzetten voor creditcards</translation>
@@ -6462,6 +6486,21 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8543108307976719751">Verbindingen voor externe toegang tot deze machine voorkomen</translation>
 <translation id="8544375438507658205">Standaard HTML-renderer voor <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
+<translation id="8553955290407912156">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om toegang tot een HID-apparaat.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
+
+      Als URL-patronen niet overeenkomen met het beleid, krijgen de volgende voorrang, in deze volgorde:
+
+* <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> (als er een overeenkomst is),
+
+* <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) of
+
+* de persoonlijke instellingen van gebruikers.
+
+      URL-patronen mogen geen conflict vormen met <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="8566842294717252664">De Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher</translation>
 <translation id="8571314270766672278">Een rollback uitvoeren en het apparaat resetten bij een kanaaldowngrade en de inschrijving proberen te behouden</translation>
 <translation id="8571871284943706125">CRD-sessiegebeurtenissen rapporteren op ingeschreven apparaten voor aangesloten gebruikers.
@@ -6552,6 +6591,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Als je het beleid niet toepast of niet instelt, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>
 <translation id="867708016260789630">Afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
+<translation id="8677853537025397834">De WebHID API toestaan op deze sites</translation>
 <translation id="8685024486845674965">Waarschuwing voor wachtwoordbeveiliging wordt geactiveerd bij hergebruik van een wachtwoord</translation>
 <translation id="8685680544554917389">Als je het beleid instelt op True, wordt media automatisch afgespeeld door <ph name="PRODUCT_NAME" />. Als je het beleid instelt op False, wordt media niet automatisch afgespeeld door <ph name="PRODUCT_NAME" />.
 
