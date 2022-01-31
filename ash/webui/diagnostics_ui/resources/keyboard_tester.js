@@ -5,9 +5,11 @@
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPhysicalLayout, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
+import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRowKey} from './diagnostics_types.js';
+import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRowKey} from './diagnostics_types.js';
 
 /**
  * @fileoverview
@@ -46,6 +48,20 @@ Polymer({
   is: 'keyboard-tester',
 
   _template: html`{__html_template__}`,
+
+  /** @private {?KeyboardObserverReceiver} */
+  receiver_: null,
+
+  /** @private {?InputDataProviderInterface} */
+  inputDataProvider_: null,
+
+  /**
+   * Set the InputDataProvider to get events from.
+   * @param {!InputDataProviderInterface} provider
+   */
+  setInputDataProvider(provider) {
+    this.inputDataProvider_ = provider;
+  },
 
   properties: {
     /**
@@ -169,6 +185,11 @@ Polymer({
 
   /** Shows the tester's dialog. */
   show() {
+    assert(this.inputDataProvider_);
+    this.receiver_ = new KeyboardObserverReceiver(
+        /** @type {!KeyboardObserverInterface} */ (this));
+    this.inputDataProvider_.observeKeyEvents(
+        this.keyboard.id, this.receiver_.$.bindNewPipeAndPassRemote());
     this.$.dialog.showModal();
   },
 
@@ -178,5 +199,40 @@ Polymer({
    */
   isOpen() {
     return this.$.dialog.open;
+  },
+
+  handleClose() {
+    this.receiver_.$.close();
+  },
+
+  /**
+   * Implements KeyboardObserver.OnKeyEvent.
+   * @param {!KeyEvent} keyEvent
+   */
+  onKeyEvent(keyEvent) {
+    const state = keyEvent.type === KeyEventType.kPress ?
+        KeyboardKeyState.kPressed :
+        KeyboardKeyState.kTested;
+    if (keyEvent.topRowPosition !== -1) {
+      this.$$('#diagram').setTopRowKeyState(keyEvent.topRowPosition, state);
+    } else {
+      this.$$('#diagram').setKeyState(keyEvent.keyCode, state);
+    }
+  },
+
+  /**
+   * Implements KeyboardObserver.OnKeyEventsPaused.
+   */
+  onKeyEventsPaused() {
+    // TODO(crbug.com/1207678): show key event pauses in the UI.
+    console.log('key events paused');
+  },
+
+  /**
+   * Implements KeyboardObserver.OnKeyEventsResumed.
+   */
+  onKeyEventsResumed() {
+    // TODO(crbug.com/1207678): show key event pauses in the UI.
+    console.log('key events resumed');
   },
 });

@@ -13,6 +13,19 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
  * 'keyboard-diagram' component.
  */
 
+/**
+ * Enum of key states.
+ * @enum {string}
+ */
+export const KeyboardKeyState = {
+  /** The key has not been pressed during this test session. */
+  kNotPressed: 'not-pressed',
+  /** The key is currently pressed. */
+  kPressed: 'pressed',
+  /** The key is not currently pressed, but we've seen it pressed previously. */
+  kTested: 'tested',
+};
+
 export class KeyboardKeyElement extends PolymerElement {
   static get is() {
     return 'keyboard-key';
@@ -36,6 +49,16 @@ export class KeyboardKeyElement extends PolymerElement {
        * @type {?string}
        */
       icon: String,
+
+      /**
+       * The state to display the key in.
+       * @type {!KeyboardKeyState}
+       */
+      state: {
+        type: String,
+        value: KeyboardKeyState.kNotPressed,
+        reflectToAttribute: true,
+      },
     };
   }
 }

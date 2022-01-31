@@ -2,6 +2,7 @@
   :root {
     --background-color-pressed: hsl(214deg 82% 51%);
     --background-color-unpressed: hsl(218deg 92% 95%);
+    --background-color-tested: hsl(214deg 82% 85%);
     --border-color: hsl(214deg 82% 51%);
     --border-radius:
         var(--keyboard-key-top-radii, 3px)
@@ -70,15 +71,19 @@
    * TODO(crbug.com/1207678): Apply this styling when the key is pressed,
    * instead of on hover.
    */
-  :host(:hover) #foreground {
+  :host([state='pressed']) #foreground {
     background-color: var(--background-color-pressed);
     bottom: 0;
     color: var(--foreground-color-pressed);
     top: var(--travel);
   }
 
-  :host(:hover) iron-icon {
+  :host([state='pressed']) iron-icon {
     --iron-icon-fill-color: var(--foreground-color-pressed);
+  }
+
+  :host([state='tested']) #foreground {
+    background-color: var(--background-color-tested);
   }
 
   #background {

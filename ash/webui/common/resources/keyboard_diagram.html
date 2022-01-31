@@ -223,7 +223,7 @@
       data-show-assistant-key$="[[showAssistantKey]]"
       data-show-fn-and-globe-keys$="[[showFnAndGlobeKeys_]]">
     <div id="topRow">
-      <keyboard-key main-glyph="esc"></keyboard-key>
+      <keyboard-key main-glyph="esc" data-code="1"></keyboard-key>
       <dom-repeat items="[[topRowKeys]]" as="key">
         <template>
           <keyboard-key icon="[[key.icon]]" main-glyph="[[key.text]]"></keyboard-key>
@@ -233,133 +233,133 @@
     </div>
 
     <!-- TODO(crbug.com/1207678): Apply glyphs from the backend to the keys. -->
-    <keyboard-key main-glyph="\`"></keyboard-key>
-    <keyboard-key main-glyph="1"></keyboard-key>
-    <keyboard-key main-glyph="2"></keyboard-key>
-    <keyboard-key main-glyph="3"></keyboard-key>
-    <keyboard-key main-glyph="4"></keyboard-key>
-    <keyboard-key main-glyph="5"></keyboard-key>
-    <keyboard-key main-glyph="6"></keyboard-key>
-    <keyboard-key main-glyph="7"></keyboard-key>
-    <keyboard-key main-glyph="8"></keyboard-key>
-    <keyboard-key main-glyph="9"></keyboard-key>
-    <keyboard-key main-glyph="0"></keyboard-key>
-    <keyboard-key main-glyph="-"></keyboard-key>
-    <keyboard-key main-glyph="="></keyboard-key>
+    <keyboard-key main-glyph="\`" data-code="41"></keyboard-key>
+    <keyboard-key main-glyph="1" data-code="2"></keyboard-key>
+    <keyboard-key main-glyph="2" data-code="3"></keyboard-key>
+    <keyboard-key main-glyph="3" data-code="4"></keyboard-key>
+    <keyboard-key main-glyph="4" data-code="5"></keyboard-key>
+    <keyboard-key main-glyph="5" data-code="6"></keyboard-key>
+    <keyboard-key main-glyph="6" data-code="7"></keyboard-key>
+    <keyboard-key main-glyph="7" data-code="8"></keyboard-key>
+    <keyboard-key main-glyph="8" data-code="9"></keyboard-key>
+    <keyboard-key main-glyph="9" data-code="10"></keyboard-key>
+    <keyboard-key main-glyph="0" data-code="11"></keyboard-key>
+    <keyboard-key main-glyph="-" data-code="12"></keyboard-key>
+    <keyboard-key main-glyph="=" data-code="13"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisYenKey" main-glyph="¥"></keyboard-key>
+      <keyboard-key id="jisYenKey" main-glyph="¥" data-code="124"></keyboard-key>
     </template>
-    <keyboard-key id="backspaceKey" class="right" main-glyph="backspace"></keyboard-key>
+    <keyboard-key id="backspaceKey" class="right" main-glyph="backspace" data-code="14"></keyboard-key>
 
-    <keyboard-key id="tabKey" class="left" main-glyph="tab"></keyboard-key>
-    <keyboard-key main-glyph="q"></keyboard-key>
-    <keyboard-key main-glyph="w"></keyboard-key>
-    <keyboard-key main-glyph="e"></keyboard-key>
-    <keyboard-key main-glyph="r"></keyboard-key>
-    <keyboard-key main-glyph="t"></keyboard-key>
-    <keyboard-key main-glyph="y"></keyboard-key>
-    <keyboard-key main-glyph="u"></keyboard-key>
-    <keyboard-key main-glyph="i"></keyboard-key>
-    <keyboard-key main-glyph="o"></keyboard-key>
-    <keyboard-key main-glyph="p"></keyboard-key>
-    <keyboard-key main-glyph="["></keyboard-key>
-    <keyboard-key main-glyph="]"></keyboard-key>
-    <keyboard-key id="backslashKey" main-glyph="\\"></keyboard-key>
+    <keyboard-key id="tabKey" class="left" main-glyph="tab" data-code="15"></keyboard-key>
+    <keyboard-key main-glyph="q" data-code="16"></keyboard-key>
+    <keyboard-key main-glyph="w" data-code="17"></keyboard-key>
+    <keyboard-key main-glyph="e" data-code="18"></keyboard-key>
+    <keyboard-key main-glyph="r" data-code="19"></keyboard-key>
+    <keyboard-key main-glyph="t" data-code="20"></keyboard-key>
+    <keyboard-key main-glyph="y" data-code="21"></keyboard-key>
+    <keyboard-key main-glyph="u" data-code="22"></keyboard-key>
+    <keyboard-key main-glyph="i" data-code="23"></keyboard-key>
+    <keyboard-key main-glyph="o" data-code="24"></keyboard-key>
+    <keyboard-key main-glyph="p" data-code="25"></keyboard-key>
+    <keyboard-key main-glyph="[" data-code="26"></keyboard-key>
+    <keyboard-key main-glyph="]" data-code="27"></keyboard-key>
+    <keyboard-key id="backslashKey" main-glyph="\\" data-code="43"></keyboard-key>
 
-    <keyboard-key id="launcherKey" class="left" icon="keyboard:launcher"></keyboard-key>
-    <keyboard-key main-glyph="a"></keyboard-key>
-    <keyboard-key main-glyph="s"></keyboard-key>
-    <keyboard-key main-glyph="d"></keyboard-key>
-    <keyboard-key main-glyph="f"></keyboard-key>
-    <keyboard-key main-glyph="g"></keyboard-key>
-    <keyboard-key main-glyph="h"></keyboard-key>
-    <keyboard-key main-glyph="j"></keyboard-key>
-    <keyboard-key main-glyph="k"></keyboard-key>
-    <keyboard-key main-glyph="l"></keyboard-key>
-    <keyboard-key main-glyph=";"></keyboard-key>
-    <keyboard-key main-glyph="'"></keyboard-key>
-    <keyboard-key id="enterKey" class="right" main-glyph="enter"></keyboard-key>
-    <keyboard-key id="enterKeyLowerPart" main-glyph=""></keyboard-key>
+    <keyboard-key id="launcherKey" class="left" icon="keyboard:launcher" data-code="125"></keyboard-key>
+    <keyboard-key main-glyph="a" data-code="30"></keyboard-key>
+    <keyboard-key main-glyph="s" data-code="31"></keyboard-key>
+    <keyboard-key main-glyph="d" data-code="32"></keyboard-key>
+    <keyboard-key main-glyph="f" data-code="33"></keyboard-key>
+    <keyboard-key main-glyph="g" data-code="34"></keyboard-key>
+    <keyboard-key main-glyph="h" data-code="35"></keyboard-key>
+    <keyboard-key main-glyph="j" data-code="36"></keyboard-key>
+    <keyboard-key main-glyph="k" data-code="37"></keyboard-key>
+    <keyboard-key main-glyph="l" data-code="38"></keyboard-key>
+    <keyboard-key main-glyph=";" data-code="39"></keyboard-key>
+    <keyboard-key main-glyph="'" data-code="40"></keyboard-key>
+    <keyboard-key id="enterKey" class="right" main-glyph="enter" data-code="28"></keyboard-key>
+    <keyboard-key id="enterKeyLowerPart" main-glyph="" data-code="28"></keyboard-key>
 
-    <keyboard-key id="leftShiftKey" class="left" main-glyph="shift"></keyboard-key>
+    <keyboard-key id="leftShiftKey" class="left" main-glyph="shift" data-code="42"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'iso')]]">
-      <keyboard-key id="isoKey" main-glyph="&lt;"></keyboard-key>
+      <keyboard-key id="isoKey" main-glyph="&lt;" data-code="86"></keyboard-key>
     </template>
-    <keyboard-key main-glyph="z"></keyboard-key>
-    <keyboard-key main-glyph="x"></keyboard-key>
-    <keyboard-key main-glyph="c"></keyboard-key>
-    <keyboard-key main-glyph="v"></keyboard-key>
-    <keyboard-key main-glyph="b"></keyboard-key>
-    <keyboard-key main-glyph="n"></keyboard-key>
-    <keyboard-key main-glyph="m"></keyboard-key>
-    <keyboard-key main-glyph=","></keyboard-key>
-    <keyboard-key main-glyph="."></keyboard-key>
-    <keyboard-key main-glyph="/"></keyboard-key>
+    <keyboard-key main-glyph="z" data-code="44"></keyboard-key>
+    <keyboard-key main-glyph="x" data-code="45"></keyboard-key>
+    <keyboard-key main-glyph="c" data-code="46"></keyboard-key>
+    <keyboard-key main-glyph="v" data-code="47"></keyboard-key>
+    <keyboard-key main-glyph="b" data-code="48"></keyboard-key>
+    <keyboard-key main-glyph="n" data-code="49"></keyboard-key>
+    <keyboard-key main-glyph="m" data-code="50"></keyboard-key>
+    <keyboard-key main-glyph="," data-code="51"></keyboard-key>
+    <keyboard-key main-glyph="." data-code="52"></keyboard-key>
+    <keyboard-key main-glyph="/" data-code="53"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisBackslashKey" main-glyph="\\"></keyboard-key>
+      <keyboard-key id="jisBackslashKey" main-glyph="\\" data-code="89"></keyboard-key>
     </template>
-    <keyboard-key id="rightShiftKey" class="right" main-glyph="shift"></keyboard-key>
+    <keyboard-key id="rightShiftKey" class="right" main-glyph="shift" data-code="54"></keyboard-key>
 
-    <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl"></keyboard-key>
+    <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl" data-code="29"></keyboard-key>
     <template is="dom-if" if="[[showFnAndGlobeKeys_]]">
       <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
-      <keyboard-key id="layoutSwitchKey" icon="keyboard:layout-switch"></keyboard-key>
+      <keyboard-key id="layoutSwitchKey" icon="keyboard:layout-switch" data-code="584"></keyboard-key>
     </template>
     <template is="dom-if" if="[[showAssistantKey]]">
-      <keyboard-key icon="keyboard:assistant"></keyboard-key>
+      <keyboard-key icon="keyboard:assistant" data-code="583"></keyboard-key>
     </template>
-    <keyboard-key id="leftAltKey" class="left" main-glyph="alt"></keyboard-key>
+    <keyboard-key id="leftAltKey" class="left" main-glyph="alt" data-code="56"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisAlphanumericKey" main-glyph="英数"></keyboard-key>
+      <keyboard-key id="jisAlphanumericKey" main-glyph="英数" data-code="94"></keyboard-key>
     </template>
-    <keyboard-key id="spacebar" main-glyph=""></keyboard-key>
+    <keyboard-key id="spacebar" main-glyph="" data-code="57"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisKanaKey" main-glyph="かな"></keyboard-key>
+      <keyboard-key id="jisKanaKey" main-glyph="かな" data-code="92"></keyboard-key>
     </template>
-    <keyboard-key id="rightAltKey" main-glyph="alt"></keyboard-key>
-    <keyboard-key id="rightCtrlKey" main-glyph="ctrl"></keyboard-key>
+    <keyboard-key id="rightAltKey" main-glyph="alt" data-code="100"></keyboard-key>
+    <keyboard-key id="rightCtrlKey" main-glyph="ctrl" data-code="97"></keyboard-key>
 
     <div id="arrowKeyCluster">
       <template is="dom-if"
           if="[[isEqual_(physicalLayout, 'dell-enterprise-wilco')]]">
-        <keyboard-key id="dellPageUpKey" main-glyph="pg up"></keyboard-key>
+        <keyboard-key id="dellPageUpKey" main-glyph="pg up" data-code="104"></keyboard-key>
       </template>
-      <keyboard-key id="upArrow" icon="keyboard:arrow-up"></keyboard-key>
+      <keyboard-key id="upArrow" icon="keyboard:arrow-up" data-code="103"></keyboard-key>
       <template is="dom-if"
           if="[[isEqual_(physicalLayout, 'dell-enterprise-wilco')]]">
-        <keyboard-key id="dellPageDownKey" main-glyph="pg dn"></keyboard-key>
+        <keyboard-key id="dellPageDownKey" main-glyph="pg dn" data-code="109"></keyboard-key>
       </template>
-      <keyboard-key icon="keyboard:arrow-left"></keyboard-key>
-      <keyboard-key icon="keyboard:arrow-down"></keyboard-key>
-      <keyboard-key icon="keyboard:arrow-right"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-left" data-code="105"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-down" data-code="108"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-right" data-code="106"></keyboard-key>
     </div>
   </div>
   <div id="numberPad">
-    <keyboard-key main-glyph="page up"></keyboard-key>
-    <keyboard-key main-glyph="page dn"></keyboard-key>
-    <keyboard-key main-glyph="home"></keyboard-key>
-    <keyboard-key main-glyph="end"></keyboard-key>
+    <keyboard-key main-glyph="page up" data-code="104"></keyboard-key>
+    <keyboard-key main-glyph="page dn" data-code="109"></keyboard-key>
+    <keyboard-key main-glyph="home" data-code="102"></keyboard-key>
+    <keyboard-key main-glyph="end" data-code="107"></keyboard-key>
 
-    <keyboard-key main-glyph="delete"></keyboard-key>
-    <keyboard-key main-glyph="/"></keyboard-key>
-    <keyboard-key main-glyph="*"></keyboard-key>
-    <keyboard-key main-glyph="-"></keyboard-key>
+    <keyboard-key main-glyph="delete" data-code="111"></keyboard-key>
+    <keyboard-key main-glyph="/" data-code="98"></keyboard-key>
+    <keyboard-key main-glyph="*" data-code="55"></keyboard-key>
+    <keyboard-key main-glyph="-" data-code="74"></keyboard-key>
 
-    <keyboard-key main-glyph="7"></keyboard-key>
-    <keyboard-key main-glyph="8"></keyboard-key>
-    <keyboard-key main-glyph="9"></keyboard-key>
-    <keyboard-key class="double-height" main-glyph="+"></keyboard-key>
+    <keyboard-key main-glyph="7" data-code="71"></keyboard-key>
+    <keyboard-key main-glyph="8" data-code="72"></keyboard-key>
+    <keyboard-key main-glyph="9" data-code="73"></keyboard-key>
+    <keyboard-key class="double-height" main-glyph="+" data-code="78"></keyboard-key>
 
-    <keyboard-key main-glyph="4"></keyboard-key>
-    <keyboard-key main-glyph="5"></keyboard-key>
-    <keyboard-key main-glyph="6"></keyboard-key>
+    <keyboard-key main-glyph="4" data-code="75"></keyboard-key>
+    <keyboard-key main-glyph="5" data-code="76"></keyboard-key>
+    <keyboard-key main-glyph="6" data-code="77"></keyboard-key>
 
-    <keyboard-key main-glyph="1"></keyboard-key>
-    <keyboard-key main-glyph="2"></keyboard-key>
-    <keyboard-key main-glyph="3"></keyboard-key>
-    <keyboard-key class="double-height" main-glyph="enter"></keyboard-key>
+    <keyboard-key main-glyph="1" data-code="79"></keyboard-key>
+    <keyboard-key main-glyph="2" data-code="80"></keyboard-key>
+    <keyboard-key main-glyph="3" data-code="81"></keyboard-key>
+    <keyboard-key class="double-height" main-glyph="enter" data-code="96"></keyboard-key>
 
-    <keyboard-key class="double-width" main-glyph="0"></keyboard-key>
-    <keyboard-key main-glyph="."></keyboard-key>
+    <keyboard-key class="double-width" main-glyph="0" data-code="82"></keyboard-key>
+    <keyboard-key main-glyph="." data-code="83"></keyboard-key>
   </div>
 </div>

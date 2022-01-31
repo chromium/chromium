@@ -568,3 +568,15 @@ export let GetKeyboardVisualLayoutResponse;
  */
 export const InputDataProviderInterface =
     ash.diagnostics.mojom.InputDataProviderInterface;
+
+/**
+ * Type alias for KeyEvent.
+ * @typedef {ash.diagnostics.mojom.KeyEvent}
+ */
+export const KeyEvent = ash.diagnostics.mojom.KeyEvent;
+
+/**
+ * Type alias for KeyEventType.
+ * @typedef {ash.diagnostics.mojom.KeyEvent}
+ */
+export const KeyEventType = ash.diagnostics.mojom.KeyEventType;

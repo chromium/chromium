@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {MechanicalLayout, PhysicalLayout, TopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
-import {assertEquals, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
+import {assertEquals, assertNotEquals, assertThrows, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 export function keyboardDiagramTestSuite() {
@@ -144,5 +145,72 @@ export function keyboardDiagramTestSuite() {
 
     assertEquals('keyboard:back', keyElements[1].icon);
     assertEquals('delete', keyElements[6].mainGlyph);
+  });
+
+  test('setKeyState', async () => {
+    const backspaceKey = diagramElement.root.getElementById('backspaceKey');
+    assertEquals(KeyboardKeyState.kNotPressed, backspaceKey.state);
+    diagramElement.setKeyState(
+        14 /* KEY_BACKSPACE */, KeyboardKeyState.kPressed);
+    assertEquals(KeyboardKeyState.kPressed, backspaceKey.state);
+  });
+
+  test('setKeyState_twoPartEnter', async () => {
+    diagramElement.mechanicalLayout = MechanicalLayout.kIso;
+    await flushTasks();
+
+    const enterKey = diagramElement.root.getElementById('enterKey');
+    const enterKeyLowerPart =
+        diagramElement.root.getElementById('enterKeyLowerPart');
+    assertEquals(KeyboardKeyState.kNotPressed, enterKey.state);
+    assertEquals(KeyboardKeyState.kNotPressed, enterKeyLowerPart.state);
+    diagramElement.setKeyState(28 /* KEY_ENTER */, KeyboardKeyState.kPressed);
+    assertEquals(KeyboardKeyState.kPressed, enterKey.state);
+    assertEquals(KeyboardKeyState.kPressed, enterKeyLowerPart.state);
+  });
+
+  test('setTopRowKeyState', async () => {
+    const topRowContainer = diagramElement.$.topRow;
+    const testKeySet = [
+      TopRowKey.kBack,
+      TopRowKey.kRefresh,
+      TopRowKey.kNone,
+      TopRowKey.kNone,
+      TopRowKey.kScreenMirror,
+      TopRowKey.kDelete,
+    ];
+
+    diagramElement.topRowKeys = testKeySet;
+    await flushTasks();
+
+    diagramElement.setTopRowKeyState(
+        /* topRowPosition= */ 0, KeyboardKeyState.kPressed);
+    const keyElements = topRowContainer.getElementsByTagName('keyboard-key');
+    assertEquals(KeyboardKeyState.kPressed, keyElements[1].state);
+  });
+
+  test('setTopRowKeyState_invalidPosition', async () => {
+    const topRowContainer = diagramElement.$.topRow;
+    const testKeySet = [
+      TopRowKey.kBack,
+      TopRowKey.kRefresh,
+      TopRowKey.kNone,
+      TopRowKey.kNone,
+      TopRowKey.kScreenMirror,
+      TopRowKey.kDelete,
+    ];
+
+    diagramElement.topRowKeys = testKeySet;
+    await flushTasks();
+
+    assertThrows(
+        () => diagramElement.setTopRowKeyState(
+            /* topRowPosition= */ -1, KeyboardKeyState.kPressed),
+        RangeError);
+    assertThrows(
+        () => diagramElement.setTopRowKeyState(
+            /* topRowPosition= */ testKeySet.length + 1,
+            KeyboardKeyState.kPressed),
+        RangeError);
   });
 }

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './keyboard_key.js';
-
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {KeyboardKeyState} from './keyboard_key.js';
 
 /**
  * @fileoverview
@@ -171,6 +171,38 @@ export class KeyboardDiagramElement extends PolymerElement {
       this.updateHeight_();
       this.currentWidth_ = newWidth;
     }
+  }
+
+  /**
+   * Set the state of a given key.
+   * @param {number} evdevCode
+   * @param {!KeyboardKeyState} state
+   */
+  setKeyState(evdevCode, state) {
+    const keys = this.root.querySelectorAll(`[data-code="${evdevCode}"]`);
+    if (keys.length === 0) {
+      console.warn(`No keys found for evdev code ${evdevCode}.`);
+      return;
+    }
+    for (const key of keys) {
+      key.state = state;
+    }
+  }
+
+  /**
+   * Set the state of a top row key.
+   * @param {number} topRowPosition The position of the key on the top row,
+   *     where 0 is the first key after escape (which is not counted as part of
+   *     the top row).
+   * @param {!KeyboardKeyState} state
+   */
+  setTopRowKeyState(topRowPosition, state) {
+    if (topRowPosition < 0 || topRowPosition >= this.topRowKeys.length) {
+      throw new RangeError(
+          `Invalid top row position ${topRowPosition} ` +
+          `> ${this.topRowKeys.length}`);
+    }
+    this.$.topRow.children[topRowPosition + 1].state = state;
   }
 }
 

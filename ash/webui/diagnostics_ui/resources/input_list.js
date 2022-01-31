@@ -140,6 +140,8 @@ Polymer({
     if (!this.keyboardTester_) {
       this.keyboardTester_ = /** @type {!KeyboardTesterElement} */ (
           document.createElement('keyboard-tester'));
+      this.keyboardTester_.setInputDataProvider(
+          assert(this.inputDataProvider_));
       this.root.appendChild(this.keyboardTester_);
     }
     this.keyboardTester_.keyboard = assert(
