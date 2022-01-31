@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/android/jni_headers/PrivacySandboxBridge_jni.h"
@@ -97,4 +98,25 @@ JNI_PrivacySandboxBridge_GetFlocResetExplanationString(JNIEnv* env) {
                                   PrivacySandboxServiceFactory::GetForProfile(
                                       ProfileManager::GetActiveUserProfile())
                                       ->GetFlocResetExplanationForDisplay());
+}
+
+static ScopedJavaLocalRef<jobjectArray>
+JNI_PrivacySandboxBridge_GetCurrentTopTopics(JNIEnv* env) {
+  // TODO(crbug.com/1286276): Call PrivacySandboxService.
+  std::vector<std::string> topics{"Generated sample data", "More made up data"};
+  return base::android::ToJavaArrayOfStrings(env, topics);
+}
+
+static ScopedJavaLocalRef<jobjectArray>
+JNI_PrivacySandboxBridge_GetBlockedTopics(JNIEnv* env) {
+  // TODO(crbug.com/1286276): Call PrivacySandboxService.
+  std::vector<std::string> topics{"Blocked sample data", "More blocked data"};
+  return base::android::ToJavaArrayOfStrings(env, topics);
+}
+
+static void JNI_PrivacySandboxBridge_SetTopicAllowed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& topic,
+    jboolean allowed) {
+  // TODO(crbug.com/1286276): Call PrivacySandboxService.
 }

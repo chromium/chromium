@@ -14,7 +14,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.components.browser_ui.settings.ImageButtonPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,12 +53,11 @@ public class AdPersonalizationFragment
     }
 
     private List<String> getTopicInterests() {
-        // TODO(crbug.com/1286276): Get real data.
-        return Arrays.asList("Generated sample data", "More made up data");
+        return PrivacySandboxBridge.getCurrentTopTopics();
     }
 
     private void removeTopicInterest(String topic) {
-        // TODO(crbug.com/1286276): Remove topic.
+        PrivacySandboxBridge.setTopicAllowed(topic, false);
     }
 
     @Override

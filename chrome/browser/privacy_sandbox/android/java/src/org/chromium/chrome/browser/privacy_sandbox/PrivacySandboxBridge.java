@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import org.chromium.base.annotations.NativeMethods;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
 public class PrivacySandboxBridge {
     public static boolean isPrivacySandboxEnabled() {
@@ -56,6 +59,18 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().getFlocResetExplanationString();
     }
 
+    public static List<String> getCurrentTopTopics() {
+        return Arrays.asList(PrivacySandboxBridgeJni.get().getCurrentTopTopics());
+    }
+
+    public static List<String> getBlockedTopics() {
+        return Arrays.asList(PrivacySandboxBridgeJni.get().getBlockedTopics());
+    }
+
+    public static void setTopicAllowed(String topic, boolean allowed) {
+        PrivacySandboxBridgeJni.get().setTopicAllowed(topic, allowed);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isPrivacySandboxEnabled();
@@ -70,5 +85,8 @@ public class PrivacySandboxBridge {
         String getFlocUpdateString();
         String getFlocDescriptionString();
         String getFlocResetExplanationString();
+        String[] getCurrentTopTopics();
+        String[] getBlockedTopics();
+        void setTopicAllowed(String topic, boolean allowed);
     }
 }
