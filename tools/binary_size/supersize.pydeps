@@ -40,6 +40,7 @@
 ../grit/grit/tclib.py
 ../grit/grit/util.py
 ../grit/grit/xtb_reader.py
+libsupersize/apk.py
 libsupersize/apkanalyzer.py
 libsupersize/ar.py
 libsupersize/archive.py
