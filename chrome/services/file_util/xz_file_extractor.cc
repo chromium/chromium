@@ -79,41 +79,49 @@ class XzState {
       }
     }
 
-    uint8_t* data = nullptr;
-    uint32_t size = 0;
-    result = producer_->BeginWriteData(reinterpret_cast<void**>(&data), &size,
-                                       MOJO_WRITE_DATA_FLAG_NONE);
-    if (result == MOJO_RESULT_SHOULD_WAIT) {
-      return;
-    }
-    if (result != MOJO_RESULT_OK) {
-      RunCallbackAndDeleteThis(false);
-      return;
-    }
+    ECoderStatus status = CODER_STATUS_NOT_FINISHED;
 
-    ECoderStatus status;
-    size_t in_remaining = buffer_size_;
-    size_t out_remaining = size;
-    int xz_result = XzUnpacker_Code(
-        &state_, data, &out_remaining, buffer_.data(), &in_remaining,
-        /*srcFinished=*/buffer_size_ == 0, CODER_FINISH_ANY, &status);
-    if (xz_result != SZ_OK) {
-      producer_->EndWriteData(0);
-      RunCallbackAndDeleteThis(false);
-      return;
-    }
-    std::copy(buffer_.begin() + in_remaining, buffer_.begin() + buffer_size_,
-              buffer_.begin());
-    buffer_size_ -= in_remaining;
+    // With mojo buffer size, decompressed data cannot always be written at
+    // once. Repeat unpack and write while XzUnpacker_Code returns
+    // CODER_STATUS_NOT_FINISHED.
+    while (status == CODER_STATUS_NOT_FINISHED) {
+      uint8_t* data = nullptr;
+      uint32_t size = 0;
+      result = producer_->BeginWriteData(reinterpret_cast<void**>(&data), &size,
+                                         MOJO_WRITE_DATA_FLAG_NONE);
+      if (result == MOJO_RESULT_SHOULD_WAIT) {
+        continue;
+      }
+      if (result != MOJO_RESULT_OK) {
+        RunCallbackAndDeleteThis(false);
+        return;
+      }
 
-    result = producer_->EndWriteData(out_remaining);
-    if (result != MOJO_RESULT_OK) {
-      RunCallbackAndDeleteThis(false);
-      return;
-    }
+      size_t in_remaining = buffer_size_;
+      size_t out_remaining = size;
+      int xz_result = XzUnpacker_Code(
+          &state_, data, &out_remaining, buffer_.data(), &in_remaining,
+          /*srcFinished=*/buffer_size_ == 0, CODER_FINISH_ANY, &status);
+      if (xz_result != SZ_OK) {
+        producer_->EndWriteData(0);
+        RunCallbackAndDeleteThis(false);
+        return;
+      }
+      std::array<uint8_t, kXzBufferSize> copy_buffer;
+      std::copy(buffer_.begin() + in_remaining, buffer_.begin() + buffer_size_,
+                copy_buffer.begin());
+      std::swap(buffer_, copy_buffer);
+      buffer_size_ -= in_remaining;
 
-    is_end_of_stream_ = (status == CODER_STATUS_FINISHED_WITH_MARK ||
-                         XzUnpacker_IsStreamWasFinished(&state_));
+      result = producer_->EndWriteData(out_remaining);
+      if (result != MOJO_RESULT_OK) {
+        RunCallbackAndDeleteThis(false);
+        return;
+      }
+
+      is_end_of_stream_ = (status == CODER_STATUS_FINISHED_WITH_MARK ||
+                           XzUnpacker_IsStreamWasFinished(&state_));
+    }
   }
 
   void RunCallbackAndDeleteThis(bool success) {

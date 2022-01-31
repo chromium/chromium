@@ -114,5 +114,25 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteFile) {
   EXPECT_TRUE(contents.empty());
 }
 
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractBigFile) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
+  properties_.image_path = test_data_dir.AppendASCII("2MBzeros.tar.xz");
+
+  base::FilePath out_path;
+  base::RunLoop run_loop;
+  EXPECT_CALL(open_callback_, Run(_)).WillOnce(SaveArg<0>(&out_path));
+  EXPECT_CALL(complete_callback_, Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  XzExtractor::Extract(std::move(properties_));
+  run_loop.Run();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
+  EXPECT_EQ(contents, std::string(2097152, '\0'));
+}
+
 }  // namespace image_writer
 }  // namespace extensions
