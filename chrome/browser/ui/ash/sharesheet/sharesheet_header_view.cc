@@ -274,17 +274,19 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
       views::BoxLayout::Orientation::kVertical,
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
-  text_view_->AddChildView(
-      CreateShareLabel(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
-                       CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
-                       kTitleTextColor, gfx::ALIGN_LEFT));
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  text_view_->AddChildView(CreateShareLabel(
+      l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+      CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary),
+      gfx::ALIGN_LEFT));
   if (show_content_previews) {
     ShowTextPreview();
     if (has_files) {
       ResolveImages();
     } else {
       DCHECK_GT(image_preview_->GetImageViewCount(), 0);
-      ScopedLightModeAsDefault scoped_light_mode_as_default;
       const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
           ColorProvider::ContentLayerType::kIconColorProminent);
       gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
@@ -355,9 +357,12 @@ void SharesheetHeaderView::ShowTextPreview() {
 
 void SharesheetHeaderView::AddTextLine(const std::u16string& text,
                                        const std::u16string& tooltip_text) {
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
   auto* new_line = text_view_->AddChildView(CreateShareLabel(
       text, CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
-      kPrimaryTextColor, gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY));
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary),
+      gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY));
   new_line->SetHandlesTooltips(true);
   if (tooltip_text.empty()) {
     return;

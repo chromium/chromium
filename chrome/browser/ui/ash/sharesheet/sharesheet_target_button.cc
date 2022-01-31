@@ -110,7 +110,10 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   auto* label = label_view->AddChildView(std::make_unique<views::Label>(
       display_name, CONTEXT_SHARESHEET_BUBBLE_BODY, STYLE_SHARESHEET));
-  label->SetEnabledColor(kPrimaryTextColor);
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  auto secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  label->SetEnabledColor(secondary_text_color);
   SetLabelProperties(label);
 
   std::u16string accessible_name = display_name;
@@ -120,7 +123,7 @@ SharesheetTargetButton::SharesheetTargetButton(
         label_view->AddChildView(std::make_unique<views::Label>(
             secondary_display_name, CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
             STYLE_SHARESHEET));
-    secondary_label->SetEnabledColor(kSecondaryTextColor);
+    secondary_label->SetEnabledColor(secondary_text_color);
     SetLabelProperties(secondary_label);
     accessible_name =
         base::StrCat({display_name, u" ", secondary_display_name});

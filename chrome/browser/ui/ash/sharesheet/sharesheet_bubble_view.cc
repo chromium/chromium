@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
@@ -223,14 +225,20 @@ void SharesheetBubbleView::ShowBubble(
     image->SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
         IDR_SHARESHEET_EMPTY));
     image->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, kSpacing, 0));
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    auto* color_provider = AshColorProvider::Get();
     body_view_->AddChildView(CreateShareLabel(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_PRIMARY_LABEL),
         CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
-        kPrimaryTextColor, gfx::ALIGN_CENTER));
+        color_provider->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorPrimary),
+        gfx::ALIGN_CENTER));
     body_view_->AddChildView(CreateShareLabel(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_SECONDARY_LABEL),
         CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY, kPrimaryTextLineHeight,
-        kSecondaryTextColor, gfx::ALIGN_CENTER, views::style::STYLE_PRIMARY));
+        color_provider->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorSecondary),
+        gfx::ALIGN_CENTER, views::style::STYLE_PRIMARY));
   } else {
     if (show_content_previews) {
       header_body_separator_ =
@@ -319,10 +327,13 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
     expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
                                    kExpandViewPaddingTop);
     expanded_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdTitle);
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
     expanded_layout->AddView(CreateShareLabel(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
         CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
-        kPrimaryTextColor, gfx::ALIGN_CENTER));
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorPrimary),
+        gfx::ALIGN_CENTER));
     expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
                                    kExpandViewPaddingBottom);
   }
