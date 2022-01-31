@@ -101,6 +101,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // short-lived and is not shown in the UI.
   bool transient;
 
+  // Whether this download requires safety checks.
+  bool require_safety_checks;
+
   absl::optional<ui::PageTransition> transition_type;
 
   // The HTTP response headers. This contains a nullptr when the response has

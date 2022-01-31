@@ -72,6 +72,7 @@ class FakeDownloadItem : public download::DownloadItem {
   bool IsPaused() const override;
   bool AllowMetered() const override;
   bool IsTemporary() const override;
+  bool RequireSafetyChecks() const override;
   bool CanResume() const override;
   int64_t GetBytesWasted() const override;
   int32_t GetAutoResumeCount() const override;

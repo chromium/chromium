@@ -531,6 +531,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // for target file path determination.
   virtual bool IsTransient() const = 0;
 
+  // Returns whether the download requires safety checks. Only downloads
+  // triggered by Chrome itself are excluded from safety checks.
+  virtual bool RequireSafetyChecks() const = 0;
+
   // Returns whether the download item corresponds to a parallel download. This
   // usually means parallel download has been enabled and the download job is
   // parallelizable.

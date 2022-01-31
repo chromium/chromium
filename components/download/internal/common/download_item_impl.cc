@@ -429,6 +429,7 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
       delegate_(delegate),
       is_temporary_(!info.transient && !info.save_info->file_path.empty()),
       transient_(info.transient),
+      require_safety_checks_(info.require_safety_checks),
       destination_info_(info.save_info->prompt_for_save_location
                             ? TARGET_DISPOSITION_PROMPT
                             : TARGET_DISPOSITION_OVERWRITE),
@@ -1169,6 +1170,10 @@ base::Time DownloadItemImpl::GetLastAccessTime() const {
 
 bool DownloadItemImpl::IsTransient() const {
   return transient_;
+}
+
+bool DownloadItemImpl::RequireSafetyChecks() const {
+  return require_safety_checks_;
 }
 
 bool DownloadItemImpl::IsParallelDownload() const {
@@ -2025,7 +2030,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
                      weak_ptr_factory_.GetWeakPtr());
 
   // If an alternate rename handler is specified, use it instead.
-  if (GetRenameHandler()) {
+  if (GetRenameHandler() && !is_temporary_) {
     auto update_callback =
         base::BindRepeating(&DownloadItemImpl::OnRenameHandlerUpdate,
                             weak_ptr_factory_.GetWeakPtr());

@@ -354,6 +354,11 @@ bool FakeDownloadItem::IsTemporary() const {
   return false;
 }
 
+bool FakeDownloadItem::RequireSafetyChecks() const {
+  NOTREACHED();
+  return false;
+}
+
 bool FakeDownloadItem::CanResume() const {
   NOTREACHED();
   return false;

@@ -612,6 +612,10 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
     base::OnceClosure internal_complete_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(FULL_SAFE_BROWSING)
+  // If this is a chrome triggered download, return true;
+  if (!item->RequireSafetyChecks())
+    return true;
+
   if (!download_prefs_->safebrowsing_for_trusted_sources_enabled() &&
       download_prefs_->IsFromTrustedSource(*item)) {
     return true;
