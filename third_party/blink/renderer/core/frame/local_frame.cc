@@ -1634,7 +1634,7 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
 
     // Sandboxed frames can also navigate popups, if the
     // 'allow-sandbox-escape-via-popup' flag is specified, or if
-    // 'allow-popups' flag is specified, or if the
+    // 'allow-popups' flag is specified and the popup's opener is the frame.
     if (target_frame.IsMainFrame() &&
         target_frame != source_frame.Tree().Top() &&
         source_frame.GetSecurityContext()->IsSandboxed(
