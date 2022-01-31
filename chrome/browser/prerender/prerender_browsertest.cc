@@ -100,8 +100,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
 }
 
 // An end-to-end test of prerendering triggered by an embedder and activation.
+// TODO(crbug.com/1290975): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderTriggeredByEmbedderAndActivate DISABLED_PrerenderTriggeredByEmbedderAndActivate
+#else
+#define MAYBE_PrerenderTriggeredByEmbedderAndActivate PrerenderTriggeredByEmbedderAndActivate
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       PrerenderTriggeredByEmbedderAndActivate) {
+                       MAYBE_PrerenderTriggeredByEmbedderAndActivate) {
   base::HistogramTester histogram_tester;
 
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
