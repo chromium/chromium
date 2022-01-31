@@ -285,7 +285,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   // Set up the second tab and bring the bubble again.
-  AddTabAtIndex(1, GURL("http://example.com/"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_FALSE(
+      AddTabAtIndex(1, GURL("http://example.com/"), ui::PAGE_TRANSITION_TYPED));
   TabStripModel* tab_model = browser()->tab_strip_model();
   tab_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
   EXPECT_FALSE(IsBubbleShowing());
