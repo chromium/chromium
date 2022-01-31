@@ -252,7 +252,7 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
     case kPercentageToken:
     case kDimensionToken: {
       const auto token = range.ConsumeIncludingWhitespace();
-      if (!range.AtEnd())
+      if (!range.AtEnd() || !IsValidUnit(token.GetUnitType()))
         break;
       return CSSUnitValue::Create(token.NumericValue(), token.GetUnitType());
     }
