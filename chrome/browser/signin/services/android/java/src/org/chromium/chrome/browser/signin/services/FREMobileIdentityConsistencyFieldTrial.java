@@ -96,6 +96,11 @@ public class FREMobileIdentityConsistencyFieldTrial {
          * Subtitle: None
          */
         int MAKE_CHROME_YOUR_OWN = 5;
+        /**
+         * When adding new groups, increasing this value will automatically cause new groups
+         * to receive clients. A different control group will need to be implemented however
+         * when adding new groups.
+         */
         int MAX_VALUE = 6;
     }
 
@@ -268,9 +273,16 @@ public class FREMobileIdentityConsistencyFieldTrial {
      */
     @MainThread
     private static void createFirstRunVariationsTrial() {
-        // TODO(https://crbug.com/1276961): This percentage will be changed when the experiment
-        //  starts.
-        final int variationsPercentage = 0;
+        int variationsPercentage = 0;
+        switch (VersionConstants.CHANNEL) {
+            case Channel.DEFAULT:
+            case Channel.CANARY:
+            case Channel.DEV:
+            case Channel.BETA:
+                variationsPercentage = 10;
+                break;
+            case Channel.STABLE:
+        }
         // For A/B testing all experiment groups should have the same percentages.
         assert variationsPercentage * VariationsGroup.MAX_VALUE <= 100;
 
