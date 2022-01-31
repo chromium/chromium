@@ -30,6 +30,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.internal.DoNotInstrument;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -57,6 +58,7 @@ import java.util.concurrent.TimeUnit;
         manifest = Config.NONE,
         shadows = {AttributionReportingProviderImplRobolectricTest.ShadowProvider.class,
                 ShadowSystemClock.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 @DoNotInstrument
 public class AttributionReportingProviderImplRobolectricTest {
     @Implements(SplitCompatContentProvider.Impl.class)

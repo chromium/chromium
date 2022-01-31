@@ -15,6 +15,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -31,6 +32,7 @@ import org.chromium.components.signin.identitymanager.IdentityManagerJni;
  * Unit tests for {@link ProfileDataCache}
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ProfileDataCacheUnitTest {
     private static final long NATIVE_IDENTITY_MANAGER = 10001L;
     private static final String ACCOUNT_EMAIL = "test@gmail.com";
