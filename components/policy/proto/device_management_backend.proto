@@ -4046,10 +4046,6 @@ message BrowserPublicKeyUploadResponse {
 //   * deviceid: MUST BE no more than 64-char in [\x21-\x7E].
 //   * agent: MUST BE no more than 64-char long.
 // * HTTP Authorization header MUST be in the following formats:
-//   * For register, ping, check_android_management
-//     requests with user authentication
-//     Authorization: GoogleLogin auth=<auth cookie for Mobile Sync>
-//
 //   * For register for Chrome browsers
 //     Authorization: GoogleEnrollmentToken token=<enrollment token>
 //
@@ -4062,9 +4058,10 @@ message BrowserPublicKeyUploadResponse {
 //
 //   * The Authorization header isn't used for enterprise_check,
 //     enterprise_psm_check, device_initial_enrollment_state or
-//     certificate_based_register requests, nor for register
-//     requests using OAuth. In the latter case, the OAuth
-//     token is passed in the "oauth" parameter.
+//     certificate_based_register requests.
+//     It is also not used for register requests and check_android_management
+//     requests - for these requests, the OAuth token is passed in the "oauth"
+//     HTTP query parameter.
 //
 // DeviceManagementRequest should only contain one request which matches the
 // HTTP query parameter - request, as mentioned in comments on the fields of the

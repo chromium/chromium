@@ -311,12 +311,6 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   switch (auth_data_.token_type()) {
     case DMAuthTokenType::kNoAuth:
       break;
-    case DMAuthTokenType::kGaia:
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
-              auth_data_.gaia_token());
-      break;
     case DMAuthTokenType::kDm:
       rr->headers.SetHeader(dm_protocol::kAuthHeader,
                             std::string(dm_protocol::kDMTokenAuthHeaderPrefix) +

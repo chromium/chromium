@@ -16,7 +16,7 @@ namespace policy {
 // set to allow easy identification of value from the logs.
 enum class DMAuthTokenType {
   kNoAuth = 0,
-  kGaia = 1,
+  // Skipping obsolete kGaia = 1
   kDm = 2,
   kEnrollment = 3,
   kOauth = 4,
@@ -24,19 +24,18 @@ enum class DMAuthTokenType {
 
 // Class that encapsulates different authentication methods to interact with
 // device management service.
-// We currently have 4 methods for authentication:
-// * OAuth token, that is passes as a part of URL
-// * GAIA token, an OAuth token passed as Authorization: GoogleLogin header.
+// We currently have 3 methods for authentication:
+// * OAuth token, that is passed as a part of URL
 // * Enrollment token, provided by installation configuration, passed as
 //       Authorization: GoogleEnrollmentToken header
 // * DMToken, created during Register request, passed as
 //     Authorization: GoogleDMToken header
-// Also, several requests require no authentication.
+// Also, several requests require no authentication (e.g. enterprise_check) or
+// embed some authentication in the payload (e.g. certificate_based_register).
 class POLICY_EXPORT DMAuth {
  public:
   // Static methods for creating DMAuth instances:
   static DMAuth FromDMToken(const std::string& dm_token);
-  static DMAuth FromGaiaToken(const std::string& gaia_token);
   static DMAuth FromOAuthToken(const std::string& oauth_token);
   static DMAuth FromEnrollmentToken(const std::string& token);
   static DMAuth NoAuth();
@@ -59,11 +58,6 @@ class POLICY_EXPORT DMAuth {
   // Checks if no authentication is provided.
   bool empty() const { return token_type_ == DMAuthTokenType::kNoAuth; }
 
-  std::string gaia_token() const {
-    DCHECK_EQ(DMAuthTokenType::kGaia, token_type_);
-    return token_;
-  }
-  bool has_gaia_token() const { return token_type_ == DMAuthTokenType::kGaia; }
   std::string dm_token() const {
     DCHECK_EQ(DMAuthTokenType::kDm, token_type_);
     return token_;
