@@ -104,8 +104,7 @@ cr.define('settings', function() {
             createSubpage(r.OS_PEOPLE, mojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
       }
       r.SYNC = createSubpage(
-          r.OS_PEOPLE, mojom.SYNC_DEPRECATED_SUBPAGE_PATH,
-          Subpage.kSyncDeprecated);
+          r.OS_PEOPLE, mojom.SYNC_SETUP_SUBPAGE_PATH, Subpage.kSyncSetup);
       if (!loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
         r.SYNC_ADVANCED = createSubpage(
             r.SYNC, mojom.SYNC_DEPRECATED_ADVANCED_SUBPAGE_PATH,

@@ -56,7 +56,7 @@ enum Subpage {
   // People section.
   kMyAccounts = 300,
   kSync = 301,
-  kSyncDeprecated = 302,  // Used if split-sync flag is off.
+  kSyncSetup = 302,
   kSyncDeprecatedAdvanced = 303,  // Used if split-sync flag is off.
   // Note: Value 304 was for kSecurityAndSignIn. Do not reuse.
   // Note: Value 305 was for kFingerprint. Do not reuse.
@@ -178,7 +178,7 @@ const string kNearbyShareSubpagePath = "multidevice/nearbyshare";
 const string kPeopleSectionPath = "osPeople";
 const string kMyAccountsSubpagePath = "accountManager";
 const string kSyncSubpagePath = "osSync";
-const string kSyncDeprecatedSubpagePath = "syncSetup";
+const string kSyncSetupSubpagePath = "osSyncSetup";
 const string kSyncDeprecatedAdvancedSubpagePath = "syncSetup/advanced";
 
 // Device section.

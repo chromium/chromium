@@ -106,11 +106,11 @@ const std::vector<SearchConcept>& GetRemoveAccountSearchConcepts() {
 const std::vector<SearchConcept>& GetNonCategorizedSyncSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_SYNC_AND_GOOGLE_SERVICES,
-       mojom::kSyncDeprecatedSubpagePath,
+       mojom::kSyncSetupSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kSyncDeprecated}},
+       {.subpage = mojom::Subpage::kSyncSetup}},
       {IDS_OS_SETTINGS_TAG_SYNC_MANAGEMENT,
        mojom::kSyncDeprecatedAdvancedSubpagePath,
        mojom::SearchResultIcon::kSync,
@@ -118,7 +118,7 @@ const std::vector<SearchConcept>& GetNonCategorizedSyncSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kSyncDeprecatedAdvanced}},
       {IDS_OS_SETTINGS_TAG_SYNC_ENCRYPTION_OPTIONS,
-       mojom::kSyncDeprecatedSubpagePath,
+       mojom::kSyncSetupSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -126,19 +126,19 @@ const std::vector<SearchConcept>& GetNonCategorizedSyncSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_SYNC_ENCRYPTION_OPTIONS_ALT1,
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_AUTOCOMPLETE_SEARCHES_AND_URLS,
-       mojom::kSyncDeprecatedSubpagePath,
+       mojom::kSyncSetupSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAutocompleteSearchesAndUrls}},
       {IDS_OS_SETTINGS_TAG_MAKE_SEARCHES_AND_BROWSER_BETTER,
-       mojom::kSyncDeprecatedSubpagePath,
+       mojom::kSyncSetupSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kMakeSearchesAndBrowsingBetter}},
       {IDS_OS_SETTINGS_TAG_GOOGLE_DRIVE_SEARCH_SUGGESTIONS,
-       mojom::kSyncDeprecatedSubpagePath,
+       mojom::kSyncSetupSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -753,22 +753,21 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Combined browser/OS sync.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES,
-      mojom::Subpage::kSyncDeprecated, mojom::SearchResultIcon::kSync,
-      mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSyncDeprecatedSubpagePath);
-  static constexpr mojom::Setting kSyncDeprecatedSettings[] = {
+      mojom::Subpage::kSyncSetup, mojom::SearchResultIcon::kSync,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kSyncSetupSubpagePath);
+  static constexpr mojom::Setting kSyncSettings[] = {
       mojom::Setting::kNonSplitSyncEncryptionOptions,
       mojom::Setting::kAutocompleteSearchesAndUrls,
       mojom::Setting::kMakeSearchesAndBrowsingBetter,
       mojom::Setting::kGoogleDriveSearchSuggestions,
   };
-  RegisterNestedSettingBulk(mojom::Subpage::kSyncDeprecated,
-                            kSyncDeprecatedSettings, generator);
+  RegisterNestedSettingBulk(mojom::Subpage::kSyncSetup, kSyncSettings,
+                            generator);
 
   // TODO(crbug.com/1227417): Remove after SyncSettingsCategorization launch.
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE,
-      mojom::Subpage::kSyncDeprecatedAdvanced, mojom::Subpage::kSyncDeprecated,
+      mojom::Subpage::kSyncDeprecatedAdvanced, mojom::Subpage::kSyncSetup,
       mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSyncDeprecatedAdvancedSubpagePath);
 

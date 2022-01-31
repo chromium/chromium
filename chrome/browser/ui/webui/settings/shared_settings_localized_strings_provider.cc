@@ -342,9 +342,8 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1275542): Un-deprecate kSyncDeprecatedSubpagePath.
   html_source->AddString("chromeOSSyncSettingsPath",
-                         chromeos::settings::mojom::kSyncDeprecatedSubpagePath);
+                         chromeos::settings::mojom::kSyncSetupSubpagePath);
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
