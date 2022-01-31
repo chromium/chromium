@@ -1,2 +1,4 @@
 # EdgeUpdater app
 /EdgeUpdater.app
+/chromium_mac_amd64/updater/
+/chromium_mac_arm64/updater/
