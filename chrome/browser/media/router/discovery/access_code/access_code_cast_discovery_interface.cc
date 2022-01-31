@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -33,6 +34,8 @@
 namespace media_router {
 
 namespace {
+using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
+
 bool command_line_enabled_for_testing = false;
 
 // TODO(b/206131520): Add Policy Switches to
@@ -69,6 +72,10 @@ constexpr char kJsonVideoIn[] = "videoIn";
 constexpr char kJsonAudioOut[] = "audioOut";
 constexpr char kJsonAudioIn[] = "audioIn";
 constexpr char kJsonDevMode[] = "devMode";
+
+constexpr char kJsonError[] = "error";
+constexpr char kJsonErrorCode[] = "code";
+constexpr char kJsonErrorMessage[] = "message";
 
 const int64_t kTimeoutMs = 30000;
 
@@ -123,20 +130,83 @@ std::string GetDiscoveryUrl() {
   return std::string(kDefaultDiscoveryEndpoint) + kDiscoveryServicePath;
 }
 
+AddSinkResultCode GetErrorFromResponse(const base::Value& response) {
+  const base::Value* error = response.FindKey(kJsonError);
+  if (!error) {
+    return AddSinkResultCode::OK;
+  }
+
+  // Get the HTTP code
+  absl::optional<int> http_code = error->FindIntKey(kJsonErrorCode);
+  if (!http_code) {
+    return AddSinkResultCode::RESPONSE_MALFORMED;
+  }
+
+  const std::string* error_message = error->FindStringKey(kJsonErrorMessage);
+  DVLOG(1) << "Error: HTTP " << *http_code << ": ("
+           << (error_message ? *error_message : "") << ")";
+
+  switch (*http_code) {
+    // 401
+    case net::HTTP_UNAUTHORIZED:
+      ABSL_FALLTHROUGH_INTENDED;
+    // 403
+    case net::HTTP_FORBIDDEN:
+      return AddSinkResultCode::AUTH_ERROR;
+
+    // 404
+    case net::HTTP_NOT_FOUND:
+      return AddSinkResultCode::ACCESS_CODE_NOT_FOUND;
+
+    // 408
+    case net::HTTP_REQUEST_TIMEOUT:
+      ABSL_FALLTHROUGH_INTENDED;
+    // 502
+    case net::HTTP_GATEWAY_TIMEOUT:
+      return AddSinkResultCode::SERVER_ERROR;
+
+    // 412
+    case net::HTTP_PRECONDITION_FAILED:
+      ABSL_FALLTHROUGH_INTENDED;
+    // 417
+    case net::HTTP_EXPECTATION_FAILED:
+      return AddSinkResultCode::INVALID_ACCESS_CODE;
+
+    // 429
+    case net::HTTP_TOO_MANY_REQUESTS:
+      return AddSinkResultCode::TOO_MANY_REQUESTS;
+
+    // 501
+    case net::HTTP_INTERNAL_SERVER_ERROR:
+      return AddSinkResultCode::SERVER_ERROR;
+
+    // 503
+    case net::HTTP_SERVICE_UNAVAILABLE:
+      return AddSinkResultCode::SERVICE_NOT_PRESENT;
+
+    case net::HTTP_OK:
+      NOTREACHED();
+      ABSL_FALLTHROUGH_INTENDED;
+    default:
+      return AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR;
+  }
+}
+
 // TODO(b/206997996): Add an enum to the EndpointResponse struct so that we can
 // check the enum instead of the string
-bool IsResponseValid(const absl::optional<base::Value>& response) {
+AddSinkResultCode IsResponseValid(const absl::optional<base::Value>& response) {
   if (!response || !response->is_dict()) {
     DVLOG(1) << "response_body was of unexpected format.";
-    return false;
+    return AddSinkResultCode::RESPONSE_MALFORMED;
   }
 
   if (response->DictEmpty()) {
     DVLOG(1) << "Response does not have value. Response: "
              << response->DebugString();
-    return false;
+    return AddSinkResultCode::EMPTY_RESPONSE;
   }
-  return true;
+
+  return GetErrorFromResponse(*response);
 }
 
 bool HasAuthenticationError(const std::string& response) {
@@ -252,8 +322,10 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
 
   absl::optional<base::Value> response_value =
       base::JSONReader::Read(response->response);
-  if (!IsResponseValid(response_value)) {
-    ReportError(AddSinkResultCode::RESPONSE_MALFORMED);
+
+  AddSinkResultCode result_code = IsResponseValid(response_value);
+  if (result_code != AddSinkResultCode::OK) {
+    ReportError(result_code);
     return;
   }
 

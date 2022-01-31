@@ -42,6 +42,7 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::InvokeArgument;
+using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -139,6 +140,16 @@ const char kEndpointResponseWrongDataTypes[] =
       }
     })";
 
+// videoOut is a string instead of a bool in this test case
+const char kErrorResponseFmt[] =
+    R"({
+      "error": {
+        "code": %d,
+        "message": "%s",
+        "status": "%s"
+      }
+    })";
+
 }  // namespace
 
 MATCHER_P(DiscoveryDeviceProtoEquals, message, "") {
@@ -205,6 +216,26 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
     status.decoded_body_length = response_data.size();
     test_url_loader_factory_.AddResponse(request_url, std::move(head),
                                          response_data, status);
+  }
+
+  std::string ConstructErrorResponse(net::HttpStatusCode code) {
+    return base::StringPrintf(kErrorResponseFmt, code,
+                              GetHttpReasonPhrase(code),
+                              GetHttpReasonPhrase(code));
+  }
+
+  void ErrorMappingTestHelper(net::HttpStatusCode http_response,
+                              AddSinkResultCode expected) {
+    SetEndpointFetcherMockResponse(GURL(kMockEndpoint),
+                                   ConstructErrorResponse(http_response),
+                                   http_response, net::OK);
+
+    MockDiscoveryDeviceCallback mock_callback;
+
+    EXPECT_CALL(mock_callback, Run(Eq(absl::nullopt), expected));
+
+    stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
+    base::RunLoop().RunUntilIdle();
   }
 
   void SignIn() {
@@ -274,6 +305,29 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerError) {
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccessCodeCastDiscoveryInterfaceTest, HttpErrorMapping) {
+  ErrorMappingTestHelper(net::HTTP_UNAUTHORIZED, AddSinkResultCode::AUTH_ERROR);
+  ErrorMappingTestHelper(net::HTTP_FORBIDDEN, AddSinkResultCode::AUTH_ERROR);
+  ErrorMappingTestHelper(net::HTTP_NOT_FOUND,
+                         AddSinkResultCode::ACCESS_CODE_NOT_FOUND);
+  ErrorMappingTestHelper(net::HTTP_REQUEST_TIMEOUT,
+                         AddSinkResultCode::SERVER_ERROR);
+  ErrorMappingTestHelper(net::HTTP_PRECONDITION_FAILED,
+                         AddSinkResultCode::INVALID_ACCESS_CODE);
+  ErrorMappingTestHelper(net::HTTP_EXPECTATION_FAILED,
+                         AddSinkResultCode::INVALID_ACCESS_CODE);
+  ErrorMappingTestHelper(net::HTTP_TOO_MANY_REQUESTS,
+                         AddSinkResultCode::TOO_MANY_REQUESTS);
+  ErrorMappingTestHelper(net::HTTP_INTERNAL_SERVER_ERROR,
+                         AddSinkResultCode::SERVER_ERROR);
+  ErrorMappingTestHelper(net::HTTP_SERVICE_UNAVAILABLE,
+                         AddSinkResultCode::SERVICE_NOT_PRESENT);
+
+  // Some random error
+  ErrorMappingTestHelper(net::HTTP_INVALID_XPRIVET_TOKEN,
+                         AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR);
 }
 
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerResponseMalformedError) {
