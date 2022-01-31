@@ -3259,6 +3259,21 @@
             ]
         }
     ],
+    "IOSEnableUnrealizedWebStates": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableUnrealizedWebStates"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFeedPreview": [
         {
             "platforms": [
