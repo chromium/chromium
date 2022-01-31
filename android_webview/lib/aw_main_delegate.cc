@@ -45,6 +45,7 @@
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/android/media_url_interceptor_register.h"
@@ -264,6 +265,11 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     // Disable dr-dc on webview.
     features.DisableIfNotSet(::features::kEnableDrDc);
+
+    // Disable TFLite based language detection on webview until webview supports
+    // ML model delivery via Optimization Guide component.
+    // TODO(crbug.com/1292622): Enable the feature on Webview.
+    features.DisableIfNotSet(::translate::kTFLiteLanguageDetectionEnabled);
   }
 
   android_webview::RegisterPathProvider();
