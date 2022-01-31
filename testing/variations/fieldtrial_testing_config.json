@@ -6157,6 +6157,44 @@
             ]
         }
     ],
+    "UiCompositorReleaseTileResourcesForHiddenLayers": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UiCompositorReleaseTileResourcesForHiddenLayers"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UiCompositorRequiredTilesOnly": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UiCompositorRequiredTilesOnly"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
