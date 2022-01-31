@@ -163,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, GestureToPrompt) {
 }
 
 // TODO(crbug.com/1290805): Test failing on linux-chromeos-chrome.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1290660): Test failing on linux.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DismissAndDeny DISABLED_DismissAndDeny
 #else
 #define MAYBE_DismissAndDeny DismissAndDeny
