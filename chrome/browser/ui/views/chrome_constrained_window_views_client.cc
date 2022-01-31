@@ -46,5 +46,5 @@ class ChromeConstrainedWindowViewsClient
 
 std::unique_ptr<constrained_window::ConstrainedWindowViewsClient>
 CreateChromeConstrainedWindowViewsClient() {
-  return base::WrapUnique(new ChromeConstrainedWindowViewsClient);
+  return std::make_unique<ChromeConstrainedWindowViewsClient>();
 }
