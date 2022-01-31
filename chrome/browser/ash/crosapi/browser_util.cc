@@ -251,6 +251,21 @@ const char kLacrosSelectionSwitch[] = "lacros-selection";
 const char kLacrosSelectionRootfs[] = "rootfs";
 const char kLacrosSelectionStateful[] = "stateful";
 
+// The internal name in about_flags.cc for the lacros-availablility-policy
+// config.
+const char kLacrosAvailabilityPolicyInternalName[] =
+    "lacros-availability-policy";
+
+// The commandline flag name of lacros-availability-policy.
+// The value should be the policy value as defined just below.
+// The values need to be consistent with policy_value_to_enum above.
+const char kLacrosAvailabilityPolicySwitch[] = "lacros-availability-policy";
+const char kLacrosAvailabilityPolicyUserChoice[] = "user_choice";
+const char kLacrosAvailabilityPolicyLacrosDisabled[] = "lacros_disabled";
+const char kLacrosAvailabilityPolicySideBySide[] = "side_by_side";
+const char kLacrosAvailabilityPolicyLacrosPrimary[] = "lacros_primary";
+const char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
+
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 const char kDataVerPref[] = "lacros.data_version";
@@ -749,6 +764,16 @@ void SetProfileMigrationCompletedForTest(bool is_completed) {
 
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
   return g_lacros_launch_switch_source;
+}
+
+base::StringPiece GetLacrosAvailabilityPolicyName(LacrosLaunchSwitch value) {
+  for (const auto& entry : policy_value_to_enum) {
+    if (entry.second == value)
+      return entry.first;
+  }
+
+  NOTREACHED();
+  return base::StringPiece();
 }
 
 }  // namespace browser_util

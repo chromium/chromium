@@ -56460,6 +56460,7 @@ from previous Chrome versions.
   <int value="1978570295" label="RawDraw:disabled"/>
   <int value="1979222611" label="XRSandbox:disabled"/>
   <int value="1979472169" label="TabGroupsFeedback:disabled"/>
+  <int value="1979536751" label="lacros-availability-policy"/>
   <int value="1980011075" label="debug-packed-apps"/>
   <int value="1980648371" label="PointerEventV1SpecCapturing:enabled"/>
   <int value="1985584246" label="PageInfoHistory:enabled"/>

@@ -115,6 +115,15 @@ extern const char kLacrosSelectionSwitch[];
 extern const char kLacrosSelectionRootfs[];
 extern const char kLacrosSelectionStateful[];
 
+// A command-line switch that is converted and set via the feature flag.
+extern const char kLacrosAvailabilityPolicyInternalName[];
+extern const char kLacrosAvailabilityPolicySwitch[];
+extern const char kLacrosAvailabilityPolicyUserChoice[];
+extern const char kLacrosAvailabilityPolicyLacrosDisabled[];
+extern const char kLacrosAvailabilityPolicySideBySide[];
+extern const char kLacrosAvailabilityPolicyLacrosPrimary[];
+extern const char kLacrosAvailabilityPolicyLacrosOnly[];
+
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];
 
@@ -281,6 +290,9 @@ void SetProfileMigrationCompletedForTest(bool is_completed);
 // Returns who decided how Lacros should be used - or not: The User, the policy
 // or another edge case.
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
+
+// Returns the policy value name from the given value.
+base::StringPiece GetLacrosAvailabilityPolicyName(LacrosLaunchSwitch value);
 
 }  // namespace browser_util
 }  // namespace crosapi

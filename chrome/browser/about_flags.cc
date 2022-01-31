@@ -717,6 +717,24 @@ const FeatureEntry::Choice kLacrosSelectionChoices[] = {
      crosapi::browser_util::kLacrosSelectionRootfs},
 };
 
+const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
+    {crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice,
+     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
+     crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice},
+    {crosapi::browser_util::kLacrosAvailabilityPolicyLacrosDisabled,
+     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
+     crosapi::browser_util::kLacrosAvailabilityPolicyLacrosDisabled},
+    {crosapi::browser_util::kLacrosAvailabilityPolicySideBySide,
+     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
+     crosapi::browser_util::kLacrosAvailabilityPolicySideBySide},
+    {crosapi::browser_util::kLacrosAvailabilityPolicyLacrosPrimary,
+     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
+     crosapi::browser_util::kLacrosAvailabilityPolicyLacrosPrimary},
+    {crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly,
+     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
+     crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly},
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const FeatureEntry::Choice kForceUIDirectionChoices[] = {
@@ -3085,6 +3103,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-notifications-revamp", flag_descriptions::kNotificationsRevampName,
      flag_descriptions::kNotificationsRevampDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNotificationsRefresh)},
+    // Used to carry the policy value crossing the Chrome process lifetime.
+    {crosapi::browser_util::kLacrosAvailabilityPolicyInternalName, "", "",
+     kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
     {kLacrosSupportInternalName, flag_descriptions::kLacrosSupportName,
      flag_descriptions::kLacrosSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kLacrosSupport)},
@@ -7770,6 +7791,13 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // enable-ui-devtools is only available on for non Stable channels.
   if (!strcmp(ui_devtools::switches::kEnableUiDevTools, entry.internal_name) &&
       channel == version_info::Channel::STABLE) {
+    return true;
+  }
+
+  // Skip lacros-availability-policy always. This is a pseudo entry
+  // and used to carry the policy value crossing the Chrome's lifetime.
+  if (!strcmp(crosapi::browser_util::kLacrosAvailabilityPolicyInternalName,
+              entry.internal_name)) {
     return true;
   }
 

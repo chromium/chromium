@@ -65,6 +65,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/lacros_availability_policy_observer.h"
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/dbus/chrome_features_service_provider.h"
@@ -901,8 +902,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
   browser_manager_ = std::make_unique<crosapi::BrowserManager>(
       g_browser_process->platform_part()->cros_component_manager());
-
   browser_manager_->AddObserver(SessionControllerClientImpl::Get());
+  lacros_availability_policy_observer_ =
+      std::make_unique<crosapi::LacrosAvailabilityPolicyObserver>();
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
@@ -1468,6 +1470,11 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // Cleans up dbus services depending on ash.
   dbus_services_->PreAshShutdown();
+
+  // LacrosAvailabilityPolicyObserver has the dependency to ProfileManager,
+  // so it needs to be destroyed before ProfileManager destruction,
+  // which happens inside PostMainMessageLoop below.
+  lacros_availability_policy_observer_.reset();
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();

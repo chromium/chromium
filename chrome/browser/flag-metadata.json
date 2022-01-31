@@ -3671,6 +3671,15 @@
     "expiry_milestone": 130
   },
   {
+    "name": "lacros-availability-policy",
+    "owners": [ "hidehiko", "lacros-team@google.com" ],
+    // Once Lacros is launched, and all users switch to use lacros fully,
+    // this flag can be removed. Until then, this absolutely must not expire.
+    // We do not yet have a launch milestone.
+    // TODO(https://crbug.com/1148474, https://crbug.com/1286340).
+    "expiry_milestone": 130
+  },
+  {
     "name": "lacros-non-syncing-profiles",
     "owners": [ "jkrcal", "droger", "chrome-signin@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this
