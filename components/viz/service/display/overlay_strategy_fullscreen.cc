@@ -67,7 +67,7 @@ bool OverlayStrategyFullscreen::Attempt(
   candidate.plane_z_order = 0;
   OverlayCandidateList new_candidate_list;
   new_candidate_list.push_back(candidate);
-  capability_checker_->CheckOverlaySupport(primary_plane, &new_candidate_list);
+  capability_checker_->CheckOverlaySupport(nullptr, &new_candidate_list);
   if (!new_candidate_list.front().overlay_handled)
     return false;
 
@@ -141,7 +141,7 @@ bool OverlayStrategyFullscreen::AttemptPrioritized(
 
   OverlayCandidateList new_candidate_list;
   new_candidate_list.push_back(proposed_candidate.candidate);
-  capability_checker_->CheckOverlaySupport(primary_plane, &new_candidate_list);
+  capability_checker_->CheckOverlaySupport(nullptr, &new_candidate_list);
   if (!new_candidate_list.front().overlay_handled)
     return false;
 
