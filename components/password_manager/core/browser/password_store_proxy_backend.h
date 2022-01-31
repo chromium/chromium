@@ -37,7 +37,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
 
  private:
   // Implements PasswordStoreBackend interface.
-  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
@@ -77,7 +76,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   const raw_ptr<PasswordStoreBackend> shadow_backend_;
   raw_ptr<PrefService> const prefs_ = nullptr;
   base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
-  base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

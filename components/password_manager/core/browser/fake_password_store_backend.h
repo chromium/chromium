@@ -29,7 +29,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
 
  private:
   // Implements PasswordStoreBackend interface.
-  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
@@ -79,7 +78,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
 
   PasswordMap stored_passwords_;
-  base::WeakPtrFactory<FakePasswordStoreBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

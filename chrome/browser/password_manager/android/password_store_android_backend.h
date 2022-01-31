@@ -164,7 +164,6 @@ class PasswordStoreAndroidBackend
       base::OnceCallback<void(std::unique_ptr<PasswordStoreChangeList>)>;
 
   // Implements PasswordStoreBackend interface.
-  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived stored_passwords_changed,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;

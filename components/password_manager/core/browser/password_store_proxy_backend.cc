@@ -282,10 +282,6 @@ PasswordStoreProxyBackend::PasswordStoreProxyBackend(
 
 PasswordStoreProxyBackend::~PasswordStoreProxyBackend() = default;
 
-base::WeakPtr<PasswordStoreBackend> PasswordStoreProxyBackend::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void PasswordStoreProxyBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,

@@ -33,15 +33,9 @@ PasswordStoreBuiltInBackend::~PasswordStoreBuiltInBackend() {
 void PasswordStoreBuiltInBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  weak_ptr_factory_.InvalidateWeakPtrs();
   if (helper_) {
     background_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
   }
-}
-
-base::WeakPtr<PasswordStoreBackend> PasswordStoreBuiltInBackend::GetWeakPtr() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void PasswordStoreBuiltInBackend::InitBackend(

@@ -24,10 +24,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
   MockPasswordStoreBackend();
   ~MockPasswordStoreBackend() override;
 
-  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   MOCK_METHOD(void,
               InitBackend,
               (RemoteChangesReceived remote_form_changes_received,
@@ -88,9 +84,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (),
               (override));
   MOCK_METHOD(void, ClearAllLocalPasswords, (), (override));
-
- private:
-  base::WeakPtrFactory<MockPasswordStoreBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

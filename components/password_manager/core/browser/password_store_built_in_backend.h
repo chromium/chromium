@@ -44,7 +44,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
 
  private:
   // Implements PasswordStoreBackend interface.
-  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
@@ -111,9 +110,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::WeakPtrFactory<PasswordStoreBuiltInBackend> GUARDED_BY_CONTEXT(
-      sequence_checker_) weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

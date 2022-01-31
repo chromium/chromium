@@ -343,10 +343,6 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
 
 PasswordStoreAndroidBackend::~PasswordStoreAndroidBackend() = default;
 
-base::WeakPtr<PasswordStoreBackend> PasswordStoreAndroidBackend::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void PasswordStoreAndroidBackend::InitBackend(
     RemoteChangesReceived stored_passwords_changed,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
