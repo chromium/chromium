@@ -30,6 +30,8 @@ static_library("core") {
     "history_clusters_service.h",
     "history_clusters_types.cc",
     "history_clusters_types.h",
+    "query_clusters_state.cc",
+    "query_clusters_state.h",
   ]
   if (build_with_on_device_clustering_backend) {
     sources += [
