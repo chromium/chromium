@@ -354,10 +354,8 @@ class BaseSelectFileDialogExtensionBrowserTest
         owning_window, this /* params */);
   }
 
-  void CloseDialog(DialogButtonType button_type,
-                   const gfx::NativeWindow& owning_window) {
-    // Inject JavaScript into the dialog to click the dialog |button_type|.
-    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+  void ClickJsButton(content::RenderFrameHost* frame_host,
+                     DialogButtonType button_type) {
     std::string button_class =
         (button_type == DIALOG_BTN_OK) ? ".button-panel .ok" :
                                          ".button-panel .cancel";
@@ -368,6 +366,14 @@ class BaseSelectFileDialogExtensionBrowserTest
     // The file selection handler code closes the dialog but does not return
     // control to JavaScript, so do not wait for the script return value.
     frame_host->ExecuteJavaScriptForTests(script, base::NullCallback());
+  }
+
+  void CloseDialog(DialogButtonType button_type,
+                   const gfx::NativeWindow& owning_window) {
+    // Inject JavaScript into the dialog to click the dialog |button_type|.
+    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+
+    ClickJsButton(frame_host, button_type);
 
     // Instead, wait for Listener notification that the window has closed.
     LOG(INFO) << "Waiting for window close notification.";
@@ -412,6 +418,32 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, DestroyListener) {
   // up the dialog.  Make sure we don't crash.
   dialog_->ListenerDestroyed();
   listener_.reset();
+}
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, DestroyListener2) {
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  // Open the file dialog on the default path.
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     base::FilePath(), owning_window, ""));
+
+  // Get the Files app WebContents/Framehost, before deleting the dialog_.
+  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+
+  // Some users of SelectFileDialog destroy their listener before cleaning
+  // up the dialog, delete the `dialog_`, however the
+  // SystemFilesAppDialogDelegate will still be alive with the Files app
+  // WebContents.  Make sure we don't crash.
+  dialog_->ListenerDestroyed();
+  listener_.reset();
+  dialog_.reset();
+
+  // This will close the FrameHost/WebContents and will try to close the
+  // `dialog_`.
+  ClickJsButton(frame_host, DIALOG_BTN_CANCEL);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, CanResize) {
