@@ -26,7 +26,6 @@ using AttributionType = ::content::AttributionStorage::AttributionType;
 constexpr AttributionType kAttributionTypes[] = {
     AttributionType::kNavigation,
     AttributionType::kEvent,
-    AttributionType::kAggregate,
 };
 
 AttributionType AttributionTypeFromSourceType(
@@ -67,13 +66,6 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // |conversion_destination| is the destination of the conversion.
   // |conversion_origin| is the origin of the conversion.
   // |conversion_time| is the report's conversion time.
-  // |bucket| is the bucket for aggregate histogram contributions. It is unused
-  // for now, but we want the table to be extensible to a number of different
-  // types of limits. These include limiting total contributions across all
-  // buckets, as well as limiting the number of contributions to any one bucket.
-  // |value| is the magnitude of this contribution when compared against rate
-  // limits. For event-level rows, this is 1. For aggregate contributions, this
-  // is the value of the individual contribution to a bucket.
   static constexpr char kRateLimitTableSql[] =
       "CREATE TABLE IF NOT EXISTS rate_limits"
       "(rate_limit_id INTEGER PRIMARY KEY NOT NULL,"
@@ -83,9 +75,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "impression_origin TEXT NOT NULL,"
       "conversion_destination TEXT NOT NULL,"
       "conversion_origin TEXT NOT NULL,"
-      "conversion_time INTEGER NOT NULL,"
-      "bucket TEXT NOT NULL,"
-      "value INTEGER NOT NULL)";
+      "conversion_time INTEGER NOT NULL)";
   if (!db->Execute(kRateLimitTableSql))
     return false;
 
@@ -126,12 +116,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
       SerializeOrigin(report.source().common_info().impression_origin()),
       report.source().common_info().ConversionDestination().Serialize(),
       SerializeOrigin(report.source().common_info().conversion_origin()),
-      report.trigger_time(),
-      // Rate limits for the event-level API do not have a bucket.
-      /*bucket=*/"",
-      // By supplying 1 here, rate limits for the event-level API act
-      // as a count.
-      /*value=*/1u);
+      report.trigger_time());
 }
 
 bool RateLimitTable::AddRow(
@@ -142,9 +127,7 @@ bool RateLimitTable::AddRow(
     const std::string& serialized_impression_origin,
     const std::string& serialized_conversion_destination,
     const std::string& serialized_conversion_origin,
-    base::Time time,
-    const std::string& bucket,
-    uint32_t value) {
+    base::Time time) {
   // Only delete expired rate limits periodically to avoid excessive DB
   // operations.
   const base::TimeDelta delete_frequency =
@@ -160,8 +143,8 @@ bool RateLimitTable::AddRow(
   static constexpr char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits"
       "(attribution_type,impression_id,impression_site,impression_origin,"
-      "conversion_destination,conversion_origin,conversion_time,bucket,value)"
-      "VALUES(?,?,?,?,?,?,?,?,?)";
+      "conversion_destination,conversion_origin,conversion_time)"
+      "VALUES(?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
   statement.BindInt(0, SerializeAttributionType(attribution_type));
@@ -171,8 +154,6 @@ bool RateLimitTable::AddRow(
   statement.BindString(4, serialized_conversion_destination);
   statement.BindString(5, serialized_conversion_origin);
   statement.BindTime(6, time);
-  statement.BindString(7, bucket);
-  statement.BindInt64(8, static_cast<int64_t>(value));
   return statement.Run();
 }
 
@@ -214,7 +195,7 @@ int64_t RateLimitTable::GetCapacity(
   base::Time min_timestamp = now - rate_limits.time_window;
 
   static constexpr char kAttributionAllowedSql[] =
-      "SELECT value FROM rate_limits "
+      "SELECT COUNT(*) FROM rate_limits "
       DCHECK_SQL_INDEXED_BY("rate_limit_impression_site_type_idx")
       "WHERE attribution_type = ? "
       "AND impression_site = ? "
@@ -227,16 +208,13 @@ int64_t RateLimitTable::GetCapacity(
   statement.BindString(2, serialized_conversion_destination);
   statement.BindTime(3, min_timestamp);
 
-  int64_t sum = 0;
-  while (statement.Step()) {
-    int64_t value = statement.ColumnInt64(0);
-    sum += value;
-  }
-  if (!statement.Succeeded())
+  if (!statement.Step())
     return -1;
 
-  return rate_limits.max_contributions_per_window > sum
-             ? rate_limits.max_contributions_per_window - sum
+  int64_t count = statement.ColumnInt64(0);
+
+  return rate_limits.max_contributions_per_window > count
+             ? rate_limits.max_contributions_per_window - count
              : 0;
 }
 
@@ -371,60 +349,6 @@ bool RateLimitTable::ClearDataForSourceIds(
   }
 
   return transaction.Commit();
-}
-
-AttributionAllowedStatus
-RateLimitTable::AddAggregateHistogramContributionsForTesting(
-    sql::Database* db,
-    const StoredSource& source,
-    const std::vector<AggregateHistogramContribution>& contributions) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::Time now = base::Time::Now();
-
-  const std::string serialized_impression_site =
-      source.common_info().ImpressionSite().Serialize();
-  const std::string serialized_conversion_destination =
-      source.common_info().ConversionDestination().Serialize();
-
-  const int64_t capacity =
-      GetCapacity(db, AttributionType::kAggregate, serialized_impression_site,
-                  serialized_conversion_destination, now);
-  // This should only be possible if there is DB corruption.
-  if (capacity < 0)
-    return AttributionAllowedStatus::kError;
-  if (capacity == 0)
-    return AttributionAllowedStatus::kNotAllowed;
-
-  int64_t new_sum = 0;
-  for (const auto& contribution : contributions) {
-    DCHECK_GT(contribution.value, 0u);
-    new_sum += contribution.value;
-  }
-
-  if (new_sum > capacity)
-    return AttributionAllowedStatus::kNotAllowed;
-
-  sql::Transaction transaction(db);
-  if (!transaction.Begin())
-    return AttributionAllowedStatus::kError;
-
-  const std::string serialized_impression_origin =
-      SerializeOrigin(source.common_info().impression_origin());
-  const std::string serialized_conversion_origin =
-      SerializeOrigin(source.common_info().conversion_origin());
-
-  for (const auto& contribution : contributions) {
-    if (!AddRow(db, AttributionType::kAggregate, source.source_id(),
-                serialized_impression_site, serialized_impression_origin,
-                serialized_conversion_destination, serialized_conversion_origin,
-                now, contribution.bucket, contribution.value)) {
-      return AttributionAllowedStatus::kError;
-    }
-  }
-
-  return transaction.Commit() ? AttributionAllowedStatus::kAllowed
-                              : AttributionAllowedStatus::kError;
 }
 
 }  // namespace content

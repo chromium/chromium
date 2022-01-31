@@ -121,11 +121,15 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 16 replaces the event_source_impression_site_idx with
 // impression_site_reporting_origin_idx, which applies to both source types and
 // includes the reporting origin.
-const int kCurrentVersionNumber = 16;
+//
+// Version 17 - 2022/01/31 - https://crrev.com/c/3427311
+//
+// Version 17 removes the rate_limits.bucket and rate_limits.value columns.
+const int kCurrentVersionNumber = 17;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 16;
+const int kCompatibleVersionNumber = 17;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -133,7 +137,9 @@ const int kCompatibleVersionNumber = 16;
 // Versions 1-14 were deprecated by https://crrev.com/c/3421175.
 //
 // Version 15 was deprecated by https://crrev.com/c/3421414.
-const int kDeprecatedVersionNumber = 15;
+//
+// Version 16 was deprecated by https://crrev.com/c/3427311.
+const int kDeprecatedVersionNumber = 16;
 
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {

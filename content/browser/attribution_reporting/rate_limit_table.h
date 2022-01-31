@@ -29,11 +29,6 @@ namespace content {
 
 class AttributionReport;
 
-struct AggregateHistogramContribution {
-  std::string bucket;
-  uint32_t value;
-};
-
 // Manages storage for rate-limiting reports.
 // This class may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence. The sequence must outlive |this|.
@@ -66,16 +61,6 @@ class CONTENT_EXPORT RateLimitTable {
   AttributionAllowedStatus AttributionAllowed(sql::Database* db,
                                               const AttributionReport& report,
                                               base::Time now);
-
-  // Attempts to add a set of histogram contributions to the rate limit. Returns
-  // `kAllowed` if the contributions were added, `kNotAllowed` if the reports
-  // would have exceeded the limit, and `kError` otherwise. This API will change
-  // as we iterate on the aggregate API, so for now it is only available in
-  // tests.
-  AttributionAllowedStatus AddAggregateHistogramContributionsForTesting(
-      sql::Database* db,
-      const StoredSource& source,
-      const std::vector<AggregateHistogramContribution>& contributions);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.
@@ -110,9 +95,7 @@ class CONTENT_EXPORT RateLimitTable {
       const std::string& serialized_impression_origin,
       const std::string& serialized_conversion_destination,
       const std::string& serialized_conversion_origin,
-      base::Time time,
-      const std::string& bucket,
-      uint32_t value) VALID_CONTEXT_REQUIRED(sequence_checker_);
+      base::Time time) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.
   [[nodiscard]] bool ClearAllDataInRange(sql::Database* db,

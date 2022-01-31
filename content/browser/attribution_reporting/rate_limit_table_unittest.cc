@@ -465,23 +465,6 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
       &db, base::Time(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), example_a)));
   EXPECT_EQ(0u, GetRateLimitRows(&db));
-
-  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
-            table()->AddAggregateHistogramContributionsForTesting(
-                &db,
-                SourceBuilder()
-                    .SetImpressionOrigin(example_a)
-                    .SetConversionOrigin(example_b)
-                    .SetSourceId(StoredSource::Id(1))
-                    .BuildStored(),
-                {{.bucket = "a", .value = 2}}));
-  EXPECT_EQ(1u, GetRateLimitRows(&db));
-
-  // Should delete (example_a, example_b).
-  EXPECT_TRUE(table()->ClearDataForOriginsInRange(
-      &db, base::Time(), base::Time::Max(),
-      base::BindRepeating(std::equal_to<url::Origin>(), example_a)));
-  EXPECT_EQ(0u, GetRateLimitRows(&db));
 }
 
 TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
@@ -576,62 +559,6 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AttributionAllowed(
                 &db, NewConversionReport(example_c, example_d), now));
-}
-
-TEST_F(RateLimitTableTest, Aggregate) {
-  sql::Database db;
-  EXPECT_TRUE(db.Open(db_path()));
-  EXPECT_TRUE(table()->CreateTable(&db));
-
-  delegate()->set_rate_limits({
-      .time_window = base::Days(7),
-      .max_contributions_per_window = 16,
-  });
-
-  const auto impression =
-      SourceBuilder()
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://a.example/")))
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example/")))
-          .SetSourceId(StoredSource::Id(1))
-          .BuildStored();
-
-  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
-            table()->AddAggregateHistogramContributionsForTesting(
-                &db, impression,
-                {
-                    {.bucket = "a", .value = 2},
-                    {.bucket = "b", .value = 5},
-                }));
-
-  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
-            table()->AddAggregateHistogramContributionsForTesting(
-                &db, impression,
-                {
-                    {.bucket = "a", .value = 10},
-                }));
-
-  task_environment_.FastForwardBy(base::Days(7) - base::Milliseconds(1));
-  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
-            table()->AddAggregateHistogramContributionsForTesting(
-                &db, impression,
-                {
-                    {.bucket = "a", .value = 9},
-                }));
-  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
-            table()->AddAggregateHistogramContributionsForTesting(
-                &db, impression,
-                {
-                    {.bucket = "b", .value = 1},
-                }));
-
-  // This is checking expiry behavior.
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
-            table()->AddAggregateHistogramContributionsForTesting(
-                &db, impression,
-                {
-                    {.bucket = "a", .value = 7},
-                }));
 }
 
 }  // namespace content

@@ -61,11 +61,6 @@ AttributionStorageDelegateImpl::GetRateLimits(
           .time_window = base::Days(30),
           .max_contributions_per_window = 100,
       };
-    case AttributionType::kAggregate:
-      return {
-          .time_window = base::Days(7),
-          .max_contributions_per_window = 65536,
-      };
   }
 }
 

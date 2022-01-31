@@ -29,7 +29,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 16;
+const int kCurrentVersionNumber = 17;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_16.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_17.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -136,7 +136,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
 
 TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
   base::HistogramTester histograms;
-  LoadDatabase(FILE_PATH_LITERAL("version_15.sql"), DbPath());
+  LoadDatabase(FILE_PATH_LITERAL("version_16.sql"), DbPath());
 
   // Verify pre-conditions.
   {

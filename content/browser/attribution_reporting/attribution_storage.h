@@ -39,7 +39,6 @@ class AttributionStorage {
   enum class AttributionType {
     kNavigation = 0,
     kEvent = 1,
-    kAggregate = 2,
   };
 
   // Storage delegate that can supplied to extend basic attribution storage
