@@ -889,6 +889,53 @@ Privacy Sandbox trials are still in active development and are available in sele
         Reset group
       </message>
 
+      <!-- TODO(crbug.com/1286276) These strings are not final yet and therefor marked as translatable="false" -->
+      <message name="IDS_PRIVACY_SANDBOX_TRIALS_TITLE" desc="Title shown at the top of privacy sandbox settings." translateable="false">
+        Trials
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" desc="Title of the settings page to configure ad personalization." translateable="false">
+        Ad personalization
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" desc="Summary of the settings page to configure ad personalization." translateable="false">
+        Your browsing history affects the ads you see
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" desc="Title of the settings apge to explain ad measurement." translateable="false">
+        Ad measurement
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="Summary of the settings page to explain ad measurement." translateable="false">
+         Advertisers can understand how ads perform
+     </message>
+      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_TITLE" desc="Title of the settings page to configure spam and fraud reduction." translateable="false">
+        Spam &amp; fraud reduction
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_SUMMARY" desc="Summary of the settings page to configure spam and fraud reduction." translateable="false">
+        Help sites fight fraud and distinguish bots from people
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_LINK" desc="Text of a link to explain ad personalization." translateable="false">
+       <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more about browser-based ad personalization<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_TITLE" desc="Title of the settings page to explain ad personalization." translateable="false">
+        About personalized ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest." translateable="false">
+        Remove interest?
+      </message>
+       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_TITLE" desc="Title of the settings page to configure interests that were removed from ad personalization." translateable="false">
+        Interests you removed
+      </message>
+       <message name="IDS_PRIVACY_SANDBOX_TOPIC_INTERESTS_CATEGORY" desc="Title of a section of the settings page to configure ad personalization." translateable="false">
+        Your interests as estimated by Chrome
+      </message>
+       <message name="IDS_PRIVACY_SANDBOX_FLEDGE_INTERESTS_CATEGORY" desc="Title of a section of the settings page to configure ad personalization." translateable="false">
+        Sites you visit that define your interests
+      </message>
+       <message name="IDS_PRIVACY_SANDBOX_FLEDGE_UNDER_DEVELOPMENT_NOTICE" desc="Text to explain that a feature for ad personalization is not implemented yet." translateable="false">
+        This feature is currently under development.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION_PLACEHOLDER" desc="This is only used until final strings are approved and should never be translated." translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+      </message>
+
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
       <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
         Custom

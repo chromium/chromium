@@ -19,8 +19,7 @@ public class AdMeasurementFragment extends PreferenceFragmentCompat {
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        // TODO(crbug.com/1286276): Replace string placeholders.
-        getActivity().setTitle("Ad measurement");
+        getActivity().setTitle(R.string.privacy_sandbox_ad_measurement_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference);
     }
 }

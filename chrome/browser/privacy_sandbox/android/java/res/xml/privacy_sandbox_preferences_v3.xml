@@ -6,37 +6,37 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO(crbug.com/1286276): Replace string and icon placeholders. -->
+    <!-- TODO(crbug.com/1286276): Replace icon placeholders. -->
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="privacy_sandbox_toggle"
-        android:title="Trials"
-        android:summary="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+        android:title="@string/privacy_sandbox_trials_title"
+        android:summary="@string/privacy_sandbox_description_placeholder"
         android:persistent="false"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.LearnMoreFragment"
         android:key="privacy_sandbox_learn_more"
-        android:summary="&lt;link&gt;Learn more about browser-based ad personalization&lt;/link&gt;" />
+        android:summary="@string/privacy_sandbox_learn_more_link" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment"
-        android:title="Ad personalization"
-        android:summary="Lorem ipsum dolor sit amet, consetetur sadipscing elitr."
+        android:title="@string/privacy_sandbox_ad_personalization_title"
+        android:summary="@string/privacy_sandbox_ad_personalization_summary"
         android:icon="@drawable/permission_cookie"
         app:iconTint="@macro/default_icon_color" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment"
-        android:title="Ad measurement"
-        android:summary="Lorem ipsum dolor sit amet, consetetur sadipscing elitr."
+        android:title="@string/privacy_sandbox_ad_measurement_title"
+        android:summary="@string/privacy_sandbox_ad_measurement_summary"
         android:icon="@drawable/permission_cookie"
         app:iconTint="@macro/default_icon_color" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.SpamFraudFragment"
-        android:title="Spam &amp; fraud detection"
-        android:summary="Lorem ipsum dolor sit amet, consetetur sadipscing elitr."
+        android:title="@string/privacy_sandbox_spam_fraud_title"
+        android:summary="@string/privacy_sandbox_spam_fraud_summary"
         android:icon="@drawable/permission_cookie"
         app:iconTint="@macro/default_icon_color" />
 

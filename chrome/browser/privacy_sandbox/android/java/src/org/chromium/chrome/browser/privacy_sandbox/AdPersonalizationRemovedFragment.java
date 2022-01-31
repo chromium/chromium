@@ -13,13 +13,13 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 /**
  * Settings fragment for privacy sandbox settings.
  */
-public class LearnMoreFragment extends PreferenceFragmentCompat {
+public class AdPersonalizationRemovedFragment extends PreferenceFragmentCompat {
     /**
      * Initializes all the objects related to the preferences page.
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        getActivity().setTitle(R.string.privacy_sandbox_learn_more_title);
-        SettingsUtils.addPreferencesFromResource(this, R.xml.learn_more_preference);
+        getActivity().setTitle(R.string.privacy_sandbox_remove_interest_title);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_removed_preference);
     }
 }

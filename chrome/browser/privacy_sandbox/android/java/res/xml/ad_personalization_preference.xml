@@ -6,10 +6,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO(crbug.com/1286276): Replace string placeholders. -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:title="Some title"
-        android:summary="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+    <Preference
+        android:summary="@string/privacy_sandbox_description_placeholder"
+        android:selectable="false"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:key="topic_interests"
+        android:title="@string/privacy_sandbox_topic_interests_category" />
+
+    <Preference
+        android:title="@string/privacy_sandbox_remove_interest_title"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"/>
+
+    <PreferenceCategory
+        android:title="@string/privacy_sandbox_fledge_interests_category" />
+
+    <Preference
+        android:summary="@string/privacy_sandbox_fledge_under_development_notice"
+        android:selectable="false"
         app:allowDividerBelow="false"/>
 
 </PreferenceScreen>

@@ -19,8 +19,7 @@ public class SpamFraudFragment extends PreferenceFragmentCompat {
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        // TODO(crbug.com/1286276): Replace string placeholders.
-        getActivity().setTitle("Spam and fraud reduction");
+        getActivity().setTitle(R.string.privacy_sandbox_spam_fraud_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.spam_fraud_preference);
     }
 }
