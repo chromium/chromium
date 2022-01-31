@@ -162,17 +162,18 @@ struct FieldMatches {
   double InvScore() { return std::pow(1 - weight, count); }
 };
 
-// Extracts a list of strings from a DictionaryValue containing a list of
-// objects containing a string field.
+// Extracts a list of pointers to strings from a DictionaryValue containing a
+// list of objects containing a string field of interest. Note that pointers may
+// be `nullptr` if the value at `field_path` is not found or is not a string.
 std::vector<const std::string*> ExtractResultList(
-    const base::DictionaryValue* result,
+    const base::Value* result,
     const base::StringPiece& list_path,
     const base::StringPiece& field_path) {
   const base::Value* values = result->FindListPath(list_path);
   if (!values)
     return {};
 
-  base::Value::ConstListView list = values->GetList();
+  auto list = values->GetList();
   std::vector<const std::string*> extracted(list.size());
   std::transform(list.begin(), list.end(), extracted.begin(),
                  [field_path](const auto& value) {
@@ -187,8 +188,7 @@ double FieldWeight(const std::string& param_name, double default_weight) {
                                                    param_name, default_weight);
 }
 
-int CalculateScore(const std::u16string& input,
-                   const base::DictionaryValue* result) {
+int CalculateScore(const std::u16string& input, const base::Value* result) {
   // Suggestions scored lower than |raw_score_cutoff| will be discarded.
   double raw_score_cutoff = base::GetFieldTrialParamByFeatureAsDouble(
       omnibox::kDocumentProvider, "RawDocScoreCutoff", .25);
@@ -250,7 +250,7 @@ int CalculateScore(const std::u16string& input,
 
 int BoostOwned(const int score,
                const std::string& owner,
-               const base::DictionaryValue* result) {
+               const base::Value* result) {
   int promotion = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kDocumentProvider, "OwnedDocPromotion", 0);
   int demotion = base::GetFieldTrialParamByFeatureAsInt(
@@ -322,6 +322,11 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
     }
   }
   return std::string();
+}
+
+std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
+  auto* ptr = value.FindStringKey(key);
+  return ptr ? *ptr : "";
 }
 
 }  // namespace
@@ -691,17 +696,13 @@ std::u16string DocumentProvider::GetMatchDescription(
 ACMatches DocumentProvider::ParseDocumentSearchResults(
     const base::Value& root_val) {
   ACMatches matches;
-  const base::DictionaryValue* root_dict = nullptr;
-  const base::ListValue* results_list = nullptr;
-  if (!root_val.GetAsDictionary(&root_dict)) {
-    return matches;
-  }
 
   // Parse the results.
-  if (!root_dict->GetList("results", &results_list)) {
+  const base::Value* results = root_val.FindListKey("results");
+  if (!results) {
     return matches;
   }
-  size_t num_results = results_list->GetList().size();
+  size_t num_results = results->GetList().size();
   UMA_HISTOGRAM_COUNTS_1M("Omnibox.DocumentSuggest.ResultCount", num_results);
 
   // During development/quality iteration we may wish to defeat server scores.
@@ -732,16 +733,12 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   // Ensure server's suggestions are added with monotonically decreasing scores.
   int previous_score = INT_MAX;
   for (size_t i = 0; i < num_results; i++) {
-    const base::Value& result_value = results_list->GetList()[i];
-    if (!result_value.is_dict()) {
+    const base::Value& result = results->GetList()[i];
+    if (!result.is_dict()) {
       return matches;
     }
-    const base::DictionaryValue& result =
-        base::Value::AsDictionaryValue(result_value);
-    std::u16string title;
-    std::u16string url;
-    result.GetString("title", &title);
-    result.GetString("url", &url);
+    const std::string title = FindStringKeyOrEmpty(result, "title");
+    const std::string url = FindStringKeyOrEmpty(result, "url");
     if (title.empty() || url.empty()) {
       continue;
     }
@@ -776,10 +773,10 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
                             AutocompleteMatchType::DOCUMENT_SUGGESTION);
     // Use full URL for displayed text and navigation. Use "originalUrl" for
     // deduping if present.
-    match.fill_into_edit = url;
+    match.fill_into_edit = base::UTF8ToUTF16(url);
     match.destination_url = GURL(url);
-    std::u16string original_url;
-    if (result.GetString("originalUrl", &original_url)) {
+    const std::string* original_url = result.FindStringKey("originalUrl");
+    if (original_url) {
       // |AutocompleteMatch::GURLToStrippedGURL()| will try to use
       // |GetURLForDeduping()| to extract a doc ID and generate a canonical doc
       // URL; this is ideal as it handles different URL formats pointing to the
@@ -787,23 +784,24 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       // generation that can still be used for generic deduping and as a key to
       // |matches_cache_|.
       match.stripped_destination_url = AutocompleteMatch::GURLToStrippedGURL(
-          GURL(original_url), input_, client_->GetTemplateURLService(),
+          GURL(*original_url), input_, client_->GetTemplateURLService(),
           std::u16string());
     }
 
-    match.contents = AutocompleteMatch::SanitizeString(title);
+    match.contents =
+        AutocompleteMatch::SanitizeString(base::UTF8ToUTF16(title));
     match.contents_class = Classify(match.contents, input_.text());
-    const base::DictionaryValue* metadata = nullptr;
-    if (result.GetDictionary("metadata", &metadata)) {
-      std::string mimetype;
-      if (metadata->GetString("mimeType", &mimetype)) {
+    const base::Value* metadata = result.FindDictKey("metadata");
+    if (metadata) {
+      const std::string update_time =
+          FindStringKeyOrEmpty(*metadata, "updateTime");
+      const std::string mimetype = FindStringKeyOrEmpty(*metadata, "mimeType");
+      if (metadata->FindStringKey("mimeType")) {
         match.document_type = GetIconForMIMEType(mimetype);
         match.RecordAdditionalInfo(
             "document type",
             AutocompleteMatch::DocumentTypeString(match.document_type));
       }
-      std::string update_time;
-      metadata->GetString("updateTime", &update_time);
       auto owners = ExtractResultList(&result, "metadata.owner.personNames",
                                       "displayName");
       if (!owners.empty())

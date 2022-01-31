@@ -71,7 +71,7 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
 
   if (subtypes_value == nullptr || !subtypes_value->is_list())
     return result;
-  const auto& subtypes_list = subtypes_value->GetList();
+  auto subtypes_list = subtypes_value->GetList();
 
   if (!subtypes_list.empty() && subtypes_list.size() != expected_size) {
     LOG(WARNING) << "The length of reported subtypes (" << subtypes_list.size()
@@ -86,7 +86,7 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
     if (!subtypes_item.is_list())
       continue;
 
-    const auto& subtype_list = subtypes_item.GetList();
+    auto subtype_list = subtypes_item.GetList();
     auto& result_subtypes = result[index];
     result_subtypes.reserve(subtype_list.size());
 
@@ -456,75 +456,71 @@ bool SearchSuggestionParser::ParseSuggestResults(
     Results* results) {
   if (!root_val.is_list())
     return false;
-  base::Value::ConstListView root_list = root_val.GetList();
+  auto root_list = root_val.GetList();
 
+  // 1st element: query.
   if (root_list.empty() || !root_list[0].is_string())
     return false;
   std::u16string query = base::UTF8ToUTF16(root_list[0].GetString());
   if (query != input.text())
     return false;
 
+  // 2nd element: suggestions list.
   if (root_list.size() < 2u || !root_list[1].is_list())
     return false;
-  base::Value::ConstListView results_list = root_list[1].GetList();
+  auto results_list = root_list[1].GetList();
 
-  // 3rd element: Description list.
-  absl::optional<base::Value::ConstListView> descriptions;
-  if (root_list.size() > 2u && root_list[2].is_list())
-    descriptions = root_list[2].GetList();
-
-  // 4th element: Disregard the query URL list for now.
+  // 3rd element: Ignore the optional description list for now.
+  // 4th element: Disregard the query URL list.
+  // 5th element: Disregard the optional key-value pairs from the server.
 
   // Reset suggested relevance information.
   results->verbatim_relevance = -1;
 
-  // 5th element: Optional key-value pairs from the Suggest server.
-  const base::ListValue* types = nullptr;
-  const base::ListValue* experiment_stats = nullptr;
-  const base::ListValue* suggestion_details = nullptr;
-  const base::DictionaryValue* extras = nullptr;
-  const base::Value* suggestsubtypes = nullptr;
+  const base::Value* suggest_types = nullptr;
+  const base::Value* suggest_subtypes = nullptr;
+  const base::Value* relevances = nullptr;
+  const base::Value* suggestion_details = nullptr;
+  const base::Value* subtype_identifiers = nullptr;
   int prefetch_index = -1;
   int prerender_index = -1;
 
-  absl::optional<base::Value::ConstListView> subtype_identifiers;
-  absl::optional<base::Value::ConstListView> relevances;
+  if (root_list.size() > 4u && root_list[4].is_dict()) {
+    const base::Value& extras = root_list[4];
 
-  if (root_list.size() > 4u && root_list[4].GetAsDictionary(&extras)) {
-    extras->GetList("google:suggesttype", &types);
+    suggest_types = extras.FindListKey("google:suggesttype");
 
-    suggestsubtypes = extras->FindPath("google:suggestsubtypes");
+    suggest_subtypes = extras.FindListKey("google:suggestsubtypes");
 
+    relevances = extras.FindListKey("google:suggestrelevance");
     // Discard this list if its size does not match that of the suggestions.
-    const base::Value* relevances_value =
-        extras->FindListKey("google:suggestrelevance");
-    if (relevances_value &&
-        relevances_value->GetList().size() == results_list.size()) {
-      relevances = relevances_value->GetList();
+    if (relevances && relevances->GetList().size() != results_list.size()) {
+      relevances = nullptr;
     }
+
     if (absl::optional<int> relevance =
-            extras->FindIntKey("google:verbatimrelevance")) {
+            extras.FindIntKey("google:verbatimrelevance")) {
       results->verbatim_relevance = *relevance;
     }
 
     // Check if the active suggest field trial (if any) has triggered either
     // for the default provider or keyword provider.
     absl::optional<bool> field_trial_triggered =
-        extras->FindBoolKey("google:fieldtrialtriggered");
+        extras.FindBoolKey("google:fieldtrialtriggered");
     results->field_trial_triggered = field_trial_triggered.value_or(false);
 
     results->experiment_stats.clear();
-    if (extras->GetList("google:experimentstats", &experiment_stats) &&
-        experiment_stats) {
-      for (const base::Value& experiment_stat : experiment_stats->GetList())
+    const base::Value* experiment_stats =
+        extras.FindListKey("google:experimentstats");
+    if (experiment_stats) {
+      for (const auto& experiment_stat : experiment_stats->GetList())
         results->experiment_stats.push_back(experiment_stat.Clone());
     }
 
-    const base::DictionaryValue* header_texts = nullptr;
-    if (extras->GetDictionary("google:headertexts", &header_texts) &&
-        header_texts) {
-      const base::DictionaryValue* headers = nullptr;
-      if (header_texts->GetDictionary("a", &headers) && headers) {
+    const base::Value* header_texts = extras.FindDictKey("google:headertexts");
+    if (header_texts) {
+      const base::Value* headers = header_texts->FindDictKey("a");
+      if (headers) {
         for (auto it : headers->DictItems()) {
           int suggestion_group_id;
           base::StringToInt(it.first, &suggestion_group_id);
@@ -533,8 +529,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
       }
 
-      const base::ListValue* hidden_group_ids = nullptr;
-      if (header_texts->GetList("h", &hidden_group_ids) && hidden_group_ids) {
+      const base::Value* hidden_group_ids = header_texts->FindListKey("h");
+      if (hidden_group_ids) {
         for (const auto& value : hidden_group_ids->GetList()) {
           if (value.is_int())
             results->hidden_group_ids.emplace_back(value.GetInt());
@@ -542,39 +538,38 @@ bool SearchSuggestionParser::ParseSuggestResults(
       }
     }
 
-    const base::DictionaryValue* client_data = nullptr;
-    if (extras->GetDictionary("google:clientdata", &client_data) &&
-        client_data) {
-      if (absl::optional<int> phi = client_data->FindIntKey("phi"))
-        prefetch_index = *phi;
-      if (absl::optional<int> pre = client_data->FindIntKey("pre")) {
-        prerender_index = *pre;
-      }
+    const base::Value* client_data = extras.FindDictKey("google:clientdata");
+    if (client_data) {
+      prefetch_index = client_data->FindIntKey("phi").value_or(-1);
+      prerender_index = client_data->FindIntKey("pre").value_or(-1);
     }
 
-    if (extras->GetList("google:suggestdetail", &suggestion_details) &&
-        suggestion_details->GetList().size() != results_list.size())
+    suggestion_details = extras.FindListKey("google:suggestdetail");
+    // Discard this list if its size does not match that of the suggestions.
+    if (suggestion_details &&
+        suggestion_details->GetList().size() != results_list.size()) {
       suggestion_details = nullptr;
+    }
 
     // Legacy code: Get subtype identifiers.
-    const base::Value* subtype_identifiers_value =
-        extras->FindListKey("google:subtypeid");
-    if (subtype_identifiers_value &&
-        subtype_identifiers_value->GetList().size() == results_list.size()) {
-      subtype_identifiers = subtype_identifiers_value->GetList();
+    subtype_identifiers = extras.FindListKey("google:subtypeid");
+    // Discard this list if its size does not match that of the suggestions.
+    if (subtype_identifiers &&
+        subtype_identifiers->GetList().size() != results_list.size()) {
+      subtype_identifiers = nullptr;
     }
 
     // Store the metadata that came with the response in case we need to pass it
     // along with the prefetch query to Instant.
     JSONStringValueSerializer json_serializer(&results->metadata);
-    json_serializer.Serialize(*extras);
+    json_serializer.Serialize(extras);
   }
 
   // Processed list of match subtypes, one vector per match.
   // Note: ParseMatchSubtypes will handle the cases where the key does not
   // exist or contains malformed data.
   std::vector<std::vector<int>> subtypes =
-      ParseMatchSubtypes(suggestsubtypes, results_list.size());
+      ParseMatchSubtypes(suggest_subtypes, results_list.size());
 
   // Clear the previous results now that new results are available.
   results->suggest_results.clear();
@@ -597,11 +592,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Apply valid suggested relevance scores; discard invalid lists.
     if (relevances) {
-      const auto& val = (*relevances)[index];
-      if (!val.is_int()) {
-        relevances = absl::nullopt;
+      if (!relevances->GetList()[index].is_int()) {
+        relevances = nullptr;
       } else {
-        relevance = val.GetInt();
+        relevance = relevances->GetList()[index].GetInt();
       }
     }
 
@@ -610,28 +604,24 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Legacy code: if the server sends us a single subtype ID, place it beside
     // other subtypes.
-    if (subtype_identifiers) {
-      int subtype_identifier =
-          (*subtype_identifiers)[index].GetIfInt().value_or(0);
-
-      if (subtype_identifier != 0) {
-        subtypes[index].emplace_back(subtype_identifier);
-      }
+    if (subtype_identifiers && index < subtype_identifiers->GetList().size() &&
+        subtype_identifiers->GetList()[index].is_int()) {
+      subtypes[index].emplace_back(
+          subtype_identifiers->GetList()[index].GetInt());
     }
 
-    if (types && index < types->GetList().size() &&
-        types->GetList()[index].is_string()) {
+    if (suggest_types && index < suggest_types->GetList().size() &&
+        suggest_types->GetList()[index].is_string()) {
       match_type =
-          GetAutocompleteMatchType(types->GetList()[index].GetString());
+          GetAutocompleteMatchType(suggest_types->GetList()[index].GetString());
     }
 
     std::string deletion_url;
-    if (suggestion_details) {
+    if (suggestion_details && index < suggestion_details->GetList().size() &&
+        suggestion_details->GetList()[index].is_dict()) {
       const base::Value& suggestion_detail =
           suggestion_details->GetList()[index];
-      if (suggestion_detail.is_dict()) {
-        deletion_url = FindStringKeyOrEmpty(suggestion_detail, "du");
-      }
+      deletion_url = FindStringKeyOrEmpty(suggestion_detail, "du");
     }
 
     if ((match_type == AutocompleteMatchType::NAVSUGGEST) ||
@@ -641,13 +631,16 @@ bool SearchSuggestionParser::ParseSuggestResults(
                                        std::string()));
       if (url.is_valid()) {
         std::u16string title;
-        if (descriptions.has_value() && index < descriptions.value().size() &&
-            descriptions.value()[index].is_string()) {
-          title = base::UTF8ToUTF16(descriptions.value()[index].GetString());
+        // 3rd element: optional descriptions list
+        if (root_list.size() > 2u && root_list[2].is_list()) {
+          auto descriptions = root_list[2].GetList();
+          if (index < descriptions.size() && descriptions[index].is_string()) {
+            title = base::UTF8ToUTF16(descriptions[index].GetString());
+          }
         }
         results->navigation_results.push_back(NavigationResult(
             scheme_classifier, url, match_type, subtypes[index], title,
-            deletion_url, is_keyword_result, relevance, relevances.has_value(),
+            deletion_url, is_keyword_result, relevance, relevances != nullptr,
             input.text()));
       }
     } else {
@@ -677,42 +670,38 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::string additional_query_params;
       absl::optional<int> suggestion_group_id;
 
-      if (suggestion_details) {
+      if (suggestion_details &&
+          suggestion_details->GetList()[index].is_dict()) {
         const base::Value& suggestion_detail =
             suggestion_details->GetList()[index];
-        if (suggestion_detail.is_dict()) {
-          match_contents =
-              base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "t"));
-          if (match_contents.empty()) {
-            match_contents = suggestion;
-          }
-          match_contents_prefix =
-              base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "mp"));
-          annotation =
-              base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "a"));
-          image_dominant_color = FindStringKeyOrEmpty(suggestion_detail, "dc");
-          image_url = FindStringKeyOrEmpty(suggestion_detail, "i");
-          additional_query_params =
-              FindStringKeyOrEmpty(suggestion_detail, "q");
+        match_contents =
+            base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "t"));
+        if (match_contents.empty()) {
+          match_contents = suggestion;
+        }
+        match_contents_prefix =
+            base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "mp"));
+        annotation =
+            base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "a"));
+        image_dominant_color = FindStringKeyOrEmpty(suggestion_detail, "dc");
+        image_url = FindStringKeyOrEmpty(suggestion_detail, "i");
+        additional_query_params = FindStringKeyOrEmpty(suggestion_detail, "q");
 
-          // Suggestion group Id.
-          suggestion_group_id = suggestion_detail.FindIntKey("zl");
+        // Suggestion group Id.
+        suggestion_group_id = suggestion_detail.FindIntKey("zl");
 
-          // Extract the Answer, if provided.
-          const base::Value* answer_json =
-              suggestion_detail.FindDictKey("ansa");
-          const std::string* answer_type =
-              suggestion_detail.FindStringKey("ansb");
-          if (answer_json && answer_type) {
-            if (SuggestionAnswer::ParseAnswer(
-                    *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
-              base::UmaHistogramSparse("Omnibox.AnswerParseType",
-                                       answer.type());
-              answer_parsed_successfully = true;
-            }
-            UMA_HISTOGRAM_BOOLEAN("Omnibox.AnswerParseSuccess",
-                                  answer_parsed_successfully);
+        // Extract the Answer, if provided.
+        const base::Value* answer_json = suggestion_detail.FindDictKey("ansa");
+        const std::string* answer_type =
+            suggestion_detail.FindStringKey("ansb");
+        if (answer_json && answer_type) {
+          if (SuggestionAnswer::ParseAnswer(
+                  *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
+            base::UmaHistogramSparse("Omnibox.AnswerParseType", answer.type());
+            answer_parsed_successfully = true;
           }
+          UMA_HISTOGRAM_BOOLEAN("Omnibox.AnswerParseSuccess",
+                                answer_parsed_successfully);
         }
       }
 
@@ -724,7 +713,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
           base::CollapseWhitespace(match_contents, false),
           match_contents_prefix, annotation, additional_query_params,
           deletion_url, image_dominant_color, image_url, is_keyword_result,
-          relevance, relevances.has_value(), should_prefetch, should_prerender,
+          relevance, relevances != nullptr, should_prefetch, should_prerender,
           trimmed_input));
 
       if (suggestion_group_id) {
@@ -735,6 +724,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
         results->suggest_results.back().SetAnswer(answer);
     }
   }
-  results->relevances_from_server = relevances.has_value();
+  results->relevances_from_server = relevances != nullptr;
   return true;
 }
