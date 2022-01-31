@@ -2106,6 +2106,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.ParkableString.Snappy.CompressedLargerThanOriginal"
+    enum="Boolean" expires_after="2022-03-14">
+  <owner>peilinwang@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Whether the compressed string is larger than the original string, if it were
+    compressed by snappy.
+  </summary>
+</histogram>
+
 <histogram name="Memory.ParkableString.TotalSizeKb.5min" units="KB"
     expires_after="2022-07-24">
   <owner>lizeb@chromium.org</owner>

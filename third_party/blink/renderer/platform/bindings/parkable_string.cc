@@ -719,6 +719,9 @@ void ParkableStringImpl::CompressInBackground(
         if (compressed_size > params->size) {
           ok = false;
         }
+
+        base::UmaHistogramBoolean(
+            "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", !ok);
       } else {
         ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
                                        &compressed_size, nullptr, nullptr);

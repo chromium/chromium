@@ -176,6 +176,7 @@ TEST_P(ParkableStringTest, CheckCompressedSize) {
 }
 
 TEST_P(ParkableStringTest, DontCompressRandomString) {
+  base::HistogramTester histogram_tester;
   // Make a large random string. Large to make sure it's parkable, and random to
   // ensure its compressed size is larger than the initial size (at least from
   // gzip's header). Mersenne-Twister implementation is specified, making the
@@ -189,6 +190,14 @@ TEST_P(ParkableStringTest, DontCompressRandomString) {
   RunPostedTasks();
   // Not parked because the temporary buffer wasn't large enough.
   EXPECT_FALSE(parkable.Impl()->is_parked());
+
+  if (features::ParkableStringsUseSnappy()) {
+    histogram_tester.ExpectUniqueSample(
+        "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", true, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", 0);
+  }
 }
 
 TEST_P(ParkableStringTest, ParkUnparkIdenticalContent) {
