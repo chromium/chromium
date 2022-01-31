@@ -58,8 +58,6 @@ constexpr int kBorderCornerRadius = 6;
 constexpr int kCornerRadius = 4;
 constexpr gfx::RoundedCornersF kCornerRadii(kCornerRadius);
 
-constexpr int kShadowElevation = 4;
-
 // Holds data about the original desk's layers to determine what we should do
 // when we attempt to mirror those layers.
 struct LayerData {
@@ -244,54 +242,6 @@ void GetLayersData(aura::Window* window,
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// DeskPreviewView::ShadowRenderer
-
-// Layer delegate which handles drawing a shadow around DeskPreviewView.
-class DeskPreviewView::ShadowRenderer : public ui::LayerDelegate {
- public:
-  ShadowRenderer()
-      : shadow_values_(gfx::ShadowValue::MakeMdShadowValues(kShadowElevation)) {
-  }
-
-  ShadowRenderer(const ShadowRenderer&) = delete;
-  ShadowRenderer& operator=(const ShadowRenderer&) = delete;
-
-  ~ShadowRenderer() override = default;
-
-  gfx::Rect GetPaintedBounds() const {
-    gfx::Rect total_rect(bounds_);
-    total_rect.Inset(gfx::ShadowValue::GetMargin(shadow_values_));
-    return total_rect;
-  }
-
-  void set_bounds(const gfx::Rect& bounds) { bounds_ = bounds; }
-
- private:
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, bounds_.size());
-
-    cc::PaintFlags shadow_flags;
-    shadow_flags.setAntiAlias(true);
-    shadow_flags.setLooper(gfx::CreateShadowDrawLooper(shadow_values_));
-
-    const gfx::Rect rrect_bounds =
-        bounds_ - GetPaintedBounds().OffsetFromOrigin();
-    const auto r_rect = SkRRect::MakeRectXY(gfx::RectToSkRect(rrect_bounds),
-                                            kCornerRadius, kCornerRadius);
-    recorder.canvas()->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference,
-                                              /*do_anti_alias=*/true);
-    recorder.canvas()->sk_canvas()->drawRRect(r_rect, shadow_flags);
-  }
-
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
-
-  gfx::Rect bounds_;
-  const gfx::ShadowValues shadow_values_;
-};
-
-// -----------------------------------------------------------------------------
 // DeskPreviewView
 
 DeskPreviewView::DeskPreviewView(PressedCallback callback,
@@ -303,7 +253,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
       force_occlusion_tracker_visible_(
           std::make_unique<aura::WindowOcclusionTracker::ScopedForceVisible>(
               mini_view->GetDeskContainer())),
-      shadow_delegate_(std::make_unique<ShadowRenderer>()) {
+      shadow_(std::make_unique<SystemShadow>(kDefaultShadowType)) {
   DCHECK(mini_view_);
 
   SetFocusPainter(nullptr);
@@ -319,9 +269,8 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(false);
 
-  shadow_layer_.SetFillsBoundsOpaquely(false);
-  layer()->Add(&shadow_layer_);
-  shadow_layer_.set_delegate(shadow_delegate_.get());
+  shadow_->SetRoundedCornerRadius(kCornerRadius);
+  layer()->Add(shadow_->layer());
 
   wallpaper_preview_->SetPaintToLayer();
   auto* wallpaper_preview_layer = wallpaper_preview_->layer();
@@ -418,9 +367,8 @@ const char* DeskPreviewView::GetClassName() const {
 }
 
 void DeskPreviewView::Layout() {
-  gfx::Rect bounds = GetContentsBounds();
-  shadow_delegate_->set_bounds(bounds);
-  shadow_layer_.SetBounds(shadow_delegate_->GetPaintedBounds());
+  const gfx::Rect bounds = GetContentsBounds();
+  shadow_->SetContentBounds(bounds);
   wallpaper_preview_->SetBoundsRect(bounds);
   desk_mirrored_contents_view_->SetBoundsRect(bounds);
 

@@ -64,6 +64,8 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
   DesksBarView* desks_bar_view_ = nullptr;
   // The desk's mini view being dragged.
   DeskMiniView* drag_view_ = nullptr;
+  // The desk preview view generated based on the `drag_view_`.
+  DeskPreviewView* drag_preview_ = nullptr;
   // The size of dragged preview.
   const gfx::Size drag_preview_size_;
   // The y of the dragged preview in screen coordinate.
