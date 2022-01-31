@@ -162,9 +162,6 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, "SystemJapanesePhysicalTyping") == 0) {
     return features::IsSystemJapanesePhysicalTypingEnabled();
   }
-  if (strcmp(feature_name, "SystemKoreanPhysicalTyping") == 0) {
-    return features::IsSystemKoreanPhysicalTypingEnabled();
-  }
   if (strcmp(feature_name, "SystemLatinPhysicalTyping") == 0) {
     return true;
   }
