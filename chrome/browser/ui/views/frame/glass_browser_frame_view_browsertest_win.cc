@@ -353,3 +353,22 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   // Verify the component clears when the feature is turned off.
   EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 }
+
+// Regression test for https://crbug.com/1286896.
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       TitlebarLayoutAfterUpdateWindowTitle) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  browser_view_->ToggleWindowControlsOverlayEnabled();
+  glass_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
+  glass_frame_view_->UpdateWindowTitle();
+
+  WebAppFrameToolbarView* web_app_frame_toolbar =
+      glass_frame_view_->web_app_frame_toolbar_for_testing();
+
+  // Verify that the center container doesn't consume space by expecting the
+  // right container to consume the full width of the WebAppFrameToolbarView.
+  EXPECT_EQ(web_app_frame_toolbar->width(),
+            web_app_frame_toolbar->get_right_container_for_testing()->width());
+}

@@ -704,7 +704,8 @@ void GlassBrowserFrameView::LayoutTitleBar() {
     next_leading_x = window_icon_bounds.right() + kIconTitleSpacing;
   }
 
-  if (web_app_frame_toolbar()) {
+  if (web_app_frame_toolbar() &&
+      !browser_view()->IsWindowControlsOverlayEnabled()) {
     const int web_app_titlebar_height =
         caption_button_container_->size().height();
     std::pair<int, int> remaining_bounds =
