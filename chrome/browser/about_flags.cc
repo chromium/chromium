@@ -5183,10 +5183,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNetworkLoggingToFileDescription, kOsAll,
      SINGLE_VALUE_TYPE(network::switches::kLogNetLog)},
 
-    {"enable-web-authentication-cable-v2-support",
-     flag_descriptions::kEnableWebAuthenticationCableV2SupportName,
-     flag_descriptions::kEnableWebAuthenticationCableV2SupportDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(device::kWebAuthPhoneSupport)},
+    {"enable-web-authentication-cable-disco-creds",
+     flag_descriptions::kEnableWebAuthenticationCableDiscoCredsName,
+     flag_descriptions::kEnableWebAuthenticationCableDiscoCredsDescription,
+     kOsAll, FEATURE_VALUE_TYPE(device::kWebAuthCableDisco)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-web-authentication-chromeos-authenticator",

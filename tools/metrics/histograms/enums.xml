@@ -51033,6 +51033,7 @@ from previous Chrome versions.
   <int value="-2071515296" label="allow-sync-xhr-in-page-dismissal"/>
   <int value="-2071202821" label="CopyLinkToText:enabled"/>
   <int value="-2068490665" label="PasswordChange:enabled"/>
+  <int value="-2067596114" label="WebAuthenticationCableDisco:enabled"/>
   <int value="-2067166422" label="enable-slimming-paint-v2"/>
   <int value="-2066541315" label="Mus:enabled"/>
   <int value="-2064164557" label="DownloadsForeground:disabled"/>
@@ -56157,6 +56158,7 @@ from previous Chrome versions.
   <int value="1612446645" label="enable-weak-memorycache"/>
   <int value="1612871297" label="WebPayments:disabled"/>
   <int value="1612974229" label="allow-insecure-localhost"/>
+  <int value="1613179749" label="WebAuthenticationCableDisco:disabled"/>
   <int value="1613738524" label="ForceAppLanguagePrompt:enabled"/>
   <int value="1614309501" label="DataSaverLiteModeRebranding:enabled"/>
   <int value="1614596813" label="CloseButtonsInactiveTabs:disabled"/>

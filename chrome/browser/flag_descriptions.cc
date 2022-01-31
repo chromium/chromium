@@ -1239,10 +1239,11 @@ const char kEnableUseZoomForDsfChoiceDefault[] = "Default";
 const char kEnableUseZoomForDsfChoiceEnabled[] = "Enabled";
 const char kEnableUseZoomForDsfChoiceDisabled[] = "Disabled";
 
-const char kEnableWebAuthenticationCableV2SupportName[] =
-    "Web Authentication caBLE v2 QR codes";
-const char kEnableWebAuthenticationCableV2SupportDescription[] =
-    "Enable display of QR codes for using Android phones as security keys.";
+const char kEnableWebAuthenticationCableDiscoCredsName[] =
+    "Discoverable credentials over caBLEv2";
+const char kEnableWebAuthenticationCableDiscoCredsDescription[] =
+    "Enable the creation and use of Web Authentication discoverable "
+    "credentials over the caBLEv2 transport";
 
 const char kEnableWebAuthenticationChromeOSAuthenticatorName[] =
     "ChromeOS platform Web Authentication support";

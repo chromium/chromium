@@ -2883,9 +2883,9 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-web-authentication-cable-v2-support",
+    "name": "enable-web-authentication-cable-disco-creds",
     "owners": [ "webauthn-team@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 112
   },
   {
     "name": "enable-web-authentication-chromeos-authenticator",
