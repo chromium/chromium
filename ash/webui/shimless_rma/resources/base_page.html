@@ -1,12 +1,8 @@
 <style include="cr-shared-style shimless-rma-shared">
-  .page-wrapper {
-    padding: 50px 0 50px 0;
-    width:  100%;
-  }
-
-  .page-wrapper {
+  #pageWrapper {
     display: flex;
     flex-direction: row;
+    width:  100%;
   }
 
   #leftPane {
@@ -16,9 +12,8 @@
   #rightPane {
     flex-basis: 500px;
   }
-
 </style>
-<div class="page-wrapper">
+<div id="pageWrapper">
   <div id="leftPane">
     <slot name="left-pane"></slot>
   </div>

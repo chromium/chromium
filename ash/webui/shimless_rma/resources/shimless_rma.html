@@ -1,9 +1,21 @@
 <style include="cr-shared-style shimless-rma-shared">
   #shimlessRMAContainer {
-    padding: 50px;
+    align-items: stretch;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-inline-end: 40px;
+    padding-inline-start: 40px;
+    width: 100%;
+  }
+
+  #contentContainer {
+    flex-grow: 1;
   }
 
   .shimless-footer {
+    height: 80px;
     margin-top: 10px;
     text-align: end;
   }
@@ -14,7 +26,7 @@
 
   #back {
     border: 0;
-    margin-inline-start: -15px;
+    height: 80px;
   }
 
   #cancel {
