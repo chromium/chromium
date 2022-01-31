@@ -3586,6 +3586,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
 }
 
 TEST_F(DeviceStatusCollectorTest, TestUnsetTpmInfo) {
+  DisableDefaultSettings();
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceVersionInfo, true);
   auto telemetry_info = cros_healthd::TelemetryInfo::New();
