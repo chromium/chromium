@@ -281,16 +281,6 @@ class TestTabDialogs : public TabDialogs {
       content::RenderWidgetHost* render_widget_host) override {}
   bool IsShowingHungRendererDialog() override { return false; }
 
-  void ShowProfileSigninConfirmation(
-      Browser* browser,
-      const std::string& username,
-      bool prompt_for_new_profile,
-      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate)
-      override {
-    delegate->OnContinueSignin();
-    run_loop_->Quit();
-  }
-
   void ShowManagePasswordsBubble(bool user_action) override {}
   void HideManagePasswordsBubble() override {}
 

@@ -1990,7 +1990,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/search_engines/search_engine_tab_helper_browsertest.cc",
       "../browser/ui/startup/startup_browser_creator_browsertest.cc",
       "../browser/ui/sync/one_click_signin_links_delegate_impl_browsertest.cc",
-      "../browser/ui/sync/profile_signin_confirmation_helper_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.h",
       "../browser/ui/tab_ui_helper_browsertest.cc",
@@ -3040,7 +3039,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl_browsertest.cc",
         "../browser/ui/views/session_crashed_bubble_view_browsertest.cc",
         "../browser/ui/views/status_bubble_views_browsertest.cc",
-        "../browser/ui/views/sync/profile_signin_confirmation_dialog_views_browsertest.cc",
         "../browser/ui/views/tab_sharing/tab_sharing_ui_views_browsertest.cc",
         "../browser/ui/views/tabs/tab_group_editor_bubble_view_browsertest.cc",
         "../browser/ui/views/tabs/tab_hover_card_bubble_view_browsertest.cc",
@@ -3688,7 +3686,6 @@ if (!is_android && !is_fuchsia) {
 
         # chromeos does not use the profile chooser view
         "../browser/ui/views/profiles/profile_menu_view_browsertest.cc",
-        "../browser/ui/views/sync/profile_signin_confirmation_dialog_views_browsertest.cc",
         "../browser/ui/webui/profile_helper_browsertest.cc",
 
         # chromeos does not support machine level user cloud policies
@@ -5074,7 +5071,6 @@ test("unit_tests") {
       "../browser/ui/hats/trust_safety_sentiment_service_factory_unittest.cc",
       "../browser/ui/hats/trust_safety_sentiment_service_unittest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_unittest.cc",
-      "../browser/ui/sync/profile_signin_confirmation_helper_unittest.cc",
       "../browser/ui/sync/sync_promo_ui_unittest.cc",
       "../browser/ui/toolbar/app_menu_icon_controller_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_ui_helpers_unittest.cc",
@@ -7843,7 +7839,6 @@ test("unit_tests") {
     if (!is_chromeos_ash) {
       sources += [
         "../browser/ui/views/sync/one_click_signin_dialog_view_unittest.cc",
-        "../browser/ui/views/sync/profile_signin_confirmation_dialog_views_unittest.cc",
       ]
     }
     if (!is_chromeos) {

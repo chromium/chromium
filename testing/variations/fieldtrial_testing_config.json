@@ -3738,23 +3738,6 @@
             ]
         }
     ],
-    "ManagedSigninPopup": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncConfirmationUpdatedText"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaFoundationD3D11VideoCapture": [
         {
             "platforms": [

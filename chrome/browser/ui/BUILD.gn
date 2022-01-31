@@ -4584,8 +4584,6 @@ static_library("ui") {
       "views/status_bubble_views.h",
       "views/storage/storage_pressure_bubble_view.cc",
       "views/storage/storage_pressure_bubble_view.h",
-      "views/sync/profile_signin_confirmation_dialog_views.cc",
-      "views/sync/profile_signin_confirmation_dialog_views.h",
       "views/tab_contents/chrome_web_contents_view_focus_helper.cc",
       "views/tab_contents/chrome_web_contents_view_focus_helper.h",
       "views/tab_dialogs_views.cc",

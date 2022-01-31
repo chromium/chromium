@@ -123,10 +123,6 @@ const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 const base::Feature kScrollableTabStripButtons{
     "ScrollableTabStripButtons", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Updated managed profile sign-in popup. https://crbug.com/1141224
-const base::Feature kSyncConfirmationUpdatedText{
-    "SyncConfirmationUpdatedText", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Automatically create groups for users based on domain.
 // https://crbug.com/1128703
 const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",

@@ -76,8 +76,6 @@ extern const base::Feature kSideSearchFeedback;
 extern const base::Feature kSideSearchStatePerTab;
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
-extern const base::Feature kSyncConfirmationUpdatedText;
-
 extern const base::Feature kTabGroupsAutoCreate;
 
 extern const base::Feature kTabGroupsNewBadgePromo;
