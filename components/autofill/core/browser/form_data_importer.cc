@@ -836,7 +836,7 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   // Local card migration will not be offered. We check to see if it is valid to
   // offer upload save or local card save, which will happen below if we do not
   // early return false in this if-statement.
-  if (!ShouldOfferUploadCardOrLocalCardSave(&imported_credit_card,
+  if (!ShouldOfferUploadCardOrLocalCardSave(imported_credit_card.get(),
                                             is_credit_card_upstream_enabled)) {
     return false;
   }
@@ -1073,7 +1073,7 @@ absl::optional<std::string> FormDataImporter::ImportUpiId(
 }
 
 bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
-    std::unique_ptr<CreditCard>* imported_credit_card,
+    const CreditCard* imported_credit_card,
     bool is_credit_card_upload_enabled) {
   // If we have an invalid card in the form, a duplicate field type, or we have
   // entered a virtual card, |imported_credit_card| will be set

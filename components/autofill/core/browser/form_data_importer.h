@@ -203,15 +203,16 @@ class FormDataImporter {
   // will be empty if no UPI ID was found.
   absl::optional<std::string> ImportUpiId(const FormStructure& form);
 
-  // |imported_credit_card| is the card from a form if it is valid (and it might
-  // be set to a copy of a LOCAL_CARD or SERVER_CARD we have saved if we were
-  // able to find a matching copy). |is_credit_card_upstream_enabled| denotes
-  // whether the user has credit card upload enabled. This function is used to
-  // prevent offering upload card save or local card save in situations where it
-  // would be invalid to offer them. For example, we should not offer to upload
-  // card if it is already a server card.
+  // |imported_credit_card| stores a pointer to the card imported from the form.
+  // If no valid card was imported, it is set to nullptr. It might be set to a
+  // copy of a LOCAL_CARD or SERVER_CARD we have already saved if we were able
+  // to find a matching copy. |is_credit_card_upstream_enabled| denotes whether
+  // the user has credit card upload enabled. This function is used to prevent
+  // offering upload card save or local card save in situations where it would
+  // be invalid to offer them. For example, we should not offer to upload card
+  // if it is already a server card.
   bool ShouldOfferUploadCardOrLocalCardSave(
-      std::unique_ptr<CreditCard>* imported_credit_card,
+      const CreditCard* imported_credit_card,
       bool is_credit_card_upload_enabled);
 
   // Whether a dynamic change form is imported.
