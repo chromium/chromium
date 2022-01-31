@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -13,7 +14,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/layers/surface_layer.h"
@@ -21,6 +25,7 @@
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,6 +44,8 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/layout.h"
 #include "ui/display/display_switches.h"
@@ -1029,6 +1036,179 @@ INSTANTIATE_TEST_SUITE_P(
     GLAndSoftwareCompositing,
     CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI,
     kTestCompositingModes);
+
+class RenderWidgetHostViewPresentationFeedbackBrowserTest
+    : public NoCompositingRenderWidgetHostViewBrowserTest {
+ public:
+  RenderWidgetHostViewPresentationFeedbackBrowserTest(
+      const RenderWidgetHostViewPresentationFeedbackBrowserTest&) = delete;
+  RenderWidgetHostViewPresentationFeedbackBrowserTest& operator=(
+      const RenderWidgetHostViewPresentationFeedbackBrowserTest&) = delete;
+
+ protected:
+  RenderWidgetHostViewPresentationFeedbackBrowserTest() = default;
+  ~RenderWidgetHostViewPresentationFeedbackBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    NoCompositingRenderWidgetHostViewBrowserTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+
+    RenderWidgetHostViewBase* rwhvb = GetRenderWidgetHostView();
+    ASSERT_TRUE(rwhvb);
+
+    // Start with the widget hidden.
+    rwhvb->Hide();
+
+    // Set a VisibleTimeRequest that will be sent the first time the widget
+    // becomes visible.
+    VisibleTimeRequestTrigger* request_trigger =
+        rwhvb->host()->GetVisibleTimeRequestTrigger();
+    ASSERT_TRUE(request_trigger);
+    request_trigger->UpdateRequest(base::TimeTicks::Now(),
+                                   /*destination_is_loaded=*/true,
+                                   /*show_reason_tab_switching=*/true,
+                                   /*show_reason_unoccluded=*/false,
+                                   /*show_reason_bfcache_restore=*/false);
+  }
+
+  enum class HistogramToExpect {
+    kTotalSwitchDuration,
+    kTotalIncompleteSwitchDuration,
+  };
+
+  ::testing::AssertionResult WaitForPresentationFeedback(
+      HistogramToExpect histogram_to_expect) {
+    // If TabSwitchMetrics2 is enabled, both Browser.Tabs.TotalSwitchDuration.*
+    // and Browser.Tabs.TotalSwitchDuration2.* will be logged.
+    const size_t expected_histogram_count =
+        base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2) ? 2
+                                                                          : 1;
+
+    // Expect one of Browser.Tabs.TotalSwitchDuration.* or
+    // Browser.Tabs.TotalIncompleteSwitchDuration.*.
+    //
+    // Browser.Tabs.TabSwitchResult.* is also logged with a result code, but the
+    // HistogramTest API makes it easier to count the number of samples for any
+    // suffix of TotalSwitchDuration than to check the exact histogram values
+    // for each possible suffix of TabSwitchResult.
+    const char* expected_prefix;
+    const char* unexpected_prefix;
+    switch (histogram_to_expect) {
+      case HistogramToExpect::kTotalSwitchDuration:
+        expected_prefix = "Browser.Tabs.TotalSwitchDuration";
+        unexpected_prefix = "Browser.Tabs.TotalIncompleteSwitchDuration";
+        break;
+      case HistogramToExpect::kTotalIncompleteSwitchDuration:
+        expected_prefix = "Browser.Tabs.TotalIncompleteSwitchDuration";
+        unexpected_prefix = "Browser.Tabs.TotalSwitchDuration";
+        break;
+    }
+
+    // Wait for the expected histograms (only) to be logged.
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    while (base::TimeTicks::Now() - start_time <
+           TestTimeouts::action_timeout()) {
+      GiveItSomeTime();
+
+      if (!histogram_tester_.GetTotalCountsForPrefix(unexpected_prefix)
+               .empty()) {
+        return ::testing::AssertionFailure()
+               << "Unexpected histogram " << unexpected_prefix
+               << ". All histograms: "
+               << ::testing::PrintToString(
+                      histogram_tester_.GetTotalCountsForPrefix(
+                          "Browser.Tabs."));
+      }
+      if (histogram_tester_.GetTotalCountsForPrefix(expected_prefix).size() ==
+          expected_histogram_count) {
+        return ::testing::AssertionSuccess();
+      }
+    }
+
+    return ::testing::AssertionFailure()
+           << "Timed out waiting for " << expected_prefix
+           << ". All histograms: "
+           << ::testing::PrintToString(
+                  histogram_tester_.GetTotalCountsForPrefix("Browser.Tabs."));
+  }
+
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       Show) {
+  GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
+  EXPECT_TRUE(
+      WaitForPresentationFeedback(HistogramToExpect::kTotalSwitchDuration));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       ShowThenHide) {
+  // Browser.Tabs.TotalIncompleteSwitchDuration.* is logged when the widget
+  // is hidden before presenting a frame.
+  GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
+  GetRenderWidgetHostView()->Hide();
+  EXPECT_TRUE(WaitForPresentationFeedback(
+      HistogramToExpect::kTotalIncompleteSwitchDuration));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       HiddenButPainting) {
+  if (!base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2)) {
+    GTEST_SKIP() << "Visibility changes with a hidden capturer are only "
+                    "handled when TabSwitchMetrics2 is enabled";
+  }
+
+  // Browser.Tabs.* is not logged if the page becomes "visible" due to a hidden
+  // capturer.
+  GetRenderWidgetHostView()->ShowWithVisibility(
+      PageVisibilityState::kHiddenButPainting);
+
+  // The full action_timeout is excessively long for the expected path.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  while (base::TimeTicks::Now() - start_time < base::Seconds(1)) {
+    GiveItSomeTime();
+    ASSERT_TRUE(
+        histogram_tester_.GetTotalCountsForPrefix("Browser.Tabs.").empty())
+        << "Unexpected histogram Browser.Tabs. All histograms: "
+        << ::testing::PrintToString(
+               histogram_tester_.GetTotalCountsForPrefix("Browser.Tabs."));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       ShowWhileCapturing) {
+  if (!base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2)) {
+    GTEST_SKIP() << "Visibility changes with a hidden capturer are only "
+                    "handled when TabSwitchMetrics2 is enabled";
+  }
+
+  // Frame is captured and then becomes visible.
+  GetRenderWidgetHostView()->ShowWithVisibility(
+      PageVisibilityState::kHiddenButPainting);
+  GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
+  EXPECT_TRUE(
+      WaitForPresentationFeedback(HistogramToExpect::kTotalSwitchDuration));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       HideWhileCapturing) {
+  if (!base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2)) {
+    GTEST_SKIP() << "Visibility changes with a hidden capturer are only "
+                    "handled when TabSwitchMetrics2 is enabled";
+  }
+
+  // Capture starts and frame becomes "hidden" before a render frame is
+  // presented.
+  GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
+  GetRenderWidgetHostView()->ShowWithVisibility(
+      PageVisibilityState::kHiddenButPainting);
+  EXPECT_TRUE(WaitForPresentationFeedback(
+      HistogramToExpect::kTotalIncompleteSwitchDuration));
+}
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
