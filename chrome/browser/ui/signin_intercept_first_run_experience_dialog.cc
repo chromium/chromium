@@ -60,7 +60,9 @@ class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
       LoginUIService::SyncConfirmationUIClosedResult result) override;
 
  private:
-  base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog_;
+  const base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog_;
+  // Store `browser_` separately as it may outlive `dialog_`.
+  const base::WeakPtr<Browser> browser_;
 
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
@@ -71,7 +73,7 @@ class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
 SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
     InterceptTurnSyncOnHelperDelegate(
         base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog)
-    : dialog_(std::move(dialog)) {}
+    : dialog_(std::move(dialog)), browser_(dialog_->browser_->AsWeakPtr()) {}
 SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
     ~InterceptTurnSyncOnHelperDelegate() = default;
 
@@ -114,7 +116,7 @@ void SigninInterceptFirstRunExperienceDialog::
   }
 
   scoped_login_ui_service_observation_.Observe(
-      LoginUIServiceFactory::GetForProfile(dialog_->browser_->profile()));
+      LoginUIServiceFactory::GetForProfile(browser_->profile()));
   DCHECK(!sync_confirmation_callback_);
   sync_confirmation_callback_ = std::move(callback);
   dialog_->DoNextStep(Step::kTurnOnSync, Step::kSyncConfirmation);
@@ -137,11 +139,10 @@ void SigninInterceptFirstRunExperienceDialog::
 
 void SigninInterceptFirstRunExperienceDialog::
     InterceptTurnSyncOnHelperDelegate::ShowSyncSettings() {
-  if (dialog_) {
-    // Dialog's step is updated in OnSyncConfirmationUIClosed(). This
-    // function only needs to open the Sync Settings.
-    DCHECK_EQ(dialog_->current_step_, Step::kSyncConfirmation);
-    chrome::ShowSettingsSubPage(dialog_->browser_, chrome::kSyncSetupSubPage);
+  // Dialog's step is updated in OnSyncConfirmationUIClosed(). This
+  // function only needs to open the Sync Settings.
+  if (browser_) {
+    chrome::ShowSettingsSubPage(browser_.get(), chrome::kSyncSetupSubPage);
   }
 }
 
@@ -168,25 +169,19 @@ void SigninInterceptFirstRunExperienceDialog::
       break;
   }
 
+  // This may delete `dialog_`.
+  if (dialog_)
+    dialog_->DoNextStep(Step::kSyncConfirmation, next_step);
+
   if (result == LoginUIService::UI_CLOSED) {
     // Sync must be aborted if the user didn't interact explicitly with the
     // dialog.
     result = LoginUIService::ABORT_SYNC;
   }
 
-  // Save a local reference to `dialog_` before `this` is destroyed.
-  auto local_dialog = dialog_;
-
-  // Run the callback before moving to the next step to give
-  // `DiceTurnSyncOnHelper` the last opportunity to call `dialog_`'s methods.
-  // This is important for `ShowSyncSettings()`, for example.
   DCHECK(sync_confirmation_callback_);
   std::move(sync_confirmation_callback_).Run(result);
   // `this` may now be deleted.
-
-  if (local_dialog) {
-    local_dialog->DoNextStep(Step::kSyncConfirmation, next_step);
-  }
 }
 
 SigninInterceptFirstRunExperienceDialog::

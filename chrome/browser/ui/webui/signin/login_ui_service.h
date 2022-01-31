@@ -38,7 +38,8 @@ class LoginUIService : public KeyedService {
   enum SyncConfirmationUIClosedResult {
     // TODO(crbug.com/1141341): Rename the first option to make it work better
     // for the sync-disabled variant of the UI.
-    // Start sync immediately.
+    // Start sync immediately, if sync can be enabled. Otherwise, keep the user
+    // signed in (with sync disabled).
     SYNC_WITH_DEFAULT_SETTINGS,
     // Show the user the sync settings before starting sync.
     CONFIGURE_SYNC_FIRST,
