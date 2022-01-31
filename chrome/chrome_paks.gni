@@ -205,6 +205,7 @@ template("chrome_extra_paks") {
     if (is_chromeos_ash) {
       sources += [
         "$root_gen_dir/ash/ash_camera_app_resources.pak",
+        "$root_gen_dir/ash/ash_color_internals_resources.pak",
         "$root_gen_dir/ash/ash_diagnostics_app_resources.pak",
         "$root_gen_dir/ash/ash_eche_app_resources.pak",
         "$root_gen_dir/ash/ash_eche_bundle_resources.pak",
@@ -256,6 +257,7 @@ template("chrome_extra_paks") {
         "//ash/webui/file_manager/resources:file_manager_swa_resources",
         "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
         "//ash/webui/resources:camera_app_resources",
+        "//ash/webui/resources:color_internals_resources",
         "//ash/webui/resources:connectivity_diagnostics_resources",
         "//ash/webui/resources:diagnostics_app_resources",
         "//ash/webui/resources:eche_app_resources",

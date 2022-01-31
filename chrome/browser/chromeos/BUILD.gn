@@ -141,6 +141,7 @@ source_set("chromeos") {
     "//ash/webui/print_management",
     "//ash/webui/print_management/mojom",
     "//ash/webui/projector_app",
+    "//ash/webui/resources:color_internals_resources_grit",
     "//ash/webui/resources:connectivity_diagnostics_resources_grit",
     "//ash/webui/resources:diagnostics_app_resources_grit",
     "//ash/webui/resources:eche_bundle_resources_grit",

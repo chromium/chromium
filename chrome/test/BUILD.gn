@@ -2433,6 +2433,7 @@ if (!is_android && !is_fuchsia) {
       ]
       if (is_chromeos_ash) {
         deps += [
+          "//ash/webui/color_internals:browser_tests_js",
           "//ash/webui/eche_app_ui:browser_tests_js",
           "//ash/webui/help_app_ui:browser_tests_js",
           "//ash/webui/media_app_ui:browser_tests_js",

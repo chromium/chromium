@@ -158,6 +158,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/color_internals/color_internals_ui.h"
+#include "ash/webui/color_internals/url_constants.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
@@ -1008,6 +1010,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == ash::kChromeUISystemExtensionsInternalsHost &&
       base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {
     return &NewWebUI<ash::SystemExtensionsInternalsUI>;
+  }
+  if (url.host_piece() == ash::kChromeUIColorInternalsHost) {
+    return &NewWebUI<ash::ColorInternalsUI>;
   }
 
 #if !defined(OFFICIAL_BUILD)

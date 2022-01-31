@@ -440,6 +440,10 @@
   "ash/webui/camera_app_ui/resources/strings/camera_strings.grd": {
     "messages": [2940],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/color_internals/resources/ash_color_internals_resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [2950],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2960],
