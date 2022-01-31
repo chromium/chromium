@@ -1667,4 +1667,31 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
   EXPECT_EQ(storage()->GetNextReportTime(report_time_b), absl::nullopt);
 }
 
+TEST_F(AttributionStorageTest, GetAttributionsToReport_Shuffles) {
+  storage()->StoreSource(SourceBuilder().Build());
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      MaybeCreateAndStoreReport(TriggerBuilder().SetTriggerData(3).Build()));
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      MaybeCreateAndStoreReport(TriggerBuilder().SetTriggerData(1).Build()));
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      MaybeCreateAndStoreReport(TriggerBuilder().SetTriggerData(2).Build()));
+
+  EXPECT_THAT(storage()->GetAttributionsToReport(
+                  /*max_report_time=*/base::Time::Max(), /*limit=*/-1),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(3)),
+                          EventLevelDataIs(TriggerDataIs(1)),
+                          EventLevelDataIs(TriggerDataIs(2))));
+
+  delegate()->set_reverse_reports_on_shuffle(true);
+
+  EXPECT_THAT(storage()->GetAttributionsToReport(
+                  /*max_report_time=*/base::Time::Max(), /*limit=*/-1),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(2)),
+                          EventLevelDataIs(TriggerDataIs(1)),
+                          EventLevelDataIs(TriggerDataIs(3))));
+}
+
 }  // namespace content

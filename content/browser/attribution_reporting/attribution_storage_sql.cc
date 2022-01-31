@@ -924,6 +924,8 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionsToReport(
 
   if (!statement.Succeeded())
     return {};
+
+  delegate_->ShuffleReports(reports);
   return reports;
 }
 

@@ -114,6 +114,14 @@ class AttributionStorage {
     // no delay should be applied, e.g. due to debug mode.
     virtual absl::optional<OfflineReportDelayConfig>
     GetOfflineReportDelayConfig() const = 0;
+
+    // Shuffles reports to provide plausible deniability on the ordering of
+    // reports that share the same |report_time|. This is important because
+    // multiple conversions for the same impression share the same report time
+    // if they are within the same reporting window, and we do not want to allow
+    // ordering on their conversion metadata bits.
+    virtual void ShuffleReports(
+        std::vector<AttributionReport>& reports) const = 0;
   };
 
   struct CONTENT_EXPORT DeactivatedSource {
@@ -240,7 +248,7 @@ class AttributionStorage {
   // Returns all of the reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
   // underlying storage. |limit| limits the number of reports to return; use
-  // a negative number for no limit.
+  // a negative number for no limit. Reports are shuffled before being returned.
   virtual std::vector<AttributionReport> GetAttributionsToReport(
       base::Time max_report_time,
       int limit = -1) = 0;

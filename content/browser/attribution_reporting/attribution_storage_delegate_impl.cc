@@ -111,4 +111,10 @@ AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
   };
 }
 
+void AttributionStorageDelegateImpl::ShuffleReports(
+    std::vector<AttributionReport>& reports) const {
+  if (!debug_mode_)
+    base::RandomShuffle(reports.begin(), reports.end());
+}
+
 }  // namespace content

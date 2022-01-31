@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
@@ -108,6 +109,12 @@ base::GUID ConfigurableStorageDelegate::NewReportID() const {
 absl::optional<AttributionStorage::Delegate::OfflineReportDelayConfig>
 ConfigurableStorageDelegate::GetOfflineReportDelayConfig() const {
   return offline_report_delay_config_;
+}
+
+void ConfigurableStorageDelegate::ShuffleReports(
+    std::vector<AttributionReport>& reports) const {
+  if (reverse_reports_on_shuffle_)
+    base::ranges::reverse(reports);
 }
 
 AttributionManager* TestManagerProvider::GetManager(

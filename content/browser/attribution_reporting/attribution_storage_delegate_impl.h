@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 
+#include <vector>
+
 #include "base/sequence_checker.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -16,6 +18,8 @@ class Time;
 }  // namespace base
 
 namespace content {
+
+class AttributionReport;
 
 // Implementation of the storage delegate. This class handles assigning
 // report times to newly created reports. It
@@ -51,6 +55,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   base::GUID NewReportID() const override;
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
+  void ShuffleReports(std::vector<AttributionReport>& reports) const override;
 
  private:
   // Whether the API is running in debug mode, meaning that there should be
