@@ -501,9 +501,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   void UpdateCannotSnapWarningVisibility();
 
-  // Updates frame throttling on overview item windows.
-  void UpdateFrameThrottling();
-
   // Called back when the button to save a desk template is pressed.
   void OnSaveDeskAsTemplateButtonPressed();
 

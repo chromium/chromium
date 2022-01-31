@@ -11,6 +11,7 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -1481,4 +1482,16 @@ bool OverviewSession::ShouldKeepOverviewOpenForDesksTemplatesDialog(
   return gained_active == dialog_window || lost_active == dialog_window;
 }
 
+void OverviewSession::UpdateFrameThrottling() {
+  std::vector<aura::Window*> windows_to_throttle;
+  if (!grid_list_.empty()) {
+    windows_to_throttle.reserve(grid_list_.size() * grid_list_[0]->size() * 2);
+    for (auto& grid : grid_list_) {
+      for (auto& item : grid->window_list())
+        windows_to_throttle.push_back(item->GetWindow());
+    }
+  }
+  Shell::Get()->frame_throttling_controller()->StartThrottling(
+      windows_to_throttle);
+}
 }  // namespace ash

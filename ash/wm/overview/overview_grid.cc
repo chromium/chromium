@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -646,7 +645,9 @@ void OverviewGrid::AddItem(aura::Window* window,
       window_list_.begin() + index,
       std::make_unique<OverviewItem>(window, overview_session_, this));
 
-  UpdateFrameThrottling();
+  if (overview_session_)
+    overview_session_->UpdateFrameThrottling();
+
   auto* item = window_list_[index].get();
   item->PrepareForOverview();
 
@@ -718,7 +719,8 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   window_list_.erase(std::next(iter).base());
   tmp.reset();
 
-  UpdateFrameThrottling();
+  if (overview_session_)
+    overview_session_->UpdateFrameThrottling();
 
   if (!item_destroying)
     return;
@@ -2329,15 +2331,6 @@ gfx::Rect OverviewGrid::GetDesksWidgetBounds() const {
 void OverviewGrid::UpdateCannotSnapWarningVisibility() {
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->UpdateCannotSnapWarningVisibility();
-}
-
-void OverviewGrid::UpdateFrameThrottling() {
-  std::vector<aura::Window*> windows_to_throttle(window_list_.size(), nullptr);
-  std::transform(
-      window_list_.begin(), window_list_.end(), windows_to_throttle.begin(),
-      [](std::unique_ptr<OverviewItem>& item) { return item->GetWindow(); });
-  Shell::Get()->frame_throttling_controller()->StartThrottling(
-      windows_to_throttle);
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {

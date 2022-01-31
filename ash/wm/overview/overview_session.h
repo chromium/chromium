@@ -331,6 +331,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
+  void UpdateFrameThrottling();
+
   OverviewDelegate* delegate() { return delegate_; }
 
   bool is_shutting_down() const { return is_shutting_down_; }
