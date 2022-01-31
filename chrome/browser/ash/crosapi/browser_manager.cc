@@ -58,6 +58,7 @@
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/channel_info.h"
@@ -386,6 +387,12 @@ bool BrowserManager::IsRunningOrWillRun() const {
 
 void BrowserManager::NewWindow(bool incognito,
                                bool should_trigger_session_restore) {
+  if (incognito) {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    if (!profile || !IncognitoModePrefs::IsIncognitoAllowed(profile))
+      return;
+  }
+
   // If `should_trigger_session_restore` is set to true the new lacros window
   // should be treated like the start of a new session. Ensure this is the case
   // by deferring to the browser startup preferences. Otherwise we open the

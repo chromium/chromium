@@ -165,9 +165,7 @@ void RestoreTabUsingProfile(Profile* profile) {
 
 bool IsIncognitoAllowed() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  return profile && !profile->IsGuestSession() &&
-         IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-             IncognitoModePrefs::Availability::kDisabled;
+  return profile && IncognitoModePrefs::IsIncognitoAllowed(profile);
 }
 
 // Converts the given ARC URL to an external file URL to read it via ARC content

@@ -67,6 +67,9 @@ class IncognitoModePrefs {
   // open new windows.
   static bool CanOpenBrowser(Profile* profile);
 
+  // Returns true if incognito mode is allowed in |profile|.
+  [[nodiscard]] static bool IsIncognitoAllowed(Profile* profile);
+
   // Returns whether parental controls have been enabled on the platform. This
   // method evaluates and caches if the platform controls have been enabled on
   // the first call, which must be on the UI thread when IO and blocking are

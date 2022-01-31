@@ -110,6 +110,13 @@ bool IncognitoModePrefs::CanOpenBrowser(Profile* profile) {
 }
 
 // static
+bool IncognitoModePrefs::IsIncognitoAllowed(Profile* profile) {
+  return !profile->IsGuestSession() &&
+         IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+             IncognitoModePrefs::Availability::kDisabled;
+}
+
+// static
 bool IncognitoModePrefs::ArePlatformParentalControlsEnabled() {
 #if BUILDFLAG(IS_WIN)
   return GetWinParentalControls().logging_required;

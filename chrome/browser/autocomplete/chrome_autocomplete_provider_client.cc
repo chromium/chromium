@@ -392,11 +392,7 @@ const TabMatcher& ChromeAutocompleteProviderClient::GetTabMatcher() const {
 }
 
 bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
-  if (profile_->IsGuestSession()) {
-    return false;
-  }
-  return IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
-         IncognitoModePrefs::Availability::kDisabled;
+  return IncognitoModePrefs::IsIncognitoAllowed(profile_);
 }
 
 bool ChromeAutocompleteProviderClient::IsSharingHubAvailable() const {
