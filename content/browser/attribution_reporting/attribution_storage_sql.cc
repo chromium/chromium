@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
@@ -116,17 +115,25 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 15 - 2021/11/13 - https://crrev.com/c/3180180
 //
 // Version 15 adds the conversions.external_report_id column.
-const int kCurrentVersionNumber = 15;
+//
+// Version 16 - 2022/01/31 - https://crrev.com/c/3421414
+//
+// Version 16 replaces the event_source_impression_site_idx with
+// impression_site_reporting_origin_idx, which applies to both source types and
+// includes the reporting origin.
+const int kCurrentVersionNumber = 16;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 15;
+const int kCompatibleVersionNumber = 16;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 //
 // Versions 1-14 were deprecated by https://crrev.com/c/3421175.
-const int kDeprecatedVersionNumber = 14;
+//
+// Version 15 was deprecated by https://crrev.com/c/3421414.
+const int kDeprecatedVersionNumber = 15;
 
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {
@@ -396,14 +403,16 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
         StoreSourceResult::Status::kInsufficientSourceCapacity);
   }
 
+  if (!HasCapacityForUniqueDestinationLimitForPendingSource(source)) {
+    return StoreSourceResult(
+        StoreSourceResult::Status::kInsufficientUniqueDestinationCapacity);
+  }
+
   // Wrap the deactivation and insertion in the same transaction. If the
   // deactivation fails, we do not want to store the new source as we may
   // return the wrong set of sources for a trigger.
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return StoreSourceResult(StoreSourceResult::Status::kInternalError);
-
-  if (!EnsureCapacityForPendingDestinationLimit(source))
     return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
   const std::string serialized_conversion_destination =
@@ -1570,13 +1579,13 @@ bool AttributionStorageSql::CreateSchema() {
   if (!db_->Execute(kImpressionOriginIndexSql))
     return false;
 
-  // Optimizes `EnsureCapacityForPendingDestinationLimit()`, which only needs to
-  // examine active, unconverted, event-source sources.
-  static constexpr char kEventSourceImpressionSiteIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS event_source_impression_site_idx "
-      "ON impressions(impression_site)"
-      "WHERE active = 1 AND num_conversions = 0 AND source_type = 1";
-  if (!db_->Execute(kEventSourceImpressionSiteIndexSql))
+  // Optimizes `HasCapacityForUniqueDestinationLimitForPendingSource()`, which
+  // only needs to examine active, unconverted sources.
+  static constexpr char kImpressionSiteReportingOriginIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_site_reporting_origin_idx "
+      "ON impressions(impression_site,reporting_origin)"
+      "WHERE active=1 AND num_conversions=0";
+  if (!db_->Execute(kImpressionSiteReportingOriginIndexSql))
     return false;
 
   // All columns in this table are const except |report_time| and
@@ -1678,92 +1687,46 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
   db_init_status_ = DbStatus::kClosed;
 }
 
-bool AttributionStorageSql::EnsureCapacityForPendingDestinationLimit(
-    const StorableSource& source) {
-  // TODO(apaseltiner): Add metrics for how this behaves so we can see how often
-  // sites are hitting the limit.
-
-  if (source.common_info().source_type() !=
-      CommonSourceInfo::SourceType::kEvent)
-    return true;
-
-  static_assert(static_cast<int>(CommonSourceInfo::SourceType::kEvent) == 1,
-                "Update the SQL statement below and this condition");
-
-  const std::string serialized_conversion_destination =
-      source.common_info().ConversionDestination().Serialize();
-
-  // Optimized by `kEventSourceImpressionSiteIndexSql`.
-  static constexpr char kSelectSourcesSql[] =
-      "SELECT impression_id,conversion_destination FROM impressions "
-      DCHECK_SQL_INDEXED_BY("event_source_impression_site_idx")
-      "WHERE impression_site = ? AND source_type = 1 "
-      "AND active = 1 AND num_conversions = 0 "
-      "ORDER BY impression_time ASC";
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSelectSourcesSql));
-  statement.BindString(0, source.common_info().ImpressionSite().Serialize());
-
-  base::flat_map<std::string, size_t> conversion_destinations;
-
-  struct SourceData {
-    StoredSource::Id source_id;
-    std::string conversion_destination;
-  };
-  std::vector<SourceData> sources_by_impression_time;
-
-  while (statement.Step()) {
-    SourceData impression_data = {
-        .source_id = StoredSource::Id(statement.ColumnInt64(0)),
-        .conversion_destination = statement.ColumnString(1),
-    };
-
-    // If there's already a source matching the to-be-stored
-    // `impression_site` and `conversion_destination`, then the unique count
-    // won't be changed, so there's nothing else to do.
-    if (impression_data.conversion_destination ==
-        serialized_conversion_destination) {
-      return true;
-    }
-
-    conversion_destinations[impression_data.conversion_destination]++;
-    sources_by_impression_time.push_back(std::move(impression_data));
-  }
-
-  if (!statement.Succeeded())
-    return false;
-
-  const int max = delegate_->GetMaxAttributionDestinationsPerEventSource();
+bool AttributionStorageSql::
+    HasCapacityForUniqueDestinationLimitForPendingSource(
+        const StorableSource& source) {
+  const int max = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
   // TODO(apaseltiner): We could just make
-  // `GetMaxAttributionDestinationsPerEventSource()` return `size_t`, but it
+  // `GetMaxDestinationsPerSourceSiteReportingOrigin()` return `size_t`, but it
   // would be inconsistent with the other `AttributionStorage::Delegate`
   // methods.
   DCHECK_GT(max, 0);
 
-  // Otherwise, if there's capacity for the new `conversion_destination` to be
-  // stored for the `impression_site`, there's nothing else to do.
-  if (conversion_destinations.size() < static_cast<size_t>(max))
-    return true;
+  const std::string serialized_conversion_destination =
+      source.common_info().ConversionDestination().Serialize();
 
-  // Otherwise, delete sources in order by `impression_time` until the
-  // number of distinct `conversion_destination`s is under `max`.
-  std::vector<StoredSource::Id> source_ids_to_delete;
-  for (const auto& source_data : sources_by_impression_time) {
-    auto it = conversion_destinations.find(source_data.conversion_destination);
-    DCHECK(it != conversion_destinations.end());
-    it->second--;
-    if (it->second == 0)
-      conversion_destinations.erase(it);
-    source_ids_to_delete.push_back(source_data.source_id);
-    if (conversion_destinations.size() < static_cast<size_t>(max))
-      break;
+  // Optimized by `kImpressionSiteReportingOriginIndexSql`.
+  static constexpr char kSelectSourcesSql[] =
+      "SELECT conversion_destination FROM impressions "
+      DCHECK_SQL_INDEXED_BY("impression_site_reporting_origin_idx")
+      "WHERE impression_site=? AND reporting_origin=? "
+      "AND active=1 AND num_conversions=0";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSelectSourcesSql));
+  statement.BindString(0, source.common_info().ImpressionSite().Serialize());
+  statement.BindString(
+      1, SerializeOrigin(source.common_info().reporting_origin()));
+
+  base::flat_set<std::string> destinations;
+  while (statement.Step()) {
+    std::string destination = statement.ColumnString(0);
+
+    // The destination isn't new, so it doesn't change the count.
+    if (destination == serialized_conversion_destination)
+      return true;
+
+    destinations.insert(std::move(destination));
+
+    if (destinations.size() == static_cast<size_t>(max))
+      return false;
   }
 
-  return DeleteSources(source_ids_to_delete);
-
-  // Because this is limited to active sources with `num_conversions = 0`,
-  // we should be guaranteed that there is not any corresponding data in the
-  // rate limit table or the report table.
+  return statement.Succeeded();
 }
 
 bool AttributionStorageSql::DeleteSources(

@@ -220,6 +220,8 @@ void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
              AttributionStorage::StoreSourceResult result) {
             // TODO(apaseltiner): Consider logging UMA based on `result` to help
             // understand how often this fails due to privacy limits, etc.
+            //
+            // TODO(apaseltiner): Show rejected sources in internals UI.
 
             if (!manager)
               return;

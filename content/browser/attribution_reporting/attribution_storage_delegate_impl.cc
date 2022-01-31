@@ -44,10 +44,9 @@ int AttributionStorageDelegateImpl::GetMaxAttributionsPerOrigin() const {
 }
 
 int AttributionStorageDelegateImpl::
-    GetMaxAttributionDestinationsPerEventSource() const {
+    GetMaxDestinationsPerSourceSiteReportingOrigin() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(apaseltiner): Finalize a value for this.
-  return INT_MAX;
+  return 100;
 }
 
 AttributionStorage::Delegate::RateLimitConfig

@@ -171,11 +171,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<std::vector<int64_t>> ReadDedupKeys(StoredSource::Id source_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // When storing an event source, deletes active event
-  // sources in order by |impression_time| until there are sufficiently few
-  // unique conversion destinations for the same |impression_site|. Returns
-  // false on failure.
-  [[nodiscard]] bool EnsureCapacityForPendingDestinationLimit(
+  [[nodiscard]] bool HasCapacityForUniqueDestinationLimitForPendingSource(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreReport(const AttributionReport& report)

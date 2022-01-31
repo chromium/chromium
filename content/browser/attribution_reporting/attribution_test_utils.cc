@@ -80,9 +80,9 @@ int ConfigurableStorageDelegate::GetMaxAttributionsPerOrigin() const {
   return max_attributions_per_origin_;
 }
 
-int ConfigurableStorageDelegate::GetMaxAttributionDestinationsPerEventSource()
-    const {
-  return max_attribution_destinations_per_event_source_;
+int ConfigurableStorageDelegate::
+    GetMaxDestinationsPerSourceSiteReportingOrigin() const {
+  return max_destinations_per_source_site_reporting_origin_;
 }
 
 AttributionStorage::Delegate::RateLimitConfig
@@ -662,6 +662,8 @@ std::ostream& operator<<(std::ostream& out, StoreSourceResult::Status status) {
       return out << "kInternalError";
     case StoreSourceResult::Status::kInsufficientSourceCapacity:
       return out << "kInsufficientSourceCapacity";
+    case StoreSourceResult::Status::kInsufficientUniqueDestinationCapacity:
+      return out << "kInsufficientUniqueDestinationCapacity";
   }
 }
 

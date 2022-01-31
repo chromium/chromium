@@ -89,9 +89,9 @@ class AttributionStorage {
     virtual int GetMaxAttributionsPerOrigin() const = 0;
 
     // Returns the maximum number of distinct attribution destinations that can
-    // be in storage at any time for event sources with a given
-    // reporting origin.
-    virtual int GetMaxAttributionDestinationsPerEventSource() const = 0;
+    // be in storage at any time for sources with the same <source site,
+    // reporting origin>.
+    virtual int GetMaxDestinationsPerSourceSiteReportingOrigin() const = 0;
 
     // Returns the rate limits for capping contributions per window.
     virtual RateLimitConfig GetRateLimits(
@@ -140,6 +140,7 @@ class AttributionStorage {
       kSuccess,
       kInternalError,
       kInsufficientSourceCapacity,
+      kInsufficientUniqueDestinationCapacity,
     };
 
     explicit StoreSourceResult(
