@@ -2695,8 +2695,9 @@ class LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate
   scoped_refptr<FakePaintedScrollbarLayer> scrollbar_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(
-    LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate);
+// TODO(crbug.com/1292184): Flaky failures.
+//SINGLE_AND_MULTI_THREAD_TEST_F(
+//    LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate);
 
 class LayerTreeHostTestDeviceScaleFactorChange : public LayerTreeHostTest {
  public:
