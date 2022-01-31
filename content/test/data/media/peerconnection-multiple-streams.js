@@ -15,11 +15,8 @@ class PeerConnection {
    * @param {!Element} videoElement the video element to render the feed on.
    * @param {!Array<!{x: number, y: number}>} resolutions. A width of -1 will
    *     result in disabled video for that stream.
-   * @param {?boolean=} cpuOveruseDetection Whether to enable
-   *     googCpuOveruseDetection (lower video quality if CPU usage is high).
-   *     Default is null which means that the constraint is not set at all.
    */
-  constructor(videoElement, resolutions, cpuOveruseDetection=null) {
+  constructor(videoElement, resolutions) {
     this.localConnection = null;
     this.remoteConnection = null;
     this.remoteView = videoElement;
@@ -29,11 +26,8 @@ class PeerConnection {
     this.resolutions = resolutions.slice().sort((x, y) => y.w - x.w);
     this.activeStreamIndex = resolutions.length - 1;
     this.badResolutionsSeen = 0;
-    if (cpuOveruseDetection !== null) {
-      this.pcConstraints = {
-        'optional': [{'googCpuOveruseDetection': cpuOveruseDetection}]
-      };
-    }
+    this.localAudioTransceiver = null;
+    this.localVideoTransceiver = null;
   }
 
   /**
@@ -41,7 +35,7 @@ class PeerConnection {
    * to render the video on {@code this.videoElement}.
    * @return {!Promise} a Promise that resolves when everything is initalized.
    */
-  start() {
+  async start() {
     // getUserMedia fails if we first request a low resolution and
     // later a higher one. Hence, sort resolutions above and
     // start with the highest resolution here.
@@ -51,10 +45,9 @@ class PeerConnection {
         .getUserMedia(constraints)
         .then((stream) => this.streams.push(stream));
     });
-    return Promise.all(promises).then(() => {
-      // Start with the smallest video to not overload the machine instantly.
-      return this.onGetUserMediaSuccess_(this.streams[this.activeStreamIndex]);
-    })
+    await Promise.all(promises);
+    // Start with the smallest video to not overload the machine instantly.
+    await this.createPeerConnections_(this.streams[this.activeStreamIndex]);
   };
 
   /**
@@ -109,53 +102,66 @@ class PeerConnection {
    * resolutions provided to the constructor.
    * @return {!Promise} A promise that resolved when everything is initialized.
    */
-  switchToRandomStream() {
-    const localStreams = this.localConnection.getLocalStreams();
-    const track = localStreams[0];
-    if (track != null) {
-      this.localConnection.removeStream(track);
-      const newStreamIndex = Math.floor(Math.random() * this.streams.length);
-      return this.addStream_(this.streams[newStreamIndex])
-          .then(() => this.activeStreamIndex = newStreamIndex);
-    } else {
-      return Promise.resolve();
-    }
+  async switchToRandomStream() {
+    await this.stopSending_();
+    const newStreamIndex = Math.floor(Math.random() * this.streams.length);
+    await this.startSending_(this.streams[newStreamIndex]);
+    this.activeStreamIndex = newStreamIndex;
   }
 
-  onGetUserMediaSuccess_(stream) {
-    this.localConnection =
-        new RTCPeerConnection({sdpSemantics:'plan-b'}, this.pcConstraints);
+  async createPeerConnections_(stream) {
+    this.localConnection = new RTCPeerConnection();
     this.localConnection.onicecandidate = (event) => {
       this.onIceCandidate_(this.remoteConnection, event);
     };
-    this.remoteConnection =
-        new RTCPeerConnection({sdpSemantics:'plan-b'}, this.pcConstraints);
+    this.remoteConnection = new RTCPeerConnection();
     this.remoteConnection.onicecandidate = (event) => {
       this.onIceCandidate_(this.localConnection, event);
     };
-    this.remoteConnection.onaddstream = (e) => {
-      this.remoteView.srcObject = e.stream;
+    this.remoteConnection.ontrack = (e) => {
+      this.remoteView.srcObject = e.streams[0];
     };
-    return this.addStream_(stream);
+
+    const [audioTrack] = stream.getAudioTracks();
+    const [videoTrack] = stream.getVideoTracks();
+    this.localAudioTransceiver =
+        audioTrack ? this.localConnection.addTransceiver(audioTrack) : null;
+    this.localVideoTransceiver =
+        videoTrack ? this.localConnection.addTransceiver(videoTrack) : null;
+    await this.renegotiate_();
   }
 
-  addStream_(stream) {
-    this.localConnection.addStream(stream);
-    return this.localConnection
-        .createOffer({offerToReceiveAudio: 1, offerToReceiveVideo: 1})
-        .then((desc) => this.onCreateOfferSuccess_(desc), logError);
+  async startSending_(stream) {
+    const [audioTrack] = stream.getAudioTracks();
+    const [videoTrack] = stream.getVideoTracks();
+    if (audioTrack) {
+      await this.localAudioTransceiver.sender.replaceTrack(audioTrack);
+      this.localAudioTransceiver.direction = 'sendrecv';
+    }
+    if (videoTrack) {
+      await this.localVideoTransceiver.sender.replaceTrack(videoTrack);
+      this.localVideoTransceiver.direction = 'sendrecv';
+    }
+    await this.renegotiate_();
   }
 
-  onCreateOfferSuccess_(desc) {
-    this.localConnection.setLocalDescription(desc);
-    this.remoteConnection.setRemoteDescription(desc);
-    return this.remoteConnection.createAnswer().then(
-        (desc) => this.onCreateAnswerSuccess_(desc), logError);
-  };
+  async stopSending_() {
+    await this.localAudioTransceiver.sender.replaceTrack(null);
+    this.localAudioTransceiver.direction = 'inactive';
+    await this.localVideoTransceiver.sender.replaceTrack(null);
+    this.localVideoTransceiver.direction = 'inactive';
+    await this.renegotiate_();
+  }
 
-  onCreateAnswerSuccess_(desc) {
-    this.remoteConnection.setLocalDescription(desc);
-    this.localConnection.setRemoteDescription(desc);
+  async renegotiate_() {
+    // Implicitly creates the offer.
+    await this.localConnection.setLocalDescription();
+    await this.remoteConnection.setRemoteDescription(
+        this.localConnection.localDescription);
+    // Implicitly creates the answer.
+    await this.remoteConnection.setLocalDescription();
+    await this.localConnection.setRemoteDescription(
+        this.remoteConnection.localDescription);
   };
 
   onIceCandidate_(connection, event) {

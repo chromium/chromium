@@ -38,13 +38,6 @@ void WebRtcContentBrowserTestBase::SetUpCommandLine(
   // permission is granted.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kAllowLoopbackInPeerConnection);
-
-  // Act as if any website under test is opted in to the Plan B Deprecation
-  // Trial, i.e. allow it to use Plan B.
-  // TODO(hbos): When the Deprecation Trial ends, either update legacy browser
-  // tests to use Unified Plan or delete them in favor of WPT test coverage.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "RTCExtendDeadlineForPlanBRemoval");
 }
 
 void WebRtcContentBrowserTestBase::SetUp() {

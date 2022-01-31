@@ -31,8 +31,7 @@ class TestRunner {
       failTest('elementType must be one of "audio" or "video"');
     }
     this.elements.push(element);
-    this.peerConnections.push(
-        new PeerConnection(element, [resolution], false));
+    this.peerConnections.push(new PeerConnection(element, [resolution]));
   }
 
   runTest() {

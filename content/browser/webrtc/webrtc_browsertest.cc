@@ -222,15 +222,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   MakeTypicalPeerConnectionCall("callWithNewVideoMediaStream();");
 }
 
-// This test will make a PeerConnection-based call and send a new Video
-// MediaStream that has been created based on a MediaStream created with
-// getUserMedia. When video is flowing, the VideoTrack is removed and an
-// AudioTrack is added instead.
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CallAndModifyStream) {
-  MakeTypicalPeerConnectionCall(
-      "callWithNewVideoMediaStreamLaterSwitchToAudio();");
-}
-
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, AddTwoMediaStreamsToOnePC) {
   MakeTypicalPeerConnectionCall("addTwoMediaStreamsToOneConnection();");
 }
