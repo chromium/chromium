@@ -179,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 
 #if BUILDFLAG(IS_ANDROID)
 // Test that no-state-prefetch results in UKM getting recorded.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, UKMRecorded) {
+// TODO(https://crbug.com/1292252): Flaky failures.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, DISABLED_UKMRecorded) {
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, true);
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
