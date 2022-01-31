@@ -100,6 +100,27 @@
   :host(.disabled) #background {
     background-color: hsl(0deg 0% 59%);
   }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background-color-pressed: hsl(217deg 87% 76%);
+      --background-color-unpressed: hsl(218deg 20% 32%);
+      --border-color: hsl(217deg 87% 76%);
+      --foreground-color-pressed: hsl(225deg 6% 13%);
+      --foreground-color-unpressed: hsl(217deg 87% 76%);
+    }
+
+    :host(.disabled) #foreground {
+      --foreground-color-unpressed: var(--cros-button-label-color-primary-disabled);
+      background-color: var(--cros-button-background-color-primary-disabled);
+      border-color: var(--cros-button-background-color-primary-disabled);
+      color: var(--foreground-color-unpressed);
+    }
+
+    :host(.disabled) #background {
+      background-color: hsl(192deg 4% 25%);
+    }
+  }
 </style>
 <div id="background"></div>
 <div id="foreground">
