@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1351937230027495976">Menü összecsukása</translation>
 <translation id="1364382257761975320">A Chromebook zárolásának feloldásához használja ujjlenyomatát.</translation>
+<translation id="1364618750746929654">Nem sikerült átiratot létrehozni</translation>
 <translation id="1383597849754832576">Nem sikerült a beszédfájlok letöltése. Próbálja újra később.</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1391102559483454063">Be</translation>
@@ -680,6 +681,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="54609108002486618">Kezelt</translation>
 <translation id="5465662442746197494">Segítségre van szüksége?</translation>
 <translation id="547979256943495781">A polc a jobb oldalon található</translation>
+<translation id="5491186829646618080">Firmware-frissítések állnak rendelkezésre</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">A rendszergazda az összes eSIM-profilt eltávolította. További információért forduljon a rendszergazdához.</translation>
 <translation id="5523434445161341166">A(z) <ph name="FEATURE_NAME" /> csatlakozik.</translation>
@@ -1178,6 +1180,7 @@ Frissen telepítve</translation>
 <translation id="8876661425082386199">Ellenőrizze az internetkapcsolatot</translation>
 <translation id="8877788021141246043">Emlékeztető beállítása</translation>
 <translation id="8878886163241303700">Kibővített képernyő</translation>
+<translation id="888982883502837004">Firmware-frissítések állnak rendelkezésre eszközéhez. Kattintson az áttekintésükhöz és a frissítéshez.</translation>
 <translation id="8896630965521842259">A(z) <ph name="DESK_TEMPLATE_NAME" /> sablon véglegesen törlésre kerül.</translation>
 <translation id="890616557918890486">Forrás módosítása</translation>
 <translation id="8909138438987180327">Az akkumulátor töltöttsége <ph name="PERCENTAGE" /> százalék.</translation>

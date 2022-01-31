@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">يُرجى وضع صفحة أخرى على الماسح الضوئي.</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
+<translation id="291142119251986300">المكونات غير المعتمَدة</translation>
+<translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>

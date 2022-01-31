@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">tundmatu nimi</translation>
 <translation id="1041998700806130099">Töölehe sõnum</translation>
 <translation id="1048785276086539861">Märkuste muutmisel naaseb see dokument ühe lehe vaatele</translation>
-<translation id="1049743911850919806">Inkognito</translation>
 <translation id="1050038467049342496">Sulgege muud rakendused</translation>
 <translation id="1055184225775184556">&amp;Võta lisamine tagasi</translation>
 <translation id="1056898198331236512">Hoiatus</translation>
@@ -735,12 +734,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3345782426586609320">Silmad</translation>
 <translation id="3355823806454867987">Muuda puhverserveri seadeid ...</translation>
 <translation id="3360103848165129075">Maksetöötleja leht</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />ei salvesta<ph name="END_EMPHASIS" /> järgmist teavet:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />teie sirvimisajalugu;
-          <ph name="LIST_ITEM" />küpsisefailid ja saidi andmed;
-          <ph name="LIST_ITEM" />vormidesse sisestatud teave.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">See reegel kopeeriti automaatselt katkestatud toega reeglist <ph name="OLD_POLICY" />. Peaksite selle asemel kasutama seda reeglit.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> soovib kasutada teie virtuaalreaalsuse seadet ja andmeid</translation>
 <translation id="3366477098757335611">Kuva kaardid</translation>
@@ -1221,12 +1214,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4819347708020428563">Kas muuta märkusi vaikekuval?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, kiirelt uue Google'i arvutustabeli loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="4825507807291741242">Võimas</translation>
-<translation id="4827402517081186284">Inkognito režiim ei muuda teid veebis nähtamatuks.
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Saidid teavad, kui neid külastate.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Tööandjad või koolid saavad teie sirvimistegevust jälgida.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Interneti teenusepakkujad võivad veebiliiklust jälgida.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Eiratakse, kuna reegli saab seadistada ainult pilves olev kasutaja.</translation>
 <translation id="483241715238664915">Lülita hoiatused sisse</translation>
 <translation id="4838327282952368871">Unistav</translation>
 <translation id="4840250757394056958">Chrome’i ajaloo vaatamine</translation>
@@ -1795,7 +1783,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6757797048963528358">Teie seade lülitus unerežiimile.</translation>
 <translation id="6767985426384634228">Kas värskendada aadressi?</translation>
 <translation id="6768213884286397650">Hagaki (postkaart)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> inkognito režiimi kohta</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violetne</translation>
 <translation id="6786747875388722282">Laiendused</translation>
@@ -2275,12 +2262,6 @@ Lisateave:
 <translation id="8317207217658302555">Kas värskendada ARCore'i?</translation>
 <translation id="831997045666694187">Õhtu</translation>
 <translation id="8321476692217554900">märguanded</translation>
-<translation id="8328484624016508118">Pärast kõigi inkognito vahelehtede sulgemist kustutab Chrome järgmised andmed.
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Teie sirvimistegevus selles seadmes.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Teie otsinguajalugu selles seadmes.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Vormidesse sisestatud teave.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Juurdepääs hostile <ph name="HOST_NAME" /> blokeeriti</translation>
 <translation id="833262891116910667">Tõsta esile</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> keeles olevaid lehti ei tõlgita</translation>

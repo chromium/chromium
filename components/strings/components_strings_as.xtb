@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">অজ্ঞাত নাম</translation>
 <translation id="1041998700806130099">কামৰ শ্বীটৰ বাৰ্তা</translation>
 <translation id="1048785276086539861">আপুনি এন’টেশ্বন সম্পাদনা কৰিলে, এই নথিখন একক পৃষ্ঠাৰ ভিউলৈ সলনি হ’ব</translation>
-<translation id="1049743911850919806">ইনক’গনিট’</translation>
 <translation id="1050038467049342496">অন্য এপ্‌বোৰ বাছনি কৰক</translation>
 <translation id="1055184225775184556">যোগ কৰা কার্যটো &amp;আনডু কৰক</translation>
 <translation id="1056898198331236512">সতর্কবার্তা</translation>
@@ -734,12 +733,6 @@
 <translation id="3345782426586609320">চকু</translation>
 <translation id="3355823806454867987">প্ৰক্সি ছেটিংসমূহ সলনি কৰক...</translation>
 <translation id="3360103848165129075">পৰিশোধ নিয়ন্ত্ৰক শ্বীটখন</translation>
-<translation id="3361596688432910856">Chromeএ তলৰ তথ্যসমূহ <ph name="BEGIN_EMPHASIS" />ছেভ নকৰে<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস
-          <ph name="LIST_ITEM" />কুকি আৰু ছাইটৰ ডেটা
-          <ph name="LIST_ITEM" />ফ’মবোৰত দিয়া তথ্য
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">এই নীতিটো অপ্ৰচলিত <ph name="OLD_POLICY" /> নীতিটোৰ পৰা স্বয়ংক্ৰিয়ভাৱে প্ৰতিলিপি কৰা হৈছে। আপুনি তাৰ পৰিৱৰ্তে এই নীতিটো ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="3364869320075768271"><ph name="URL" />এ আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা ব্যৱহাৰ কৰিব বিচাৰিছে</translation>
 <translation id="3366477098757335611">কার্ড চাওক</translation>
@@ -1218,12 +1211,7 @@
 <translation id="4819347708020428563">ডিফ’ল্ট ভিউত এন’টেশ্বন সম্পাদনা কৰিবনে?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, এখন নতুন Google Sheet ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4825507807291741242">শক্তিশালী</translation>
-<translation id="4827402517081186284">ইনক’গনিট’ টেবে আপোনাক অনলাইনত অদৃশ্য নকৰে:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />আপুনি ছাইটসমূহ কেতিয়া চাইছিল সেয়া ছাইটসমূহে জানে<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />নিয়োগদাতা অথবা বিদ্যালয়ে ব্ৰাউজিঙৰ কার্যকলাপ ট্ৰেক কৰিব পাৰে<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ইণ্টাৰনেট সেৱা প্ৰদানকাৰীয়ে ৱেবৰ ট্ৰেফিক নিৰীক্ষণ কৰিব পাৰে<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">নীতিটো কেৱল ক্লাউড ব্যৱহাৰকাৰীৰ নীতিয়ে ছেট কৰিব পাৰে বাবে উপেক্ষা কৰা হৈছে।</translation>
 <translation id="483241715238664915">সকীয়নি অন কৰক</translation>
 <translation id="4838327282952368871">স্বপ্নময়</translation>
 <translation id="4840250757394056958">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
@@ -1791,7 +1779,6 @@
 <translation id="6757797048963528358">আপোনাৰ ডিভাইচটো সুপ্ত অৱস্থালৈ গৈছে।</translation>
 <translation id="6767985426384634228">ঠিকনা আপডে’ট কৰিবনে?</translation>
 <translation id="6768213884286397650">হেগাকি (প'ষ্টকাৰ্ড)</translation>
-<translation id="6774185088257932239">ইনক’গনিট’ টেবৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">বেঙুনীয়া</translation>
 <translation id="6786747875388722282">এক্সটেনশ্বনসমূহ</translation>
@@ -2271,12 +2258,6 @@
 <translation id="8317207217658302555">ARCore আপডে’ট কৰিবনে?</translation>
 <translation id="831997045666694187">সন্ধিয়া</translation>
 <translation id="8321476692217554900">জাননী</translation>
-<translation id="8328484624016508118">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰাৰ পাছত, Chromeএ তলত দিয়া তথ্যসমূহ মচে:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />এই ডিভাইচটোত আপোনাৰ ব্ৰাউজিঙৰ কার্যকলাপ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />এই ডিভাইচটোৰ পৰা আপোনাৰ সন্ধানৰ ইতিহাস<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ফ'র্মত দিয়া তথ্য<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />লৈ এক্সেছ অগ্ৰাহ্য কৰা হৈছিল</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ অনুবাদ কৰা নহয়</translation>

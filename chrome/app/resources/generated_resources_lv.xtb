@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Pašreizējā ikona</translation>
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
 <translation id="1108600514891325577">&amp;Apturēt</translation>
+<translation id="1108938384783527433">Vēstures sinhronizēšana</translation>
 <translation id="1110155001042129815">Uzgaidiet</translation>
 <translation id="1110965959145884739">Izvēlieties, kuras valodas instalēt šajā ierīcē. Lai ietaupītu vietu diskā, valodu failus var izmantot visi lietotāji. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -510,6 +511,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1521442365706402292">Pārvaldīt sertifikātus</translation>
 <translation id="1521774566618522728">Aktīvs šodien</translation>
 <translation id="152234381334907219">Jaunākie saglabātie</translation>
+<translation id="1523279371236772909">Skatīts pēdējā mēneša laikā</translation>
 <translation id="1523978563989812243">Teksta pārvēršanas runā programmas</translation>
 <translation id="1524430321211440688">Tastatūra</translation>
 <translation id="1524563461097350801">Nē, paldies</translation>
@@ -1164,6 +1166,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Pievienot Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinhronizācija tiks sākta, tiklīdz aizvērsiet sinhronizācijas iestatījumus.</translation>
+<translation id="2162926944953615670">Nav pieejamu eSIM profilu</translation>
 <translation id="2163470535490402084">Lai pierakstītos savā <ph name="DEVICE_TYPE" /> ierīcē, lūdzu, izveidojiet savienojumu ar internetu.</translation>
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> un vēl 1 slēdža taustiņš</translation>
@@ -1241,6 +1244,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2232876851878324699">Failā bija iekļauts viens sertifikāts, kas netika importēts:</translation>
 <translation id="2233502537820838181">&amp;Plašāka informācija</translation>
 <translation id="223356358902285214">Darbības tīmeklī un lietotnēs</translation>
+<translation id="2234827758954819389">Konfidencialitātes ceļvedis</translation>
 <translation id="2234876718134438132">Sinhronizēšana un Google pakalp.</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="2238379619048995541">Dati par frekvences stāvokli</translation>
@@ -1856,6 +1860,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2828650939514476812">Izveidojiet savienojumu ar Wi-Fi tīklu</translation>
 <translation id="2831430281393059038">Ierīce tiek atbalstīta</translation>
 <translation id="2832124733806557606">Jūsu bērns var izmantot PIN, lai pierakstītos ierīcē vai to atbloķētu.</translation>
+<translation id="2835177225987815960">Tiks atiestatīti pašreizējie pārlūkošanas iestatījumi, tostarp piešķirtie slēdži un automātiskās pārlūkošanas ātruma preferences.</translation>
 <translation id="2835547721736623118">Runas atpazīšanas pakalpojums</translation>
 <translation id="2836269494620652131">Avārija</translation>
 <translation id="2836635946302913370">Administrators ir atspējojis iespēju pierakstīties, izmantojot šo lietotājvārdu.</translation>
@@ -3094,6 +3099,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4095264805865317199">Atvērt mobilā tīkla aktivizācijas lietotāja saskarni</translation>
 <translation id="4095507791297118304">Galvenais displejs</translation>
 <translation id="4096508467498758490">Izstrādātāja režīma paplašinājumu atspējošana</translation>
+<translation id="4096797685681362305">Skatīts pēdējās nedēļas laikā</translation>
 <translation id="4097406557126260163">Lietotnes un paplašinājumi</translation>
 <translation id="409742781329613461">Padomi par Chrome</translation>
 <translation id="4097560579602855702">Meklēt Google tīklā</translation>
@@ -3649,6 +3655,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4699172675775169585">Kešatmiņā ievietotie attēli un faili</translation>
 <translation id="4699357559218762027">(tiek palaista automātiski)</translation>
 <translation id="4701025263201366865">Jāpierakstās vienam no vecākiem</translation>
+<translation id="4701335814944566468">Skatīts vakar</translation>
 <translation id="4708794300267213770">Rādīt bloķēšanas ekrānu, kad tiek izslēgts miega režīms</translation>
 <translation id="4708849949179781599">Aizvērt programmu <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Atjaunot iestatījumus</translation>
@@ -3716,6 +3723,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="479536056609751218">Tikai tīmekļa lapa, HTML</translation>
 <translation id="4796142525425001238">Vienmēr atjaunot</translation>
 <translation id="4798236378408895261">Pievienot <ph name="BEGIN_LINK" />Bluetooth žurnālus<ph name="END_LINK" /> (tikai Google darbiniekiem)</translation>
+<translation id="479863874072008121">Pārvaldīt ierīces</translation>
 <translation id="4800839971935185386">Pārskatiet nosaukuma un ikonas izmaiņas</translation>
 <translation id="4801448226354548035">Slēpt kontus</translation>
 <translation id="4801512016965057443">Ļaut mobilo datu viesabonēšanu</translation>
@@ -6439,6 +6447,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7659154729610375585">Vai tomēr iziet no inkognito režīma?</translation>
 <translation id="7659297516559011665">Paroles tikai šajā ierīcē</translation>
+<translation id="7659336857671800422">Konfidencialitātes ceļveža izpēte</translation>
 <translation id="7659584679870740384">Jums nav atļaujas izmantot šo ierīci. Lūdzu, sazinieties ar administratoru, lai saņemtu pierakstīšanās atļauju.</translation>
 <translation id="7661259717474717992">Atļaut vietnēm saglabāt un nolasīt sīkfailu datus</translation>
 <translation id="7661451191293163002">Nevarēja iegūt reģistrācijas sertifikātu.</translation>
@@ -7962,6 +7971,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9200339982498053969">Vietne <ph name="ORIGIN" /> varēs rediģēt failus mapē “<ph name="FOLDERNAME" />”.</translation>
 <translation id="920045321358709304">Meklēt pakalpojumā <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Visi bezsaistē esošie dati tiks izdzēsti</translation>
+<translation id="9201117361710210082">Iepriekš skatīts</translation>
 <translation id="9201220332032049474">Ekrāna bloķēšanas opcijas</translation>
 <translation id="9201842707396338580">Radās kļūda. Lūdzu, sazinieties ar ierīces īpašnieku vai administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilēšana iespējota</translation>

@@ -82,6 +82,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, utiliza a impresión dixital</translation>
+<translation id="1364618750746929654">Non se puido xerar a transcrición</translation>
 <translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Activada</translation>
@@ -680,6 +681,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="54609108002486618">Dispositivo xestionado</translation>
 <translation id="5465662442746197494">Precisas axuda?</translation>
 <translation id="547979256943495781">O estante está na parte dereita</translation>
+<translation id="5491186829646618080">Hai actualizacións de firmware dispoñibles</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">O teu administrador quitou todos os perfís de eSIM. Para obter máis información, ponte en contacto con el.</translation>
 <translation id="5523434445161341166">A función <ph name="FEATURE_NAME" /> estase conectando.</translation>
@@ -1178,6 +1180,7 @@ Nova instalación</translation>
 <translation id="8876661425082386199">Comproba a conexión</translation>
 <translation id="8877788021141246043">Definir un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando a pantalla</translation>
+<translation id="888982883502837004">Hai actualizacións de firmware dispoñibles para o teu dispositivo. Fai clic para revisalas e instalalas.</translation>
 <translation id="8896630965521842259">Eliminarase <ph name="DESK_TEMPLATE_NAME" /> de forma permanente</translation>
 <translation id="890616557918890486">Cambiar fonte</translation>
 <translation id="8909138438987180327">Nivel de batería: <ph name="PERCENTAGE" /> por cento.</translation>

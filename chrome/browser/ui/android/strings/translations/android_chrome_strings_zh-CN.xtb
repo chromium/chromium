@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">要管理您的 Google 帐号，请点按“管理帐号”按钮</translation>
 <translation id="1549000191223877751">移至其他窗口</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1554532453982918912">可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能够获享更好的体验</translation>
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="1571304935088121812">复制用户名</translation>
 <translation id="1592864538817356322">标准保护：</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">完成</translation>
 <translation id="2459390580524506445">增强版语音搜索</translation>
 <translation id="2461822463642141190">电流</translation>
+<translation id="2472163211318554013">登录即可充分利用 Chrome</translation>
 <translation id="247737702124049222">“图片说明”功能已开启</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">卸载</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252">您的 <ph name="CONNECTION_TYPE" /> 连接可能会拖慢您的下载速度</translation>
 <translation id="2647434099613338025">添加语言</translation>
 <translation id="2649068648233607930">您的浏览器由 <ph name="DOMAIN" /> 管理</translation>
+<translation id="2650348088770008516">隐私保护指南说明已关闭</translation>
 <translation id="2650751991977523696">是否重新下载文件？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 个音频文件}other{# 个音频文件}}</translation>
 <translation id="265156376773362237">标准预加载</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">要将您的书签同步到您的所有设备上，请登录您的帐号并开启同步功能</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
 <translation id="2830783625999891985">已隐藏剪贴板内容</translation>
+<translation id="2838367486340230368">隐私保护指南说明已半屏打开</translation>
 <translation id="2839327205551510876">已取消关注“<ph name="SITE_NAME" />”</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{系统将会关闭 <ph name="TAB_COUNT_ONE" /> 个无痕式标签页}other{系统将会关闭 <ph name="TAB_COUNT_MANY" /> 个无痕式标签页}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 天前检查过}other{# 天前检查过}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">创建密码</translation>
 <translation id="2996809686854298943">必须提供网址</translation>
 <translation id="2997081575621687554">当某个 Google 网站请求以私密方式预加载其网页上的链接时，Chrome 会通过 Google 服务器（而不使用 Cookie）加密和预加载网页。这样一来，预加载的网站便无法得知您的身份。</translation>
+<translation id="3003733539450769656">在危险事件发生之前向您发出警告</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
 <translation id="301080557829842765">隐私保护指南</translation>
 <translation id="3016635187733453316">请确保此设备已连接到互联网。</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">显示意在引导用户登录 Chrome 的提示</translation>
 <translation id="3046945242843292318">下次可更快速地转到此网站</translation>
 <translation id="3055259925215945098">已移动书签</translation>
+<translation id="3055841435094910999">系统会向 Google 发送与您的 Chrome 使用情况相关的信息，但这些信息与您没有关联\n\n如果 Chrome 崩溃，崩溃事件的相关详情中可能会包含一些个人信息\n\n如果您开启同步功能，相关指标可能会包含与您访问的网址相关的信息</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
 <translation id="3066573403916685335">下移</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 帐号中。您可在“探索”设置中管理它们。</translation>
 <translation id="5091249083535528968">扩展的使用情况数据</translation>
 <translation id="509429900233858213">出现错误。</translation>
+<translation id="5102401324271069229">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
 <translation id="510275257476243843">还剩 1 小时</translation>
 <translation id="5115811374190515607">已移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">兴趣</translation>
@@ -1011,6 +1018,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="6659594942844771486">Tab 键</translation>
 <translation id="666731172850799929">在 <ph name="APP_NAME" />中打开</translation>
 <translation id="6671495933530132209">复制图片</translation>
+<translation id="6674044799624355221">发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁</translation>
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
 <translation id="6684809838922667136">帮助改善 Chrome</translation>
@@ -1086,6 +1094,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="7085332316435785646">选择是否要包含 Chrome 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7093803425429738190">添加表情符号</translation>
+<translation id="7105047059074518658">登录即可让跨设备浏览更轻松顺畅</translation>
 <translation id="7106762743910369165">您的浏览器由贵单位管理</translation>
 <translation id="7121362699166175603">清除历史记录和地址栏中的自动补全项。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="7138678301420049075">其他</translation>
@@ -1101,6 +1110,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="7187993566681480880">会保护您在 Chrome 中免受安全威胁；如果您是处于已登录状态，还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="718926126787620637">书签文件夹列表已全屏打开</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>
+<translation id="7196215469483532480">隐私保护指南说明已全屏打开</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
 <translation id="7242755609445462077">已为突出显示的内容添加样式，日期为：<ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">请确保<ph name="TARGET_DEVICE_NAME" />已在 Chrome 中开启同步功能</translation>
@@ -1200,11 +1210,13 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7761849928583394409">选择日期和时间</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">登录可使用更多功能并获享 Chrome 最强大的安全保护</translation>
 <translation id="7764225426217299476">添加地址</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772375229873196092">关闭<ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7778840695157240389">请稍后再回来查看是否有新报道</translation>
+<translation id="7780645209293383778">而且，会在您登录后暂时将这些数据关联到您的 Google 帐号，以便在各款 Google 应用中为您提供保护</translation>
 <translation id="7786595606756654269">当您在网上搜索内容以及与已打开的网站互动时，Google 助理可让您畅享更佳的语音使用体验。Google 助理将会收到您使用它时所在网站的网址和内容。</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798392620021911922">已恢复 <ph name="TAB_COUNT" /> 个标签页</translation>
@@ -1274,6 +1286,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="8084285576995584326">控制您的 Google 帐号数据</translation>
 <translation id="808747664143081553">已连接到设备</translation>
 <translation id="8088176524274673045">若要与附近的人分享，请让他们扫描此二维码</translation>
+<translation id="8100969750121413114">登录即可定制您的专属 Chrome</translation>
 <translation id="8103578431304235997">无痕模式标签页</translation>
 <translation id="8105613260829665809">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />服务条款<ph name="END_TOS_LINK" />。\n为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">打开历史记录页</translation>
 <translation id="8493948351860045254">释放空间</translation>
+<translation id="8497480609928300907">隐私保护指南说明</translation>
 <translation id="8497726226069778601">目前还未列出任何网页…</translation>
 <translation id="8503559462189395349">Chrome 密码</translation>
 <translation id="8503813439785031346">用户名</translation>

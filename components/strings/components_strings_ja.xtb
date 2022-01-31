@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">不明な名前</translation>
 <translation id="1041998700806130099">ジョブシート メッセージ</translation>
 <translation id="1048785276086539861">メモを編集すると、ドキュメントは単一ページ表示に戻ります</translation>
-<translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1050038467049342496">他のアプリを終了する</translation>
 <translation id="1055184225775184556">追加の取り消し（&amp;U）</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -732,12 +731,6 @@
 <translation id="3345782426586609320">目</translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
 <translation id="3360103848165129075">支払いハンドラのシート</translation>
-<translation id="3361596688432910856">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません。<ph name="END_EMPHASIS" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />閲覧履歴
-          <ph name="LIST_ITEM" />Cookie とサイトデータ
-          <ph name="LIST_ITEM" />フォームに入力した情報
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">このポリシーは、サポートが終了した <ph name="OLD_POLICY" /> ポリシーから自動的にコピーされました。今後はこのポリシーを使用してください。</translation>
 <translation id="3364869320075768271"><ph name="URL" /> から、バーチャル リアリティ デバイスとデータの使用許可を求められています</translation>
 <translation id="3366477098757335611">カードを表示</translation>
@@ -1213,12 +1206,6 @@
 <translation id="4819347708020428563">デフォルト表示でメモを編集しますか？</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="4825507807291741242">パワフル</translation>
-<translation id="4827402517081186284">シークレット モードを使用しても、オンライン上にまったく記録が残らないわけではありません。
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />サイトにはアクセスしたことが知られます<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />雇用主や教育機関で閲覧アクティビティを追跡している場合があります<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />インターネット サービス プロバイダでウェブ トラフィックを監視していることがあります<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">ポリシーは、クラウド ユーザー ポリシーでのみ設定可能なため無視されました。</translation>
 <translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4838327282952368871">ドリーミー</translation>
@@ -1788,7 +1775,6 @@
 <translation id="6757797048963528358">デバイスがスリープ状態です。</translation>
 <translation id="6767985426384634228">住所を更新しますか？</translation>
 <translation id="6768213884286397650">はがき</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />シークレット モードについて<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">バイオレット</translation>
 <translation id="6786747875388722282">拡張機能</translation>
@@ -2268,12 +2254,6 @@
 <translation id="8317207217658302555">ARCore を更新しますか？</translation>
 <translation id="831997045666694187">夕方</translation>
 <translation id="8321476692217554900">通知</translation>
-<translation id="8328484624016508118">すべてのシークレット タブを閉じると、Chrome で以下のデータが削除されます。
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />このデバイスでの閲覧アクティビティ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />このデバイスでの検索履歴<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />フォームに入力した情報<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> へのアクセスが拒否されました</translation>
 <translation id="833262891116910667">ハイライト表示</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />のページは翻訳されません</translation>

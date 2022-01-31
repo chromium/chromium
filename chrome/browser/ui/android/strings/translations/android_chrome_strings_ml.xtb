@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">നിങ്ങളുടെ Google അക്കൗണ്ട് മാനേജ് ചെയ്യാൻ, "അക്കൗണ്ട് മാനേജ് ചെയ്യുക" ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1549000191223877751">മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
+<translation id="1554532453982918912">നിങ്ങളെപ്പോലെ Chrome ഉപയോഗിക്കുന്ന ആളുകൾക്കായി Chrome മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നു</translation>
 <translation id="1558391695376153246">അദൃശ്യ ടാബുകൾ അടയ്‌ക്കുക</translation>
 <translation id="1571304935088121812">ഉപയോക്തൃനാമം പകർത്തുക</translation>
 <translation id="1592864538817356322">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ:</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">പൂര്‍ത്തിയാക്കുക</translation>
 <translation id="2459390580524506445">മെച്ചപ്പെടുത്തിയ ശബ്ദ തിരയൽ</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
+<translation id="2472163211318554013">Chrome പരമാവധി പ്രയോജനപ്പെടുത്താൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="247737702124049222">ചിത്രത്തിന്റെ വിവരണങ്ങൾ ഓണാണ്</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2485422356828889247">അണ്‍‌ഇന്‍‌സ്റ്റാള്‍‌ ചെയ്യുക</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> കണക്ഷൻ നിങ്ങളുടെ ഡൗൺലോഡിന്റെ വേഗത കുറച്ചേക്കാം</translation>
 <translation id="2647434099613338025">ഭാഷ ചേര്‍ക്കുക</translation>
 <translation id="2649068648233607930">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
+<translation id="2650348088770008516">സ്വകാര്യതാ ഗൈഡ് വിശദീകരണം അടച്ചു</translation>
 <translation id="2650751991977523696">ഫയൽ വീണ്ടും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ഓഡിയോ ഫയൽ}other{# ഓഡിയോ ഫയലുകള്‍}}</translation>
 <translation id="265156376773362237">സാധാരണ മുൻകൂട്ടി ലോഡ് ചെയ്യൽ</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="2827278682606527653">പകുതി ഉയരത്തിലുള്ള ഫീഡ് കാർഡ് മെനു</translation>
 <translation id="2830783625999891985">ക്ലിപ്പ്ബോർഡ് ഉള്ളടക്കം മറച്ചിരിക്കുന്നു</translation>
+<translation id="2838367486340230368">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> പിന്തുടരുന്നത് ഒഴിവാക്കി</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> അദൃശ്യ ടാബ് അടയ്‌ക്കും}other{<ph name="TAB_COUNT_MANY" /> അദൃശ്യ ടാബുകൾ അടയ്‌ക്കും}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ഒരു ദിവസം മുമ്പ് പരിശോധിച്ചു}other{# ദിവസം മുമ്പ് പരിശോധിച്ചു}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">പാസ്‌ഫ്രെയ്‌സ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="2996809686854298943">URL ആവശ്യമാണ്</translation>
 <translation id="2997081575621687554">ഒരു Google സൈറ്റ് അവരുടെ പേജിലെ ലിങ്കുകൾ സ്വകാര്യമായി മുൻകൂട്ടി ലോഡ് ചെയ്യാൻ ആവശ്യപ്പെടുമ്പോൾ, കുക്കികളില്ലാതെ Google സെർവറുകൾ മുഖേന പേജുകൾ Chrome എൻക്രിപ്റ്റും മുൻകൂട്ടി ലോഡും ചെയ്യുന്നു. മുൻകൂട്ടി ലോഡ് ചെയ്ത സൈറ്റിൽ നിന്ന് ഇത് നിങ്ങളുടെ ഐഡന്റിറ്റി മറയ്ക്കുന്നു.</translation>
+<translation id="3003733539450769656">അപകടകരമായ ഇവന്റുകൾ നടക്കുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
 <translation id="3006881078666935414">ഉപയോഗ ഡാറ്റ ഇല്ല</translation>
 <translation id="301080557829842765">സ്വകാര്യതാ ഗൈഡ്</translation>
 <translation id="3016635187733453316">ഈ ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">Chrome-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="3046945242843292318">അടുത്ത തവണ കൂടുതൽ വേഗത്തിൽ ഈ സൈറ്റിലേക്ക് എത്തുക</translation>
 <translation id="3055259925215945098">ബുക്ക്‌മാർക്ക് നീക്കി</translation>
+<translation id="3055841435094910999">നിങ്ങളുടെ Chrome ഉപയോഗത്തെ കുറിച്ചുള്ള വിവരങ്ങൾ Google-ന് അയയ്ക്കും, എന്നാൽ അവയിൽ നിങ്ങളുടെ വ്യക്തിപര വിവരങ്ങൾ ഉൾപ്പെടുത്തില്ല\n\nChrome ക്രാഷാകുകയാണെങ്കിൽ ക്രാഷിനെ കുറിച്ചുള്ള വിശദാംശങ്ങളിൽ ചില വ്യക്തിപര വിവരങ്ങൾ അടങ്ങിയേക്കാം\n\nനിങ്ങൾ സമന്വയം ഓണാക്കുകയാണെങ്കിൽ, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കളെ കുറിച്ചുള്ള വിവരങ്ങളും മെട്രിക്കുകളിൽ ഉൾപ്പെടുത്തിയേക്കാം</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="3062802207422175757">Chrome-ൽ നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളിലെ ലേഖനങ്ങൾ കാണൂ</translation>
 <translation id="3066573403916685335">താഴേക്ക് നീക്കുക</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">ഉടൻ, പുതിയൊരു ടാബ് തുറക്കുമ്പോൾ, നിങ്ങൾക്ക് <ph name="SITE_NAME" /> എന്നതിൽ നിന്നുള്ള സ്റ്റോറികൾ കാണാനാകും. നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നു. Discover ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് അവ മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="5091249083535528968">വിപുലീകൃത ഉപയോഗ ഡാറ്റ</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
+<translation id="5102401324271069229">ഒരു സൈറ്റ് നിങ്ങളുടെ പാസ്‌വേഡ് മോഷ്‌ടിക്കാൻ ശ്രമിക്കുമ്പോഴോ നിങ്ങൾ ദോഷകരമായ ഒരു ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോഴോ, പേജ് ഉള്ളടക്കത്തിന്റെ ബിറ്റുകൾ ഉൾപ്പെടെയുള്ള URL-കൾ സുരക്ഷിത ബ്രൗസിംഗിലേക്ക് Chrome അയച്ചേക്കാം</translation>
 <translation id="510275257476243843">ഒരു മണിക്കൂർ ശേഷിക്കുന്നു</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> എന്നതിലേക്ക്</translation>
 <translation id="5118713593561876160">താൽപ്പര്യങ്ങൾ</translation>
@@ -1011,6 +1018,7 @@
 <translation id="6659594942844771486">ടാബ്</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
+<translation id="6674044799624355221">പുതിയ ഭീഷണികൾ കണ്ടെത്താൻ സഹായിക്കുന്നതിന് പേജുകൾ, ഡൗൺലോഡുകൾ, വിപുലീകരണ ആക്റ്റിവിറ്റി, സിസ്റ്റം വിവരങ്ങൾ എന്നിവയുടെ ഒരു ചെറിയ സാമ്പിൾ അയയ്‌ക്കുന്നു</translation>
 <translation id="6674571176963658787">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="6676840375528380067">ഉപകരണത്തില്‍ നിന്ന് Chrome ഡാറ്റ മായ്ക്കണോ?</translation>
 <translation id="6684809838922667136">Chrome മെച്ചപ്പെടുത്തുക</translation>
@@ -1086,6 +1094,7 @@
 <translation id="7085332316435785646">Google സേവനങ്ങളിൽ കൂടുതൽ വ്യക്തിപരമാക്കിയ അനുഭവം ലഭ്യമാകാൻ Chrome ചരിത്രം ഉൾപ്പെടുത്തണോ എന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7088681679121566888">Chrome അപ് റ്റു ഡേറ്റാണ്</translation>
 <translation id="7093803425429738190">ഇമോഷൻ ചേർക്കുക</translation>
+<translation id="7105047059074518658">ഉപകരണങ്ങളിൽ ഉടനീളം എളുപ്പം ബ്രൗസ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="7106762743910369165">നിങ്ങളുടെ സ്ഥാപനമാണ് നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="7121362699166175603">ചരിത്രവും വിലാസ ബാറിലെ സ്വയം പൂർത്തീകരണങ്ങളും മായ്ക്കുന്നു. നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
@@ -1101,6 +1110,7 @@
 <translation id="7187993566681480880">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കുകയും ചെയ്യും.</translation>
 <translation id="718926126787620637">മുഴുവൻ ഉയരത്തിൽ തുറന്ന ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="7191430249889272776">ടാബ് പശ്ചാത്തലത്തിൽ തുറന്നു.</translation>
+<translation id="7196215469483532480">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് തീർച്ചപ്പെടുത്തിയിട്ടില്ല}other{# ഡൗൺലോഡുകൾ തീർച്ചപ്പെടുത്തിയിട്ടില്ല}}</translation>
 <translation id="7242755609445462077">പ്രത്യേക സ്റ്റൈലിൽ ആക്കിയ ഹൈലൈറ്റ് <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome-ൽ <ph name="TARGET_DEVICE_NAME" /> ഉപകരണത്തിലെ സമന്വയിപ്പിക്കൽ ഓണാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
@@ -1200,11 +1210,13 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ട ടെക്‌സ്റ്റ്</translation>
 <translation id="7761849928583394409">തീയതിയും സമയവും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7762668264895820836">SD കാർഡ് <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">അധിക ഫീച്ചറുകളും അതിശക്തമായ Chrome സുരക്ഷയും നേടാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
 <translation id="7772032839648071052">പാസ്ഫ്രേസ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> അടയ്‌ക്കുക</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="7778840695157240389">പുതിയ സ്‌റ്റോറികൾക്ക് പിന്നീട് വീണ്ടും പരിശോധിക്കൂ</translation>
+<translation id="7780645209293383778">Google ആപ്പുകളിലുടനീളം പരിരക്ഷിക്കുന്നതിന്, നിങ്ങൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ ഈ ഡാറ്റ നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് താൽക്കാലികമായി ലിങ്ക് ചെയ്യുന്നു</translation>
 <translation id="7786595606756654269">വെബിൽ തിരയാനും നിങ്ങൾ തുറന്ന സൈറ്റുകളുമായി ഇടപഴകാനും Google Assistant മികച്ച ശബ്‌ദാനുഭവം നൽകുന്നു. നിങ്ങൾ Google Assistant ഉപയോഗിക്കുന്ന സൈറ്റുകളുടെ URL-ഉം അവയുടെ ഉള്ളടക്കവും ഇതിന് ലഭിക്കും.</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിച്ചു</translation>
@@ -1274,6 +1286,7 @@
 <translation id="8084285576995584326">നിങ്ങളുടെ Google അക്കൗണ്ട് ഡാറ്റ നിയന്ത്രിക്കുക</translation>
 <translation id="808747664143081553">ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>
 <translation id="8088176524274673045">സമീപമുള്ള ആളുകളുമായി പങ്കിടുന്നതിന്, അവരെ ഈ QR കോഡ് സ്‌കാൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
+<translation id="8100969750121413114">Chrome നിങ്ങളുടെ സ്വന്തമാക്കാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="8103578431304235997">അദൃശ്യ ടാബ്</translation>
 <translation id="8105613260829665809">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />സേവന നിബന്ധനകൾ<ph name="END_TOS_LINK" /> അംഗീകരിക്കുന്നു.\nആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന്, Google-ന് ഉപയോഗ ഡാറ്റയും ക്രാഷ് ഡാറ്റയും Chrome അയയ്ക്കുന്നു. <ph name="BEGIN_UMA_LINK" />മാനേജ് ചെയ്യുക<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ചരിത്ര പേജ് തുറക്കുക</translation>
 <translation id="8493948351860045254">ഇടം സൃഷ്‌ടിക്കുക</translation>
+<translation id="8497480609928300907">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം</translation>
 <translation id="8497726226069778601">ഇതുവരെയും ഇവിടെ കാണാനായി ഒന്നുമില്ല...</translation>
 <translation id="8503559462189395349">Chrome പാസ്‌വേഡുകൾ</translation>
 <translation id="8503813439785031346">ഉപയോക്തൃനാമം</translation>

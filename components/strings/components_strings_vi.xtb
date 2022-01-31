@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">tên không biết</translation>
 <translation id="1041998700806130099">Thông báo tờ công việc</translation>
 <translation id="1048785276086539861">Khi bạn chỉnh sửa chú thích, tài liệu này sẽ trở về chế độ xem một trang</translation>
-<translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="1050038467049342496">Đóng các ứng dụng khác</translation>
 <translation id="1055184225775184556">&amp;Hoàn tác thêm</translation>
 <translation id="1056898198331236512">Cảnh báo</translation>
@@ -736,12 +735,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3345782426586609320">Mắt</translation>
 <translation id="3355823806454867987">Thay đổi cài đặt proxy...</translation>
 <translation id="3360103848165129075">Trang tính trình xử lý thanh toán</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" /> thông tin sau đây:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Lịch sử duyệt web của bạn
-          <ph name="LIST_ITEM" />Cookie và dữ liệu trang web
-          <ph name="LIST_ITEM" />Thông tin đã nhập trong biểu mẫu
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Chính sách này được sao chép tự động từ chính sách <ph name="OLD_POLICY" /> không còn dùng nữa. Thay vào đó, bạn nên sử dụng chính sách này.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> muốn sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="3366477098757335611">Xem thẻ</translation>
@@ -1222,12 +1215,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4819347708020428563">Chỉnh sửa chú thích ở chế độ xem mặc định?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh một trang tính mới trong Google Trang tính</translation>
 <translation id="4825507807291741242">Mạnh mẽ</translation>
-<translation id="4827402517081186284">Chế độ ẩn danh không ẩn các hoạt động trực tuyến của bạn:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Các trang web biết thời điểm bạn truy cập<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Người quản lý doanh nghiệp hoặc trường học có thể theo dõi hoạt động duyệt web<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Nhà cung cấp dịch vụ Internet có thể giám sát lưu lượng truy cập web<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Bỏ qua vì chỉ có chính sách người dùng đám mây mới thiết lập được chính sách này.</translation>
 <translation id="483241715238664915">Bật cảnh báo</translation>
 <translation id="4838327282952368871">Mơ mộng</translation>
 <translation id="4840250757394056958">Xem nhật ký Chrome của bạn</translation>
@@ -1796,7 +1784,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6757797048963528358">Thiết bị của bạn đã chuyển sang chế độ ngủ.</translation>
 <translation id="6767985426384634228">Cập nhật địa chỉ?</translation>
 <translation id="6768213884286397650">Hagaki (Bưu thiếp)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về Chế độ ẩn danh</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Tím vi-ô-lét</translation>
 <translation id="6786747875388722282">Tiện ích</translation>
@@ -2276,12 +2263,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8317207217658302555">Cập nhật ARCore?</translation>
 <translation id="831997045666694187">Buổi tối</translation>
 <translation id="8321476692217554900">thông báo</translation>
-<translation id="8328484624016508118">Sau khi bạn đóng tất cả thẻ Ẩn danh, Chrome sẽ xóa:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Hoạt động duyệt web của bạn trên thiết bị này<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Nhật ký tìm kiếm của bạn trên thiết bị này<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Thông tin bạn đã nhập vào các biểu mẫu<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Quyền truy cập <ph name="HOST_NAME" /> bị từ chối</translation>
 <translation id="833262891116910667">Đánh dấu</translation>
 <translation id="8339163506404995330">Các trang viết bằng <ph name="LANGUAGE" /> sẽ không được dịch</translation>

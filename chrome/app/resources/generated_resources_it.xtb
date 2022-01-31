@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Icona attuale</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Interrompi</translation>
+<translation id="1108938384783527433">Sincronizzazione della cronologia</translation>
 <translation id="1110155001042129815">Attendi</translation>
 <translation id="1110965959145884739">Scegli quali lingue installare sul tuo dispositivo. I file della lingua vengono condivisi tra gli utenti per risparmiare spazio su disco. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Proiettore</translation>
@@ -509,6 +510,7 @@
 <translation id="1521442365706402292">Gestisci certificati</translation>
 <translation id="1521774566618522728">Attivo oggi</translation>
 <translation id="152234381334907219">Mai salvate</translation>
+<translation id="1523279371236772909">Visualizzato nell'ultimo mese</translation>
 <translation id="1523978563989812243">Motori di sintesi vocale</translation>
 <translation id="1524430321211440688">Tastiera</translation>
 <translation id="1524563461097350801">No, grazie</translation>
@@ -1163,6 +1165,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Aggiungi Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronizzazione inizierà quando esci dalle impostazioni di sincronizzazione</translation>
+<translation id="2162926944953615670">Nessun profilo eSIM disponibile</translation>
 <translation id="2163470535490402084">Connettiti a Internet per accedere al tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Attiva la modalità Buio</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e 1 altro sensore</translation>
@@ -1240,6 +1243,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2232876851878324699">Il file conteneva un certificato, che non è stato importato:</translation>
 <translation id="2233502537820838181">Ulteriori infor&amp;mazioni</translation>
 <translation id="223356358902285214">Attività web e app</translation>
+<translation id="2234827758954819389">Guida alla privacy</translation>
 <translation id="2234876718134438132">Sincronizzazione e servizi Google</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2238379619048995541">Dati sullo stato di frequenza</translation>
@@ -1855,6 +1859,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2828650939514476812">Collegati alla rete Wi-Fi</translation>
 <translation id="2831430281393059038">Il dispositivo è supportato</translation>
 <translation id="2832124733806557606">Tuo figlio può usare il PIN per accedere al dispositivo o per sbloccarlo.</translation>
+<translation id="2835177225987815960">Se ripeti la configurazione della scansione, tutte le assegnazioni verranno reimpostate, compresi eventuali sensori assegnati e le preferenze di velocità per la scansione automatica.</translation>
 <translation id="2835547721736623118">Servizio di riconoscimento vocale</translation>
 <translation id="2836269494620652131">Interruzione anomala</translation>
 <translation id="2836635946302913370">L'accesso con questo nome utente è stato disattivato dall'amministratore.</translation>
@@ -3093,6 +3098,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4095264805865317199">Apri UI di attivazione rete mobile</translation>
 <translation id="4095507791297118304">Display principale</translation>
 <translation id="4096508467498758490">Disattiva estensioni in modalità sviluppatore</translation>
+<translation id="4096797685681362305">Visualizzato nell'ultima settimana</translation>
 <translation id="4097406557126260163">App ed estensioni</translation>
 <translation id="409742781329613461">Suggerimenti per Chrome</translation>
 <translation id="4097560579602855702">Cerca su Google</translation>
@@ -3648,6 +3654,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699357559218762027">(avviata automaticamente)</translation>
 <translation id="4701025263201366865">Accesso per i genitori</translation>
+<translation id="4701335814944566468">Visualizzato ieri</translation>
 <translation id="4708794300267213770">Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione</translation>
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Ripristina impostazioni</translation>
@@ -3715,6 +3722,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="479536056609751218">Pagina web, solo HTML</translation>
 <translation id="4796142525425001238">Ripristina sempre</translation>
 <translation id="4798236378408895261">Allega <ph name="BEGIN_LINK" />log Bluetooth<ph name="END_LINK" /> (interno di Google)</translation>
+<translation id="479863874072008121">Gestisci dispositivi</translation>
 <translation id="4800839971935185386">Controlla gli aggiornamenti del nome e dell'icona</translation>
 <translation id="4801448226354548035">Nascondi account</translation>
 <translation id="4801512016965057443">Consenti roaming dati mobile</translation>
@@ -6438,6 +6446,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7659154729610375585">Vuoi uscire comunque dalla modalità di navigazione in incognito?</translation>
 <translation id="7659297516559011665">Password memorizzate soltanto su questo dispositivo</translation>
+<translation id="7659336857671800422">Ottieni la Guida alla privacy</translation>
 <translation id="7659584679870740384">Non sei autorizzato a utilizzare questo dispositivo. Per ottenere l'autorizzazione di accesso contatta l'amministratore.</translation>
 <translation id="7661259717474717992">Consenti ai siti di salvare e leggere i dati dei cookie</translation>
 <translation id="7661451191293163002">Impossibile ottenere un certificato di registrazione.</translation>
@@ -7961,6 +7970,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9200339982498053969"><ph name="ORIGIN" /> potrà modificare i file nella cartella <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Cerca su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">I dati offline verranno cancellati</translation>
+<translation id="9201117361710210082">Visualizzato in precedenza</translation>
 <translation id="9201220332032049474">Opzioni di blocco schermo</translation>
 <translation id="9201842707396338580">Si è verificato un problema. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiling attivato</translation>

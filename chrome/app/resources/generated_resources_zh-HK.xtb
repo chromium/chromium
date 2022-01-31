@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">目前圖示</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
+<translation id="1108938384783527433">同步處理記錄</translation>
 <translation id="1110155001042129815">等一下</translation>
 <translation id="1110965959145884739">選取要在此裝置上安裝的語言。為節省磁碟空間，語言檔案會由裝置的所有使用者共用。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">投影機</translation>
@@ -511,7 +512,7 @@
 <translation id="1521442365706402292">管理憑證</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="152234381334907219">永不儲存</translation>
-<translation id="1523279371236772909">過去一個月看過</translation>
+<translation id="1523279371236772909">上個月看過</translation>
 <translation id="1523978563989812243">「文字轉語音」引擎</translation>
 <translation id="1524430321211440688">鍵盤</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
@@ -1252,7 +1253,7 @@
 <translation id="2232876851878324699">檔案含有一個憑證，但無法匯入：</translation>
 <translation id="2233502537820838181">更多資料(&amp;M)</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
-<translation id="2234827758954819389">隱私權指南</translation>
+<translation id="2234827758954819389">私隱權指南</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238379619048995541">頻率狀態數據</translation>
@@ -3110,7 +3111,7 @@
 <translation id="4095264805865317199">開啟流動網絡啟用使用者介面</translation>
 <translation id="4095507791297118304">主要顯示屏</translation>
 <translation id="4096508467498758490">停用開發人員模式擴充功能</translation>
-<translation id="4096797685681362305">過去一週看過</translation>
+<translation id="4096797685681362305">上星期看過</translation>
 <translation id="4097406557126260163">應用程式和擴充程式</translation>
 <translation id="409742781329613461">Chrome 提示</translation>
 <translation id="4097560579602855702">搜尋 Google</translation>
@@ -6460,7 +6461,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659154729610375585">仍要結束無痕模式嗎？</translation>
 <translation id="7659297516559011665">只儲存在此裝置上的密碼</translation>
-<translation id="7659336857671800422">查看隱私權指南</translation>
+<translation id="7659336857671800422">查看私隱權指南</translation>
 <translation id="7659584679870740384">您無權使用這部裝置。如需登入權限，請與管理員聯絡。</translation>
 <translation id="7661259717474717992">允許網站儲存及讀取 Cookie 資料</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>

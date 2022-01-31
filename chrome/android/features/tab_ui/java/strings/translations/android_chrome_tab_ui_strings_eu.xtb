@@ -63,7 +63,7 @@
 <translation id="6615455863669487791">Erakutsi</translation>
 <translation id="6840760312327750441">Fitxak taldekatzeko, eduki fitxa bat sakatuta eta, ondoren, arrasta ezazu beste batera.</translation>
 <translation id="6856809498882026482">Ezkutatu hautespen anizkoitzeko modua</translation>
-<translation id="7129458170538955174">Ireki da denda honi buruzko informazioa altuera erdian</translation>
+<translation id="7129458170538955174">Denda honi buruzko informazioa altuera erdian irekita dago</translation>
 <translation id="7151209024774799310">Kendu fitxak taldetik</translation>
 <translation id="7204204600596740190">Hautespen anizkoitzeko modua</translation>
 <translation id="7326879924029668159">Ikusi dendaren itzultze-gidalerroak</translation>
@@ -75,7 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_ONE" />.}other{Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_MANY" />.}}</translation>
 <translation id="7885132941432959125">Eraman fitxa eskuinera</translation>
 <translation id="7966321538264951561">Baztertu iradokizunak.</translation>
-<translation id="8029301326595421733">Ireki da denda honi buruzko informazioa altuera osoan</translation>
+<translation id="8029301326595421733">Denda honi buruzko informazioa altuera osoan irekita dago</translation>
 <translation id="814503310257431685">Ikusi guztiak</translation>
 <translation id="8205266828577616993">Eraman fitxa gora</translation>
 <translation id="8304833501377495048">Fitxen zinta ikusteari utzi nahi diozu?</translation>

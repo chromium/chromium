@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">查看详情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 想在您的设备上永久存储大量数据</translation>
 <translation id="1032854598605920125">顺时针旋转</translation>
+<translation id="1033329911862281889">无痕模式无法让您在网上处于隐身状态：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />网站及其使用的服务可以看到用户访问记录<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />雇主或学校可以跟踪浏览活动<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />互联网服务提供商可能会监控网络流量<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1036982837258183574">按 |<ph name="ACCELERATOR" />| 即可退出全屏模式</translation>
 <translation id="1038106730571050514">显示搜索建议</translation>
 <translation id="1038842779957582377">未知名称</translation>
 <translation id="1041998700806130099">工作表消息</translation>
 <translation id="1048785276086539861">当您修改注释时，此文档会恢复为单页视图</translation>
-<translation id="1049743911850919806">无痕</translation>
 <translation id="1050038467049342496">关闭其他应用</translation>
 <translation id="1055184225775184556">撤消添加(&amp;U)</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">策略缓存良好</translation>
 <translation id="1130564665089811311">“翻译网页”按钮，按 Enter 键即可使用“Google 翻译”服务来翻译此页面</translation>
 <translation id="1131264053432022307">您复制的图片</translation>
+<translation id="1142846828089312304">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="1150979032973867961">此服务器无法证明它是<ph name="DOMAIN" />；您计算机的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1151972924205500581">需要密码</translation>
 <translation id="1156303062776767266">您正在查看一个本地文件或共享文件</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484290072879560759">选择送货地址</translation>
 <translation id="1492194039220927094">政策推送：</translation>
+<translation id="149293076951187737">当您关闭 Chrome 中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />浏览活动<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />搜索记录<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表单中填写的信息<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1501859676467574491">显示您的 Google 帐号中保存的支付卡</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 门户网站必须登录才能连接网络，您就会看到这条错误消息。&lt;/p&gt;
@@ -281,6 +293,7 @@
 <translation id="1763864636252898013">此服务器无法证明它是<ph name="DOMAIN" />；您设备的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
 <translation id="1772163372082567643">您要访问的服务器 <ph name="ORIGIN" /> 已设定标头，其中要求收到的所有请求都应用一项来源政策。但该标头的格式不正确，导致浏览器无法实现您对 <ph name="SITE" /> 的访问请求。网站运营商可以使用来源政策为网站配置安全属性及其他属性。</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />详细了解 Chromium 中的无痕模式<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">您打开的标签页会显示在此处</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -522,6 +535,12 @@
 <translation id="2597378329261239068">本文档设置了密码保护，请输入密码。</translation>
 <translation id="2609632851001447353">其他变体</translation>
 <translation id="2610561535971892504">点击复制</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />您的浏览记录
+            <ph name="LIST_ITEM" />Cookie 和网站数据
+            <ph name="LIST_ITEM" />在表单中填写的信息
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">可以询问能否使用您的屏幕的相关信息</translation>
 <translation id="2625385379895617796">您的时钟快了</translation>
@@ -730,12 +749,6 @@
 <translation id="3345782426586609320">眼睛</translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="3360103848165129075">付款处理程序工作表</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />您的浏览记录
-          <ph name="LIST_ITEM" />Cookie 和网站数据
-          <ph name="LIST_ITEM" />在表单中填写的信息
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">此政策的值是系统从已弃用的 <ph name="OLD_POLICY" /> 政策中自动复制而来的。您应改用此政策。</translation>
 <translation id="3364869320075768271"><ph name="URL" /> 想使用您的虚拟实境设备和数据</translation>
 <translation id="3366477098757335611">查看您的卡</translation>
@@ -1147,6 +1160,7 @@
 <translation id="4628948037717959914">照片</translation>
 <translation id="4631649115723685955">已关联返现</translation>
 <translation id="4636930964841734540">信息</translation>
+<translation id="4638670630777875591">Chromium 中的无痕模式</translation>
 <translation id="464342062220857295">搜索功能</translation>
 <translation id="4644670975240021822">逆转顺序，正面朝下</translation>
 <translation id="4646534391647090355">立即前往</translation>
@@ -1209,12 +1223,7 @@
 <translation id="4819347708020428563">在默认视图中修改注释？</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4825507807291741242">强大</translation>
-<translation id="4827402517081186284">无痕模式无法让您在网上处于隐身状态：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />网站会知道您何时访问了它们<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />雇主或学校可以跟踪浏览活动<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />互联网服务提供商可能会监控网络流量<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">被忽略了，因为此政策只能通过云端用户政策进行设置。</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4838327282952368871">梦幻</translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
@@ -1247,6 +1256,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键再按 Enter 键可进行搜索</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4940163644868678279">Chrome 中的无痕模式</translation>
 <translation id="4943872375798546930">找不到结果</translation>
 <translation id="4950898438188848926">标签页切换按钮，按 Enter 键可切换到打开的标签页，<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">操作</translation>
@@ -1607,6 +1617,7 @@
 <translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6127379762771434464">该项已移除</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />详细了解 Chrome 中的无痕模式<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6150036310511284407">三孔（左侧）</translation>
@@ -1782,7 +1793,6 @@
 <translation id="6757797048963528358">您的设备已进入休眠模式。</translation>
 <translation id="6767985426384634228">更新地址？</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />无痕模式</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
 <translation id="6786747875388722282">扩展程序</translation>
@@ -1882,6 +1892,12 @@
 <translation id="7111012039238467737">（有效）</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
+<translation id="7129355289156517987">当您关闭 Chromium 中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />浏览活动<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />搜索记录<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表单中填写的信息<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">无法向此地址送货。请另选一个地址。</translation>
 <translation id="7132939140423847331">您的管理员已禁止复制此数据。</translation>
 <translation id="7135130955892390533">显示状态</translation>
@@ -2000,6 +2016,12 @@
 <translation id="7485870689360869515">找不到数据。</translation>
 <translation id="7495528107193238112">该内容被屏蔽了。请联系网站所有者以解决此问题。</translation>
 <translation id="7497998058912824456">“创建文档”按钮，按 Enter 键即可快速创建新的 Google 文档</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />您的浏览记录
+            <ph name="LIST_ITEM" />Cookie 和网站数据
+            <ph name="LIST_ITEM" />在表单中填写的信息
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">返回的政策设备 ID 为空，或与当前的设备 ID 不一致</translation>
 <translation id="7508870219247277067">黄绿色</translation>
 <translation id="7511955381719512146">您要使用的 Wi-Fi 网络可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
@@ -2219,6 +2241,7 @@
 <translation id="8202370299023114387">冲突</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8217240300496046857">网站无法使用 Cookie 来跟踪您在网上的活动。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">设置此计算机的用户已选择屏蔽此网站。</translation>
@@ -2262,12 +2285,6 @@
 <translation id="8317207217658302555">更新 ARCore？</translation>
 <translation id="831997045666694187">晚上</translation>
 <translation id="8321476692217554900">通知</translation>
-<translation id="8328484624016508118">关闭所有无痕式标签页之后，Chrome 会清除：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />您在这部设备上的浏览活动记录<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />您在这部设备上的搜索记录<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />您在表单中填写过的信息<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">访问 <ph name="HOST_NAME" /> 的请求遭到拒绝</translation>
 <translation id="833262891116910667">突出显示</translation>
 <translation id="8339163506404995330">系统不会自动翻译源语言为<ph name="LANGUAGE" />的网页</translation>

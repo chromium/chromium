@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">nume necunoscut</translation>
 <translation id="1041998700806130099">Mesajul din foaia sarcinii</translation>
 <translation id="1048785276086539861">Când editezi adnotări, acest document va reveni la afișarea cu o pagină</translation>
-<translation id="1049743911850919806">Incognito</translation>
 <translation id="1050038467049342496">închide celelalte aplicații;</translation>
 <translation id="1055184225775184556">&amp;Anulați adăugarea</translation>
 <translation id="1056898198331236512">Avertisment</translation>
@@ -736,12 +735,6 @@
 <translation id="3345782426586609320">Ochi</translation>
 <translation id="3355823806454867987">Modifica setările proxy...</translation>
 <translation id="3360103848165129075">Foaia handlerului pentru plăți</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" /> următoarele informații:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />istoricul de navigare;
-          <ph name="LIST_ITEM" />cookie-urile și datele privind site-urile;
-          <ph name="LIST_ITEM" />informațiile introduse în formulare.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Politica a fost copiată automat din politica învechită <ph name="OLD_POLICY" />. Ar trebui să folosești această politică.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> dorește să folosească dispozitivul tău de realitate virtuală și datele conexe</translation>
 <translation id="3366477098757335611">Vezi cardurile</translation>
@@ -1222,12 +1215,6 @@
 <translation id="4819347708020428563">Editezi adnotările în afișarea prestabilită?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid o Foaie de calcul Google</translation>
 <translation id="4825507807291741242">Puternic</translation>
-<translation id="4827402517081186284">Modul incognito nu îți asigură invizibilitatea online:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />site-urile știu când le accesezi;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />angajatorii sau școlile pot să urmărească activitatea de navigare;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />furnizorii de servicii de internet pot monitoriza traficul pe web.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ignorată deoarece politica poate fi setată numai de utilizatorii cloud.</translation>
 <translation id="483241715238664915">Activează avertizările</translation>
 <translation id="4838327282952368871">Visare</translation>
@@ -1797,7 +1784,6 @@
 <translation id="6757797048963528358">Dispozitivul este inactiv.</translation>
 <translation id="6767985426384634228">Actualizezi adresa?</translation>
 <translation id="6768213884286397650">Hagaki (Carte poștală)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre modul incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensii</translation>
@@ -2277,12 +2263,6 @@ Detalii suplimentare:
 <translation id="8317207217658302555">Actualizezi ARCore?</translation>
 <translation id="831997045666694187">Seara</translation>
 <translation id="8321476692217554900">Notificări</translation>
-<translation id="8328484624016508118">După ce închizi toate filele incognito, Chrome șterge:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />activitatea de navigare de pe dispozitiv,<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />istoricul căutărilor de pe dispozitiv,<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />informațiile introduse în formulare.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Accesul la <ph name="HOST_NAME" /> nu este permis</translation>
 <translation id="833262891116910667">Evidențiază</translation>
 <translation id="8339163506404995330">Paginile în <ph name="LANGUAGE" /> nu vor fi traduse</translation>

@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">विवरणहरू हेर्नुहोस्</translation>
 <translation id="1030706264415084469"><ph name="URL" /> तपाईंको डिभाइसमा स्थायी रूपमा ठुलो परिमाणको डेटा भण्डारण गर्न चाहन्छ</translation>
 <translation id="1032854598605920125">घडीको दिशामा घुमाउनुहोस्</translation>
+<translation id="1033329911862281889">इन्कोग्निटो मोडले तपाईंलाई अनलाइन दुनियाँमा अदृश्य बनाउँदैन:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंले कुनै साइट खोल्दा सो साइटले प्रयोग गर्ने साइट तथा सेवाहरूले थाहा पाउँछन्<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />रोजगारदाता वा विद्यालयले ब्राउजर प्रयोग गरी गरिएको क्रियाकलापसम्बन्धी विवरण हेर्न सक्छन्<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />इन्टरनेट सेवा प्रदायकहरूले वेब ट्राफिकको निरीक्षण गर्न सक्छन्<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">निस्कृय पार्नुहोस्</translation>
 <translation id="1036982837258183574">पूर्ण स्क्रिनबाट बाहिर निस्कनका लागि <ph name="ACCELERATOR" /> लाई थिच्नुहोस्</translation>
 <translation id="1038106730571050514">सुझावहरू देखाइयोस्</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">कार्य पानासम्बन्धी सन्देश</translation>
 <translation id="1048785276086539861">तपाईंले एनोटेसनहरू सम्पादन गर्दा स्क्रिनमा यो कागजातको एउटा मात्र पृष्ठ देखिने छ</translation>
-<translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="1050038467049342496">अन्य एपहरू बन्द गर्नुहोस्</translation>
 <translation id="1055184225775184556">&amp;पूर्वस्थितिमा फर्काउनुहोस् थप्नुहोस्</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">नीति क्यास ठिक छ</translation>
 <translation id="1130564665089811311">'पृष्ठ अनुवाद गर्नुहोस्' नामक बटन, Google अनुवादक प्रयोग गरी यो पृष्ठ अनुवाद गर्न Enter थिच्नुहोस्</translation>
 <translation id="1131264053432022307">तपाईंले प्रतिलिपि गर्नुभएको छवि</translation>
+<translation id="1142846828089312304">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकी ब्लक गरियोस्</translation>
 <translation id="1150979032973867961">यो सर्भर हो भनेर प्रमाणित गर्न सकेन <ph name="DOMAIN" />; यसको सुरक्षा प्रमाणपत्रलाई तपाईंको कम्प्युटरको अपरेटिङ सिस्टमले विश्वास गरेन। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
 <translation id="1151972924205500581">पासवर्ड आवश्यक छ</translation>
 <translation id="1156303062776767266">तपाईं स्थानीय वा साझा फाइल हेर्दै हुनुहुन्छ</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
 <translation id="1484290072879560759">ढुवानीको ठेगाना छनौट गर्नुहोस्</translation>
 <translation id="1492194039220927094">नीतिहरू लागू गर्ने कार्य:</translation>
+<translation id="149293076951187737">तपाईंले Chrome का सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुभयो भने तपाईंले ती ट्याबमा गरेका निम्न क्रियाकलाप यो डिभाइसबाट मेटाइन्छ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ब्राउजर प्रयोग गरी गरिएको क्रियाकलाप<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />पहिला खोजेका कुराहरू<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />फाराममा भरिएको जानकारी<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ट्याबमा फर्कनुहोस्</translation>
 <translation id="1501859676467574491">आफ्नो Google खाताका कार्डहरू देखाउनुहोस्</translation>
 <translation id="1507202001669085618">&lt;p&gt;तपाईं अनलाइन हुनु पूर्व साइन इन गर्न पर्नेमा Wi-Fi पोर्टल प्रयोग गर्नुभएको खण्डमा तपाईंले यो त्रुटि देखुहुने छ।&lt;/p&gt;
@@ -285,6 +297,7 @@
     उक्त हेडरको ढाँचा सही नभएकाले यसले ब्राउजरलाई 
     <ph name="SITE" /> का सन्दर्भमा तपाईंले गर्नुभएको अनुरोध पूरा गर्न दिँदैन। साइटका सञ्चालकहरू कुनै साइटको सुरक्षा र
     अन्य विशेषता कन्फिगर गर्ने प्रयोजनका लागि मूल नीतिहरू प्रयोग गर्न सक्छन्।</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium मा उपलब्ध इन्कोग्निटो मोडका बारेमा थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">तपाईंका खुला ट्याबहरू यहाँ देखा पर्छन्</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@
 <translation id="2597378329261239068">यो कागजात पासवर्ड सुरक्षित छ। कृपया पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="2609632851001447353">विचरणहरू</translation>
 <translation id="2610561535971892504">क्लिक टु कपी</translation>
+<translation id="2617988307566202237">Chrome ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सेभ गर्ने छैन<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंको ब्राउजिङ इतिहास
+          <ph name="LIST_ITEM" />कुकी तथा साइट डेटा
+          <ph name="LIST_ITEM" />फारामहरूमा भरिएको जानकारी
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">तपाईंका स्क्रिनहरूका बारेमा जानकारी प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="2625385379895617796">तपाईंको घडी धेरै छिटो छ</translation>
@@ -733,12 +752,6 @@
 <translation id="3345782426586609320">आँखा</translation>
 <translation id="3355823806454867987">प्रोक्सी सेटिङहरू परिवर्तन गर्नुहोस्...</translation>
 <translation id="3360103848165129075">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना</translation>
-<translation id="3361596688432910856">Chrome ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सुरक्षित गर्नेछैन<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />तपाईंको ब्राउजिङ इतिहास
-          <ph name="LIST_ITEM" />कुकीहरू र साइटको डेटा
-          <ph name="LIST_ITEM" />फारमहरूमा प्रविष्ट गरिएको जानकारी
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">यो नीति प्रचलनबाट हटाइएको <ph name="OLD_POLICY" /> नीतिबाट स्वतः प्रतिलिपि गरियो। तपाईंले उक्त नीतिको साटो यो नीतिको प्रयोग गर्नु पर्छ।</translation>
 <translation id="3364869320075768271"><ph name="URL" /> भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न चाहन्छ</translation>
 <translation id="3366477098757335611">कार्डहरू हेर्नुहोस्</translation>
@@ -1156,6 +1169,7 @@
 <translation id="4628948037717959914">तस्बिर</translation>
 <translation id="4631649115723685955">यो कार्डमार्फत भुक्तानी गर्दा क्यासब्याक पाइन्छ</translation>
 <translation id="4636930964841734540">जानकारी</translation>
+<translation id="4638670630777875591">Chromium मा उपलब्ध इन्कोग्निटो मोड</translation>
 <translation id="464342062220857295">खोजसम्बन्धी सुविधाहरू</translation>
 <translation id="4644670975240021822">विपरीत क्रम तर तलतिर फर्काएर</translation>
 <translation id="4646534391647090355">मलाई अहिले नै त्यहाँ लैजानुहोस्</translation>
@@ -1218,12 +1232,6 @@
 <translation id="4819347708020428563">एनोटेसनहरू डिफल्ट भ्यूमा सम्पादन गर्ने हो?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4825507807291741242">शक्तिशाली</translation>
-<translation id="4827402517081186284">इन्कोग्निटो मोडले तपाईंलाई अनलाइन दुनियाँमा अदृश्य बनाउँदैन:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />तपाईंले कुनै साइट खोल्दा सो साइटले थाहा पाउँछ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />रोजगारदाता वा विद्यालयले ब्राउजर प्रयोग गरी गरिएको क्रियाकलापसम्बन्धी विवरण हेर्न सक्छन्<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />इन्टरनेट सेवा प्रदायकहरूले वेब ट्राफिकको निरीक्षण गर्न सक्छन्<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">क्लाउडका प्रयोगकर्ताले मात्र नीति तय गर्न मिल्ने भएकाले वेवास्ता गरिएको छ।</translation>
 <translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4838327282952368871">स्वप्निल</translation>
@@ -1257,6 +1265,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, खोज्नका लागि Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4930153903256238152">धेरै क्षमता भएको</translation>
+<translation id="4940163644868678279">Chrome मा उपलब्ध इन्कोग्निटो मोड</translation>
 <translation id="4943872375798546930">कुनै नतिजा छैन</translation>
 <translation id="4950898438188848926">ट्याब बदल्ने बटन, खुला रहेको ट्याबमा जान Enter थिच्नुहोस्, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">कार्यहरू</translation>
@@ -1617,6 +1626,7 @@
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome मा उपलब्ध इन्कोग्निटो मोडका बारेमा थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">तपाइँले प्रयोग गरिेहेको कुनै पनि केबुलहरू जाँच्नुहोस् र कुनै पनि राउटरहरू, मोडेमहरू, वा अन्य 
         नेटवर्क यन्त्रहरू रिबुट गर्नुहोस्।</translation>
 <translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
@@ -1793,7 +1803,6 @@
 <translation id="6757797048963528358">तपाईंको यन्त्र शयन अवस्थामा गयो।</translation>
 <translation id="6767985426384634228">ठेगाना बदल्ने हो?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239">इन्कोग्निटो मोडका बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">हल्का निलो</translation>
 <translation id="6786747875388722282">विस्तारहरू</translation>
@@ -1893,6 +1902,12 @@
 <translation id="7111012039238467737">(मान्य)</translation>
 <translation id="7118618213916969306">क्लिपबोर्डको URL <ph name="SHORT_URL" /> खोज्नुहोस्</translation>
 <translation id="7119414471315195487">अन्य ट्याब वा कार्यक्रमहरू बन्द गर्नुहोस्</translation>
+<translation id="7129355289156517987">तपाईंले Chromium का सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुभयो भने तपाईंले ती ट्याबमा गरेका निम्न क्रियाकलाप यो डिभाइसबाट मेटाइन्छ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ब्राउजर प्रयोग गरी गरिएको क्रियाकलाप<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />पहिला खोजेका कुराहरू<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />फाराममा भरिएको जानकारी<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">यो ठेगानामा ढुवानी गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
 <translation id="7132939140423847331">तपाईंका एड्मिनले लगाएको प्रतिबन्धका कारण यो डेटा कपी गर्न मिल्दैन।</translation>
 <translation id="7135130955892390533">स्थिति देखाउनुहोस्</translation>
@@ -2011,6 +2026,12 @@
 <translation id="7485870689360869515">कुनैपनि डाटा भेटिएन।</translation>
 <translation id="7495528107193238112">यो सामग्रीलाई रोक लगाइएको छ। यो समस्या समाधान गर्न उक्त साइटका मालिकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="7497998058912824456">"डकुमेन्ट बनाउनुहोस्" नामक बटन, Google डकुमेन्ट प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन Enter थिच्नुहोस्</translation>
+<translation id="7506488012654002225">Chromium ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सेभ गर्ने छैन<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंको ब्राउजिङ इतिहास
+          <ph name="LIST_ITEM" />कुकी तथा साइट डेटा
+          <ph name="LIST_ITEM" />फारामहरूमा भरिएको जानकारी
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">फिर्ता गरिएको नीति सम्बन्धी यन्त्र खाली छ वा हालको यन्त्रको id सँग मेल खाँदैन</translation>
 <translation id="7508870219247277067">गाढा हरियो</translation>
 <translation id="7511955381719512146">तपाईँले प्रयोग गरिरहनुभएको Wi-Fi लाई तपाईँले <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> को भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
@@ -2230,6 +2251,7 @@
 <translation id="8202370299023114387">बेमेल</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">जडान सुरक्षित छ</translation>
+<translation id="8217240300496046857">साइटहरूले इन्टरनेटको दुनियाँमा तपाईंका क्रियाकलाप ट्र्याक गर्ने कुकीहरू प्रयोग गर्न सक्दैनन्। तर केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="8218327578424803826">तोकिएको स्थान:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">यो कम्प्युटर सेटअप गर्ने व्यक्तिले यो साइटमाथि रोक लगाउने छनौट गर्नुभएको छ।</translation>
@@ -2273,12 +2295,6 @@
 <translation id="8317207217658302555">ARCore अपडेट गर्ने हो?</translation>
 <translation id="831997045666694187">साँझ</translation>
 <translation id="8321476692217554900">सूचनाहरू</translation>
-<translation id="8328484624016508118">तपाईंले सबै इन्कोग्निटो ट्याब बन्द गरेपछि Chrome ले:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />तपाईंले यो डिभाइसमा भएको ब्राउजरमार्फत गर्नुभएको क्रियाकलापसम्बन्धी विवरण मेटाउँछ <ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />यो डिभाइसबाट तपाईंको खोजसम्बन्धी इतिहास मेटाउँछ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />तपाईंले फारममा हाल्नुभएको जानकारी मेटाउँछ<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> मा पहुँच गर्न अस्वीकृत भयो</translation>
 <translation id="833262891116910667">हाइलाइट गर्नुहोस्</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> मा रहेका पृष्ठहरूलाई अनुवाद गरिने छैन</translation>

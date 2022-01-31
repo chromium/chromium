@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">अपना Google खाता प्रबंधित करने के लिए, "खाता प्रबंधित करें" बटन पर टैप करें</translation>
 <translation id="1549000191223877751">अन्य विंडो में ले जाएं</translation>
 <translation id="1553358976309200471">Chrome अपडेट करें</translation>
+<translation id="1554532453982918912">यह विकल्प, उन लोगों के लिए Chrome को बेहतर बनाने में मदद करता है जो आपकी तरह ही इसे इस्तेमाल करते हैं</translation>
 <translation id="1558391695376153246">गुप्त टैब बंद करें</translation>
 <translation id="1571304935088121812">उपयोगकर्ता नाम की कॉपी करें</translation>
 <translation id="1592864538817356322">सामान्य सुरक्षा मोड:</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">खत्म करें</translation>
 <translation id="2459390580524506445">वॉइस सर्च की बेहतर सुविधा</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
+<translation id="2472163211318554013">Chrome का ज़्यादा से ज़्यादा फ़ायदा पाने के लिए, साइन इन करें</translation>
 <translation id="247737702124049222">इमेज की जानकारी जोड़ने की सुविधा चालू कर दी गई है</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2485422356828889247">विस्थापित करें</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252">हो सकता है कि आपका <ph name="CONNECTION_TYPE" /> कनेक्शन आपके डाउनलोड की स्पीड कम कर दे</translation>
 <translation id="2647434099613338025">भाषा जोड़ें</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" />, आपके ब्राउज़र को मैनेज करता है</translation>
+<translation id="2650348088770008516">निजता गाइड के बारे में जानकारी देने वाली शीट बंद हो गई है</translation>
 <translation id="2650751991977523696">फ़ाइल दोबारा डाउनलोड करें?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडियो फ़ाइल}one{# ऑडियो फ़ाइलें}other{# ऑडियो फ़ाइलें}}</translation>
 <translation id="265156376773362237">पहले से लोड करने की स्टैंडर्ड सुविधा</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
 <translation id="2827278682606527653">फ़ीड कार्ड मेन्यू आधा खुल गया है</translation>
 <translation id="2830783625999891985">क्लिपबोर्ड का कॉन्टेंट छिपाया गया</translation>
+<translation id="2838367486340230368">निजता गाइड के बारे में जानकारी देने वाली शीट, आधी स्क्रीन पर खुली है</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> को अनफ़ॉलो कर दिया गया</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> गुप्त टैब बंद हो जाएगा}one{<ph name="TAB_COUNT_MANY" /> गुप्त टैब बंद हो जाएगा}other{<ph name="TAB_COUNT_MANY" /> गुप्त टैब बंद हो जाएंगे}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{जांच 1 दिन पहले की गई}one{जांच # दिन पहले की गई}other{जांच # दिन पहले की गई}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">'पासफ़्रेज़' बनाएं</translation>
 <translation id="2996809686854298943">URL ज़रूरी है</translation>
 <translation id="2997081575621687554">जब कोई Google साइट अपने पेज पर, लिंक को निजी तौर पर पहले से लोड करने के लिए कहती है, तो Chrome, Google के सर्वर की मदद से पेजों को एन्क्रिप्ट करके पहले से लोड कर देता है. इसके लिए, Chrome कुकी का इस्तेमाल नहीं करता है. इससे, पहले से लोड की गई साइट से आपकी पहचान को छिपाया जा सकता है.</translation>
+<translation id="3003733539450769656">यह सुविधा, नुकसान पहुंचाने वाले इवेंट का पहले से अंदाज़ा लगाकर, उनके बारे में आपको चेतावनी देती है</translation>
 <translation id="3006881078666935414">कोई उपयोग डेटा नहीं</translation>
 <translation id="301080557829842765">निजता गाइड</translation>
 <translation id="3016635187733453316">पक्का करें कि इस डिवाइस को इंटरनेट से कनेक्ट किया गया है</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">Chrome में साइन इन करने के निर्देश दिखाता है</translation>
 <translation id="3046945242843292318">अगली बार यह साइट तेज़ी से ऐक्सेस हो</translation>
 <translation id="3055259925215945098">बुकमार्क को एक से दूसरी जगह ले जाया गया</translation>
+<translation id="3055841435094910999">Chrome के इस्तेमाल से जुड़ी आपकी जानकारी Google को भेजी जाती है. हालांकि, इसमें आपकी निजी जानकारी शामिल नहीं होती\n\nअगर Chrome बंद होता है, तो हो सकता है कि बंद होने की रिपोर्ट में कुछ निजी जानकारी शामिल की जाए.\n\nसिंक की सुविधा चालू करने पर, हो सकता है कि मेट्रिक में भी आपके देखे गए पेजों के यूआरएल की जानकारी शामिल की जाए</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
 <translation id="3066573403916685335">नीचे ले जाएं</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">जल्द ही, कोई भी नया टैब खोलते ही आपको <ph name="SITE_NAME" /> से जुड़ी जानकारी दिखेगी. आप जिन साइटों को फ़ॉलो करते हैं वे आपके Google खाते में सेव हो जाती हैं. आप उन्हें डिस्कवर की सेटिंग में मैनेज कर सकते हैं.</translation>
 <translation id="5091249083535528968">इस्तेमाल के बारे में ज़्यादा डेटा</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
+<translation id="5102401324271069229">अगर कोई साइट आपका पासवर्ड चुराने की कोशिश करती है या नुकसान पहुंचाने वाली कोई फ़ाइल डाउनलोड होती है, तो Chrome उनके यूआरएल, सुरक्षित ब्राउज़िंग की सेवा को भेज सकता है. यूआरएल के साथ-साथ, पेज का कुछ कॉन्टेंट भी भेजा जाता है</translation>
 <translation id="510275257476243843">1 घंटा शेष</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> में ले जाया गया</translation>
 <translation id="5118713593561876160">रुचि</translation>
@@ -1011,6 +1018,7 @@
 <translation id="6659594942844771486">टैब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> में खोलें</translation>
 <translation id="6671495933530132209">चित्र की कॉपी बनाएं</translation>
+<translation id="6674044799624355221">नए खतरों का पता लगाने के लिए, पेज के नमूने, डाउनलोड, एक्सटेंशन की गतिविधि, और सिस्टम की जानकारी भेजी जाती है</translation>
 <translation id="6674571176963658787">इसे चालू करने के लिए, अपना लंबा पासवर्ड डालें</translation>
 <translation id="6676840375528380067">इस डिवाइस से अपना Chrome डेटा हटाएं?</translation>
 <translation id="6684809838922667136">Chrome को बेहतर बनाएं</translation>
@@ -1086,6 +1094,7 @@
 <translation id="7085332316435785646">चुनें कि Google की सेवाओं में अपने हिसाब से और बेहतर अनुभव पाने के लिए, Chrome पर सेव किए गए आपके ब्राउज़िंग इतिहास को शामिल करना है या नहीं</translation>
 <translation id="7088681679121566888">Chrome अप-टू-डेट है</translation>
 <translation id="7093803425429738190">भावना जोड़ें</translation>
+<translation id="7105047059074518658">सभी डिवाइसों पर आसानी से ब्राउज़ करने के लिए, साइन इन करें</translation>
 <translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को मैनेज करता है</translation>
 <translation id="7121362699166175603">पता बार मेंअपने-आपपूर्णता और इतिहास को हटाता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="7138678301420049075">अन्य</translation>
@@ -1101,6 +1110,7 @@
 <translation id="7187993566681480880">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है.</translation>
 <translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
+<translation id="7196215469483532480">निजता गाइड के बारे में जानकारी देने वाली शीट, पूरी स्क्रीन पर खुली है</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 डाउनलोड बाकी है}one{# डाउनलोड बाकी हैं}other{# डाउनलोड बाकी हैं}}</translation>
 <translation id="7242755609445462077">बेहतर बनाई गई हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> पर Chrome में सिंक करने की सुविधा चालू है</translation>
@@ -1200,11 +1210,13 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
 <translation id="7761849928583394409">तारीख और समय चुनें</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">ज़्यादा सुविधाएं और Chrome की सबसे मज़बूत सुरक्षा पाने के लिए, साइन इन करें</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
 <translation id="7772032839648071052">'पासफ़्रेज' की पुष्टि करें</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> को बंद करें</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7778840695157240389">नई कहानियों के लिए कुछ समय बाद आएं</translation>
+<translation id="7780645209293383778">आपके साइन इन होने पर, थोड़ी देर के लिए इस डेटा को आपके Google खाते से जोड़ा जाता है. ऐसा Google के सभी ऐप्लिकेशन पर आपके डेटा की सुरक्षा के लिए किया जाता है</translation>
 <translation id="7786595606756654269">Google Assistant, वेब पर खोजने के लिए वॉइस सर्च का बेहतर अनुभव उपलब्ध कराती है और आपको खोली गई साइटों से जोड़े रखती है. Google Assistant, यूआरएल और उन साइटों का कॉन्टेंट इस्तेमाल करेगी जिन पर आप Assistant का इस्तेमाल करते हैं.</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टैब वापस लाए गए</translation>
@@ -1274,6 +1286,7 @@
 <translation id="8084285576995584326">तय करें कि आपके Google खाते का डेटा कैसे इस्तेमाल किया जा सकता है</translation>
 <translation id="808747664143081553">डिवाइस से कनेक्ट किया गया</translation>
 <translation id="8088176524274673045">आस-पास के लोगों से शेयर करने के लिए, उन्हें यह क्यूआर कोड स्कैन करने दें</translation>
+<translation id="8100969750121413114">साइन इन करके, Chrome को मनमुताबिक बनाएं</translation>
 <translation id="8103578431304235997">गुप्त टैब</translation>
 <translation id="8105613260829665809">जारी रखने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पेज खोलें</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
+<translation id="8497480609928300907">निजता गाइड के बारे में जानकारी</translation>
 <translation id="8497726226069778601">यहां देखने के लिए…अभी तक कुछ भी नहीं है</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>

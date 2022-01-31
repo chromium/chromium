@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">जॉब शीट मैसेज</translation>
 <translation id="1048785276086539861">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़, सिंगल पेज व्यू पर वापस चला जाएगा</translation>
-<translation id="1049743911850919806">गुप्त</translation>
 <translation id="1050038467049342496">दूूूूसरे ऐप्लिकेशन बंद करें</translation>
 <translation id="1055184225775184556">&amp;जोड़ना वापस लाएं</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
@@ -736,12 +735,6 @@
 <translation id="3345782426586609320">आंखें</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
 <translation id="3360103848165129075">पैसे चुकाने की हैंडलर शीट</translation>
-<translation id="3361596688432910856">Chrome नीचे दी गई जानकारी को <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />आपका ब्राउज़िंग इतिहास
-          <ph name="LIST_ITEM" />कुकी और साइट डेटा
-          <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">इस नीति को हटाई गई <ph name="OLD_POLICY" /> नीति से अपने आप कॉपी किया गया था. आपको इसके बजाय, इस नीति का इस्तेमाल करना चाहिए.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> आपका वर्चुअल रिएलिटी वाला डिवाइस और डेटा इस्तेमाल करना चाहता है</translation>
 <translation id="3366477098757335611">कार्ड देखें</translation>
@@ -1222,12 +1215,6 @@
 <translation id="4819347708020428563">क्या आप डिफ़ॉल्ट व्यू में वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करना चाहते हैं?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, जल्दी से नई Google शीट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="4825507807291741242">दमदार</translation>
-<translation id="4827402517081186284">गुप्त मोड में आप ऑनलाइन दिखते हैं:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />जब आप साइटों पर जाते हैं, तो उन्हें पता चलता है<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />नौकरी देने वाली कंपनियां या स्कूल, ब्राउज़िंग गतिविधि को ट्रैक कर सकते हैं<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />इंटरनेट सेवा देने वाली कंपनियां, वेब ट्रैफ़िक की निगरानी कर सकती हैं<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">अनदेखा कर दिया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के ज़रिए सेट किया जा सकता है.</translation>
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
 <translation id="4838327282952368871">ख्वाब जैसा</translation>
@@ -1797,7 +1784,6 @@
 <translation id="6757797048963528358">आपका डिवाइस निष्क्रिय हो गया है.</translation>
 <translation id="6767985426384634228">क्या आप पता अपडेट करना चाहते हैं?</translation>
 <translation id="6768213884286397650">हगाकी (पोस्टकार्ड)</translation>
-<translation id="6774185088257932239">गुप्त मोड के बारे में <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">बैंगनी</translation>
 <translation id="6786747875388722282">एक्‍सटेंशन</translation>
@@ -2277,12 +2263,6 @@
 <translation id="8317207217658302555">ARCore को अपडेट करें?</translation>
 <translation id="831997045666694187">शाम</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
-<translation id="8328484624016508118">सभी गुप्त टैब बंद करने के बाद, Chrome इन चीज़ों को मिटाता है:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />इस डिवाइस से आपकी ब्राउज़िंग गतिविधि<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />इस डिवाइस से आपका खोज इतिहास<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> का एक्सेस देने से मना किया गया था</translation>
 <translation id="833262891116910667">हाइलाइट करें</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> भाषा के पेज का अनुवाद नहीं किया जाएगा</translation>

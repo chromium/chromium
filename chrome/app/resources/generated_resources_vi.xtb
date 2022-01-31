@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Biểu tượng hiện tại</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Dừng</translation>
+<translation id="1108938384783527433">Đồng bộ nhật ký</translation>
 <translation id="1110155001042129815">Chờ</translation>
 <translation id="1110965959145884739">Chọn ngôn ngữ để cài đặt trên thiết bị này. Các tệp ngôn ngữ được chia sẻ giữa những người dùng để tiết kiệm dung lượng ổ đĩa. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Máy chiếu</translation>
@@ -511,6 +512,7 @@
 <translation id="1521442365706402292">Quản lý chứng chỉ</translation>
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="152234381334907219">Không bao giờ lưu</translation>
+<translation id="1523279371236772909">Từng xem trong tháng trước</translation>
 <translation id="1523978563989812243">Các công cụ chuyển văn bản sang lời nói</translation>
 <translation id="1524430321211440688">Bàn phím</translation>
 <translation id="1524563461097350801">Không, cảm ơn</translation>
@@ -1174,6 +1176,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Thêm Wi-Fi...</translation>
 <translation id="2162155940152307086">Quá trình đồng bộ hóa sẽ bắt đầu sau khi bạn thoát khỏi trang cài đặt đồng bộ hóa</translation>
+<translation id="2162926944953615670">Không có hồ sơ eSIM nào</translation>
 <translation id="2163470535490402084">Vui lòng kết nối Internet để đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="2163937499206714165">Bật chế độ tối</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> và 1 công tắc khác</translation>
@@ -1251,6 +1254,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2232876851878324699">Tệp có chứa một chứng chỉ chưa được nhập:</translation>
 <translation id="2233502537820838181">&amp;Thông tin khác</translation>
 <translation id="223356358902285214">Hoạt động trên web và ứng dụng</translation>
+<translation id="2234827758954819389">Hướng dẫn về quyền riêng tư</translation>
 <translation id="2234876718134438132">Đồng bộ hóa và các dịch vụ của Google</translation>
 <translation id="2235344399760031203">Đã chặn các cookie bên thứ ba</translation>
 <translation id="2238379619048995541">Dữ liệu trạng thái tần suất</translation>
@@ -1869,6 +1873,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2828650939514476812">Kết nối với mạng Wi-Fi</translation>
 <translation id="2831430281393059038">Thiết bị được hỗ trợ</translation>
 <translation id="2832124733806557606">Con bạn có thể dùng mã PIN để đăng nhập hoặc mở khóa thiết bị này.</translation>
+<translation id="2835177225987815960">Chế độ quét hiện tại của bạn sẽ được đặt lại, bao gồm cả mọi công tắc đã chỉ định và ưu tiên về tốc độ quét.</translation>
 <translation id="2835547721736623118">Dịch vụ nhận dạng lời nói</translation>
 <translation id="2836269494620652131">Lỗi</translation>
 <translation id="2836635946302913370">Đăng nhập bằng tên người dùng này đã bị quản trị viên của bạn vô hiệu hóa.</translation>
@@ -3107,6 +3112,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4095264805865317199">Mở giao diện kích hoạt mạng di động</translation>
 <translation id="4095507791297118304">Màn hình chính</translation>
 <translation id="4096508467498758490">Vô hiệu hóa tiện ích chế độ nhà phát triển</translation>
+<translation id="4096797685681362305">Từng xem trong tuần trước</translation>
 <translation id="4097406557126260163">Ứng dụng và tiện ích</translation>
 <translation id="409742781329613461">Mẹo dành cho Chrome</translation>
 <translation id="4097560579602855702">Tìm kiếm trên Google</translation>
@@ -3663,6 +3669,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4699172675775169585">Tệp và hình ảnh được lưu trong bộ nhớ đệm</translation>
 <translation id="4699357559218762027">(tự động chạy)</translation>
 <translation id="4701025263201366865">Hoạt động đăng nhập của cha mẹ</translation>
+<translation id="4701335814944566468">Vừa xem hôm qua</translation>
 <translation id="4708794300267213770">Hiển thị màn hình khóa khi đánh thức từ chế độ ngủ</translation>
 <translation id="4708849949179781599">Thoát <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Khôi phục cài đặt</translation>
@@ -3730,6 +3737,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="479536056609751218">Trang web, chỉ HTML</translation>
 <translation id="4796142525425001238">Luôn khôi phục</translation>
 <translation id="4798236378408895261">Đính kèm <ph name="BEGIN_LINK" />Nhật ký Bluetooth<ph name="END_LINK" /> (nội bộ Google)</translation>
+<translation id="479863874072008121">Quản lý thiết bị</translation>
 <translation id="4800839971935185386">Xem lại các lần cập nhật tên và biểu tượng</translation>
 <translation id="4801448226354548035">Ẩn tài khoản</translation>
 <translation id="4801512016965057443">Cho phép chuyển vùng dữ liệu di động</translation>
@@ -6453,6 +6461,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7659154729610375585">Vẫn thoát khỏi chế độ Ẩn danh?</translation>
 <translation id="7659297516559011665">Chỉ mật khẩu trên thiết bị này</translation>
+<translation id="7659336857671800422">Xem Hướng dẫn về quyền riêng tư</translation>
 <translation id="7659584679870740384">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập.</translation>
 <translation id="7661259717474717992">Cho phép trang web lưu và đọc dữ liệu cookie</translation>
 <translation id="7661451191293163002">Không thể lấy chứng chỉ đăng ký.</translation>
@@ -7975,6 +7984,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9200339982498053969"><ph name="ORIGIN" /> sẽ chỉnh sửa được các tệp trong <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Tìm kiếm trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Mọi dữ liệu ngoại tuyến sẽ bị xóa</translation>
+<translation id="9201117361710210082">Từng xem trước đây</translation>
 <translation id="9201220332032049474">Tùy chọn khóa màn hình</translation>
 <translation id="9201842707396338580">Đã xảy ra lỗi. Vui lòng liên hệ với quản trị viên hoặc chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Bật cấu hình</translation>

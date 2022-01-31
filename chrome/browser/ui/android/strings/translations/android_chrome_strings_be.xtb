@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">Каб змяніць налады вашага ўліковага запісу Google, націсніце кнопку "Кіраваць уліковым запісам"</translation>
 <translation id="1549000191223877751">Перамясціць у іншае акно</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
+<translation id="1554532453982918912">Дапамажыце палепшыць браўзер Chrome для карыстальнікаў, якія выкарыстоўваюць яго так, як і вы</translation>
 <translation id="1558391695376153246">Закрыць укладкі інкогніта</translation>
 <translation id="1571304935088121812">Капіраваць імя карыстальніка</translation>
 <translation id="1592864538817356322">Стандартная абарона:</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">Завяршыць</translation>
 <translation id="2459390580524506445">Палепшаны галасавы пошук</translation>
 <translation id="2461822463642141190">Цяпер</translation>
+<translation id="2472163211318554013">Увайдзіце ва ўліковы запіс, каб карыстацца ўсімі магчымасцямі Chrome</translation>
 <translation id="247737702124049222">Апісанні відарысаў уключаны</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252">Спампоўванне праз падключэнне <ph name="CONNECTION_TYPE" /> можа быць маруднейшым</translation>
 <translation id="2647434099613338025">Дадаць мову</translation>
 <translation id="2649068648233607930">Браўзерам кіруе <ph name="DOMAIN" />.</translation>
+<translation id="2650348088770008516">Тлумачэнні адносна дапаможніка па прыватнасці закрыты</translation>
 <translation id="2650751991977523696">Спампаваць файл зноў?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аўдыяфайл}one{# аўдыяфайл}few{# аўдыяфайлы}many{# аўдыяфайлаў}other{# аўдыяфайла}}</translation>
 <translation id="265156376773362237">Стандартная перадзагрузка</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">Каб перанесці закладкі на ўсе прылады, увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю</translation>
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
 <translation id="2830783625999891985">Змесціва буфера абмену схавана</translation>
+<translation id="2838367486340230368">Тлумачэнні адносна дапаможніка па прыватнасці разгорнуты на палову экрана</translation>
 <translation id="2839327205551510876">Вы адпісаліся ад сайта "<ph name="SITE_NAME" />"</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка ў рэжыме інкогніта будзе закрыта}one{<ph name="TAB_COUNT_MANY" /> укладка ў рэжыме інкогніта будзе закрыта}few{<ph name="TAB_COUNT_MANY" /> укладкі ў рэжыме інкогніта будуць закрыты}many{<ph name="TAB_COUNT_MANY" /> укладак у рэжыме інкогніта будуць закрыты}other{<ph name="TAB_COUNT_MANY" /> укладкі ў рэжыме інкогніта будуць закрыты}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Праверка праводзілася дзень таму}one{Праверка праводзілася # дзень таму}few{Праверка праводзілася # дні таму}many{Праверка праводзілася # дзён таму}other{Праверка праводзілася # дня таму}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">Стварыць фразу-пароль</translation>
 <translation id="2996809686854298943">Патрабуецца URL-адрас</translation>
 <translation id="2997081575621687554">Калі сайт Google па спасылках на ім запытвае перадзагрузку старонак у прыватным рэжыме, Chrome шыфруе і перадзагружае старонкі праз серверы Google, не выкарыстоўваючы файлы cookie. Дзякуючы гэтаму перадзагружаны сайт не атрымлівае звестак пра вашу асобу.</translation>
+<translation id="3003733539450769656">Папярэджвае вас пра небяспечныя падзеі да таго, як яны здараюцца</translation>
 <translation id="3006881078666935414">Няма даных аб выкарыстанні</translation>
 <translation id="301080557829842765">Дапаможнік па прыватнасці</translation>
 <translation id="3016635187733453316">Праверце, ці падключана прылада да інтэрнэту</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">Будуць паказвацца запыты ўваходу ў Chrome</translation>
 <translation id="3046945242843292318">У наступны раз вы зможаце перайсці на гэты сайт хутчэй</translation>
 <translation id="3055259925215945098">Закладка перамешчана</translation>
+<translation id="3055841435094910999">Інфармацыя пра выкарыстанне вамі Chrome адпраўляецца ў Google, але яна не прывязана да вашай асобы\n\nКалі ў Chrome адбываецца збой, падрабязныя звесткі пра яго могуць уключаць у сябе пэўную асабістую інфармацыю\n\nКалі вы ўключылі сінхранізацыю, паказчыкі могуць таксама ўключаць у сябе інфармацыю пра наведаныя вамі URL-адрасы</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
 <translation id="3062802207422175757">Цікавыя для вас артыкулы ў Chrome</translation>
 <translation id="3066573403916685335">Перамясціць уніз</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта <ph name="SITE_NAME" />. Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
 <translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
+<translation id="5102401324271069229">Пры спробе сайта ўкрасці пароль і пры спампоўванні шкоднага файла браўзер Chrome можа адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі</translation>
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
 <translation id="5115811374190515607">куды: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Інтарэсы</translation>
@@ -1011,6 +1018,7 @@
 <translation id="6659594942844771486">Укладка</translation>
 <translation id="666731172850799929">Адкрыць у праграме <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
+<translation id="6674044799624355221">Адпраўляе невялікія прыклады старонак, спамповак, дзеянняў пашырэнняў і інфармацыі пра сістэму, каб дапамагчы выяўляць новыя пагрозы</translation>
 <translation id="6674571176963658787">Каб пачаць сінхранізацыю, увядзіце фразу-пароль</translation>
 <translation id="6676840375528380067">Выдаліць даныя Chrome з гэтай прылады?</translation>
 <translation id="6684809838922667136">Зрабіце браўзер Chrome лепшым</translation>
@@ -1086,6 +1094,7 @@
 <translation id="7085332316435785646">Выберыце, ці выкарыстоўваць гісторыю Chrome для персаналізацыі сэрвісаў Google</translation>
 <translation id="7088681679121566888">Chrome не патрабуе абнаўлення</translation>
 <translation id="7093803425429738190">Дадаць эмоцыю</translation>
+<translation id="7105047059074518658">Увайдзіце, каб вам было прасцей выкарыстоўваць браўзер на розных прыладах</translation>
 <translation id="7106762743910369165">Вашым браўзерам кіруе арганізацыя</translation>
 <translation id="7121362699166175603">Ачышчае гісторыю і гісторыю аўтазапаўнення ў адрасным радку. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="7138678301420049075">Іншыя</translation>
@@ -1101,6 +1110,7 @@
 <translation id="7187993566681480880">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс.</translation>
 <translation id="718926126787620637">Спіс папак з закладкамі разгорнуты на ўвесь экран</translation>
 <translation id="7191430249889272776">Укладка адкрыта ў фоне.</translation>
+<translation id="7196215469483532480">Тлумачэнні адносна дапаможніка па прыватнасці разгорнуты на ўвесь экран</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка}one{Чакаецца # спампоўка}few{Чакаецца # спампоўкі}many{Чакаецца # спамповак}other{Чакаецца # спампоўкі}}</translation>
 <translation id="7242755609445462077">Стылізаванае вылучанае змесціва (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Праверце, ці ўключана на прыладзе "<ph name="TARGET_DEVICE_NAME" />" сінхранізацыя ў браўзеры Chrome</translation>
@@ -1200,11 +1210,13 @@
 <translation id="7757787379047923882">Тэкст абагулены з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7761849928583394409">Выберыце дату і час</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">Увайдзіце ва ўліковы запіс, каб карыстацца дадатковымі функцыямі і найлепшымі сродкамі бяспекі ў Chrome</translation>
 <translation id="7764225426217299476">Дадаць адрас</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772375229873196092">Закрыццё праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Каб праверыць, ці з'явіліся новыя артыкулы, загляніце сюды пазней</translation>
+<translation id="7780645209293383778">Часова звязвае гэтыя даныя з Уліковым запісам Google, у які вы ўвайшлі, каб абараніць вас у праграмах Google</translation>
 <translation id="7786595606756654269">Памочнік Google робіць пошук у інтэрнэце і працу з вэб-старонкамі яшчэ зручнейшымі дзякуючы палепшаным функцыям галасавога пошуку. Памочнік будзе збіраць URL-адрасы і змесціва сайтаў, на якіх ён будзе выкарыстоўвацца.</translation>
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="7798392620021911922">Адноўлена ўкладак: <ph name="TAB_COUNT" /></translation>
@@ -1274,6 +1286,7 @@
 <translation id="8084285576995584326">Кіруйце данымі Уліковага запісу Google</translation>
 <translation id="808747664143081553">Падключана</translation>
 <translation id="8088176524274673045">Каб абагуліць гэта змесціва з карыстальнікамі паблізу, дайце ім адсканіраваць гэты QR-код</translation>
+<translation id="8100969750121413114">Увайдзіце, каб персаналізаваць работу Chrome</translation>
 <translation id="8103578431304235997">Укладка інкогніта</translation>
 <translation id="8105613260829665809">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" />.\nChrome адпраўляе даныя пра выкарыстанне і збоі ў Google, якія дапамогуць палепшыць праграму. <ph name="BEGIN_UMA_LINK" />Кіраваць<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Адкрыць старонку гісторыі</translation>
 <translation id="8493948351860045254">Вызваліць месца</translation>
+<translation id="8497480609928300907">Тлумачэнні адносна дапаможніка па прыватнасці</translation>
 <translation id="8497726226069778601">Тут нічога няма… пакуль што</translation>
 <translation id="8503559462189395349">Паролі Chrome</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>

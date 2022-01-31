@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">عرض التفاصيل</translation>
 <translation id="1030706264415084469">يريد <ph name="URL" /> تخزين حجم كبير من البيانات بشكل دائم على جهازك.</translation>
 <translation id="1032854598605920125">تدوير في اتجاه عقارب الساعة</translation>
+<translation id="1033329911862281889">لا يخفي وضع التصفّح المتخفي هويتك عند زيارتك للمواقع الإلكترونية:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ترصد المواقع الإلكترونية والخدمات المتوفّرة عليها زيارتك لها<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />بإمكان أصحاب الأعمال أو المؤسسات التعليمية تتبُّع نشاط التصفّح<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />قد يراقب مزوّدو خدمة الإنترنت عدد زيارات المستخدمين للمواقع الإلكترونية<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1036982837258183574">اضغط على |<ph name="ACCELERATOR" />| للخروج من وضع ملء الشاشة</translation>
 <translation id="1038106730571050514">عرض الاقتراحات</translation>
 <translation id="1038842779957582377">اسم غير معروف</translation>
 <translation id="1041998700806130099">رسالة ورقة المهمة</translation>
 <translation id="1048785276086539861">عند تعديل التعليقات التوضيحية، سيعود هذا المستند إلى عرض صفحة واحدة.</translation>
-<translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1050038467049342496">إغلاق التطبيقات الأخرى</translation>
 <translation id="1055184225775184556">تراجع عن الإ&amp;ضافة</translation>
 <translation id="1056898198331236512">تحذير</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">ذاكرة التخزين المؤقت للسياسة بحالة جيدة</translation>
 <translation id="1130564665089811311">‏زر "ترجمة الصفحة"، اضغط على مفتاح Enter لترجمة هذه الصفحة باستخدام "ترجمة Google".</translation>
 <translation id="1131264053432022307">الصورة التي نسختها</translation>
+<translation id="1142846828089312304">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="1150979032973867961">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان غير موثقة من خلال نظام تشغيل الكمبيوتر. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض الاتصال.</translation>
 <translation id="1151972924205500581">كلمة المرور مطلوبة</translation>
 <translation id="1156303062776767266">يتمّ عرض ملف محلي أو مشترك.</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">إرسال</translation>
 <translation id="1484290072879560759">اختيار عنوان الشحن</translation>
 <translation id="1492194039220927094">إرسال السياسات:</translation>
+<translation id="149293076951187737">‏عند إغلاق كل علامات التبويب في وضع التصفّح المتخفي في متصفّح Chrome، يتم محو نشاطك في علامات التبويب تلك من هذا الجهاز:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />نشاط التصفّح<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />سجلّ البحث<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />المعلومات التي تمّ إدخالها في النماذج<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">الرجوع إلى علامة التبويب</translation>
 <translation id="1501859676467574491">‏عرض البطاقات من حسابك على Google</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;سيظهر هذا الخطأ عند استخدام بوابة شبكة Wi-Fi تتطلّب تسجيل الدخول قبل الاتصال بالإنترنت.&lt;/p&gt;
@@ -285,6 +297,7 @@
     العنوان غير صالح، مما يمنع المتصفِّح من إكمال
     طلبك ذي الصلة بالموقع الإلكتروني <ph name="SITE" />. ويمكن استخدام سياسات المصدر من خلال
     عوامل تشغيل المواقع الإلكترونية لضبط الأمان والخصائص الأخرى لموقع إلكتروني.</translation>
+<translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />مزيد من المعلومات حول وضع التصفّح المتخفي في متصفّح Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">تظهر علامات التبويب المفتوحة هنا</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@
 <translation id="2597378329261239068">هذا المستند محمي بكلمة المرور.  يُرجى إدخال كلمة مرور.</translation>
 <translation id="2609632851001447353">الاختلافات</translation>
 <translation id="2610561535971892504">النقر لنسخ النص</translation>
+<translation id="2617988307566202237">‏<ph name="BEGIN_EMPHASIS" />لن يحفظ<ph name="END_EMPHASIS" /> Chrome المعلومات التالية:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />سجلّ التصفُّح
+          <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
+          <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">‏C10 (مغلف)</translation>
 <translation id="2623663032199728144">يمكن للموقع الإلكتروني أن يطلب استخدام المعلومات المتعلقة بشاشاتك.</translation>
 <translation id="2625385379895617796">توقيت ساعتك متقدم عن الوقت الحالي</translation>
@@ -736,12 +755,6 @@
 <translation id="3345782426586609320">عينان</translation>
 <translation id="3355823806454867987">تغيير إعدادات الخادم الوكيل...</translation>
 <translation id="3360103848165129075">جدول بيانات معالج الدفع</translation>
-<translation id="3361596688432910856">‏لن يحفظ <ph name="BEGIN_EMPHASIS" />Chrome<ph name="END_EMPHASIS" /> المعلومات التالية:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />سجل التصفّح لديك
-          <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات الموقع
-          <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">تم نسخ هذه السياسة تلقائيًا من السياسة المتوقفة <ph name="OLD_POLICY" />. يمكنك استخدام هذه السياسة بدلاً من ذلك.</translation>
 <translation id="3364869320075768271">يريد <ph name="URL" /> استخدام جهاز الواقع الافتراضي وبياناته.</translation>
 <translation id="3366477098757335611">عرض البطاقات</translation>
@@ -1160,6 +1173,7 @@
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4631649115723685955">تم ربط مكافأة لاسترداد جزء من المال.</translation>
 <translation id="4636930964841734540">معلومات</translation>
+<translation id="4638670630777875591">‏وضع التصفّح المتخفي في متصفّح Chromium</translation>
 <translation id="464342062220857295">ميزات البحث</translation>
 <translation id="4644670975240021822">ترتيب عكسي والوجه للأسفل</translation>
 <translation id="4646534391647090355">الانتقال الآن</translation>
@@ -1222,12 +1236,6 @@
 <translation id="4819347708020428563">هل تريد تعديل التعليقات التوضيحية في العرض التلقائي؟</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء "جدول بيانات Google" جديد بسرعة.</translation>
 <translation id="4825507807291741242">قوي</translation>
-<translation id="4827402517081186284">لا يخفي وضع التصفُّح المتخفي هويتك عند زيارتك للمواقع الإلكترونية:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ترصد المواقع الإلكترونية بيانات زيارتك لها<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />بإمكان أصحاب العمل أو المؤسسات التعليمية تتبّع نشاط التصفُّح<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />قد يراقب مزوّدو خدمة الإنترنت زيارات المستخدمين للمواقع الإلكترونية<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">تم التجاهل لأن السياسة لا يمكن ضبطها إلا من خلال سياسات المستخدم على السحابة الإلكترونية.</translation>
 <translation id="483241715238664915">تفعيل التحذيرات</translation>
 <translation id="4838327282952368871">جذّاب</translation>
@@ -1261,6 +1269,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter للبحث.</translation>
 <translation id="4930153903256238152">سِعة كبيرة</translation>
+<translation id="4940163644868678279">‏وضع التصفّح المتخفي في متصفّح Chrome</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
 <translation id="4950898438188848926">‏زر التبديل بين علامات التبويب، اضغط على Enter للتبديل إلى علامة التبويب المفتوحة هذه <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">إجراءات</translation>
@@ -1332,6 +1341,7 @@
 <translation id="5138227688689900538">عرض أقل</translation>
 <translation id="5145883236150621069">يوجد رمز خطأ في استجابة السياسة</translation>
 <translation id="5146995429444047494">يتم حظر الإشعارات للنطاق <ph name="ORIGIN" /></translation>
+<translation id="514704532284964975">‏هناك طلب من <ph name="URL" /> بالاطّلاع على المعلومات وتعديلها على الأجهزة المزوَّدة بتقنية NFC التي نقرت عليها باستخدام هاتفك.</translation>
 <translation id="5148809049217731050">الوجه للأعلى</translation>
 <translation id="515292512908731282">‏C4 (مغلف)</translation>
 <translation id="5158275234811857234">غلاف</translation>
@@ -1620,6 +1630,7 @@
 <translation id="6120179357481664955">هل تتذكر معرّف واجهة الدفعات الموحّدة؟</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">أُزيلَ عنصر</translation>
+<translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />مزيد من المعلومات حول وضع التصفّح المتخفي في متصفّح Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">تحقق من أي كابلات وأعد تشغيل أي أجهزة توجيه أو أجهزة مودم أو أجهزة شبكة
         أخرى ربما تستخدمها.</translation>
 <translation id="614940544461990577">يمكنك محاولة:</translation>
@@ -1796,7 +1807,6 @@
 <translation id="6757797048963528358">خضع جهازك إلى وضع السكون.</translation>
 <translation id="6767985426384634228">هل تريد تعديل العنوان؟</translation>
 <translation id="6768213884286397650">‏Hagaki (بطاقة بريدية)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول وضع التصفُّح المتخفي</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">بنفسجي</translation>
 <translation id="6786747875388722282">الإضافات</translation>
@@ -1896,6 +1906,12 @@
 <translation id="7111012039238467737">(صالح)</translation>
 <translation id="7118618213916969306">‏البحث عن عنوان URL للحافظة، <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">إغلاق علامات التبويب أو البرامج الأخرى</translation>
+<translation id="7129355289156517987">‏عند إغلاق كل علامات التبويب في وضع التصفّح المتخفي في متصفّح Chromium، يتم محو نشاطك في علامات التبويب تلك من هذا الجهاز:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />نشاط التصفّح<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />سجلّ البحث<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />المعلومات التي تمّ إدخالها في النماذج<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">لا يمكن الشحن على هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="7132939140423847331">حظر المشرف نسخ هذه البيانات.</translation>
 <translation id="7135130955892390533">عرض الحالة</translation>
@@ -2014,6 +2030,12 @@
 <translation id="7485870689360869515">لم يتم العثور على بيانات.</translation>
 <translation id="7495528107193238112">هذا المحتوى محظور. يمكنك التواصل مع مالك الموقع الإلكتروني لحلّ المشكلة.</translation>
 <translation id="7497998058912824456">‏زرّ إنشاء مستند: اضغط على مفتاح Enter لإنشاء "مستند Google" جديد بسرعة.</translation>
+<translation id="7506488012654002225">‏<ph name="BEGIN_EMPHASIS" />لن يحفظ<ph name="END_EMPHASIS" /> Chromium المعلومات التالية:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />سجلّ التصفُّح
+          <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
+          <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">رقم تعريف الجهاز المعروض للسياسة فارغ أو لا يتطابق مع رقم تعريف الجهاز الحالي</translation>
 <translation id="7508870219247277067">أخضر مصفر</translation>
 <translation id="7511955381719512146">‏قد يتتطلب Wi-Fi الذي تستخدمه زيارة <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2233,6 +2255,7 @@
 <translation id="8202370299023114387">تعارض</translation>
 <translation id="8206978196348664717">‏Prc4 (مغلف)</translation>
 <translation id="8211406090763984747">الاتصال بموقع الويب هذا آمن</translation>
+<translation id="8217240300496046857">لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط لتتبّع نشاط تصفحّك على الإنترنت. وقد تتعطّل بعض الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="8218327578424803826">الموقع الذي تم تعيينه:</translation>
 <translation id="8220146938470311105">‏C7/C6 (مغلف)</translation>
 <translation id="8225771182978767009">اختار الشخص الذي أعد جهاز الكمبيوتر حظر الموقع الإلكتروني هذا.</translation>
@@ -2276,12 +2299,6 @@
 <translation id="8317207217658302555">‏هل تريد تحديث ARCore؟</translation>
 <translation id="831997045666694187">مساءً</translation>
 <translation id="8321476692217554900">الإشعارات</translation>
-<translation id="8328484624016508118">‏بعد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي، يمحو Chrome:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />نشاط التصفُّح على هذا الجهاز<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />سجلّ البحث على هذا الجهاز<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">تم رفض الدخول إلى <ph name="HOST_NAME" />.</translation>
 <translation id="833262891116910667">تمييز</translation>
 <translation id="8339163506404995330">لن تتم ترجمة الصفحات باللغة <ph name="LANGUAGE" /></translation>

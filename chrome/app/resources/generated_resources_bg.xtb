@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Настояща икона</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Стоп</translation>
+<translation id="1108938384783527433">Синхронизиране на историята</translation>
 <translation id="1110155001042129815">Изчакване</translation>
 <translation id="1110965959145884739">Изберете кои езици да бъдат инсталирани на това устройство. Езиковите файлове се споделят между потребителите с цел пестене на място на диска. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Проектор</translation>
@@ -508,6 +509,7 @@
 <translation id="1521442365706402292">Управление на сертификати</translation>
 <translation id="1521774566618522728">Активно днес</translation>
 <translation id="152234381334907219">Незапазвани никога</translation>
+<translation id="1523279371236772909">Прегледано през миналия месец</translation>
 <translation id="1523978563989812243">Машини за синтезиран говор</translation>
 <translation id="1524430321211440688">Клавиатура</translation>
 <translation id="1524563461097350801">Не, благодаря</translation>
@@ -1170,6 +1172,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Добавяне на Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронизирането ще започне, след като излезете от страницата с настройките му</translation>
+<translation id="2162926944953615670">Няма налични потребителски профили за електронни SIM карти</translation>
 <translation id="2163470535490402084">Моля, свържете се с интернет, за да влезте в устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Включване на тъмния режим</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и още 1 превключвател</translation>
@@ -1247,6 +1250,7 @@
 <translation id="2232876851878324699">Файлът съдържаше един сертификат, който не бе импортиран:</translation>
 <translation id="2233502537820838181">&amp;Още информация</translation>
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
+<translation id="2234827758954819389">Ръководство за поверителност</translation>
 <translation id="2234876718134438132">Синхронизиране и услуги на Google</translation>
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
 <translation id="2238379619048995541">Данни за състоянието на активност</translation>
@@ -1865,6 +1869,7 @@
 <translation id="2828650939514476812">Свързване с Wi-Fi мрежата</translation>
 <translation id="2831430281393059038">Устройството се поддържа</translation>
 <translation id="2832124733806557606">Детето ви може да използва ПИН код, за да влиза в профила си или да отключва устройството.</translation>
+<translation id="2835177225987815960">Текущите ви настройки за сканиране ще бъдат нулирани, включително зададените превключватели и предпочитанията за скорост на автоматичното сканиране.</translation>
 <translation id="2835547721736623118">Услуга за разпознаване на говор</translation>
 <translation id="2836269494620652131">Срив</translation>
 <translation id="2836635946302913370">Влизането с това потребителско име е деактивирано от администратора ви.</translation>
@@ -3104,6 +3109,7 @@
 <translation id="4095264805865317199">Отваряне на ПИ за активиране на мобилна мрежа</translation>
 <translation id="4095507791297118304">Основен екран</translation>
 <translation id="4096508467498758490">Деактивиране на разширенията в режим за програмисти</translation>
+<translation id="4096797685681362305">Прегледано през миналата седмица</translation>
 <translation id="4097406557126260163">Приложения и разширения</translation>
 <translation id="409742781329613461">Съвети за Chrome</translation>
 <translation id="4097560579602855702">Търсете с Google</translation>
@@ -3660,6 +3666,7 @@
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4699357559218762027">(автоматично стартирано)</translation>
 <translation id="4701025263201366865">Влизане в профила на родител</translation>
+<translation id="4701335814944566468">Прегледано вчера</translation>
 <translation id="4708794300267213770">Показване на заключения екран при излизане от спящ режим</translation>
 <translation id="4708849949179781599">Изход от <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Възстановяване на настройките</translation>
@@ -3727,6 +3734,7 @@
 <translation id="479536056609751218">Уеб страница, само HTML</translation>
 <translation id="4796142525425001238">Винаги</translation>
 <translation id="4798236378408895261">Прикачване на <ph name="BEGIN_LINK" />регистрационните файлове за Bluetooth<ph name="END_LINK" /> (вътрешно за Google)</translation>
+<translation id="479863874072008121">Управление на устройствата</translation>
 <translation id="4800839971935185386">Преглед на актуализациите на името и иконата</translation>
 <translation id="4801448226354548035">Скриване на профилите</translation>
 <translation id="4801512016965057443">Разрешаване на роуминг за данни</translation>
@@ -6451,6 +6459,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7659154729610375585">Да се излезе ли от режим „инкогнито“ въпреки това?</translation>
 <translation id="7659297516559011665">Пароли само на това устройство</translation>
+<translation id="7659336857671800422">Преглед на ръководството за поверителността</translation>
 <translation id="7659584679870740384">Не сте упълномощени да използвате това устройство. За разрешение за вход се свържете с администратора.</translation>
 <translation id="7661259717474717992">Разрешаване на сайтовете да запазват и четат данни в „бисквитки“</translation>
 <translation id="7661451191293163002">Не можа да бъде получен регистрационен сертификат.</translation>
@@ -7973,6 +7982,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ще може да редактира файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
 <translation id="920045321358709304">Търсене с/ъс <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Всички офлайн данни ще бъдат изчистени</translation>
+<translation id="9201117361710210082">Прегледано преди време</translation>
 <translation id="9201220332032049474">Опции за заключване на екрана</translation>
 <translation id="9201842707396338580">Нещо се обърка. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Профилирането е активирано</translation>

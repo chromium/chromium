@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Дэлгэрэнгүйг харах</translation>
 <translation id="1030706264415084469"><ph name="URL" /> таны төхөөрөмжид том хэмжээний өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="1032854598605920125">Цагийн зүүний дагуу эргүүлэх</translation>
+<translation id="1033329911862281889">Нууцлалтай горим нь таныг онлайн үед үл харагддаг болгохгүй:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Сайт болон тэдний ашигладаг үйлчилгээ нь зочилсон харилцан үйлдлийг харах боломжтой<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ажил олгогч эсвэл сургууль хөтчийн үйл ажиллагааг хянах боломжтой<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Интернэт үйлчилгээ нийлүүлэгч вебийн ачааллыг хянах боломжтой<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1036982837258183574">Бүтэн дэлгэцээс гарах бол |<ph name="ACCELERATOR" />|-г дарна уу</translation>
 <translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1038842779957582377">үл мэдэгдэх нэр</translation>
 <translation id="1041998700806130099">Ажлын хүснэгтийн мессеж</translation>
 <translation id="1048785276086539861">Та тэмдэглэгээг засах үед энэ документ нэг хуудсаар харах руу буцна</translation>
-<translation id="1049743911850919806">Нууцлал</translation>
 <translation id="1050038467049342496">Бусад аппыг хаах</translation>
 <translation id="1055184225775184556">&amp; Нэмэх үйлдлийг буцаах</translation>
 <translation id="1056898198331236512">Анхааруулга</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Тохиргооны кэш болж байна</translation>
 <translation id="1130564665089811311">Хуудас орчуулах товч, энэ хуудсыг Google Орчуулагчаар орчуулахын тулд Enter дарна уу</translation>
 <translation id="1131264053432022307">Таны хуулсан зураг</translation>
+<translation id="1142846828089312304">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="1150979032973867961">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; учир нь энэхүү сертификатыг таны компьютерийн үйлдлийн систем дэмждэггүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болох юм.</translation>
 <translation id="1151972924205500581">Нууц үг шаардлагатай</translation>
 <translation id="1156303062776767266">Та дотоод эсвэл хуваалцсан файлыг харж байна</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">Илгээх</translation>
 <translation id="1484290072879560759">Тээвэрлэлтийн хаяг сонгох</translation>
 <translation id="1492194039220927094">Удирдамжийн хэрэгжүүлэлт:</translation>
+<translation id="149293076951187737">Таныг Chrome-н бүх нууцлалтай табыг хаах үед таны тэдгээр таб дахь үйл ажиллагааг энэ төхөөрөмжөөс арилгана:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Хөтчийн үйл ажиллагаа<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Хайлтын түүх<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Таб руу буцах</translation>
 <translation id="1501859676467574491">Google Бүртгэлээсээ карт харуулах</translation>
 <translation id="1507202001669085618">&lt;p&gt;Хэрэв та онлайн болохоосоо өмнө нэвтрэх шаардлагатай Wi-Fi портал ашиглаж байгаа бол тус алдааг харах болно.&lt;/p&gt;
@@ -285,6 +297,7 @@
     толгой хэсэг нь гэмтсэн тул
     <ph name="SITE" />-д зочлох таны хүсэлтийг гүйцэтгэхэд хөтчид саад болж байна. Үндсэн удирдамжийг
     сайтад зориулж аюулгүй байдал болон бусад шинж чанарыг тохируулахад сайтын оператор ашиглаж болно.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium дахь Нууцлалтай горимын талаар нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Таны нээлттэй таб энд харагдана</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@
 <translation id="2597378329261239068">Энэхүү баримт бичиг нь нууц үгээр хамгаалагдсан. Нууц үгээ оруулна уу.</translation>
 <translation id="2609632851001447353">Хувилбарууд</translation>
 <translation id="2610561535971892504">Хуулахын тулд товшино уу</translation>
+<translation id="2617988307566202237">Chrome нь дараах мэдээллийг <ph name="BEGIN_EMPHASIS" />хадгалахгүй<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Таны хөтчийн түүх
+            <ph name="LIST_ITEM" />Күүки болон сайтын өгөгдөл
+            <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Дугтуй)</translation>
 <translation id="2623663032199728144">Таны дэлгэцийн талаарх мэдээллийг ашиглахыг хүсэх боломжтой</translation>
 <translation id="2625385379895617796">Таны цаг түрүүлж явж байна.</translation>
@@ -737,12 +756,6 @@
 <translation id="3345782426586609320">Нүд</translation>
 <translation id="3355823806454867987">Прокси-ийн тохиргоонуудыг өөрчлөх ...</translation>
 <translation id="3360103848165129075">Төлбөр хариуцагчийн хүснэгт</translation>
-<translation id="3361596688432910856">Chrome дараах мэдээллийг <ph name="BEGIN_EMPHASIS" />хадгалахгүй<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Таны хөтчийн түүх
-          <ph name="LIST_ITEM" />Күүки, сайтын өгөгдөл
-          <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Энэ удирдамжийг зогсоосон <ph name="OLD_POLICY" /> удирдамжаас автоматаар хуулсан байна. Та оронд нь энэ удирдамжийг ашиглавал зохино.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> нь таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглах хүсэлтэй байна</translation>
 <translation id="3366477098757335611">Картыг харах</translation>
@@ -1161,6 +1174,7 @@
 <translation id="4628948037717959914">Зураг</translation>
 <translation id="4631649115723685955">Бэлэн мөнгө олгох маягтыг холбосон</translation>
 <translation id="4636930964841734540">Мэдээлэл</translation>
+<translation id="4638670630777875591">Chromium дахь Нууцлалтай горим</translation>
 <translation id="464342062220857295">Онцлогийг хайх</translation>
 <translation id="4644670975240021822">Нүүрээр нь доош харуулж, хуудасны урвуу дарааллаар</translation>
 <translation id="4646534391647090355">Одоо намайг тийшээ аваач</translation>
@@ -1223,12 +1237,6 @@
 <translation id="4819347708020428563">Тэмдэглэгээг өгөгдмөлөөр харахаар засах уу?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Шинэ Google Хүснэгт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="4825507807291741242">Хүчирхэг</translation>
-<translation id="4827402517081186284">Нууцлалтай горим таныг онлайн үед үл харагддаг болгохгүй:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Сайт таныг үүнд зочилж байгааг мэднэ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Ажил олгогч эсвэл сургууль хөтчийн үйл ажиллагааг хянах боломжтой<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Интернэт үйлчилгээ нийлүүлэгч вебийн ачааллыг хянаж магадгүй<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Бодлогыг зөвхөн үүлний хэрэглэгчийн бодлогоор тохируулах боломжтой тул үл хэрэгссэн.</translation>
 <translation id="483241715238664915">Сануулгыг асаах</translation>
 <translation id="4838327282952368871">Зүүд шиг</translation>
@@ -1262,6 +1270,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, хайхын тулд Таб дээр, дараа нь Enter дарна уу</translation>
 <translation id="4930153903256238152">Их багтаамжтай</translation>
+<translation id="4940163644868678279">Chrome дахь Нууцлалтай горим</translation>
 <translation id="4943872375798546930">Илэрц байхгүй байна</translation>
 <translation id="4950898438188848926">Таб сэлгэх товчлуур, нээлттэй таб <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> руу сэлгэхийн тулд Enter дээр дарна уу</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
@@ -1622,6 +1631,7 @@
 <translation id="6120179357481664955">UPI ID-гаа санаж байна уу?</translation>
 <translation id="6124432979022149706">Chrome байгууллагын холбогч</translation>
 <translation id="6127379762771434464">Хамгийн их зочилсон вэбсайтуудыг устгасан</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome дахь Нууцлалтай горимын талаар нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Ашиглаж байгаа кабелаа шалгасны дараагаар рутер, модем эсвэл бусад сүлжээний төхөөрөмжөө дахин ачааллана уу.</translation>
 <translation id="614940544461990577">Оролдож үзэх:</translation>
 <translation id="6150036310511284407">Зүүн ирмэг дагуу гурван нүх цоолох</translation>
@@ -1797,7 +1807,6 @@
 <translation id="6757797048963528358">Таны төхөөрөмж идэвхгүй болсон байна.</translation>
 <translation id="6767985426384634228">Хаягийг шинэчлэх үү?</translation>
 <translation id="6768213884286397650">Хагаки (Ил захидал)</translation>
-<translation id="6774185088257932239">Нууцлалтай горимын талаар <ph name="BEGIN_LINK" />нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Нил хөх ягаан</translation>
 <translation id="6786747875388722282">Өргөтгөлүүд</translation>
@@ -1897,6 +1906,12 @@
 <translation id="7111012039238467737">(Хүчинтэй)</translation>
 <translation id="7118618213916969306">Түр санах ойн URL болох <ph name="SHORT_URL" />-г хайх</translation>
 <translation id="7119414471315195487">Бусад таб, эсвэл программыг хаах</translation>
+<translation id="7129355289156517987">Таныг Chromium-н бүх нууцлалтай табыг хаах үед таны тэдгээр таб дахь үйл ажиллагааг энэ төхөөрөмжөөс арилгана:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Хөтчийн үйл ажиллагаа<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Хайлтын түүх<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Энэ хаяг руу хүргэх боломжгүй тул өөр хаяг сонгоно уу.</translation>
 <translation id="7132939140423847331">Таны админ энэ өгөгдлийг хуулахыг хориглосон.</translation>
 <translation id="7135130955892390533">Төлөвийг харуулах</translation>
@@ -2015,6 +2030,12 @@
 <translation id="7485870689360869515">Мэдээлэл байхгүй байна.</translation>
 <translation id="7495528107193238112">Энэ контентыг блоклосон байна. Асуудлыг шийдвэрлэхийн тулд сайтын өмчлөгчтэй холбогдоно уу.</translation>
 <translation id="7497998058912824456">Документ үүсгэх товчлуур, шинэ Google Док шуурхай үүсгэхийн тулд Enter дээр дарна уу</translation>
+<translation id="7506488012654002225">Chromium нь дараах мэдээллийг <ph name="BEGIN_EMPHASIS" />хадгалахгүй<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Таны хөтчийн түүх
+            <ph name="LIST_ITEM" />Күүки болон сайтын өгөгдөл
+            <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Буцаасан удирдамжийн төхөөрөмжийн id хоосон, эсвэл одоогийн төхөөрөмжийн id-тай тохирохгүй байна</translation>
 <translation id="7508870219247277067">Авокадо ногоон</translation>
 <translation id="7511955381719512146">Таны ашиглаж буй Wi-Fi сүлжээ таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />-д нэвтрэхийг шаардах магадлалтай.</translation>
@@ -2234,6 +2255,7 @@
 <translation id="8202370299023114387">Зөрчил</translation>
 <translation id="8206978196348664717">Prc4 (Дугтуй)</translation>
 <translation id="8211406090763984747">Холболт аюулгүй байна</translation>
+<translation id="8217240300496046857">Сайтууд таныг веб дээр хянадаг күүкиг ашиглах боломжгүй. Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй.</translation>
 <translation id="8218327578424803826">Заасан байршил:</translation>
 <translation id="8220146938470311105">C7/C6 (Дугтуй)</translation>
 <translation id="8225771182978767009">Энэ компьютерийг тохиуулсан хүн энэ сайтыг блоклосон байна.</translation>
@@ -2277,12 +2299,6 @@
 <translation id="8317207217658302555">ARCore-г шинэчлэх үү?</translation>
 <translation id="831997045666694187">Үдэш</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
-<translation id="8328484624016508118">Бүх нууцлалтай табыг хаасны дараа Chrome дараахыг арилгана:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Энэ төхөөрөмжөөс таны хөтчийн үйл ажиллагаа<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Энэ төхөөрөмжөөс таны хайлт<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />-н хандах хүсэлтийг зөвшөөрсөнгүй</translation>
 <translation id="833262891116910667">Тодруулах</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> хэл дээрх хуудсыг орчуулахгүй</translation>

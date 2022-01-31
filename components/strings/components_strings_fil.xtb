@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Tingnan ang mga detalye</translation>
 <translation id="1030706264415084469">Gusto ng <ph name="URL" /> na permanenteng mag-store ng malaking data sa iyong device</translation>
 <translation id="1032854598605920125">I-rotate pakanan</translation>
+<translation id="1033329911862281889">Hindi ka ginagawang invisible ng Incognito online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Nakakakita ng mga pagbisita ang mga site at serbisyong ginagamit nila<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Nakaka-track ng aktibidad sa pag-browse ang mga employer o paaralan<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Nasusubaybayan ng mga internet service provider ang trapiko sa web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1036982837258183574">Pindutin ang |<ph name="ACCELERATOR" />| upang lumabas sa full screen</translation>
 <translation id="1038106730571050514">Ipakita ang mga suhestyon</translation>
 <translation id="1038842779957582377">Hindi kilalang pangalan</translation>
 <translation id="1041998700806130099">Mensahe sa sheet ng trabaho</translation>
 <translation id="1048785276086539861">Kapag nag-edit ka ng mga anotasyon, babalik ang dokumentong ito sa isang page na view</translation>
-<translation id="1049743911850919806">Incognito</translation>
 <translation id="1050038467049342496">Isara ang iba pang app</translation>
 <translation id="1055184225775184556">&amp;I-undo ang Pagdagdag</translation>
 <translation id="1056898198331236512">Babala</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">OK ang cache ng patakaran</translation>
 <translation id="1130564665089811311">Button na Isalin ang page, pindutin ang Enter para isalin ang page na ito gamit ang Google Translate</translation>
 <translation id="1131264053432022307">Larawang Kinopya Mo</translation>
+<translation id="1142846828089312304">I-block ang third party na cookies sa Incognito</translation>
 <translation id="1150979032973867961">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng operating system ng iyong computer ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="1151972924205500581">Kinakailangan ang password</translation>
 <translation id="1156303062776767266">Tumitingin ka ng lokal o nakabahaging file</translation>
@@ -181,6 +187,12 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1483493594462132177">Ipadala</translation>
 <translation id="1484290072879560759">Pumili ng Address sa Pagpapadala</translation>
 <translation id="1492194039220927094">Pag-push ng mga patakaran:</translation>
+<translation id="149293076951187737">Kapag isinara mo ang lahat ng tab na Incognito sa Chrome, maki-clear mula sa device na ito ang iyong aktibidad sa mga tab na iyon:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktibidad sa pag-browse<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />History ng paghahanap<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Impormasyong inilagay sa mga form<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Bumalik sa tab</translation>
 <translation id="1501859676467574491">Ipakita ang mga card mula sa iyong Google Account</translation>
 <translation id="1507202001669085618">&lt;p&gt;Makikita mo ang error na ito kung gumagamit ka ng Wi-Fi portal kung saan kailangan mong mag-sign in bago ka makapag-online.&lt;/p&gt;
@@ -285,6 +297,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     sira ang header, na pumipigil sa browser na matugunan
     ang iyong kahilingan para sa <ph name="SITE" />. Magagamit ng mga operator ng site ang mga patakaran ng
     pinagmulan para i-configure ang seguridad at iba pang property para sa isang site.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Matuto pa tungkol sa Incognito sa Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Lalabas dito ang iyong mga bukas na tab</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2597378329261239068">Protektado ng password ang dokumentong ito.  Mangyaring magpasok ng password.</translation>
 <translation id="2609632851001447353">Mga Pagkakaiba-iba</translation>
 <translation id="2610561535971892504">I-click para kopyahin</translation>
+<translation id="2617988307566202237"><ph name="BEGIN_EMPHASIS" />Hindi ise-save<ph name="END_EMPHASIS" /> ng Chrome ang sumusunod na impormasyon:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Iyong history ng pag-browse
+          <ph name="LIST_ITEM" />Cookies at data ng site
+          <ph name="LIST_ITEM" />Impormasyong inilalagay sa mga form
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">Puwedeng hilining gamitin ang impormasyon tungkol sa iyong mga screen</translation>
 <translation id="2625385379895617796">Nauuna ang iyong orasan</translation>
@@ -736,12 +755,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3345782426586609320">Mga Mata</translation>
 <translation id="3355823806454867987">Baguhin ang mga setting ng proxy...</translation>
 <translation id="3360103848165129075">Sheet ng tagapangasiwa ng pagbabayad</translation>
-<translation id="3361596688432910856"><ph name="BEGIN_EMPHASIS" />Hindi ise-save<ph name="END_EMPHASIS" /> ng Chrome ang sumusunod na impormasyon:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Iyong history ng pag-browse
-          <ph name="LIST_ITEM" />Cookies at data ng site
-          <ph name="LIST_ITEM" />Impormasyong nilagay sa mga form
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Awtomatikong kinopya ang patakarang ito mula sa hindi na ginagamit na patakarang <ph name="OLD_POLICY" />. Dapat mong gamitin ang patakarang ito sa halip.</translation>
 <translation id="3364869320075768271">Gustong gamitin ng <ph name="URL" /> ang iyong virtual reality device at data</translation>
 <translation id="3366477098757335611">Tingnan ang mga card</translation>
@@ -1160,6 +1173,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4628948037717959914">Larawan</translation>
 <translation id="4631649115723685955">May naka-link na cashback</translation>
 <translation id="4636930964841734540">Impormasyon</translation>
+<translation id="4638670630777875591">Incognito sa Chromium</translation>
 <translation id="464342062220857295">Mga feature sa paghahanap</translation>
 <translation id="4644670975240021822">Baligtarin ang pagkakasunod-sunod nang nakataob</translation>
 <translation id="4646534391647090355">Dalhin na ako roon</translation>
@@ -1222,12 +1236,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4819347708020428563">I-edit ang mga anotasyon sa default na view?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong Google Sheet nang mabilis</translation>
 <translation id="4825507807291741242">Mahusay</translation>
-<translation id="4827402517081186284">Hindi ka nagagawang hindi nakikita online ng Incognito:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Alam ng mga site kapag binisita mo ang mga ito<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Puwedeng subaybayan ng mga empleyado o paaralan ang aktibidad sa pag-browse<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Puwedeng i-monitor ng mga internet service provider ang trapiko sa web<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Binalewala dahil ang patakaran ay puwede lang itakda ng patakaran ng user ng cloud.</translation>
 <translation id="483241715238664915">I-on ang mga babala</translation>
 <translation id="4838327282952368871">Dreamy</translation>
@@ -1261,6 +1269,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay Enter para maghanap</translation>
 <translation id="4930153903256238152">Malaking kapasidad</translation>
+<translation id="4940163644868678279">Incognito sa Chrome</translation>
 <translation id="4943872375798546930">Walang mga resulta</translation>
 <translation id="4950898438188848926">Button sa paglipat ng tab, pindutin ang Enter para lumipat sa nakabukas na tab, na <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Mga Pagkilos</translation>
@@ -1621,6 +1630,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6120179357481664955">Natatandaan mo ang iyong UPI ID?</translation>
 <translation id="6124432979022149706">Mga Chrome Enterprise Connector</translation>
 <translation id="6127379762771434464">Inalis ang item</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Matuto pa tungkol sa Incognito sa Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Tingnan ang anumang mga kable at i-reboot ang anumang mga router, modem o iba
     pang mga network device na maaaring ginagamit mo.</translation>
 <translation id="614940544461990577">Subukang:</translation>
@@ -1797,7 +1807,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6757797048963528358">Nag-sleep ang iyong device.</translation>
 <translation id="6767985426384634228">I-update ang Address?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /> tungkol sa Incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Mga Extension</translation>
@@ -1897,6 +1906,12 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7118618213916969306">Hanapin ang URL sa clipboard, na <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Isara ang iba pang tab o program</translation>
+<translation id="7129355289156517987">Kapag isinara mo ang lahat ng tab na Incognito sa Chromium, maki-clear mula sa device na ito ang iyong aktibidad sa mga tab na iyon:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktibidad sa pag-browse<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />History ng paghahanap<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Impormasyong inilagay sa mga form<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Hindi maaaring magpadala sa address na ito. Pumili ng ibang address.</translation>
 <translation id="7132939140423847331">Ipinagbawal ng iyong admin ang pagkopya sa data na ito.</translation>
 <translation id="7135130955892390533">Ipakita ang status</translation>
@@ -2015,6 +2030,12 @@ Mga karagdagang detalye:
 <translation id="7485870689360869515">Walang nahanap na data.</translation>
 <translation id="7495528107193238112">Naka-block ang content na ito. Makipag-ugnayan sa may-ari ng site para maayos ang isyu.</translation>
 <translation id="7497998058912824456">Button na Gumawa ng doc, pindutin ang Enter para gumawa ng bagong Google Doc nang mabilis</translation>
+<translation id="7506488012654002225"><ph name="BEGIN_EMPHASIS" />Hindi ise-save<ph name="END_EMPHASIS" /> ng Chromium ang sumusunod na impormasyon:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Iyong history ng pag-browse
+            <ph name="LIST_ITEM" />Cookies at data ng site
+            <ph name="LIST_ITEM" />Impormasyong inilalagay sa mga form
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Walang laman ang ibinalik na device id ng patakaran o hindi ito tumutugma sa kasalukuyang device id</translation>
 <translation id="7508870219247277067">Avocado Green</translation>
 <translation id="7511955381719512146">Maaaring hilingin ng Wi-Fi na ginagamit mo na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2234,6 +2255,7 @@ Mga karagdagang detalye:
 <translation id="8202370299023114387">Hindi pagkakasundo</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Secure ang koneksyon</translation>
+<translation id="8217240300496046857">Hindi makakagamit ng cookies na sumusubaybay sa iyo sa buong web ang mga site. Posibleng masira ang mga feature sa ilang site.</translation>
 <translation id="8218327578424803826">Itinakdang Lokasyon:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Pinili ng taong nag-set up ng computer na ito na i-block ang site na ito.</translation>
@@ -2277,12 +2299,6 @@ Mga karagdagang detalye:
 <translation id="8317207217658302555">I-update ang ARCore?</translation>
 <translation id="831997045666694187">Gabi</translation>
 <translation id="8321476692217554900">mga notification</translation>
-<translation id="8328484624016508118">Pagkatapos isara ang lahat ng tab na Incognito, kini-clear ng Chrome ang:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Iyong aktibidad sa pag-browse sa device na ito<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Iyong history ng paghahanap sa device na ito<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Impormasyong inilagay sa mga form<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Tinanggihan ang access sa <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">I-highlight</translation>
 <translation id="8339163506404995330">Hindi isasalin ang mga page na nasa <ph name="LANGUAGE" /></translation>

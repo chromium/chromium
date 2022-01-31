@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">നിലവിലെ ഐക്കൺ</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> എല്ലായ്പ്പോഴും വിവര്‍ത്തനം ചെയ്യുക </translation>
 <translation id="1108600514891325577">&amp;നിറുത്തുക</translation>
+<translation id="1108938384783527433">ചരിത്രം സമന്വയിപ്പിക്കൽ</translation>
 <translation id="1110155001042129815">കാത്തിരിക്കുക</translation>
 <translation id="1110965959145884739">ഈ ഉപകരണത്തിൽ ഇൻസ്റ്റാൾ ചെയ്യേണ്ട ഭാഷകൾ തിരഞ്ഞെടുക്കുക. ഡിസ്‌ക് സ്പെയ്‌സ് ലാഭിക്കാൻ, ഭാഷാ ഫയലുകൾ ഉപയോക്താക്കൾക്കിടയിൽ പങ്കിടും. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -507,6 +508,7 @@
 <translation id="1521442365706402292">സര്‍ട്ടിഫിക്കറ്റുകള്‍ മാനേജ് ചെയ്യുക</translation>
 <translation id="1521774566618522728">ഇന്ന് സജീവമായിരുന്നു</translation>
 <translation id="152234381334907219">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
+<translation id="1523279371236772909">കഴിഞ്ഞ മാസം കണ്ടു</translation>
 <translation id="1523978563989812243">ടെക്‌സ്റ്റ് ടു സ്‌പീച്ച് എഞ്ചിനുകൾ</translation>
 <translation id="1524430321211440688">കീബോർഡ്</translation>
 <translation id="1524563461097350801">വേണ്ട</translation>
@@ -1239,6 +1241,7 @@
 <translation id="2232876851878324699">ഫയലില്‍ ഒരു സർട്ടിഫിക്കറ്റ് ഉണ്ടായിരുന്നു, അത് ഇമ്പോർട്ട് ചെയ്തിട്ടില്ല:</translation>
 <translation id="2233502537820838181">&amp;കൂടുതൽ വിവരങ്ങൾ</translation>
 <translation id="223356358902285214">വെബ്, ആപ്പ് ആക്റ്റിവിറ്റി</translation>
+<translation id="2234827758954819389">സ്വകാര്യതാ ഗൈഡ്</translation>
 <translation id="2234876718134438132">സമന്വയവും Google സേവനങ്ങളും</translation>
 <translation id="2235344399760031203">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്‍തു</translation>
 <translation id="2238379619048995541">ആവൃത്തി നില ഡാറ്റ</translation>
@@ -3092,6 +3095,7 @@
 <translation id="4095264805865317199">Cellular Activation UI തുറക്കുക</translation>
 <translation id="4095507791297118304">പ്രാഥമിക ഡിസ്‌പ്ലേ</translation>
 <translation id="4096508467498758490">ഡെവലപ്പർ മോഡ് വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കുക</translation>
+<translation id="4096797685681362305">കഴിഞ്ഞ ആഴ്‌ച കണ്ടു</translation>
 <translation id="4097406557126260163">ആപ്പുകളും വിപുലീകരണങ്ങളും</translation>
 <translation id="409742781329613461">Chrome-നുള്ള നുറുങ്ങുകൾ</translation>
 <translation id="4097560579602855702">Google-ൽ തിരയുക</translation>
@@ -3647,6 +3651,7 @@
 <translation id="4699172675775169585">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="4699357559218762027">(സ്വയമേവ-സമാരംഭിച്ചു)</translation>
 <translation id="4701025263201366865">രക്ഷിതാവിനുള്ള സൈൻ ഇൻ</translation>
+<translation id="4701335814944566468">ഇന്നലെ കണ്ടു</translation>
 <translation id="4708794300267213770">സുഷുപ്‌തിയിൽ നിന്നുണരുമ്പോൾ ലോക്ക് സ്‌ക്രീൻ കാണിക്കുക</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> പുറത്തുകടക്കുക</translation>
 <translation id="4711638718396952945">ക്രമീകരണങ്ങൾ പുനഃസ്ഥാപിക്കുക</translation>
@@ -3714,6 +3719,7 @@
 <translation id="479536056609751218">വെബ്‌പേജുകൾ, HTML മാത്രം</translation>
 <translation id="4796142525425001238">എപ്പോഴും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ലോഗുകൾ<ph name="END_LINK" /> (Google-ൽ ഉള്ളത് മാത്രം) അറ്റാച്ച് ചെയ്യുക</translation>
+<translation id="479863874072008121">ഉപകരണങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="4800839971935185386">പേരുമായും ഐക്കണുമായും ബന്ധപ്പെട്ട അപ്‌ഡേറ്റുകൾ അവലോകനം ചെയ്യുക</translation>
 <translation id="4801448226354548035">അക്കൗണ്ടുകൾ മറയ്‌ക്കുക</translation>
 <translation id="4801512016965057443">മൊബൈല്‍ ഡാറ്റ റോമിംഗ് അനുവദിക്കുക</translation>
@@ -6439,6 +6445,7 @@
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7659154729610375585">അദൃശ്യ മോഡിൽ നിന്ന് എന്തായാലും പുറത്തുകടക്കണോ?</translation>
 <translation id="7659297516559011665">ഈ ഉപകരണത്തിലുള്ള പാസ്‌വേഡുകൾ മാത്രം</translation>
+<translation id="7659336857671800422">സ്വകാര്യതാ ഗൈഡ് അവലോകനം ചെയ്യുക</translation>
 <translation id="7659584679870740384">ഈ ഉപകരണം ഉപയോഗിക്കാൻ നിങ്ങൾക്ക് അനുമതിയില്ല. സൈൻ ഇൻ അനുമതിയ്‌ക്കായി അഡ്‌മിനിസ്‌ട്രേറ്ററെ ബന്ധപ്പെടുക.</translation>
 <translation id="7661259717474717992">കുക്കി ഡാറ്റ സംരക്ഷിക്കുന്നതിനും വായിക്കുന്നതിനും സൈറ്റുകളെ അനുവദിക്കുക</translation>
 <translation id="7661451191293163002">ഒരു രജിസ്‌ട്രേഷൻ സർട്ടിഫിക്കറ്റ് ലഭ്യമാക്കാനായില്ല.</translation>
@@ -7959,6 +7966,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> എന്നതിന് <ph name="FOLDERNAME" /> എന്ന ഫോൾഡറിലെ ഫയലുകൾ എഡിറ്റ് ചെയ്യാനാകും</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> തിരയുക</translation>
 <translation id="9201023452444595544">എല്ലാ ഓഫ്‍ലൈൻ ഡാറ്റയും മായ്‌ക്കും</translation>
+<translation id="9201117361710210082">മുമ്പ് കണ്ടു</translation>
 <translation id="9201220332032049474">സ്‌ക്രീൻ ലോക്ക് ഓപ്ഷനുകള്‍</translation>
 <translation id="9201842707396338580">എന്തോ കുഴപ്പം സംഭവിച്ചു. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉടമയെയോ അഡ്‌മിനെയോ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;പ്രൊഫൈലിംഗ് പ്രാപ്തമാക്കി</translation>

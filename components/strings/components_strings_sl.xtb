@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">neznano ime</translation>
 <translation id="1041998700806130099">Sporočilo glede delovnega lista</translation>
 <translation id="1048785276086539861">Če boste urejali pripise, se bo ta dokument vrnil v pogled ene strani.</translation>
-<translation id="1049743911850919806">Anonimni način</translation>
 <translation id="1050038467049342496">Zaprite druge aplikacije</translation>
 <translation id="1055184225775184556">&amp;Razveljavi dodajanje</translation>
 <translation id="1056898198331236512">Opozorilo</translation>
@@ -736,12 +735,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3345782426586609320">Oči</translation>
 <translation id="3355823806454867987">Spremeni nastavitve proxyja ...</translation>
 <translation id="3360103848165129075">List rutine za obravnavo plačil</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />ne shrani<ph name="END_EMPHASIS" /> teh podatkov:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />zgodovine brskanja,
-          <ph name="LIST_ITEM" />piškotkov in podatkov spletnih mest,
-          <ph name="LIST_ITEM" />podatkov, vnesenih v obrazce.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Ta pravilnik je bil samodejno kopiran iz zastarelega pravilnika <ph name="OLD_POLICY" />. Uporabite ta pravilnik.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> želi uporabljati napravo in podatke za navidezno resničnost</translation>
 <translation id="3366477098757335611">Ogled kartic</translation>
@@ -1222,12 +1215,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4819347708020428563">Želite urejati pripise v privzetem pogledu?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti novo Google Preglednico</translation>
 <translation id="4825507807291741242">Zmogljivo</translation>
-<translation id="4827402517081186284">V anonimnem načinu niste nevidni v spletu:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />spletna mesta vedo, kdaj jih obiščete;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />delodajalci ali šole lahko spremljajo vaše brskanje;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ponudniki internetnih storitev morda spremljajo spletni promet.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Prezrto, ker lahko pravilnik nastavi samo uporabniški pravilnik za oblak.</translation>
 <translation id="483241715238664915">Vklopi opozorila</translation>
 <translation id="4838327282952368871">Zasanjano</translation>
@@ -1797,7 +1784,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6757797048963528358">Naprava je preklopila v stanje pripravljenosti.</translation>
 <translation id="6767985426384634228">Želite posodobiti naslov?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> o anonimnem načinu</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Vijoličnomodra</translation>
 <translation id="6786747875388722282">Razširitve</translation>
@@ -2277,12 +2263,6 @@ Dodatne podrobnosti:
 <translation id="8317207217658302555">Želite posodobiti ARCore?</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obvestila</translation>
-<translation id="8328484624016508118">Po zaprtju vseh anonimnih zavihkov Chrome počisti:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />vaše brskanje v tej napravi;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />vašo zgodovino iskanja v tej napravi;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />podatke, vnesene v obrazce.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Dostop do spletnega mesta <ph name="HOST_NAME" /> je bil zavrnjen</translation>
 <translation id="833262891116910667">Označevanje</translation>
 <translation id="8339163506404995330">Strani v jeziku <ph name="LANGUAGE" /> ne bodo prevedene</translation>

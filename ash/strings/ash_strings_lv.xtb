@@ -82,6 +82,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
 <translation id="1364382257761975320">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu.</translation>
+<translation id="1364618750746929654">Nevar izveidot atšifrējumu</translation>
 <translation id="1383597849754832576">Nevar lejupielādēt automātisko subtitru failus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1391102559483454063">Ieslēgta</translation>
@@ -679,6 +680,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5465662442746197494">Vai nepieciešama palīdzība?</translation>
 <translation id="547979256943495781">Plaukts tiek rādīts labajā pusē</translation>
+<translation id="5491186829646618080">Pieejami aparātprogrammatūras atjauninājumi</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Jūsu administrators ir noņēmis visus eSIM profilus. Lai uzzinātu vairāk, sazinieties ar administratoru.</translation>
 <translation id="5523434445161341166">Funkcijā “<ph name="FEATURE_NAME" />” notiek savienojuma izveide.</translation>
@@ -1177,6 +1179,7 @@ Jauna instalācija</translation>
 <translation id="8876661425082386199">Savienojuma pārbaude</translation>
 <translation id="8877788021141246043">Iestatīt atgādinājumu</translation>
 <translation id="8878886163241303700">Notiek ekrāna izvēršana</translation>
+<translation id="888982883502837004">Jūsu ierīcei ir pieejami aparātprogrammatūras atjauninājumi. Noklikšķiniet, lai tos izskatītu un veiktu atjaunināšanu.</translation>
 <translation id="8896630965521842259">Veidne “<ph name="DESK_TEMPLATE_NAME" />” tiks neatgriezeniski dzēsta.</translation>
 <translation id="890616557918890486">Mainīt avotu</translation>
 <translation id="8909138438987180327">Akumulatora uzlādes līmenis:<ph name="PERCENTAGE" />.</translation>

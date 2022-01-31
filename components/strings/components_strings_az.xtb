@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">bilinməyən ad</translation>
 <translation id="1041998700806130099">İş vərəqi mesajı</translation>
 <translation id="1048785276086539861">Annotasiyaları redaktə etdiyiniz zaman bu sənəd bir səhifəlik görünüşə qayıdacaq</translation>
-<translation id="1049743911850919806">Gizli Rejim</translation>
 <translation id="1050038467049342496">Digər tətbiqləri bağlayın</translation>
 <translation id="1055184225775184556">Əlavəni geri qaytarın</translation>
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
@@ -734,12 +733,6 @@
 <translation id="3345782426586609320">Gözlər</translation>
 <translation id="3355823806454867987">Proksi ayarlarını dəyişin...</translation>
 <translation id="3360103848165129075">Ödəniş səhifəsi</translation>
-<translation id="3361596688432910856">Chrome aşağıdakı məlumatları <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Axtarış tarixçəsi
-          <ph name="LIST_ITEM" />Kuki və sayt datası
-          <ph name="LIST_ITEM" />Formaya daxil edilən məlumat
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Bu siyasət ləğv edilmiş <ph name="OLD_POLICY" /> siyasətindən avtomatik kopyalanıb. Əvəzinə bu siyasətdən istifadə etməlisiniz.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> virtual reallıq cihazınız və datanızı istifadə etmək istəyir</translation>
 <translation id="3366477098757335611">Kartlara baxın</translation>
@@ -1217,12 +1210,6 @@
 <translation id="4819347708020428563">Annotasiyalar defolt görünüşdə redaktə edilsin?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq cəld yeni Google Cədvəli yaradın</translation>
 <translation id="4825507807291741242">Güclü</translation>
-<translation id="4827402517081186284">Anonim rejim sizi onlayn görünməz etmir:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Saytlar onları ziyarət etdiyiniz zaman xəbərdar olur<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />İşəgötürənlər və ya məktəblər axtarış fəaliyyətini izləyə bilir<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />İnternet xidmət təminatçıları veb trafikini izləyə bilər<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Siyasət yalnız bulud istifadəçisi siyasəti tərəfindən təyin oluna bildiyi üçün nəzərə alınmadı.</translation>
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4838327282952368871">Xəyali</translation>
@@ -1792,7 +1779,6 @@
 <translation id="6757797048963528358">Cihazınız yatmağa getdi.</translation>
 <translation id="6767985426384634228">Ünvan yenilənsin?</translation>
 <translation id="6768213884286397650">Hagaki (Postkart)</translation>
-<translation id="6774185088257932239">Anonim rejim haqqında <ph name="BEGIN_LINK" />ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Tünd-bənövşəyi</translation>
 <translation id="6786747875388722282">Artırmalar</translation>
@@ -2272,12 +2258,6 @@
 <translation id="8317207217658302555">ARCore güncəllənsin?</translation>
 <translation id="831997045666694187">Axşam</translation>
 <translation id="8321476692217554900">bildirişlər</translation>
-<translation id="8328484624016508118">Bütün Anonim tabları bağladıqdan sonra Chrome bunları təmizləyəcək:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Bu cihazdan axtarış fəaliyyətinizi<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Bu cihazdan axtarış tarixçənizi<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Formalara daxil edilən məlumatları<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> hostuna giriş rədd edildi</translation>
 <translation id="833262891116910667">Vurğulama</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> dilində olan səhifələr tərcümə edilməyəcək</translation>

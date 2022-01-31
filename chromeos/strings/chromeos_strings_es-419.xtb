@@ -172,6 +172,7 @@
 <translation id="357889014807611375">Wi-Fi de uso medido</translation>
 <translation id="3583278742022654445">La intensidad de la señal es débil. Intenta acercarte a la fuente de la señal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batería completa</translation>
+<translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
 <translation id="3606583719724308068">Alta latencia de los sitios web HTTPS</translation>
 <translation id="3689839747745352263">Prueba de <ph name="TEST_NAME" /></translation>
@@ -423,6 +424,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La tapa del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
 <translation id="6911383237894364323">No es posible conectarse a los servidores de medios</translation>
+<translation id="6935486296377631201">Protector de pantalla</translation>
 <translation id="6957231940976260713">Nombre del servicio</translation>
 <translation id="6961170852793647506">Para comenzar, coloca tu documento en el escáner.</translation>
 <translation id="6965382102122355670">Aceptar</translation>

@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Դիտել մանրամասները</translation>
 <translation id="1030706264415084469"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="1032854598605920125">Պտտել ժամացույցի սլաքի ուղղությամբ</translation>
+<translation id="1033329911862281889">Ինկոգնիտո ռեժիմը չի կարող ձեզ լիովին անտեսանելի դարձնել համացանցում, մասնավորապես՝
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />այցելությունները կարող են տեսանելի լինել կայքերին և դրանց կողմից օգտագործվող ծառայություններին,<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />գործատուները և ուսումնական հաստատությունները կարող են հետագծել գործողությունները դիտարկիչում,<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ինտերնետ պրովայդերները կարող են հետևել վեբ թրաֆիկին։<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1036982837258183574">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Ցուցադրել առաջարկները</translation>
 <translation id="1038842779957582377">անհայտ անուն</translation>
 <translation id="1041998700806130099">Հաղորդագրություն առաջադրանքի թերթի վրա</translation>
 <translation id="1048785276086539861">Երբ դուք խմբագրեք ծանոթագրությունները, փաստաթուղթը կցուցադրվի մեկ էջով</translation>
-<translation id="1049743911850919806">Ինկոգնիտո</translation>
 <translation id="1050038467049342496">Փակեք մյուս հավելվածները</translation>
 <translation id="1055184225775184556">&amp;Հետարկել հավելումը</translation>
 <translation id="1056898198331236512">Զգուշացում</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Քաղաքականության քեշում սխալներ չեն գտնվել</translation>
 <translation id="1130564665089811311">«Թարգմանել էջը» կոճակ։ Այս էջը Google Translate-ով թարգմանելու համար սեղմեք Enter։</translation>
 <translation id="1131264053432022307">Ձեր պատճենած պատկերը</translation>
+<translation id="1142846828089312304">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="1150979032973867961">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Ձեր համակարգչի օպերացիոն համակարգը չի վստահում դրա անվտանգության վկայականին: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="1151972924205500581">Պահանջվում է գաղտնաբառ</translation>
 <translation id="1156303062776767266">Դուք տեղային կամ ընդհանուր ֆայլ եք դիտում</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">Ուղարկել</translation>
 <translation id="1484290072879560759">Ընտրեք առաքման հասցեն</translation>
 <translation id="1492194039220927094">Կանոնների մղում՝</translation>
+<translation id="149293076951187737">Երբ փակեք Chrome-ի բոլոր ինկոգնիտո ներդիրները, այս սարքից կհեռացվեն այդ ներդիրներում ձեր կատարած գործողությունները, այդ թվում՝
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />գործողությունները դիտարկիչում,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />որոնումների պատմությունը,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Վերադառնալ ներդիր</translation>
 <translation id="1501859676467574491">Ցուցադրեք քարտեր ձեր Google հաշվից</translation>
 <translation id="1507202001669085618">&lt;p&gt;Այս սխալը կցուցադրվի, եթե դուք օգտագործում եք Wi-Fi պորտալ, որտեղ ցանցին միանալու համար անհրաժեշտ է մտնել հաշիվ։&lt;/p&gt;
@@ -285,6 +297,7 @@
     վերնագրի կազմությունը սխալ է, ինչը թույլ չի տալիս դիտարկիչին կատարել
     <ph name="SITE" /> կայքի ձեր հարցումը։ Սկզբնական կանոնները կարող են օգտագործվել
     կայքերի օպերատորների կողմից կայքի տարատեսակ պարամետրերի և անվտանգության կարգավորումների համար։</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Իմանալ ավելին Chromium-ի ինկոգնիտո ռեժիմի մասին<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Ձեր բացված ներդիրները կցուցադրվեն այստեղ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@
 <translation id="2597378329261239068">Այս փաստաթուղթը գաղտնաբառով պաշտպանված է: Մուտքագրեք գաղտնաբառը:</translation>
 <translation id="2609632851001447353">Տարբերակներ</translation>
 <translation id="2610561535971892504">Սեղմել՝ պատճենելու համար</translation>
+<translation id="2617988307566202237">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ձեր այցելությունների պատմությունը,
+            <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
+            <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (ծրար)</translation>
 <translation id="2623663032199728144">Կարող է ձեր էկրանների մասին տեղեկություններն օգտագործելու թույլտվություն հայցել</translation>
 <translation id="2625385379895617796">Ձեր ժամացույցը առաջ է ընկել</translation>
@@ -736,12 +755,6 @@
 <translation id="3345782426586609320">Աչքեր</translation>
 <translation id="3355823806454867987">Փոխել պրոքսի-սերվերի կարգավորումները…</translation>
 <translation id="3360103848165129075">Վճարման մշակման թերթ</translation>
-<translation id="3361596688432910856">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ձեր այցելությունների պատմությունը,
-          <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
-          <ph name="LIST_ITEM" />ձևերում լրացրած տեղեկությունները։
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Այս կանոնն ավտոմատ պատճենվել է <ph name="OLD_POLICY" /> կանոնից, որն արդեն հնացել է։ Վերջինիս փոխարեն օգտագործեք այս կանոնը։</translation>
 <translation id="3364869320075768271"><ph name="URL" /> կայքն ուզում է օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="3366477098757335611">Դիտել քարտերը</translation>
@@ -1160,6 +1173,7 @@
 <translation id="4628948037717959914">Լուսանկար</translation>
 <translation id="4631649115723685955">Քեշբեքով</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
+<translation id="4638670630777875591">Ինկոգնիտո ռեժիմը Chromium-ում</translation>
 <translation id="464342062220857295">Որոնման գործառույթներ</translation>
 <translation id="4644670975240021822">Հակառակ հերթականությամբ՝ երեսի կողմով ներքև</translation>
 <translation id="4646534391647090355">Անցնել հիմա</translation>
@@ -1222,12 +1236,6 @@
 <translation id="4819347708020428563">Խմբագրե՞լ ծանոթագրությունները կանխադրված դիտակերպում</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Արագ Google աղյուսակ ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="4825507807291741242">Հզոր</translation>
-<translation id="4827402517081186284">Ինկոգնիտո ռեժիմը չի կարող ձեզ լիովին անտեսանելի դարձնել համացանցում․
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Կայքերը տեղեկանում են ձեր այցելության մասին<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Գործատուները և ուսումնական հաստատությունները կարող են հետագծել գործողությունները դիտարկիչում<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Ինտերնետ պրովայդերները կարող են հետևել վեբ թրաֆիկին<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Անտեսվում է, քանի որ այս կանոնը կարելի է կարգավորել միայն ամպի օգտատիրոջ կանոնի միջոցով։</translation>
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4838327282952368871">Երազային</translation>
@@ -1261,6 +1269,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Որոնելու համար սեղմեք Tab, ապա՝ Enter</translation>
 <translation id="4930153903256238152">Մեծ տարողություն</translation>
+<translation id="4940163644868678279">Ինկոգնիտո ռեժիմը Chrome-ում</translation>
 <translation id="4943872375798546930">Արդյունքներ չկան</translation>
 <translation id="4950898438188848926">Ներդիրների միջև անցման կոճակ։ Բացված ներդիրին (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />) անցնելու համար սեղմեք «Enter»։</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
@@ -1622,6 +1631,7 @@
 <translation id="6120179357481664955">Հիշո՞ւմ եք ձեր UPI ID-ն</translation>
 <translation id="6124432979022149706">Chrome Enterprise-ի միակցիչներ</translation>
 <translation id="6127379762771434464">Տարրը հեռացվեց</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Իմանալ ավելին Chrome-ի ինկոգնիտո ռեժիմի մասին<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Ստուգեք բոլոր մալուխները և վերաբեռնեք երթուղիչները, մոդեմները կամ օգտագործվող
     այլ ցանցային սարքերը:</translation>
 <translation id="614940544461990577">Փորձեք՝</translation>
@@ -1798,7 +1808,6 @@
 <translation id="6757797048963528358">Ձեր սարքը մտել է քնի ռեժիմ:</translation>
 <translation id="6767985426384634228">Թարմացնե՞լ հասցեն</translation>
 <translation id="6768213884286397650">Hagaki (բացիկ)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> ինկոգնիտո ռեժիմի մասին</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Բաց մանուշակագույն</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
@@ -1898,6 +1907,12 @@
 <translation id="7111012039238467737">(վավեր)</translation>
 <translation id="7118618213916969306">Սեղմատախտակին պահված URL-ի որոնում, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Փակեք մյուս ներդիրներն ու ծրագրերը</translation>
+<translation id="7129355289156517987">Երբ փակեք Chromium-ի բոլոր ինկոգնիտո ներդիրները, այս սարքից կհեռացվեն այդ ներդիրներում ձեր կատարած գործողությունները, այդ թվում՝
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />գործողությունները դիտարկիչում,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />որոնումների պատմությունը,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Այս հասցեով հնարավոր չէ առաքել: Ընտրեք այլ հասցե:</translation>
 <translation id="7132939140423847331">Ձեր ադմինիստրատորն արգելել է այս տվյալների պատճենումը։</translation>
 <translation id="7135130955892390533">Ցուցադրել կարգավիճակը</translation>
@@ -2016,6 +2031,12 @@
 <translation id="7485870689360869515">Տվյալներ չեն գտնվել:</translation>
 <translation id="7495528107193238112">Այս բովանդակությունն արգելափակված է։ Խնդիրը վերացնելու համար դիմեք կայքի սեփականատիրոջը։</translation>
 <translation id="7497998058912824456">«Ստեղծել փաստաթուղթ» կոճակ։ Արագ Google փաստաթուղթ ստեղծելու համար սեղմեք Enter։</translation>
+<translation id="7506488012654002225">Chromium-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ձեր այցելությունների պատմությունը,
+            <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
+            <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Սարքի վերադարձված կանոնի ID-ն դատարկ է կամ չի համապատասխանում ընթացիկ ID-ին</translation>
 <translation id="7508870219247277067">Ավոկադոյի կանաչ</translation>
 <translation id="7511955381719512146">Անլար կապը, որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />:</translation>
@@ -2235,6 +2256,7 @@
 <translation id="8202370299023114387">Հակասություն</translation>
 <translation id="8206978196348664717">Prc4 (ծրար)</translation>
 <translation id="8211406090763984747">Կապն անվտանգ է</translation>
+<translation id="8217240300496046857">Կայքերը չեն կարող օգտագործել քուքիները, որոնց միջոցով հետագծվում են ձեր գործողությունները համացանցում։ Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="8218327578424803826">Նշանակված տեղադրություն՝</translation>
 <translation id="8220146938470311105">C7/C6 (ծրար)</translation>
 <translation id="8225771182978767009">Անձն, ով կարգավորել է այս համակարգիչը, նշել է, որպեսզի այս կայքն արգելափակվի:</translation>
@@ -2278,12 +2300,6 @@
 <translation id="8317207217658302555">Թարմացնե՞լ ARCore-ը</translation>
 <translation id="831997045666694187">Մինչև երեկո</translation>
 <translation id="8321476692217554900">ծանուցումներ</translation>
-<translation id="8328484624016508118">Երբ դուք փակեք բոլոր ինկոգնիտո ներդիրները, Chrome-ում կջնջվեն՝
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Այս սարքի դիտարկիչում ձեր կատարած գործողությունները<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Այս սարքում ձեր կատարած որոնումների պամությունը<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Ձևերում մուտքագրված տեղեկությունները<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> մուտքը մերժվել է</translation>
 <translation id="833262891116910667">Նշել</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> էջերը չեն թարգմանվի</translation>

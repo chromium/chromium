@@ -79,6 +79,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1351937230027495976">Comprimi il menu</translation>
 <translation id="1364382257761975320">Per sbloccare Chromebook, utilizza la tua impronta</translation>
+<translation id="1364618750746929654">Impossibile generare la trascrizione</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1391102559483454063">On</translation>
@@ -677,6 +678,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="54609108002486618">Gestito</translation>
 <translation id="5465662442746197494">Hai bisogno di assistenza?</translation>
 <translation id="547979256943495781">Barra delle app a destra</translation>
+<translation id="5491186829646618080">Aggiornamenti firmware disponibili</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
@@ -1174,6 +1176,7 @@ Nuova installazione</translation>
 <translation id="8876661425082386199">Controlla la connessione</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8878886163241303700">Estensione schermo</translation>
+<translation id="888982883502837004">Sono disponibili degli aggiornamenti del firmware per il tuo dispositivo. Fai clic per esaminarli ed eseguire gli aggiornamenti.</translation>
 <translation id="8896630965521842259">Il modello <ph name="DESK_TEMPLATE_NAME" /> verrà eliminato definitivamente</translation>
 <translation id="890616557918890486">Cambia origine</translation>
 <translation id="8909138438987180327">Livello batteria: <ph name="PERCENTAGE" />%.</translation>

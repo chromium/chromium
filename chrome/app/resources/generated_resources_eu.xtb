@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Une honetako ikonoa</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
 <translation id="1108600514891325577">&amp;Gelditu</translation>
+<translation id="1108938384783527433">Historiaren sinkronizazioa</translation>
 <translation id="1110155001042129815">Itxaron</translation>
 <translation id="1110965959145884739">Aukeratu gailuan instalatu nahi dituzun hizkuntza-paketeak. Erabiltzaileek hizkuntza-fitxategiak partekatzen dituzte, diskoko tokia aurrezteko. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Proiektorea</translation>
@@ -508,6 +509,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1521442365706402292">Kudeatu ziurtagiriak</translation>
 <translation id="1521774566618522728">Aktibo gaur</translation>
 <translation id="152234381334907219">Ez dira inoiz gordeko</translation>
+<translation id="1523279371236772909">Azken hilabetean ikusi duzu</translation>
 <translation id="1523978563989812243">Testua ahots bihurtzeko eginbidearen motorrak</translation>
 <translation id="1524430321211440688">Teklatua</translation>
 <translation id="1524563461097350801">Ez, eskerrik asko</translation>
@@ -1240,6 +1242,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2232876851878324699">Fitxategiak ziurtagiri bat du, baina ez da inportatu.</translation>
 <translation id="2233502537820838181">Infor&amp;mazio gehiago</translation>
 <translation id="223356358902285214">Sareko eta aplikazioetako jarduerak</translation>
+<translation id="2234827758954819389">Pribatutasun-gida</translation>
 <translation id="2234876718134438132">Sinkronizazioa eta Google-ren zerbitzuak</translation>
 <translation id="2235344399760031203">Hirugarrenen cookieak blokeatu dira</translation>
 <translation id="2238379619048995541">Maiztasunaren egoeraren datuak</translation>
@@ -3093,6 +3096,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4095264805865317199">Ireki sare mugikorretarako SIM txartelak aktibatzeko erabiltzaile-interfazea</translation>
 <translation id="4095507791297118304">Pantaila nagusia</translation>
 <translation id="4096508467498758490">Desgaitu garatzaile moduaren luzapenak</translation>
+<translation id="4096797685681362305">Azken astean ikusi duzu</translation>
 <translation id="4097406557126260163">Aplikazioak eta luzapenak</translation>
 <translation id="409742781329613461">Chrome erabiltzeko aholkuak</translation>
 <translation id="4097560579602855702">Bilatu Google-n</translation>
@@ -3648,6 +3652,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
 <translation id="4699357559218762027">(automatikoki abiarazia)</translation>
 <translation id="4701025263201366865">Gurasoen saio-hasiera</translation>
+<translation id="4701335814944566468">Atzo ikusi zenuen</translation>
 <translation id="4708794300267213770">Inaktibo egoeratik irtetean, erakutsi pantaila blokeatua</translation>
 <translation id="4708849949179781599">Irten <ph name="PRODUCT_NAME" />-tik</translation>
 <translation id="4711638718396952945">Berrezarri ezarpenak</translation>
@@ -3715,6 +3720,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="479536056609751218">Web-orria, HTML soilik</translation>
 <translation id="4796142525425001238">Leheneratu beti</translation>
 <translation id="4798236378408895261">Erantsi <ph name="BEGIN_LINK" />Bluetooth konexioari buruzko erregistroak<ph name="END_LINK" /> (Google barnekoa)</translation>
+<translation id="479863874072008121">Kudeatu gailuak</translation>
 <translation id="4800839971935185386">Berrikusi izenaren eta ikonoaren berritasunak</translation>
 <translation id="4801448226354548035">Ezkutatu kontuak</translation>
 <translation id="4801512016965057443">Baimendu mugikorreko ibiltaritzako datuak</translation>
@@ -6438,6 +6444,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7659154729610375585">Ezkutuko modutik irten nahi duzu hala ere?</translation>
 <translation id="7659297516559011665">Gailu honetan soilik gordetako pasahitzak</translation>
+<translation id="7659336857671800422">Irakurri Pribatutasun-gida</translation>
 <translation id="7659584679870740384">Ez duzu gailua erabiltzeko baimenik. Saioa hasteko baimena lortzeko, jarri gailuaren administratzailearekin harremanetan.</translation>
 <translation id="7661259717474717992">Baimendu webguneei cookieen datuak gordetzea eta irakurtzea</translation>
 <translation id="7661451191293163002">Ezin izan da lortu erregistro-ziurtagiri bat.</translation>
@@ -7958,6 +7965,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9200339982498053969"><ph name="FOLDERNAME" /> karpetako fitxategiak editatzeko gai izango da <ph name="ORIGIN" /></translation>
 <translation id="920045321358709304">Bilatu <ph name="SEARCH_ENGINE" /> zerbitzuaren bidez</translation>
 <translation id="9201023452444595544">Garbitu egingo dira konexiorik gabe erabiltzeko datu guztiak</translation>
+<translation id="9201117361710210082">Aurrez ikusi duzu</translation>
 <translation id="9201220332032049474">Pantaila blokeatzeko aukerak</translation>
 <translation id="9201842707396338580">Arazo bat izan da. Jarri harremanetan gailuaren jabearekin edo administratzailearekin. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilen sorrera gaituta</translation>

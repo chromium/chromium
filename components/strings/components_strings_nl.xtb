@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Details bekijken</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil grote gegevens permanent op je apparaat opslaan</translation>
 <translation id="1032854598605920125">Rechtsom draaien</translation>
+<translation id="1033329911862281889">Incognito maakt je niet onzichtbaar online:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Sites en de services die ze gebruiken, kunnen bezoeken zien<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Werkgevers of scholen kunnen browse-activiteit bijhouden<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Internetproviders kunnen webverkeer monitoren<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1036982837258183574">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten</translation>
 <translation id="1038106730571050514">Suggesties bekijken</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Bericht voor taakblad</translation>
 <translation id="1048785276086539861">Als je annotaties bewerkt, keert dit document terug naar een weergave op één pagina</translation>
-<translation id="1049743911850919806">Incognito</translation>
 <translation id="1050038467049342496">Andere apps sluiten</translation>
 <translation id="1055184225775184556">&amp;Toevoegen ongedaan maken</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Cachegeheugen van beleid is OK</translation>
 <translation id="1130564665089811311">Knop 'Pagina vertalen'. Druk op Enter om deze pagina te vertalen met Google Translate.</translation>
 <translation id="1131264053432022307">Afbeelding die je hebt gekopieerd</translation>
+<translation id="1142846828089312304">Cookies van derden blokkeren in incognito</translation>
 <translation id="1150979032973867961">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door het besturingssysteem van je computer. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="1151972924205500581">Wachtwoord vereist</translation>
 <translation id="1156303062776767266">Je bekijkt een lokaal of gedeeld bestand</translation>
@@ -181,6 +187,12 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1483493594462132177">Verzenden</translation>
 <translation id="1484290072879560759">Verzendadres kiezen</translation>
 <translation id="1492194039220927094">Pushen van beleid:</translation>
+<translation id="149293076951187737">Als je alle Chrome-incognitotabbladen sluit, wordt je activiteit op die tabbladen van dit apparaat gewist:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Browse-activiteit<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Zoekgeschiedenis<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Informatie die je in formulieren hebt opgegeven<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Terug naar tabblad</translation>
 <translation id="1501859676467574491">Passen uit je Google-account bekijken</translation>
 <translation id="1507202001669085618">&lt;p&gt;J​e ​zi​et​ d​ez​e ​fo​ut​ a​ls​ j​e ​ee​n ​wi​fi​-p​or​ta​l ​ge​br​ui​kt​ w​aa​ro​p ​je​ m​oe​t ​in​lo​gg​en​ v​oo​rd​at​ j​e ​on​li​ne​ k​un​t ​ga​an​.&lt;/p&gt;
@@ -282,6 +294,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Voer Windows Netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Voor de server waar je naartoe gaat (<ph name="ORIGIN" />), is een header ingesteld
     die vereist dat een herkomstbeleid wordt toegepast op alle verzoeken aan de server. De header heeft echter een verkeerde indeling, waardoor de browser je verzoek voor <ph name="SITE" /> niet kan uitvoeren. Herkomstbeleidsregels kunnen worden gebruikt door site-operators om beveiliging en andere eigenschappen voor een site te configureren.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Meer informatie over incognito in Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Je geopende tabbladen zie je hier</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -523,6 +536,12 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2597378329261239068">Dit document is beveiligd met een wachtwoord. Geef een wachtwoord op.</translation>
 <translation id="2609632851001447353">Varianten</translation>
 <translation id="2610561535971892504">Klik om te kopiëren</translation>
+<translation id="2617988307566202237">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chrome:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Je browsegeschiedenis
+<ph name="LIST_ITEM" />Cookies en sitegegevens
+<ph name="LIST_ITEM" />Informatie die je in formulieren hebt opgegeven
+<ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (envelop)</translation>
 <translation id="2623663032199728144">Kan vragen om informatie over je schermen te gebruiken</translation>
 <translation id="2625385379895617796">Je klok loopt voor</translation>
@@ -730,12 +749,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3345782426586609320">Ogen</translation>
 <translation id="3355823806454867987">Proxyinstellingen wijzigen...</translation>
 <translation id="3360103848165129075">Blad voor betalingshandler</translation>
-<translation id="3361596688432910856">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chrome:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Je browsegeschiedenis
-          <ph name="LIST_ITEM" />Cookies en sitegegevens
-          <ph name="LIST_ITEM" />Informatie die is opgegeven in formulieren
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Dit beleid is automatisch gekopieerd uit het beëindigde beleid: <ph name="OLD_POLICY" />. Gebruik dit beleid in plaats van het oude.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wil je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="3366477098757335611">Passen bekijken</translation>
@@ -1152,6 +1165,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Cashback gekoppeld</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4638670630777875591">Incognito in Chromium</translation>
 <translation id="464342062220857295">Zoekfuncties</translation>
 <translation id="4644670975240021822">Omgekeerde volgorde met de bedrukte zijde omlaag</translation>
 <translation id="4646534391647090355">Breng me daar nu naartoe</translation>
@@ -1214,12 +1228,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4819347708020428563">Annotaties bewerken in standaardweergave?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe Google-spreadsheet te maken</translation>
 <translation id="4825507807291741242">Krachtig</translation>
-<translation id="4827402517081186284">Incognito maakt je niet onzichtbaar online:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Sites weten het als je ze bezoekt.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Werkgevers of scholen kunnen browse-activiteit bijhouden.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Internetproviders kunnen webverkeer monitoren.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Genegeerd omdat het beleid alleen kan worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="483241715238664915">Waarschuwingen aanzetten</translation>
 <translation id="4838327282952368871">Dromerig</translation>
@@ -1253,6 +1261,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op 'Tab' en vervolgens op 'Enter' om te zoeken</translation>
 <translation id="4930153903256238152">Hoge capaciteit</translation>
+<translation id="4940163644868678279">Incognito in Chrome</translation>
 <translation id="4943872375798546930">Geen resultaten</translation>
 <translation id="4950898438188848926">Schakelknop voor tabbladen, druk op Enter om naar het geopende tabblad, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, te schakelen</translation>
 <translation id="495170559598752135">Acties</translation>
@@ -1613,6 +1622,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6120179357481664955">Weet je je UPI-ID nog?</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectors</translation>
 <translation id="6127379762771434464">Item verwijderd</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Meer informatie over incognito in Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Controleer alle kabels en start alle routers, modems of andere netwerkapparaten die je gebruikt, opnieuw op.</translation>
 <translation id="614940544461990577">Probeer dit eens:</translation>
 <translation id="6150036310511284407">Drie perforaties links</translation>
@@ -1788,7 +1798,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6757797048963528358">De slaapstand van je apparaat is geactiveerd.</translation>
 <translation id="6767985426384634228">Adres updaten?</translation>
 <translation id="6768213884286397650">Hagaki (briefkaart)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensies</translation>
@@ -1888,6 +1897,12 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="7111012039238467737">(Geldig)</translation>
 <translation id="7118618213916969306">Zoeken naar klembord-URL, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Andere tabbladen of programma's sluiten</translation>
+<translation id="7129355289156517987">Als je alle Chromium-incognitotabbladen sluit, wordt je activiteit op die tabbladen van dit apparaat gewist:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Browse-activiteit<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Zoekgeschiedenis<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Informatie die je in formulieren hebt opgegeven<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Kan niet verzenden naar dit adres. Selecteer een ander adres.</translation>
 <translation id="7132939140423847331">Je beheerder heeft voorkomen dat deze gegevens worden gekopieerd.</translation>
 <translation id="7135130955892390533">Status bekijken</translation>
@@ -2006,6 +2021,12 @@ Aanvullende informatie:
 <translation id="7485870689360869515">Geen gegevens gevonden.</translation>
 <translation id="7495528107193238112">Deze content is geblokkeerd. Neem contact op met de site-eigenaar om het probleem op te lossen.</translation>
 <translation id="7497998058912824456">Knop Document maken, druk op Enter om snel een nieuw Google-document te maken</translation>
+<translation id="7506488012654002225">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chromium:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Je browsegeschiedenis
+<ph name="LIST_ITEM" />Cookies en sitegegevens
+<ph name="LIST_ITEM" />Informatie die je in formulieren hebt opgegeven
+<ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Geretourneerde apparaat-ID voor beleid is leeg of komt niet overeen met de huidige apparaat-ID</translation>
 <translation id="7508870219247277067">Avocadogroen</translation>
 <translation id="7511955381719512146">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
@@ -2225,6 +2246,7 @@ Aanvullende informatie:
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8206978196348664717">Prc4 (envelop)</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
+<translation id="8217240300496046857">Sites kunnen geen cookies gebruiken die je volgen op internet. Functies op bepaalde sites werken mogelijk niet meer.</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>
 <translation id="8220146938470311105">C7/C6 (envelop)</translation>
 <translation id="8225771182978767009">De persoon die deze computer heeft geconfigureerd, heeft deze site geblokkeerd.</translation>
@@ -2268,12 +2290,6 @@ Aanvullende informatie:
 <translation id="8317207217658302555">ARCore updaten?</translation>
 <translation id="831997045666694187">Avond</translation>
 <translation id="8321476692217554900">meldingen</translation>
-<translation id="8328484624016508118">Nadat je alle incognitotabbladen hebt gesloten, wist Chrome deze gegevens:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Je browse-activiteit vanaf dit apparaat.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Je zoekgeschiedenis vanaf dit apparaat.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Informatie die je in formulieren hebt ingevuld.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Toegang tot <ph name="HOST_NAME" /> is geweigerd</translation>
 <translation id="833262891116910667">Markeren</translation>
 <translation id="8339163506404995330">Pagina's in het <ph name="LANGUAGE" /> worden niet vertaald</translation>

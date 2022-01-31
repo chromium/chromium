@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">неизвестно име</translation>
 <translation id="1041998700806130099">Съобщение за листа за заданието</translation>
 <translation id="1048785276086539861">Когато редактирате поясненията, изгледът на документа ще бъде на една страница</translation>
-<translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="1050038467049342496">Затворете другите приложения.</translation>
 <translation id="1055184225775184556">&amp;Отмяна на добавянето</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
@@ -734,12 +733,6 @@
 <translation id="3345782426586609320">Очи</translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
 <translation id="3360103848165129075">Лист на инструмента за обработване на плащания</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />няма да съхранява<ph name="END_EMPHASIS" /> следната информация:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />историята на сърфирането ви;
-<ph name="LIST_ITEM" />„бисквитките“ и данните за сайтове;
-<ph name="LIST_ITEM" />въведените във формуляри данни.
-<ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Това правило е копирано автоматично от оттегленото <ph name="OLD_POLICY" />. Препоръчваме ви да използвате него.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> иска да използва устройствата и данните ви за виртуална реалност</translation>
 <translation id="3366477098757335611">Преглед на картите</translation>
@@ -1220,12 +1213,7 @@
 <translation id="4819347708020428563">Искате ли да редактирате поясненията в стандартния изглед?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо таблица в Google Таблици</translation>
 <translation id="4825507807291741242">Впечатляващо</translation>
-<translation id="4827402517081186284">Режимът „инкогнито“ не ви прави невидими онлайн:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Когато посещавате сайтове, те знаят за това.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Работодателите или учебните заведения могат да проследяват активността при сърфиране.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Доставчиците на интернет услуги може да следят уеб трафика.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Пренебрегнато, защото правилото може да бъде зададено само като правило за потребители в облака.</translation>
 <translation id="483241715238664915">Включване на предупрежденията</translation>
 <translation id="4838327282952368871">Замечтано</translation>
 <translation id="4840250757394056958">Преглед на историята ви в Chrome</translation>
@@ -1794,7 +1782,6 @@
 <translation id="6757797048963528358">Устройството ви премина в спящ режим.</translation>
 <translation id="6767985426384634228">Да се актуализира ли адресът?</translation>
 <translation id="6768213884286397650">Hagaki (пощенска картичка)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за режима „инкогнито“</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">виолетово</translation>
 <translation id="6786747875388722282">Разширения</translation>
@@ -2274,12 +2261,6 @@
 <translation id="8317207217658302555">Да се актуализира ли ARCore?</translation>
 <translation id="831997045666694187">Вечерта</translation>
 <translation id="8321476692217554900">известия</translation>
-<translation id="8328484624016508118">След като затворите всички раздели в режим „инкогнито“, Chrome изчиства:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />активността ви при сърфиране от това устройство;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />историята на търсенията от това устройство;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />въведената във формуляри информация.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Достъпът до <ph name="HOST_NAME" /> бе отказан</translation>
 <translation id="833262891116910667">Открояване</translation>
 <translation id="8339163506404995330">Страниците на <ph name="LANGUAGE" /> няма да се превеждат</translation>

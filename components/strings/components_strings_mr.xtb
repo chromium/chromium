@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">अज्ञात नाव</translation>
 <translation id="1041998700806130099">जॉब पत्रकाचा मेसेज</translation>
 <translation id="1048785276086539861">तुम्ही भाष्ये संपादित करता तेव्हा हा दस्तऐवज एकल पेजव्ह्यूवर परत येईल</translation>
-<translation id="1049743911850919806">गुप्त</translation>
 <translation id="1050038467049342496">अन्य ॲप्स बंद करा</translation>
 <translation id="1055184225775184556">&amp;जोडा पूर्ववत करा</translation>
 <translation id="1056898198331236512">चेतावणी</translation>
@@ -736,12 +735,6 @@
 <translation id="3345782426586609320">डोळे</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="3360103848165129075">पेमेंट हँडलर शीट</translation>
-<translation id="3361596688432910856">Chrome पुढील माहिती <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />तुमचा ब्राउझिंग इतिहास
-          <ph name="LIST_ITEM" />कुकी आणि साइट डेटा
-          <ph name="LIST_ITEM" />फॉर्ममध्ये टाकलेली माहिती
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">हे धोरण कालबाह्य झालेल्या <ph name="OLD_POLICY" /> धोरणावरून आपोआप कॉपी केले गेले. तुम्ही त्याऐवजी हे धोरण वापरले पाहिजे.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ला तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरायचा आहे</translation>
 <translation id="3366477098757335611">कार्डे पहा</translation>
@@ -1221,12 +1214,6 @@
 <translation id="4819347708020428563">भाष्ये डीफॉल्ट व्ह्यूमध्ये संपादित करायची आहेत का?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, नवीन Google शीट झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="4825507807291741242">प्रभावी</translation>
-<translation id="4827402517081186284">गुप्त मोड तुम्हाला ऑनलाइन अदृश्य करत नाही:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />तुम्ही साइटना भेट दिल्यास, त्यांना समजते<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />नियोक्ते किंवा शाळा ब्राउझिंग अ‍ॅक्टिव्हिटी ट्रॅक करू शकतात<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />इंटरनेट सेवा पुरवठादार वेब ट्रॅफिकचे निरीक्षण करू शकतात<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">दुर्लक्ष केले आहे, कारण हे धोरण फक्त क्लाउड वापरकर्ता धोरणाद्वारे सेट केले जाऊ शकते.</translation>
 <translation id="483241715238664915">चेतावण्या सुरू करा</translation>
 <translation id="4838327282952368871">स्वप्नवत</translation>
@@ -1797,7 +1784,6 @@
 <translation id="6757797048963528358">तुमचे डिव्हाइस निष्क्रीय झाले.</translation>
 <translation id="6767985426384634228">पत्ता अपडेट करायचा आहे का?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239">गुप्त मोडविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">जांभळा</translation>
 <translation id="6786747875388722282">विस्तार</translation>
@@ -2277,12 +2263,6 @@
 <translation id="8317207217658302555">ARCore अपडेट करायचे आहे का?</translation>
 <translation id="831997045666694187">संध्याकाळी</translation>
 <translation id="8321476692217554900">सूचना</translation>
-<translation id="8328484624016508118">सर्व गुप्त टॅब बंद केल्यानंतर, Chrome हे साफ करते:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />या डिव्हाइसवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />या डिव्हाइसवरील तुमचा शोध इतिहास<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> चा ॲक्सेस नाकारला</translation>
 <translation id="833262891116910667">हायलाइट</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />मधील पेज भाषांतरीत केले जाणार नाही</translation>

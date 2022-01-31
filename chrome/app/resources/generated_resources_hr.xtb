@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Trenutačna ikona</translation>
 <translation id="1103523840287552314">Uvijek prevedi <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop (Zaustavi)</translation>
+<translation id="1108938384783527433">Sinkronizacija povijesti</translation>
 <translation id="1110155001042129815">Čekaj</translation>
 <translation id="1110965959145884739">Odaberite jezike za instaliranje na ovom uređaju. Jezične datoteke dijele se između korisnika radi uštede prostora na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -510,6 +511,7 @@
 <translation id="1521442365706402292">Upravljanje potvrdama</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="152234381334907219">Nikad spremljeno</translation>
+<translation id="1523279371236772909">Pogledano u proteklih mjesec dana</translation>
 <translation id="1523978563989812243">Alati za pretvaranje teksta u govor</translation>
 <translation id="1524430321211440688">Tipkovnica</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
@@ -1242,6 +1244,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2232876851878324699">Datoteka je sadržavala jedan certifikat koji nije bio uvezen:</translation>
 <translation id="2233502537820838181">&amp;Više informacija</translation>
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
+<translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2234876718134438132">Sinkronizacija i Googleove usluge</translation>
 <translation id="2235344399760031203">Blokirani su kolačići treće strane</translation>
 <translation id="2238379619048995541">Podaci o stanju učestalosti</translation>
@@ -3097,6 +3100,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4095264805865317199">Otvori korisničko sučelje za mobilnu aktivaciju</translation>
 <translation id="4095507791297118304">Primarni zaslon</translation>
 <translation id="4096508467498758490">Onemogućivanje proširenja u načinu rada razvojnog programera</translation>
+<translation id="4096797685681362305">Pogledano u proteklih tjedan dana</translation>
 <translation id="4097406557126260163">Aplikacije i proširenja</translation>
 <translation id="409742781329613461">Savjeti za Chrome</translation>
 <translation id="4097560579602855702">Pretražite Google</translation>
@@ -3652,6 +3656,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>
 <translation id="4699357559218762027">(pokrenuto automatski)</translation>
 <translation id="4701025263201366865">Prijava roditelja</translation>
+<translation id="4701335814944566468">Pogledano jučer</translation>
 <translation id="4708794300267213770">Prikaži zaključan zaslon prilikom vraćanja iz mirovanja</translation>
 <translation id="4708849949179781599">Izađi iz programa <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Vrati postavke</translation>
@@ -3719,6 +3724,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="479536056609751218">Web-stranica, samo HTML</translation>
 <translation id="4796142525425001238">Uvijek vraćaj</translation>
 <translation id="4798236378408895261">Priloži <ph name="BEGIN_LINK" />Bluetooth zapisnike<ph name="END_LINK" /> (Google interno)</translation>
+<translation id="479863874072008121">Upravljajte uređajima</translation>
 <translation id="4800839971935185386">Pregled ažuriranja naziva i ikone</translation>
 <translation id="4801448226354548035">Sakrij račune</translation>
 <translation id="4801512016965057443">Omogući roaming mobilnih podataka</translation>
@@ -6442,6 +6448,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7659154729610375585">Želite li ipak zatvoriti anonimni način?</translation>
 <translation id="7659297516559011665">Zaporke samo na ovom uređaju</translation>
+<translation id="7659336857671800422">Pregledaj vodič za privatnost</translation>
 <translation id="7659584679870740384">Niste ovlašteni za upotrebu ovog uređaja. Zamolite administratora da vam dopusti prijavu.</translation>
 <translation id="7661259717474717992">Dopusti web-lokacijama spremanje i čitanje podataka kolačića</translation>
 <translation id="7661451191293163002">Certifikat za registraciju nije dohvaćen.</translation>
@@ -7965,6 +7972,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> će moći uređivati datoteke u mapi <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pretraži <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Izbrisat će se svi offline podaci</translation>
+<translation id="9201117361710210082">Pogledano prethodno</translation>
 <translation id="9201220332032049474">Opcije zaključavanja zaslona</translation>
 <translation id="9201842707396338580">Nešto nije u redu. Obratite se vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiliranje omogućeno</translation>

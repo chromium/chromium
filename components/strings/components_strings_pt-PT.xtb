@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Veja detalhes</translation>
 <translation id="1030706264415084469"><ph name="URL" /> pretende armazenar permanentemente dados de grandes dimensões no seu dispositivo.</translation>
 <translation id="1032854598605920125">Rodar para a direita</translation>
+<translation id="1033329911862281889">A Navegação anónima não faz com que esteja invisível online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Os sites e os serviços que estes utilizam podem ver as visitas<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Os empregadores ou as escolas podem monitorizar a atividade de navegação<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Os fornecedores de serviços de Internet podem monitorizar o tráfego da Web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036982837258183574">Premir |<ph name="ACCELERATOR" />| para sair do ecrã inteiro</translation>
 <translation id="1038106730571050514">Mostre as sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem da folha da tarefa</translation>
 <translation id="1048785276086539861">Quando edita anotações, este documento volta à vista de página única.</translation>
-<translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="1050038467049342496">Fechar outras aplicações</translation>
 <translation id="1055184225775184556">&amp;Anular adição</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1130564665089811311">Botão Traduzir página; prima Enter para traduzir esta página com o Google Tradutor.</translation>
 <translation id="1131264053432022307">Imagem que copiou</translation>
+<translation id="1142846828089312304">Bloquear cookies de terceiros na Navegação anónima</translation>
 <translation id="1150979032973867961">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o sistema operativo do seu computador não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="1151972924205500581">É necessária a palavra-passe</translation>
 <translation id="1156303062776767266">Está a visualizar um ficheiro local ou partilhado</translation>
@@ -181,6 +187,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484290072879560759">Escolher morada para envio</translation>
 <translation id="1492194039220927094">Push das políticas:</translation>
+<translation id="149293076951187737">Quando fechar todos os separadores de navegação anónima do Chrome, a sua atividade nesses separadores será limpa neste dispositivo:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Histórico de pesquisas<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informações introduzidas em formulários<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Voltar ao separador</translation>
 <translation id="1501859676467574491">Mostrar cartões da sua Conta Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Este erro é apresentado se estiver a utilizar um portal Wi-Fi que requer que inicie sessão para poder aceder à Internet.&lt;/p&gt;
@@ -285,6 +297,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     o cabeçalho está formatado incorretamente, o que impede que o navegador satisfaça
     o seu pedido para <ph name="SITE" />. As políticas de origem podem ser utilizadas
     pelos operadores de sites para configurar a segurança e outras propriedades de um site.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Saiba mais sobre a Navegação anónima no Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Os separadores abertos aparecem aqui</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2597378329261239068">Este documento está protegido por palavra-passe.  Introduza uma palavra-passe.</translation>
 <translation id="2609632851001447353">Variações</translation>
 <translation id="2610561535971892504">Clique para copiar</translation>
+<translation id="2617988307566202237">O Chrome <ph name="BEGIN_EMPHASIS" />não guardará<ph name="END_EMPHASIS" /> as seguintes informações:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />O seu histórico de navegação
+            <ph name="LIST_ITEM" />Os cookies e os dados de sites
+            <ph name="LIST_ITEM" />As informações introduzidas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">Pode solicitar a utilização de informações acerca dos seus ecrãs</translation>
 <translation id="2625385379895617796">O seu relógio está adiantado</translation>
@@ -736,12 +755,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3345782426586609320">Olhos</translation>
 <translation id="3355823806454867987">Alterar definições de proxy...</translation>
 <translation id="3360103848165129075">Página do controlador do pagamento</translation>
-<translation id="3361596688432910856">O Chrome <ph name="BEGIN_EMPHASIS" />não guardará<ph name="END_EMPHASIS" /> as seguintes informações:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />O seu histórico de navegação
-          <ph name="LIST_ITEM" />Os cookies e os dados de sites
-          <ph name="LIST_ITEM" />As informações introduzidas em formulários
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Esta política foi copiada automaticamente da política <ph name="OLD_POLICY" /> descontinuada. Deverá optar por utilizar esta política.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> pretende utilizar os seus dados e dispositivo de realidade virtual.</translation>
 <translation id="3366477098757335611">Ver cartões</translation>
@@ -1160,6 +1173,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4631649115723685955">Reembolso associado</translation>
 <translation id="4636930964841734540">Informações</translation>
+<translation id="4638670630777875591">Navegação anónima no Chromium</translation>
 <translation id="464342062220857295">Funcionalidades de pesquisa</translation>
 <translation id="4644670975240021822">Ordem inversa, com orientação para baixo</translation>
 <translation id="4646534391647090355">Aceder agora</translation>
@@ -1222,12 +1236,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4819347708020428563">Pretende editar anotações na vista predefinida?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova Folha de cálculo do Google Sheets</translation>
 <translation id="4825507807291741242">Potente</translation>
-<translation id="4827402517081186284">A Navegação anónima não faz com que esteja invisível online:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Os sites sabem quando os visita<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Os empregadores ou as escolas podem monitorizar a atividade de navegação<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Os fornecedores de serviços de Internet podem monitorizar o tráfego da Web<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ignorado porque a política só pode ser definida pela Política do Utilizador da nuvem.</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4838327282952368871">Sonhador</translation>
@@ -1261,6 +1269,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para pesquisar.</translation>
 <translation id="4930153903256238152">Capacidade elevada</translation>
+<translation id="4940163644868678279">Navegação anónima no Chrome</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4950898438188848926">Botão de mudança de separador: prima Enter para mudar para o separador aberto, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ações</translation>
@@ -1621,6 +1630,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6120179357481664955">Lembra-se do seu ID do UPI?</translation>
 <translation id="6124432979022149706">Conetores do Chrome Enterprise</translation>
 <translation id="6127379762771434464">Item removido</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Saiba mais sobre a Navegação anónima no Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Verifique os cabos e reinicie todos os routers, modems ou outros
     dispositivos de rede que possa estar a utilizar.</translation>
 <translation id="614940544461990577">Experimente:</translation>
@@ -1797,7 +1807,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6757797048963528358">O dispositivo entrou em suspensão.</translation>
 <translation id="6767985426384634228">Pretende atualizar o endereço?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre a Navegação anónima</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
@@ -1897,6 +1906,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7111012039238467737">(Válido)</translation>
 <translation id="7118618213916969306">Pesquisar URL da área de transferência, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Fechar outros separadores ou programas</translation>
+<translation id="7129355289156517987">Quando fechar todos os separadores de navegação anónima do Chromium, a sua atividade nesses separadores será limpa neste dispositivo:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Histórico de pesquisas<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informações introduzidas em formulários<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Não é possível enviar para este endereço. Selecione um diferente.</translation>
 <translation id="7132939140423847331">O seu administrador proibiu a cópia destes dados.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
@@ -2014,6 +2029,12 @@ Detalhes adicionais:
 <translation id="7485870689360869515">Não foram encontrados dados.</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
 <translation id="7497998058912824456">Botão Criar documento prima Enter para criar rapidamente um novo Documento do Google Docs</translation>
+<translation id="7506488012654002225">O Chrome <ph name="BEGIN_EMPHASIS" />não guardará<ph name="END_EMPHASIS" /> as seguintes informações:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />O seu histórico de navegação
+            <ph name="LIST_ITEM" />Os cookies e os dados de sites
+            <ph name="LIST_ITEM" />As informações introduzidas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">O ID do dispositivo da política devolvido está vazio ou não corresponde ao ID do dispositivo atual</translation>
 <translation id="7508870219247277067">Verde abacate</translation>
 <translation id="7511955381719512146">A rede Wi-Fi que está a utilizar pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2233,6 +2254,7 @@ Detalhes adicionais:
 <translation id="8202370299023114387">Conflito</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">A ligação é segura</translation>
+<translation id="8217240300496046857">Os sites não podem utilizar cookies que monitorizem a sua navegação na Web. As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="8218327578424803826">Localização atribuída:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear este site.</translation>
@@ -2276,12 +2298,6 @@ Detalhes adicionais:
 <translation id="8317207217658302555">Atualizar o ARCore?</translation>
 <translation id="831997045666694187">Noite</translation>
 <translation id="8321476692217554900">notificações</translation>
-<translation id="8328484624016508118">Após fechar todos os separadores de navegação anónima, o Chrome limpa:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />A sua atividade de navegação deste dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />O seu histórico de pesquisas deste dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />As informações introduzidas em formulários<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">O acesso a <ph name="HOST_NAME" /> foi recusado</translation>
 <translation id="833262891116910667">Realçar</translation>
 <translation id="8339163506404995330">As páginas em <ph name="LANGUAGE" /> não serão traduzidas</translation>

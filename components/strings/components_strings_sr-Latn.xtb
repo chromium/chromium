@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Prikaži detalje</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno da skladišti velike količine podataka na uređaju</translation>
 <translation id="1032854598605920125">Okrenite u smeru kazaljke na satu</translation>
+<translation id="1033329911862281889">Režim bez arhiviranja vas ne čini nevidljivim onlajn:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Sajtovi i usluge koje koristite mogu da vide posete<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Poslodavci ili škole mogu da prate aktivnosti pregledanja<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internet provajderi mogu da prate saobraćaj na vebu<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1036982837258183574">Pritisnite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana</translation>
 <translation id="1038106730571050514">Prikažite predloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
 <translation id="1048785276086539861">Kada izmenite komentare, ovaj dokument se vraća na prikaz pojedinačne stranice.</translation>
-<translation id="1049743911850919806">Bez arhiviranja</translation>
 <translation id="1050038467049342496">Zatvorite druge aplikacije</translation>
 <translation id="1055184225775184556">&amp;Opozovi dodavanje</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Keš smernica je u redu</translation>
 <translation id="1130564665089811311">Dugme Prevedi stranicu, pritisnite Enter da biste preveli ovu stranicu pomoću Google prevodioca</translation>
 <translation id="1131264053432022307">Kopirana slika</translation>
+<translation id="1142846828089312304">Blokiraj kolačiće trećih strana u režimu bez arhiviranja</translation>
 <translation id="1150979032973867961">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; operativni sistem računara nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="1151972924205500581">Lozinka je obavezna</translation>
 <translation id="1156303062776767266">Pregledate lokalnu ili deljenu datoteku</translation>
@@ -181,6 +187,12 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1483493594462132177">Pošalji</translation>
 <translation id="1484290072879560759">Odaberite adresu za isporuku</translation>
 <translation id="1492194039220927094">Slanje smernica:</translation>
+<translation id="149293076951187737">Kada zatvorite sve Chrome kartice bez arhiviranja, aktivnost na tim karticama se briše sa uređaja:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktivnosti pregledanja<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Istorija pretrage<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informacije unete u obrascima<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Nazad na karticu</translation>
 <translation id="1501859676467574491">Prikazuj kartice sa mog Google naloga</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ova greška se prikazuje ako koristite WiFi portal na kome morate da se prijavite da biste se povezali na internet.&lt;/p&gt;
@@ -285,6 +297,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     format zaglavlja je netačan, što sprečava pregledač da ispuni
     zahtev za <ph name="SITE" />. Pomoću smernica za poreklo
     operatori sajtova mogu da konfigurišu bezbednost i druga svojstva za sajt.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Saznajte više o režimu Bez arhiviranja u Chromium-u<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Otvorene kartice se pojavljuju ovde</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2597378329261239068">Ovaj dokument je zaštićen lozinkom. Unesite lozinku.</translation>
 <translation id="2609632851001447353">Varijacije</translation>
 <translation id="2610561535971892504">Kliknite da biste kopirali</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />ne čuva<ph name="END_EMPHASIS" /> sledeće informacije:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />istoriju pregledanja
+          <ph name="LIST_ITEM" />kolačiće i podatke o sajtovima
+          <ph name="LIST_ITEM" />informacije koje unosite u obrascima
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (koverat)</translation>
 <translation id="2623663032199728144">Može da zatraži da koristi informacije o ekranima</translation>
 <translation id="2625385379895617796">Sat vam žuri</translation>
@@ -736,12 +755,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3345782426586609320">Oči</translation>
 <translation id="3355823806454867987">Promeni podešavanja proksija...</translation>
 <translation id="3360103848165129075">Stranica obrađivača plaćanja</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />ne čuva<ph name="END_EMPHASIS" /> sledeće informacije:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />istoriju pregledanja
-          <ph name="LIST_ITEM" />kolačiće i podatke o sajtovima
-          <ph name="LIST_ITEM" />informacije koje unosite u obrascima
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Ove smernice se automatski kopiraju iz zastarelih smernica <ph name="OLD_POLICY" />. Umesto njih treba da koristite ove smernice.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> želi da koristi uređaj i podatke virtuelne realnosti</translation>
 <translation id="3366477098757335611">Prikaži kartice</translation>
@@ -1160,6 +1173,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4628948037717959914">Slika</translation>
 <translation id="4631649115723685955">Povezan je povraćaj gotovine</translation>
 <translation id="4636930964841734540">Informacije</translation>
+<translation id="4638670630777875591">Bez arhiviranja u Chromium-u</translation>
 <translation id="464342062220857295">Funkcije pretrage</translation>
 <translation id="4644670975240021822">Obrnutim redosledom sa odštampanom stranom nadole</translation>
 <translation id="4646534391647090355">Odvedi me tamo</translation>
@@ -1222,12 +1236,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4819347708020428563">Želite li da izmenite komentare u podrazumevanom prikazu?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste brzo napravili novu Google tabelu</translation>
 <translation id="4825507807291741242">Moćno</translation>
-<translation id="4827402517081186284">Režim bez arhiviranja vas ne čini nevidljivim onlajn:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />sajtovi znaju da ih posećujete<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />poslodavci ili škole mogu da prate aktivnosti pregledanja<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />internet provajderi mogu da prate saobraćaj na vebu<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ignoriše se jer smernice mogu da se podese samo kao smernice za korisnika u klaudu.</translation>
 <translation id="483241715238664915">Uključi upozorenja</translation>
 <translation id="4838327282952368871">Čarobno</translation>
@@ -1261,6 +1269,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pretražili</translation>
 <translation id="4930153903256238152">Veliki kapacitet</translation>
+<translation id="4940163644868678279">Bez arhiviranja u Chrome-u</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
 <translation id="4950898438188848926">Dugme za promenu kartice, pritisnite Enter da biste prešli na otvorenu karticu, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Radnje</translation>
@@ -1621,6 +1630,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6120179357481664955">Želite da sačuvate ID za UPI?</translation>
 <translation id="6124432979022149706">Priključci za Chrome za preduzeća</translation>
 <translation id="6127379762771434464">Uklonili ste stavku</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Saznajte više o režimu Bez arhiviranja u Chrome-u<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Proverite sve kablove i restartujte sve rutere, modeme ili druge mrežne uređaje koje možda koristite.</translation>
 <translation id="614940544461990577">Pokušajte:</translation>
 <translation id="6150036310511284407">Trostruko bušenje na levoj strani</translation>
@@ -1796,7 +1806,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6757797048963528358">Uređaj je prešao u režim spavanja.</translation>
 <translation id="6767985426384634228">Želite da ažurirate adresu?</translation>
 <translation id="6768213884286397650">Hagaki (razglednica)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o režimu bez arhiviranja</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786747875388722282">Dodaci</translation>
@@ -1896,6 +1905,12 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7111012039238467737">(Važeći)</translation>
 <translation id="7118618213916969306">Potražite URL u privremenoj memoriji, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Zatvorite druge kartice ili programe</translation>
+<translation id="7129355289156517987">Kada zatvorite sve Chromium kartice bez arhiviranja, aktivnost na tim karticama se briše sa uređaja:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktivnosti pregledanja<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Istorija pretrage<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informacije unete u obrascima<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Slanje na ovu adresu nije moguće. Izaberite drugu adresu.</translation>
 <translation id="7132939140423847331">Administrator je zabranio kopiranje ovih podataka.</translation>
 <translation id="7135130955892390533">Prikaži status</translation>
@@ -2014,6 +2029,12 @@ Dodatni detalji:
 <translation id="7485870689360869515">Nisu pronađeni podaci.</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Obratite se vlasniku sajta da biste rešili problem.</translation>
 <translation id="7497998058912824456">Dugme Napravite dokument, pritisnite Enter da biste brzo napravili nov Google dokument</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />ne čuva<ph name="END_EMPHASIS" /> sledeće informacije:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />istoriju pregledanja
+          <ph name="LIST_ITEM" />kolačiće i podatke o sajtovima
+          <ph name="LIST_ITEM" />informacije koje unosite u obrascima
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Vraćeni ID uređaja za smernice je prazan ili se ne podudara sa aktuelnim ID-om uređaja</translation>
 <translation id="7508870219247277067">Zelenožuta</translation>
 <translation id="7511955381719512146">WiFi mreža koju koristite će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2233,6 +2254,7 @@ Dodatni detalji:
 <translation id="8202370299023114387">Neusaglašenost</translation>
 <translation id="8206978196348664717">Prc4 (koverat)</translation>
 <translation id="8211406090763984747">Veza je bezbedna</translation>
+<translation id="8217240300496046857">Sajtovi ne mogu da koriste kolačiće koji vas prate na vebu. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="8218327578424803826">Dodeljena lokacija:</translation>
 <translation id="8220146938470311105">C7/C6 (koverat)</translation>
 <translation id="8225771182978767009">Osoba koja je podesila ovaj računar je odlučila da blokira ovaj sajt.</translation>
@@ -2276,12 +2298,6 @@ Dodatni detalji:
 <translation id="8317207217658302555">Želite da ažurirate ARCore?</translation>
 <translation id="831997045666694187">Uveče</translation>
 <translation id="8321476692217554900">obaveštenja</translation>
-<translation id="8328484624016508118">Kada zatvorite sve kartice bez arhiviranja, Chrome briše:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />aktivnosti pregledanja sa ovog uređaja<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />istoriju pretrage sa ovog uređaja<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />informacije unesene preko obrazaca<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Pristup hostu <ph name="HOST_NAME" /> je odbijen</translation>
 <translation id="833262891116910667">Isticanje</translation>
 <translation id="8339163506404995330">Stranice na jeziku <ph name="LANGUAGE" /> se neće prevoditi</translation>

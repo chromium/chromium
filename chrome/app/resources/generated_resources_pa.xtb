@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">ਮੋਜੂਦਾ ਪ੍ਰਤੀਕ</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> ਦਾ ਹਮੇਸ਼ਾਂ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="1108600514891325577">&amp;ਬੰਦ ਕਰੋ</translation>
+<translation id="1108938384783527433">ਇਤਿਹਾਸ ਸਿੰਕ</translation>
 <translation id="1110155001042129815">ਠਹਿਰੋ</translation>
 <translation id="1110965959145884739">ਚੁਣੋ ਕਿ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕਿਹੜੀਆਂ ਭਾਸ਼ਾਵਾਂ ਸਥਾਪਤ ਕਰਨੀਆਂ ਹਨ। ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਬਚਾਉਣ ਲਈ ਵਰਤੋਂਕਾਰਾਂ ਵਿਚਕਾਰ ਭਾਸ਼ਾ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">ਪ੍ਰੋਜੈਕਟਰ</translation>
@@ -512,6 +513,7 @@
 <translation id="1521442365706402292">ਸਰਟੀਫਿਕੇਟ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="1521774566618522728">ਅੱਜ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="152234381334907219">ਕਦੇ ਵੀ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੇ ਗਏ</translation>
+<translation id="1523279371236772909">ਪਿਛਲੇ ਮਹੀਨੇ ਦੇਖੀ ਗਈ</translation>
 <translation id="1523978563989812243">ਲਿਖਤ-ਤੋਂ-ਬੋਲੀ ਇੰਜਣ</translation>
 <translation id="1524430321211440688">ਕੀ-ਬੋਰਡ</translation>
 <translation id="1524563461097350801">ਨਹੀਂ, ਧੰਨਵਾਦ</translation>
@@ -1253,6 +1255,7 @@
 <translation id="2232876851878324699">ਫਾਈਲ ਵਿੱਚ ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸੀ, ਜੋ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਸੀ:</translation>
 <translation id="2233502537820838181">&amp;ਹੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="223356358902285214">ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ</translation>
+<translation id="2234827758954819389">ਪਰਦੇਦਾਰੀ ਗਾਈਡ</translation>
 <translation id="2234876718134438132">ਸਿੰਕ ਅਤੇ Google ਸੇਵਾਵਾਂ</translation>
 <translation id="2235344399760031203">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2238379619048995541">ਬਾਰੰਬਾਰਤਾ ਸਥਿਤੀ ਡਾਟਾ</translation>
@@ -3109,6 +3112,7 @@
 <translation id="4095264805865317199">ਸੈਲਿਊਲਰ ਕਿਰਿਆਸ਼ੀਲਤਾ UI ਖੋਲ੍ਹੋ</translation>
 <translation id="4095507791297118304">ਪ੍ਰਾਇਮਰੀ ਡਿਸਪਲੇ</translation>
 <translation id="4096508467498758490">ਵਿਕਾਸਕਾਰ ਮੋਡ ਐਕਸਟੈਂਸ਼ਨ ਬੰਦ ਕਰੋ</translation>
+<translation id="4096797685681362305">ਪਿਛਲੇ ਹਫ਼ਤੇ ਦੇਖੀ ਗਈ</translation>
 <translation id="4097406557126260163">ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="409742781329613461">Chrome ਲਈ ਨੁਕਤੇ</translation>
 <translation id="4097560579602855702">Google ਖੋਜੋ</translation>
@@ -3665,6 +3669,7 @@
 <translation id="4699172675775169585">ਕੈਚ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਫਾਈਲਾਂ</translation>
 <translation id="4699357559218762027">(ਆਟੋ-ਲੌਂਚ ਕੀਤਾ)</translation>
 <translation id="4701025263201366865">ਮਾਂ-ਪਿਓ ਦਾ ਸਾਈਨ-ਇਨ</translation>
+<translation id="4701335814944566468">ਬੀਤੇ ਕੱਲ੍ਹ ਦੇਖੀ ਗਈ</translation>
 <translation id="4708794300267213770">ਸਲੀਪ ਤੋਂ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ ਦੌਰਾਨ ਲੌਕ ਸਕ੍ਰੀਨ  ਦਿਖਾਓ </translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ਨੂੰ ਛੱਡੋ</translation>
 <translation id="4711638718396952945">ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
@@ -3732,6 +3737,7 @@
 <translation id="479536056609751218">ਵੈਬਪੇਜ, ਕੇਵਲ HTML</translation>
 <translation id="4796142525425001238">ਹਮੇਸ਼ਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ਬਲੂਟੁੱਥ ਲੌਗ<ph name="END_LINK" /> ਅਟੈਚ ਕਰੋ (Google ਅੰਦਰੂਨੀ)</translation>
+<translation id="479863874072008121">ਡੀਵਾਈਸਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4800839971935185386">ਨਾਮ ਅਤੇ ਪ੍ਰਤੀਕ ਸੰਬੰਧੀ ਅੱਪਡੇਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="4801448226354548035">ਖਾਤੇ ਲੁਕਾਓ</translation>
 <translation id="4801512016965057443">ਮੋਬਾਈਲ ਡਾਟਾ ਰੋਮਿੰਗ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
@@ -6456,6 +6462,7 @@
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7659154729610375585">ਕੀ ਫਿਰ ਵੀ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="7659297516559011665">ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ ਵਿਚਲੇ ਪਾਸਵਰਡ</translation>
+<translation id="7659336857671800422">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="7659584679870740384">ਤੁਸੀਂ ਇਹ ਡੀਵਾਈਸ ਵਰਤਣ ਲਈ ਅਧਿਕਾਰਿਤ ਨਹੀਂ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਲਈ ਡੀਵਾਈਸ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="7661259717474717992">ਸਾਈਟਾਂ ਨੂੰ ਕੁਕੀ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਅਤੇ ਪੜ੍ਹਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="7661451191293163002">ਇੱਕ ਰਜਿਸਟਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
@@ -7977,6 +7984,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕੇਗੀ</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> ਖੋਜੋ</translation>
 <translation id="9201023452444595544">ਕਿਸੇ ਵੀ ਆਫ਼ਲਾਈਨ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="9201117361710210082">ਪਹਿਲਾਂ ਦੇਖੀ ਗਈ</translation>
 <translation id="9201220332032049474">ਸਕ੍ਰੀਨ ਲੌਕ ਵਿਕਲਪ</translation>
 <translation id="9201842707396338580">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਮਾਲਕ ਜਾਂ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
 <translation id="9203398526606335860">&amp;ਪ੍ਰੋਫਾਈਲਿੰਗ ਸਮਰਥਿਤ</translation>

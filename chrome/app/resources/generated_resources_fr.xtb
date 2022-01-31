@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Icône actuelle</translation>
 <translation id="1103523840287552314">Toujours traduire les pages en <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Arrêter</translation>
+<translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1110155001042129815">Attendre</translation>
 <translation id="1110965959145884739">Sélectionnez les langues à installer sur cet appareil. Les fichiers de langue sont partagés entre les utilisateurs pour libérer de l'espace disque. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projecteur</translation>
@@ -509,6 +510,7 @@
 <translation id="1521442365706402292">Gérer les certificats</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
 <translation id="152234381334907219">Jamais enregistrés</translation>
+<translation id="1523279371236772909">Consulté le mois dernier</translation>
 <translation id="1523978563989812243">Moteurs de synthèse vocale</translation>
 <translation id="1524430321211440688">Clavier</translation>
 <translation id="1524563461097350801">Non, merci</translation>
@@ -1163,6 +1165,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera une fois que vous aurez quitté les paramètres de synchronisation</translation>
+<translation id="2162926944953615670">Aucun profil eSIM disponible</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Appliquer le mode sombre</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre contacteur</translation>
@@ -1240,6 +1243,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2232876851878324699">Le fichier contenait un certificat, qui n'a pas été importé :</translation>
 <translation id="2233502537820838181">Plus d'informations</translation>
 <translation id="223356358902285214">Activité sur le Web et les applications</translation>
+<translation id="2234827758954819389">Guide de confidentialité</translation>
 <translation id="2234876718134438132">Services Google/Synchronisation</translation>
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
 <translation id="2238379619048995541">Données sur l'état de fréquence</translation>
@@ -1855,6 +1859,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2828650939514476812">Se connecter au réseau Wi-Fi</translation>
 <translation id="2831430281393059038">Appareil accepté</translation>
 <translation id="2832124733806557606">Votre enfant peut l'utiliser pour se connecter ou déverrouiller l'appareil.</translation>
+<translation id="2835177225987815960">La configuration actuelle de l'analyse sera réinitialisée, y compris les contacteurs associés et les paramètres liés à la vitesse d'exploration automatique.</translation>
 <translation id="2835547721736623118">Service de reconnaissance vocale</translation>
 <translation id="2836269494620652131">Blocage</translation>
 <translation id="2836635946302913370">Impossible de se connecter avec ce nom d'utilisateur, car il a été désactivé par votre administrateur.</translation>
@@ -3093,6 +3098,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4095264805865317199">Ouvrir l'UI d'activation mobile</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
 <translation id="4096508467498758490">Désactiver les extensions exécutées en mode développeur ?</translation>
+<translation id="4096797685681362305">Consulté la semaine passée</translation>
 <translation id="4097406557126260163">Applications et extensions</translation>
 <translation id="409742781329613461">Conseils pour Chrome</translation>
 <translation id="4097560579602855702">Recherche Google</translation>
@@ -3648,6 +3654,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4699357559218762027">(lancée automatiquement)</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
+<translation id="4701335814944566468">Consulté hier</translation>
 <translation id="4708794300267213770">Afficher l'écran de verrouillage en sortant du mode veille</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
@@ -3715,6 +3722,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="479536056609751218">Page Web, HTML uniquement</translation>
 <translation id="4796142525425001238">Toujours restaurer</translation>
 <translation id="4798236378408895261">Joindre les <ph name="BEGIN_LINK" />journaux Bluetooth<ph name="END_LINK" /> (usage interne de Google)</translation>
+<translation id="479863874072008121">Gérer les appareils</translation>
 <translation id="4800839971935185386">Examiner les modifications apportées au nom et à l'icône</translation>
 <translation id="4801448226354548035">Masquer les comptes</translation>
 <translation id="4801512016965057443">Autoriser l'itinérance des données mobiles</translation>
@@ -6439,6 +6447,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659154729610375585">Quitter quand même le mode navigation privée ?</translation>
 <translation id="7659297516559011665">Mots de passe sur cet appareil uniquement</translation>
+<translation id="7659336857671800422">Consulter le guide de confidentialité</translation>
 <translation id="7659584679870740384">Vous n'êtes pas autorisé à utiliser cet appareil. Pour obtenir l'autorisation de vous y connecter, veuillez contacter l'administrateur.</translation>
 <translation id="7661259717474717992">Autoriser les sites à enregistrer/lire les données des cookies</translation>
 <translation id="7661451191293163002">Impossible d'obtenir un certificat d'inscription.</translation>
@@ -7962,6 +7971,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9200339982498053969"><ph name="ORIGIN" /> pourra modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Rechercher avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Toutes les données hors connexion vont être effacées</translation>
+<translation id="9201117361710210082">Consulté précédemment</translation>
 <translation id="9201220332032049474">Options de verrouillage de l'écran</translation>
 <translation id="9201842707396338580">Une erreur s'est produite. Veuillez contacter le propriétaire ou l'administrateur de l'appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilage activé</translation>

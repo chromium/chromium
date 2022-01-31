@@ -749,6 +749,43 @@
 <translation id="1861206724856734193">데이터 유출 방지 규칙 목록을 설정합니다.</translation>
 <translation id="1862267110714201519">고스트 창 기능 사용 안함</translation>
 <translation id="1865417998205858223">주요 권한</translation>
+<translation id="1867025364110179456">정책을 설정하면 사용자 상호작용 없이 자동으로 설치하며 사용자가 제거하거나 사용 중지할 수 없는 웹 앱 목록이 지정됩니다.
+
+      정책 목록에 있는 각 항목은 필수 요소인
+      <ph name="URL_LABEL" />(설치할 웹 앱 URL)
+
+      및 다음 다섯 개의 선택 요소로 구성된 객체입니다.
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (웹 앱이 열리는 방식에 관한 설정, 새 탭이 기본값임)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (<ph name="LINUX_OS_NAME" /> 및
+      <ph name="MS_WIN_NAME" /> 바탕화면 바로가기를 만들 경우 True)
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" /> 버전 90부터
+      프로그레시브 웹 앱(PWA)이 아니면 앱 이름을 재정의하거나
+      PWA이지만 설치 완료 전 인증이 필요하면
+      임시로 설치된 앱 이름을
+      재정의할 수 있습니다. <ph name="CUSTOM_NAME_LABEL" /> 및
+      <ph name="FALLBACK_APP_NAME_LABEL" /> 모두
+      제공되는 경우
+      후자는 무시됩니다.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" />
+      버전 99부터 모든 웹 앱 및 PWA의 앱 이름을 영구적으로 재정의할 수 있습니다. 현재
+      <ph name="PRODUCT_OS_NAME" />에서만 지원됩니다.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (<ph name="PRODUCT_NAME" />
+      버전 99부터 설치된 앱의 앱 아이콘을 재정의할 수 있습니다. 아이콘은
+      정사각형이어야 하며 크기는 최대 1MB여야 합니다. 또한 jpeg, png, gif, webp, ico 중
+      하나의 형식을 사용해야 합니다. 해시 값은 아이콘 파일의 SHA256
+      해시여야 합니다. 현재
+      <ph name="PRODUCT_OS_NAME" />에서만 지원됩니다.)
+
+      <ph name="PRODUCT_OS_NAME" /> 실행기 앱 고정에 관한 내용은 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 정책을 참고하세요.</translation>
 <translation id="186719019195685253">AC 전원으로 기기를 실행하는 동안 유휴 지연 시간에 도달했을 때 실행할 작업</translation>
 <translation id="1881649377321404593">
       이 정책은 M80에서 삭제되었습니다. WebDriver가 이제 기존의 모든 정책과 호환됨에 따라 더 이상 필요가 없어졌기 때문입니다.
@@ -1542,6 +1579,13 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 
       정책을 사용 중지하면 등록된 기기에서 사용자 목록을 보고하지 않습니다.</translation>
 <translation id="2730419309754848345">PDF를 이미지로 인쇄 기본값</translation>
+<translation id="2731299561202635374">이 정책은 안전하지 않은 URL을 파악할 수 있는 실시간 URL 확인을 제어합니다.
+
+      정책을 설정하지 않거나 '사용 중지됨'으로 설정하면 일반 세이프 브라우징 확인이 적용됩니다. '검색 및 탐색 기능 개선' 설정값과 UrlKeyedAnonymizedDataCollectionEnabled 정책값에 따라 일반 세이프 브라우징 확인에는 실시간 검색이 계속해서 포함될 수 있습니다.
+
+      정책을 '사용 설정됨'으로 설정하면 URL이 전송되어 Google Enterprise 서비스 약관에 따라 실시간으로 검사됩니다. 결국 실시간 확인을 위해 Chrome에서 URL을 Google Cloud 또는 선택한 타사로 전송하게 됩니다. 일반 버전의 세이프 브라우징 실시간 검색이 꺼집니다.
+
+      이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="2731627323327011390">ARC 앱에서 <ph name="PRODUCT_OS_NAME" /> 인증서를 사용하지 않도록 설정</translation>
 <translation id="2742843273354638707">새 탭 페이지 및 <ph name="PRODUCT_OS_NAME" /> 앱 런처에서 Chrome 웹 스토어 앱과 바닥글 링크가 표시되지 않도록 숨깁니다.
 
@@ -1703,6 +1747,11 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
       정책을 설정하지 않거나 유효한 URL로 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 브라우저를 전환하는 규칙의 출처로 이 정책을 사용하지 않습니다.
 
       참고: 이 정책은 <ph name="IE_PRODUCT_NAME" />의 <ph name="IEEM_SITELIST_POLICY" /> 정책과 동일한 형식의 XML 파일로 연결됩니다. 정책은 XML 파일에서 규칙을 로드하지만 이를 <ph name="IE_PRODUCT_NAME" />와 공유하지는 않습니다. <ph name="IE_PRODUCT_NAME" />의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)을 자세히 살펴보세요.</translation>
+<translation id="2940653651012844682"><ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, Chrome에서 보안 관련 활동이 발생할 때 실행됩니다. 보안 관련 활동에는 Enterprise 커넥터 분석, 비밀번호 재사용, 안전하지 않은 페이지 탐색 및 보안에 민감한 다른 사용자 작업에 의한 부정적인 평가가 포함됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 보고 서비스 제공업체를 나타내며 <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> 필드는 이 제공업체를 대상으로 사용 설정되는 이벤트를 지정합니다.
+
+      이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="2947111924404450461">정책을 설정하면 회사 프린터가 구성됩니다. 형식은 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 사전과 일치하며 프린터마다 허용 목록 또는 차단 목록을 사용하려면 <ph name="ID_FIELD" /> 또는 <ph name="GUID_FIELD" /> 필드가 추가로 필요합니다. 파일 크기는 5MB를 초과할 수 없으며 JSON 형식입니다. 약 21,000대의 프린터가 포함된 파일은 5MB 크기의 파일로 인코딩됩니다. 암호화 해시로 다운로드 파일의 무결성을 확인할 수 있습니다. 파일이 다운로드되고 캐시되며 이후 URL 또는 해시가 변경되면 다시 다운로드됩니다. <ph name="PRODUCT_OS_NAME" />에서 프린터 설정 파일을 다운로드하고 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" />, <ph name="BULK_PRINTERS_BLACKLIST" />에 따라 프린터를 사용할 수 있게 합니다.
 
       이 정책은 사용자가 개별 기기에서 프린터를 설정할 수 있는지에 영향을 미치지 않으며, 개별 사용자의 프린터 설정을 보완하는 데 목적이 있습니다.
@@ -1892,6 +1941,23 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 <translation id="3144173889708944482"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />에 <ph name="PRINTERS_BLOCKLIST" />을 선택할 경우 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />를 설정하면 사용자가 사용할 수 없는 프린터가 지정됩니다. ID가 이 정책에 명시된 프린터를 제외한 모든 프린터가 사용자에게 제공됩니다. ID는 <ph name="DEVICE_PRINTERS_POLICY_NAME" />에 지정된 파일의 <ph name="ID_FIELD" /> 또는 <ph name="GUID_FIELD" /> 필드와 일치해야 합니다.</translation>
 <translation id="3146711617256415776">텍스트 읽어주기 사용 시 향상된 네트워크 텍스트 음성 변환 음성을 허용하지 않음</translation>
 <translation id="3152425128389603870">통합 바탕화면을 기본적으로 허용하고 사용 설정합니다.</translation>
+<translation id="3157857846231611820"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 파일이 Chrome에 첨부될 때 실행됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 파일이 특정 페이지에 첨부되었을 때 커넥터가 분석을 위해 파일을 전송할지와 파일 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 'enable' 패턴에 해당하는 태그는 페이지 URL이 이 태그와 연결된 패턴과 일치하면 분석 요청에 포함되지만, 이때 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 하나 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 Chrome에서 페이지에 파일 액세스 권한을 부여하기 전에 분석 서비스의 응답을 받을 때까지 대기합니다. 다른 정숫값으로 설정되면 Chrome에서 페이지에 파일 액세스 권한을 즉시 부여합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 필드는 Chrome에서 비밀번호로 보호된 파일을 차단 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 필드는 Chrome에서 크기가 커서 분석하기 어려운 파일을 차단할지 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 필드는 스캔 시 부정적인 평가가 있어 경고가 표시될 경우 사용자에게 표시할 메시지를 구성하는 데 사용됩니다. message 필드에는 사용자에게 표시하는 텍스트가 포함되며 최대 200자(영문 기준)까지 포함할 수 있습니다. learn_more_url 필드에는 관리자가 제공한 URL이 포함됩니다. 사용자는 이 URL을 클릭하여 작업이 차단된 이유에 관해 고객이 제공한 정보를 자세히 확인할 수 있습니다. language 필드는 선택사항이며 여기에는 메시지의 언어가 포함됩니다. language 필드가 비어 있거나 값이 'default'이면 사용자의 언어로는 메시지가 없는 경우에 사용될 메시지를 나타냅니다. tag 필드는 메시지가 표시될 스캔 유형을 지정합니다. custom_messages 목록에는 0개 이상의 항목이 포함될 수 있으며, 각 항목에는 비어 있지 않은 message 필드와 tag 필드가 있어야 합니다.
+
+      이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="3159375329008977062">사용자가 UI를 통해 Crostini 컨테이너를 내보내고 가져올 수 있음</translation>
 <translation id="3164531087779621747">인쇄 PostScript 모드</translation>
 <translation id="3165468162820163252">로그인 화면의 WebUI 부분을 시작할 때 항상 로드할지, 아니면 로그인 화면을 표시하기 전에만 로드할지 결정하는 정책입니다. 이 정책은 로그인 화면에 적용됩니다.
@@ -4303,6 +4369,21 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="6135398260575578389">세이프 브라우징이 강화 모드에서 활성화됩니다. 이 모드에서는 보안이 강화되지만 Google과 인터넷 사용 정보를 더 많이 공유해야 합니다.</translation>
 <translation id="6135552820180449830">Crosh(버전 99부터 지원)</translation>
 <translation id="6138636318340561140">URL의 세이프 브라우징 상태 실시간 확인</translation>
+<translation id="6140635914906859015"><ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 클립보드에서 붙여넣거나 웹 콘텐츠를 드래그 앤 드롭하는 방법으로 Chrome에 데이터가 입력될 때 실행됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 데이터가 특정 페이지에서 입력되었을 때 커넥터가 분석을 위해 데이터를 전송할지와 데이터 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 'enable' 패턴에 해당하는 태그는 페이지 URL이 이 태그와 연결된 패턴과 일치하면 분석 요청에 포함되지만, 이때 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 하나 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 Chrome에서 페이지에 데이터 액세스 권한을 부여하기 전에 분석 서비스의 응답을 받을 때까지 대기합니다. 다른 정숫값으로 설정되면 Chrome에서 페이지에 데이터 액세스 권한을 즉시 부여합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 필드는 Chrome에 입력되는 데이터의 최소 크기(바이트)로, 스캔하기 위해서는 데이터 크기가 이보다 크거나 같아야 합니다. 필드를 설정하지 않으면 기본값은 100바이트입니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 필드는 스캔 시 부정적인 평가가 있어 경고가 표시될 경우 사용자에게 표시할 메시지를 구성하는 데 사용됩니다. message 필드에는 사용자에게 표시하는 텍스트가 포함되며 최대 200자(영문 기준)까지 포함할 수 있습니다. learn_more_url 필드에는 관리자가 제공한 URL이 포함됩니다. 사용자는 이 URL을 클릭하여 작업이 차단된 이유에 관해 고객이 제공한 정보를 자세히 확인할 수 있습니다. language 필드는 선택사항이며 여기에는 메시지의 언어가 포함됩니다. language 필드가 비어 있거나 값이 'default'이면 사용자의 언어로는 메시지가 없는 경우에 사용될 메시지를 나타냅니다. tag 필드는 메시지가 표시될 스캔 유형을 지정합니다. custom_messages 목록에는 0개 이상의 항목이 포함될 수 있으며, 각 항목에는 비어 있지 않은 message 필드와 tag 필드가 있어야 합니다.
+
+      이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="6141402445226505817">항상 대략적인 시간대 감지를 사용합니다.</translation>
 <translation id="6142501278956229253">PDF DPI 인쇄 래스터화</translation>
 <translation id="6144046700495610112">정책을 '사용'으로 설정하면 최초 실행 시 이전 기본 브라우저의 자동 완성 양식 데이터를 가져옵니다. 정책을 '사용 안함'으로 설정하거나 설정하지 않으면 최초 실행 시 자동 완성 양식 데이터를 가져오지 않습니다.
@@ -4710,6 +4791,21 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="66265932317331474">CPU 정보 보고</translation>
 <translation id="6628120204569232711">저장용량 상태 보고</translation>
 <translation id="663685822663765995">컬러 인쇄 모드 제한</translation>
+<translation id="6637946190026453735"><ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 <ph name="PRODUCT_NAME" /> Enterprise 커넥터 서비스 설정의 목록으로, <ph name="PRODUCT_NAME" />에서 페이지나 파일이 출력될 때 실행됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 특정 페이지에서 출력이 실행될 때 커넥터가 분석을 위해 데이터를 전송할지, 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 하나 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 <ph name="PRODUCT_NAME" />에서 분석 서비스의 응답이 올 때까지 기다렸다가 출력된 페이지의 출력 미리보기 대화상자가 표시되도록 허용합니다. 다른 정숫값으로 설정되면 <ph name="PRODUCT_NAME" />에서 출력 미리보기 대화상자를 즉시 표시합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 필드는 <ph name="PRODUCT_NAME" />에서 크기가 커서 분석하기 어려운 파일/페이지를 차단 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 필드는 스캔 시 부정적인 평가가 있어 경고가 표시될 경우 사용자에게 표시할 메시지를 구성하는 데 사용됩니다. 관리자는 최대 200자(영문 기준)의 메시지를 구성할 수 있습니다.
+
+      이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="6640355849038068978">설정을 사용하면 사용자가 예를 들어 휴대전화 허브 알림을 클릭하여 Eche 애플리케이션을 실행할 수 있습니다.
 
       설정을 사용 중지하면 사용자가 Eche 애플리케이션을 실행할 수 없습니다.
@@ -5492,6 +5588,23 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="7477149584454865826">프린터 설정 시 IPP Everywhere의 사용 여부를 나타내는 부울 플래그입니다.</translation>
 <translation id="7477231245051133709">모노 오디오 접근성 기능 사용</translation>
 <translation id="7477239290070847560">Zeroconf 기반(mDNS + DNS-SD) 프로토콜 목적지</translation>
+<translation id="7480826412572122600"><ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 파일이 Chrome에서 다운로드될 때 실행됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 파일이 특정 페이지에서 다운로드되었을 때 커넥터가 분석을 위해 파일을 전송할지와 파일 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 'enable' 패턴에 해당하는 태그는 페이지 URL이 이 태그와 연결된 패턴과 일치하면 분석 요청에 포함되지만, 이때 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 하나 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 Chrome에서 사용자에게 다운로드된 파일 액세스 권한을 부여하기 전에 분석 서비스의 응답을 받을 때까지 대기합니다. 다른 정숫값으로 설정되면 Chrome에서 사용자에게 파일 액세스 권한을 즉시 부여합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 필드는 Chrome에서 비밀번호로 보호된 파일을 차단 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 필드는 Chrome에서 크기가 커서 분석하기 어려운 파일을 차단할지 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 필드는 스캔 시 부정적인 평가가 있어 경고가 표시될 경우 사용자에게 표시할 메시지를 구성하는 데 사용됩니다. message 필드에는 사용자에게 표시하는 텍스트가 포함되며 최대 200자(영문 기준)까지 포함할 수 있습니다. learn_more_url 필드에는 관리자가 제공한 URL이 포함됩니다. 사용자는 이 URL을 클릭하여 작업이 차단된 이유에 관해 고객이 제공한 정보를 자세히 확인할 수 있습니다. language 필드는 선택사항이며 여기에는 메시지의 언어가 포함됩니다. language 필드가 비어 있거나 값이 'default'이면 사용자의 언어로는 메시지가 없는 경우에 사용될 메시지를 나타냅니다. tag 필드는 메시지가 표시될 스캔 유형을 지정합니다. custom_messages 목록에는 0개 이상의 항목이 포함될 수 있으며, 각 항목에는 비어 있지 않은 message 필드와 tag 필드가 있어야 합니다.
+
+      이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="7485481791539008776">기본 프린터 선택 규칙</translation>
 <translation id="7486205887492534734">여러 인증서가 일치하는 경우 로그인 화면에 메시지 표시</translation>
 <translation id="7491720878670299691">이벤트와 관련하여 네트워크 데이터가 수집 및 확인되는 속도입니다. 허용되는 최솟값은 1분입니다.

@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">Google アカウントを管理するには、[アカウントを管理] をタップします。</translation>
 <translation id="1549000191223877751">他のウィンドウに移動</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
+<translation id="1554532453982918912">同じように Chrome を使用する他のユーザーの利便性向上に役立てられます</translation>
 <translation id="1558391695376153246">シークレット タブを閉じる</translation>
 <translation id="1571304935088121812">ユーザー名をコピー</translation>
 <translation id="1592864538817356322">標準保護機能:</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">終了</translation>
 <translation id="2459390580524506445">拡張音声検索</translation>
 <translation id="2461822463642141190">電流</translation>
+<translation id="2472163211318554013">Chrome を最大限に活用するにはログインしてください</translation>
 <translation id="247737702124049222">画像の説明をオンにしました</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">アンインストール</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 接続ではダウンロードに時間がかかる可能性があります</translation>
 <translation id="2647434099613338025">言語の追加</translation>
 <translation id="2649068648233607930">お使いのブラウザは <ph name="DOMAIN" /> によって管理されています</translation>
+<translation id="2650348088770008516">プライバシー ガイドの説明が閉じられています</translation>
 <translation id="2650751991977523696">ファイルをもう一度ダウンロードしますか？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 件の音声ファイル}other{# 件の音声ファイル}}</translation>
 <translation id="265156376773362237">標準プリロード</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">お使いのどのデバイスでも同じブックマークを使用するには、ログインして同期を有効にします</translation>
 <translation id="2827278682606527653">フィードカード メニューが画面の下半分に開いています</translation>
 <translation id="2830783625999891985">クリップボードの内容は非表示になっています</translation>
+<translation id="2838367486340230368">プライバシー ガイドの説明が画面の下半分に表示されています</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> のフォローを解除しました</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のシークレット タブが閉じられます}other{<ph name="TAB_COUNT_MANY" /> 個のシークレット タブが閉じられます}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{前回の確認: 1 日前}other{前回の確認: # 日前}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">パスフレーズの作成</translation>
 <translation id="2996809686854298943">URLが必要です</translation>
 <translation id="2997081575621687554">ページのリンクを非公開でプリロードするように求めるメッセージが Google サイトに表示された場合、Chrome は Cookie を使用せずに Google サーバーを経由してページを暗号化し、プリロードします。その結果、プリロードされたサイトでユーザーの ID が非表示になります。</translation>
+<translation id="3003733539450769656">危険なイベントの発生を事前に警告します</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
 <translation id="301080557829842765">プライバシー ガイド</translation>
 <translation id="3016635187733453316">このデバイスがインターネットに接続していることを確認してください</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">Chrome へのログインを促すメッセージが表示されます</translation>
 <translation id="3046945242843292318">次回からこのサイトにすばやくアクセスできます</translation>
 <translation id="3055259925215945098">ブックマークを移動しました</translation>
+<translation id="3055841435094910999">Chrome の使用状況に関する情報が Google に送信されますが、ユーザーとは関連付けられません\n\nChrome がクラッシュした場合、クラッシュに関する情報として一部の個人情報が送信される場合があります\n\n同期を有効にした場合、アクセスした URL に関する情報も送信される場合があります</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
 <translation id="3066573403916685335">下に移動</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">まもなく、新しいタブを開くと、<ph name="SITE_NAME" /> のストーリーが表示されるようになります。フォローしたサイトは Google アカウントに保存され、Discover の設定で管理できます。</translation>
 <translation id="5091249083535528968">詳細な使用状況データ</translation>
 <translation id="509429900233858213">エラーが発生しました。</translation>
+<translation id="5102401324271069229">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="510275257476243843">残り 1 時間</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> に移動</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
@@ -1011,6 +1018,7 @@
 <translation id="6659594942844771486">タブ</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />で開く</translation>
 <translation id="6671495933530132209">画像をコピー</translation>
+<translation id="6674044799624355221">新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルを送信します</translation>
 <translation id="6674571176963658787">同期を開始するには、パスフレーズを入力してください</translation>
 <translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
 <translation id="6684809838922667136">Chrome の品質を向上</translation>
@@ -1086,6 +1094,7 @@
 <translation id="7085332316435785646">Chrome の履歴を含めて、Google サービスのパーソナライズに使用するかどうかを選択してください</translation>
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
 <translation id="7093803425429738190">気分を追加</translation>
+<translation id="7105047059074518658">複数のデバイスでスムーズにブラウジングするにはログインしてください</translation>
 <translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
 <translation id="7121362699166175603">アドレスバーの履歴とオートコンプリートを削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="7138678301420049075">その他</translation>
@@ -1101,6 +1110,7 @@
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
+<translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
 <translation id="7242755609445462077">スタイルを設定した選択箇所（<ph name="CURRENT_DATE" />）</translation>
 <translation id="7248069434667874558">Chrome で <ph name="TARGET_DEVICE_NAME" /> の同期がオンになっていることを確認してください</translation>
@@ -1200,11 +1210,13 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7761849928583394409">日付と時間を選択</translation>
 <translation id="7762668264895820836">SD カード <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">追加の機能と Chrome の最高水準のセキュリティを利用するにはログインしてください</translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> を閉じる</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}}</translation>
 <translation id="7778840695157240389">しばらくしてからご確認ください</translation>
+<translation id="7780645209293383778">ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します</translation>
 <translation id="7786595606756654269">Google アシスタントを使用すると、ウェブを検索したり、開いたサイトを操作したりする際の、音声操作の利便性が向上します。Google アシスタントを使用するサイトの URL とコンテンツがアシスタントに渡されます。</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> 個のタブを復元しました</translation>
@@ -1274,6 +1286,7 @@
 <translation id="8084285576995584326">Google アカウントのデータを管理します</translation>
 <translation id="808747664143081553">デバイスに接続しました</translation>
 <translation id="8088176524274673045">近くのユーザーと共有するには、この QR コードをスキャンしてもらいます</translation>
+<translation id="8100969750121413114">自分の設定で Chrome を使用するにはログインしてください</translation>
 <translation id="8103578431304235997">シークレット タブ</translation>
 <translation id="8105613260829665809">続行すると、<ph name="BEGIN_TOS_LINK" />利用規約<ph name="END_TOS_LINK" />に同意されたものとみなされます。\nアプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">履歴ページを開く</translation>
 <translation id="8493948351860045254">容量を空ける</translation>
+<translation id="8497480609928300907">プライバシー ガイドの説明</translation>
 <translation id="8497726226069778601">表示するものがまだありません</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>
 <translation id="8503813439785031346">ユーザー名</translation>

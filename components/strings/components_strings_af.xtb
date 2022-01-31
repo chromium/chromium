@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Sien besonderhede</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil groot data permanent op jou toestel berg</translation>
 <translation id="1032854598605920125">Draai kloksgewys</translation>
+<translation id="1033329911862281889">Incognito maak jou nie onsigbaar aanlyn nie:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Werwe en die dienste wat hulle gebruik, kan besoeke sien<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Werkgewers of skole kan blaai-aktiwiteit naspoor<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internetdiensverskaffers kan webverkeer monitor<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Skakel af</translation>
 <translation id="1036982837258183574">Druk |<ph name="ACCELERATOR" />| om volskerm te verlaat</translation>
 <translation id="1038106730571050514">Wys voorstelle</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Taakbladsyboodskap</translation>
 <translation id="1048785276086539861">Hierdie dokument sal na enkelbladsyaansig toe terugkeer wanneer jy aantekeninge redigeer</translation>
-<translation id="1049743911850919806">Incognito</translation>
 <translation id="1050038467049342496">Maak ander programme toe</translation>
 <translation id="1055184225775184556">Ontdoen byvoeging</translation>
 <translation id="1056898198331236512">Waarskuwing</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Beleidkas OK</translation>
 <translation id="1130564665089811311">Vertaal Bladsy-knoppie; druk Enter om hierdie bladsy met Google Vertaal te vertaal</translation>
 <translation id="1131264053432022307">Prent wat jy gekopieer het</translation>
+<translation id="1142846828089312304">Blokkeer derdepartywebkoekies in Incognito</translation>
 <translation id="1150979032973867961">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur jou rekenaar se bedryfstelsel vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="1151972924205500581">Wagwoord word vereis</translation>
 <translation id="1156303062776767266">Jy bekyk tans 'n plaaslike of gedeelde lêer</translation>
@@ -181,6 +187,12 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1483493594462132177">Stuur</translation>
 <translation id="1484290072879560759">Kies versendingadres</translation>
 <translation id="1492194039220927094">Deurstuur van beleide:</translation>
+<translation id="149293076951187737">Jou aktiwiteit in oortjies word op hierdie toestel uitgevee wanneer jy alle Incognito-oortjies in Chromium toemaak:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Blaai-aktiwiteit<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Soekgeskiedenis<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Inligting wat op vorms ingevoer is<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Terug na oortjie</translation>
 <translation id="1501859676467574491">Wys kaarte van jou Google-rekening</translation>
 <translation id="1507202001669085618">&lt;p&gt;Jy sal hierdie fout sien as jy 'n Wi-Fi-portaal gebruik waar jy moet aanmeld voordat jy aanlyn kan gaan.&lt;/p&gt;
@@ -285,6 +297,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
     die opskrif is misvormd, wat die blaaier verhinder om jou versoek
     vir <ph name="SITE" /> uit te voer. Werfoperateurs kan oorsprongbeleide gebruik om
     sekuriteit- en ander eienskappe vir 'n werf op te stel.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Kom meer te wete oor Incognito in Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Jou oop oortjies verskyn hier</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2597378329261239068">Hierdie dokument word deur 'n wagwoord beskerm. Voer asseblief 'n wagwoord in.</translation>
 <translation id="2609632851001447353">Variasies</translation>
 <translation id="2610561535971892504">Klik om te kopieer</translation>
+<translation id="2617988307566202237">Chrome sal nie die volgende inligting <ph name="BEGIN_EMPHASIS" />stoor nie<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Jou blaaigeskiedenis
+            <ph name="LIST_ITEM" />Webkoekies en werfdata
+            <ph name="LIST_ITEM" />Inligting wat op vorms ingevul is
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">Kan vra om inligting oor jou skerms te gebruik</translation>
 <translation id="2625385379895617796">Jou horlosie is voor</translation>
@@ -736,12 +755,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3345782426586609320">Oë</translation>
 <translation id="3355823806454867987">Verander instaanbedienerinstellings …</translation>
 <translation id="3360103848165129075">Betalinghanteerdersigblad</translation>
-<translation id="3361596688432910856">Chrome sal nie die volgende inligting <ph name="BEGIN_EMPHASIS" />stoor nie<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Jou blaaigeskiedenis
-          <ph name="LIST_ITEM" />Webkoekies en werfdata
-          <ph name="LIST_ITEM" />Inligting wat op vorms ingevul is
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Hierdie beleid is outomaties van die opgeskorte <ph name="OLD_POLICY" />-beleid af gekopieer. Jy moet liewer hierdie beleid gebruik.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wil jou virtuelerealiteittoestel en -data gebruik</translation>
 <translation id="3366477098757335611">Bekyk kaarte</translation>
@@ -1160,6 +1173,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Kontantterugbetaling is gekoppel</translation>
 <translation id="4636930964841734540">Inligting</translation>
+<translation id="4638670630777875591">Incognito in Chromium</translation>
 <translation id="464342062220857295">Soekkenmerke</translation>
 <translation id="4644670975240021822">Omgekeerde volgorde, voorkant na onder</translation>
 <translation id="4646534391647090355">Vat my nou soontoe</translation>
@@ -1222,12 +1236,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4819347708020428563">Redigeer aantekeninge in verstekaansig?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe Google Blad te skep</translation>
 <translation id="4825507807291741242">Kragtig</translation>
-<translation id="4827402517081186284">Incognito maak jou nie onsigbaar aanlyn nie:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Werwe weet wanneer jy hulle besoek<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Werknemers of skole kan blaai-aktiwiteit naspoor<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internetdiensverskaffers kan webverkeer monitor<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Geïgnoreer omdat die beleid slegs deur wolkgebruikerbeleid gestel kan word.</translation>
 <translation id="483241715238664915">Skakel waarskuwings aan</translation>
 <translation id="4838327282952368871">Dromerig</translation>
@@ -1261,6 +1269,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te soek</translation>
 <translation id="4930153903256238152">Groot kapasiteit</translation>
+<translation id="4940163644868678279">Incognito in Chrome</translation>
 <translation id="4943872375798546930">Geen resultate nie</translation>
 <translation id="4950898438188848926">Oortjiewisselingknoppie, druk Enter om na die oop oortjie toe oor te skakel, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Handelinge</translation>
@@ -1621,6 +1630,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6120179357481664955">Onthou jy jou UPI-ID?</translation>
 <translation id="6124432979022149706">Chrome Enterprise-verbinders</translation>
 <translation id="6127379762771434464">Item is verwyder</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Kom meer te wete oor Incognito in Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Gaan alle kabels na en herselflaai enige roeteerders, modems of ander
     netwerktoestelle wat jy gebruik.</translation>
 <translation id="614940544461990577">Probeer:</translation>
@@ -1797,7 +1807,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6757797048963528358">Jou toestel het gaan slaap.</translation>
 <translation id="6767985426384634228">Dateer adres op?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor Incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Pers</translation>
 <translation id="6786747875388722282">Uitbreidings</translation>
@@ -1897,6 +1906,12 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7111012039238467737">(Geldig)</translation>
 <translation id="7118618213916969306">Soek vir knipbord-URL, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Maak ander oortjies of programme toe</translation>
+<translation id="7129355289156517987">Jou aktiwiteit in oortjies word op hierdie toestel uitgevee wanneer jy alle Incognito-oortjies in Chromium toemaak:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Blaai-aktiwiteit<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Soekgeskiedenis<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Inligting wat op vorms ingevoer is<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Kan nie na hierdie adres versend nie. Kies 'n ander adres.</translation>
 <translation id="7132939140423847331">Jou admin het verbied dat hierdie data gekopieer word.</translation>
 <translation id="7135130955892390533">Wys status</translation>
@@ -2015,6 +2030,12 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7485870689360869515">Geen data gevind nie.</translation>
 <translation id="7495528107193238112">Hierdie inhoud is geblokkeer. Kontak die werfeienaar om die kwessie reg te stel.</translation>
 <translation id="7497998058912824456">Skep Dokument-knoppie – druk Enter om vinnig 'n nuwe Google-dokument te skep</translation>
+<translation id="7506488012654002225">Chromium sal nie die volgende inligting <ph name="BEGIN_EMPHASIS" />stoor nie<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Jou blaaigeskiedenis
+            <ph name="LIST_ITEM" />Webkoekies en werfdata
+            <ph name="LIST_ITEM" />Inligting wat op vorms ingevul is
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Teruggestuurde beleidtoestel-ID is leeg of stem nie met huidige toestel-ID ooreen nie</translation>
 <translation id="7508870219247277067">Avokadogroen</translation>
 <translation id="7511955381719512146">Die Wi-Fi wat jy gebruik, kan vereis dat jy <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> besoek.</translation>
@@ -2234,6 +2255,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8202370299023114387">Konflik</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Verbinding is veilig</translation>
+<translation id="8217240300496046857">Werwe kan nie webkoekies gebruik wat jou op die web naspoor nie. Kenmerke op sommige werwe kan breek.</translation>
 <translation id="8218327578424803826">Toegewysde ligging:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Die persoon wat hierdie rekenaar opgestel het, het besluit om hierdie werf te blokkeer.</translation>
@@ -2277,12 +2299,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8317207217658302555">Dateer ARCore op?</translation>
 <translation id="831997045666694187">Aand</translation>
 <translation id="8321476692217554900">kennisgewings</translation>
-<translation id="8328484624016508118">Nadat alle Incognito-oortjies toegemaak is, vee Chrome die volgende uit:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Jou blaai-aktiwiteit op hierdie toestel<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Jou soekgeskiedenis op hierdie toestel<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Inligting wat op vorms ingevul is<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Toegang tot <ph name="HOST_NAME" /> is geweier</translation>
 <translation id="833262891116910667">Merk</translation>
 <translation id="8339163506404995330">Bladsye in <ph name="LANGUAGE" /> sal nie vertaal word nie</translation>

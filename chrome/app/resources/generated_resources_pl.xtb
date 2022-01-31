@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Aktualna ikona</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Zatrzymaj</translation>
+<translation id="1108938384783527433">Synchronizacja historii</translation>
 <translation id="1110155001042129815">Zaczekaj</translation>
 <translation id="1110965959145884739">Wybierz języki do zainstalowania na tym urządzeniu. Aby pliki pakietów językowych nie zajmowały za dużo miejsca na dysku, użytkownicy korzystają z nich wspólnie. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -510,6 +511,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1521442365706402292">Zarządzaj certyfikatami</translation>
 <translation id="1521774566618522728">Aktywność: dzisiaj</translation>
 <translation id="152234381334907219">Nigdy nie zapisane</translation>
+<translation id="1523279371236772909">Wyświetlono w zeszłym miesiącu</translation>
 <translation id="1523978563989812243">Mechanizmy zamiany tekstu na mowę</translation>
 <translation id="1524430321211440688">Klawiatura</translation>
 <translation id="1524563461097350801">Nie, dziękuję</translation>
@@ -1238,6 +1240,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2232876851878324699">Plik zawierał jeden certyfikat, który nie został zaimportowany:</translation>
 <translation id="2233502537820838181">&amp;Więcej informacji</translation>
 <translation id="223356358902285214">Aktywność w internecie i aplikacjach</translation>
+<translation id="2234827758954819389">Przewodnik po prywatności</translation>
 <translation id="2234876718134438132">Synchronizacja i usługi Google</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2238379619048995541">Dane o stanie częstotliwości</translation>
@@ -3091,6 +3094,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4095264805865317199">Otwórz interfejs aktywacji sieci komórkowej</translation>
 <translation id="4095507791297118304">Ekran główny</translation>
 <translation id="4096508467498758490">Wyłącz rozszerzenia trybu dewelopera</translation>
+<translation id="4096797685681362305">Wyświetlono w zeszłym tygodniu</translation>
 <translation id="4097406557126260163">Aplikacje i rozszerzenia</translation>
 <translation id="409742781329613461">Wskazówki dotyczące Chrome</translation>
 <translation id="4097560579602855702">Szukaj w Google</translation>
@@ -3646,6 +3650,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4699172675775169585">Obrazy i pliki zapisane w pamięci podręcznej</translation>
 <translation id="4699357559218762027">(automatyczne uruchamianie)</translation>
 <translation id="4701025263201366865">Logowanie rodzica</translation>
+<translation id="4701335814944566468">Wyświetlono wczoraj</translation>
 <translation id="4708794300267213770">Pokaż ekran blokady po wybudzeniu</translation>
 <translation id="4708849949179781599">Zamknij przeglądarkę <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Przywróć ustawienia</translation>
@@ -3713,6 +3718,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="479536056609751218">Strona internetowa, tylko kod HTML</translation>
 <translation id="4796142525425001238">Zawsze przywracaj</translation>
 <translation id="4798236378408895261">Dołącz <ph name="BEGIN_LINK" />dzienniki Bluetooth<ph name="END_LINK" /> (na użytek wewnętrzny Google)</translation>
+<translation id="479863874072008121">Zarządzaj urządzeniami</translation>
 <translation id="4800839971935185386">Sprawdź zmienione nazwy i ikony</translation>
 <translation id="4801448226354548035">Ukryj konta</translation>
 <translation id="4801512016965057443">Zezwól na przesył danych w roamingu</translation>
@@ -6435,6 +6441,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7659154729610375585">Zamknąć tryb incognito mimo to?</translation>
 <translation id="7659297516559011665">Tylko hasła na tym urządzeniu</translation>
+<translation id="7659336857671800422">Zapoznaj się z Przewodnikiem po prywatności</translation>
 <translation id="7659584679870740384">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego administratorem.</translation>
 <translation id="7661259717474717992">Zezwalaj witrynom na zapis i odczyt danych w plikach cookie</translation>
 <translation id="7661451191293163002">Nie udało się uzyskać certyfikatu rejestracji.</translation>
@@ -7956,6 +7963,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9200339982498053969">Strona <ph name="ORIGIN" /> będzie mogła edytować pliki z folderu <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Szukaj w: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Wszystkie dane offline zostaną wyczyszczone</translation>
+<translation id="9201117361710210082">Wyświetlono wcześniej</translation>
 <translation id="9201220332032049474">Opcje blokady ekranu</translation>
 <translation id="9201842707396338580">Coś poszło nie tak. Skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilowanie włączone</translation>

@@ -82,6 +82,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1364382257761975320">Para desbloquear la Chromebook, utiliza la huella dactilar</translation>
+<translation id="1364618750746929654">No se puede generar una transcripción</translation>
 <translation id="1383597849754832576">No se pueden descargar los videos de Subtitulado instantáneo. Vuelve a intentarlo más tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Sí</translation>
@@ -680,6 +681,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="54609108002486618">Gestionado</translation>
 <translation id="5465662442746197494">¿Necesitas ayuda?</translation>
 <translation id="547979256943495781">Biblioteca a la derecha</translation>
+<translation id="5491186829646618080">Hay actualizaciones de firmware disponibles</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Tu administrador quitó todos los perfiles de eSIM. Para obtener más información, comunícate con el administrador.</translation>
 <translation id="5523434445161341166">Se está conectando <ph name="FEATURE_NAME" />.</translation>
@@ -1178,6 +1180,7 @@ Nueva instalación</translation>
 <translation id="8876661425082386199">Revisa tu conexión</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
+<translation id="888982883502837004">Hay actualizaciones de firmware disponibles para tu dispositivo. Haz clic para revisarlas y aplicarlas.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se borrará de forma permanente.</translation>
 <translation id="890616557918890486">Cambiar la fuente</translation>
 <translation id="8909138438987180327">Batería al <ph name="PERCENTAGE" />%</translation>

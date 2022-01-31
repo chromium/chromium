@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">વિગતો જુઓ</translation>
 <translation id="1030706264415084469"><ph name="URL" /> તમારા ઉપકરણ પર કાયમી ધોરણે વિશાળ ડેટા સ્ટોર કરવા માગે છે</translation>
 <translation id="1032854598605920125">ઘડિયાળની દિશામાં ફેરવો</translation>
+<translation id="1033329911862281889">છૂપા મોડ થકી તમે ઑનલાઇન અદૃશ્ય બની જતા નથી:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />સાઇટ અને તેમના દ્વારા ઉપયોગમાં લેવાતી સેવાઓ મુલાકાતો જોઈ શકે છે<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />નિયોક્તા અથવા સ્કૂલ બ્રાઉઝિંગ પ્રવૃત્તિ ટ્રૅક કરી શકે છે<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ઇન્ટરનેટ સેવા આપનાર કંપની વેબ ટ્રાફિક મૉનિટર કરી શકે છે<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1036982837258183574">બહાર નીકળવા માટે |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="1038106730571050514">સૂચનો બતાવો</translation>
 <translation id="1038842779957582377">અજ્ઞાત નામ</translation>
 <translation id="1041998700806130099">જોબ શીટ સંદેશ</translation>
 <translation id="1048785276086539861">જ્યારે તમે ટીકાટિપ્પણીમાં ફેરફાર કરશો, ત્યારે આ દસ્તાવેજ 'એક પેજના વ્યૂ' પર પાછો ફરશે</translation>
-<translation id="1049743911850919806">છૂપી</translation>
 <translation id="1050038467049342496">અન્ય ઍપ્લિકેશનો બંધ કરો</translation>
 <translation id="1055184225775184556">&amp;ઉમેરવું પૂર્વવત્ કરો</translation>
 <translation id="1056898198331236512">ચેતવણી</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">પૉલિસી કૅશ મેમરી ઓકે</translation>
 <translation id="1130564665089811311">પેજનો અનુવાદ કરો બટન, Google Translate વડે આ પેજનો અનુવાદ કરવા માટે Enter દબાવો</translation>
 <translation id="1131264053432022307">તમે કૉપિ કરેલી છબી</translation>
+<translation id="1142846828089312304">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="1150979032973867961">આ સર્વર સાબિત કરી શક્યું નથી કે એ <ph name="DOMAIN" /> છે; એનું સુરક્ષા પ્રમાણપત્ર તમારા કમ્પ્યુટરની ઑપરેટિંગ સિસ્ટમ દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="1151972924205500581">પાસવર્ડ આવશ્યક છે</translation>
 <translation id="1156303062776767266">તમે સ્થાનિક અથવા શેર કરેલી ફાઇલ જોઈ રહ્યાં છો</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">મોકલો</translation>
 <translation id="1484290072879560759">વિતરણ માટેનું સરનામું પસંદ કરો</translation>
 <translation id="1492194039220927094">પુશ કરેલી પૉલિસી:</translation>
+<translation id="149293076951187737">તમે Chromeની બધી છૂપી ટૅબ બંધ કરી દો ત્યારે તે ટૅબની તમારી પ્રવૃત્તિ આ ડિવાઇસમાંથી સાફ કરી દેવાય છે:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />બ્રાઉઝિંગ પ્રવૃત્તિ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />શોધ ઇતિહાસ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ટૅબ પર પાછા જાઓ</translation>
 <translation id="1501859676467574491">તમારા Google એકાઉન્ટમાંથી કાર્ડ બતાવો</translation>
 <translation id="1507202001669085618">&lt;p&gt;જો તમે ઑનલાઇન થાઓ એ પહેલાં જ્યાં તમારે સાઇન ઇન કરવું જરૂરી હોય તેવા વાઇ-ફાઇ પોર્ટલનો ઉપયોગ કરી રહ્યા હો, તો તમને આ ભૂલ દેખાશે.&lt;/p&gt;
@@ -285,6 +297,7 @@
     હેડર દૂષિત છે, જે બ્રાઉઝરને
     <ph name="SITE" /> માટેની તમારી વિનંતી પૂરી કરતા અટકાવે છે. સાઇટ ઑપરેટર ઑરિજિન
     પૉલિસીઓનો ઉપયોગ સાઇટ માટે સુરક્ષા અને અન્ય પ્રોપર્ટીની ગોઠવણી કરવા માટે કરી શકે છે.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromiumમાં છૂપા મોડ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">તમારા ખુલ્લા ટૅબ્સ અહીં દેખાય છે</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +539,12 @@
 <translation id="2597378329261239068">આ દસ્તાવેજ પાસવર્ડ સુરક્ષિત છે. કૃપા કરીને પાસવર્ડ દાખલ કરો.</translation>
 <translation id="2609632851001447353">વૈવિધ્ય</translation>
 <translation id="2610561535971892504">કૉપિ કરવા માટે ક્લિક</translation>
+<translation id="2617988307566202237">Chrome નીચે આપેલી માહિતી <ph name="BEGIN_EMPHASIS" />સાચવશે નહીં<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />તમારો બ્રાઉઝિંગ ઇતિહાસ
+          <ph name="LIST_ITEM" />કુકી અને સાઇટ ડેટા
+          <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (એન્વલપ)</translation>
 <translation id="2623663032199728144">તમારી સ્ક્રીન વિશેની માહિતીનો ઉપયોગ કરવા પરવાનગી માગી શકે છે</translation>
 <translation id="2625385379895617796">તમારી ઘડિયાળ આગળ છે</translation>
@@ -736,11 +755,6 @@
 <translation id="3345782426586609320">આંખો</translation>
 <translation id="3355823806454867987">પ્રૉક્સી સેટિંગ બદલો...</translation>
 <translation id="3360103848165129075">ચુકવણી માટેની હૅન્ડલર શીટ</translation>
-<translation id="3361596688432910856">Chrome નિમ્નલિખિત માહિતી <ph name="BEGIN_EMPHASIS" />સાચવશે નહીં<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" /> <ph name="LIST_ITEM" />તમારો બ્રાઉઝિંગ ઇતિહાસ
-          <ph name="LIST_ITEM" />કુકી અને સાઇટ ડેટા
-          <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">આ પૉલિસી, ટાળેલી <ph name="OLD_POLICY" /> પૉલિસીમાંથી ઑટોમૅટિક રીતે કૉપિ કરી હતી. તેના બદલે તમારે આ પૉલિસીનો ઉપયોગ કરવો જોઈએ.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="3366477098757335611">કાર્ડ જુઓ</translation>
@@ -1159,6 +1173,7 @@
 <translation id="4628948037717959914">ફોટો</translation>
 <translation id="4631649115723685955">કૅશબૅક લિંક કર્યું છે</translation>
 <translation id="4636930964841734540">માહિતી</translation>
+<translation id="4638670630777875591">Chromiumમાં છૂપો મોડ</translation>
 <translation id="464342062220857295">શોધ સુવિધાઓ</translation>
 <translation id="4644670975240021822">ઉલ્ટા ક્રમમાં નીચે તરફ</translation>
 <translation id="4646534391647090355">મને હવે ડાઉનલોડ હોમ પર લઈ જાઓ</translation>
@@ -1221,12 +1236,6 @@
 <translation id="4819347708020428563">ટીકાટિપ્પણીમાં ફેરફાર કરીને ડિફૉલ્ટ વ્યૂ પસંદ કરીએ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheetsમાં ઝડપથી કોઈ નવી શીટ બનાવવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="4825507807291741242">શક્તિશાળી</translation>
-<translation id="4827402517081186284">છૂપા મોડથી તમે ઑનલાઇન અદ્રશ્ય બની જતા નથી:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />સાઇટ તમારી મુલાકાત વિશે જાણી શકે છે<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />નોકરીદાતા કે સ્કૂલ, બ્રાઉઝિંગ પ્રવૃત્તિ ટ્રૅક કરી શકે છે<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ઇન્ટરનેટ સેવા આપનાર કંપની વેબ ટ્રાફિક મૉનિટર કરી શકે છે<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">અવગણવામાં આવ્યું કારણ કે પૉલિસી ફક્ત ક્લાઉડ વપરાશકર્તા પૉલિસી દ્વારા જ સેટ કરવામાં આવી શકે છે.</translation>
 <translation id="483241715238664915">ચેતવણીઓ ચાલુ કરો</translation>
 <translation id="4838327282952368871">સ્વપ્નશીલ</translation>
@@ -1260,6 +1269,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, શોધવા માટે Tab અને પછી Enter દબાવો</translation>
 <translation id="4930153903256238152">વિશાળ ક્ષમતા</translation>
+<translation id="4940163644868678279">Chromeમાં છૂપો મોડ</translation>
 <translation id="4943872375798546930">પરિણામો નથી</translation>
 <translation id="4950898438188848926">ટૅબ, સ્વિચ બટન, ખુલ્લા ટૅબ, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> પર સ્વિચ કરવા માટે Enter દબાવો</translation>
 <translation id="495170559598752135">ક્રિયાઓ</translation>
@@ -1620,6 +1630,7 @@
 <translation id="6120179357481664955">તમારું UPI ID યાદ રાખીએ?</translation>
 <translation id="6124432979022149706">Chrome એન્ટરપ્રાઇઝ કનેક્ટર</translation>
 <translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeમાં છૂપા મોડ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">કોઈપણ કેબલ્સ તપાસો અને તમે કદાચ ઉપયોગમાં લઇ રહ્યાં હોય તેવા કોઇપણ રાઉટર્સ, મૉડેમ્સ 
     અથવા અન્ય નેટવર્ક ઉપકરણોને રીબૂટ કરો.</translation>
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>
@@ -1796,7 +1807,6 @@
 <translation id="6757797048963528358">તમારું ઉપકરણ નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="6767985426384634228">સરનામું અપડેટ કરીએ?</translation>
 <translation id="6768213884286397650">Hagaki (પોસ્ટકાર્ડ)</translation>
-<translation id="6774185088257932239">છૂપા મોડ વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">જાંબુડિયો</translation>
 <translation id="6786747875388722282">એક્સ્ટેન્શન</translation>
@@ -1896,6 +1906,12 @@
 <translation id="7111012039238467737">(માન્ય)</translation>
 <translation id="7118618213916969306">ક્લિપબોર્ડ URL શોધો, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">અન્ય ટૅબ અથવા પ્રોગ્રામ બંધ કરો</translation>
+<translation id="7129355289156517987">તમે Chromiumની બધી છૂપી ટૅબ બંધ કરી દો ત્યારે તે ટૅબની તમારી પ્રવૃત્તિ આ ડિવાઇસમાંથી સાફ કરી દેવાય છે:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />બ્રાઉઝિંગ પ્રવૃત્તિ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />શોધ ઇતિહાસ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">આ સરનામે વિતરણ કરી શકાતું નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="7132939140423847331">તમારા ઍડમિન દ્વારા આ ડેટાને કૉપિ કરવાથી પ્રતિબંધિત કરવામાં આવ્યો છે.</translation>
 <translation id="7135130955892390533">સ્ટેટસ બતાવો</translation>
@@ -2014,6 +2030,12 @@
 <translation id="7485870689360869515">કોઈ ડેટા મળ્યો નથી.</translation>
 <translation id="7495528107193238112">આ કન્ટેન્ટ બ્લૉક કરવામાં આવ્યું છે. સમસ્યાનાં નિરાકરણ માટે, સાઇટના માલિકનો સંપર્ક કરો.</translation>
 <translation id="7497998058912824456">Doc બટન બનાવો, Google Docમાં ઝડપથી નવો દસ્તાવેજ બનાવવા માટે Enter કી દબાવો</translation>
+<translation id="7506488012654002225">Chromium નીચે આપેલી માહિતી <ph name="BEGIN_EMPHASIS" />સાચવશે નહીં<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />તમારો બ્રાઉઝિંગ ઇતિહાસ
+          <ph name="LIST_ITEM" />કુકી અને સાઇટ ડેટા
+          <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">પરત થયેલું પૉલિસી ડિવાઇસ id ખાલી છે અથવા વર્તમાન ટોકન સાથે મેળ ખાતું નથી</translation>
 <translation id="7508870219247277067">જમરૂખ જેવો લીલો</translation>
 <translation id="7511955381719512146">તમે ઉપયોગ કરી રહ્યા છો તે વાઇ-ફાઇને <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ની મુલાકાત લેવાની જરૂર પડી શકે છે.</translation>
@@ -2233,6 +2255,7 @@
 <translation id="8202370299023114387">વિરોધ</translation>
 <translation id="8206978196348664717">Prc4 (એન્વલપ)</translation>
 <translation id="8211406090763984747">કનેક્શન સુરક્ષિત છે</translation>
+<translation id="8217240300496046857">સાઇટ તમને વેબ પર બધે ટ્રૅક કરતી કુકીનો ઉપયોગ કરી શકે નહીં. અમુક સાઇટ પરની સુવિધાઓમાં કદાચ ખલેલ પડી શકે છે.</translation>
 <translation id="8218327578424803826">સોંપાયેલ સ્થાન:</translation>
 <translation id="8220146938470311105">C7/C6 (એન્વલપ)</translation>
 <translation id="8225771182978767009">આ કમ્પ્યુટરને સેટ કરનાર વ્યક્તિએ આ સાઇટને અવરોધિત કરવાનું પસંદ કર્યું છે.</translation>
@@ -2276,12 +2299,6 @@
 <translation id="8317207217658302555">ARCore અપડેટ કરીએ?</translation>
 <translation id="831997045666694187">સાંજ</translation>
 <translation id="8321476692217554900">નોટિફિકેશન</translation>
-<translation id="8328484624016508118">બધી છૂપી ટૅબ બંધ કર્યા પછી, Chrome આ સાફ કરશે:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />આ ડિવાઇસમાંની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />આ ડિવાઇસમાંનો તમારો શોધ ઇતિહાસ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ની ઍક્સેસ નકારાઈ હતી</translation>
 <translation id="833262891116910667">હાઇલાઇટ</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />માં છે તે પેજનો અનુવાદ થશે નહીં</translation>

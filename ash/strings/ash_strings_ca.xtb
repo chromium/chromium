@@ -82,6 +82,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
 <translation id="1364382257761975320">Per desbloquejar el Chromebook, utilitza l'empremta digital</translation>
+<translation id="1364618750746929654">No es pot generar la transcripció</translation>
 <translation id="1383597849754832576">No es poden baixar fitxers de veu. Torna-ho a provar més tard.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1391102559483454063">Activada</translation>
@@ -679,6 +680,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5465662442746197494">Necessiteu ajuda?</translation>
 <translation id="547979256943495781">El prestatge és a la dreta</translation>
+<translation id="5491186829646618080">Hi ha actualitzacions de microprogramari disponibles</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'administrador ha suprimit tots els perfils d'eSIM. Contacta amb l'administrador per obtenir més informació.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> s'està connectant.</translation>
@@ -1177,6 +1179,7 @@ Instal·lació nova</translation>
 <translation id="8876661425082386199">Comprova la connexió</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
+<translation id="888982883502837004">Hi ha actualitzacions de microprogramari disponibles per al teu dispositiu. Fes clic per consultar-les i actualitzar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se suprimirà permanentment</translation>
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>

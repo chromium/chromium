@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Поточний значок</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Зупинити</translation>
+<translation id="1108938384783527433">Синхронізація історії</translation>
 <translation id="1110155001042129815">Зачекайте</translation>
 <translation id="1110965959145884739">Виберіть, які мови встановити на цьому пристрої. Мовні пакети спільні для користувачів задля економії місця на диску. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Проектор</translation>
@@ -514,6 +515,7 @@
 <translation id="1521442365706402292">Керування сертифікатами</translation>
 <translation id="1521774566618522728">У мережі сьогодні</translation>
 <translation id="152234381334907219">Ніколи не зберігалося</translation>
+<translation id="1523279371236772909">Переглянуто минулого місяця</translation>
 <translation id="1523978563989812243">Системи синтезу мовлення</translation>
 <translation id="1524430321211440688">Клавіатура</translation>
 <translation id="1524563461097350801">Ні, дякую</translation>
@@ -1255,6 +1257,7 @@
 <translation id="2232876851878324699">Файл містив сертифікат, який не було імпортовано:</translation>
 <translation id="2233502537820838181">&amp;Докладніше</translation>
 <translation id="223356358902285214">Історія додатків і веб-пошуку</translation>
+<translation id="2234827758954819389">Посібник щодо конфіденційності</translation>
 <translation id="2234876718134438132">Синхронізація та сервіси Google</translation>
 <translation id="2235344399760031203">Файли cookie третіх сторін блокуються</translation>
 <translation id="2238379619048995541">Дані про стан частоти</translation>
@@ -3112,6 +3115,7 @@
 <translation id="4095264805865317199">Відкрити інтерфейс активації мобільної мережі</translation>
 <translation id="4095507791297118304">Основний дисплей</translation>
 <translation id="4096508467498758490">Вимкнути розширення в режимі розробника</translation>
+<translation id="4096797685681362305">Переглянуто минулого тижня</translation>
 <translation id="4097406557126260163">Додатки та розширення</translation>
 <translation id="409742781329613461">Поради для Chrome</translation>
 <translation id="4097560579602855702">Пошук Google</translation>
@@ -3668,6 +3672,7 @@
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
+<translation id="4701335814944566468">Переглянуто вчора</translation>
 <translation id="4708794300267213770">Показувати заблокований екран, коли пристрій виходить із режиму сну</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
@@ -3735,6 +3740,7 @@
 <translation id="479536056609751218">Веб-сторінка, тільки HTML</translation>
 <translation id="4796142525425001238">Завжди відновлювати</translation>
 <translation id="4798236378408895261">Вкласти <ph name="BEGIN_LINK" />журнали Bluetooth<ph name="END_LINK" /> (для внутрішнього використання в Google)</translation>
+<translation id="479863874072008121">Керувати пристроями</translation>
 <translation id="4800839971935185386">Перевірити змінені назву й значок</translation>
 <translation id="4801448226354548035">Сховати облікові записи</translation>
 <translation id="4801512016965057443">Дозволити роумінг мобільних даних</translation>
@@ -6458,6 +6464,7 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7659154729610375585">Усе одно вимкнути режим анонімного перегляду?</translation>
 <translation id="7659297516559011665">Паролі лише на цьому пристрої</translation>
+<translation id="7659336857671800422">Перегляньте посібник щодо конфіденційності</translation>
 <translation id="7659584679870740384">Вам не маєте права використовувати цей пристрій. Зверніться до адміністратора, щоб отримати дозвіл на вхід.</translation>
 <translation id="7661259717474717992">Дозволити сайтам зберігати та переглядати дані файлів cookie</translation>
 <translation id="7661451191293163002">Не вдалось отримати сертифікат про реєстрацію.</translation>
@@ -7983,6 +7990,7 @@
 <translation id="9200339982498053969">Сайт <ph name="ORIGIN" /> зможе змінювати файли в папці <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Пошук у <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Усі дані, збережені офлайн, буде видалено</translation>
+<translation id="9201117361710210082">Уже переглянуто</translation>
 <translation id="9201220332032049474">Способи блокування екрана</translation>
 <translation id="9201842707396338580">Сталася помилка. Зв'яжіться з адміністратором або власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Профілювання ввімкнено</translation>

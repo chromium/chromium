@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">óþekkt heiti</translation>
 <translation id="1041998700806130099">Skilaboð vinnslublaðs</translation>
 <translation id="1048785276086539861">Þegar þú breytir textaskýringum fer þetta skjal aftur í einnar síðu snið</translation>
-<translation id="1049743911850919806">Fara huldu höfðu</translation>
 <translation id="1050038467049342496">Lokaðu öðrum forritum</translation>
 <translation id="1055184225775184556">Aft&amp;urkalla nýtt bókamerki</translation>
 <translation id="1056898198331236512">Viðvörun</translation>
@@ -736,12 +735,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3345782426586609320">Augu</translation>
 <translation id="3355823806454867987">Breyta proxy-stillingum...</translation>
 <translation id="3360103848165129075">Greiðsluhjálparforrit</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />mun ekki vista<ph name="END_EMPHASIS" /> eftirfarandi upplýsingar:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Vafraferilinn þinn
-          <ph name="LIST_ITEM" />Fótspor og vefsvæðagögn
-          <ph name="LIST_ITEM" />Upplýsingar sem eru færðar í eyðublöð
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Þessi regla var sjálfkrafa afrituð úr úreltu <ph name="OLD_POLICY" /> reglunni. Þú ættir að nota þessa reglu í staðinn.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> vill fá að nota sýndarveruleikatæki og -gögn</translation>
 <translation id="3366477098757335611">Skoða kort</translation>
@@ -1222,12 +1215,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4819347708020428563">Breyta textaskýringum í sjálfgefnu sniði?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýjan Google töflureikni á skjótan hátt</translation>
 <translation id="4825507807291741242">Kraftmikið</translation>
-<translation id="4827402517081186284">Huliðsstilling gerir þig ekki ósýnilega(n) á netinu:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Vefsvæði vita þegar þú opnar þau<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Vinnuveitendur eða skólar geta rakið vafranotkun<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Netþjónustur kunna að fylgjast með netumferð<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Hunsað vegna þess að aðeins er hægt að stilla regluna með notendareglum í skýi.</translation>
 <translation id="483241715238664915">Kveikja á viðvörunum</translation>
 <translation id="4838327282952368871">Draumkennt</translation>
 <translation id="4840250757394056958">Skoða Chrome ferilinn þinn</translation>
@@ -1796,7 +1784,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6757797048963528358">Tækið þitt fór að sofa.</translation>
 <translation id="6767985426384634228">Uppfæra heimilisfang?</translation>
 <translation id="6768213884286397650">Hagaki (póstkort)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /> um huliðsstillingu</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Fjólublár</translation>
 <translation id="6786747875388722282">Viðbætur</translation>
@@ -2276,12 +2263,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8317207217658302555">Uppfæra ARCore?</translation>
 <translation id="831997045666694187">Kvöld</translation>
 <translation id="8321476692217554900">tilkynningar</translation>
-<translation id="8328484624016508118">Chrome hreinsar eftirfarandi um leið og öllum huliðsflipum er lokað:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Vafranotkun þína í þessu tæki<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Leitarferil þinn þessu tæki<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Upplýsingar sem slegnar voru inn á eyðublöð<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Ekki fæst aðgangur að <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Auðkenna</translation>
 <translation id="8339163506404995330">Síður á þessu tungumáli verða ekki þýddar: <ph name="LANGUAGE" /></translation>

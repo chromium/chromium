@@ -172,6 +172,7 @@
 <translation id="357889014807611375">matuojamas „Wi-Fi“ tinklas</translation>
 <translation id="3583278742022654445">Silpnas signalas. Pabandykite prieiti arčiau „Wi-Fi“ signalo šaltinio.</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
+<translation id="3603829704940252505">Pseudoportretas</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
@@ -423,6 +424,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6905724422583748843">Atgal į puslapį „<ph name="PAGE_NAME" />“</translation>
 <translation id="6910312834584889076">Skaitytuvo dangtis atidarytas. Uždarykite dangtį ir bandykite dar kartą.</translation>
 <translation id="6911383237894364323">Nepavyko prisijungti prie medijos serverių</translation>
+<translation id="6935486296377631201">Ekrano užsklanda</translation>
 <translation id="6957231940976260713">Paslaugos pavadinimas</translation>
 <translation id="6961170852793647506">Jei norite pradėti, padėkite dokumentą ant skaitytuvo</translation>
 <translation id="6965382102122355670">Gerai</translation>

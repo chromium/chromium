@@ -419,6 +419,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Mẫu so khớp nguồn sẽ có định dạng giống với các mẫu của chính sách "<ph name="URL_BLOCKLIST_POLICY_NAME" />" nêu tại http://www.chromium.org/administrators/url-blocklist-filter-format.
 
       Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được chứa các thành phần "/path" hoặc "@query". Mọi mẫu chứa thành phần "/path" hoặc "@query" đều bị bỏ qua.</translation>
+<translation id="1508588104835702000">Tắt tính năng báo cáo trên đám mây qua trình duyệt được quản lý</translation>
 <translation id="1509377996969000672">Việc đặt chính sách này sẽ cung cấp các cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị. Định dạng của chính sách khớp với định dạng của từ điển <ph name="NATIVE_PRINTERS_POLICY_NAME" />, có thêm trường "id" hoặc "guid" bắt buộc trên từng máy in để đưa vào danh sách cho phép hoặc danh sách cấm. Kích thước tệp không được vượt quá 5 MB và phải ở định dạng JSON. Một tệp có khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB. Hàm băm mật mã giúp xác minh tính toàn vẹn của tệp tải xuống. Tệp này được tải xuống, lưu vào bộ nhớ đệm và tải lại xuống khi URL hoặc hàm băm thay đổi. <ph name="PRODUCT_OS_NAME" /> tải tệp này xuống để định cấu hình máy in và cung cấp các máy in theo đúng <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, và <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Chính sách này:
@@ -747,6 +748,44 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1861206724856734193">Đặt danh sách các quy tắc ngăn rò rỉ dữ liệu.</translation>
 <translation id="1862267110714201519">Tắt tính năng cửa sổ ảo.</translation>
 <translation id="1865417998205858223">Quyền khóa</translation>
+<translation id="1867025364110179456">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách những ứng dụng web tự động cài đặt mà không cần người dùng tương tác, cũng như chỉ định những người dùng không thể gỡ cài đặt hay tắt.
+
+      Mỗi mục trong danh sách của chính sách này là một đối tượng chứa một thành phần bắt buộc:
+      <ph name="URL_LABEL" /> (URL của ứng dụng web sẽ cài đặt)
+
+      và 5 thành phần không bắt buộc:
+      – <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (chỉ định cách mở ứng dụng web – mặc định là một thẻ mới)
+
+      – <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (chọn Đúng nếu bạn muốn tạo lối tắt trên màn hình <ph name="LINUX_OS_NAME" /> và
+      <ph name="MS_WIN_NAME" />).
+
+      – <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" /> phiên bản 90,
+      bạn có thể ghi đè tên ứng dụng nếu tên đó không phải là một
+      Ứng dụng web tiến bộ (PWA) hoặc ghi đè tên ứng dụng tạm thời
+      được cài đặt nếu tên đó là một Ứng dụng web tiến bộ nhưng cần xác thực trước khi
+      hoàn tất quá trình cài đặt. Nếu hệ thống cung cấp cả chính sách
+      <ph name="CUSTOM_NAME_LABEL" /> và
+      <ph name="FALLBACK_APP_NAME_LABEL" />,
+      thì chính sách thứ hai sẽ bị bỏ qua.)
+
+      – <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" />
+      phiên bản 99, bạn có thể ghi đè vĩnh viễn tên ứng dụng cho tất cả ứng dụng
+web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      – <ph name="CUSTOM_ICON_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" />
+      phiên bản 99, bạn có thể ghi đè biểu tượng ứng dụng của các ứng dụng đã cài đặt. Các
+      biểu tượng phải là hình vuông, có kích thước tối đa 1 MB và thuộc một trong các định dạng
+      sau: jpeg, png, gif, webp, ico. Giá trị băm phải là hàm băm SHA256
+      của tệp biểu tượng. Hiện chỉ được hỗ trợ trên
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      Vui lòng xem <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> để biết cách ghim các ứng dụng vào kệ <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="186719019195685253">Tác vụ sẽ thực hiện khi đạt độ trễ không hoạt động trong khi chạy bằng nguồn AC</translation>
 <translation id="1881649377321404593">
       Chính sách này đã bị xoá trong M80, vì không cần thiết nữa do
@@ -937,6 +976,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="208566302163036794">Chặn các tính năng đã tắt</translation>
 <translation id="208623333578980446">Cho phép khóa chế độ thức của màn hình để quản lý nguồn điện</translation>
 <translation id="2086944573376916479">Một Tài khoản được quản lý phải là tài khoản chính và không có các tài khoản phụ</translation>
+<translation id="2089541797660774692">Bật tính năng báo cáo trên đám mây qua trình duyệt được quản lý</translation>
 <translation id="2090304907729569435">Tắt lựa chọn hiện kết quả <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> trong bảng điều khiển bên của Trình duyệt.</translation>
 <translation id="2090939118981888335">Nếu bạn đặt chính sách này thành Bật, proxy nén dữ liệu sẽ được phép hoạt động. Nếu bạn đặt chính sách này thành Tắt, proxy nén dữ liệu sẽ không được phép hoạt động.
 
@@ -1539,6 +1579,13 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo danh sách người dùng.</translation>
 <translation id="2730419309754848345">Lựa chọn In tệp PDF dưới dạng hình ảnh mặc định</translation>
+<translation id="2731299561202635374">Chính sách này sẽ kiểm soát quy trình kiểm tra URL theo thời gian thực để xác định các URL không an toàn.
+
+      Nếu bạn không đặt hoặc đặt chính sách này thành “Vô hiệu hoá”, thì quy trình kiểm tra người tiêu dùng qua tính năng Duyệt web an toàn sẽ được áp dụng. Các lượt kiểm tra người tiêu dùng qua tính năng Duyệt web an toàn vẫn có thể bao gồm cả các lượt tra cứu theo thời gian thực, tuỳ vào giá trị của chế độ cài đặt “Cải thiện tính năng tìm kiếm và duyệt web” cũng như giá trị của chính sách UrlKeyedAnonymizedDataCollectionEnabled.
+
+      Nếu bạn đặt chính sách này thành “Đang bật”, thì các URL sẽ được gửi đi để quét theo thời gian thực theo Điều khoản dịch vụ của Enterprise. Do vậy, Chrome sẽ gửi các URL tới Google Cloud hoặc bên thứ ba mà bạn chọn để kiểm tra chúng theo thời gian thực. Phiên bản tra cứu bằng tính năng Duyệt web an toàn dành cho người tiêu dùng theo thời gian thực sẽ bị tắt.
+
+      Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="2731627323327011390">Tắt sử dụng chứng chỉ <ph name="PRODUCT_OS_NAME" /> đối với ứng dụng ARC</translation>
 <translation id="2742843273354638707">Ẩn ứng dụng Cửa hàng Chrome trực tuyến và liên kết chân trang khỏi Trang thẻ mới và trình chạy ứng dụng <ph name="PRODUCT_OS_NAME" />.
 
@@ -1700,6 +1747,11 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Nếu bạn không đặt chính sách này (hoặc đặt thành một URL không hợp lệ), thì <ph name="PRODUCT_NAME" /> sẽ không dùng chính sách này làm nguồn của các quy tắc chuyển đổi trình duyệt.
 
       Lưu ý: Chính sách này trỏ tới một tệp XML có cùng định dạng với chính sách <ph name="IEEM_SITELIST_POLICY" /> của <ph name="IE_PRODUCT_NAME" />. URL này sẽ tải các quy tắc từ một tệp XML nhưng không chia sẻ những quy tắc đó với <ph name="IE_PRODUCT_NAME" />. Hãy đọc thêm về chính sách <ph name="IEEM_SITELIST_POLICY" /> của <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2940653651012844682">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi có sự kiện bảo mật xảy ra trong Chrome). Danh sách này bao gồm kết quả phủ định từ các phân tích của Enterprise Connector, hoạt động sử dụng lại mật khẩu, các lượt truy cập vào trang không an toàn và các thao tác nhạy cảm khác của người dùng liên quan đến vấn đề bảo mật.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> xác định những nhà cung cấp dịch vụ báo cáo tương ứng với chế độ cài đặt và trường <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> xác định những sự kiện mà nhà cung cấp đó đang bật.
+
+      Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="2947111924404450461">Việc đặt chính sách này sẽ định cấu hình các máy in của doanh nghiệp. Định dạng của chính sách khớp với định dạng của từ điển <ph name="NATIVE_PRINTERS_POLICY_NAME" />, có thêm một trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> bắt buộc cho từng máy in để đưa vào danh sách cho phép hoặc danh sách cấm. Kích thước tệp không được vượt quá 5 MB và phải ở định dạng JSON. Một tệp có khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB. Hàm băm mật mã giúp xác minh tính toàn vẹn của tệp tải xuống. Tệp này được tải xuống, lưu vào bộ nhớ đệm và tải lại xuống khi URL hoặc hàm băm thay đổi. <ph name="PRODUCT_OS_NAME" /> tải tệp này xuống để định cấu hình máy in và cung cấp các máy in theo đúng <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> và <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Chính sách này không ảnh hưởng đến việc người dùng có thể định cấu hình máy in trên từng thiết bị hay không. Chính sách này nhằm bổ sung cho quá trình định cấu hình máy in theo từng người dùng.
@@ -1888,6 +1940,23 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="3144173889708944482">Nếu bạn chọn <ph name="PRINTERS_BLOCKLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, thì việc đặt <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng không thể sử dụng. Tất cả máy in sẽ được cung cấp cho người dùng, ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Không cho phép dùng các giọng nói của tính năng chuyển văn bản sang lời nói trên mạng nâng cao khi dùng tính năng Chọn để nói</translation>
 <translation id="3152425128389603870">Cho phép Màn hình hợp nhất và chính sách này bật theo mặc định.</translation>
+<translation id="3157857846231611820">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi có tệp được đính kèm vào Chrome).
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi tệp đi để phân tích hay không khi tệp được đính kèm vào một trang cụ thể và cần thêm những thẻ nào vào yêu cầu phân tích cho tệp đó. Nếu URL của trang khớp với mẫu liên kết với một thẻ tương ứng với một mẫu “enable” (bật), thì hệ thống sẽ đưa thẻ đó vào yêu cầu phân tích chừng nào không còn mẫu “disable” (tắt) có cùng thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống đưa ít nhất 1 thẻ vào yêu cầu.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> giúp xác định nhà cung cấp dịch vụ phân tích tương ứng với chế độ cài đặt.
+
+      Nếu bạn đặt trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> thành 1, thì Chrome sẽ đợi để nhận phản hồi của dịch vụ phân tích rồi mới cho phép trang này truy cập vào tệp đó. Nếu bạn đặt trường đó thành giá trị số nguyên nào khác, thì Chrome sẽ cho phép trang này truy cập vào tệp đó ngay lập tức.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> kiểm soát việc Chrome chặn hay cho phép tệp được bảo vệ bằng mật khẩu.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> kiểm soát việc Chrome chặn hay cho phép phân tích các tệp quá lớn.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> dùng để xác định những thẻ mà trình kết nối yêu cầu người dùng cho biết lý do thẻ đó bỏ qua quá trình quét, theo đó có thể bỏ qua cảnh báo. Nếu bạn không đặt trường này, hệ thống sẽ xem như người dùng không cần cho biết lý do.
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> dùng để định cấu hình thông báo mà người dùng thấy khi cảnh báo xuất hiện sau một quá trình quét cho kết quả không rõ ràng. Người dùng sẽ thấy trường thông báo dạng văn bản và trường này chỉ được có tối đa 200 ký tự. Trường learn_more_url chứa URL do quản trị viên cung cấp. Người dùng có thể nhấp vào trường này để xem thêm thông tin mà khách hàng cung cấp về lý do họ chặn thao tác. Trường ngôn ngữ là trường không bắt buộc và cho biết ngôn ngữ của thông báo. Trường ngôn ngữ trống hoặc có giá trị “default” (mặc định) cho biết thông báo sẽ được sử dụng khi không có thông báo ở ngôn ngữ của người dùng. Trường thẻ chỉ định kiểu quét sẽ hiện thông báo. Danh sách custom_messages có thể không có hoặc có nhiều mục nhập, trong đó mỗi mục nhập bắt buộc phải có các trường thẻ và thông báo không được để trống.
+
+      Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="3159375329008977062">Người dùng được phép xuất/nhập các vùng chứa Crostini qua giao diện người dùng</translation>
 <translation id="3164531087779621747">Chế độ in PostScript</translation>
 <translation id="3165468162820163252">Chính sách này kiểm soát việc liệu phần WebUI của màn hình đăng nhập sẽ luôn tải khi khởi động hay chỉ tải trước khi xuất hiện. Chính sách này áp dụng cho màn hình đăng nhập.
@@ -2014,6 +2083,16 @@ Khi chính sách này được đặt thành false hoặc không được địn
           Chính sách này không ngăn quản trị viên doanh nghiệp kết nối với các thiết bị Chrome OS được quản lý.
 
           Chính sách này không có hiệu lực nếu bạn bật, để trống hoặc không đặt chính sách.</translation>
+<translation id="3246744067327836077">
+      Chính sách này kiểm soát hoạt động báo cáo của <ph name="PRODUCT_NAME" /> trên đám mây cho một hồ sơ cụ thể được quản lý.
+
+      Khi bạn không đặt chính sách này hoặc đặt thành Disabled (Tắt), thì dữ liệu sẽ không được thu thập hay tải lên.
+      Khi bạn đặt chính sách này thành Enabled (Bật), thì dữ liệu sẽ được thu thập và tải lên.<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Báo cáo này cho biết trạng thái của hồ sơ và thông tin về mức sử dụng, bao gồm nhưng không giới hạn ở phiên bản hệ điều hành, phiên bản trình duyệt, tiện ích đã cài đặt và chính sách áp dụng.
+
+      Bạn chỉ có thể đặt chính sách này thành chính sách người dùng trên đám mây.
+      </translation>
 <translation id="3251500716404598358">Định cấu hình chính sách để chuyển đổi giữa các trình duyệt.
 
       Các trang web được định cấu hình sẽ tự động mở trong trình duyệt khác không phải là <ph name="PRODUCT_NAME" />.</translation>
@@ -3959,6 +4038,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn không đặt chính sách này, hệ thống có thể sử dụng lại các GPO đã lưu vào bộ nhớ đệm trong tối đa 25 giờ.
 
       Lưu ý: Thao tác khởi động lại và đăng xuất sẽ xóa bộ nhớ đệm.</translation>
+<translation id="5717973246079053225">Tắt tính năng báo cáo trên đám mây qua hồ sơ được quản lý.</translation>
 <translation id="572155275267014074">Cài đặt Android</translation>
 <translation id="5728154254076636808">Bật tạo bản sao chuyển vùng cho dữ liệu hồ sơ của <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mật khẩu Kerberos. Phần giữ chỗ <ph name="PASSWORD_PLACEHOLDER" /> được thay bằng mật khẩu đăng nhập.</translation>
@@ -4293,6 +4373,21 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="6135398260575578389">Tính năng Duyệt web an toàn đang hoạt động ở chế độ nâng cao. Chế độ này bảo mật tốt hơn nhưng người dùng sẽ phải chia sẻ thêm thông tin duyệt web với Google.</translation>
 <translation id="6135552820180449830">Crosh (được hỗ trợ kể từ phiên bản 99)</translation>
 <translation id="6138636318340561140">Kiểm tra trạng thái Duyệt web an toàn của các URL trong thời gian thực</translation>
+<translation id="6140635914906859015">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi người dùng nhập dữ liệu vào Chrome từ bảng nhớ tạm hoặc bằng cách kéo và thả nội dung trên web).
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi dữ liệu đi để phân tích hay không khi người dùng nhập dữ liệu vào một trang cụ thể và thẻ nào cần thêm vào yêu cầu phân tích cho dữ liệu đó. Nếu URL của trang khớp với mẫu liên kết với một thẻ tương ứng với một mẫu “enable” (bật), thì hệ thống sẽ thêm thẻ đó vào yêu cầu phân tích chừng nào không còn mẫu “disable” (tắt) có cùng thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống thêm ít nhất 1 thẻ vào yêu cầu.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> giúp xác định nhà cung cấp dịch vụ phân tích tương ứng với chế độ cài đặt.
+
+      Nếu bạn đặt trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> thành 1, thì Chrome sẽ đợi để nhận phản hồi của dịch vụ phân tích rồi mới cho phép trang này truy cập vào dữ liệu đó. Nếu bạn đặt trường đó thành giá trị số nguyên nào khác, thì Chrome sẽ cho phép trang này truy cập vào dữ liệu đó ngay lập tức.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết kích thước tối thiểu (tính bằng byte) mà dữ liệu nhập vào Chrome phải bằng hoặc lớn hơn thì mới quét được. Giá trị mặc định là 100 byte nếu bạn không đặt trường này.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> dùng để xác định những thẻ mà trình kết nối yêu cầu người dùng cho biết lý do thẻ đó bỏ qua quá trình quét, theo đó có thể bỏ qua cảnh báo. Nếu bạn không đặt trường này, hệ thống sẽ xem như người dùng không cần cho biết lý do.
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> dùng để định cấu hình thông báo mà người dùng thấy khi cảnh báo xuất hiện sau một quá trình quét cho kết quả không rõ ràng. Người dùng sẽ thấy trường thông báo dạng văn bản và trường này chỉ được có tối đa 200 ký tự. Trường learn_more_url chứa URL do quản trị viên cung cấp. Người dùng có thể nhấp vào trường này để xem thêm thông tin mà khách hàng cung cấp về lý do họ chặn thao tác. Trường ngôn ngữ là trường không bắt buộc và cho biết ngôn ngữ của thông báo. Trường ngôn ngữ trống hoặc có giá trị “default” (mặc định) cho biết thông báo sẽ được sử dụng khi không có thông báo ở ngôn ngữ của người dùng. Trường thẻ chỉ định kiểu quét sẽ hiện thông báo. Danh sách custom_messages có thể không có hoặc có nhiều mục nhập, trong đó mỗi mục nhập bắt buộc phải có các trường thẻ và thông báo không được để trống.
+
+      Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="6141402445226505817">Luôn sử dụng tính năng phát hiện múi giờ thô</translation>
 <translation id="6142501278956229253">In tệp PDF được tạo điểm ảnh DPI</translation>
 <translation id="6144046700495610112">Nếu bạn đặt chính sách này thành Bật, thì dữ liệu tự động điền vào biểu mẫu trên trình duyệt mặc định trước sẽ được nhập trong lần chạy đầu tiên. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì dữ liệu tự động điền vào biểu mẫu sẽ không được nhập trong lần chạy đầu tiên.
@@ -4700,6 +4795,21 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="66265932317331474">Báo cáo thông tin CPU</translation>
 <translation id="6628120204569232711">Báo cáo trạng thái bộ nhớ</translation>
 <translation id="663685822663765995">Hạn chế chế độ in màu</translation>
+<translation id="6637946190026453735">Danh sách các chế độ cài đặt dịch vụ <ph name="PRODUCT_NAME" /> Enterprise Connectors sẽ áp dụng cho <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi <ph name="PRODUCT_NAME" /> in một trang hoặc tệp).
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có cần gửi dữ liệu đi để phân tích hay không khi một trang cụ thể được in và cần thêm những thẻ nào vào yêu cầu phân tích đó. Quá trình phân tích sẽ diễn ra nếu hệ thống đưa ít nhất 1 thẻ vào yêu cầu.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> giúp xác định nhà cung cấp dịch vụ phân tích tương ứng với chế độ cài đặt.
+
+      Nếu bạn đặt trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> thành 1, thì <ph name="PRODUCT_NAME" /> sẽ đợi để nhận được phản hồi của dịch vụ phân tích trước khi cho thấy hộp thoại xem trước bản in cho trang được in. Nếu bạn đặt trường này thành giá trị số nguyên nào khác, thì <ph name="PRODUCT_NAME" /> sẽ cho thấy hộp thoại xem trước bản in ngay lập tức.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> kiểm soát việc <ph name="PRODUCT_NAME" /> chặn hay cho phép phân tích những tệp/trang quá lớn.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> dùng để xác định những thẻ mà trình kết nối yêu cầu người dùng cho biết lý do thẻ đó bỏ qua quá trình quét, theo đó có thể bỏ qua cảnh báo. Nếu bạn không đặt trường này, hệ thống sẽ xem như người dùng không cần cho biết lý do.
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> dùng để định cấu hình thông báo mà người dùng thấy khi cảnh báo xuất hiện sau một quá trình quét cho kết quả không rõ ràng. Quản trị viên có thể định cấu hình các thông báo có tối đa 200 ký tự.
+
+      Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="6640355849038068978">Nếu chế độ cài đặt này đang bật, người dùng sẽ mở được ứng dụng Eche, chẳng hạn như bằng cách nhấp vào thông báo trong Trung tâm điều khiển điện thoại.
 
       Nếu chế độ cài đặt này đang tắt, người dùng sẽ không mở được ứng dụng Eche.
@@ -4732,6 +4842,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì các lệnh in sẽ kích hoạt màn hình xem trước bản in.</translation>
 <translation id="6658245400435704251">Chỉ định số giây tối đa mà thiết bị có thể ngẫu nhiên trì hoãn việc tải xuống bản cập nhật từ thời điểm bản cập nhật được đưa lên máy chủ lần đầu tiên. Thiết bị có thể đợi một phần số thời gian này là thời gian thực và phần thời gian còn lại là thời gian kiểm tra bản cập nhật. Trong bất kỳ trường hợp nào, việc phân tán bị chặn trên ở lượng thời gian cố định để thiết bị không bao giờ phải chờ mãi để tải xuống bản cập nhật.</translation>
 <translation id="6659537776197644458">Không kích hoạt quy trình xác thực cho tính năng đồng bộ hóa mật khẩu</translation>
+<translation id="6661178198729301029">Bật tính năng báo cáo trên đám mây qua hồ sơ được quản lý</translation>
 <translation id="6665670272107384733">Đặt tần suất người dùng phải nhập mật khẩu để sử dụng tính năng mở khóa nhanh</translation>
 <translation id="6667586534922258705">Hiện nút hiển thị mật khẩu trên màn hình đăng nhập và màn hình khóa</translation>
 <translation id="6669700740683748046">Tính năng này cho phép hiển thị URL đầy đủ trên thanh địa chỉ.
@@ -5481,6 +5592,23 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="7477149584454865826">Cờ boolean cho biết liệu có nên dùng IPP Everywhere để thiết lập máy in hay không.</translation>
 <translation id="7477231245051133709">Bật tính năng hỗ trợ tiếp cận về đơn âm</translation>
 <translation id="7477239290070847560">Đích giao thức dựa trên máy in tự động định cấu hình (mDNS + DNS-SD)</translation>
+<translation id="7480826412572122600">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi tệp được tải xuống qua Chrome).
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi tệp đi phân tích hay không khi tệp được tải xuống trên một trang cụ thể và cần thêm những thẻ nào vào yêu cầu phân tích cho tệp đó. Nếu URL của trang khớp với mẫu liên kết với một thẻ tương ứng với một mẫu “enable” (bật), thì hệ thống sẽ đưa thẻ đó vào yêu cầu phân tích chừng nào không còn mẫu “disable” (tắt) có cùng thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống đưa ít nhất 1 thẻ vào yêu cầu.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> giúp xác định nhà cung cấp dịch vụ phân tích tương ứng với chế độ cài đặt.
+
+      Nếu bạn đặt trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> thành 1, thì Chrome sẽ đợi để nhận phản hồi của dịch vụ phân tích rồi mới cho phép người dùng truy cập vào tệp đã tải xuống. Nếu bạn đặt trường này thành một giá trị số nguyên khác, thì Chrome sẽ cho phép người dùng truy cập vào tệp đó ngay lập tức.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> kiểm soát việc Chrome chặn hay cho phép tệp được bảo vệ bằng mật khẩu.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> kiểm soát việc Chrome chặn hay cho phép phân tích các tệp quá lớn.
+
+      Trường <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> dùng để xác định những thẻ mà trình kết nối yêu cầu người dùng cho biết lý do thẻ đó bỏ qua quá trình quét, theo đó có thể bỏ qua cảnh báo. Nếu bạn không đặt trường này, hệ thống sẽ xem như người dùng không cần cho biết lý do.
+
+      Các trường <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> dùng để định cấu hình thông báo mà người dùng thấy khi cảnh báo xuất hiện sau một quá trình quét cho kết quả không rõ ràng. Người dùng sẽ thấy trường thông báo dạng văn bản và trường này chỉ được có tối đa 200 ký tự. Trường learn_more_url chứa URL do quản trị viên cung cấp. Người dùng có thể nhấp vào trường này để xem thêm thông tin mà khách hàng cung cấp về lý do họ chặn thao tác. Trường ngôn ngữ là trường không bắt buộc và cho biết ngôn ngữ của thông báo. Trường ngôn ngữ trống hoặc có giá trị “default” (mặc định) cho biết thông báo sẽ được sử dụng khi không có thông báo ở ngôn ngữ của người dùng. Trường thẻ chỉ định kiểu quét sẽ hiện thông báo. Danh sách custom_messages có thể không có hoặc có nhiều mục nhập, trong đó mỗi mục nhập bắt buộc phải có các trường thẻ và thông báo không được để trống.
+
+      Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="7485481791539008776">Quy tắc chọn máy in mặc định</translation>
 <translation id="7486205887492534734">Lời nhắc khi có nhiều chứng chỉ khớp trên màn hình đăng nhập</translation>
 <translation id="7491720878670299691">Chu kỳ hệ thống thăm dò và kiểm tra dữ liệu mạng cho các sự kiện. Thời gian tối thiểu cho phép là 1 phút.
@@ -6737,6 +6865,7 @@ Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù vi�
 <translation id="8917070657147922192">Cho phép người dùng quản lý các chứng chỉ CA đã cài đặt.</translation>
 <translation id="8919100556245407184">Thời gian (tính theo ngày) mà sau khi bài đăng hết hạn tự động cập nhật thì người dùng sẽ bị đăng xuất nếu phiên bản <ph name="PRODUCT_OS_NAME" /> cũ hơn phiên bản <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> được chỉ định</translation>
 <translation id="8919369436496201075">Cho phép thiết bị nhận bản cập nhật LTS (hỗ trợ dài hạn)</translation>
+<translation id="8921669704201370845">Bật tính năng báo cáo của <ph name="PRODUCT_NAME" /> trên đám mây qua hồ sơ được quản lý</translation>
 <translation id="8930064580550462145">Trong khi đăng nhập qua màn hình khóa, <ph name="PRODUCT_OS_NAME" /> có thể xác thực với một máy chủ (trực tuyến) hoặc dùng mật khẩu lưu trong bộ nhớ đệm (ngoại tuyến).
 
       Khi bạn đặt chính sách này thành -2, chính sách này sẽ khớp với giá trị của giới hạn thời gian đăng nhập ngoại tuyến trên màn hình đăng nhập trong chính sách <ph name="POLICY" />.
@@ -6991,6 +7120,13 @@ Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù vi�
 <translation id="9220314833408124365">Sử dụng chính sách liên kết giới thiệu mặc định no-referrer-when-downgrade</translation>
 <translation id="922540222991413931">Định cấu hình nguồn cài đặt tiện ích, ứng dụng và tập lệnh người dùng</translation>
 <translation id="924557436754151212">Nhập mật khẩu đã lưu từ trình duyệt mặc định trong lần chạy đầu tiên</translation>
+<translation id="926104720905645793">Chính sách này kiểm soát hoạt động báo cáo của <ph name="PRODUCT_NAME" /> trên đám mây, cho phép tải thông tin về hoạt động của trình duyệt lên <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Khi bạn không đặt chính sách này hoặc đặt thành Disabled (Tắt), thì dữ liệu sẽ không được thu thập hay tải lên.
+      Khi bạn đặt chính sách này thành Enabled (Bật), thì dữ liệu sẽ được thu thập và tải lên.<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Đối với <ph name="PRODUCT_NAME" />, chính sách này chỉ có hiệu lực khi máy đã đăng ký bằng <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+      Đối với <ph name="PRODUCT_OS_NAME" />, chính sách này luôn có hiệu lực.</translation>
 <translation id="927384371566552478">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì giao diện người dùng xuất/nhập sẽ hiển thị với người dùng. Nếu bạn đặt chính sách này thành Tắt, giao diện người dùng xuất/nhập sẽ không hiển thị với người dùng.</translation>
 <translation id="927444535723396977">Nếu bạn đặt chính sách này thành 1, thì các trang web có thể chạy JavaScript. Nếu bạn đặt chính sách này thành 2, thì các trang web không được chạy JavaScript.
 

@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Белгілі бір сайт үшін cookie файлдарына рұқсат беріңіз.</translation>
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
+<translation id="4194328954146351878">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне рұқсат бермес бұрын сізден сұрау (ұсынылады)</translation>
 <translation id="4200726100658658164">Орналасу параметрлерін ашу</translation>
 <translation id="4226663524361240545">Хабарландыру келіп түскенде, құрылғы дірілдейді</translation>
 <translation id="4259722352634471385">Навигация тыйылған: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Үлкейту</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Бұл құрылғыда NFC функциясы өшірілген. Оны <ph name="BEGIN_LINK" />Android параметрлерінен<ph name="END_LINK" /> қосыңыз.</translation>
+<translation id="8928445016601307354">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне тыйым салу</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Белгілі бір сайт үшін cookie файлдарына тыйым салыңыз.</translation>
 <translation id="8959122750345127698"><ph name="URL" /> мекенжайына өту мүмкін емес</translation>

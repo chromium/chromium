@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Huidig icoon</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
+<translation id="1108938384783527433">Geschiedenissynchronisatie</translation>
 <translation id="1110155001042129815">Wachten</translation>
 <translation id="1110965959145884739">Kies welke talen je wilt installeren op dit apparaat. Taalbestanden worden gedeeld onder gebruikers om schijfruimte te besparen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -508,6 +509,7 @@
 <translation id="1521442365706402292">Certificaten beheren</translation>
 <translation id="1521774566618522728">Vandaag actief</translation>
 <translation id="152234381334907219">Nooit opgeslagen</translation>
+<translation id="1523279371236772909">Bekeken in de afgelopen maand</translation>
 <translation id="1523978563989812243">Machines voor tekst-naar-spraak</translation>
 <translation id="1524430321211440688">Toetsenbord</translation>
 <translation id="1524563461097350801">Nee, bedankt</translation>
@@ -1240,6 +1242,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2232876851878324699">Het bestand bevat één certificaat. Dit certificaat is niet geïmporteerd:</translation>
 <translation id="2233502537820838181">&amp;Meer informatie</translation>
 <translation id="223356358902285214">Web- en app-activiteit</translation>
+<translation id="2234827758954819389">Privacygids</translation>
 <translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238379619048995541">Gegevens van frequentiestatus</translation>
@@ -3093,6 +3096,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4095264805865317199">UI voor mobiele activering openen</translation>
 <translation id="4095507791297118304">Primair scherm</translation>
 <translation id="4096508467498758490">Extensies van ontwikkelaarsmodus uitzetten</translation>
+<translation id="4096797685681362305">Bekeken in de afgelopen week</translation>
 <translation id="4097406557126260163">Apps en extensies</translation>
 <translation id="409742781329613461">Tips voor Chrome</translation>
 <translation id="4097560579602855702">Zoeken op Google</translation>
@@ -3648,6 +3652,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4699172675775169585">Gecachte afbeeldingen en bestanden</translation>
 <translation id="4699357559218762027">(automatisch gestart)</translation>
 <translation id="4701025263201366865">Inloggen voor ouders</translation>
+<translation id="4701335814944566468">Gisteren bekeken</translation>
 <translation id="4708794300267213770">Vergrendelscherm bekijken bij activering vanuit de slaapstand</translation>
 <translation id="4708849949179781599">Stop <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Instellingen herstellen</translation>
@@ -3715,6 +3720,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="479536056609751218">Webpagina, alleen HTML</translation>
 <translation id="4796142525425001238">Altijd herstellen</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth-logboeken<ph name="END_LINK" /> toevoegen (voor intern Google-gebruik)</translation>
+<translation id="479863874072008121">Apparaten beheren</translation>
 <translation id="4800839971935185386">Updates voor namen en iconen bekijken</translation>
 <translation id="4801448226354548035">Accounts verbergen</translation>
 <translation id="4801512016965057443">Mobiele dataroaming toestaan</translation>
@@ -6436,6 +6442,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7659154729610375585">Incognitomodus toch afsluiten?</translation>
 <translation id="7659297516559011665">Alleen wachtwoorden op dit apparaat</translation>
+<translation id="7659336857671800422">Privacygids doorlopen</translation>
 <translation id="7659584679870740384">Je beschikt niet over de rechten om dit apparaat te gebruiken. Neem contact op met de beheerder voor toestemming om in te loggen.</translation>
 <translation id="7661259717474717992">Sites toestaan cookiegegevens op te slaan en te lezen</translation>
 <translation id="7661451191293163002">Er kan geen registratiecertificaat worden opgehaald.</translation>
@@ -7957,6 +7964,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9200339982498053969"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bewerken</translation>
 <translation id="920045321358709304">Zoeken op <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Alle offline gegevens worden gewist</translation>
+<translation id="9201117361710210082">Eerder bekeken</translation>
 <translation id="9201220332032049474">Schermvergrendelingsopties</translation>
 <translation id="9201842707396338580">Er is iets misgegaan. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiling staat aan</translation>

@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">Για να διαχειριστείτε τον Λογαριασμό σας Google, πατήστε το κουμπί Διαχείριση λογαριασμού.</translation>
 <translation id="1549000191223877751">Μεταβείτε σε άλλο παράθυρο</translation>
 <translation id="1553358976309200471">Ενημερώστε το Chrome</translation>
+<translation id="1554532453982918912">Συμβάλετε στη βελτίωση του Chrome για άτομα που το χρησιμοποιούν όπως και εσείς.</translation>
 <translation id="1558391695376153246">Κλείσιμο ανών. περιήγησης</translation>
 <translation id="1571304935088121812">Αντιγραφή ονόματος χρήστη</translation>
 <translation id="1592864538817356322">Βασική ασφάλεια:</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">Τέλος</translation>
 <translation id="2459390580524506445">Βελτιωμένη φωνητική αναζήτηση</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
+<translation id="2472163211318554013">Συνδεθείτε για να αξιοποιήσετε πλήρως το Chrome</translation>
 <translation id="247737702124049222">Οι περιγραφές εικόνων είναι ενεργοποιημένες</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2485422356828889247">Απεγκατάσταση</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252">Η σύνδεση <ph name="CONNECTION_TYPE" /> μπορεί να επιβραδύνει τη λήψη σας</translation>
 <translation id="2647434099613338025">Προσθήκη γλώσσας</translation>
 <translation id="2649068648233607930">Η διαχείριση του προγράμματος περιήγησής σας γίνεται από τον τομέα <ph name="DOMAIN" /></translation>
+<translation id="2650348088770008516">Η επεξήγηση Οδηγού απορρήτου έκλεισε.</translation>
 <translation id="2650751991977523696">Επανάληψη λήψης αρχείου;</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Αρχείο ήχου}other{# Αρχεία ήχου}}</translation>
 <translation id="265156376773362237">Βασική προφόρτωση</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">Για να εμφανίζονται οι σελιδοδείκτες σας σε όλες τις συσκευές σας, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>
 <translation id="2827278682606527653">Μενού της κάρτας ροής στο μισό ύψος</translation>
 <translation id="2830783625999891985">Έγινε απόκρυψη του περιεχομένου προχείρου</translation>
+<translation id="2838367486340230368">Η επεξήγηση Οδηγού απορρήτου άνοιξε στο μισό ύψος.</translation>
 <translation id="2839327205551510876">Καταργήθηκε η παρακολούθηση του ιστοτόπου <ph name="SITE_NAME" /></translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Πρόκειται να κλείσει <ph name="TAB_COUNT_ONE" /> καρτέλα ανώνυμης περιήγησης.}other{Πρόκειται να κλείσουν <ph name="TAB_COUNT_MANY" /> καρτέλες ανώνυμης περιήγησης.}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ελέγχθηκε πριν από μία ημέρα}other{Ελέγχθηκε πριν από # ημέρες}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">Δημιουργία φράσης πρόσβασης</translation>
 <translation id="2996809686854298943">Απαιτείται διεύθυνση URL</translation>
 <translation id="2997081575621687554">Όταν ένας ιστότοπος της Google ζητήσει να προφορτώσει ιδιωτικά συνδέσμους στη σελίδα του, το Chrome κρυπτογραφεί και προφορτώνει τις σελίδες μέσω των διακομιστών της Google χωρίς cookie. Με αυτόν τον τρόπο, αποκρύπτεται η ταυτότητά σας από τον προφορτωμένο ιστότοπο.</translation>
+<translation id="3003733539450769656">Σας προειδοποιεί για επικίνδυνα συμβάντα προτού αυτά συμβούν.</translation>
 <translation id="3006881078666935414">Δεν υπάρχουν δεδομένα χρήσης</translation>
 <translation id="301080557829842765">Οδηγός απορρήτου</translation>
 <translation id="3016635187733453316">Βεβαιωθείτε ότι η συσκευή είναι συνδεδεμένη στο διαδίκτυο.</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">Εμφανίζει μηνύματα προτροπής για σύνδεση στο Chrome.</translation>
 <translation id="3046945242843292318">Μεταβείτε πιο γρήγορα σε αυτόν τον ιστότοπο την επόμενη φορά</translation>
 <translation id="3055259925215945098">Ο σελιδοδείκτης μετακινήθηκε</translation>
+<translation id="3055841435094910999">Πληροφορίες σχετικά με την από μέρους σας χρήση του Chrome αποστέλλονται στην Google, αλλά δεν συνδέονται με εσάς.\n\nΕάν το Chrome παρουσιάσει σφάλμα, οι λεπτομέρειες σχετικά με το σφάλμα ενδέχεται να περιλαμβάνουν ορισμένα προσωπικά στοιχεία.\n\nΕάν ενεργοποιήσετε τον συγχρονισμό, οι μετρήσεις ενδέχεται επίσης να περιλαμβάνουν πληροφορίες σχετικά με τα URL που επισκέπτεστε.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> σελιδοδείκτης}other{<ph name="BOOKMARKS_COUNT_MANY" /> σελιδοδείκτες}}</translation>
 <translation id="3062802207422175757">Άρθρα για τα ενδιαφέροντά σας στο Chrome</translation>
 <translation id="3066573403916685335">Μετακίνηση κάτω</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">Σύντομα, θα βλέπετε ειδήσεις από τον ιστότοπο <ph name="SITE_NAME" /> όταν ανοίγετε μια νέα καρτέλα. Οι ιστότοποι που ακολουθείτε αποθηκεύονται στον Λογαριασμό σας Google. Μπορείτε να τους διαχειριστείτε στις ρυθμίσεις του Discover.</translation>
 <translation id="5091249083535528968">Εκτεταμένα δεδομένα χρήσης</translation>
 <translation id="509429900233858213">Παρουσιάστηκε σφάλμα.</translation>
+<translation id="5102401324271069229">Εάν ένας ιστότοπος προσπαθήσει να κλέψει τον κωδικό πρόσβασής σας ή όταν κατεβάσετε ένα επιβλαβές αρχείο, το Chrome μπορεί να στείλει URL, καθώς και τμήματα του περιεχομένου της σελίδας, στην Ασφαλή περιήγηση.</translation>
 <translation id="510275257476243843">Απομένει 1 ώρα</translation>
 <translation id="5115811374190515607">σε <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Ενδιαφέροντα</translation>
@@ -1011,6 +1018,7 @@
 <translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="666731172850799929">Άνοιγμα σε <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
+<translation id="6674044799624355221">Στέλνει ένα μικρό δείγμα σελίδων, λήψεων, δραστηριοτήτων επεκτάσεων και πληροφοριών συστήματος για να βοηθήσει στην ανακάλυψη νέων απειλών.</translation>
 <translation id="6674571176963658787">Για να ξεκινήσετε τον συγχρονισμό, εισαγάγετε τη φράση πρόσβασης.</translation>
 <translation id="6676840375528380067">Να διαγραφούν τα δεδομένα Chrome από τη συσκευή;</translation>
 <translation id="6684809838922667136">Βελτίωση του Chrome</translation>
@@ -1086,6 +1094,7 @@
 <translation id="7085332316435785646">Επιλέξτε αν θέλετε να συμπεριλαμβάνεται το ιστορικό Chrome για πιο εξατομικευμένες εμπειρίες στις υπηρεσίες Google.</translation>
 <translation id="7088681679121566888">Το Chrome έχει ενημερωθεί.</translation>
 <translation id="7093803425429738190">Προσθήκη συναισθήματος</translation>
+<translation id="7105047059074518658">Συνδεθείτε για να περιηγείστε πιο εύκολα σε όλες τις συσκευές</translation>
 <translation id="7106762743910369165">Η διαχείριση του προγράμματος περιήγησής σας πραγματοποιείται από τον οργανισμό σας.</translation>
 <translation id="7121362699166175603">Διαγράφει το ιστορικό και τα στοιχεία αυτόματης συμπλήρωσης στη γραμμή διευθύνσεων. Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Άλλο</translation>
@@ -1101,6 +1110,7 @@
 <translation id="7187993566681480880">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="718926126787620637">Η λίστα φακέλων σελιδοδεικτών άνοιξε σε πλήρες ύψος</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
+<translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα}other{# λήψεις σε εκκρεμότητα}}</translation>
 <translation id="7242755609445462077">Στιλιζαρισμένη επισήμανση <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Βεβαιωθείτε ότι ο συγχρονισμός στο Chrome έχει ενεργοποιηθεί για τη συσκευή <ph name="TARGET_DEVICE_NAME" />.</translation>
@@ -1200,11 +1210,13 @@
 <translation id="7757787379047923882">Το κείμενο κοινοποιήθηκε από τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Επιλογή ημερομηνίας και ώρας</translation>
 <translation id="7762668264895820836">Κάρτα SD <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">Συνδεθείτε για πρόσθετες λειτουργίες και την ισχυρότερη ασφάλεια του Chrome</translation>
 <translation id="7764225426217299476">Προσθήκη διεύθυνσης</translation>
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7772375229873196092">Κλείσιμο <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
+<translation id="7780645209293383778">Όταν είστε συνδεδεμένοι, συνδέει προσωρινά αυτά τα δεδομένα με τον Λογαριασμό σας Google, για να σας προστατεύσει σε όλες τις εφαρμογές Google.</translation>
 <translation id="7786595606756654269">Ο Βοηθός Google παρέχει μια βελτιωμένη φωνητική εμπειρία για την αναζήτηση στον ιστό και την αλληλεπίδραση με τους ιστοτόπους που ανοίγετε. Ο Βοηθός Google θα λαμβάνει τα URL και το περιεχόμενο των ιστοτόπων στους οποίους χρησιμοποιείτε τον Βοηθό.</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="7798392620021911922">Έγινε επαναφορά <ph name="TAB_COUNT" /> καρτελών</translation>
@@ -1274,6 +1286,7 @@
 <translation id="8084285576995584326">Ελέγξτε τα δεδομένα του Λογαριασμού σας Google</translation>
 <translation id="808747664143081553">Συνδέθηκε στη συσκευή</translation>
 <translation id="8088176524274673045">Για κοινοποίηση στα άτομα που βρίσκονται κοντά σας, επιτρέψτε τους να σαρώσουν αυτόν τον κωδικό QR.</translation>
+<translation id="8100969750121413114">Συνδεθείτε για εξατομίκευση του Chrome</translation>
 <translation id="8103578431304235997">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="8105613260829665809">Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" />.\nΓια να συμβάλλει στη βελτίωση της εφαρμογής, το Chrome στέλνει δεδομένα χρήσης και σφαλμάτων στην Google. <ph name="BEGIN_UMA_LINK" />Διαχείριση<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Άνοιγμα σελίδας "Ιστορικό"</translation>
 <translation id="8493948351860045254">Απελευθερώστε χώρο</translation>
+<translation id="8497480609928300907">Επεξήγηση Οδηγού απορρήτου</translation>
 <translation id="8497726226069778601">Δεν υπάρχει τίποτα να δείτε εδώ…ακόμη</translation>
 <translation id="8503559462189395349">Κωδικοί πρόσβασης Chrome</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>

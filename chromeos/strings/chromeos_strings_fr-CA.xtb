@@ -172,6 +172,7 @@
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3583278742022654445">Faible puissance du signal. Essayez de vous rapprocher de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
+<translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -423,6 +424,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6905724422583748843">Retourner à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
+<translation id="6935486296377631201">Écran de veille</translation>
 <translation id="6957231940976260713">Nom du service</translation>
 <translation id="6961170852793647506">Pour commencer, placez le document sur le numériseur</translation>
 <translation id="6965382102122355670">OK</translation>

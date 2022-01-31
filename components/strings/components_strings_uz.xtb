@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Tafsilotlar</translation>
 <translation id="1030706264415084469"><ph name="URL" /> saytidan katta hajmdagi ma’lumotlarni mobil qurilmangizda saqlashga ruxsat so‘rovi keldi</translation>
 <translation id="1032854598605920125">Soat mili yo‘nalishida burish</translation>
+<translation id="1033329911862281889">Inkognito rejimida ayrim axborotlar yashirilmaydi:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Saytlar va xizmatlar ularga qilgan tashrifingizni biladi<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ishxona va maktablarda brauzer tarixi kuzatilishi mumkin<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internet provayderlari ham trafikni kuzatishi mumkin<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1036982837258183574">To‘liq ekran rejimidan chiqish uchun |<ph name="ACCELERATOR" />| tugmasini bosing</translation>
 <translation id="1038106730571050514">Variantlar taklif qilish</translation>
 <translation id="1038842779957582377">noma’lum ism</translation>
 <translation id="1041998700806130099">Vazifa varagʻidagi xabar</translation>
 <translation id="1048785276086539861">Izohlarni tahrirlash vaqtida bu hujjat bir sahifali shaklga qaytadi</translation>
-<translation id="1049743911850919806">Inkognito</translation>
 <translation id="1050038467049342496">Boshqa ilovalarni yoping</translation>
 <translation id="1055184225775184556">&amp;Qo‘shishni bekor qilish</translation>
 <translation id="1056898198331236512">Ogohlantirish</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Siyosat keshida xatoliklar yo‘q</translation>
 <translation id="1130564665089811311">“Sahifani tarjima qilish” tugmasi, bu sahifani Google Tarjimon orqali tarjima qilish uchun Enter tugmasini bosing</translation>
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
+<translation id="1142846828089312304">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="1150979032973867961">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati kompyuteringizdagi operatsion tizimga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="1151972924205500581">Parol kiritish zarur</translation>
 <translation id="1156303062776767266">Bu – mahalliy yoki ulashilgan fayl</translation>
@@ -181,6 +187,12 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1483493594462132177">Yuborish</translation>
 <translation id="1484290072879560759">Yetkazib berish manzilini tanlang</translation>
 <translation id="1492194039220927094">Push-xabar orqali yuboriladigan siyosatlar:</translation>
+<translation id="149293076951187737">Chromeda barcha Inkognito varaqlar yopilsa, ulardagi faoliyatingiz bu qurilmadan tozalanadi:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Brauzer tarixi<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Qidiruv tarixi<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Shakllarga kiritilgan maʼlumotlar<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Varaqqa qaytish</translation>
 <translation id="1501859676467574491">Google hisobingizdagi kartalarni ochish</translation>
 <translation id="1507202001669085618">&lt;p&gt;Wi-Fi portaldan foydalanayotganingizda onlayn bo‘lishingiz uchun sizdan kirishni so‘raganda shunday xatolik ko‘rsatiladi.&lt;/p&gt;
@@ -284,6 +296,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
     sarlavha xato formatdaligi sababli brauzer <ph name="SITE" /> saytidagi soʻrovingizni
     bajara olmaydi. Manba siyosatlari sayt operatorlari
     tomonidan xavfsizlik kabi sayt parametrlarini sozlashda ishlatiladi.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromiumdagi Inkognito rejimi haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Ochiq varaqlar shu yerda ko‘rsatiladi</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +538,12 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2597378329261239068">Bu hujjat parol bilan himoyalangan. Iltimos parolni kiriting.</translation>
 <translation id="2609632851001447353">Variantlar</translation>
 <translation id="2610561535971892504">Nusxa olish uchun bosing</translation>
+<translation id="2617988307566202237">Chrome quyidagi maʼlumotlarni <ph name="BEGIN_EMPHASIS" />saqlamaydi<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Brauzer tarixi
+          <ph name="LIST_ITEM" />Cookie fayllar va sayt maʼlumotlari
+          <ph name="LIST_ITEM" />Shakllarga kiritilgan maʼlumotlar
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">Ekranlardagi axborotdan foydalanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="2625385379895617796">Soatingiz oldinda</translation>
@@ -733,12 +752,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3345782426586609320">Koʻzlar</translation>
 <translation id="3355823806454867987">Proksi-server sozlamalarini o‘zgartirish...</translation>
 <translation id="3360103848165129075">Toʻlovni qayta ishlash vositasi</translation>
-<translation id="3361596688432910856">Chrome quyidagi ma’lumotlarni <ph name="BEGIN_EMPHASIS" />saqlab qolmaydi<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Veb-sahifalarni ko‘rish tarixi;
-          <ph name="LIST_ITEM" />Cookie-fayllar va sayt ma’lumotlari;
-          <ph name="LIST_ITEM" />To‘ldirilgan shakllar.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Bu parametr eskirgan <ph name="OLD_POLICY" /> siyosatidan avtomatik ravishda nusxa olgan. Oʻrniga bu parametrdan foydalaning.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> virtual reallik qurilmangiz va uning maʼlumotlaridan foydalanmoqchi</translation>
 <translation id="3366477098757335611">Kartalarni ko‘rish</translation>
@@ -1155,6 +1168,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4628948037717959914">Rasm</translation>
 <translation id="4631649115723685955">Keshbek ulandi</translation>
 <translation id="4636930964841734540">Ma’lumot</translation>
+<translation id="4638670630777875591">Chromiumdagi Inkognito rejimi</translation>
 <translation id="464342062220857295">Funksiyalar qidiruvi</translation>
 <translation id="4644670975240021822">Teskari tartibda orqa tomonida</translation>
 <translation id="4646534391647090355">Hoziroq ochish</translation>
@@ -1217,12 +1231,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4819347708020428563">Izohlar standart shaklda tahrirlansinmi?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Google Sheetda yangi jadvalni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="4825507807291741242">Qudratli</translation>
-<translation id="4827402517081186284">Inkognito rejimida ayrim axborotlar yashirilmaydi:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Saytlar ularga qilgan tashrifingizni biladi<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Ishxona va maktablarda brauzer tarixi kuzatilishi mumkin<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internet provayderlari ham trafikni kuzatishi mumkin<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Parametr faqat bulutdagi foydalanuvchilar siyosati tomonidan belgilanishi mumkinligi uchun inkor etildi</translation>
 <translation id="483241715238664915">Ogohlantiruvlarni yoqish</translation>
 <translation id="4838327282952368871">Xayolparast</translation>
@@ -1256,6 +1264,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, qidirish uchun avval Tab, keyin esa Enter tugmasini bosing</translation>
 <translation id="4930153903256238152">Koʻp sigʻimli</translation>
+<translation id="4940163644868678279">Chromedagi Inkognito rejimi</translation>
 <translation id="4943872375798546930">Hech narsa topilmadi</translation>
 <translation id="4950898438188848926">Varaqlar orasida almashish tugmasi, shu varaqqa almashish uchun Enter tugmasini bosing, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Harakatlar</translation>
@@ -1616,6 +1625,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6120179357481664955">UPI identifikatori eslab qolinsinmi?</translation>
 <translation id="6124432979022149706">Chrome korporativ konnektorlari</translation>
 <translation id="6127379762771434464">Havola olib tashlandi</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromedagi Inkognito rejimi haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Kabel ulanishlarini tekshiring, router, modem yoki boshqa tarmoq qurilmalarini o‘chirib yoqing.</translation>
 <translation id="614940544461990577">Quyidagilarni bajaring:</translation>
 <translation id="6150036310511284407">Chapdan 3 ta teshik ochish</translation>
@@ -1791,7 +1801,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6757797048963528358">Qurilma uyqu rejimiga o‘tib qoldi.</translation>
 <translation id="6767985426384634228">Manzil yangilansinmi?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239">Inkognito haqida <ph name="BEGIN_LINK" />batafsil<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Siyohrang</translation>
 <translation id="6786747875388722282">Kengaytmalar</translation>
@@ -1891,6 +1900,12 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7111012039238467737">(yaroqli)</translation>
 <translation id="7118618213916969306">Klipborddagi havolani qidirish, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Boshqa varaq va dasturlarni yoping</translation>
+<translation id="7129355289156517987">Chromiumda barcha Inkognito varaqlar yopilsa, ulardagi faoliyatingiz bu qurilmadan tozalanadi:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Brauzer tarixi<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Qidiruv tarixi<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Shakllarga kiritilgan maʼlumotlar<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Bu manzilga yetkazib bera olmaymiz. Boshqa manzilni tanlang.</translation>
 <translation id="7132939140423847331">Administrator bu maʼlumotlardan nusxa olishni taqiqlagan.</translation>
 <translation id="7135130955892390533">Holat axboroti</translation>
@@ -2009,6 +2024,12 @@ Batafsil axborot:
 <translation id="7485870689360869515">Ma‘lumotlar topilmadi.</translation>
 <translation id="7495528107193238112">Bu kontent bloklandi. Muammoni yechish uchun sayt egasiga murojaat qiling.</translation>
 <translation id="7497998058912824456">Doc hujjatini yaratish tugmasi, yangi Google Doc hujjatini tezda yaratish uchun Enter tugmasini bosing</translation>
+<translation id="7506488012654002225">Chromium quyidagi maʼlumotlarni <ph name="BEGIN_EMPHASIS" />saqlamaydi<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Brauzer tarixi
+          <ph name="LIST_ITEM" />Cookie fayllar va sayt maʼlumotlari
+          <ph name="LIST_ITEM" />Shakllarga kiritilgan maʼlumotlar
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Qurilmaning qaytarilgan identifikatori bo‘sh yoki joriy qurilma identifikatoriga mos kelmaydi</translation>
 <translation id="7508870219247277067">Yashil avokado</translation>
 <translation id="7511955381719512146">Siz ulangan Wi-Fi tarmog‘i <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> sahifaga o‘tishingizni talab qilishi mumkin.</translation>
@@ -2228,6 +2249,7 @@ Batafsil axborot:
 <translation id="8202370299023114387">Ziddiyat</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Bu ulanish xavfsiz</translation>
+<translation id="8217240300496046857">Saytlar sizni internet boʻylab kuzatadigan cookie fayllardan foydalana olmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="8218327578424803826">Tayinlangan joylashuv:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Bu saytga kirish ushbu kompyuter sozlamalarida taqiqlab qo‘yilgan.</translation>
@@ -2271,12 +2293,6 @@ Batafsil axborot:
 <translation id="8317207217658302555">ARCore yangilansinmi?</translation>
 <translation id="831997045666694187">Kechqurun</translation>
 <translation id="8321476692217554900">bildirishnomalar</translation>
-<translation id="8328484624016508118">Barcha Inkognito varaqlar yopilganidan keyin Chrome quyidagilarni tozalaydi:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Bu qurilmadagi bauzer faoliyati tarixi<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Bu qurilmadagi qidiruv tarixi<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Shakllarda kiritilgan axborotlar<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
 <translation id="833262891116910667">Ajratib belgilash</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> tilidagi sahifalar tarjima qilinmaydi</translation>

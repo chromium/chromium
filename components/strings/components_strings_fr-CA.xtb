@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">nom inconnu</translation>
 <translation id="1041998700806130099">Message de la feuille de travail</translation>
 <translation id="1048785276086539861">Lorsque vous modifiez des annotations, ce document s'affiche au format de vue par page</translation>
-<translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1050038467049342496">Fermer les autres applications</translation>
 <translation id="1055184225775184556">&amp;Annuler l'ajout</translation>
 <translation id="1056898198331236512">Avertissement</translation>
@@ -732,12 +731,6 @@
 <translation id="3345782426586609320">Yeux</translation>
 <translation id="3355823806454867987">Modifier les paramètres du mandataire...</translation>
 <translation id="3360103848165129075">Feuille du module de traitement du paiement</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />n'enregistrera pas<ph name="END_EMPHASIS" /> les données suivantes :
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />votre historique de navigation;
-          <ph name="LIST_ITEM" />les témoins et les données de sites;
-          <ph name="LIST_ITEM" />les renseignements fournis dans les formulaires.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Cette politique a été automatiquement copiée à partir de la politique obsolète <ph name="OLD_POLICY" />. Vous devriez utiliser cette politique à la place.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> souhaite utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="3366477098757335611">Afficher les cartes</translation>
@@ -1213,12 +1206,7 @@
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
 <translation id="4825507807291741242">Puissant</translation>
-<translation id="4827402517081186284">La navigation privée ne vous rend pas invisible en ligne :
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Les sites savent que vous les consultez.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Votre employeur ou votre établissement scolaire peuvent suivre votre activité de navigation.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Les fournisseurs d'accès Internet peuvent surveiller le trafic Web.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ignoré parce que la politique peut uniquement être définie par la politique utilisateur du nuage.</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4838327282952368871">Rêveur</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
@@ -1787,7 +1775,6 @@
 <translation id="6757797048963528358">Votre appareil s'est mis en veille.</translation>
 <translation id="6767985426384634228">Mettre à jour l'adresse?</translation>
 <translation id="6768213884286397650">Carte postale hagaki</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> à propos de la navigation privée</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensions</translation>
@@ -2267,12 +2254,6 @@ Détails supplémentaires :
 <translation id="8317207217658302555">Mettre à jour ARCore?</translation>
 <translation id="831997045666694187">Soirée</translation>
 <translation id="8321476692217554900">Notifications</translation>
-<translation id="8328484624016508118">Lorsque vous fermez tous les onglets de navigation privée, Chrome efface :
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />votre activité de navigation sur cet appareil;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />l'historique de vos recherches sur cet appareil;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />les renseignements entrés dans des formulaires.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Accès à l'adresse <ph name="HOST_NAME" /> refusé</translation>
 <translation id="833262891116910667">Surligner</translation>
 <translation id="8339163506404995330">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites</translation>

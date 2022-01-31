@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Nykyinen kuvake</translation>
 <translation id="1103523840287552314">Käännä <ph name="LANGUAGE" /> aina</translation>
 <translation id="1108600514891325577">Py&amp;säytä</translation>
+<translation id="1108938384783527433">Historian synkronointi</translation>
 <translation id="1110155001042129815">Odota</translation>
 <translation id="1110965959145884739">Valitse, mitkä kielet asennetaan laitteelle. Kielitiedostot jaetaan käyttäjien kesken levytilan säästämiseksi. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektori</translation>
@@ -511,6 +512,7 @@
 <translation id="1521442365706402292">Hallinnoi varmenteita</translation>
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
 <translation id="152234381334907219">Tallentamattomat</translation>
+<translation id="1523279371236772909">Nähty viimeisen kuukauden aikana</translation>
 <translation id="1523978563989812243">Tekstistä puheeksi ‑moottorit</translation>
 <translation id="1524430321211440688">Näppäimistö</translation>
 <translation id="1524563461097350801">Ei kiitos</translation>
@@ -1173,6 +1175,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Lisää Wi-Fi-yhteys...</translation>
 <translation id="2162155940152307086">Synkronointi alkaa, kun poistut synkronointiasetuksista</translation>
+<translation id="2162926944953615670">Ei eSIM-profiileja saatavilla</translation>
 <translation id="2163470535490402084">Kirjaudu laitteelle <ph name="DEVICE_TYPE" /> muodostamalla verkkoyhteys.</translation>
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ja 1 muu kytkin</translation>
@@ -1250,6 +1253,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2232876851878324699">Tiedosto sisälsi yhden varmenteen, jota ei tuotu:</translation>
 <translation id="2233502537820838181">&amp;Lisätietoja</translation>
 <translation id="223356358902285214">Verkko- ja sovellustoiminta</translation>
+<translation id="2234827758954819389">Yksityisyysopas</translation>
 <translation id="2234876718134438132">Synkronointi ja Google-palvelut</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="2238379619048995541">Kellotaajuuden tilan tiedot</translation>
@@ -1868,6 +1872,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2828650939514476812">Yhdistä Wi-Fi-verkkoon</translation>
 <translation id="2831430281393059038">Laitetta tuetaan</translation>
 <translation id="2832124733806557606">Lapsi voi avata tämän laitteen tai kirjautua sille PIN-koodilla.</translation>
+<translation id="2835177225987815960">Nykyiset skannausmääritykset nollataan, mukaan lukien kaikki määritetyt kytkimet ja automaattisen skannauksen nopeusasetukset.</translation>
 <translation id="2835547721736623118">Puheentunnistuspalvelu</translation>
 <translation id="2836269494620652131">Kaatuminen</translation>
 <translation id="2836635946302913370">Järjestelmänvalvoja on estänyt tällä käyttäjänimellä kirjautumisen.</translation>
@@ -3103,6 +3108,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4095264805865317199">Avaa mobiiliyhteyden aktivoinnin käyttöliittymä</translation>
 <translation id="4095507791297118304">Ensisijainen näyttö</translation>
 <translation id="4096508467498758490">Poista kehittäjätilassa olevat laajennukset käytöstä</translation>
+<translation id="4096797685681362305">Nähty viimeisen viikon aikana</translation>
 <translation id="4097406557126260163">Sovellukset ja laajennukset</translation>
 <translation id="409742781329613461">Vinkkejä Chromen käyttöön</translation>
 <translation id="4097560579602855702">Hae Googlesta</translation>
@@ -3659,6 +3665,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4699172675775169585">Välimuistissa olevat kuvat ja tiedostot</translation>
 <translation id="4699357559218762027">(käynnistyy automaattisesti)</translation>
 <translation id="4701025263201366865">Vanhemman sisäänkirjautuminen</translation>
+<translation id="4701335814944566468">Nähty eilen</translation>
 <translation id="4708794300267213770">Näytä lukitusnäyttö, kun laite poistuu virransäästötilasta</translation>
 <translation id="4708849949179781599">Sulje <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Palauta asetukset</translation>
@@ -3726,6 +3733,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="479536056609751218">Verkkosivu, vain HTML</translation>
 <translation id="4796142525425001238">Palauta aina</translation>
 <translation id="4798236378408895261">Liitä <ph name="BEGIN_LINK" />Bluetooth-lokit<ph name="END_LINK" /> (Googlen sisäinen)</translation>
+<translation id="479863874072008121">Laitevalinnat</translation>
 <translation id="4800839971935185386">Katso nimen ja kuvakkeen muutokset</translation>
 <translation id="4801448226354548035">Piilota tilit</translation>
 <translation id="4801512016965057443">Salli mobiilitiedonsiirto roaming-tilassa</translation>
@@ -6449,6 +6457,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7659154729610375585">Haluatko silti poistua incognito-tilasta?</translation>
 <translation id="7659297516559011665">Vain tämän laitteen salasanat</translation>
+<translation id="7659336857671800422">Tutustu yksityisyysoppaaseen</translation>
 <translation id="7659584679870740384">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä järjestelmänvalvojalta kirjautumislupa.</translation>
 <translation id="7661259717474717992">Salli sivustojen tallentaa ja lukea evästetietoja</translation>
 <translation id="7661451191293163002">Rekisteröintivarmenteen noutaminen epäonnistui.</translation>
@@ -7970,6 +7979,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9200339982498053969"><ph name="ORIGIN" /> voi muokata täällä olevia tiedostoja: <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Hae hakukoneella <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Kaikki offline-data poistetaan</translation>
+<translation id="9201117361710210082">Nähty aiemmin</translation>
 <translation id="9201220332032049474">Näytön lukitusvaihtoehdot</translation>
 <translation id="9201842707396338580">Jotain meni pieleen. Ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilointi on käytössä</translation>

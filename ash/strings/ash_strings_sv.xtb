@@ -82,6 +82,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
 <translation id="1364382257761975320">Använd ditt fingeravtryck om du vill låsa upp Chromebook</translation>
+<translation id="1364618750746929654">Det gick inte att generera transkriptionen</translation>
 <translation id="1383597849754832576">Det gick inte att ladda ned röstfilerna. Försök igen senare.</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1391102559483454063">På</translation>
@@ -679,6 +680,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5465662442746197494">Behöver du hjälp?</translation>
 <translation id="547979256943495781">Hyllan till höger</translation>
+<translation id="5491186829646618080">Det finns firmware-uppdateringar</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratören har tagit bort alla eSIM-profiler. Kontakta administratören för mer information.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ansluter.</translation>
@@ -1177,6 +1179,7 @@ Nyligen installerad</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
+<translation id="888982883502837004">Det finns firmware-uppdateringar för enheten. Klicka här om du vill granska dem och uppdatera.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> raderas permanent</translation>
 <translation id="890616557918890486">Ändra källa</translation>
 <translation id="8909138438987180327">Batterinivån är på <ph name="PERCENTAGE" /> procent.</translation>

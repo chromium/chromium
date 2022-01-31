@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">အသေးစိတ်အချက်များ ကြည့်ရန်</translation>
 <translation id="1030706264415084469"><ph name="URL" /> သည် ကြီးမားသည့်ဒေတာများကို သင့်စက်တွင် အမြဲတမ်းသိုလှောင်လိုသည်</translation>
 <translation id="1032854598605920125">လက်ယာရစ် လှည့်ရန်</translation>
+<translation id="1033329911862281889">ရုပ်ဖျက်မုဒ်က အွန်လိုင်းပေါ်တွင် သင့်ကိုမမြင်ရအောင် မလုပ်နိုင်ပါ-
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ဝဘ်ဆိုက်နှင့် ဝန်ဆောင်မှုများက ဝင်ကြည့်မှုများကို သိနိုင်သည်<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />အလုပ်ရှင် (သို့) ကျောင်းများက ကြည့်ရှုခြင်းများကို ခြေရာခံနိုင်သည်<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />အင်တာနက်ဝန်ဆောင်မှုပေးသူများက ဝဘ်ဒေတာစီးဆင်းမှုကို စောင့်ကြည့်နိုင်သည်<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
 <translation id="1036982837258183574">မျက်နှာပြင်အပြည့်ဖွင့်ခြင်းမှ ထွက်ရန် |<ph name="ACCELERATOR" />| ကိုနှိပ်ပါ</translation>
 <translation id="1038106730571050514">အကြံပြုချက်များ ပြရန်</translation>
 <translation id="1038842779957582377">မသိရ အမည်</translation>
 <translation id="1041998700806130099">အလုပ် စာမျက်နှာ မက်ဆေ့ဂျ်</translation>
 <translation id="1048785276086539861">မှတ်ချက်များတည်းဖြတ်ပါက ဤမှတ်တမ်းသည် စာမျက်နှာတစ်ခုတည်းသို့ ပြန်ပြောင်းသွားမည်</translation>
-<translation id="1049743911850919806">ရုပ်ဖျက်</translation>
 <translation id="1050038467049342496">အခြား အက်ပ်များကို ပိတ်ပါ</translation>
 <translation id="1055184225775184556">&amp;ထည့်ပေးမှု တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="1056898198331236512">သတိပေးချက်</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">ပေါ်လစီ ကက်ရှ်အိုကေ</translation>
 <translation id="1130564665089811311">စာမျက်နှာဘာသာပြန်ရန်ခလုတ်၊ ဤစာမျက်နှာကို Google Translate ဖြင့်ဘာသာပြန်ရန် Enter နှိပ်ပါ</translation>
 <translation id="1131264053432022307">သင်မိတ္တူကူးထားသော ပုံ</translation>
+<translation id="1142846828089312304">ရုပ်ဖျက်မုဒ်တွင် ပြင်ပကုမ္ပဏီကွတ်ကီးများကို ပိတ်ထားရန်</translation>
 <translation id="1150979032973867961">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ကို သင့်ကွန်ပျူတာ၏ လည်ပတ်မှု  စနစ် ဘက်မှ မယုံကြည်ပါ။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
 <translation id="1151972924205500581">စကားဝှက် လိုအပ်</translation>
 <translation id="1156303062776767266">သင်သည် စက်အတွင်း သို့မဟုတ် မျှဝေထားသည့် ဖိုင်ကို ကြည့်နေသည်</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">ပို့ရန်</translation>
 <translation id="1484290072879560759">ပစ္စည်းပို့ရမည့်လိပ်စာ ရွေးရန်</translation>
 <translation id="1492194039220927094">မူဝါဒများ ထည့်သွင်းရန်-</translation>
+<translation id="149293076951187737">Chrome ရုပ်ဖျက်တဘ်အားလုံး ပိတ်လိုက်သောအခါ ထိုတဘ်များရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖျက်လိုက်မည်-
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ကြည့်ရှုခြင်းများ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ရှာဖွေမှတ်တမ်း<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ဖောင်များတွင်ထည့်ထားသော အချက်အလက်<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">တဘ်သို့ ပြန်သွားရန်</translation>
 <translation id="1501859676467574491">သင့် Google အကောင့်မှ ကတ်များကို ပြရန်</translation>
 <translation id="1507202001669085618">&lt;p&gt;အွန်လိုင်း မရရှိမီ လက်မှတ်ထိုးဝင်ရသည့် Wi-Fi ပေါ်တယ်ကို အသုံးပြုသည့်အခါ ဤအမှားကို တွေ့ရပါမည်။&lt;/p&gt;
@@ -286,6 +298,7 @@
     ခေါင်းစဉ်ပုံစံပျက်ယွင်းနေသောကြောင့် ဘရောင်ဇာက <ph name="SITE" /> အတွက်
     သင်၏တောင်းဆိုချက်ကို မဖြည့်ဆည်းနိုင်ပါ။ ဝဘ်ဆိုက်တစ်ခုအတွက် လုံခြုံရေးနှင့် အခြားသတ်မှတ်ချက်များကို
     စီစဉ်သတ်မှတ်ရန် ဝဘ်ဆိုက် အော်ပရေတာများက ရင်းမြစ် မူဝါဒများကို အသုံးပြုနိုင်ပါသည်။</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium ရှိ ရုပ်ဖျက်မုဒ်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">သင်ဖွင့်ထားသည့်တဘ်များ ဤနေရာတွင် ပေါ်ပါမည်</translation>
 <translation id="1791429645902722292">Google ကစမတ်သော့ခတ်</translation>
@@ -531,6 +544,12 @@
 <translation id="2597378329261239068">ဒီစာတမ်းကို စကားဝှက်ဖြင့် ကာကွယ်ထားသည်။ ကျေးဇူးပြုပြီး စကားဝှက် ရိုက်ထည့်ပါ။</translation>
 <translation id="2609632851001447353">မူကွဲများ</translation>
 <translation id="2610561535971892504">မိတ္တူကူးရန် နှိပ်ပါ</translation>
+<translation id="2617988307566202237">Chrome သည် အောက်ပါအချက်အလက်များကို <ph name="BEGIN_EMPHASIS" />သိမ်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />-
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />သင်၏ ကြည့်ရှုခြင်းမှတ်တမ်း
+            <ph name="LIST_ITEM" />ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာ
+            <ph name="LIST_ITEM" />ဖောင်များတွင်ထည့်ထားသော အချက်အလက်
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (စာအိတ်)</translation>
 <translation id="2623663032199728144">သင့်ဖန်သားပြင်အချက်အလက်ကို သုံးရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="2625385379895617796">သင်၏ နာရီမှာ စောနေ</translation>
@@ -738,12 +757,6 @@
 <translation id="3345782426586609320">မျက်လုံး</translation>
 <translation id="3355823806454867987">ပရောက်စီ ဆက်တင်များ ပြောင်းရန်...</translation>
 <translation id="3360103848165129075">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာ</translation>
-<translation id="3361596688432910856">Chrome သည် အောက်ပါ အချက်အလက်များကို <ph name="BEGIN_EMPHASIS" />သိမ်းဆည်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />−
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />သင်၏ အင်တာနက်အသုံးပြုမှု မှတ်တမ်း
-          <ph name="LIST_ITEM" />ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာများ
-          <ph name="LIST_ITEM" />ဖောင်များတွင် ထည့်သွင်းထားသည့် အချက်အလက်များ
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">အသုံးမပြုတော့သော <ph name="OLD_POLICY" /> မူဝါဒမှ ဤမူဝါဒကို အလိုအလျောက် မိတ္တူကူးထားပါသည်။ ၎င်းအစား ဤမူဝါဒကို အသုံးပြုရပါမည်။</translation>
 <translation id="3364869320075768271"><ph name="URL" /> က သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို အသုံးပြုလိုသည်</translation>
 <translation id="3366477098757335611">ကတ်များကို ကြည့်ရန်</translation>
@@ -1161,6 +1174,7 @@
 <translation id="4628948037717959914">ဓာတ်ပုံ</translation>
 <translation id="4631649115723685955">ငွေပြန်ပေးခြင်းကို လင့်ခ်ချိတ်ထားသည်</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
+<translation id="4638670630777875591">Chromium ရှိ ရုပ်ဖျက်မုဒ်</translation>
 <translation id="464342062220857295">ရှာဖွေရေး ဝန်ဆောင်မှုများ</translation>
 <translation id="4644670975240021822">ပြောင်းပြန်အစဉ်ဖြင့် မှောက်ထားရန်</translation>
 <translation id="4646534391647090355">ထိုနေရာသို့ ယခုသွားရန်</translation>
@@ -1223,12 +1237,6 @@
 <translation id="4819347708020428563">မှတ်ချက်များကို မူရင်းမြင်ကွင်းတွင် တည်းဖြတ်မလား။</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Sheet အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="4825507807291741242">စွမ်းအားပြည့်</translation>
-<translation id="4827402517081186284">ရုပ်ဖျက်မုဒ်က အွန်လိုင်းပေါ်တွင် သင့်ကိုမမြင်ရအောင် မလုပ်နိုင်ပါ-
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />သင်ဝင်ကြည့်နေသည်ကို ဝဘ်ဆိုက်များက သိနိုင်သည်<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />အလုပ်ရှင် (သို့) ကျောင်းများက ကြည့်ရှုခြင်းများကို ခြေရာခံနိုင်သည်<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />အင်တာနက်ဝန်ဆောင်မှုပေးသူများက ကွန်ရက်ဒေတာစီးဆင်းမှုကို စောင့်ကြည့်နေနိုင်သည်<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">မူဝါဒကို cloud အသုံးပြုသူလိုက်နာရမည့် မူဝါဒဖြင့်သာ သတ်မှတ်နိုင်သောကြောင့် လျစ်လျူရှုထားသည်။</translation>
 <translation id="483241715238664915">သတိပေးချက်များ ဖွင့်ရန်</translation>
 <translation id="4838327282952368871">အိပ်မက်ဆန်ဆန်</translation>
@@ -1262,6 +1270,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Tab ကိုနှိပ်ပြီးနောက် Enter နှိပ်၍ ရှာဖွေပါ</translation>
 <translation id="4930153903256238152">သိုလှောင်နိုင်မှု မြင့်သည်</translation>
+<translation id="4940163644868678279">Chrome ရှိ ရုပ်ဖျက်မုဒ်</translation>
 <translation id="4943872375798546930">ရလဒ်မရှိပါ</translation>
 <translation id="4950898438188848926">တဘ်ပြောင်းရန်ခလုတ်၊ ပွင့်နေသောတဘ် <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> သို့ ပြောင်းရန် Enter ကို နှိပ်ပါ</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
@@ -1622,6 +1631,7 @@
 <translation id="6120179357481664955">သင့် UPI ID ကို မှတ်မိပါသလား။</translation>
 <translation id="6124432979022149706">Chrome လုပ်ငန်းသုံး ချိတ်ဆက်သည့်ကိရိယာများ</translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome ရှိ ရုပ်ဖျက်မုဒ်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">သင်အသုံးပြုနေသည့် ရောက်တာများ၊ မိုဒမ်းများ၊ သို့မဟုတ် အခြားကွန်ယက်စက်ပစ္စည်းများနှင့် ကြိုးများကို စစ်ဆေးပါ။</translation>
 <translation id="614940544461990577">စမ်းကြည့်ပါ −</translation>
 <translation id="6150036310511284407">ဘယ်ဘက်တွင် သုံးချက်ဖောက်ရန်</translation>
@@ -1797,7 +1807,6 @@
 <translation id="6757797048963528358">သင့်စက်ပစ္စည်း အိပ်ပျော်သွားပါသည်။</translation>
 <translation id="6767985426384634228">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="6768213884286397650">ဟာဂကိ (ပို့စ်ကတ်)</translation>
-<translation id="6774185088257932239">ရုပ်ဖျက်မုဒ်အကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ခရမ်းပြာ</translation>
 <translation id="6786747875388722282">အိတ်စတန်းရှင်းများ</translation>
@@ -1897,6 +1906,12 @@
 <translation id="7111012039238467737">(မှန်ကန်သည်)</translation>
 <translation id="7118618213916969306">ကလစ်ဘုတ် URL <ph name="SHORT_URL" /> အတွက် ရှာဖွေမှု</translation>
 <translation id="7119414471315195487">အခြားတဘ် သို့မဟုတ် ပရိုဂရမ်များကို ပိတ်ပါ</translation>
+<translation id="7129355289156517987">Chromium ရုပ်ဖျက်တဘ်အားလုံး ပိတ်လိုက်သောအခါ ထိုတဘ်များရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖျက်လိုက်မည်-
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ကြည့်ရှုခြင်းများ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ရှာဖွေမှတ်တမ်း<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ဖောင်များတွင်ထည့်ထားသော အချက်အလက်<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ဤလိပ်စာသို့ ပို့၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
 <translation id="7132939140423847331">ဤဒေတာကူးယူခြင်းကို သင့်စီမံခန့်ခွဲသူက တားမြစ်ထားသည်။</translation>
 <translation id="7135130955892390533">အခြေအနေ ပြရန်</translation>
@@ -2016,6 +2031,12 @@
 <translation id="7485870689360869515">ဒေတာ မတွေ့ရပါ။</translation>
 <translation id="7495528107193238112">ဤအကြောင်းအရာကို ပိတ်ထားသည်။ ပြဿနာကို ဖြေရှင်းရန် ဝဘ်ဆိုက်ပိုင်ရှင်ကို ဆက်သွယ်ပါ။</translation>
 <translation id="7497998058912824456">Doc ပြုလုပ်ရန် ခလုတ်၊ Google Doc အသစ် အမြန်ပြုလုပ်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
+<translation id="7506488012654002225">Chromium သည် အောက်ပါအချက်အလက်များကို <ph name="BEGIN_EMPHASIS" />သိမ်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />-
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />သင်၏ ကြည့်ရှုခြင်းမှတ်တမ်း
+            <ph name="LIST_ITEM" />ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာ
+            <ph name="LIST_ITEM" />ဖောင်များတွင်ထည့်ထားသော အချက်အလက်
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ပစ္စည်းပြန်ပို့နိုင်သည့် မူဝါဒဆိုင်ရာကိရိယာအိုင်ဒီသည် ကွက်လပ်ဖြစ်နေပါသည် သို့မဟုတ် လက်ရှိကိရိယာအိုင်ဒီနှင့် ကိုက်ညီမှုမရှိပါ</translation>
 <translation id="7508870219247277067">ထောပတ်သီးစိမ်း</translation>
 <translation id="7511955381719512146">သင်အသုံးပြုနေသော Wi-Fi သည် <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />သို့ သင်သွားရောက်ကြည့်ရှုရန် လိုအပ်စေလိမ့်မည်။</translation>
@@ -2236,6 +2257,7 @@
 <translation id="8202370299023114387">ပြဿနာ</translation>
 <translation id="8206978196348664717">Prc4 (စာအိတ်)</translation>
 <translation id="8211406090763984747">ချိတ်ဆက်မှုသည် လုံခြုံပါသည်</translation>
+<translation id="8217240300496046857">ဝဘ်ပေါ်တွင် သင့်အားခြေရာခံသည့် ကွတ်ကီးများကို ဝဘ်ဆိုက်များက အသုံးမပြုနိုင်ပါ။ အချို့ဝဘ်ဆိုက်များပေါ်ရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်သည်။</translation>
 <translation id="8218327578424803826">သတ်မှတ်ထားသော တည်နေရာ-</translation>
 <translation id="8220146938470311105">C7/C6 (စာအိတ်)</translation>
 <translation id="8225771182978767009">ဤကွန်ပျူတာကို တပ်ဆင်ခဲ့သူသည် ဤဆိုက်ကိုပိတ်ဆို့ရန် ဆုံးဖြတ်ခဲ့သည်။</translation>
@@ -2279,12 +2301,6 @@
 <translation id="8317207217658302555">ARCore ကို အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="831997045666694187">ညနေ</translation>
 <translation id="8321476692217554900">အကြောင်းကြားချက်များ</translation>
-<translation id="8328484624016508118">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်ပြီးချိန်တွင် Chrome က အောက်ပါတို့ကိုရှင်းလင်းမည်- 
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ဤစက်ရှိ ကြည့်ရှုမှုများ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ဤစက်ရှိ ရှာဖွေမှတ်တမ်းများ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ဖောင်များတွင် ထည့်သွင်းသည့်အချက်အလက်များ<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> အားအသုံးပြုခွင့် ပယ်ချခံခဲ့ရပါသည်</translation>
 <translation id="833262891116910667">အထူးအသားပေး ဖော်ပြချက်</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ဘာသာဖြင့် စာမျက်နှာများကို ဘာသာပြန်သွားပါမည်</translation>

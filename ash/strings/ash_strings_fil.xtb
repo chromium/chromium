@@ -82,6 +82,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
 <translation id="1364382257761975320">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo</translation>
+<translation id="1364618750746929654">Hindi mabuo ang transcription</translation>
 <translation id="1383597849754832576">Hindi ma-download ang mga speech file. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1391102559483454063">Naka-on</translation>
@@ -679,6 +680,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="54609108002486618">Pinamamahalaan</translation>
 <translation id="5465662442746197494">Kailangan ng tulong?</translation>
 <translation id="547979256943495781">Nasa kanan ang shelf</translation>
+<translation id="5491186829646618080">May mga available na update sa firmware</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5523434445161341166">Kumokonekta ang <ph name="FEATURE_NAME" />.</translation>
@@ -1177,6 +1179,7 @@ Kaka-install lang</translation>
 <translation id="8876661425082386199">Suriin ang iyong koneksyon</translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>
 <translation id="8878886163241303700">Pinapalawak ang screen</translation>
+<translation id="888982883502837004">May mga available na update sa firmware para sa iyong device. I-click para suriin at i-update.</translation>
 <translation id="8896630965521842259">Permanenteng ide-delete ang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="890616557918890486">Baguhin ang source</translation>
 <translation id="8909138438987180327">Nasa <ph name="PERCENTAGE" /> porsyento ang baterya.</translation>

@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Aikoni ya sasa</translation>
 <translation id="1103523840287552314">Tafsiri <ph name="LANGUAGE" /> kila wakati</translation>
 <translation id="1108600514891325577">&amp;Acha</translation>
+<translation id="1108938384783527433">Usawazishaji wa historia</translation>
 <translation id="1110155001042129815">Subiri</translation>
 <translation id="1110965959145884739">Chagua lugha unazotaka kuweka kwenye kifaa hiki. Faili za lugha hushirikiwa baina ya watumiaji ili kuokoa nafasi ya hifadhi ya diski. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projekta</translation>
@@ -1171,6 +1172,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ongeza Wi-Fi...</translation>
 <translation id="2162155940152307086">Itaanza kusawazisha utakapofunga mipangilio ya usawazishaji</translation>
+<translation id="2162926944953615670">Hakuna wasifu wa eSIM unaopatikana</translation>
 <translation id="2163470535490402084">Tafadhali unganisha kwenye Intaneti ili uingie katika <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="2163937499206714165">Washa hali nyeusi</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> na swichi nyingine moja</translation>
@@ -1867,6 +1869,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="2828650939514476812">Unganisha kwenye mtandao wa Wi-Fi</translation>
 <translation id="2831430281393059038">Kifaa kinachoweza kutumika</translation>
 <translation id="2832124733806557606">Mtoto wako anaweza kutumia PIN kuingia katika akaunti kwenye kifaa au kukifungua.</translation>
+<translation id="2835177225987815960">Mipangilio yako ya sasa ya kuchanganua itawekwa upya, ikijumuisha swichi zozote ulizoteua na mapendeleo ya kasi ya kuchanganua kiotomatiki.</translation>
 <translation id="2835547721736623118">Huduma ya utambuzi wa matamshi</translation>
 <translation id="2836269494620652131">Imeacha kufanya kazi</translation>
 <translation id="2836635946302913370">Kuingia kwa jina hili la mtumiaji kumelemazwa na msimamizi wako.</translation>

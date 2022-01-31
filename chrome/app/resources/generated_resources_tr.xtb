@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Mevcut simge</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1108600514891325577">D&amp;urdur</translation>
+<translation id="1108938384783527433">Geçmiş senkronizasyonu</translation>
 <translation id="1110155001042129815">Bekle</translation>
 <translation id="1110965959145884739">Bu cihaza yüklenecek dilleri seçin. Disk alanından tasarruf etmek için dil dosyaları kullanıcılar arasında paylaşılır. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektör</translation>
@@ -508,6 +509,7 @@
 <translation id="1521442365706402292">Sertifikaları yönet</translation>
 <translation id="1521774566618522728">Son etkin olduğu zaman:</translation>
 <translation id="152234381334907219">Hiç Kaydedilmeyenler</translation>
+<translation id="1523279371236772909">Geçen ay görüntülendi</translation>
 <translation id="1523978563989812243">Metin okuma motorları</translation>
 <translation id="1524430321211440688">Klavye</translation>
 <translation id="1524563461097350801">Hayır, teşekkürler</translation>
@@ -1239,6 +1241,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2232876851878324699">Dosya bir sertifika içeriyordu ve bu sertifika içe aktarılmadı:</translation>
 <translation id="2233502537820838181">&amp;Daha fazla bilgi</translation>
 <translation id="223356358902285214">Web ve Uygulama Etkinliği</translation>
+<translation id="2234827758954819389">Gizlilik Rehberi</translation>
 <translation id="2234876718134438132">Senkronizasyon ve Google hizmetleri</translation>
 <translation id="2235344399760031203">Üçüncü taraf çerezler engellendi</translation>
 <translation id="2238379619048995541">Frekans Durumu Verileri</translation>
@@ -3092,6 +3095,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4095264805865317199">Hücresel Etkinleştirme Kullanıcı Arayüzü'nü Aç</translation>
 <translation id="4095507791297118304">Birincil ekran</translation>
 <translation id="4096508467498758490">Geliştirici modu uzantılarını devre dışı bırakın</translation>
+<translation id="4096797685681362305">Geçen hafta görüntülendi</translation>
 <translation id="4097406557126260163">Uygulamalar ve uzantılar</translation>
 <translation id="409742781329613461">Chrome için ipuçları</translation>
 <translation id="4097560579602855702">Google’da Ara</translation>
@@ -3647,6 +3651,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4699172675775169585">Önbelleğe alınan resimler ve dosyalar</translation>
 <translation id="4699357559218762027">(otomatik başlatıldı)</translation>
 <translation id="4701025263201366865">Ebeveyn oturum açmalı</translation>
+<translation id="4701335814944566468">Dün görüntülendi</translation>
 <translation id="4708794300267213770">Uykudan uyanırken kilit ekranını göster</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> uygulamasından çık</translation>
 <translation id="4711638718396952945">Ayarları geri yükle</translation>
@@ -3714,6 +3719,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="479536056609751218">Web sayfası, Sadece HTML</translation>
 <translation id="4796142525425001238">Her zaman geri yükle</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth Günlükleri<ph name="END_LINK" /> ekle (Google dahili)</translation>
+<translation id="479863874072008121">Cihazları yönet</translation>
 <translation id="4800839971935185386">Ad ve simge güncellemelerini inceleyin</translation>
 <translation id="4801448226354548035">Hesapları gizle</translation>
 <translation id="4801512016965057443">Mobil veri dolaşımına izin ver</translation>
@@ -6438,6 +6444,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7659154729610375585">Yine de Gizli moddan çıkılsın mı?</translation>
 <translation id="7659297516559011665">Yalnızca bu cihazdaki şifreler</translation>
+<translation id="7659336857671800422">Gizlilik kılavuzuna göz at</translation>
 <translation id="7659584679870740384">Bu cihazı kullanma yetkiniz yok. Oturum açma izni almak için lütfen yöneticiyle iletişim kurun.</translation>
 <translation id="7661259717474717992">Sitelere, çerez verilerini kaydetme ve okuma izni ver</translation>
 <translation id="7661451191293163002">Kayıt sertifikası alınamadı.</translation>
@@ -7958,6 +7965,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9200339982498053969"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> klasöründeki dosyaları düzenleyebilir</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> üzerinde ara</translation>
 <translation id="9201023452444595544">Tüm çevrimdışı veriler temizlenecek</translation>
+<translation id="9201117361710210082">Daha önce görüntülendi</translation>
 <translation id="9201220332032049474">Ekran kilidi seçenekleri</translation>
 <translation id="9201842707396338580">Bir hata oluştu. Lütfen cihaz sahibiyle ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profil oluşturma etkin</translation>

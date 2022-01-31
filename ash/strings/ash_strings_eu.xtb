@@ -82,6 +82,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1346748346194534595">Eskuinera</translation>
 <translation id="1351937230027495976">Tolestu menua</translation>
 <translation id="1364382257761975320">Chromebook-a desblokeatzeko, erabili hatz-marka</translation>
+<translation id="1364618750746929654">Ezin da sortu transkripzioa</translation>
 <translation id="1383597849754832576">Ezin dira deskargatu hizketa-fitxategiak. Saiatu berriro geroago.</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1391102559483454063">Aktibatuta</translation>
@@ -680,6 +681,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="54609108002486618">Kudeatua</translation>
 <translation id="5465662442746197494">Laguntza behar duzu?</translation>
 <translation id="547979256943495781">Apala eskuinaldean dago</translation>
+<translation id="5491186829646618080">Firmwareen eguneratze batzuk erabilgarri daude</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratzaileak eSIMaren profil guztiak kendu ditu. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> konektatzen ari da.</translation>
@@ -1178,6 +1180,7 @@ Berriki instalatu da</translation>
 <translation id="8876661425082386199">Egiaztatu konektatuta zaudela</translation>
 <translation id="8877788021141246043">Ezarri abisu bat</translation>
 <translation id="8878886163241303700">Pantaila hedatzen</translation>
+<translation id="888982883502837004">Firmwareen eguneratze batzuk erabilgarri daude gailurako. Sakatu hau eguneratzeak berrikusi eta instalatzeko.</translation>
 <translation id="8896630965521842259">Betiko ezabatuko da "<ph name="DESK_TEMPLATE_NAME" />".</translation>
 <translation id="890616557918890486">Aldatu iturburua</translation>
 <translation id="8909138438987180327">Bateriaren % <ph name="PERCENTAGE" /> geratzen zaizu.</translation>

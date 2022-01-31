@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">הסמל הנוכחי</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
 <translation id="1108600514891325577">&amp;הפסקה</translation>
+<translation id="1108938384783527433">סנכרון ההיסטוריה</translation>
 <translation id="1110155001042129815">יש להמתין</translation>
 <translation id="1110965959145884739">צריך לבחור את השפות שרוצים להגדיר במכשיר הזה. קובצי השפה משותפים עם משתמשים כדי לחסוך מקום בכונן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -510,6 +511,7 @@
 <translation id="1521442365706402292">ניהול אישורים</translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="152234381334907219">פריטים שאף פעם לא נשמרו</translation>
+<translation id="1523279371236772909">נצפה בחודש האחרון</translation>
 <translation id="1523978563989812243">‏מנוע המרת טקסט לדיבור (TTS)</translation>
 <translation id="1524430321211440688">מקלדת</translation>
 <translation id="1524563461097350801">לא, תודה</translation>
@@ -1173,6 +1175,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">‏הוספת רשת Wi-Fi...</translation>
 <translation id="2162155940152307086">הסנכרון יתחיל מיד לאחר היציאה מהגדרות הסנכרון</translation>
+<translation id="2162926944953615670">‏אין פרופילים זמינים של eSIM</translation>
 <translation id="2163470535490402084">צריך להתחבר לאינטרנט כדי להיכנס אל ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">הפעלת המצב הכהה</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ועוד מתג אחד</translation>
@@ -1250,6 +1253,7 @@
 <translation id="2232876851878324699">הקובץ הכיל אישור אחד, שלא יובא:</translation>
 <translation id="2233502537820838181">&amp;מידע נוסף</translation>
 <translation id="223356358902285214">פעילות באינטרנט ובאפליקציות</translation>
+<translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
 <translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2238379619048995541">נתוני מצב תדירות</translation>
@@ -1869,6 +1873,7 @@
 <translation id="2828650939514476812">‏התחברות אל רשת Wi-Fi</translation>
 <translation id="2831430281393059038">המכשיר נתמך</translation>
 <translation id="2832124733806557606">לילד או לילדה שלך יש אפשרות להשתמש בקוד אימות כדי להיכנס למכשיר הזה או לבטל את הנעילה שלו.</translation>
+<translation id="2835177225987815960">הגדרת הסריקה הנוכחית שלך תאופס, לרבות העדפות למהירות הסריקה האוטומטית ומתגים שהוקצו.</translation>
 <translation id="2835547721736623118">שירות של זיהוי דיבור</translation>
 <translation id="2836269494620652131">קריסה</translation>
 <translation id="2836635946302913370">הכניסה עם שם משתמש זה הושבתה על ידי מנהל המערכת.</translation>
@@ -3107,6 +3112,7 @@
 <translation id="4095264805865317199">פתיחת ממשק המשתמש להפעלה סלולרית</translation>
 <translation id="4095507791297118304">צג ראשי</translation>
 <translation id="4096508467498758490">השבתת תוספים של מצב מפתח</translation>
+<translation id="4096797685681362305">נצפה בשבוע האחרון</translation>
 <translation id="4097406557126260163">אפליקציות ותוספים</translation>
 <translation id="409742781329613461">‏טיפים לשימוש ב-Chrome</translation>
 <translation id="4097560579602855702">‏חיפוש ב-Google</translation>
@@ -3663,6 +3669,7 @@
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>
 <translation id="4699357559218762027">(מופעלת אוטומטית)</translation>
 <translation id="4701025263201366865">כניסה של הורה</translation>
+<translation id="4701335814944566468">נצפה אתמול</translation>
 <translation id="4708794300267213770">הצגת מסך הנעילה ביציאה ממצב שינה</translation>
 <translation id="4708849949179781599">יציאה מ-<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">שחזור הגדרות</translation>
@@ -3730,6 +3737,7 @@
 <translation id="479536056609751218">‏דף אינטרנט, HTML בלבד</translation>
 <translation id="4796142525425001238">תמיד לשחזר</translation>
 <translation id="4798236378408895261">‏צירוף של <ph name="BEGIN_LINK" />יומני Bluetooth<ph name="END_LINK" /> (מידע פנימי של Google)</translation>
+<translation id="479863874072008121">ניהול מכשירים</translation>
 <translation id="4800839971935185386">בדיקה של עדכוני הסמל והשם</translation>
 <translation id="4801448226354548035">הסתרת חשבונות</translation>
 <translation id="4801512016965057443">אפשר נדידה</translation>
@@ -6453,6 +6461,7 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659154729610375585">לצאת מהמצב האנונימי בכל זאת?</translation>
 <translation id="7659297516559011665">רק סיסמאות במכשיר הזה</translation>
+<translation id="7659336857671800422">כניסה למדריך בנושא פרטיות</translation>
 <translation id="7659584679870740384">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם מנהל המערכת כדי לקבל הרשאה לכניסה.</translation>
 <translation id="7661259717474717992">‏לאפשר לאתרים לשמור ולקרוא נתונים של קובצי Cookie</translation>
 <translation id="7661451191293163002">לא ניתן להשיג אישור הרשמה.</translation>
@@ -7978,6 +7987,7 @@
 <translation id="9200339982498053969">ל-<ph name="ORIGIN" /> תהיה הרשאה לערוך את הקבצים בתיקייה <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">חיפוש ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">המערכת תמחק את כל הנתונים שנשמרו במצב אופליין</translation>
+<translation id="9201117361710210082">נצפה בעבר</translation>
 <translation id="9201220332032049474">אפשרויות נעילת מסך</translation>
 <translation id="9201842707396338580">משהו השתבש. יש לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;יצירת פרופילים מופעלת</translation>

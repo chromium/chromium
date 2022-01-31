@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Kasalukuyang icon</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Huminto</translation>
+<translation id="1108938384783527433">Pag-sync ng history</translation>
 <translation id="1110155001042129815">Mag-intay</translation>
 <translation id="1110965959145884739">Piliin kung aling mga wika ang ii-install sa device na ito. Ibinabahagi ang mga file ng wika sa mga user para makatipid ng disk space. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -512,6 +513,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1521442365706402292">Pamahalaan ang mga sertipiko</translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="152234381334907219">Hindi Kailanman Na-save</translation>
+<translation id="1523279371236772909">Tiningnan sa nakalipas na buwan</translation>
 <translation id="1523978563989812243">Mga engine para sa text-to-speech</translation>
 <translation id="1524430321211440688">Keyboard</translation>
 <translation id="1524563461097350801">Hindi, Salamat na lang</translation>
@@ -1253,6 +1255,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2232876851878324699">Naglalaman ang file ng isang certificate, na hindi na-import:</translation>
 <translation id="2233502537820838181">&amp;Higit pang impormasyon</translation>
 <translation id="223356358902285214">Aktibidad sa Web at App</translation>
+<translation id="2234827758954819389">Gabay sa Privacy</translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
 <translation id="2238379619048995541">Data ng Estado ng Dalas</translation>
@@ -3110,6 +3113,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4095264805865317199">Buksan ang UI sa Pag-activate ng Cellular Network</translation>
 <translation id="4095507791297118304">Pangunahing display</translation>
 <translation id="4096508467498758490">I-disable ang mga extension ng developer mode</translation>
+<translation id="4096797685681362305">Tiningnan sa nakalipas na linggo</translation>
 <translation id="4097406557126260163">Mga App at extension</translation>
 <translation id="409742781329613461">Mga Tip para sa Chrome</translation>
 <translation id="4097560579602855702">Maghanap sa Google</translation>
@@ -3666,6 +3670,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4699172675775169585">Mga naka-cache na larawan at file</translation>
 <translation id="4699357559218762027">(awtomatikong inilunsad)</translation>
 <translation id="4701025263201366865">Pag-sign in ng magulang</translation>
+<translation id="4701335814944566468">Tiningnan kahapon</translation>
 <translation id="4708794300267213770">Ipakita ang lock screen kapag pinagana mula sa pag-sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Ipanumbalik ang mga setting</translation>
@@ -3733,6 +3738,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="479536056609751218">Webpage, HTML Lamang</translation>
 <translation id="4796142525425001238">Palaging i-restore</translation>
 <translation id="4798236378408895261">Mag-attach ng <ph name="BEGIN_LINK" />Mga Log ng Bluetooth<ph name="END_LINK" /> (Google internal)</translation>
+<translation id="479863874072008121">Pamahalaan ang mga device</translation>
 <translation id="4800839971935185386">Suriin ang mga update sa pangalan at icon</translation>
 <translation id="4801448226354548035">Itago ang mga account</translation>
 <translation id="4801512016965057443">Payagan ang pag-roam ng mobile data</translation>
@@ -6456,6 +6462,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7659154729610375585">Umalis pa rin sa Incognito mode?</translation>
 <translation id="7659297516559011665">Mga password sa device lang na ito</translation>
+<translation id="7659336857671800422">Gamitin ang Gabay sa Privacy</translation>
 <translation id="7659584679870740384">Wala kang pahintulot na gamitin ang device na ito. Mangyaring makipag-ugnayan sa administrator upang makakuha ng pahintulot sa pag-sign in.</translation>
 <translation id="7661259717474717992">Payagan ang mga site na mag-save at magbasa ng data ng cookie</translation>
 <translation id="7661451191293163002">Walang makuhang certificate ng pagpaparehistro.</translation>
@@ -7981,6 +7988,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9200339982498053969">Mae-edit ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Maghanap sa <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Maki-clear ang anumang offline na data</translation>
+<translation id="9201117361710210082">Huling tiningnan</translation>
 <translation id="9201220332032049474">Mga opsyon sa lock ng screen</translation>
 <translation id="9201842707396338580">Nagkaproblema. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Pinagana ang pag-profile</translation>

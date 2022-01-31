@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">ไม่ทราบชื่อ</translation>
 <translation id="1041998700806130099">ข้อความแผ่นงาน</translation>
 <translation id="1048785276086539861">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปเป็นมุมมองแบบหน้าเดียว</translation>
-<translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1050038467049342496">ปิดแอปอื่นๆ</translation>
 <translation id="1055184225775184556">&amp;เลิกทำการเพิ่ม</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
@@ -732,12 +731,6 @@
 <translation id="3345782426586609320">ตา</translation>
 <translation id="3355823806454867987">เปลี่ยนการตั้งค่าพร็อกซี...</translation>
 <translation id="3360103848165129075">แผ่นงานของเครื่องจัดการการชำระเงิน</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ประวัติการท่องเว็บของคุณ
-          <ph name="LIST_ITEM" />คุกกี้และข้อมูลไซต์
-          <ph name="LIST_ITEM" />ข้อมูลที่กรอกในฟอร์ม
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">เราคัดลอกนโยบายนี้มาโดยอัตโนมัติจากนโยบาย <ph name="OLD_POLICY" /> ที่เลิกใช้งานแล้ว คุณควรใช้นโยบายนี้แทน</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ต้องการเข้าถึงอุปกรณ์และข้อมูล Virtual Reality ของคุณ</translation>
 <translation id="3366477098757335611">ดูบัตร</translation>
@@ -1212,12 +1205,6 @@
 <translation id="4819347708020428563">แก้ไขคำอธิบายประกอบในมุมมองเริ่มต้นใช่ไหม</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="4825507807291741242">ทรงพลัง</translation>
-<translation id="4827402517081186284">โหมดไม่ระบุตัวตนไม่ได้ซ่อนการใช้งานออนไลน์ของคุณ
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />เว็บไซต์รู้เมื่อคุณเข้าชม<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />นายจ้างหรือโรงเรียนติดตามกิจกรรมการท่องเว็บได้<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ผู้ให้บริการอินเทอร์เน็ตอาจตรวจสอบการเข้าชมเว็บ<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">ถูกละเว้นเนื่องจากนโยบายจะต้องตั้งค่าโดยนโยบายผู้ใช้ระบบคลาวด์เท่านั้น</translation>
 <translation id="483241715238664915">เปิดคำเตือน</translation>
 <translation id="4838327282952368871">ชวนฝัน</translation>
@@ -1787,7 +1774,6 @@
 <translation id="6757797048963528358">อุปกรณ์ของคุณเข้าสู่โหมดสลีปแล้ว</translation>
 <translation id="6767985426384634228">อัปเดตที่อยู่ไหม</translation>
 <translation id="6768213884286397650">Hagaki (โปสการ์ด)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับโหมดไม่ระบุตัวตน</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ม่วงอมน้ำเงิน</translation>
 <translation id="6786747875388722282">ส่วนขยาย</translation>
@@ -2267,12 +2253,6 @@
 <translation id="8317207217658302555">อัปเดต ARCore ไหม</translation>
 <translation id="831997045666694187">ตอนเย็น</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
-<translation id="8328484624016508118">หลังจากที่ปิดแท็บที่ไม่ระบุตัวตนทั้งหมด Chrome จะล้าง
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />กิจกรรมการท่องเว็บออกจากอุปกรณ์นี้<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ประวัติการค้นหาออกจากอุปกรณ์นี้<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">การเข้าถึง <ph name="HOST_NAME" /> ถูกปฏิเสธ</translation>
 <translation id="833262891116910667">ไฮไลต์</translation>
 <translation id="8339163506404995330">ระบบจะไม่แปลหน้าเว็บภาษา<ph name="LANGUAGE" /></translation>

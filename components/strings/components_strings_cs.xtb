@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Zobrazit podrobnosti</translation>
 <translation id="1030706264415084469">Stránka <ph name="URL" /> chce v zařízení trvale ukládat velké množství dat</translation>
 <translation id="1032854598605920125">Otočit ve směru hodinových ručiček</translation>
+<translation id="1033329911862281889">Anonymní režim neznamená, že jste neviditelní:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />weby a jimi používané služby poznají, když je navštívíte,<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />zaměstnavatel nebo škola mohou sledovat, co si prohlížíte,<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />poskytovatelé internetových služeb mohou sledovat návštěvnost webů.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1036982837258183574">Režim celé obrazovky ukončíte stisknutím klávesy |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Zobrazit návrhy</translation>
 <translation id="1038842779957582377">neznámé jméno</translation>
 <translation id="1041998700806130099">Zpráva listu úlohy</translation>
 <translation id="1048785276086539861">Když poznámky upravíte, tento dokument se vrátí do zobrazení jedné stránky</translation>
-<translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="1050038467049342496">Zavřete ostatní aplikace</translation>
 <translation id="1055184225775184556">&amp;Vrátit přidání zpět</translation>
 <translation id="1056898198331236512">Upozornění</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Mezipaměť zásady je v pořádku</translation>
 <translation id="1130564665089811311">Tlačítko Přeložit stránku, stisknutím klávesy Enter tuto stránku přeložíte pomocí Překladače Google</translation>
 <translation id="1131264053432022307">Obrázek, který jste zkopírovali</translation>
+<translation id="1142846828089312304">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="1150979032973867961">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Operační systém vašeho počítače nedůvěřuje jeho bezpečnostnímu certifikátu.Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="1151972924205500581">Je vyžadováno heslo</translation>
 <translation id="1156303062776767266">Prohlížíte si místní nebo sdílený soubor.</translation>
@@ -181,6 +187,12 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1483493594462132177">Odeslat</translation>
 <translation id="1484290072879560759">Vybrat dodací adresu</translation>
 <translation id="1492194039220927094">Přenesení zásad:</translation>
+<translation id="149293076951187737">Když zavřete všechny anonymní karty Chromu, vaše aktivita na těchto kartách bude ze zařízení vymazána:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />aktivita prohlížení,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />historie vyhledávání,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />údaje zadané do formulářů.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Zpět na kartu</translation>
 <translation id="1501859676467574491">Zobrazit karty z vašeho účtu Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Tato chyba se zobrazí při použití portálu Wi-Fi, na kterém je třeba se před přístupem na internet přihlásit.&lt;/p&gt;
@@ -281,6 +293,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1763864636252898013">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Operační systém vašeho zařízení nedůvěřuje jeho bezpečnostnímu certifikátu. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Zkuste spustit Diagnostiku sítě systému Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Server, na který přecházíte (<ph name="ORIGIN" />), nastavil záhlaví, které vyžaduje, aby se na všechny na něj odesílané požadavky vztahovaly zásady ohledně původu. Záhlaví má ale nesprávný tvar. Prohlížeč proto váš požadavek na web <ph name="SITE" /> nemůže splnit. Zásady ohledně původu mohou použít provozovatelé webů ke konfiguraci bezpečnostních a dalších vlastností webu.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Další informace o anonymním režimu v prohlížeči Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Zde se zobrazí otevřené karty</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -522,6 +535,12 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2597378329261239068">Tento dokument je chráněn heslem. Zadejte prosím heslo.</translation>
 <translation id="2609632851001447353">Varianty</translation>
 <translation id="2610561535971892504">Kliknutím zkopírujte</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" /> následující informace:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />vaši historii prohlížení,
+            <ph name="LIST_ITEM" />soubory cookie a data webů,
+            <ph name="LIST_ITEM" />údaje zadané do formulářů.
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (obálka)</translation>
 <translation id="2623663032199728144">Může žádat o použití informací o vašich obrazovkách</translation>
 <translation id="2625385379895617796">Vaše hodiny jdou napřed</translation>
@@ -729,12 +748,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3345782426586609320">Oči</translation>
 <translation id="3355823806454867987">Změna nastavení proxy...</translation>
 <translation id="3360103848165129075">List obslužného nástroje pro platby</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" /> následující informace:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />vaši historii prohlížení,
-          <ph name="LIST_ITEM" />soubory cookie a data webů,
-          <ph name="LIST_ITEM" />údaje zadané do formulářů.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Tato zásada byla automaticky zkopírována ze zásady <ph name="OLD_POLICY" />, jejíž podpora byla ukončena. Měli byste místo ní používat tuto zásadu.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> chce používat vaše zařízení a data pro virtuální realitu</translation>
 <translation id="3366477098757335611">Zobrazit karty</translation>
@@ -1147,6 +1160,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4628948037717959914">Fotka</translation>
 <translation id="4631649115723685955">Cashback je propojen</translation>
 <translation id="4636930964841734540">Informace</translation>
+<translation id="4638670630777875591">Anonymní režim v prohlížeči Chromium</translation>
 <translation id="464342062220857295">Funkce vyhledávání</translation>
 <translation id="4644670975240021822">Obrácené pořadí lícem dolů</translation>
 <translation id="4646534391647090355">Zobrazit</translation>
@@ -1209,12 +1223,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4819347708020428563">Upravit poznámky ve výchozím zobrazení?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou Tabulku Google</translation>
 <translation id="4825507807291741242">Důrazné</translation>
-<translation id="4827402517081186284">Anonymní režim neznamená, že jste neviditelní:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />weby poznají, když je navštívíte,<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />zaměstnavatel nebo škola mohou sledovat, co si prohlížíte,<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />poskytovatelé internetových služeb mohou sledovat návštěvnost webů.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ignorováno, protože zásadu lze nastavit pouze skrze zásady pro cloudové uživatele.</translation>
 <translation id="483241715238664915">Zapnout upozornění</translation>
 <translation id="4838327282952368871">Zasněné</translation>
 <translation id="4840250757394056958">Zobrazit historii Chromu</translation>
@@ -1247,6 +1256,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, vyhledávat můžete stisknutím klávesy Tab a poté Enter</translation>
 <translation id="4930153903256238152">Velká kapacita</translation>
+<translation id="4940163644868678279">Anonymní režim v Chromu</translation>
 <translation id="4943872375798546930">Žádné výsledky</translation>
 <translation id="4950898438188848926">Tlačítko přepínání karet. Stisknutím klávesy Enter přejdete na otevřenou kartu (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />)</translation>
 <translation id="495170559598752135">Akce</translation>
@@ -1607,6 +1617,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6120179357481664955">Uložit vaše UPI ID?</translation>
 <translation id="6124432979022149706">Konektory Chrome Enterprise</translation>
 <translation id="6127379762771434464">Položka byla odstraněna</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Další informace o anonymním režimu v Chromu<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Zkontrolujte všechny kabely a restartujte všechny směrovače, modemy a další síťová zařízení, která používáte.</translation>
 <translation id="614940544461990577">Zkuste:</translation>
 <translation id="6150036310511284407">Tři díry vlevo</translation>
@@ -1782,7 +1793,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6757797048963528358">Zařízení přešlo do režimu spánku.</translation>
 <translation id="6767985426384634228">Aktualizovat adresu?</translation>
 <translation id="6768213884286397650">Hagaki (pohlednice)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o anonymním režimu</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Fialová</translation>
 <translation id="6786747875388722282">Rozšíření</translation>
@@ -1882,6 +1892,12 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7111012039238467737">(platný)</translation>
 <translation id="7118618213916969306">Vyhledat adresu URL ve schránce, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Zavřete ostatní karty nebo programy</translation>
+<translation id="7129355289156517987">Když zavřete všechny anonymní karty prohlížeče Chromium, vaše aktivita na těchto kartách bude ze zařízení vymazána:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />aktivita prohlížení,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />historie vyhledávání,<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />údaje zadané do formulářů.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Dodání na tuto adresu není možné. Vyberte jinou adresu.</translation>
 <translation id="7132939140423847331">Váš správce kopírování těchto dat zakázal.</translation>
 <translation id="7135130955892390533">Zobrazit stav</translation>
@@ -1999,6 +2015,12 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7485870689360869515">Nebyla nalezena žádná data.</translation>
 <translation id="7495528107193238112">Tento obsah je blokován. Požádejte vlastníka webu, aby tento problém vyřešil.</translation>
 <translation id="7497998058912824456">Tlačítko Vytvořit dokument, stisknutím klávesy Enter rychle vytvoříte nový Dokument Google</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" /> následující informace:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />vaši historii prohlížení,
+          <ph name="LIST_ITEM" />soubory cookie a data webů,
+          <ph name="LIST_ITEM" />údaje zadané do formulářů.
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Vrácené ID zařízení pro zásady je prázdné nebo neodpovídá aktuálnímu ID zařízení</translation>
 <translation id="7508870219247277067">Žlutozelená</translation>
 <translation id="7511955381719512146">Síť Wi-Fi, kterou používáte, může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2218,6 +2240,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (obálka)</translation>
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
+<translation id="8217240300496046857">Weby vás nemohou na internetu sledovat pomocí souborů cookie. Některé weby mohou přestat fungovat.</translation>
 <translation id="8218327578424803826">Přiřazené místo:</translation>
 <translation id="8220146938470311105">C7/C6 (obálka)</translation>
 <translation id="8225771182978767009">Uživatel, který tento počítač nastavoval, se rozhodl tento web blokovat.</translation>
@@ -2261,12 +2284,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8317207217658302555">Aktualizovat ARCore?</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">oznámení</translation>
-<translation id="8328484624016508118">Po zavření všech anonymních karet smaže Chrome:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />aktivitu prohlížení z tohoto zařízení,<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />historii vyhledávání z tohoto zařízení,<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />informace zadané ve formulářích.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Přístup k webu <ph name="HOST_NAME" /> byl odepřen</translation>
 <translation id="833262891116910667">Zvýraznit</translation>
 <translation id="8339163506404995330">Stránky v jazyce <ph name="LANGUAGE" /> nebudou překládány</translation>

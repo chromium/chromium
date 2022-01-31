@@ -172,6 +172,7 @@
 <translation id="357889014807611375">mért adatforgalmú Wi-Fi</translation>
 <translation id="3583278742022654445">Gyenge jelerősség. Próbáljon közelebb helyezkedni a Wi-Fi-jelforráshoz.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
+<translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
 <translation id="3606583719724308068">Hosszú a várakozási idő a HTTPS-protokollt használó webhelyekhez való csatlakozáskor</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
@@ -423,6 +424,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6905724422583748843">Vissza ide: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A szkenner fedele nyitva van. Zárja le, és próbálja újra.</translation>
 <translation id="6911383237894364323">Nem lehet csatlakozni a médiaszerverekhez.</translation>
+<translation id="6935486296377631201">Képernyővédő</translation>
 <translation id="6957231940976260713">Szolgáltatás neve</translation>
 <translation id="6961170852793647506">A kezdéshez helyezze dokumentumát a szkennerbe</translation>
 <translation id="6965382102122355670">OK</translation>

@@ -81,6 +81,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
 <translation id="1364382257761975320">Voit avata Chromebookin lukituksen käyttämällä sormenjälkeäsi</translation>
+<translation id="1364618750746929654">Transkriptiota ei voida luoda</translation>
 <translation id="1383597849754832576">Puhetiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1391102559483454063">Päällä</translation>
@@ -678,6 +679,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
 <translation id="5465662442746197494">Tarvitsetko apua?</translation>
 <translation id="547979256943495781">Hylly oikealla</translation>
+<translation id="5491186829646618080">Laiteohjelmiston päivityksiä saatavilla</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Järjestelmänvalvojasi on poistanut kaikki eSim-profiilit. Pyydä lisätietoja järjestelmänvalvojalta.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> muodostaa yhteyttä.</translation>
@@ -1176,6 +1178,7 @@ Uusi asennus</translation>
 <translation id="8876661425082386199">Tarkista yhteys</translation>
 <translation id="8877788021141246043">Aseta muistutus</translation>
 <translation id="8878886163241303700">Laajennettu näyttö</translation>
+<translation id="888982883502837004">Laitteellesi on saatavilla laiteohjelmiston päivityksiä. Katso ja päivitä klikkaamalla.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> poistetaan pysyvästi</translation>
 <translation id="890616557918890486">Vaihda lähdettä</translation>
 <translation id="8909138438987180327">Akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>

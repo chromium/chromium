@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">当前图标</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
+<translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1110155001042129815">等待</translation>
 <translation id="1110965959145884739">选择要在此设备上安装哪些语言。为节省磁盘可用空间，系统会让用户共用语言包文件。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">投影仪</translation>
@@ -505,6 +506,7 @@
 <translation id="1521442365706402292">管理证书</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="152234381334907219">一律不保存</translation>
+<translation id="1523279371236772909">过去一个月内看过</translation>
 <translation id="1523978563989812243">文字转语音引擎</translation>
 <translation id="1524430321211440688">键盘</translation>
 <translation id="1524563461097350801">不用了</translation>
@@ -1159,6 +1161,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">添加 Wi-Fi...</translation>
 <translation id="2162155940152307086">一旦您离开同步设置页面，同步功能就会启动</translation>
+<translation id="2162926944953615670">无可用的 eSIM 卡配置文件</translation>
 <translation id="2163470535490402084">请连接到互联网，以便登录您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
@@ -1236,6 +1239,7 @@
 <translation id="2232876851878324699">该文件包含一个证书，但未导入：</translation>
 <translation id="2233502537820838181">详细信息(&amp;M)</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
+<translation id="2234827758954819389">隐私保护指南</translation>
 <translation id="2234876718134438132">同步功能和 Google 服务</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2238379619048995541">频率状态数据</translation>
@@ -1850,6 +1854,7 @@
 <translation id="2828650939514476812">连接到 Wi-Fi 网络</translation>
 <translation id="2831430281393059038">所用设备必须受支持</translation>
 <translation id="2832124733806557606">您的孩子可以使用 PIN 码登录或解锁此设备。</translation>
+<translation id="2835177225987815960">您当前的扫描设置将被重置，包括已分配的所有开关以及自动扫描速度偏好设置。</translation>
 <translation id="2835547721736623118">语音识别服务</translation>
 <translation id="2836269494620652131">崩溃</translation>
 <translation id="2836635946302913370">管理员已禁止使用此用户名登录。</translation>
@@ -3087,6 +3092,7 @@
 <translation id="4095264805865317199">打开移动网络激活界面</translation>
 <translation id="4095507791297118304">主显示屏</translation>
 <translation id="4096508467498758490">请停用以开发者模式运行的扩展程序</translation>
+<translation id="4096797685681362305">过去一周内看过</translation>
 <translation id="4097406557126260163">应用和扩展程序</translation>
 <translation id="409742781329613461">Chrome 使用提示</translation>
 <translation id="4097560579602855702">在 Google 中搜索</translation>
@@ -3642,6 +3648,7 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4701025263201366865">家长登录</translation>
+<translation id="4701335814944566468">昨天看过</translation>
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
@@ -3709,6 +3716,7 @@
 <translation id="479536056609751218">网页，仅 HTML</translation>
 <translation id="4796142525425001238">一律恢复</translation>
 <translation id="4798236378408895261">附加<ph name="BEGIN_LINK" />蓝牙日志<ph name="END_LINK" />（Google 内部使用）</translation>
+<translation id="479863874072008121">管理设备</translation>
 <translation id="4800839971935185386">查看名称和图标的新变化</translation>
 <translation id="4801448226354548035">隐藏帐号</translation>
 <translation id="4801512016965057443">允许移动数据漫游</translation>
@@ -6432,6 +6440,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659154729610375585">仍要退出无痕模式？</translation>
 <translation id="7659297516559011665">仅在此设备上保存的密码</translation>
+<translation id="7659336857671800422">查看隐私保护指南</translation>
 <translation id="7659584679870740384">您无权使用此设备。请向管理员申请登录权限。</translation>
 <translation id="7661259717474717992">允许网站保存和读取 Cookie 数据</translation>
 <translation id="7661451191293163002">无法获取注册证书。</translation>
@@ -7953,6 +7962,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
 <translation id="9201023452444595544">所有离线数据都会被清除</translation>
+<translation id="9201117361710210082">之前看过</translation>
 <translation id="9201220332032049474">屏幕锁定选项</translation>
 <translation id="9201842707396338580">出了点问题。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203398526606335860">分析已启用(&amp;P)</translation>

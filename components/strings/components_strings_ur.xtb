@@ -14,13 +14,19 @@
 <translation id="1028781062521375153">تفصیلات دیکھیں</translation>
 <translation id="1030706264415084469"><ph name="URL" /> آپ کے آلے پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="1032854598605920125">گھڑی کی سمت میں گھمائیں</translation>
+<translation id="1033329911862281889">پوشیدگی وضع آپ کو آن لائن غیر مرئی نہیں کرتی ہے:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />سائٹس اور سروسز جو صارف استعمال کرتا ہے ملاحظات دیکھ سکتی ہیں
+<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />آجر یا اسکول براؤزنگ کی سرگرمی کو ٹریک کر سکتے ہیں<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />انٹرنیٹ سروس پرووائیڈرز ویب ٹریفک کو مانیٹر کر سکتے ہیں<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036982837258183574">پوری اسکرین سے باہر نکلنے کیلئے |<ph name="ACCELERATOR" />| کو دبائیں</translation>
 <translation id="1038106730571050514">تجاویز دکھائیں</translation>
 <translation id="1038842779957582377">نامعلوم نام</translation>
 <translation id="1041998700806130099">جاب شیٹ کا پیغام</translation>
 <translation id="1048785276086539861">آپ کے تشریحات میں ترمیم کرنے پر، یہ دستاویز واحد صفحے کے منظر پر واپس آ جائے گا</translation>
-<translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="1050038467049342496">دیگر ایپس بند کریں</translation>
 <translation id="1055184225775184556">شامل کریں کو &amp;کالعدم کریں</translation>
 <translation id="1056898198331236512">وارننگ</translation>
@@ -48,6 +54,7 @@
 <translation id="112840717907525620">پالیسی کیش ٹھیک ہے</translation>
 <translation id="1130564665089811311">‏'صفحے کا ترجمہ کریں' بٹن، Google ترجمے سے اس صفحے کا ترجمہ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="1131264053432022307">آپ کی کاپی کردہ تصویر</translation>
+<translation id="1142846828089312304">پوشیدگی وضع میں فریق ثالث کی کوکیز کو مسدود کریں</translation>
 <translation id="1150979032973867961">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے کمپیوٹر کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="1151972924205500581">پاس ورڈ درکار ہے</translation>
 <translation id="1156303062776767266">آپ ایک مقامی یا اشتراک کردہ فائل دیکھ رہے ہیں</translation>
@@ -181,6 +188,12 @@
 <translation id="1483493594462132177">بھیجیں</translation>
 <translation id="1484290072879560759">ترسیل کا پتہ منتخب کریں</translation>
 <translation id="1492194039220927094">پالیسیوں کو پُش کرنا:</translation>
+<translation id="149293076951187737">‏جب آپ سبھی Chrome ونڈوز بند کرتے ہیں تو ان ٹیبز پر آپ کی سرگرمی اس آلے سے صاف ہو جاتی ہے:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />براؤزنگ کی سرگرمی<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />تلاش کی سرگزشت<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ٹیب پر واپس جائیں</translation>
 <translation id="1501859676467574491">‏اپنے Google اکاؤنٹ سے کارڈز دکھائیں</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;اگر آپ کسی ایسے Wi-Fi پورٹل کا استعمال کر رہے ہیں، جس میں آپ کو آن لائن جانے سے پہلے سائن ان کرنا پڑتا ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
@@ -285,6 +298,7 @@
     ہیڈر ناقص ہے، جو براؤزر کو <ph name="SITE" /> کے ليے کی گئی
     آپ کی درخواست کو پورا کرنے سے روکتا ہے۔ کسی سائٹ کی خاطر سیکیورٹی اور دیگر پراپرٹیز کو ترتیب دینے کے لیے
     سائٹ آپریٹرز کے ذریعے ماخذ پالیسیوں کا استعمال کیا جا سکتا ہے۔</translation>
+<translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />Chromium میں پوشیدگی وضع کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">آپ کے کھلے ٹیبز یہاں ظاہر ہوتے ہیں</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +540,12 @@
 <translation id="2597378329261239068">یہ دستاویز پاس ورڈ کے ذریعہ تحفظ یافتہ ہے۔  براہ کرم ایک پاس ورڈ درج کریں۔</translation>
 <translation id="2609632851001447353">تغیرات</translation>
 <translation id="2610561535971892504">کلک کر کے کاپی کریں</translation>
+<translation id="2617988307566202237">‏Chrome درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />آپ کی براؤزنگ کی سرگزشت
+          <ph name="LIST_ITEM" />کوکیز اور سائٹ ڈیٹا
+          <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 ‎(Envelope‎)‎</translation>
 <translation id="2623663032199728144">آپ کی اسکرینز کے بارے میں معلومات کا استعمال کرنے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="2625385379895617796">آپ کی گھڑی آگے ہے</translation>
@@ -737,12 +757,6 @@
 <translation id="3345782426586609320">آنکھیں</translation>
 <translation id="3355823806454867987">پراکسی ترتیبات تبدیل کریں…</translation>
 <translation id="3360103848165129075">ادائیگی ہینڈلر کی شیٹ</translation>
-<translation id="3361596688432910856">‏Chrome مندرجہ ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />آپ کی براؤزنگ سرگزشت
-          <ph name="LIST_ITEM" />کوکیز اور سائٹ ڈیٹا
-          <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">یہ پالیسی خودکار طور پر فرسودہ <ph name="OLD_POLICY" /> پالیسی سے کاپی کی گئی تھی۔ اس کی بجائے، آپ کو اس کا پالیسی کا استعمال کرنا چاہیے۔</translation>
 <translation id="3364869320075768271"><ph name="URL" /> آپ کا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنا چاہتا ہے</translation>
 <translation id="3366477098757335611">کارڈز دیکھیں</translation>
@@ -1161,6 +1175,7 @@
 <translation id="4628948037717959914">تصویر</translation>
 <translation id="4631649115723685955">کیش بیک لنک کردہ ہے</translation>
 <translation id="4636930964841734540">معلومات</translation>
+<translation id="4638670630777875591">‏Chromium میں پوشیدگی وضع</translation>
 <translation id="464342062220857295">خصوصیات تلاش کریں</translation>
 <translation id="4644670975240021822">اُلٹ ترتیب میں، صفحات کا رُخ نیچے کی جانب</translation>
 <translation id="4646534391647090355">اب مجھے وہاں لے چلیں</translation>
@@ -1223,12 +1238,6 @@
 <translation id="4819347708020428563">ڈیفالٹ منظر میں تشریحات میں ترمیم کریں؟</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />، تیزی سے ایک نئی Google Sheet تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4825507807291741242">طاقتور</translation>
-<translation id="4827402517081186284">پوشیدگی وضع آپ کو آن لائن غیر مرئی نہیں کرتی ہے:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />سائٹس کو معلوم ہوتا ہے کہ آپ کب انہیں ملاحظہ کرتے ہیں<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />آجر یا اسکول براؤزنگ کی سرگرمی کو ٹریک کر سکتے ہیں<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />انٹرنیٹ سروس پرووائیڈرز ویب ٹریفک کو مانیٹر کر سکتے ہیں<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">نظر انداز کر دیا گیا کیونکہ پالیسی صرف کلاؤڈ صارف کی پالیسی کے ذریعے سیٹ کی جا سکتی ہے۔</translation>
 <translation id="483241715238664915">وارننگز کو آن کریں</translation>
 <translation id="4838327282952368871">خیالی</translation>
@@ -1262,6 +1271,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، تلاش کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4930153903256238152">بڑی گنجائش</translation>
+<translation id="4940163644868678279">‏Chrome میں پوشیدگی وضع</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4950898438188848926">‏ٹیب پر سوئچ کرنے کا بٹن، کھلے ہوئے ٹیب پر سوئچ کرنے کے لیے Enter دبائیں، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">کارروائیاں</translation>
@@ -1622,6 +1632,7 @@
 <translation id="6120179357481664955">‏آپ کی UPI ID یاد رکھیں؟</translation>
 <translation id="6124432979022149706">‏Chrome Enterprise کنیکٹرز</translation>
 <translation id="6127379762771434464">آئٹم ہٹا دیا گیا</translation>
+<translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />Chrome میں پوشیدگی وضع کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">کوئی بھی کیبلز چیک کریں اور کوئی بھی
     روٹرز، موڈمز
 یا ان دیگر نیٹ ورک آلات کو ریبوٹ کریں جنہیں آپ استعمال کر سکتے ہیں۔</translation>
@@ -1799,7 +1810,6 @@
 <translation id="6757797048963528358">آپ کا آلہ سیلپ وضع میں چلا گیا۔</translation>
 <translation id="6767985426384634228">پتہ اپ ڈیٹ کریں؟</translation>
 <translation id="6768213884286397650">Hagaki ‎(Postcard)‎</translation>
-<translation id="6774185088257932239">پوشیدگی وضع کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">وائلیٹ</translation>
 <translation id="6786747875388722282">توسیعات</translation>
@@ -1899,6 +1909,12 @@
 <translation id="7111012039238467737">(درست)</translation>
 <translation id="7118618213916969306">‏کلپ بورڈ URL تلاش کریں، <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">دیگر ٹیبز یا پروگرامز کو کھولیں</translation>
+<translation id="7129355289156517987">‏جب آپ سبھی Chromium ونڈوز بند کرتے ہیں تو ان ٹیبز پر آپ کی سرگرمی اس آلے سے صاف ہو جاتی ہے:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />براؤزنگ کی سرگرمی<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />تلاش کی سرگزشت<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">اس پتے پر ترسیل نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="7132939140423847331">آپ کے منتظم نے اس ڈیٹا کے کاپی کیے جانے پر پابندی لگائی ہے۔</translation>
 <translation id="7135130955892390533">اسٹیٹس دکھائیں</translation>
@@ -2017,6 +2033,12 @@
 <translation id="7485870689360869515">کوئی ڈیٹا نہیں ملا۔</translation>
 <translation id="7495528107193238112">یہ مواد مسدود ہے۔ مسئلے کو حل کرنے کے لیے سائٹ کے مالک سے رابطہ کریں۔</translation>
 <translation id="7497998058912824456">‏دستاویز تخلیق کریں بٹن، تیزی سے ایک نیا Google Doc تخلیق کرنے کیلئے Enter دبائیں</translation>
+<translation id="7506488012654002225">‏Chromium درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />آپ کی براؤزنگ کی سرگزشت
+          <ph name="LIST_ITEM" />کوکیز اور سائٹ ڈیٹا
+          <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">‏واپس کردہ پالیسی آلہ id خالی ہے یا موجودہ آلہ id سے مماثل نہیں ہے</translation>
 <translation id="7508870219247277067">مَگَر ناشپاتی سبز</translation>
 <translation id="7511955381719512146">‏آپ کا زیر استعمال Wi-Fi آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
@@ -2236,6 +2258,7 @@
 <translation id="8202370299023114387">تصادم</translation>
 <translation id="8206978196348664717">Prc4 ‎(Envelope‎)‎</translation>
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
+<translation id="8217240300496046857">سائٹس ان کوکیز کا استعمال نہیں کر سکتی ہیں جو آپ کو پورے ویب پر ٹریک کرتی ہیں۔ کچھ سائٹس پر خصوصیات میں خلل ہو سکتا ہے۔</translation>
 <translation id="8218327578424803826">تفویض کردہ مقام</translation>
 <translation id="8220146938470311105">C7/C6 ‎(Envelope‎)‎</translation>
 <translation id="8225771182978767009">اس کمپیوٹر کو ترتیب دینے والے شخص نے اس سائٹ کو مسدود کرنے کا انتخاب کیا ہے۔</translation>
@@ -2279,12 +2302,6 @@
 <translation id="8317207217658302555">‏ARCore کو اپ ڈیٹ کریں؟</translation>
 <translation id="831997045666694187">شام</translation>
 <translation id="8321476692217554900">اطلاعات</translation>
-<translation id="8328484624016508118">‏تمام پوشیدگی ٹیبز کو بند کرنے کے بعد، Chrome درج ذیل صاف کرتا ہے:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />اس آلہ سے آپ کی براؤزنگ کی سرگرمی<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />اس آلہ سے آپ کی تلاش کی سرگزشت<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> تک رسائی مسترد کر دی گئی</translation>
 <translation id="833262891116910667">ہائی لائٹ کریں</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> کے صفحات کا ترجمہ نہیں کیا جائے گا</translation>

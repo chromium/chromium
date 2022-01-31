@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Núverandi tákn</translation>
 <translation id="1103523840287552314">Þýða alltaf <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stöðva</translation>
+<translation id="1108938384783527433">Samstilla feril</translation>
 <translation id="1110155001042129815">Bíða</translation>
 <translation id="1110965959145884739">Veldu hvaða tungumál á að setja upp í þessu tæki. Tungumálaskrám er deilt á milli notenda til að spara diskpláss. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Skjávarpi</translation>
@@ -512,6 +513,7 @@
 <translation id="1521442365706402292">Stjórna vottorðum</translation>
 <translation id="1521774566618522728">Virkt í dag</translation>
 <translation id="152234381334907219">Aldrei vistað</translation>
+<translation id="1523279371236772909">Skoðað undanfarinn mánuð</translation>
 <translation id="1523978563989812243">Talgervilsvélar</translation>
 <translation id="1524430321211440688">Lyklaborð</translation>
 <translation id="1524563461097350801">Nei, takk</translation>
@@ -1175,6 +1177,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Bæta við Wi-Fi...</translation>
 <translation id="2162155940152307086">Samstilling hefst þegar þú lokar samstillingarkostum</translation>
+<translation id="2162926944953615670">Engir eSIM-prófílar í boði</translation>
 <translation id="2163470535490402084">Tengstu netinu til að skrá þig inn á <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Kveikja á dökku þema</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 rofi í viðbót</translation>
@@ -1252,6 +1255,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2232876851878324699">Skráin innihélt eitt vottorð sem ekki var flutt inn:</translation>
 <translation id="2233502537820838181">Frekari upplýsingar</translation>
 <translation id="223356358902285214">Vef- og forritavirkni</translation>
+<translation id="2234827758954819389">Leiðbeiningar um persónuvernd</translation>
 <translation id="2234876718134438132">Samstilling og þjónusta Google</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="2238379619048995541">Gögn um tíðnistöðu</translation>
@@ -1869,6 +1873,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2828650939514476812">Tengjast Wi-Fi neti</translation>
 <translation id="2831430281393059038">Tæki er stutt</translation>
 <translation id="2832124733806557606">Barnið getur notað PIN-númer til að skrá sig inn í tækið eða taka það úr lás.</translation>
+<translation id="2835177225987815960">Núverandi uppsetning skönnunar verður endurstillt, þ.m.t. úthlutaðir rofar og hraðastillingar sjálfvirkrar skönnunar.</translation>
 <translation id="2835547721736623118">Raddgreiningarþjónusta</translation>
 <translation id="2836269494620652131">Hrun</translation>
 <translation id="2836635946302913370">Kerfisstjóri hefur lokað á innskráningu með þessu notandanafni.</translation>
@@ -3107,6 +3112,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4095264805865317199">Opna viðmót fyrir farsímavirkjun</translation>
 <translation id="4095507791297118304">Aðalskjár</translation>
 <translation id="4096508467498758490">Slökkva á viðbótum í forritarastillingu</translation>
+<translation id="4096797685681362305">Skoðað undanfarna viku</translation>
 <translation id="4097406557126260163">Forrit og viðbætur</translation>
 <translation id="409742781329613461">Ábendingar fyrir Chrome</translation>
 <translation id="4097560579602855702">Leita á Google</translation>
@@ -3663,6 +3669,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4699172675775169585">Myndir og skrár í skyndiminni</translation>
 <translation id="4699357559218762027">(ræst sjálfkrafa)</translation>
 <translation id="4701025263201366865">Innskráning foreldris</translation>
+<translation id="4701335814944566468">Skoðað í gær</translation>
 <translation id="4708794300267213770">Sýna lásskjá þegar komið er úr hvíldarstillingu</translation>
 <translation id="4708849949179781599">Loka <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Endurheimta stillingar</translation>
@@ -3730,6 +3737,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="479536056609751218">Vefsíða, aðeins HTML</translation>
 <translation id="4796142525425001238">Alltaf endurheimta</translation>
 <translation id="4798236378408895261">Hengja við <ph name="BEGIN_LINK" />Bluetooth-skrár<ph name="END_LINK" /> (innanhúss hjá Google)</translation>
+<translation id="479863874072008121">Umsjón með tækjum</translation>
 <translation id="4800839971935185386">Endurskoða uppfærslur nafns og tákns</translation>
 <translation id="4801448226354548035">Fela reikninga</translation>
 <translation id="4801512016965057443">Leyfa reiki farsímagagna</translation>
@@ -6453,6 +6461,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7659154729610375585">Viltu samt loka huliðsstillingu?</translation>
 <translation id="7659297516559011665">Aðeins aðgangsorð á þessu tæki</translation>
+<translation id="7659336857671800422">Skoðaðu leiðbeiningar um persónuvernd</translation>
 <translation id="7659584679870740384">Þú hefur ekki leyfi til að nota þetta tæki. Hafðu samband við kerfisstjóra til að fá leyfi til að skrá þig inn.</translation>
 <translation id="7661259717474717992">Leyfa vefsvæðum að vista og lesa gögn fótspora</translation>
 <translation id="7661451191293163002">Ekki tókst að sækja skráningarvottorð.</translation>
@@ -7975,6 +7984,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9200339982498053969"><ph name="ORIGIN" /> mun geta breytt skrám í <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Leita á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Öllum ónettengdum gögnum verður eytt</translation>
+<translation id="9201117361710210082">Skoðað áður</translation>
 <translation id="9201220332032049474">Valkostir skjálæsingar</translation>
 <translation id="9201842707396338580">Eitthvað fór úrskeiðis. Hafðu samband við eiganda tækisins eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">Kveikt á hegðunarskráningu</translation>

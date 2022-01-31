@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">izen ezezaguna</translation>
 <translation id="1041998700806130099">Lan-orriko mezua</translation>
 <translation id="1048785276086539861">Oharpenak editatzen dituzunean, orri bakarreko ikuspegira itzuliko da dokumentua</translation>
-<translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="1050038467049342496">Itxi beste aplikazio batzuk</translation>
 <translation id="1055184225775184556">&amp;Desegin gehitzea</translation>
 <translation id="1056898198331236512">Abisua</translation>
@@ -729,12 +728,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3345782426586609320">Begiak</translation>
 <translation id="3355823806454867987">Aldatu proxy-ezarpenak…</translation>
 <translation id="3360103848165129075">Ordainketa kudeatzeko orria</translation>
-<translation id="3361596688432910856">Chrome-k <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />arakatze-historia,
-          <ph name="LIST_ITEM" />cookieak eta webguneetako datuak,
-          <ph name="LIST_ITEM" />inprimakietan idatzitako datuak.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467"><ph name="OLD_POLICY" /> gidalerro zaharkituaren kopia automatikoa da gidalerro hau. Horren ordez gidalerro hau erabili beharko zenuke.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> webguneak errealitate birtualeko gailua eta datuak erabili nahi ditu</translation>
 <translation id="3366477098757335611">Ikusi txartelak</translation>
@@ -1209,12 +1202,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4819347708020428563">Ikuspegi lehenetsian editatu nahi dituzu oharpenak?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Google-ko kalkulu-orri bat bizkor sortzeko</translation>
 <translation id="4825507807291741242">Indartsua</translation>
-<translation id="4827402517081186284">Ezkutuko modua erabili arren, ez zara ikusezina izango sarean:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Webguneek noiz bisitatzen dituzun dakite.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Enpresek edo ikastetxeek arakatze-jardueren jarraipena egin dezakete.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Baliteke Interneteko zerbitzu-hornitzaileek sareko trafikoa gainbegiratzea.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ez ikusi egin zaio hodeiko erabiltzaile-gidalerro batek soilik ezar dezakeelako gidalerroa.</translation>
 <translation id="483241715238664915">Aktibatu abisuak</translation>
 <translation id="4838327282952368871">Ametsezkoa</translation>
@@ -1783,7 +1770,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6757797048963528358">Inaktibo geratu da gailua.</translation>
 <translation id="6767985426384634228">Helbidea eguneratu nahi duzu?</translation>
 <translation id="6768213884286397650">Hagaki (postala)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> ezkutuko moduari buruz</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Bioleta</translation>
 <translation id="6786747875388722282">Luzapenak</translation>
@@ -2263,12 +2249,6 @@ Xehetasun gehiago:
 <translation id="8317207217658302555">ARCore eguneratu nahi duzu?</translation>
 <translation id="831997045666694187">Arratsaldea</translation>
 <translation id="8321476692217554900">jakinarazpenak</translation>
-<translation id="8328484624016508118">Ezkutuko moduko fitxa guztiak itxi ondoren, Chrome-k hauek garbitzen ditu:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />gailu honetako arakatze-jarduerak<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />gailu honetako bilaketa-historia<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Ukatu egin da <ph name="HOST_NAME" /> webgunerako sarbidea</translation>
 <translation id="833262891116910667">Nabarmenduta</translation>
 <translation id="8339163506404995330">Ez dira itzuliko <ph name="LANGUAGE" /> darabilten orriak</translation>

@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">විස්තර බලන්න</translation>
 <translation id="1030706264415084469"><ph name="URL" /> හට ඔබේ උපාංගය මත විශාල දත්ත ස්ථිරව ගබඩා කිරීමට අවශ්‍යයි</translation>
 <translation id="1032854598605920125">දක්ෂිණාවර්තව කරකවන්න</translation>
+<translation id="1033329911862281889">අප්‍රසිද්ධ ප්‍රකාරය ඔබව සබැඳිව අදෘශ්‍යමාන බවට පත් නොකරයි:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ඔවුන් භාවිත කරන අඩවි සහ සේවාවලට පැමිණීම් දැකිය හැකිය<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />සේවායෝජකයන්ට හෝ පාසල්වලට බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් හඹා යාමට හැකිය<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />අන්තර්ජාල සේවා සපයන්නන් වෙබ් තදබදය නිරීක්ෂණය කළ හැකිය<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1036982837258183574">පූර්ණ තිරයෙන් පිටවීමට |<ph name="ACCELERATOR" />| ඔබන්න</translation>
 <translation id="1038106730571050514">යෝජනා පෙන්වන්න</translation>
 <translation id="1038842779957582377">නොදන්නා නමක්</translation>
 <translation id="1041998700806130099">වැඩ පත්‍ර පණිවුඩය</translation>
 <translation id="1048785276086539861">ඔබ අනුසටහන් සංස්කරණය කරන විට, මෙම ලේඛනය තනි පිටු දසුනකට ආපසු යනු ඇත</translation>
-<translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="1050038467049342496">අනෙකුත් යෙදුම් වසන්න</translation>
 <translation id="1055184225775184556">&amp;එක් කිරීම පසුගමනය කිරීම</translation>
 <translation id="1056898198331236512">අවවාදයයි</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">ප්‍රතිපත්ති තාවකාලික මතකය හරි</translation>
 <translation id="1130564665089811311">පිටුව පරිවර්තනය කරන්න බොත්තම, Google පරිවර්තනය සමඟ මෙම පිටුව පරිවර්තනය කිරීමට Enter ඔබන්න</translation>
 <translation id="1131264053432022307">ඔබ පිටපත් කළ රූපය</translation>
+<translation id="1142846828089312304">අප්‍රසිද්ධ තුළ තෙවන පාර්ශ්ව කුකි අවහිර කරන්න</translation>
 <translation id="1150979032973867961">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය ඔබගේ පරිගණකයෙහි මෙහෙයුම් පද්ධතිය මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="1151972924205500581">රහස්වචනය අවශ්‍යයි</translation>
 <translation id="1156303062776767266">ඔබ දේශීය හෝ පොදු ගොනුවක් නරඹමින් සිටී</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">යවන්න</translation>
 <translation id="1484290072879560759">නැව්ගත කිරීමේ ලිපිනය තෝරාගන්න</translation>
 <translation id="1492194039220927094">ප්‍රතිපත්ති පුෂ්:</translation>
+<translation id="149293076951187737">ඔබ Chrome අප්‍රසිද්ධ ටැබ සියල්ල වැසූ විට, එම ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් හිස් වේ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />සෙවීම් ඉතිහාසය<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />පෝරමවල ඇතුළත් කළ තොරතුරු<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ආපසු පටිත්ත වෙත</translation>
 <translation id="1501859676467574491">ඔබේ Google ගිණුමෙන් කාඩ්පත් පෙන්වන්න</translation>
 <translation id="1507202001669085618">&lt;p&gt;ඔබ සබැඳි වීමට හැකි වීමට පෙර පුරනය වීමට අවශ්‍ය වන Wi-Fi ද්වාරයක් භාවිතා කරන්නේ නම් ඔබ මෙම දෝෂය දකිනු ඇත.&lt;/p&gt;
@@ -285,6 +297,7 @@
     මාතෘකාව වැරදිව ආකෘති කර ඇත, එය බ්‍රවුසරය
     <ph name="SITE" /> සඳහා වන ඔබේ ඉල්ලීම ඉටු කිරීමෙන් වළක්වයි. වෙබ් අඩවියක් සඳහා ආරක්‍ෂාව සහ වෙනත් ලක්‍ෂණ
     වින්‍යාස කිරීමට වෙබ් අඩවිය ක්‍රියා කරවන්නන් විසින් මූලාරම්භ ප්‍රතිපත්ති භාවිත කරනු ලැබිය හැක.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium හි අප්‍රසිද්ධ ගැන තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">ඔබේ විවෘත කළ පටිති මෙහි දිස් වේ</translation>
 <translation id="1791429645902722292">Google ස්මාට් අගුල</translation>
@@ -526,6 +539,12 @@
 <translation id="2597378329261239068">මෙම ලේඛනයේ රහස්වචනය ආරක්ෂා කර තිබේ. කරුණාකර රහස්වචනයක් ඇතුළු කරන්න.</translation>
 <translation id="2609632851001447353">විචලතා</translation>
 <translation id="2610561535971892504">පිටපත් කිරීමට ක්ලික් කිරීම</translation>
+<translation id="2617988307566202237">Chrome පහත තොරතුරු <ph name="BEGIN_EMPHASIS" />නොසුරකිනු ඇත<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය
+            <ph name="LIST_ITEM" />කුකි සහ අඩවි දත්ත
+            <ph name="LIST_ITEM" />පෝරම තුළ ඇතුළත් කළ තොරතුරු
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (ලියුම් කවරය)</translation>
 <translation id="2623663032199728144">ඔබගේ තිර පිළිබඳ තොරතුරු භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="2625385379895617796">ඔබගේ ඔරලෝසුව ඉදිරියෙන් සිටියි</translation>
@@ -736,12 +755,6 @@
 <translation id="3345782426586609320">ඇස්</translation>
 <translation id="3355823806454867987">ප්‍රොක්සි සැකසුම් වෙනස් කරන්න...</translation>
 <translation id="3360103848165129075">ගෙවීම් හසුරුවන පත්‍රය</translation>
-<translation id="3361596688432910856">Chrome පහත තොරතුරු <ph name="BEGIN_EMPHASIS" />නොසුරකිනු ඇත<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය
-          <ph name="LIST_ITEM" />කුකීස් සහ අඩවියේ දත්ත
-          <ph name="LIST_ITEM" />පෝරමවල ඇතුළු කළ තොරතුරු
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">මෙම ප්‍රතිපත්තිය අත්හරින ලද <ph name="OLD_POLICY" /> ප්‍රතිපත්තියෙන් ස්වයංක්‍රීයව පිටපත් කරන ලදි. ඒ වෙනුවෙට ඔබ මෙම ප්‍රතිපත්තිය භාවිත කළ යුතු ය.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ඔබේ අතත්‍ය යථාර්ථ උපාංගය සහ දත්ත භාවිත කිරීමට කැමතියි</translation>
 <translation id="3366477098757335611">කාඩ්පත් බලන්න</translation>
@@ -1157,6 +1170,7 @@
 <translation id="4628948037717959914">ඡායාරූපය</translation>
 <translation id="4631649115723685955">මුදල් ආපසු දීම සබැඳි කරන ලදි</translation>
 <translation id="4636930964841734540">තතු</translation>
+<translation id="4638670630777875591">Chromium හි අප්‍රසිද්ධ</translation>
 <translation id="464342062220857295">විශේෂාංග සොයන්න</translation>
 <translation id="4644670975240021822">ප්‍රතිවර්තන පිළිවෙළ මුහුණු පහළට</translation>
 <translation id="4646534391647090355">දැන් මාව එතැනට ගෙන යන්න</translation>
@@ -1219,12 +1233,7 @@
 <translation id="4819347708020428563">පෙරනිමි දසුන තුළ අනුසටහන් සංස්කරණය කරන්නද?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඉක්මනින් නව Google Sheet එකක් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4825507807291741242">ශක්තිසම්පන්න</translation>
-<translation id="4827402517081186284">අප්‍රසිද්ධ ප්‍රකාරය ඔබව සබැඳිව අදෘශ්‍යමාන බවට පත් නොකරයි:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />අඩවි ඔබ ඒවාට පිවිසෙන විට දනියි<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />සේවායෝජකයන්ට හෝ පාසල්වලට බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් හඹා යාමට හැකිය<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />අන්තර්ජාල සේවා සපයන්නන් වෙබ් තදබදය නිරීක්ෂණය කළ හැකිය<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">ප්‍රතිපත්තිය ක්ලවුඩ් පරිශීලක ප්‍රතිපත්තියෙන් පමණක් සැකසිය හැකි බැවින් නොසලකා හරින ලදී.</translation>
 <translation id="483241715238664915">අනතුරු ඇඟවීම් ක්‍රියාත්මක කරන්න</translation>
 <translation id="4838327282952368871">සිහිනමය</translation>
 <translation id="4840250757394056958">ඔබගේ Chrome ඉතිහාසය බලන්න</translation>
@@ -1257,6 +1266,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, සෙවීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4930153903256238152">විශාල ධාරිතාව</translation>
+<translation id="4940163644868678279">Chrome තුළ අප්‍රසිද්ධ</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
 <translation id="4950898438188848926">පටිත්ත මාරු වීමේ බොත්තමෙන්, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> විවෘත පටිත්තට මාරු වීමට Enter ඔබන්න</translation>
 <translation id="495170559598752135">ක්‍රියාමාර්ග</translation>
@@ -1617,6 +1627,7 @@
 <translation id="6120179357481664955">ඔබේ UPI හැඳුනුම මතකද?</translation>
 <translation id="6124432979022149706">Chrome ව්‍යවසාය සම්බන්ධක</translation>
 <translation id="6127379762771434464">අයිතමය ඉවත් කරන ලදී</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome හි අප්‍රසිද්ධ ගැන තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">කිනම් හෝ කේබල පරීක්ෂා කර කිනම් හෝ රවුටර, මොඩම හෝ ඔබ භාවිත කරමින් සිටිය හැකි
     වෙනත් ජාල උපාංග යළි පණ ගන්වන්න.</translation>
 <translation id="614940544461990577">උත්සාහ කරන්න:</translation>
@@ -1793,7 +1804,6 @@
 <translation id="6757797048963528358">ඔබගේ උපාංගය නින්දට ගියේය.</translation>
 <translation id="6767985426384634228">ලිපිනය යාවත්කාලීන කරන්නද?</translation>
 <translation id="6768213884286397650">Hagaki (තැපැල් පත)</translation>
-<translation id="6774185088257932239">අප්‍රසිද්ධ ගැන <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ජම්බූල</translation>
 <translation id="6786747875388722282">දිගු</translation>
@@ -1893,6 +1903,12 @@
 <translation id="7111012039238467737">(වලංගුයි)</translation>
 <translation id="7118618213916969306">පසුරු පුවරු URL එක සොයන්න, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">අනෙකුත් පටිති හෝ වැඩසටහන් වසන්න</translation>
+<translation id="7129355289156517987">ඔබ Chromium අප්‍රසිද්ධ ටැබ සියල්ල වැසූ විට, එම ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් හිස් වේ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />සෙවීම් ඉතිහාසය<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />පෝරමවල ඇතුළත් කළ තොරතුරු<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">මෙම ලිපිනයට නැව්ගත කළ නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
 <translation id="7132939140423847331">ඔබගේ පරිපාලක මෙම දත්ත පිටපත් කිරීම තහනම් කර ඇත.</translation>
 <translation id="7135130955892390533">තත්ත්‍වය පෙන්වන්න</translation>
@@ -2011,6 +2027,12 @@
 <translation id="7485870689360869515">දත්ත කිසිවක් හමු නොවිනි</translation>
 <translation id="7495528107193238112">මෙම අන්තර්ගතය අවහිර කර ඇත. ගැටලුව නිවැරදි කිරීමට අඩවි හිමිකරු අමතන්න</translation>
 <translation id="7497998058912824456">ලේඛනය තනන්න බොත්තම, ඉක්මනින් අලුත් Google Doc එකක් තැනීමට Enter ඔබන්න</translation>
+<translation id="7506488012654002225">Chromium පහත තොරතුරු <ph name="BEGIN_EMPHASIS" />නොසුරකිනු ඇත<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය
+            <ph name="LIST_ITEM" />කුකි සහ අඩවි දත්ත
+            <ph name="LIST_ITEM" />පෝරම තුළ ඇතුළත් කළ තොරතුරු
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ආපසු ලබා දුන් ප්‍රතිපත්ති උපාංග id හිස් හෝ වත්මන් උපාංග id හා නොගැළපෙයි</translation>
 <translation id="7508870219247277067">අලිගැට පේර කොළ</translation>
 <translation id="7511955381719512146">ඔබ භාවිතා කරන Wi-Fi මගින් ඔබ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> වෙත පිවිසීමට අවශ්‍ය විය හැක.</translation>
@@ -2230,6 +2252,7 @@
 <translation id="8202370299023114387">ගැටුම</translation>
 <translation id="8206978196348664717">Prc4 (ලියුම් කවරය)</translation>
 <translation id="8211406090763984747">සම්බන්ධතාවය ආරක්ෂිත වේ</translation>
+<translation id="8217240300496046857">අඩවිවලට වෙබය හරහා ඔබව හඹා යන කුකි භාවිත කළ නොහැකිය. සමහර අඩවිවල විශේෂාංග බිඳිය හැකිය.</translation>
 <translation id="8218327578424803826">පැවරූ ස්ථානය:</translation>
 <translation id="8220146938470311105">C7/C6 (ලියුම් කවරය)</translation>
 <translation id="8225771182978767009">මෙම පරිගණකය පිහිටුවීම කළ පුද්ගලයා මෙම අඩවිය අවහිර කිරීමට තෝරා ඇත.</translation>
@@ -2273,12 +2296,6 @@
 <translation id="8317207217658302555">ARCore යාවත්කාලීන කරන්නද?</translation>
 <translation id="831997045666694187">සවස</translation>
 <translation id="8321476692217554900">දැනුම්දීම්</translation>
-<translation id="8328484624016508118">සියලු අප්‍රසිද්ධ ටැබ වැසීමෙන් පසු, Chrome පහත ඒවා හිස් කරයි:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />මෙම උපාංගයෙන් ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />මෙම උපාංගයෙන් ඔබගේ සෙවීම් ඉතිහාසය<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />පෝරම තුළ ඇතුළත් කළ තොරතුරු<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> වෙත ප්‍රවේශය ප්‍රතික්ෂේප කරන ලදී</translation>
 <translation id="833262891116910667">උද්දීපන කරන්න</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> හි පිටු පරිවර්තනය නොවනු ඇත</translation>

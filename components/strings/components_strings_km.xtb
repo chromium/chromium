@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">ឈ្មោះមិនស្គាល់</translation>
 <translation id="1041998700806130099">សារអំពី​សន្លឹកកិច្ចការ</translation>
 <translation id="1048785276086539861">នៅពេល​អ្នក​កែចំណារ ឯកសារនេះ​នឹងត្រឡប់ទៅ​ការមើល​ទំព័រ​ទោលវិញ</translation>
-<translation id="1049743911850919806">អនាមិក</translation>
 <translation id="1050038467049342496">បិទ​កម្មវិធី​ផ្សេងទៀត</translation>
 <translation id="1055184225775184556">បកក្រោយការបន្ថែម</translation>
 <translation id="1056898198331236512">ការព្រមាន</translation>
@@ -739,12 +738,6 @@
 <translation id="3345782426586609320">ភ្នែក</translation>
 <translation id="3355823806454867987">ប្តូរការកំណត់ប្រូកស៊ី...</translation>
 <translation id="3360103848165129075">សន្លឹក​កម្មវិធីគ្រប់គ្រង​ការបង់ប្រាក់</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />នឹងមិនរក្សាទុក<ph name="END_EMPHASIS" />ព័ត៌មានខាងក្រោមទេ៖
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ប្រវត្តិរុករករបស់អ្នក
-          <ph name="LIST_ITEM" />ខូគី និងទិន្នន័យទំព័រ
-          <ph name="LIST_ITEM" />ព័ត៌មានដែលបានបញ្ចូលក្នុងទម្រង់
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">គោលការណ៍​នេះ​ត្រូវបាន​ចម្លង​ដោយស្វ័យប្រវត្តិ​ពី​គោលការណ៍ <ph name="OLD_POLICY" /> ដែលបាន​បញ្ឈប់។ អ្នក​គួរតែ​ប្រើ​គោលការណ៍​នេះ​ជំនួសវិញ។</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ចង់ប្រើ​ទិន្នន័យ និង​ឧបករណ៍ VR របស់អ្នក</translation>
 <translation id="3366477098757335611">មើលកាត</translation>
@@ -1226,12 +1219,6 @@
 <translation id="4819347708020428563">កែចំណារនៅក្នុងទិដ្ឋភាពលំនាំដើមឬ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​បង្កើត​បញ្ជី Google ថ្មីបានរហ័ស</translation>
 <translation id="4825507807291741242">មាន​ឥទ្ធិពល​ខ្លាំង</translation>
-<translation id="4827402517081186284">មុខងារឯកជន​មិនមែនធ្វើឱ្យគេ​មើលមិនឃើញអ្នក​នៅលើអ៊ីនធឺណិតនោះទេ៖
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />គេហទំព័រនានា​ដឹងថាពេលណា​ដែលអ្នកចូលមើល​គេហទំព័រទាំងនោះ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />និយោជក ឬសាលារៀន​អាចតាមដាន​សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​អាចពិនិត្យតាមដាន​ចរាចរណ៍បណ្ដាញ<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">បានមិនអើពើ ដោយសារគោលការណ៍​អាចត្រូវបានកំណត់​ដោយគោលការណ៍​អ្នកប្រើប្រាស់ពពក​តែប៉ុណ្ណោះ។</translation>
 <translation id="483241715238664915">បើក​ការព្រមាន</translation>
 <translation id="4838327282952368871">ដូចក្ដី​សុបិន</translation>
@@ -1801,7 +1788,6 @@
 <translation id="6757797048963528358">ឧបករណ៍របស់អ្នកបានដេកហើយ</translation>
 <translation id="6767985426384634228">ធ្វើបច្ចុប្បន្នភាព​អាសយដ្ឋាន​ឬ?</translation>
 <translation id="6768213884286397650">Hagaki (បណ្ណប្រៃសណីយ៍)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម<ph name="END_LINK" />អំពី​មុខងារ​ឯកជន</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ស្វាយ</translation>
 <translation id="6786747875388722282">កម្មវិធីបន្ថែម</translation>
@@ -2283,12 +2269,6 @@
 <translation id="8317207217658302555">ដំឡើងកំណែ ARCore ឬ?</translation>
 <translation id="831997045666694187">ល្ងាច</translation>
 <translation id="8321476692217554900">ការជូន​ដំណឹង</translation>
-<translation id="8328484624016508118">បន្ទាប់ពីបិទ​ផ្ទាំងឯកជន​ទាំងអស់ Chrome នឹងសម្អាត៖
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត​របស់អ្នកចេញពី​ឧបករណ៍នេះ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ប្រវត្តិ​ស្វែងរករបស់អ្នកចេញពី​ឧបករណ៍នេះ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ព័ត៌មានដែលបានបញ្ចូល​ក្នុងទម្រង់​បែបបទនានា<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">បានបដិសេធការចូលប្រើ <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">រំលេច</translation>
 <translation id="8339163506404995330">ទំព័រជាភាសា <ph name="LANGUAGE" /> នឹងមិនត្រូវបានបកប្រែទេ</translation>

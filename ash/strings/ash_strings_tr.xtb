@@ -82,6 +82,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1351937230027495976">Menüyü daralt</translation>
 <translation id="1364382257761975320">Chromebook'unuzun kilidini açmak için parmak izinizi kullanın</translation>
+<translation id="1364618750746929654">Metne dönüştürme işlemi gerçekleştirilemiyor</translation>
 <translation id="1383597849754832576">Canlı Altyazı dosyaları indirilemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1391102559483454063">Açık</translation>
@@ -679,6 +680,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="54609108002486618">Yönetilen</translation>
 <translation id="5465662442746197494">Yardıma mı ihtiyacınız var?</translation>
 <translation id="547979256943495781">Raf, ekranın sağ tarafında</translation>
+<translation id="5491186829646618080">Donanım yazılımı güncellemeleri mevcut</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Yöneticiniz tüm eSIM profillerini kaldırdı. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> bağlanıyor.</translation>
@@ -1177,6 +1179,7 @@ Yeni yüklenmiş</translation>
 <translation id="8876661425082386199">Bağlantınızı denetleyin</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8878886163241303700">Genişletilmiş ekran</translation>
+<translation id="888982883502837004">Donanım yazılımı güncellemeleri cihazınızda kullanılabilir. İnceleyip güncellemek için tıklayın.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> kalıcı olarak silinecek</translation>
 <translation id="890616557918890486">Kaynağı değiştir</translation>
 <translation id="8909138438987180327">Pil yüzde <ph name="PERCENTAGE" /> dolu.</translation>

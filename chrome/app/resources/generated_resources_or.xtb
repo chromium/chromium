@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">ବର୍ତ୍ତମାନର ଆଇକନ୍</translation>
 <translation id="1103523840287552314">ସର୍ବଦା <ph name="LANGUAGE" /> ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="1108600514891325577">&amp;ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="1108938384783527433">ଇତିହାସ ସିଙ୍କ</translation>
 <translation id="1110155001042129815">ଅପେକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="1110965959145884739">ଏହି ଡିଭାଇସରେ କେଉଁ ଭାଷାଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ୍ କରାଯିବ, ତାହା ବାଛନ୍ତୁ। ଡିସ୍କ ସ୍ପେସ୍ ସେଭ୍ କରିବା ପାଇଁ ଭାଷା ଫାଇଲଗୁଡ଼ିକୁ ଉପଯୋଗକର୍ତ୍ତାମାନଙ୍କ ମଧ୍ୟରେ ସେୟାର୍ କରାଯାଇଛି। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">ପ୍ରୋଜେକ୍ଟର୍</translation>
@@ -1160,6 +1161,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="2162155940152307086">ଥରେ ଆପଣ ସିଙ୍କ୍ ସେଟିଂସ୍‌କୁ ଛାଡ଼ିବା କ୍ଷଣି ସିଙ୍କ୍‌ର କାର୍ଯ୍ୟ ଆରମ୍ଭ ହୋଇଯିବ</translation>
+<translation id="2162926944953615670">କୌଣସି eSIM ପ୍ରୋଫାଇଲ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2163470535490402084">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ ସାଇନ୍-ଇନ୍ କରିବା ପାଇଁ ଦୟାକରି ଇଣ୍ଟର୍ନେଟ୍ ସହିତ ସଂଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, ଏବଂ ଅଧିକ 1ଟି ସ୍ୱିଚ୍</translation>
@@ -1854,6 +1856,7 @@
 <translation id="2828650939514476812">ୱାଇ-ଫାଇ ନେଟ୍‌ୱାର୍କ ସହିତ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2831430281393059038">ଡିଭାଇସ୍ ସମର୍ଥିତ ଅଟେ</translation>
 <translation id="2832124733806557606">ଆପଣଙ୍କ ପିଲା ଡିଭାଇସରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ କିମ୍ବା ଏହାକୁ ଅନଲକ୍ କରିବାକୁ ଏକ PIN ବ୍ୟବହାର କରିପାରିବ।</translation>
+<translation id="2835177225987815960">ଆସାଇନ କରାଯାଇଥିବା ଯେ କୌଣସି ସ୍ୱିଚ ଏବଂ ଅଟୋ-ସ୍କାନର ସ୍ପିଡ ସମ୍ବନ୍ଧିତ ପସନ୍ଦଗୁଡ଼ିକ ସମେତ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସ୍କାନିଂ ସେଟଅପ ରିସେଟ ହୋଇଯିବ।</translation>
 <translation id="2835547721736623118">ସ୍ପିଚ୍ ଚିହ୍ନଟକରଣ ସେବା</translation>
 <translation id="2836269494620652131">କ୍ରାଶ୍</translation>
 <translation id="2836635946302913370">ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଏହି ଉପଯୋଗକର୍ତ୍ତାନାମରେ ସାଇନ୍‌ ଇନ୍‌ କରିବା ଅକ୍ଷମ କରାଯାଇଛି।</translation>

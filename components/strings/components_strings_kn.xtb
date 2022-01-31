@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">ವಿವರಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="1030706264415084469">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ದೊಡ್ಡ ಪ್ರಮಾಣದ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲು <ph name="URL" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="1032854598605920125">ಪ್ರದಕ್ಷಿಣಾಕಾರದಲ್ಲಿ ತಿರುಗಿಸು</translation>
+<translation id="1033329911862281889">ಅದೃಶ್ಯ ಮೋಡ್ ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಅಗೋಚರವಾಗಿರುವಂತೆ ಮಾಡುವುದಿಲ್ಲ:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡುವವರು ಮತ್ತು ಅವರು ಬಳಸುವ ಸೇವೆಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಉದ್ಯೋಗದಾತರು ಅಥವಾ ಶಾಲೆಗಳು ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಇಂಟರ್ನೆಟ್ ಸೇವೆ ಒದಗಿಸುವವರು ವೆಬ್ ಟ್ರಾಫಿಕ್ ಅನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡು</translation>
 <translation id="1036982837258183574">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಲು |<ph name="ACCELERATOR" />| ಒತ್ತಿರಿ</translation>
 <translation id="1038106730571050514">ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1038842779957582377">ಆಜ್ಞಾತ ಹೆಸರು</translation>
 <translation id="1041998700806130099">ಜಾಬ್ ಶೀಟ್ ಸಂದೇಶ</translation>
 <translation id="1048785276086539861">ನೀವು ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿದಾಗ, ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಒಂದೇ ಪುಟದ ವೀಕ್ಷಣೆಗೆ ಹಿಂತಿರುಗುತ್ತದೆ</translation>
-<translation id="1049743911850919806">ಅದೃಶ್ಯ</translation>
 <translation id="1050038467049342496">ಇತರ ಅಪ್ಲಿಕೇಶನ್‍ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1055184225775184556">&amp;ಸೇರಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">ನೀತಿಯ ಕ್ಯಾಷ್ ಸರಿಯಾಗಿದೆ</translation>
 <translation id="1130564665089811311">ಪುಟ ಅನುವಾದಿಸಿ ಬಟನ್, ಈ ಪುಟವನ್ನು Google Translate ನೊಂದಿಗೆ ಅನುವಾದಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="1131264053432022307">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
+<translation id="1142846828089312304">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="1150979032973867961">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು ನಿಮ್ಮ ಸಾಧನದ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂ‌ ಪ್ರಕಾರ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="1151972924205500581">ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1156303062776767266">ನೀವು ಸ್ಥಳೀಯ ಅಥವಾ ಹಂಚಿದ ಫೈಲ್‌ ಅನ್ನು ವೀಕ್ಷಿಸುತ್ತಿದ್ದೀರಿ</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">ಕಳುಹಿಸು</translation>
 <translation id="1484290072879560759">ಶಿಪ್ಪಿಂಗ್ ವಿಳಾಸವನ್ನು ಆರಿಸಿ</translation>
 <translation id="1492194039220927094">ಕಾರ್ಯನೀತಿಗಳನ್ನು ಪುಶ್ ಮಾಡುವ ಕ್ರಿಯೆ:</translation>
+<translation id="149293076951187737">ನೀವು ಎಲ್ಲಾ Chrome ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ, ಆ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ಟ್ಯಾಬ್‌ಗೆ ಮರಳಿ</translation>
 <translation id="1501859676467574491">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಕಾರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1507202001669085618">&lt;p&gt;ನೀವು ಆನ್‌ಲೈನ್ ಪ್ರವೇಶಿಸುವ ಮೊದಲು ಸೈನ್‌ ಇನ್‌ ಮಾಡಬೇಕಾದ ವೈ-ಫೈ ಪೋರ್ಟಲ್ ಅನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ ಈ ದೋಷವನ್ನು ಕಾಣುತ್ತೀರಿ.&lt;/p&gt; &lt;p&gt;ನೀವು ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಪುಟದಲ್ಲಿ ದೋಷವನ್ನು ಸರಿಪಡಿಸಲು &lt;strong&gt;ಸಂಪರ್ಕಿಸಿ&lt;/strong&gt; ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ.&lt;/p&gt;</translation>
@@ -283,6 +295,7 @@
 ಸೆಟ್ ಮಾಡಿದೆ ಹಾಗೂ ತನ್ನ ಎಲ್ಲಾ ವಿನಂತಿಗಳಿಗೆ ಮೂಲ ಕಾರ್ಯನೀತಿಯನ್ನು ಅನ್ವಯಿಸಲು ವಿನಂತಿಸಿದೆ. ಆದರೆ,
     ಹೆಡರ್ ಫೈಲ್ ವಿರೂಪಗೊಂಡಿದೆ, <ph name="SITE" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು
     ಬ್ರೌಸರ್ ಪೂರೈಸದಂತೆ ತಡೆಯುತ್ತದೆ. ಸೈಟ್‌ ಒಂದಕ್ಕಾಗಿ ಸುರಕ್ಷತೆ ಮತ್ತು ಇತರ ಗುಣಲಕ್ಷಣಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಸೈಟ್ ಆಪರೇಟರ್‌ಗಳು ಮೂಲ ಕಾರ್ಯನೀತಿಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">ನಿಮ್ಮ ತೆರೆಯಲಾದ ಟ್ಯಾಬ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -524,6 +537,12 @@
 <translation id="2597378329261239068">ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ ಅನ್ನು ಪಾಸ್‌ವರ್ಡ್‌ನಿಂದ ರಕ್ಷಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="2609632851001447353">ಪರಿವರ್ತನೆಗಳು</translation>
 <translation id="2610561535971892504">ನಕಲಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="2617988307566202237">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chrome <ph name="BEGIN_EMPHASIS" />ಉಳಿಸುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ
+            <ph name="LIST_ITEM" />ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ
+            <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ಗಳ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="2625385379895617796">ನಿಮ್ಮ ಗಡಿಯಾರವು ಮುಂದೆ ಇದೆ</translation>
@@ -732,12 +751,6 @@
 <translation id="3345782426586609320">ಕಣ್ಣುಗಳು</translation>
 <translation id="3355823806454867987">ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಿಸಿ...</translation>
 <translation id="3360103848165129075">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್ ಶೀಟ್</translation>
-<translation id="3361596688432910856">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chrome <ph name="BEGIN_EMPHASIS" />ಉಳಿಸುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ
-          <ph name="LIST_ITEM" />ಕುಕೀಸ್ ಮತ್ತು ಸೈಟ್ ಡೇಟಾ
-          <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">ತಡೆಹಿಡಿಯಲಾಗಿರುವ <ph name="OLD_POLICY" /> ಕಾರ್ಯನೀತಿಯಿಂದ, ಈ ಕಾರ್ಯನೀತಿಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಕಲಿಸಲಾಗಿದೆ. ಅದರ ಬದಲಿಗೆ, ನೀವು ಇದನ್ನು ಬಳಸಬೇಕು.</translation>
 <translation id="3364869320075768271">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನ ಮತ್ತು ಡೇಟಾವನ್ನು <ph name="URL" /> ಬಳಸಲು ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="3366477098757335611">ಕಾರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
@@ -1150,6 +1163,7 @@
 <translation id="4628948037717959914">ಫೋಟೋ</translation>
 <translation id="4631649115723685955">ಕ್ಯಾಶ್‌ಬ್ಯಾಕ್ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4636930964841734540">ಮಾಹಿತಿ</translation>
+<translation id="4638670630777875591">Chromium ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್</translation>
 <translation id="464342062220857295">ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="4644670975240021822">ಹಿಮ್ಮುಖ ಆರ್ಡರ್ ಮುಖ ಕೆಳಗೆ</translation>
 <translation id="4646534391647090355">ನನ್ನನ್ನು ಈಗ ಅಲ್ಲಿಗೆ ಕರೆದೊಯ್ಯಿರಿ</translation>
@@ -1212,12 +1226,6 @@
 <translation id="4819347708020428563">ಡೀಫಾಲ್ಟ್ ವೀಕ್ಷಣೆಯಲ್ಲಿ ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹೊಸ Google Sheet ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="4825507807291741242">ಪ್ರಬಲ</translation>
-<translation id="4827402517081186284">ಅಜ್ಞಾತ ಮೋಡ್ ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಅಗೋಚರವಾಗಿರುವಂತೆ ಮಾಡುವುದಿಲ್ಲ:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ನೀವು ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿದಾಗ ಅವುಗಳಿಗೆ ತಿಳಿಯುತ್ತದೆ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ಉದ್ಯೋಗದಾತರು ಅಥವಾ ಶಾಲೆಗಳು ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ಇಂಟರ್ನೆಟ್ ಸೇವೆ ಒದಗಿಸುವವರು ವೆಬ್ ಟ್ರಾಫಿಕ್ ಅನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">ಕ್ಲೌಡ್ ಬಳಕೆದಾರರ ನೀತಿಯ ಮೂಲಕ ಮಾತ್ರ ನೀತಿಯನ್ನು ಹೊಂದಿಸಬಹುದು, ಆದ್ದರಿಂದ ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ.</translation>
 <translation id="483241715238664915">ಎಚ್ಚರಿಕೆಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4838327282952368871">ಕನಸು</translation>
@@ -1251,6 +1259,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹುಡುಕಲು ಟ್ಯಾಬ್ ಒತ್ತಿ ನಂತರ ನಮೂದಿಸಿ</translation>
 <translation id="4930153903256238152">ದೊಡ್ಡ ಸಾಮರ್ಥ್ಯ</translation>
+<translation id="4940163644868678279">Chrome ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್</translation>
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4950898438188848926">ಟ್ಯಾಬ್ ಬದಲಿಸುವ ಬಟನ್, ತೆರೆದಿರುವ ಟ್ಯಾಬ್, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ಗೆ ಬದಲಾಯಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
@@ -1611,6 +1620,7 @@
 <translation id="6120179357481664955">ನಿಮ್ಮ UPI ಐಡಿ ನೆನಪಿದೆಯೇ?</translation>
 <translation id="6124432979022149706">Chrome ಎಂಟರ್‌ಪ್ರೈಸ್ ಕನೆಕ್ಟರ್‌ಗಳು</translation>
 <translation id="6127379762771434464">ಐಟಂ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">ಯಾವುದೇ ಕೇಬಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ. ನೀವು ಬಳಸುತ್ತಿರಬಹುದಾದ ಯಾವುದೇ ರೂಟರ್‌ಗಳು, ಮೋಡೆಮ್‌ಗಳು ಅಥವಾ ಇತರ ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳನ್ನು ರೀಬೂಟ್ ಮಾಡಿ.</translation>
 <translation id="614940544461990577">ಪ್ರಯತ್ನಿಸಿ:</translation>
 <translation id="6150036310511284407">ಎಡಭಾಗದಲ್ಲಿ ಮೂರು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
@@ -1786,7 +1796,6 @@
 <translation id="6757797048963528358">ನಿಮ್ಮ ಸಾಧನವು ನಿದ್ರಾವಸ್ಥೆಗೆ ಹೋಗಿದೆ.</translation>
 <translation id="6767985426384634228">ವಿಳಾಸ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239">ಅಜ್ಞಾತ ಮೋಡ್ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ನೇರಳೆ</translation>
 <translation id="6786747875388722282">ವಿಸ್ತರಣೆಗಳು</translation>
@@ -1886,6 +1895,12 @@
 <translation id="7111012039238467737">(ಮಾನ್ಯವಾಗಿದೆ)</translation>
 <translation id="7118618213916969306">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ URL ಗಾಗಿ ಹುಡುಕಿ, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಥವಾ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="7129355289156517987">ನೀವು ಎಲ್ಲಾ Chromium ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ, ಆ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ಈ ವಿಳಾಸಕ್ಕೆ ರವಾನಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="7132939140423847331">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಡೇಟಾವನ್ನು ನಕಲಿಸದಂತೆ ನಿಷೇಧಿಸಿದ್ದಾರೆ.</translation>
 <translation id="7135130955892390533">ಕಾರ್ಯನೀತಿ ಸ್ಥಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
@@ -2003,6 +2018,12 @@
 <translation id="7485870689360869515">ಯಾವುದೇ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="7495528107193238112">ಈ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ಸೈಟ್ ಮಾಲೀಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="7497998058912824456">Doc ರಚಿಸಿ ಬಟನ್, ಹೊಸ Google Doc ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Enter ಒತ್ತಿ</translation>
+<translation id="7506488012654002225">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chromium <ph name="BEGIN_EMPHASIS" />ಉಳಿಸುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ
+          <ph name="LIST_ITEM" />ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ
+          <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ಹಿಂತಿರುಗಿಸಲಾದ ನೀತಿಯ ಸಾಧನ ಐಡಿ ಖಾಲಿ ಇದೆ ಅಥವಾ ಪ್ರಸ್ತುತ ಸಾಧನ ಐಡಿಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7508870219247277067">ಅವಕಾಡೊ ಹಸಿರು</translation>
 <translation id="7511955381719512146">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈಗೆ ನೀವು <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ಅನ್ನು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
@@ -2222,6 +2243,7 @@
 <translation id="8202370299023114387">ಸಂಘರ್ಷ</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">ಸಂಪರ್ಕ ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
+<translation id="8217240300496046857">ವೆಬ್‌ನಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಕುಕೀಗಳನ್ನು ವೆಬ್‌ಸೈಟ್‌ಗಳು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸೈಟ್‌ಗಳಲ್ಲಿನ ಕೆಲವು ವೈಶಿಷ್ಟ್ಯಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು.</translation>
 <translation id="8218327578424803826">ನಿಯೋಜಿಸಲಾದ ಸ್ಥಳ:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">ಈ ಕಂಪ್ಯೂಟರ್ ಹೊಂದಿಸಿರುವ ವ್ಯಕ್ತಿಯು ಈ ಸೈಟ್ ನಿರ್ಬಂಧಿಸಲು ಆಯ್ಕೆಮಾಡಿದ್ದಾರೆ.</translation>
@@ -2265,12 +2287,6 @@
 <translation id="8317207217658302555">ARCore ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="831997045666694187">ಸಂಜೆ</translation>
 <translation id="8321476692217554900">ಅಧಿಸೂಚನೆಗಳು</translation>
-<translation id="8328484624016508118">ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ, Chrome ಇವುಗಳನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ಈ ಸಾಧನದಲ್ಲಿನ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ಈ ಸಾಧನದಲ್ಲಿನ ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ಗೆ ಪ್ರವೇಶವನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="833262891116910667">ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಲಾಗುವುದಿಲ್ಲ</translation>

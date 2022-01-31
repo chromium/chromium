@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Aktuelt ikon</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
+<translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1110155001042129815">Vent</translation>
 <translation id="1110965959145884739">Vælg, hvilke sprog der skal installeres på denne enhed. Sprogfiler deles mellem brugere for at spare på diskpladsen. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -512,6 +513,7 @@
 <translation id="1521442365706402292">Administrer certifikater</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="152234381334907219">Gemmes aldrig</translation>
+<translation id="1523279371236772909">Set inden for den seneste måned</translation>
 <translation id="1523978563989812243">Maskiner til oplæsning</translation>
 <translation id="1524430321211440688">Tastatur</translation>
 <translation id="1524563461097350801">Nej tak</translation>
@@ -1175,6 +1177,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Tilføj Wi-Fi...</translation>
 <translation id="2162155940152307086">Synkroniseringen starter, når du forlader indstillingerne for synkronisering</translation>
+<translation id="2162926944953615670">Der er ingen tilgængelige eSIM-profiler</translation>
 <translation id="2163470535490402084">Du skal oprette forbindelse til internettet for at kunne logge ind på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 anden kontakt</translation>
@@ -1252,6 +1255,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2232876851878324699">Filen indeholdt ét certifikat, der ikke blev importeret:</translation>
 <translation id="2233502537820838181">&amp;Flere oplysninger</translation>
 <translation id="223356358902285214">Web- og appaktivitet</translation>
+<translation id="2234827758954819389">Guide til privatlivsindstillinger</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238379619048995541">Data for frekvenstilstand</translation>
@@ -1870,6 +1874,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2828650939514476812">Opret forbindelse til Wi-Fi-netværk</translation>
 <translation id="2831430281393059038">Enheden understøttes</translation>
 <translation id="2832124733806557606">Dit barn kan bruge en pinkode til at logge ind på enheden eller låse den op.</translation>
+<translation id="2835177225987815960">Din aktuelle konfiguration af scanning nulstilles, herunder præferencerne for tildelte kontakter og hastigheden ved automatisk scanning.</translation>
 <translation id="2835547721736623118">Tjeneste til talegenkendelse</translation>
 <translation id="2836269494620652131">Nedbrud</translation>
 <translation id="2836635946302913370">Login med dette brugernavn er blevet deaktiveret af din administrator.</translation>
@@ -3108,6 +3113,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4095264805865317199">Åbn brugerflade for aktivering af mobildata</translation>
 <translation id="4095507791297118304">Primær skærm</translation>
 <translation id="4096508467498758490">Deaktiver udvidelser, der kører i udviklertilstand</translation>
+<translation id="4096797685681362305">Set inden for den seneste uge</translation>
 <translation id="4097406557126260163">Apps og udvidelser</translation>
 <translation id="409742781329613461">Tips til Chrome</translation>
 <translation id="4097560579602855702">Søg på Google</translation>
@@ -3664,6 +3670,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
 <translation id="4699357559218762027">(automatisk opstart)</translation>
 <translation id="4701025263201366865">Forældrelogin</translation>
+<translation id="4701335814944566468">Set i går</translation>
 <translation id="4708794300267213770">Vis låseskærmen, når enheden vågner fra dvale</translation>
 <translation id="4708849949179781599">Afslut <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Gendan indstillinger</translation>
@@ -3731,6 +3738,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="479536056609751218">Webside, kun HTML</translation>
 <translation id="4796142525425001238">Gendan altid</translation>
 <translation id="4798236378408895261">Vedhæft <ph name="BEGIN_LINK" />Bluetooth-logfiler<ph name="END_LINK" /> (internt hos Google)</translation>
+<translation id="479863874072008121">Administrer enheder</translation>
 <translation id="4800839971935185386">Gennemgå navne- og ikonopdateringer</translation>
 <translation id="4801448226354548035">Skjul konti</translation>
 <translation id="4801512016965057443">Tillad dataroaming for mobil</translation>
@@ -6454,6 +6462,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7659154729610375585">Vil du afslutte inkognitotilstand alligevel?</translation>
 <translation id="7659297516559011665">Kun adgangskoder på denne enhed</translation>
+<translation id="7659336857671800422">Kig nærmere på guiden til privatlivsindstillinger</translation>
 <translation id="7659584679870740384">Du har ikke tilladelse til at bruge denne enhed. Kontakt administratoren for at få tilladelse til at logge ind.</translation>
 <translation id="7661259717474717992">Tillad, at websites gemmer og læser cookiedata</translation>
 <translation id="7661451191293163002">Det var ikke muligt at hente et registreringscertifikat.</translation>
@@ -7977,6 +7986,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9200339982498053969"><ph name="ORIGIN" /> vil kunne redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Søg via <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Alle offlinedata ryddes</translation>
+<translation id="9201117361710210082">Set for nylig</translation>
 <translation id="9201220332032049474">Valgmuligheder for skærmlås</translation>
 <translation id="9201842707396338580">Noget gik galt. Kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilering aktiveret</translation>

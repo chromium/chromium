@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Ikon saat ini</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Berhenti</translation>
+<translation id="1108938384783527433">Sinkronisasi histori</translation>
 <translation id="1110155001042129815">Tunggu</translation>
 <translation id="1110965959145884739">Pilih bahasa yang akan diinstal di perangkat ini. File bahasa tidak dibagikan antar-pengguna untuk menghemat kapasitas disk. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -511,6 +512,7 @@
 <translation id="1521442365706402292">Kelola sertifikat</translation>
 <translation id="1521774566618522728">Aktif hari ini</translation>
 <translation id="152234381334907219">Jangan Pernah Disimpan</translation>
+<translation id="1523279371236772909">Dilihat dalam sebulan terakhir</translation>
 <translation id="1523978563989812243">Mesin text-to-speech</translation>
 <translation id="1524430321211440688">Keyboard</translation>
 <translation id="1524563461097350801">Lain Kali</translation>
@@ -1174,6 +1176,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Tambahkan Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronisasi akan dimulai setelah Anda meninggalkan setelan sinkronisasi</translation>
+<translation id="2162926944953615670">Tidak ada profil eSIM yang tersedia</translation>
 <translation id="2163470535490402084">Sambungkan ke internet untuk masuk ke <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, dan 1 tombol lainnya</translation>
@@ -1251,6 +1254,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2232876851878324699">File berisi satu sertifikat, yang tidak diimpor:</translation>
 <translation id="2233502537820838181">Infor&amp;masi selengkapnya</translation>
 <translation id="223356358902285214">Aktivitas Web &amp; Aplikasi</translation>
+<translation id="2234827758954819389">Panduan Privasi</translation>
 <translation id="2234876718134438132">Sinkronisasi dan layanan Google</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
 <translation id="2238379619048995541">Data Status Frekuensi</translation>
@@ -1869,6 +1873,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2828650939514476812">Terhubung ke jaringan Wi-Fi</translation>
 <translation id="2831430281393059038">Perangkat didukung</translation>
 <translation id="2832124733806557606">Anak Anda dapat menggunakan PIN untuk login atau membuka kunci perangkat.</translation>
+<translation id="2835177225987815960">Penyiapan pemindaian saat ini akan direset, termasuk semua preferensi tombol akses yang ditetapkan dan kecepatan pemindaian otomatis.</translation>
 <translation id="2835547721736623118">Layanan pengenalan ucapan</translation>
 <translation id="2836269494620652131">Kerusakan</translation>
 <translation id="2836635946302913370">Login dengan nama pengguna ini telah dinonaktifkan oleh administrator Anda.</translation>
@@ -3107,6 +3112,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4095264805865317199">Buka UI Aktivasi Seluler</translation>
 <translation id="4095507791297118304">Tampilan utama</translation>
 <translation id="4096508467498758490">Nonaktifkan ekstensi mode pengembang</translation>
+<translation id="4096797685681362305">Dilihat dalam seminggu terakhir</translation>
 <translation id="4097406557126260163">Aplikasi dan ekstensi</translation>
 <translation id="409742781329613461">Tips untuk Chrome</translation>
 <translation id="4097560579602855702">Telusuri Google</translation>
@@ -3663,6 +3669,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4699357559218762027">(diluncurkan otomatis)</translation>
 <translation id="4701025263201366865">Login orang tua</translation>
+<translation id="4701335814944566468">Dilihat kemarin</translation>
 <translation id="4708794300267213770">Tampilkan layar kunci saat keluar dari mode tidur</translation>
 <translation id="4708849949179781599">Berhenti <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Pulihkan setelan</translation>
@@ -3730,6 +3737,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="479536056609751218">Halaman Web, HTML Saja</translation>
 <translation id="4796142525425001238">Selalu pulihkan</translation>
 <translation id="4798236378408895261">Lampirkan <ph name="BEGIN_LINK" />Log Bluetooth<ph name="END_LINK" /> (internal Google)</translation>
+<translation id="479863874072008121">Kelola perangkat</translation>
 <translation id="4800839971935185386">Tinjau pembaruan nama &amp; ikon</translation>
 <translation id="4801448226354548035">Sembunyikan akun</translation>
 <translation id="4801512016965057443">Izinkan roaming data seluler</translation>
@@ -6453,6 +6461,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659154729610375585">Tetap keluar dari mode Samaran?</translation>
 <translation id="7659297516559011665">Sandi di perangkat ini saja</translation>
+<translation id="7659336857671800422">Lihat Panduan Privasi</translation>
 <translation id="7659584679870740384">Anda tidak diizinkan untuk menggunakan perangkat ini. Untuk izin masuk, hubungi administrator perangkat.</translation>
 <translation id="7661259717474717992">Izinkan situs menyimpan dan membaca data cookie</translation>
 <translation id="7661451191293163002">Sertifikat pendaftaran tidak dapat diperoleh.</translation>
@@ -7975,6 +7984,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9200339982498053969"><ph name="ORIGIN" /> akan dapat mengedit file di <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Penelusuran <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Semua data offline akan dihapus</translation>
+<translation id="9201117361710210082">Dilihat sebelumnya</translation>
 <translation id="9201220332032049474">Opsi kunci layar</translation>
 <translation id="9201842707396338580">Terjadi error. Hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Penyidikan diaktifkan</translation>

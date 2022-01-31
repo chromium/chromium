@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Ícone atual</translation>
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Parar</translation>
+<translation id="1108938384783527433">Sincronizar histórico</translation>
 <translation id="1110155001042129815">Aguarde</translation>
 <translation id="1110965959145884739">Escolha quais idiomas serão instalados no dispositivo. Os arquivos de idioma são compartilhados entre os usuários para economizar espaço em disco. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -512,6 +513,7 @@
 <translation id="1521442365706402292">Gerenciar certificados</translation>
 <translation id="1521774566618522728">Ativado hoje</translation>
 <translation id="152234381334907219">Nunca salvas</translation>
+<translation id="1523279371236772909">Visualizado no último mês</translation>
 <translation id="1523978563989812243">Mecanismos da conversão de texto em voz</translation>
 <translation id="1524430321211440688">Teclado</translation>
 <translation id="1524563461097350801">Agora não</translation>
@@ -1253,6 +1255,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2232876851878324699">O arquivo continha um certificado que não foi importado:</translation>
 <translation id="2233502537820838181">&amp;Mais informações</translation>
 <translation id="223356358902285214">Atividade na Web e de apps</translation>
+<translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2234876718134438132">Serviços do Google e de sincronização</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2238379619048995541">Dados do estado de frequência</translation>
@@ -3111,6 +3114,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4095264805865317199">Abrir IU de ativação da rede celular</translation>
 <translation id="4095507791297118304">Tela principal</translation>
 <translation id="4096508467498758490">Desativar extensões no modo de desenvolvedor</translation>
+<translation id="4096797685681362305">Visualizado na última semana</translation>
 <translation id="4097406557126260163">Apps e extensões</translation>
 <translation id="409742781329613461">Dicas para o Chrome</translation>
 <translation id="4097560579602855702">Pesquisar no Google</translation>
@@ -3667,6 +3671,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
 <translation id="4699357559218762027">(aberto automaticamente)</translation>
 <translation id="4701025263201366865">Login do pai/mãe</translation>
+<translation id="4701335814944566468">Visualizado ontem</translation>
 <translation id="4708794300267213770">Mostrar tela de bloqueio ao sair do modo de suspensão</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configurações</translation>
@@ -3734,6 +3739,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="479536056609751218">Página da web, somente HTML</translation>
 <translation id="4796142525425001238">Sempre restaurar</translation>
 <translation id="4798236378408895261">Anexar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (interno do Google)</translation>
+<translation id="479863874072008121">Gerenciar dispositivos</translation>
 <translation id="4800839971935185386">Revisar atualizações de nome e ícone</translation>
 <translation id="4801448226354548035">Ocultar contas</translation>
 <translation id="4801512016965057443">Permitir roaming de dados móveis</translation>
@@ -6458,6 +6464,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659154729610375585">Sair do modo de navegação anônima mesmo assim?</translation>
 <translation id="7659297516559011665">Senhas apenas neste dispositivo</translation>
+<translation id="7659336857671800422">Consultar o Guia de privacidade</translation>
 <translation id="7659584679870740384">Você não tem autorização para usar este dispositivo. Para permissão de login, entre em contato com o administrador.</translation>
 <translation id="7661259717474717992">Permitir que os sites salvem e leiam os dados de arquivos "cookies" - que armazenam temporariamente o que você visitou na rede.</translation>
 <translation id="7661451191293163002">Não foi possível adquirir um certificado de registro.</translation>
@@ -7981,6 +7988,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9200339982498053969"><ph name="ORIGIN" /> poderá editar arquivos na pasta <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pesquisar <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Todos os dados off-line serão removidos</translation>
+<translation id="9201117361710210082">Visualizado anteriormente</translation>
 <translation id="9201220332032049474">Opções de bloqueio de tela</translation>
 <translation id="9201842707396338580">Algo deu errado. Entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Criação de perfil ativada</translation>

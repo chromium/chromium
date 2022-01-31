@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Dabartinė piktograma</translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Sustabdyti</translation>
+<translation id="1108938384783527433">Istorijos sinchronizavimas</translation>
 <translation id="1110155001042129815">Palaukti</translation>
 <translation id="1110965959145884739">Pasirinkite, kurias kalbas įdiegti šiame įrenginyje. Kalbų failai bendrinami naudotojų taupant vietą diske. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektorius</translation>
@@ -514,6 +515,7 @@
 <translation id="1521442365706402292">Valdyti sertifikatus</translation>
 <translation id="1521774566618522728">Aktyvus šiandien</translation>
 <translation id="152234381334907219">Niekada neišsaugota</translation>
+<translation id="1523279371236772909">Žiūrėta pastarąjį mėnesį</translation>
 <translation id="1523978563989812243">Teksto į kalbą varikliai</translation>
 <translation id="1524430321211440688">Klaviatūra</translation>
 <translation id="1524563461097350801">Ačiū, ne</translation>
@@ -1177,6 +1179,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Pridėti „Wi-Fi“...</translation>
 <translation id="2162155940152307086">Sinchronizavimas bus pradėtas, kai išeisite iš sinchronizavimo nustatymų</translation>
+<translation id="2162926944953615670">Nėra pasiekiamų „eSIM“ kortelės profilių</translation>
 <translation id="2163470535490402084">Prisijunkite prie interneto, kad galėtumėte prisijungti prie „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="2163937499206714165">Įjungti tamsų režimą</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ir dar vienas jungiklis</translation>
@@ -1254,6 +1257,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2232876851878324699">Faile buvo vienas sertifikatas, kuris nebuvo importuotas:</translation>
 <translation id="2233502537820838181">Daugiau informacijos</translation>
 <translation id="223356358902285214">Žiniatinklio ir programų veikla</translation>
+<translation id="2234827758954819389">Privatumo vadovas</translation>
 <translation id="2234876718134438132">Sinchron. ir „Google“ paslaugos</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="2238379619048995541">Dažnumo būsenos duomenys</translation>
@@ -1872,6 +1876,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2828650939514476812">Prisijungti prie „Wi-Fi“ tinklo</translation>
 <translation id="2831430281393059038">Įrenginys palaikomas</translation>
 <translation id="2832124733806557606">Vaikas gali prisijungti prie įrenginio arba jį atrakinti PIN kodu.</translation>
+<translation id="2835177225987815960">Dabartinė nuskaitymo sąranka bus nustatyta iš naujo, įskaitant visus priskirtus jungiklius ir automatinio nuskaitymo spartos nuostatas.</translation>
 <translation id="2835547721736623118">Kalbos atpažinimo paslauga</translation>
 <translation id="2836269494620652131">Strigtis</translation>
 <translation id="2836635946302913370">Prisijungimas šiuo naudotojo vardu neleidžiamas administratoriaus.</translation>
@@ -3110,6 +3115,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4095264805865317199">Atidaryti mobiliojo ryšio aktyvinimo NS</translation>
 <translation id="4095507791297118304">Pagrindinis vaizdas</translation>
 <translation id="4096508467498758490">Išjunkite kūrėjo režimu veikiančius plėtinius</translation>
+<translation id="4096797685681362305">Žiūrėta pastarąją savaitę</translation>
 <translation id="4097406557126260163">Programos ir plėtiniai</translation>
 <translation id="409742781329613461">„Chrome“ patarimai</translation>
 <translation id="4097560579602855702">Ieškoti „Google“</translation>
@@ -3666,6 +3672,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4699172675775169585">Talpykloje esantys vaizdai ir failai</translation>
 <translation id="4699357559218762027">(automatiškai paleidžiama)</translation>
 <translation id="4701025263201366865">Vieno iš tėvų prisijungimas</translation>
+<translation id="4701335814944566468">Žiūrėta vakar</translation>
 <translation id="4708794300267213770">Rodyti užrakto ekraną pažadinant iš miego būsenos</translation>
 <translation id="4708849949179781599">Baigti darbą su „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="4711638718396952945">Atkurti nustatymus</translation>
@@ -3733,6 +3740,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="479536056609751218">Tinklalapis, tik HTML</translation>
 <translation id="4796142525425001238">Visada atkurti</translation>
 <translation id="4798236378408895261">Pridėti <ph name="BEGIN_LINK" />„Bluetooth“ žurnalus<ph name="END_LINK" /> („Google“ darbuotojams)</translation>
+<translation id="479863874072008121">Tvarkyti įrenginius</translation>
 <translation id="4800839971935185386">Vardo ir piktogramos atnaujinimų peržiūra</translation>
 <translation id="4801448226354548035">Slėpti paskyras</translation>
 <translation id="4801512016965057443">Leisti mobiliųjų duomenų tarptinklinį ryšį</translation>
@@ -6457,6 +6465,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7659154729610375585">Vis tiek išeiti iš inkognito režimo?</translation>
 <translation id="7659297516559011665">Slaptažodžiai tik šiame įrenginyje</translation>
+<translation id="7659336857671800422">Naudoti privatumo vadovą</translation>
 <translation id="7659584679870740384">Neturite leidimo naudoti šį įrenginį. Susisiekite su administratoriumi, kad gautumėte leidimą prisijungti.</translation>
 <translation id="7661259717474717992">Leisti svetainėms išsaugoti ir skaityti slapukų duomenis</translation>
 <translation id="7661451191293163002">Nepavyko gauti registracijos sertifikato.</translation>
@@ -7982,6 +7991,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="9200339982498053969"><ph name="ORIGIN" /> galės redaguoti aplanko „<ph name="FOLDERNAME" />“ failus</translation>
 <translation id="920045321358709304">Ieškoti sistemoje „<ph name="SEARCH_ENGINE" />“</translation>
 <translation id="9201023452444595544">Visi neprisijungus pasiekiami duomenys bus išvalyti</translation>
+<translation id="9201117361710210082">Žiūrėta anksčiau</translation>
 <translation id="9201220332032049474">Ekrano užrakto parinktys</translation>
 <translation id="9201842707396338580">Įvyko klaida. Susisiekite su įrenginio savininku ar administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiliavimas įgalintas</translation>

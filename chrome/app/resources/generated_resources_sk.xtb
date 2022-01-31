@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Aktuálna ikona</translation>
 <translation id="1103523840287552314">Vždy preložiť nasledujúci jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Zastaviť</translation>
+<translation id="1108938384783527433">Synchronizácia histórie</translation>
 <translation id="1110155001042129815">Čakajte, prosím.</translation>
 <translation id="1110965959145884739">Vyberte, ktoré jazyky chcete inštalovať v tomto zariadení. Jazykové súbory sa zdieľajú medzi používateľmi, aby sa šetrilo miesto na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -1165,6 +1166,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2159488579268505102">USB‑C</translation>
 <translation id="216169395504480358">Pridať Wi‑Fi…</translation>
 <translation id="2162155940152307086">Synchronizácia sa spustí, keď opustíte nastavenia synchronizácie</translation>
+<translation id="2162926944953615670">Nie sú k dispozícii žiadne profily eSIM</translation>
 <translation id="2163470535490402084">Ak sa chcete prihlásiť do zariadenia <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 ďalší prepínač</translation>
@@ -1858,6 +1860,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2828650939514476812">Pripojenie k sieti Wi‑Fi</translation>
 <translation id="2831430281393059038">Zariadenie je podporované</translation>
 <translation id="2832124733806557606">Vaše dieťa sa môže prihlásiť do zariadenia alebo ho odomknúť kódom PIN.</translation>
+<translation id="2835177225987815960">Aktuálne nastavenie prehľadávania bude resetované vrátane všetkých pridelených prepínačov a predvolieb rýchlosti automatického prehľadávania.</translation>
 <translation id="2835547721736623118">Služba rozpoznávania reči</translation>
 <translation id="2836269494620652131">Zrútenie</translation>
 <translation id="2836635946302913370">Správca zakázal prihlasovanie pomocou tohto používateľského mena.</translation>

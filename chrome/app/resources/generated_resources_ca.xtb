@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Icona actual</translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Atura</translation>
+<translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1110155001042129815">Espera</translation>
 <translation id="1110965959145884739">Tria quins idiomes vols instal·lar en aquest dispositiu. Els fitxers d'idioma es comparteixen entre els usuaris per estalviar espai de disc. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -508,6 +509,7 @@
 <translation id="1521442365706402292">Administra certificats</translation>
 <translation id="1521774566618522728">Actiu avui</translation>
 <translation id="152234381334907219">No es desen mai</translation>
+<translation id="1523279371236772909">S'ha vist el darrer mes</translation>
 <translation id="1523978563989812243">Motors de text a parla</translation>
 <translation id="1524430321211440688">Teclat</translation>
 <translation id="1524563461097350801">No, gràcies</translation>
@@ -1161,6 +1163,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Afegeix una Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronització començarà quan surtis de la configuració de la sincronització</translation>
+<translation id="2162926944953615670">No hi ha cap perfil d'eSIM disponible</translation>
 <translation id="2163470535490402084">Connecteu-vos a Internet per iniciar la sessió al dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Activa el mode fosc</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i 1 interruptor més</translation>
@@ -1238,6 +1241,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2232876851878324699">El fitxer contenia un certificat que no s'ha importat:</translation>
 <translation id="2233502537820838181">&amp;Més informació</translation>
 <translation id="223356358902285214">Activitat al web i en aplicacions</translation>
+<translation id="2234827758954819389">Guia de privadesa</translation>
 <translation id="2234876718134438132">Sincronització i serveis de Google</translation>
 <translation id="2235344399760031203">Les galetes de tercers estan bloquejades</translation>
 <translation id="2238379619048995541">Dades de l'estat de freqüència</translation>
@@ -1853,6 +1857,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2828650939514476812">Connectar a una xarxa Wi-Fi</translation>
 <translation id="2831430281393059038">El dispositiu s'admet</translation>
 <translation id="2832124733806557606">El teu fill pot utilitzar un PIN per iniciar la sessió o desbloquejar el dispositiu.</translation>
+<translation id="2835177225987815960">Es restablirà la teva configuració actual de cerca, la qual inclou tots els interruptors assignats i les preferències de velocitat per a la cerca automàtica.</translation>
 <translation id="2835547721736623118">Servei de reconeixement de parla</translation>
 <translation id="2836269494620652131">Bloqueig</translation>
 <translation id="2836635946302913370">L'administrador ha desactivat l'inici de sessió amb aquest nom d'usuari.</translation>
@@ -3090,6 +3095,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4095264805865317199">Obre la IU d'activació de la xarxa mòbil</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="4096508467498758490">Desactivació de les extensions del mode de desenvolupador</translation>
+<translation id="4096797685681362305">S'ha vist la darrera setmana</translation>
 <translation id="4097406557126260163">Aplicacions i extensions</translation>
 <translation id="409742781329613461">Consells per utilitzar Chrome</translation>
 <translation id="4097560579602855702">Cerca a Google</translation>
@@ -3645,6 +3651,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
 <translation id="4699357559218762027">(inici automàtic)</translation>
 <translation id="4701025263201366865">Inici de sessió dels pares</translation>
+<translation id="4701335814944566468">Es va veure ahir</translation>
 <translation id="4708794300267213770">Mostra la pantalla de bloqueig en reactivar el dispositiu</translation>
 <translation id="4708849949179781599">Surt de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaura la configuració</translation>
@@ -3712,6 +3719,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="479536056609751218">Pàgina web, només HTML</translation>
 <translation id="4796142525425001238">Restaura sempre</translation>
 <translation id="4798236378408895261">Adjunta <ph name="BEGIN_LINK" />registres de Bluetooth<ph name="END_LINK" /> (ús intern de Google)</translation>
+<translation id="479863874072008121">Gestiona els dispositius</translation>
 <translation id="4800839971935185386">Revisa les actualitzacions de la icona i del nom</translation>
 <translation id="4801448226354548035">Amaga els comptes</translation>
 <translation id="4801512016965057443">Permet la itinerància de dades mòbils</translation>
@@ -6437,6 +6445,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7659154729610375585">Vols sortir del mode d'incògnit de totes maneres?</translation>
 <translation id="7659297516559011665">Contrasenyes desades només en aquest dispositiu</translation>
+<translation id="7659336857671800422">Consulta la guia de privadesa</translation>
 <translation id="7659584679870740384">No teniu autorització per fer servir aquest dispositiu. Contacteu amb l'administrador per obtenir el permís d'inici de sessió.</translation>
 <translation id="7661259717474717992">Permet que els llocs web desin i llegeixin les dades de les galetes</translation>
 <translation id="7661451191293163002">No s'ha pogut obtenir un certificat de registre.</translation>
@@ -7960,6 +7969,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9200339982498053969"><ph name="ORIGIN" /> podrà editar els fitxers de la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Cerca <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">S'esborraran totes les dades sense connexió</translation>
+<translation id="9201117361710210082">S'ha vist anteriorment</translation>
 <translation id="9201220332032049474">Opcions de bloqueig de pantalla</translation>
 <translation id="9201842707396338580">S'ha produït un error. Contacta amb el propietari o l'administrador del dispositiu. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">Creació de &amp;perfils activada</translation>

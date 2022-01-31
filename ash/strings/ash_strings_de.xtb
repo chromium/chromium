@@ -79,6 +79,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menü minimieren</translation>
 <translation id="1364382257761975320">Zum Entsperren des Chromebooks Fingerabdruck verwenden</translation>
+<translation id="1364618750746929654">Transkript konnte nicht erstellt werden</translation>
 <translation id="1383597849754832576">Sprachdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1391102559483454063">An</translation>
@@ -676,6 +677,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="54609108002486618">Verwaltet</translation>
 <translation id="5465662442746197494">Brauchen Sie Hilfe?</translation>
 <translation id="547979256943495781">Ablage rechts</translation>
+<translation id="5491186829646618080">Firmwareupdates verfügbar</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ihr Administrator hat alle eSIM-Profile entfernt. Weitere Informationen erhalten Sie von Ihrem Administrator.</translation>
 <translation id="5523434445161341166">"<ph name="FEATURE_NAME" />" wird verbunden.</translation>
@@ -1173,6 +1175,7 @@ Neuinstallation</translation>
 <translation id="8876661425082386199">Verbindung prüfen</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>
+<translation id="888982883502837004">Für Ihr Gerät sind Firmwareupdates verfügbar. Zum Prüfen und Herunterladen klicken Sie hier.</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ wird endgültig gelöscht</translation>
 <translation id="890616557918890486">Quelle ändern</translation>
 <translation id="8909138438987180327">Akkustand: <ph name="PERCENTAGE" />.</translation>

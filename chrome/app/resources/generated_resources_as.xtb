@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">বৰ্তমানৰ চিহ্ন</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> সদাই অনুবাদ কৰক</translation>
 <translation id="1108600514891325577">&amp;বন্ধ কৰক</translation>
+<translation id="1108938384783527433">ইতিহাস ছিংক কৰক</translation>
 <translation id="1110155001042129815">অপেক্ষা কৰক</translation>
 <translation id="1110965959145884739">এইটো ডিভাইচত কোনটো ভাষা ইনষ্টল কৰিব লাগে সেয়া বাছনি কৰক। ডিস্কৰ ঠাই ৰাহি কৰিবলৈ ভাষাৰ ফাইলসমূহ ব্যৱহাৰকাৰীৰ মাজত শ্বেয়াৰ কৰা হয়। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">প্ৰ’জেক্টৰ</translation>
@@ -509,6 +510,7 @@
 <translation id="1521442365706402292">প্ৰমাণপত্ৰ পৰিচালনা কৰক</translation>
 <translation id="1521774566618522728">আজি সক্ৰিয় হৈছে</translation>
 <translation id="152234381334907219">কেতিয়াও ছেভ কৰা নহয়</translation>
+<translation id="1523279371236772909">যোৱা মাহত চোৱা হৈছে</translation>
 <translation id="1523978563989812243">পাঠৰ পৰা কথনৰ ইঞ্জিনসমূহ</translation>
 <translation id="1524430321211440688">কীব'ৰ্ড</translation>
 <translation id="1524563461097350801">নালাগে, ধন্যবাদ</translation>
@@ -1172,6 +1174,7 @@
 <translation id="2159488579268505102">ইউএছবি-চি</translation>
 <translation id="216169395504480358">ৱাই-ফাই যোগ কৰক…</translation>
 <translation id="2162155940152307086">আপুনি ছিংকৰ ছেটিংসমূহৰ পৰা আঁতৰি যোৱাৰ লগে লগে ছিংক আৰম্ভ হ‘ব</translation>
+<translation id="2162926944953615670">কোনো ই-ছিমৰ প্ৰ’ফাইল উপলব্ধ নহয়</translation>
 <translation id="2163470535490402084">আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰিবলৈ ইণ্টাৰনেট সংযোগ কৰক।</translation>
 <translation id="2163937499206714165">গাঢ় ম’ড ম’ডটো অন কৰক</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> আৰু অন্য ১ টা ছুইচ</translation>
@@ -1249,6 +1252,7 @@
 <translation id="2232876851878324699">ফাইলটোত আমদানি নকৰা এখন প্ৰমাণপত্ৰ আছে:</translation>
 <translation id="2233502537820838181">&amp;অধিক তথ্য</translation>
 <translation id="223356358902285214">ৱেব আৰু এপৰ কাৰ্যকলাপ</translation>
+<translation id="2234827758954819389">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনা</translation>
 <translation id="2234876718134438132">ছিংক আৰু Google সেৱা</translation>
 <translation id="2235344399760031203">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="2238379619048995541">সঘনতাৰ স্থিতি ডেটা</translation>
@@ -1866,6 +1870,7 @@
 <translation id="2828650939514476812">ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযোগ কৰক</translation>
 <translation id="2831430281393059038">ডিভাইচটো সমৰ্থিত</translation>
 <translation id="2832124733806557606">ডিভাইচটোত ছাইন ইন কৰিবলৈ অথবা সেইটো আনলক কৰিবলৈ আপোনাৰ শিশুৱে এটা পিন ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="2835177225987815960">যিকোনো আবণ্টন কৰা ছুইচ আৰু স্বয়ংক্ৰিয় স্কেনৰ গতিৰ অগ্ৰাধিকাৰসমূহকে ধৰি আপোনাৰ বৰ্তমানৰ স্কেনিঙৰ ছেটআপটো ৰিছেট কৰা হ’ব।</translation>
 <translation id="2835547721736623118">কণ্ঠস্বৰ চিনাক্তকৰণ সেৱা</translation>
 <translation id="2836269494620652131">ক্ৰেশ্ব</translation>
 <translation id="2836635946302913370">আপোনাৰ প্ৰশাসকে এই ব্যৱহাৰকাৰীৰ নামটোৰে ছাইন ইন কৰাটো অক্ষম কৰি থৈছে।</translation>
@@ -3103,6 +3108,7 @@
 <translation id="4095264805865317199">চেলুলাৰ সক্ৰিয়কৰণৰ UI খোলক</translation>
 <translation id="4095507791297118304">মুখ্য ডিছপ্লে’</translation>
 <translation id="4096508467498758490">বিকাশকর্তাৰ ম’ড এক্সটেনশ্বন অক্ষম কৰক</translation>
+<translation id="4096797685681362305">যোৱা সপ্তাহত চোৱা হৈছে</translation>
 <translation id="4097406557126260163">এপ্‌ আৰু এক্সটেনশ্বনসমূহ</translation>
 <translation id="409742781329613461">Chromeৰ বাবে পৰামৰ্শ</translation>
 <translation id="4097560579602855702">Googleত সন্ধান কৰক</translation>
@@ -3659,6 +3665,7 @@
 <translation id="4699172675775169585">কেশ্ব প্ৰতিচ্ছবি আৰু ফাইল</translation>
 <translation id="4699357559218762027">(স্বয়ংক্ৰিয়ভাৱে-লঞ্চ হোৱা)</translation>
 <translation id="4701025263201366865">অভিভাৱকৰ ছাইন-ইন</translation>
+<translation id="4701335814944566468">কালি চোৱা হৈছে</translation>
 <translation id="4708794300267213770">সুপ্ত ম’ডৰ সক্ৰিয় হ’লে লক স্ক্ৰীণ দেখুৱাওক</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> বাহিৰ হওক</translation>
 <translation id="4711638718396952945">ছেটিংসমূহ পুনঃস্থাপন কৰক</translation>
@@ -3726,6 +3733,7 @@
 <translation id="479536056609751218">ৱেবপৃষ্ঠা, কেৱল HTML</translation>
 <translation id="4796142525425001238">সদায় পুনঃস্থাপন কৰক</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ব্লুটুথ লগ<ph name="END_LINK" /> (Google অভ্যন্তৰীণ) সংলগ্ন কৰক</translation>
+<translation id="479863874072008121">ডিভাইচসমূহ পৰিচালনা কৰক</translation>
 <translation id="4800839971935185386">নাম আৰু চিহ্নৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="4801448226354548035">একাউণ্ট লুকুৱাওক</translation>
 <translation id="4801512016965057443">ম'বাইল ডেটা ৰ'মিঙৰ অনুমতি দিয়ক</translation>
@@ -6449,6 +6457,7 @@
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7659154729610375585">যি হ’লেও ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হ’বনে?</translation>
 <translation id="7659297516559011665">কেৱল এই ডিভাইচটোত থকা পাছৱৰ্ডসমূহ</translation>
+<translation id="7659336857671800422">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনা লাভ কৰক</translation>
 <translation id="7659584679870740384">আপোনাৰ এই ডিভাইচটো ব্যৱহাৰ কৰাৰ কৰ্তৃত্ব নাই। ছাইন ইন কৰাৰ অনুমতিৰ বাবে অনুগ্ৰহ কৰি প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="7661259717474717992">ছাইটসমূহক কুকি ডেটা ছেভ কৰিবলৈ আৰু পঢ়িবলৈ অনুমতি দিয়ক</translation>
 <translation id="7661451191293163002">পঞ্জীয়নৰ প্ৰমাণপত্ৰ আহৰণ কৰিব পৰা নগ'ল।</translation>
@@ -7970,6 +7979,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" />এ <ph name="FOLDERNAME" />ত ফাইল সম্পাদনা কৰিব পাৰিব</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="9201023452444595544">সকলো অফলাইন ডেটা মচা হ’ব</translation>
+<translation id="9201117361710210082">পূৰ্বে চোৱা হৈছে</translation>
 <translation id="9201220332032049474">স্ক্ৰীণ লক সম্পৰ্কীয় বিকল্প</translation>
 <translation id="9201842707396338580">কিবা ভুল হ’ল। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচৰ গৰাকী অথবা প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="9203398526606335860">&amp;প্ৰ’ফিলিং সক্ষম কৰা হৈছে</translation>

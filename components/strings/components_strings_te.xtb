@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">వివరాలను చూడండి</translation>
 <translation id="1030706264415084469">డేటాను మీ పరికరంలో అధిక మొత్తంలో, శాశ్వతంగా నిల్వ చేయాలని <ph name="URL" /> అనుకుంటోంది</translation>
 <translation id="1032854598605920125">సవ్యదిశలో తిప్పు</translation>
+<translation id="1033329911862281889">అజ్ఞాత మోడ్‌ను ఉపయోగిస్తున్నంత మాత్రాన మీరు ఆన్‌లైన్‌లో ఇతరులకు కనపడరని అర్ధం కాదు:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />వారు ఉపయోగించే సైట్‌లు, సర్వీస్‌లు వారి సందర్శనలను చూడగలవు<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />యాజమాన్య సంస్థలు లేదా పాఠశాలలు బ్రౌజింగ్ యాక్టివిటీని ట్రాక్ చేయగలవు<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్‌లు వెబ్ ట్రాఫిక్‌ను మానిటర్ చేయగలవు<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1036982837258183574">ఫుల్-స్క్రీన్‌‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="1038106730571050514">సూచనలను చూపు</translation>
 <translation id="1038842779957582377">తెలియని పేరు</translation>
 <translation id="1041998700806130099">జాబ్ షీట్ మెసేజ్‌</translation>
 <translation id="1048785276086539861">మీరు అదనపు గమనికలను ఎడిట్ చేసినప్పుడు, ఈ డాక్యుమెంట్ సింగిల్ పేజీ వీక్షణకు తిరిగి వస్తుంది</translation>
-<translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
 <translation id="1050038467049342496">ఇతర యాప్‌లను మూసివేయండి</translation>
 <translation id="1055184225775184556">&amp;జోడించడాన్ని రద్దు చేయి</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
@@ -40,7 +45,7 @@
 <translation id="1096545575934602868">ఈ ఫీల్డ్‌లో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ నమోదులు ఉండకూడదు. తదుపరి అన్ని నమోదులు విస్మరించబడతాయి.</translation>
 <translation id="1100782917270858593">'మీ సెర్చ్‌ను కొనసాగించండి' బటన్, మీ సెర్చ్‌ను కొనసాగించడానికి Enterను నొక్కండి, మీ Chrome హిస్టరీలో సందర్భోచితమైన యాక్టివిటీని చూడండి</translation>
 <translation id="1101672080107056897">అమలులో లోపం</translation>
-<translation id="1103523840287552314">ఎల్లప్పుడూ <ph name="LANGUAGE" />ను అనువదించు</translation>
+<translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> కోసం అనుమతిని ఎంచుకోండి</translation>
 <translation id="1113869188872983271">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయి</translation>
 <translation id="1123753900084781868">ప్రస్తుతానికి లైవ్ క్యాప్షన్ అందుబాటులో లేదు</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">విధాన కాష్ సరిపోయింది</translation>
 <translation id="1130564665089811311">'పేజీని అనువదించు' బటన్, ఈ పేజీని Google Translateతో అనువదించేందుకు 'Enter' నొక్కండి</translation>
 <translation id="1131264053432022307">మీరు కాపీ చేసిన చిత్రం</translation>
+<translation id="1142846828089312304">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="1150979032973867961">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రాన్ని మీ కంప్యూటర్ ఆపరేటింగ్ సిస్టమ్ విశ్వసించలేదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="1151972924205500581">పాస్‌వర్డ్ అవసరం</translation>
 <translation id="1156303062776767266">మీరు స్థానిక లేదా షేర్ చేసిన ఫైల్‌ను చూస్తున్నారు</translation>
@@ -183,6 +189,12 @@
 <translation id="1483493594462132177">పంపు</translation>
 <translation id="1484290072879560759">షిప్పింగ్ అడ్రస్‌ను ఎంచుకోండి</translation>
 <translation id="1492194039220927094">విధానాలను పుష్ చేయి:</translation>
+<translation id="149293076951187737">మీరు అన్ని Chrome అజ్ఞాత ట్యాబ్‌లను మూసివేసినప్పుడు, ఆ ట్యాబ్‌లలోని మీ యాక్టివిటీ ఈ పరికరం నుండి తీసివేయబడుతుంది:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />బ్రౌజింగ్ యాక్టివిటీ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />సెర్చ్ హిస్టరీ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">తిరిగి ట్యాబ్‌కు వెళ్లు</translation>
 <translation id="1501859676467574491">మీ Google ఖాతా నుండి కార్డ్‌లను చూపండి</translation>
 <translation id="1507202001669085618">&lt;p&gt;ఆన్‌లైన్‌కు వెళ్లడం కంటే ముందు సైన్ ఇన్ చేయాల్సిన అవసరం ఉన్న Wi-Fi పోర్టల్‌ను మీరు ఉపయోగిస్తున్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
@@ -287,6 +299,7 @@
     హెడర్ తప్పుగా సెట్ చేయబడింది, దాని వలన <ph name="SITE" />కు మీరు పంపిన రిక్వెస్ట్‌ను
     బ్రౌజర్ పూర్తి చేయలేకపోతోంది. భద్రతను, సైట్ ఇతర ప్రాపర్టీ‌లను
     కాన్ఫిగర్ చేయడానికి సైట్ ఆపరేటర్‌లు ఆరిజిన్ పాలసీలను ఉపయోగించవచ్చు.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromiumలో అజ్ఞాత మోడ్ గురించి మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">మీ తెరవబడిన ట్యాబ్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -528,6 +541,12 @@
 <translation id="2597378329261239068">ఈ డాక్యుమెంట్‌ అనుమతి పదంచే రక్షించబడింది. దయచేసి అనుమతి పదాన్ని నమోదు చేయండి.</translation>
 <translation id="2609632851001447353">వ్యత్యాసాలు</translation>
 <translation id="2610561535971892504">కాపీ చేయడానికి క్లిక్ చేయండి</translation>
+<translation id="2617988307566202237">Chrome ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />మీ బ్రౌజింగ్ హిస్టరీ
+            <ph name="LIST_ITEM" />కుక్కీలు, సైట్ డేటా
+            <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (ఎన్వలప్)</translation>
 <translation id="2623663032199728144">మీ స్క్రీన్‌లకు సంబంధించిన సమాచారాన్ని ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="2625385379895617796">మీ గడియారం సమయం భవిష్యత్తులో ఉంది</translation>
@@ -738,12 +757,6 @@
 <translation id="3345782426586609320">కళ్లు</translation>
 <translation id="3355823806454867987">ప్రాక్సీ సెట్టింగ్‌లను మార్చు...</translation>
 <translation id="3360103848165129075">చెల్లింపు హ్యాండ్లర్ షీట్</translation>
-<translation id="3361596688432910856">Chrome ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />మీ బ్రౌజింగ్ చరిత్ర
-          <ph name="LIST_ITEM" />కుక్కీలు మరియు సైట్ డేటా
-          <ph name="LIST_ITEM" />ఫారమ్‌లలో నమోదు చేసిన సమాచారం
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">ఈ విధానం ఒక విస్మరించబడిన <ph name="OLD_POLICY" /> విధానం నుండి ఆటోమేటిక్‌గా కాపీ చేయబడింది. దానికి బదులుగా, మీరు ఈ విధానాన్ని ఉపయోగించాలి.</translation>
 <translation id="3364869320075768271">'<ph name="URL" />', మీ వర్చువల్ రియాలిటీ పరికరాన్ని, డేటాను వినియోగించడానికి అనుమతి కోరుతోంది</translation>
 <translation id="3366477098757335611">కార్డ్‌లను చూడండి</translation>
@@ -1162,6 +1175,7 @@
 <translation id="4628948037717959914">ఫోటో</translation>
 <translation id="4631649115723685955">క్యాష్‌బ్యాక్ లింక్ చేయబడింది</translation>
 <translation id="4636930964841734540">సమాచారం</translation>
+<translation id="4638670630777875591">Chromiumలో అజ్ఞాత మోడ్</translation>
 <translation id="464342062220857295">శోధన ఫీచర్‌లు</translation>
 <translation id="4644670975240021822">వ్యతిరేక క్రమంలో ఉన్న ఫేస్ డౌన్</translation>
 <translation id="4646534391647090355">ఇప్పుడు నన్ను అక్కడకు తీసుకు వెళ్లు</translation>
@@ -1224,12 +1238,6 @@
 <translation id="4819347708020428563">అదనపు గమనికలను ఆటోమేటిక్ వీక్షణలో ఎడిట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="4825507807291741242">శక్తివంతమైనది</translation>
-<translation id="4827402517081186284">అజ్ఞాత మోడ్‌ను ఉపయోగిస్తున్నంత మాత్రాన మీరు ఆన్‌లైన్‌లో ఇతరులకు కనపడరని అర్ధం కాదు:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />మీరు సైట్‌లకు వెళ్లినప్పుడు వాటికి తెలుస్తుంది<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />యాజమాన్య సంస్థలు లేదా పాఠశాలలు బ్రౌజింగ్ యాక్టివిటీని ట్రాక్ చేయగలవు<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్‌లు వెబ్ ట్రాఫిక్‌ను మానిటర్ చేయగలవు<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">క్లౌడ్ యూజర్ పాలసీ ద్వారా మాత్రమే పాలసీని సెట్ చేయాలి కాబట్టి ఇది విస్మరించబడింది.</translation>
 <translation id="483241715238664915">హెచ్చరికలను ఆన్ చేయండి</translation>
 <translation id="4838327282952368871">స్వప్నం లాంటిది</translation>
@@ -1263,6 +1271,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, వెతకడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="4930153903256238152">ఎక్కువ సామర్థ్యం</translation>
+<translation id="4940163644868678279">Chromeలో అజ్ఞాత మోడ్</translation>
 <translation id="4943872375798546930">ఫలితాలు ఏవీ లేవు</translation>
 <translation id="4950898438188848926">ట్యాబ్ మార్పు బటన్, తెరిచియున్న ట్యాబ్ <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />కు మారడానికి ఎంటర్ నొక్కండి</translation>
 <translation id="495170559598752135">చర్యలు</translation>
@@ -1623,6 +1632,7 @@
 <translation id="6120179357481664955">మీ UPI ID గుర్తుందా?</translation>
 <translation id="6124432979022149706">Chrome Enterprise కనెక్టర్‌లు</translation>
 <translation id="6127379762771434464">అంశాన్ని తీసివేసారు</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeలో అజ్ఞాత మోడ్ గురించి మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">ఏవైనా కేబుల్‌లను తనిఖీ చేయండి మరియు మీరు ఉపయోగించే ఏవైనా రూటర్‌లు, మోడెమ్‌లు
         లేదా ఇతర నెట్‌వర్క్ పరికరాలను రీబూట్ చేయండి.</translation>
 <translation id="614940544461990577">ఇలా చేసి ప్రయత్నించండి:</translation>
@@ -1799,7 +1809,6 @@
 <translation id="6757797048963528358">మీ పరికరం నిద్రావస్థకు వెళ్లింది.</translation>
 <translation id="6767985426384634228">అడ్రస్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="6768213884286397650">హగకి (పోస్ట్‌కార్డ్)</translation>
-<translation id="6774185088257932239">అజ్ఞాత మోడ్ గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">నీలి ఊదా రంగు</translation>
 <translation id="6786747875388722282">ఎక్స్‌టెన్షన్‌లు</translation>
@@ -1899,6 +1908,12 @@
 <translation id="7111012039238467737">(చెల్లుతుంది)</translation>
 <translation id="7118618213916969306">క్లిప్‌బోర్డ్ URL, <ph name="SHORT_URL" /> కోసం వెతకండి</translation>
 <translation id="7119414471315195487">ఇతర ట్యాబ్‌లు లేదా ప్రోగ్రామ్‌లను మూసివేయండి</translation>
+<translation id="7129355289156517987">మీరు అన్ని Chromium అజ్ఞాత ట్యాబ్‌లను మూసివేసినప్పుడు, ఆ ట్యాబ్‌లలోని మీ యాక్టివిటీ ఈ పరికరం నుండి తీసివేయబడుతుంది:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />బ్రౌజింగ్ యాక్టివిటీ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />సెర్చ్ హిస్టరీ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ఈ అడ్రస్‌కు రవాణా చేయడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="7132939140423847331">మీ అడ్మిన్ ఈ డేటాను కాపీ చేయకుండా నిషేధించారు.</translation>
 <translation id="7135130955892390533">స్థితిని చూపు</translation>
@@ -2017,6 +2032,12 @@
 <translation id="7485870689360869515">డేటా కనుగొనబడలేదు.</translation>
 <translation id="7495528107193238112">ఈ కంటెంట్ బ్లాక్ అయింది. ఈ సమస్య పరిష్కారం కోసం సైట్ ఓనర్‌ను సంప్రదించండి.</translation>
 <translation id="7497998058912824456">'డాక్‌ను క్రియేట్ చేయండి' బటన్, కొత్త Google డాక్‌ను త్వరగా క్రియేట్ చేయడానికి Enterను నొక్కండి</translation>
+<translation id="7506488012654002225">Chromium ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />మీ బ్రౌజింగ్ హిస్టరీ
+            <ph name="LIST_ITEM" />కుక్కీలు, సైట్ డేటా
+            <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">అందించబడిన విధాన పరికర id ఖాళీగా ఉంది లేదా ప్రస్తుత పరికర idకి సరిపోలలేదు</translation>
 <translation id="7508870219247277067">వెన్నపండు ఆకుపచ్చ</translation>
 <translation id="7511955381719512146">మీరు ఉపయోగిస్తున్న Wi-Fiకు మీరు<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ను సందర్శించడం అవసరం.</translation>
@@ -2054,7 +2075,7 @@
 <translation id="7592362899630581445">సర్వర్ యొక్క ప్రమాణపత్రం పేరు పరిమితులను ఉల్లంఘిస్తోంది.</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> కంటే తక్కువ</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ప్రస్తుతం ఈ రిక్వెస్ట్‌ను నిర్వహించలేదు.</translation>
-<translation id="7600965453749440009"><ph name="LANGUAGE" />ను ఎప్పటికీ అనువదించవద్దు</translation>
+<translation id="7600965453749440009"><ph name="LANGUAGE" />‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7610193165460212391">విలువ <ph name="VALUE" /> పరిధి వెలుపల ఉంది.</translation>
 <translation id="7613889955535752492">గడువు ముగింపు: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూసి, మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
@@ -2236,6 +2257,7 @@
 <translation id="8202370299023114387">వైరుధ్యం</translation>
 <translation id="8206978196348664717">Prc4 (ఎన్వలప్)</translation>
 <translation id="8211406090763984747">కనెక్షన్ సురక్షితంగా ఉంది</translation>
+<translation id="8217240300496046857">వెబ్ అంతటా మిమ్మల్ని ట్రాక్ చేయడానికి ఉపయోగించే కుక్కీలను సైట్‌లు ఉపయోగించడం సాధ్యం కాదు. కొన్ని సైట్‌లలోని ఫీచర్‌లు సరిగ్గా పని చేయకపోవచ్చు.</translation>
 <translation id="8218327578424803826">కేటాయించిన స్థానం:</translation>
 <translation id="8220146938470311105">C7/C6 (ఎన్వలప్)</translation>
 <translation id="8225771182978767009">ఈ కంప్యూటర్‌ను సెటప్ చేసిన వ్యక్తి ఈ సైట్‌ను బ్లాక్ చేయడం ఎంచుకున్నారు.</translation>
@@ -2279,12 +2301,6 @@
 <translation id="8317207217658302555">ARCoreను అప్‌డేట్ చేయాలా?</translation>
 <translation id="831997045666694187">సాయంత్రం</translation>
 <translation id="8321476692217554900">నోటిఫికేషన్‌లు</translation>
-<translation id="8328484624016508118">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేసిన తర్వాత, Chrome వీటిని క్లియర్ చేస్తుంది:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ఈ పరికరం నుండి మీ బ్రౌజింగ్ యాక్టివిటీ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ఈ పరికరం నుండి మీ సెర్చ్ హిస్టరీ<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేయబడిన సమాచారం<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />కి యాక్సెస్ నిరాకరించబడింది</translation>
 <translation id="833262891116910667">హైలైట్ చేస్తుంది</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />లో ఉన్న పేజీలు అనువదించబడవు</translation>

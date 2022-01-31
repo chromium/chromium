@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1351937230027495976">כיווץ התפריט</translation>
 <translation id="1364382257761975320">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע שלך</translation>
+<translation id="1364618750746929654">לא ניתן ליצור תמליל</translation>
 <translation id="1383597849754832576">אין אפשרות להוריד קובצי דיבור. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1391102559483454063">מופעלת</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">מנוהל</translation>
 <translation id="5465662442746197494">יש צורך בעזרה?</translation>
 <translation id="547979256943495781">המדף בצד ימין</translation>
+<translation id="5491186829646618080">יש עדכוני קושחה זמינים</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">‏מנהל המערכת שלך הסיר את כל פרופילי ה-eSIM. עליך לפנות למנהל המערכת לקבלת מידע נוסף.</translation>
 <translation id="5523434445161341166">התכונה <ph name="FEATURE_NAME" /> מתחברת.</translation>
@@ -1179,6 +1181,7 @@
 <translation id="8876661425082386199">מומלץ לבדוק את החיבור</translation>
 <translation id="8877788021141246043">הגדרת תזכורת</translation>
 <translation id="8878886163241303700">מסך מתרחב</translation>
+<translation id="888982883502837004">יש עדכוני קושחה למכשיר שלך. צריך ללחוץ כדי לבדוק ולעדכן.</translation>
 <translation id="8896630965521842259">התבנית <ph name="DESK_TEMPLATE_NAME" /> תימחק באופן סופי</translation>
 <translation id="890616557918890486">שינוי המקור</translation>
 <translation id="8909138438987180327">שיעור הטעינה של הסוללה הוא <ph name="PERCENTAGE" /> אחוזים.</translation>

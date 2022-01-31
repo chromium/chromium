@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Details anzeigen</translation>
 <translation id="1030706264415084469"><ph name="URL" /> möchte dauerhaft umfangreiche Daten auf Ihrem Gerät speichern</translation>
 <translation id="1032854598605920125">Im Uhrzeigersinn drehen</translation>
+<translation id="1033329911862281889">Der Inkognitomodus macht Sie online nicht unsichtbar:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Websites und Dienste, die darauf verwendet werden, erkennen Besuche<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Arbeitgeber und Bildungseinrichtungen können Browseraktivitäten erfassen<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internetanbieter behalten ggf. den Web-Traffic im Blick<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1036982837258183574">Zum Beenden des Vollbildmodus |<ph name="ACCELERATOR" />| drücken</translation>
 <translation id="1038106730571050514">Vorschläge anzeigen</translation>
 <translation id="1038842779957582377">Unbekannter Name</translation>
 <translation id="1041998700806130099">Auftragsblattnachricht</translation>
 <translation id="1048785276086539861">Wenn Sie Anmerkungen bearbeiten, wechselt das Dokument zur Einzelseitenansicht zurück</translation>
-<translation id="1049743911850919806">Inkognito</translation>
 <translation id="1050038467049342496">Andere Apps schließen</translation>
 <translation id="1055184225775184556">&amp;Hinzufügen rückgängig machen</translation>
 <translation id="1056898198331236512">Warnung</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Richtlinien-Cache einwandfrei</translation>
 <translation id="1130564665089811311">Schaltfläche "Seite übersetzen" – drücken Sie die Eingabetaste, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
 <translation id="1131264053432022307">Von Ihnen kopiertes Bild</translation>
+<translation id="1142846828089312304">Cookies von Drittanbietern im Inkognitomodus blockieren</translation>
 <translation id="1150979032973867961">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem Ihres Computers als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
 <translation id="1151972924205500581">Passwort erforderlich</translation>
 <translation id="1156303062776767266">Sie sehen sich eine lokale oder freigegebene Datei an</translation>
@@ -181,6 +187,12 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1483493594462132177">Senden</translation>
 <translation id="1484290072879560759">Versandadresse auswählen</translation>
 <translation id="1492194039220927094">Richtlinien per Push-Benachrichtigung:</translation>
+<translation id="149293076951187737">Wenn Sie alle Inkognitotabs in Chrome schließen, werden Ihre Aktivitäten auf diesen Tabs von diesem Gerät gelöscht:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Browseraktivitäten<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Suchverlauf<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />In Formulare eingegebene Informationen<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Zurück zum Tab</translation>
 <translation id="1501859676467574491">Zeigen Sie Karten von Ihrem Google-Konto</translation>
 <translation id="1507202001669085618">&lt;p&gt;Diese Fehlermeldung wird angezeigt, wenn Sie ein WLAN-Portal verwenden, bei dem eine Anmeldung erforderlich ist, bevor Sie online gehen können.&lt;/p&gt;
@@ -281,6 +293,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1763864636252898013">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem Ihres Geräts als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Versuchen Sie, die Windows-Netzwerkdiagnose auszuführen.<ph name="END_LINK" /></translation>
 <translation id="1772163372082567643">Der Server <ph name="ORIGIN" />, zu dem Sie gehen, verlangt in einer Header-Datei, dass auf alle an ihn gerichteten Anfragen eine Ursprungsrichtlinie angewendet wird. Die Header-Datei ist allerdings fehlerhaft. Daher kann der Browser Ihre Anforderung für <ph name="SITE" /> nicht ausführen. Ursprungsrichtlinien können von Websitebetreibern verwendet werden, um die Sicherheit und andere Eigenschaften einer Website zu konfigurieren.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Weitere Informationen zum Inkognitomodus in Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Hier werden Ihre offenen Tabs angezeigt</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -522,6 +535,12 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2597378329261239068">Dieses Dokument ist passwortgeschützt. Geben Sie ein Passwort ein.</translation>
 <translation id="2609632851001447353">Varianten</translation>
 <translation id="2610561535971892504">Zum Kopieren klicken</translation>
+<translation id="2617988307566202237">Chrome speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Ihren Browserverlauf
+            <ph name="LIST_ITEM" />Cookies und Websitedaten
+            <ph name="LIST_ITEM" />In Formulare eingegebene Informationen
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Umschlag)</translation>
 <translation id="2623663032199728144">Darf nachfragen, wenn sie Informationen über meine Bildschirme verwenden möchte</translation>
 <translation id="2625385379895617796">Ihre Uhr geht vor</translation>
@@ -732,12 +751,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3345782426586609320">Augen</translation>
 <translation id="3355823806454867987">Proxy-Einstellungen ändern...</translation>
 <translation id="3360103848165129075">Dokument zur Zahlungsabwicklung</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />speichert die folgenden Daten nicht<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Ihren Browserverlauf
-          <ph name="LIST_ITEM" />Cookies und Websitedaten
-          <ph name="LIST_ITEM" />In Formulare eingegebene Daten
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Diese Richtlinie wurde automatisch aus der verworfenen Richtlinie "<ph name="OLD_POLICY" />" kopiert. Verwenden Sie stattdessen diese Richtlinie.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> möchte Ihr Virtual-Reality-Gerät und Ihre Virtual-Reality-Daten verwenden</translation>
 <translation id="3366477098757335611">Karten ansehen</translation>
@@ -1149,6 +1162,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Cashback zugeordnet</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4638670630777875591">Inkognitomodus in Chromium</translation>
 <translation id="464342062220857295">Suchfunktionen</translation>
 <translation id="4644670975240021822">Umgekehrte Reihenfolge mit der Vorderseite nach unten</translation>
 <translation id="4646534391647090355">Jetzt aufrufen</translation>
@@ -1211,12 +1225,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4819347708020428563">Anmerkungen in der Standardansicht bearbeiten?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Google-Tabelle zu erstellen</translation>
 <translation id="4825507807291741242">Beeindruckend</translation>
-<translation id="4827402517081186284">Der Inkognitomodus macht Sie online nicht unsichtbar:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Websites erkennen, dass Sie sie besuchen<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Arbeitgeber und Bildungseinrichtungen können Browseraktivitäten erfassen<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internetanbieter behalten ggf. den Web-Traffic im Blick<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ignoriert, weil die Richtlinie nur als Cloud-Nutzer-Richtlinie konfiguriert werden kann.</translation>
 <translation id="483241715238664915">Warnmeldungen aktivieren</translation>
 <translation id="4838327282952368871">Träumerisch</translation>
 <translation id="4840250757394056958">Chrome-Verlauf anzeigen</translation>
@@ -1249,6 +1258,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, drücken Sie zum Suchen die Tabulatortaste und dann die Eingabetaste</translation>
 <translation id="4930153903256238152">Hohe Kapazität</translation>
+<translation id="4940163644868678279">Inkognitomodus in Chrome</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
 <translation id="4950898438188848926">Schaltfläche zum Wechseln von Tabs, Eingabetaste drücken, um zum offenen Tab "<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />" zu wechseln</translation>
 <translation id="495170559598752135">Aktionen</translation>
@@ -1609,6 +1619,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6120179357481664955">Soll Ihre UPI-ID gespeichert werden?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Eintrag entfernt</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Weitere Informationen zum Inkognitomodus in Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Überprüfen Sie alle Kabel und starten Sie alle verwendeten Router, Modems und
     anderen Netzwerkgeräte neu.</translation>
 <translation id="614940544461990577">Versuchen Sie Folgendes:</translation>
@@ -1785,7 +1796,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6757797048963528358">Ihr Gerät ist im Ruhemodus.</translation>
 <translation id="6767985426384634228">Adresse aktualisieren?</translation>
 <translation id="6768213884286397650">Hagaki (Postkarte)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zum Inkognitomodus</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
@@ -1885,6 +1895,12 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7111012039238467737">(Gültig)</translation>
 <translation id="7118618213916969306">Nach URL aus Zwischenablage suchen, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Andere Tabs oder Programme schließen</translation>
+<translation id="7129355289156517987">Wenn Sie alle Inkognitotabs in Chromium schließen, werden Ihre Aktivitäten auf folgenden Tabs von diesem Gerät gelöscht:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Browseraktivitäten<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Suchverlauf<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />In Formulare eingegebene Informationen<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Der Versand an diese Adresse ist nicht möglich. Bitte wählen Sie eine andere Adresse aus.</translation>
 <translation id="7132939140423847331">Ihr Administrator hat das Kopieren dieser Daten untersagt.</translation>
 <translation id="7135130955892390533">Status anzeigen</translation>
@@ -2003,6 +2019,12 @@ Weitere Details:
 <translation id="7485870689360869515">Keine Daten gefunden</translation>
 <translation id="7495528107193238112">Dieser Inhalt ist blockiert. Setzen Sie sich mit dem Websiteinhaber in Verbindung, um das Problem zu beheben.</translation>
 <translation id="7497998058912824456">Schaltfläche „Dokument erstellen“ – drücken Sie die Eingabetaste, um schnell ein neues Google-Dokument zu erstellen</translation>
+<translation id="7506488012654002225">Chromium speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Ihren Browserverlauf
+            <ph name="LIST_ITEM" />Cookies und Websitedaten
+            <ph name="LIST_ITEM" />In Formulare eingegebene Informationen
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Zurückgegebene Geräte-ID der Richtlinie ist leer oder entspricht nicht der aktuellen Geräte-ID</translation>
 <translation id="7508870219247277067">Avocadogrün</translation>
 <translation id="7511955381719512146">Unter Umständen erfordert das verwendete WLAN, dass Sie <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufen.</translation>
@@ -2222,6 +2244,7 @@ Weitere Details:
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (Umschlag)</translation>
 <translation id="8211406090763984747">Verbindung ist sicher</translation>
+<translation id="8217240300496046857">Websites können keine Cookies verwenden, die Ihre Browserdaten über mehrere Websites hinweg erfassen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>
 <translation id="8220146938470311105">C7/C6 (Umschlag)</translation>
 <translation id="8225771182978767009">Die Person, die diesen Computer eingerichtet hat, hat diese Website gesperrt.</translation>
@@ -2265,12 +2288,6 @@ Weitere Details:
 <translation id="8317207217658302555">ARCore aktualisieren?</translation>
 <translation id="831997045666694187">Abends</translation>
 <translation id="8321476692217554900">Benachrichtigungen</translation>
-<translation id="8328484624016508118">Nach dem Schließen aller Inkognitotabs löscht Chrome Folgendes:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Ihre Browseraktivitäten auf diesem Gerät<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Ihren Suchverlauf auf diesem Gerät<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Formulareingaben<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Der Zugriff auf <ph name="HOST_NAME" /> wurde verweigert</translation>
 <translation id="833262891116910667">Markieren</translation>
 <translation id="8339163506404995330">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt</translation>

@@ -419,6 +419,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Los patrones que coinciden con el origen tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en la página http://www.chromium.org/administrators/url-blocklist-filter-format
 
       Sin embargo, los patrones de esta política que coinciden con el origen no pueden contener los elementos /path ni @query. Se ignorarán todos los patrones que contengan un elemento /path o @query.</translation>
+<translation id="1508588104835702000">Inhabilitar los informes en la nube a través de un navegador gestionado</translation>
 <translation id="1509377996969000672">Si se establece esta política, proporciona opciones de configuración para impresoras de empresa vinculadas a dispositivos. Su formato es el mismo que el del diccionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo id o guid obligatorio por impresora para incluirla en una lista de permitidas o bloqueadas. El tamaño del archivo no debe exceder los 5 MB y debe estar en formato JSON. El tamaño de un archivo que contiene unas 21.000 impresoras es de 5 MB. El hash criptográfico ayuda a comprobar la integridad de la descarga. Si se cambia la URL o el hash, el archivo se descarga, se almacena en caché y se vuelve a descargar. <ph name="PRODUCT_OS_NAME" /> descarga el archivo con las configuraciones de las impresoras y estas están disponibles según lo especificado en las políticas <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Esta política tiene las siguientes características:
@@ -757,6 +758,43 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1861206724856734193">Configura una lista de reglas de prevención de filtración de datos.</translation>
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma</translation>
 <translation id="1865417998205858223">Permisos clave</translation>
+<translation id="1867025364110179456">Si se establece esta política, especifica una lista de aplicaciones web que se instalarán de forma silenciosa y sin intervención del usuario, y qué usuarios no podrán desinstalarlas ni desactivarlas.
+
+      Cada elemento de la lista de esta política es un objeto con un miembro obligatorio:
+      <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
+
+      y 5 miembros opcionales:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (define cómo se abre la aplicación web; la opción predeterminada es que lo haga en una pestaña nueva)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (selecciona True si quieres crear accesos directos del escritorio
+      de <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
+      te permite cambiar el nombre de la aplicación si no es una
+      aplicación web progresiva (PWA), o el nombre de la aplicación instalada
+      temporalmente si es una PWA, pero se requiere autenticación para que la
+      instalación pueda completarse. Si se proporcionan tanto
+      <ph name="CUSTOM_NAME_LABEL" /> como
+      <ph name="FALLBACK_APP_NAME_LABEL" />,
+      esta última se ignorará.
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      A partir de la versión 99
+      de <ph name="PRODUCT_NAME" />, podrás cambiar permanentemente el nombre de todas las aplicaciones web y PWAs. De momento, solo es compatible con
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      A partir de la versión 99
+      de <ph name="PRODUCT_NAME" />, podrás cambiar el icono de las aplicaciones instaladas. Los
+      iconos deben ser cuadrados, con un tamaño máximo de 1 MB y deben tener uno de los
+      siguientes formatos: .jpeg, .png, .gif, .webp o .ico. El valor de hash debe ser el hash SHA256
+      del archivo de icono. De momento, solo es compatible con
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="186719019195685253">Acción a emprender si se alcanza el retraso de inactividad mientras el dispositivo está conectado a la red eléctrica</translation>
 <translation id="1881649377321404593">
       Esta política se eliminó en M80. No es necesaria porque ahora
@@ -947,6 +985,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="208566302163036794">Bloquear las funciones inhabilitadas</translation>
 <translation id="208623333578980446">Permitir los wake locks de pantalla para la gestión de energía</translation>
 <translation id="2086944573376916479">Una cuenta gestionada debe ser primaria y no puede tener cuentas secundarias</translation>
+<translation id="2089541797660774692">Habilitar los informes en la nube a través de un navegador gestionado</translation>
 <translation id="2090304907729569435">No permitir que se muestren los resultados más recientes de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> en un panel lateral del navegador.</translation>
 <translation id="2090939118981888335">Si se habilita esta política, se permitirá usar el proxy de compresión de datos. Si se inhabilita esta política, no se permitirá usar este proxy.
 
@@ -1550,6 +1589,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se inhabilita la política, los dispositivos registrados no informarán sobre la lista de usuarios.</translation>
 <translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
+<translation id="2731299561202635374">Esta política controla la comprobación de URLs en tiempo real para identificar URL no seguras.
+
+      Si esta política no se establece o se le asigna el valor Disabled, se aplicarán las comprobaciones de Navegación segura de usuarios particulares. Estas comprobaciones podrán incluir consultas en tiempo real en función del valor del ajuste "Mejorar las búsquedas y la navegación" y del valor de la política UrlKeyedAnonymizedDataCollectionEnabled.
+
+      Si se habilita esta política, las URLs se enviarán para que se analicen en tiempo real de acuerdo con los Términos del Servicio de Chrome Enterprise. Chrome enviará las URLs a Google Cloud o a terceros de tu elección para que se analicen en tiempo real. Se desactivará la versión para usuarios particulares de la búsqueda en tiempo real de Navegación segura.
+
+      Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="2731627323327011390">Inhabilitar el uso de certificados de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
 <translation id="2742843273354638707">Permite ocultar la aplicación Chrome Web Store y el enlace de la parte inferior de la página en la página Nueva pestaña y en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" />.
 
@@ -1711,6 +1757,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si no se asigna ningún valor a esta política o se le asigna una URL no válida, <ph name="PRODUCT_NAME" /> no usará la política como fuente de reglas para cambiar de navegador.
 
       Nota: Esta política dirige a un archivo XML con el mismo formato que la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" />. Se cargarán las reglas de un archivo XML, sin compartirlas con <ph name="IE_PRODUCT_NAME" />. Puedes consultar más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> en https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
+<translation id="2940653651012844682">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que se van a aplicar al conector <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se produce una actividad relacionada con la seguridad en Chrome. Esto incluye resultados negativos del análisis de Enterprise Connectors, reutilización de contraseñas, acceso a páginas no seguras y otras acciones del usuario relacionadas con la seguridad.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de informes corresponde la configuración y el campo <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> identifica qué eventos están habilitados para este proveedor.
+
+      Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="2947111924404450461">Esta política configura las impresoras de empresa. El formato es el mismo que el del diccionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo adicional <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> obligatorio por impresora para incluirla en una lista de permitidas o bloqueadas. El tamaño del archivo no debe exceder los 5 MB y debe estar en formato JSON. El tamaño de un archivo que contiene unas 21.000 impresoras es de 5 MB. El hash criptográfico ayuda a comprobar la integridad de la descarga. Si se cambia la URL o el hash, el archivo se descarga, se almacena en caché y se vuelve a descargar. <ph name="PRODUCT_OS_NAME" /> descarga el archivo con las configuraciones de las impresoras y estas están disponibles según lo especificado en las políticas <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> y <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Esta política no afecta a la capacidad de los usuarios de configurar impresoras en dispositivos concretos. La política está pensada para ser complementaria a la configuración de impresoras de los usuarios.
@@ -1900,6 +1951,23 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3144173889708944482">Si se utiliza <ph name="PRINTERS_BLOCKLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />, esta especifica qué impresoras no pueden utilizar los usuarios. Los usuarios podrán utilizar todas las impresoras, excepto aquellas con los ID indicados en la política. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">No permitir las voces de conversión de texto a voz de red mejorada al usar Enunciar selección</translation>
 <translation id="3152425128389603870">Habilitar el escritorio unificado y activarlo de forma predeterminada</translation>
+<translation id="3157857846231611820">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que van a aplicarse al conector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se adjunta un archivo a Chrome.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para su análisis cuando se adjunte a una página específica y qué etiquetas se van a incluir en la solicitud de análisis del archivo. Se incluirá en la solicitud de análisis una etiqueta correspondiente a un patrón "enable" si la URL de la página coincide con un patrón asociado a esta etiqueta, siempre y cuando no se encuentre una misma etiqueta que coincida con la URL de la página con el patrón "disable". El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponde la configuración.
+
+      Si se establece el valor 1 en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, Chrome esperará hasta obtener una respuesta del servicio de análisis antes de permitir a la página acceder al archivo. Si se establece cualquier otro valor entero, Chrome permitirá a la página acceder de forma inmediata al archivo.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla si Chrome bloquea o permite archivos protegidos con contraseña.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si Chrome bloquea o permite archivos demasiado grandes para ser analizados.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> determina para qué etiquetas deberá solicitar el conector al usuario que proporcione una justificación para evitar un análisis que provoque una advertencia que se pueda evitar. Si no se define este campo, se considera que no es necesaria una justificación.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar un mensaje que se mostrará al usuario cuando aparezca una advertencia después de que un análisis detecte alguna infracción de políticas. El campo del mensaje contiene el texto que se va a mostrar al usuario y debe tener una longitud máxima de 200 caracteres. El campo learn_more_url contiene una URL proporcionada por el administrador a la que podrá acceder el usuario para consultar más información del cliente sobre las razones por las que se ha bloqueado la acción. El campo del idioma es opcional y contiene el idioma del mensaje. Si el campo del idioma está vacío o tiene el valor predeterminado, indica que el mensaje se usará cuando no exista un mensaje en el idioma del usuario. El campo de etiqueta especifica para qué tipo de análisis se muestra el mensaje. La lista custom_messages puede tener cero o más entradas, y cada entrada debe tener un mensaje que no esté vacío y campos de etiquetas.
+
+      Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="3159375329008977062">El usuario tiene permiso para exportar e importar contenedores Crostini a través de la UI</translation>
 <translation id="3164531087779621747">Imprimir en modo PostScript</translation>
 <translation id="3165468162820163252">Esta política controla si la parte WebUI de la pantalla de inicio de sesión se cargará siempre al iniciar o solo antes de que se muestre. Esta política se aplica a la pantalla de inicio de sesión.
@@ -2026,6 +2094,16 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Esta política no impide a los administradores de empresa conectarse a dispositivos Chrome OS gestionados.
 
           Esta política no tendrá efecto si se habilita, se deja vacía o no se establece.</translation>
+<translation id="3246744067327836077">
+      Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" /> de un perfil gestionado concreto.
+
+      Si no se establece esta política o se inhabilita, no se recogerá ni se subirá ningún dato.
+      Si se habilita esta política, se recogerán y subirán los datos a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      El informe contiene datos sobre el estado y el uso del perfil, incluidos, entre otros, la versión del SO, la versión del navegador, las extensiones instaladas y las políticas aplicadas.
+
+      Esta política solo se puede establecer como política de usuarios basada en la nube.
+      </translation>
 <translation id="3251500716404598358">Configura las políticas para cambiar de navegador.
 
       Los sitios web configurados se abrirán automáticamente en un navegador diferente a <ph name="PRODUCT_NAME" />.</translation>
@@ -3969,6 +4047,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se le asigna un valor a la política, los GPO almacenados en caché podrán reutilizarse durante un periodo máximo de 25 horas.
 
       Nota: La caché se borra al reiniciar y al cerrar sesión.</translation>
+<translation id="5717973246079053225">Inhabilitar los informes en la nube de un perfil gestionado</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5728154254076636808">Habilitar la creación de copias de roaming de los datos del perfil de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Contraseña de Kerberos. El marcador de posición <ph name="PASSWORD_PLACEHOLDER" /> se reemplazará por la contraseña de inicio de sesión.</translation>
@@ -4302,6 +4381,21 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6135552820180449830">Crosh (compatible desde la versión 99)</translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
+<translation id="6140635914906859015">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que se van a aplicar al conector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se introducen datos en Chrome desde el portapapeles o arrastrando y soltando contenido web.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar datos para su análisis cuando se introduzcan en una página específica y qué etiquetas se van a incluir en la solicitud de análisis de esos datos. Se incluirá en la solicitud de análisis una etiqueta correspondiente a un patrón "enable" si la URL de la página coincide con un patrón asociado a esta etiqueta, siempre y cuando no se encuentre una misma etiqueta que coincida con la URL de la página con el patrón "disable". El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponde la configuración.
+
+      Si se establece el valor 1 en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, Chrome esperará hasta obtener una respuesta del servicio de análisis antes de permitir a la página acceder a los datos. Si se establece cualquier otro valor entero, Chrome permitirá a la página acceder de forma inmediata a los datos.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica el tamaño mínimo (en bytes) que los datos introducidos en Chrome deben igualar o superar para analizarse. El valor predeterminado es 100 bytes si el campo se deja sin establecer.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> determina para qué etiquetas deberá solicitar el conector al usuario que proporcione una justificación para evitar un análisis que provoque una advertencia que se pueda evitar. Si no se define este campo, se considera que no es necesaria una justificación.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar un mensaje que se mostrará al usuario cuando aparezca una advertencia después de que un análisis detecte alguna infracción de políticas. El campo del mensaje contiene el texto que se va a mostrar al usuario y debe tener una longitud máxima de 200 caracteres. El campo learn_more_url contiene una URL proporcionada por el administrador a la que podrá acceder el usuario para consultar más información del cliente sobre las razones por las que se ha bloqueado la acción. El campo del idioma es opcional y contiene el idioma del mensaje. Si el campo del idioma está vacío o tiene el valor predeterminado, indica que el mensaje se usará cuando no exista un mensaje en el idioma del usuario. El campo de etiqueta especifica para qué tipo de análisis se muestra el mensaje. La lista custom_messages puede tener cero o más entradas, y cada entrada debe tener un mensaje que no esté vacío y campos de etiquetas.
+
+      Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="6141402445226505817">Utilizar siempre la detección de zona horaria común</translation>
 <translation id="6142501278956229253">PPP al rasterizar PDF para imprimir</translation>
 <translation id="6144046700495610112">Si se asigna el valor "Habilitada" a esta política, se importarán los datos de formularios para la función Autocompletar del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importarán estos datos al ejecutarse por primera vez.
@@ -4709,6 +4803,21 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="663685822663765995">Restringir el modo de impresión en color</translation>
+<translation id="6637946190026453735">Lista con los ajustes de los servicios de <ph name="PRODUCT_NAME" /> Enterprise Connectors que se van a aplicar al conector <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se imprimen una página o un archivo desde <ph name="PRODUCT_NAME" />.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar datos para su análisis cuando se active la impresión en una página concreta y qué etiquetas se van a incluir en la solicitud de análisis. El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponde la configuración.
+
+      Si se establece el valor 1 en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, <ph name="PRODUCT_NAME" /> esperará a obtener una respuesta del servicio de análisis antes de permitir que se muestre el cuadro de diálogo de vista previa de impresión de la página impresa. Si se establece cualquier otro valor entero, <ph name="PRODUCT_NAME" /> mostrará el cuadro de diálogo de vista previa de impresión inmediatamente.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si <ph name="PRODUCT_NAME" /> bloquea o permite archivos o páginas demasiado grandes para ser analizados.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> determina para qué etiquetas deberá solicitar el conector al usuario que proporcione una justificación para evitar un análisis que provoque una advertencia que se pueda evitar. Si no se define este campo, se considera que no es necesaria una justificación.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar un mensaje que se mostrará al usuario cuando aparezca una advertencia después de que un análisis detecte alguna infracción de políticas. El administrador puede configurar mensajes de 200 caracteres como máximo.
+
+      Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="6640355849038068978">Si se habilita esta opción, los usuarios podrán abrir la aplicación Eche (por ejemplo, haciendo clic en una notificación de la función Mi teléfono).
 
       Si se inhabilita esta opción, los usuarios no podrán abrir la aplicación Eche.
@@ -4741,6 +4850,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se inhabilita la política o no se establece, los comandos de impresión muestran la pantalla de vista previa de impresión</translation>
 <translation id="6658245400435704251">Especifica el número de segundos hasta los que un dispositivo puede retrasar aleatoriamente la descarga de una actualización desde el momento en el que esta se envío al servidor por primera vez. El dispositivo puede dedicar una parte de este tiempo al propio proceso de actualización y el resto a realizar las comprobaciones necesarias. En cualquier caso, el límite superior de la dispersión es un periodo de tiempo constante, para que el dispositivo no se quede bloqueado mientras descarga una actualización.</translation>
 <translation id="6659537776197644458">No activar flujos de autenticación para la sincronización de contraseñas</translation>
+<translation id="6661178198729301029">Habilitar los informes en la nube de un perfil gestionado</translation>
 <translation id="6665670272107384733">Definir la frecuencia con la que el usuario debe introducir la contraseña para utilizar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para mostrar la contraseña en las pantallas de inicio de sesión y bloqueo</translation>
 <translation id="6669700740683748046">Esta función permite mostrar la URL completa en la barra de direcciones.
@@ -5490,6 +5600,23 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7477149584454865826">Indicador booleano que especifica si se debe usar IPP Everywhere para configurar la impresora.</translation>
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
 <translation id="7477239290070847560">Destinos de protocolo zeroconf (mDNS y DNS‑SD)</translation>
+<translation id="7480826412572122600">Lista con los ajustes de los servicios de conectores de Chrome Enterprise que se van a aplicar al conector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se descarga un archivo en Chrome.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para su análisis cuando se descargue de una página específica y qué etiquetas se van a incluir en la solicitud de análisis del archivo. Se incluirá en la solicitud de análisis una etiqueta correspondiente a un patrón "enable" si la URL de la página coincide con un patrón asociado a esta etiqueta, siempre y cuando no se encuentre una misma etiqueta que coincida con la URL de la página con el patrón "disable". El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponde la configuración.
+
+      Si se establece el valor 1 en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, Chrome esperará hasta obtener una respuesta del servicio de análisis antes de permitir al usuario acceder al archivo descargado. Si se establece cualquier otro valor entero, Chrome permitirá al usuario acceder de forma inmediata al archivo.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla si Chrome bloquea o permite archivos protegidos con contraseña.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si Chrome bloquea o permite archivos demasiado grandes para ser analizados.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> determina para qué etiquetas deberá solicitar el conector al usuario que proporcione una justificación para evitar un análisis que provoque una advertencia que se pueda evitar. Si no se define este campo, se considera que no es necesaria una justificación.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar un mensaje que se mostrará al usuario cuando aparezca una advertencia después de que un análisis detecte alguna infracción de políticas. El campo del mensaje contiene el texto que se va a mostrar al usuario y debe tener una longitud máxima de 200 caracteres. El campo learn_more_url contiene una URL proporcionada por el administrador a la que podrá acceder el usuario para consultar más información del cliente sobre las razones por las que se ha bloqueado la acción. El campo del idioma es opcional y contiene el idioma del mensaje. Si el campo del idioma está vacío o tiene el valor predeterminado, indica que el mensaje se usará cuando no exista un mensaje en el idioma del usuario. El campo de etiqueta especifica para qué tipo de análisis se muestra el mensaje. La lista custom_messages puede tener cero o más entradas, y cada entrada debe tener un mensaje que no esté vacío y campos de etiquetas.
+
+      Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Preguntar cuando coincidan varios certificados en la pantalla de inicio de sesión</translation>
 <translation id="7491720878670299691">Intervalo en el que se consultan los datos de red y se comprueba si hay eventos. El valor mínimo permitido es 1 minuto.
@@ -6746,6 +6873,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8917070657147922192">Permite que los usuarios gestionen los certificados AC instalados.</translation>
 <translation id="8919100556245407184">Número de días tras la publicación del vencimiento de las actualizaciones automáticas después de los cuales se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="8919369436496201075">Permite que el dispositivo reciba actualizaciones de LTS</translation>
+<translation id="8921669704201370845">Habilitar los informes en la nube de <ph name="PRODUCT_NAME" /> de un perfil gestionado</translation>
 <translation id="8930064580550462145">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
 
       Si se le asigna el valor -2 a esta política, coincidirá con el valor del límite de tiempo de inicio de sesión sin conexión de la pantalla de inicio de sesión dado por <ph name="POLICY" />.
@@ -7000,6 +7128,13 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="9220314833408124365">Usar una política de referente predeterminada de no-referrer-when-downgrade</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas desde el navegador predeterminado en la primera ejecución</translation>
+<translation id="926104720905645793">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" />, que sube información sobre el funcionamiento del navegador a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Si no se establece esta política o se inhabilita, no se recogerá ni se subirá ningún dato.
+      Si se habilita esta política, se recogerán y subirán los datos a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Para <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+      Para <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="927384371566552478">Si se habilita la política o no se establece, la interfaz de usuario de exportación e importación estará disponible para los usuarios. Si se inhabilita la política, la interfaz de usuario de exportación e importación no estará disponible para los usuarios.</translation>
 <translation id="927444535723396977">Si se asigna el valor 1 a esta política, los sitios web podrán ejecutar JavaScript. Si se le asigna el valor 2, se denegará el uso de JavaScript.
 

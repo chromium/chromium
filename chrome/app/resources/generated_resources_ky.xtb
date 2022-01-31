@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Учурдагы сүрөтчө</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
 <translation id="1108600514891325577">&amp;Токтотуу</translation>
+<translation id="1108938384783527433">Таржымалды шайкештирүү</translation>
 <translation id="1110155001042129815">Күтө туруңуз</translation>
 <translation id="1110965959145884739">Бул түзмөккө кайсы тилди орнотуу керек экенин тандаңыз. Дисктеги орунду үнөмдөө үчүн тил файлдары бир нече колдонуучунун ортосунда бөлүшүлөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -2124,7 +2125,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3088052000289932193">Сайт MIDI'ни колдонууда</translation>
 <translation id="3088128611727407543">Колдонмонун профили даярдалууда...</translation>
 <translation id="3088325635286126843">&amp;Аталышын өзгөртүү…</translation>
-<translation id="3089137131053189723">Издөө таржымалы тазаланды</translation>
+<translation id="3089137131053189723">Изделген нерселер өчүрүлдү</translation>
 <translation id="3090589793601454425">Өткөрүлбөсүн</translation>
 <translation id="3090819949319990166">Тышкы crx файлы <ph name="TEMP_CRX_FILE" /> ичине көчүрүлбөй жатат.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жупташты</translation>

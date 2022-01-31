@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">ବିବରଣୀ ଦେଖନ୍ତୁ</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ସ୍ଥାୟୀରୂପେ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଅଧିକ ଡାଟା ଷ୍ଟୋର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="1032854598605920125">ବାମରୁ ଡାହାଣକୁ ଘୂରାନ୍ତୁ</translation>
+<translation id="1033329911862281889">ଇନକଗ୍ନିଟୋ ମୋଡ ଆପଣଙ୍କୁ ଅନଲାଇନରେ ଅଦୃଶ୍ୟ କରେ ନାହିଁ:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ କଲେ, ସାଇଟଗୁଡ଼ିକ ଏବଂ ସେଗୁଡ଼ିକ ବ୍ୟବହାର କରୁଥିବା ସେବାଗୁଡ଼ିକ ଏହା ବିଷୟରେ ଜାଣିପାରନ୍ତି<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ନିଯୁକ୍ତିଦାତା କିମ୍ବା ସ୍କୁଲଗୁଡ଼ିକ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଟ୍ରାକ କରିପାରିବେ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ଇଣ୍ଟରନେଟ ସେବା ପ୍ରଦାନକାରୀଗୁଡ଼ିକ ୱେବ ଟ୍ରାଫିକକୁ ମନିଟର କରିପାରନ୍ତି<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1036982837258183574">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରିବାକୁ |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ</translation>
 <translation id="1038106730571050514">ପରାମର୍ଶଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1038842779957582377">ଅଜ୍ଞାତ ନାମ</translation>
 <translation id="1041998700806130099">ଜବ୍ ସିଟ୍ ମେସେଜ୍</translation>
 <translation id="1048785276086539861">ଯେତେବେଳେ ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କରନ୍ତି, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସିଙ୍ଗଲ୍ ପେଜ୍ ଭ୍ୟୁକୁ ଫେରି ଆସିବ</translation>
-<translation id="1049743911850919806">ଇନ୍‌କଗ୍ନିଟୋ</translation>
 <translation id="1050038467049342496">ଅନ୍ୟ ଆପ୍‍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1055184225775184556">ଯୋଗ କରାଯାଇଥିବା କାର୍ଯ୍ୟକୁ &amp;ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="1056898198331236512">ଚେତାବନୀ</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">ନୀତି କେଚ୍‍ ଠିକ୍ ଅଛି</translation>
 <translation id="1130564665089811311">"ପୃଷ୍ଠା ଅନୁବାଦ କରନ୍ତୁ" ବଟନ୍, Google Translate ବ୍ୟବହାର କରି ଏହି ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="1131264053432022307">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
+<translation id="1142846828089312304">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="1150979032973867961">ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ର ଅପରେଟିଂ ସିଷ୍ଟମ୍ ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ହୁଏତ ଏକ ଭୁଲ କନଫିଗ୍‌ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇଥାଇପାରେ।</translation>
 <translation id="1151972924205500581">ପାସ୍‌ୱର୍ଡ ଆବଶ୍ୟକ</translation>
 <translation id="1156303062776767266">ଆପଣ ଏକ ସ୍ଥାନୀୟ କିମ୍ବା ସେୟାର୍‍ ହୋ‍ଇଥିବା ଫାଇଲ୍‌ ଦେଖୁଛନ୍ତି</translation>
@@ -181,6 +187,12 @@
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
 <translation id="1484290072879560759">ସିପିଂ ଠିକଣା ବାଛନ୍ତୁ</translation>
 <translation id="1492194039220927094">ନୀତିଗୁଡ଼ିକ ପୁସ୍‌ କରନ୍ତୁ:</translation>
+<translation id="149293076951187737">ଆପଣ ଯେତେବେଳେ ଇନକଗ୍ନିଟୋ ମୋଡରେ ଥିବା ସମସ୍ତ Chrome ଟାବକୁ ବନ୍ଦ କରନ୍ତି, ସେହି ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଏହି ଡିଭାଇସରୁ ଖାଲି ହୋଇଯାଏ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ସନ୍ଧାନ ଇତିହାସ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ଟାବ୍‌କୁ ଫେରନ୍ତୁ</translation>
 <translation id="1501859676467574491">ଆପଣଙ୍କର Google Accountରୁ କାର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="1507202001669085618">&lt;p&gt;ଆପଣ ଯଦି କୌଣସି ୱାଇ-ଫାଇ ପୋର୍ଟାଲ୍ ବ୍ୟବହାର କରୁଛନ୍ତି, ଯେଉଁଠି ଆପଣଙ୍କୁ ଅନ୍‌ଲାଇନ୍ ହେବା ପାଇଁ ସାଇନ୍ ଇନ୍ କରିବାକୁ ହୁଏ, ତାହେଲେ ଆପଣ ଏହି ତ୍ରୁଟିକୁ ଦେଖିବେ।&lt;/p&gt;
@@ -281,6 +293,7 @@
 <translation id="1763864636252898013">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ ଏହା <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ଆପଣଙ୍କର ଅପରେଟିଂ ସିଷ୍ଟମ୍ ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ୱିଣ୍ଡୋ ନେଟ୍‌ୱର୍କ ଡାଇଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲେଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="1772163372082567643">ଆପଣ ଯାଉଥିବା <ph name="ORIGIN" /> ସର୍ଭର୍, ଗୋଟିଏ ହେଡର୍ ସେଟ୍ କରିଛି, ଯାହା ଏହି ସର୍ଭରକୁ କରାଯାଇଥିବା ସମସ୍ତ ଅନୁରୋଧରେ ଏକ ମୂଳ ନୀତି ଲାଗୁ କରାଯିବା ଆବଶ୍ୟକ କରୁଛି। କିନ୍ତୁ ହେଡରଟି ତ୍ରୁଟିପୂର୍ଣ୍ଣ ଅଟେ, ଯାହା <ph name="SITE" /> ପାଇଁ ଆପଣଙ୍କ ଅନୁରୋଧ ପୂରଣ କରିବାରୁ ବ୍ରାଉଜରକୁ ପ୍ରତିରୋଧ କରେ। କୌଣସି ସାଇଟର ସୁରକ୍ଷା ଏବଂ ଅନ୍ୟ ପ୍ରୋପର୍ଟିଗୁଡ଼ିକ କନଫିଗର୍ କରିବାକୁ ସାଇଟ୍ ଅପରେଟରମାନଙ୍କ ଦ୍ୱାରା ମୂଳ ନୀତିଗୁଡ଼ିକ ବ୍ୟବହାର କରାଯାଇପାରିବ।</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">ଆପଣଙ୍କର ଖୋଲାଥିବା ଟାବ୍‌ଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -522,6 +535,12 @@
 <translation id="2597378329261239068">ଏହି ଡକ୍ୟୁମେଣ୍ଟ ପାସ୍‌ୱାର୍ଡ ଦ୍ୱାରା ସୁରକ୍ଷିତ ଅଟେ।  ଦୟାକରି ଗୋଟିଏ ପାସ୍‌ୱାର୍ଡ ଲେଖନ୍ତୁ।</translation>
 <translation id="2609632851001447353">ବିବିଧତା</translation>
 <translation id="2610561535971892504">କପି କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
+<translation id="2617988307566202237">Chrome ନିମ୍ନୋକ୍ତ ସୂଚନାକୁ <ph name="BEGIN_EMPHASIS" />ସେଭ କରିବ ନାହିଁ<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିହାସ
+          <ph name="LIST_ITEM" />କୁକୀ ଏବଂ ସାଇଟ ଡାଟା
+          <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (ଏନଭଲପ୍)</translation>
 <translation id="2623663032199728144">ଆପଣଙ୍କ ସ୍କ୍ରିନ ବିଷୟରେ ଥିବା ସୂଚନାକୁ ବ୍ୟବହାର କରିବା ନିମନ୍ତେ ସାଇଟ ପଚାରିପାରେ</translation>
 <translation id="2625385379895617796">ଆପଣଙ୍କର ଘଣ୍ଟା ଆଗୁଆ ଅଛି</translation>
@@ -730,12 +749,6 @@
 <translation id="3345782426586609320">ଆଖି</translation>
 <translation id="3355823806454867987">ପ୍ରୋକ୍ସି ସେଟିଂସ୍‌ ପରିବର୍ତ୍ତନ କରନ୍ତୁ...</translation>
 <translation id="3360103848165129075">ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ସିଟ୍</translation>
-<translation id="3361596688432910856">Chrome ନିମ୍ନୋକ୍ତ ସୂଚନାକୁ <ph name="BEGIN_EMPHASIS" />ସେଭ୍ କରିବ ନାହିଁ<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି
-	     <ph name="LIST_ITEM" />କୁକୀ ଓ ସାଇଟ୍ ଡାଟା
-          <ph name="LIST_ITEM" />ଫର୍ମରେ ଲେଖାଯାଇଥିବା ସୂଚନା
-	     <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">ଏହି ନୀତି ସ୍ୱଚାଳିତ ଭାବେ ଅଗ୍ରାହ୍ୟ କରାଯାଇଥିବା <ph name="OLD_POLICY" /> ନୀତିରୁ କପି ହୋଇଥିଲା। ଏହା ପରିବର୍ତ୍ତେ ଆପଣ ଏହି ନୀତି ବ୍ୟବହାର କରିବା ଉଚିତ।</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ଆପଣଙ୍କର ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟାକୁ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3366477098757335611">କାର୍ଡଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
@@ -1148,6 +1161,7 @@
 <translation id="4628948037717959914">ଫଟୋ</translation>
 <translation id="4631649115723685955">କ୍ୟାସବ୍ୟାକ୍ ଲିଙ୍କ୍ କରାଯାଇଛି</translation>
 <translation id="4636930964841734540">ସୂଚନା</translation>
+<translation id="4638670630777875591">Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡ</translation>
 <translation id="464342062220857295">ଫିଚର୍‍ଗୁଡ଼ିକର ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="4644670975240021822">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="4646534391647090355">ମୋତେ ବର୍ତ୍ତମାନ ସେଠାକୁ ନେଇଚାଲନ୍ତୁ</translation>
@@ -1210,12 +1224,7 @@
 <translation id="4819347708020428563">ଡିଫଲ୍ଟ ଭ୍ୟୁରେ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବେ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଶୀଘ୍ର ଏକ ନୂଆ Google Sheet ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="4825507807291741242">ଶକ୍ତିଶାଳୀ</translation>
-<translation id="4827402517081186284">ଇନକଗ୍ନିଟୋ ଆପଣଙ୍କୁ ଅନଲାଇନରେ ଅଦୃଶ୍ୟ କରେ ନାହିଁ:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />ଆପଣ ସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ୍ କଲେ ସେଗୁଡ଼ିକ ଏହା ବିଷୟରେ ଜାଣିପାରେ<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />ନିଯୁକ୍ତିଦାତା କିମ୍ବା ସ୍କୁଲ୍, ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଟ୍ରାକ୍ କରିପାରିବେ<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />ଇଣ୍ଟରନେଟ୍ ସେବା ପ୍ରଦାନକାରୀଗୁଡ଼ିକ ୱେବ୍ ଟ୍ରାଫିକକୁ ମନିଟର୍ କରିପାରନ୍ତି<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">କେବଳ କ୍ଲାଉଡ ଉପଯୋଗକର୍ତ୍ତା ନୀତି ଦ୍ୱାରା ଏହି ନୀତିକୁ ସେଟ କରାଯାଇପାରୁଥିବା ଯୋଗୁଁ ଏହାକୁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="483241715238664915">ଚେତାବନୀ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4838327282952368871">ଡ୍ରିମି</translation>
 <translation id="4840250757394056958">ଆପଣଙ୍କ Chrome ଇତିହାସ ଦେଖନ୍ତୁ</translation>
@@ -1248,6 +1257,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ସନ୍ଧାନ କରିବାକୁ Tab ତାପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="4930153903256238152">ଅଧିକ କ୍ଷମତାସମ୍ପନ୍ନ</translation>
+<translation id="4940163644868678279">Chromeରେ ଇନକଗ୍ନିଟୋ</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4950898438188848926">ଟାବ୍ ସ୍ୱିଚ୍ କରିବା ବଟନ୍, ଖୋଲାଥିବା ଟାବ୍‍କୁ ଯିବା ପାଇଁ Enter ଦବାନ୍ତୁ, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
@@ -1608,6 +1618,7 @@
 <translation id="6120179357481664955">ଆପଣଙ୍କର UPI ID ମନେ ଅଛି?</translation>
 <translation id="6124432979022149706">Chrome ଏଣ୍ଟରପ୍ରାଇଜ୍ କନେକ୍ଟରଗୁଡ଼ିକ</translation>
 <translation id="6127379762771434464">ଆଇଟମକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeରେ ଇନକଗ୍ନିଟୋ ମୋଡ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">ଯେକୌଣସି କେବଲ୍‌ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଉଥିବା ଯେକୌଣସି ରାଉଟର୍‌, ମୋଡେମ୍‍ କିମ୍ବା ଅନ୍ୟ ରାଉଟର୍‌ ରିବୁଟ୍‌ କରନ୍ତୁ।</translation>
 <translation id="614940544461990577">ଏହାକୁ ପରଖନ୍ତୁ:</translation>
 <translation id="6150036310511284407">ବାମ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
@@ -1783,7 +1794,6 @@
 <translation id="6757797048963528358">ଆପଣଙ୍କର ଡିଭାଇସ୍ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="6767985426384634228">ଠିକଣା ଅପଡ଼େଟ୍ କରିବେ?</translation>
 <translation id="6768213884286397650">ହାଗାକି (ପୋଷ୍ଟକାର୍ଡ)</translation>
-<translation id="6774185088257932239">ଇନକଗ୍ନିଟୋ ବିଷୟରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ବାଇଗଣୀ</translation>
 <translation id="6786747875388722282">ପରିବର୍ଦ୍ଧନ</translation>
@@ -1883,6 +1893,12 @@
 <translation id="7111012039238467737">(ବୈଧ)</translation>
 <translation id="7118618213916969306">କ୍ଲିପ୍‌ବୋର୍ଡ URL, <ph name="SHORT_URL" />କୁ ଖୋଜନ୍ତୁ</translation>
 <translation id="7119414471315195487">ଅନ୍ୟ ଟାବ୍ କିମ୍ୱା କର୍ଯ୍ୟକ୍ରମଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7129355289156517987">ଆପଣ ଯେତେବେଳେ ଇନକଗ୍ନିଟୋ ମୋଡରେ ଥିବା ସମସ୍ତ Chromium ଟାବକୁ ବନ୍ଦ କରନ୍ତି, ସେହି ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଏହି ଡିଭାଇସରୁ ଖାଲି ହୋଇଯାଏ:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ସନ୍ଧାନ ଇତିହାସ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ଏହି ଠିକଣାକୁ ପଠାଯାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="7132939140423847331">ଆପଣଙ୍କ ଆଡମିନ ଏହି ଡାଟାକୁ କପି କରିବାରୁ ପ୍ରତିବନ୍ଧିତ କରିଛନ୍ତି।</translation>
 <translation id="7135130955892390533">ସ୍ଥିତି ଦେଖାନ୍ତୁ</translation>
@@ -2001,6 +2017,12 @@
 <translation id="7485870689360869515">କୌଣସି ଡାଟା ମିଳିଲା ନାହିଁ।</translation>
 <translation id="7495528107193238112">ଏହି ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରାଯାଇଛି। ସମସ୍ୟାର ସମାଧାନ କରିବାକୁ ସାଇଟର ମାଲିକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="7497998058912824456">"ଡକ୍ୟୁମେଣ୍ଟ ତିଆରି କରନ୍ତୁ" ବଟନ୍, ଶୀଘ୍ର ଏକ ନୂଆ Google Doc ତିଆରି କରିବାକୁ Enter ଦବାନ୍ତୁ</translation>
+<translation id="7506488012654002225">Chromium ନିମ୍ନୋକ୍ତ ସୂଚନାକୁ <ph name="BEGIN_EMPHASIS" />ସେଭ କରିବ ନାହିଁ<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିହାସ
+          <ph name="LIST_ITEM" />କୁକୀ ଏବଂ ସାଇଟ ଡାଟା
+          <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ଫେରସ୍ତ ନୀତି ଡିଭାଇସ୍ id ଖାଲି ଅଛି କିମ୍ବା ବର୍ତ୍ତମାନର ଡିଭାଇସ୍ id ସହିତ ମେଳ ହେଉନାହିଁ</translation>
 <translation id="7508870219247277067">ଆଭୋକାଡୋ ସବୁଜ</translation>
 <translation id="7511955381719512146">ଆପଣ ବ୍ୟବହାର କରୁଥିବା ୱାଇ-ଫାଇ ପାଇଁ ଆପଣଙ୍କୁ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.କୁ ଯିବାକୁ ପଡିପାରେ।</translation>
@@ -2220,6 +2242,7 @@
 <translation id="8202370299023114387">ବିବାଦ</translation>
 <translation id="8206978196348664717">Prc4 (ଏନଭଲପ୍)</translation>
 <translation id="8211406090763984747">ସଂଯୋଗ ସୁରକ୍ଷିତ ଅଛି</translation>
+<translation id="8217240300496046857">ସାଇଟଗୁଡ଼ିକ ସମଗ୍ର ୱେବରେ ଆପଣଙ୍କୁ ଟ୍ରାକ କରୁଥିବା କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ। କିଛି ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ ଠିକ୍ ଭାବେ କାମ କରିନପାରେ।</translation>
 <translation id="8218327578424803826">ହସ୍ତାନ୍ତରିତ ଲୋକେସନ୍:</translation>
 <translation id="8220146938470311105">C7/C6 (ଏନଭଲପ୍)</translation>
 <translation id="8225771182978767009">ଯେଉଁ ବ୍ୟକ୍ତି ଏହି କମ୍ପ୍ୟୁଟର୍‌ ସେଟ୍‍ ଅପ୍‍ କରିଛନ୍ତି, ସିଏ ଏହି ସାଇଟ୍‍ ଅବରୋଧ କରିବାକୁ ବାଛିଛନ୍ତି।</translation>
@@ -2263,12 +2286,6 @@
 <translation id="8317207217658302555">ARCore ଅପଡେଟ କରିବେ କି?</translation>
 <translation id="831997045666694187">ସନ୍ଧ୍ୟା</translation>
 <translation id="8321476692217554900">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ</translation>
-<translation id="8328484624016508118">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବା ପରେ, Chrome ଏସବୁ ଖାଲି କରେ:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପ<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କ ସନ୍ଧାନ ଇତିହାସ<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />କୁ ଆକ୍ସେସ୍‌ ପ୍ରତ୍ୟାଖ୍ୟାନ କରାଯାଇଥିଲା</translation>
 <translation id="833262891116910667">ହାଇଲାଇଟ୍</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ରେ ପୃଷ୍ଠାଗୁଡ଼ିକ ଅନୁବାଦ କରାଯିବନାହିଁ</translation>

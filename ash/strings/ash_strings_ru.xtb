@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1364382257761975320">Чтобы разблокировать Chromebook, используйте отпечаток пальца.</translation>
+<translation id="1364618750746929654">Не удается создать расшифровку.</translation>
 <translation id="1383597849754832576">Не удалось скачать файлы автоматических субтитров. Повторите попытку позже.</translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1391102559483454063">Включено</translation>
@@ -172,7 +173,7 @@
 <translation id="2034971124472263449">Все равно сохранить</translation>
 <translation id="2047639699071423250">Добавить основную идею</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
-<translation id="2050339315714019657">Книжная</translation>
+<translation id="2050339315714019657">Вертикальное расположение</translation>
 <translation id="2066708475850724665">Выключить лупу</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2078034614700056995">Чтобы перейти на следующий рабочий стол, проведите четырьмя пальцами вправо.</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5465662442746197494">Справка</translation>
 <translation id="547979256943495781">Временное хранилище расположено справа</translation>
+<translation id="5491186829646618080">Доступны обновления</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ваш администратор удалил все профили eSIM. Обратитесь к нему за подробной информацией.</translation>
 <translation id="5523434445161341166">Функция "<ph name="FEATURE_NAME" />" выполняет подключение.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="8876661425082386199">Проверьте подключение</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8878886163241303700">Раскрытый экран</translation>
+<translation id="888982883502837004">Для вашего устройства доступны обновления встроенного ПО. Нажмите, чтобы посмотреть и установить их.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будет удален без возможности восстановления.</translation>
 <translation id="890616557918890486">Изменить источник</translation>
 <translation id="8909138438987180327">Уровень заряда батареи: <ph name="PERCENTAGE" />.</translation>
@@ -1206,7 +1209,7 @@
 <translation id="9080132581049224423">Чтобы перейти на главный экран, проведите вверх.</translation>
 <translation id="9080206825613744995">Микрофон используется</translation>
 <translation id="9084606467167974638">Переместить меню</translation>
-<translation id="9089416786594320554">Методы ввода</translation>
+<translation id="9089416786594320554">Способы ввода</translation>
 <translation id="9091626656156419976">Удален экран "<ph name="DISPLAY_NAME" />"</translation>
 <translation id="9098969848082897657">Отключить звук на телефоне</translation>
 <translation id="9099154003160514616">Доступно обновление Lacros</translation>

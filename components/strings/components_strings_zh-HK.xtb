@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">不明名稱</translation>
 <translation id="1041998700806130099">工作表訊息</translation>
 <translation id="1048785276086539861">在您編輯註解時，此文件將會返回單頁檢視模式</translation>
-<translation id="1049743911850919806">無痕模式</translation>
 <translation id="1050038467049342496">關閉其他應用程式</translation>
 <translation id="1055184225775184556">復原新增(&amp;U)</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -732,12 +731,6 @@
 <translation id="3345782426586609320">眼</translation>
 <translation id="3355823806454867987">變更 Proxy 設定…</translation>
 <translation id="3360103848165129075">付款處理常式工作表</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />您的瀏覽記錄
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-          <ph name="LIST_ITEM" />在表格中輸入的資料
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">此政策是從已淘汰的 <ph name="OLD_POLICY" /> 政策自動複製而來，請改用此政策。</translation>
 <translation id="3364869320075768271"><ph name="URL" /> 要求使用您的虛擬實境裝置和資料</translation>
 <translation id="3366477098757335611">查看付款卡</translation>
@@ -1212,12 +1205,6 @@
 <translation id="4819347708020428563">要在預設檢視模式中編輯註解嗎？</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以快速建立新嘅 Google 試算表</translation>
 <translation id="4825507807291741242">強大</translation>
-<translation id="4827402517081186284">無痕模式不會令您在網絡上隱身：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />網站會知道您在瀏覽<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />僱主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />互聯網服務供應商可能會監察網絡流量<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">由於此政策只能透過雲端使用者政策設定，因此系統已忽略。</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4838327282952368871">夢幻</translation>
@@ -1787,7 +1774,6 @@
 <translation id="6757797048963528358">您的裝置已進入休眠狀態。</translation>
 <translation id="6767985426384634228">要更新地址嗎？</translation>
 <translation id="6768213884286397650">Hagaki (明信片)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />「無痕模式」</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786747875388722282">擴充功能</translation>
@@ -2267,12 +2253,6 @@
 <translation id="8317207217658302555">要更新 ARCore 嗎？</translation>
 <translation id="831997045666694187">傍晚</translation>
 <translation id="8321476692217554900">通知</translation>
-<translation id="8328484624016508118">關閉所有無痕式分頁後，Chrome 就會清除以下資料：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />您的瀏覽活動<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />您的搜尋記錄<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />您在表格中輸入的資料<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> 的存取被拒</translation>
 <translation id="833262891116910667">突顯嘅內容</translation>
 <translation id="8339163506404995330">系統將不會自動翻譯來源語言為<ph name="LANGUAGE" />的網頁</translation>

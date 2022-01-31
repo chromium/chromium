@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">белгісіз ат</translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
 <translation id="1048785276086539861">Аннотацияларды өзгерткен кезде, бұл құжат бір беттік көрініске ауысады.</translation>
-<translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1050038467049342496">Басқа қолданбаларды жабу</translation>
 <translation id="1055184225775184556">&amp;Қосуды болдырмау</translation>
 <translation id="1056898198331236512">Ескерту</translation>
@@ -735,12 +734,6 @@
 <translation id="3345782426586609320">Көз</translation>
 <translation id="3355823806454867987">Прокси параметрлерін өзгерту…</translation>
 <translation id="3360103848165129075">Төлем өңдегіш парағы</translation>
-<translation id="3361596688432910856">Chrome-да <ph name="BEGIN_EMPHASIS" />сақталмайтын<ph name="END_EMPHASIS" /> ақпараттар:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Шолу тарихыңыз
-          <ph name="LIST_ITEM" />"Cookie" файлдары мен сайт деректері
-          <ph name="LIST_ITEM" />Пішіндерге енгізілген ақпарат
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Бұл саясат ескі <ph name="OLD_POLICY" /> саясатынан автоматты түрде көшірілді. Орнына осы саясатты пайдаланғаныңыз жөн.</translation>
 <translation id="3364869320075768271">Сайт (<ph name="URL" />) виртуалды шындық құрылғысын және деректерді пайдалануға рұқсат сұрайды.</translation>
 <translation id="3366477098757335611">Карталарды көру</translation>
@@ -1221,12 +1214,6 @@
 <translation id="4819347708020428563">Аннотацияларды әдепкі көріністе өзгерту керек пе?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google парағын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4825507807291741242">Қуатты</translation>
-<translation id="4827402517081186284">Инкогнито режимі интернеттегі іс-әрекетіңізді жасырмайды:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Сайттар қашан кіргеніңізді біледі.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Жұмыс берушілер немесе мектептер браузерді қолдану мәліметін қарай алады.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Интернет провайдерлері трафикті бақылай алады.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4838327282952368871">Арманшыл</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
@@ -1330,6 +1317,7 @@
 <translation id="5138227688689900538">Жию</translation>
 <translation id="5145883236150621069">Қате коды саясат жауабында көрсетіледі</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> сайты үшін хабарландырулар бөгелді</translation>
+<translation id="514704532284964975"><ph name="URL" /> сайты телефоныңызбен түрткен NFC құрылғылары туралы ақпаратты көргісі және өзгерткісі келеді.</translation>
 <translation id="5148809049217731050">Жоғары қарату</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Мұқаба</translation>
@@ -1794,7 +1782,6 @@
 <translation id="6757797048963528358">Құрылғы ұйқы күйіне өтті.</translation>
 <translation id="6767985426384634228">Мекенжайды жаңарту керек пе?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239">Инкогнито туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ақшыл күлгін</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
@@ -2212,7 +2199,7 @@
 <translation id="8105368624971345109">Өшіру</translation>
 <translation id="810875025413331850">Маңайдан құрылғы табылған жоқ.</translation>
 <translation id="8116925261070264013">Дыбысы өшірулі</translation>
-<translation id="8118489163946903409">Төлем әдісі</translation>
+<translation id="8118489163946903409">Төлеу әдісі</translation>
 <translation id="8124639700796374294">"Chrome-ды реттеу" түймесі. Браузер көрінісін реттеу үшін Enter пернесін басыңыз.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" компьютеріңізде не желіңізде дұрыс орнатылмаған. АТ әкімшіңізден мәселені шешуін сұраңыз.</translation>
 <translation id="8131740175452115882">Растау</translation>
@@ -2274,12 +2261,6 @@
 <translation id="8317207217658302555">ARCore жаңартылсын ба?</translation>
 <translation id="831997045666694187">Кеш</translation>
 <translation id="8321476692217554900">хабарландырулар</translation>
-<translation id="8328484624016508118">Барлық инкогнито қойындыcы жабылғанда, Chrome келесілерді жояды:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />осы құрылғыдағы браузерді қолдану мәліметі;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />осы құрылғыдағы іздеу тарихы;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> сайтына кіруге тыйым салынған</translation>
 <translation id="833262891116910667">Бөлектеу</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тіліндегі беттер аударылмайды</translation>

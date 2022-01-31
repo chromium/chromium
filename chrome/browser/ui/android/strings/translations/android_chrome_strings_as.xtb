@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">আপোনাৰ Google একাউণ্টটো পৰিচালনা কৰিবলৈ "একাউণ্ট পৰিচালনা কৰক" বুটামটোত টিপক</translation>
 <translation id="1549000191223877751">অন্য ৱিণ্ড’লৈ নিয়ক</translation>
 <translation id="1553358976309200471">Chrome আপডে’ট কৰক</translation>
+<translation id="1554532453982918912">আপুনি ব্যৱহাৰ কৰা ধৰণে Chrome ব্যৱহাৰ কৰা লোকসকলৰ বাবে Chrome উন্নত কৰাত সহায় কৰক</translation>
 <translation id="1558391695376153246">ইনক’গনিট’ টেবসমূহ বন্ধ কৰক</translation>
 <translation id="1571304935088121812">ব্যৱহাৰকাৰীৰ নামটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="1592864538817356322">মান্য সুৰক্ষা:</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">সম্পূর্ণ হ’ল</translation>
 <translation id="2459390580524506445">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান কৰাৰ উচ্চখাপৰ সুবিধা</translation>
 <translation id="2461822463642141190">বৰ্তমান</translation>
+<translation id="2472163211318554013">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ছাইন ইন কৰক</translation>
 <translation id="247737702124049222">প্ৰতিচ্ছবিৰ বিৱৰণ অন আছে</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2485422356828889247">আনইনষ্টল কৰক</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252">আপোনাৰ <ph name="CONNECTION_TYPE" /> সংযোগে আপোনাৰ ডাউনল'ডটো লেহেমীয়া কৰিব পাৰে</translation>
 <translation id="2647434099613338025">ভাষা যোগ কৰক</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" />এ আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
+<translation id="2650348088770008516">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা বন্ধ কৰা হৈছে</translation>
 <translation id="2650751991977523696">ফাইল পুনৰ ডাইনল'ড কৰিবনে?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{#টা অডিঅ' ফাইল}one{#টা অডিঅ' ফাইল}other{#টা অডিঅ' ফাইল}}</translation>
 <translation id="265156376773362237">মান্য আগতীয়া ল’ডিং</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">আপোনাৰ সকলো ডিভাইচতে নিজৰ বুকমার্কসমূহ পাবলৈ ছাইন ইন কৰি ছিংক কৰা সুবিধাটো অন কৰক</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">ক্লিপব'ৰ্ডৰ সমল লুকুওৱা হ’ল</translation>
+<translation id="2838367486340230368">অৰ্ধ উচ্চতাত খোলা গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" />ক আনফ’ল’ কৰিলে</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা ইনক’গ্নিট’ টেব বন্ধ কৰা হ’ব}one{<ph name="TAB_COUNT_MANY" /> টা ইনক’গ্নিট’ টেব বন্ধ কৰা হ’ব}other{<ph name="TAB_COUNT_MANY" /> টা ইনক’গ্নিট’ টেব বন্ধ কৰা হ’ব}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{১ দিনৰ আগত পৰীক্ষা কৰা হৈছিল}one{# দিনৰ আগত পৰীক্ষা কৰা হৈছিল}other{# দিনৰ আগত পৰীক্ষা কৰা হৈছিল}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">পাছফ্ৰেজ সৃষ্টি কৰক</translation>
 <translation id="2996809686854298943">URL আৱশ্যক</translation>
 <translation id="2997081575621687554">Googleৰ কোনো ছাইটে নিজৰ পৃষ্ঠাত থকা লিংকসমূহ গোপনে আগতীয়াকৈ ল’ড কৰিবলৈ অনুৰোধ কৰিলে Chromeএ কুকি অবিহনে Google ছাৰ্ভাৰৰ জৰিয়তে পৃষ্ঠাসমূহ এনক্ৰিপ্ট কৰি আগতীয়াকৈ ল’ড কৰে। ই আগতীয়াকৈ ল’ড কৰা ছাইটৰ পৰা আপোনাৰ পৰিচয় লুকুৱায়।</translation>
+<translation id="3003733539450769656">বিপজ্জনক ঘটনাবোৰ ঘটাৰ আগতে সেইসমূহৰ বিষয়ে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="3006881078666935414">ব্যৱহাৰৰ কোনো ডেটা নাই</translation>
 <translation id="301080557829842765">গোপনীয়তাৰ নিৰ্দেশনা</translation>
 <translation id="3016635187733453316">নিশ্চিত হৈ লওক যে এই ডিভাইচটো ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে</translation>
 <translation id="3046945242843292318">পৰৱৰ্তী সময়ত এই ছাইটটোলৈ ক্ষিপ্ৰতাৰে আহক</translation>
 <translation id="3055259925215945098">বুকমাৰ্ক স্থানান্তৰ কৰা হৈছে</translation>
+<translation id="3055841435094910999">আপোনাৰ Chrome ব্যৱহাৰ সম্পৰ্কীয় তথ্য Googleলৈ পঠিওৱা হয় কিন্তু ইয়াত আপোনাৰ ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত কৰা নহয়\n\nChrome ক্ৰেশ্ব হ’লে ক্ৰেশ্বৰ সবিশেষত হয়তো কিছুমান ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে\n\nআপুনি ছিংক কৰা সুবিধাটো অন কৰিলে মেট্ৰিকতো আপুনি চোৱা URLসমূহৰ তথ্য অন্তৰ্ভুক্ত কৰা হ’ব পাৰে</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টা বুকমাৰ্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}}</translation>
 <translation id="3062802207422175757">Chromeত আপোনাৰ আগ্ৰহৰ বিষয়বস্তু সম্পৰ্কীয় প্ৰবন্ধসমূহ</translation>
 <translation id="3066573403916685335">তললৈ নিয়ক</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">অতি সোনকালে, আপুনি এটা নতুন টেব খুলিলে <ph name="SITE_NAME" />ৰ কাহিনী দেখা পাব। আপুনি ফ’ল’ কৰা ছাইটসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হয়। আপুনি সেইবোৰ ডিস্ক’ভাৰৰ ছেটিঙত পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="5091249083535528968">বিস্তাৰিত ব্যৱহাৰৰ ডেটা</translation>
 <translation id="509429900233858213">কোনো আসোঁৱাহ হৈছে।</translation>
+<translation id="5102401324271069229">যদি কোনোবা ছাইটে আপোনাৰ পাছৱৰ্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল’ড কৰাৰ সময়ত, Chromeএ পৃষ্ঠাৰ কিছুমান সমলকে ধৰি URLসমূহ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে</translation>
 <translation id="510275257476243843">১ঘণ্টা বাকী আছে</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />লৈ</translation>
 <translation id="5118713593561876160">আগ্ৰহ</translation>
@@ -1011,6 +1018,7 @@
 <translation id="6659594942844771486">টেব</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ত খোলক</translation>
 <translation id="6671495933530132209">প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
+<translation id="6674044799624355221">নতুন ভাবুকিবোৰ বিচাৰি পোৱাত সহায় কৰিবলৈ পৃষ্ঠা, ডাউনল’ড, এক্সটেনশ্বনৰ কাৰ্যকলাপ আৰু ছিষ্টেমৰ তথ্যৰ এটা সৰু নমুনা পঠিয়ায়</translation>
 <translation id="6674571176963658787">ছিংক আৰম্ভ কৰিবলৈ আপোনাৰ পাছফ্ৰেজ দিয়ক</translation>
 <translation id="6676840375528380067">এই ডিভাইচটোৰ পৰা Chrome ডেটা মচিবনে?</translation>
 <translation id="6684809838922667136">Chromeক উন্নত কৰক</translation>
@@ -1086,6 +1094,7 @@
 <translation id="7085332316435785646">Google সেৱাসমূহত অধিক ব্যক্তিগতকৃত অভিজ্ঞতা লাভ কৰিবলৈ Chromeৰ ইতিহাস অন্তৰ্ভুক্ত কৰিবনে নকৰে সেয়া বাছনি কৰক</translation>
 <translation id="7088681679121566888">Chrome আপ টু ডে’ট আছে</translation>
 <translation id="7093803425429738190">আৱেগ যোগ দিয়ক</translation>
+<translation id="7105047059074518658">বিভিন্ন ডিভাইচত সহজে ব্ৰাউজ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="7106762743910369165">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
 <translation id="7121362699166175603">ঠিকনাৰ বাৰত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পুৰ হোৱা তথ্য মচে। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত আপোনাৰ Google একাউণ্টৰ অন্য প্ৰকাৰৰ ব্ৰাউজিং ইতিহাস থাকিব পাৰে।</translation>
 <translation id="7138678301420049075">অন্য</translation>
@@ -1101,6 +1110,7 @@
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
+<translation id="7196215469483532480">পূৰ্ণ উচ্চতাত খোলা গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড বাকী আছে}one{# টা ডাউনল’ড বাকী আছে}other{# টা ডাউনল’ড বাকী আছে}}</translation>
 <translation id="7242755609445462077">শৈলীকৰণ কৰা হাইলাইট <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে</translation>
@@ -1200,11 +1210,13 @@
 <translation id="7757787379047923882">পাঠ <ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="7761849928583394409">তাৰিখ আৰু সময় বাছক</translation>
 <translation id="7762668264895820836">এছডি কাৰ্ড <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">অতিৰিক্ত সুবিধা আৰু Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষাৰ বাবে ছাইন ইন কৰক</translation>
 <translation id="7764225426217299476">ঠিকনা যোগ কৰক</translation>
 <translation id="7772032839648071052">পাছফ্ৰেজ নিশ্চিত কৰক</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> বন্ধ কৰক</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}}</translation>
 <translation id="7778840695157240389">নতুন কাহিনীৰ বাবে পাছত আকৌ চাওক</translation>
+<translation id="7780645209293383778">আপুনি ছাইন ইন হৈ থকা অৱস্থাত আপোনাক Googleৰ সমগ্ৰ এপত সুৰক্ষা প্ৰদান কৰিবলৈ এই ডেটাখিনি অস্থায়ীভাৱে আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰে</translation>
 <translation id="7786595606756654269">ৱেবত সন্ধান কৰিবলৈ আৰু আপুনি খোলা ছাইটৰ সৈতে জড়িত কৰি ৰাখিবলৈ Google Assistantএ কণ্ঠধ্বনিৰ এক উন্নত অভিজ্ঞতা প্ৰদান কৰে। Google Assistantএ আপুনি ছাইটসমূহৰ সৈতে ব্যৱহাৰ কৰা URL আৰু সমল লাভ কৰিব।</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> টা টেব পুনঃস্থাপন কৰা হ’ল</translation>
@@ -1274,6 +1286,7 @@
 <translation id="8084285576995584326">আপোনাৰ Google একাউণ্টৰ ডেটা নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="808747664143081553">ডিভাইচৰ সৈতে সংযোগ কৰা হ’ল</translation>
 <translation id="8088176524274673045">আশে-পাশে থকা লোকসকলৰ সৈতে শ্বেয়াৰ কৰিবলৈ তেওঁলোকক এই কিউআৰ ক’ডটো স্কেন কৰিবলৈ দিয়ক</translation>
+<translation id="8100969750121413114">Chrome ব্যক্তিগতকৰণ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="8103578431304235997">ইনক’গনিট’ টেব</translation>
 <translation id="8105613260829665809">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_TOS_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" />ত সন্মত হৈছে।\nএপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_UMA_LINK" />পৰিচালনা কৰক<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ইতিহাস পৃষ্ঠাটো খোলক</translation>
 <translation id="8493948351860045254">ঠাই খালী কৰক</translation>
+<translation id="8497480609928300907">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
 <translation id="8497726226069778601">ইয়াত চাবলৈ এতিয়ালৈকে একো নাই…</translation>
 <translation id="8503559462189395349">Chromeৰ পাছৱৰ্ড</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>

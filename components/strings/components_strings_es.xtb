@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">nombre desconocido</translation>
 <translation id="1041998700806130099">Mensaje de hoja de tarea</translation>
 <translation id="1048785276086539861">Cuando edites las anotaciones, este documento volverá a la vista de una única página</translation>
-<translation id="1049743911850919806">Incógnito</translation>
 <translation id="1050038467049342496">Cierra otras aplicaciones</translation>
 <translation id="1055184225775184556">&amp;Deshacer acción de añadir</translation>
 <translation id="1056898198331236512">Advertencia</translation>
@@ -736,12 +735,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3345782426586609320">Ojos</translation>
 <translation id="3355823806454867987">Cambiar la configuración de proxy...</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Tu historial de navegación
-          <ph name="LIST_ITEM" />Las cookies y los datos de sitios web
-          <ph name="LIST_ITEM" />La información introducida en formularios
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Esta política se ha copiado automáticamente de la política obsoleta <ph name="OLD_POLICY" />. Deberías usar esta política en su lugar.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> quiere usar tu dispositivo y tus datos de realidad virtual</translation>
 <translation id="3366477098757335611">Ver tarjetas</translation>
@@ -1222,12 +1215,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4819347708020428563">¿Editar anotaciones en la vista predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Potente</translation>
-<translation id="4827402517081186284">El modo de incógnito no te hace invisible online:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Los sitios saben que los visitas<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Las empresas o los centros educativos pueden monitorizar la actividad de navegación<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Los proveedores de Internet pueden monitorizar el tráfico web<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Se ignora porque la política solo se puede establecer desde la política de usuarios basada en la nube.</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4838327282952368871">De ensueño</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
@@ -1796,7 +1784,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6757797048963528358">El dispositivo se ha suspendido.</translation>
 <translation id="6767985426384634228">¿Actualizar dirección?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el modo de incógnito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensiones</translation>
@@ -2276,12 +2263,6 @@ Más información:
 <translation id="8317207217658302555">¿Actualizar ARCore?</translation>
 <translation id="831997045666694187">Tarde</translation>
 <translation id="8321476692217554900">notificaciones</translation>
-<translation id="8328484624016508118">Al cerrar todas las pestañas de incógnito, Chrome borra lo siguiente:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Tu actividad de navegación en este dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Tu historial de búsqueda en este dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />La información que hayas introducido en formularios<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Se ha denegado el acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Resaltar</translation>
 <translation id="8339163506404995330">No se traducirán las páginas en <ph name="LANGUAGE" /></translation>

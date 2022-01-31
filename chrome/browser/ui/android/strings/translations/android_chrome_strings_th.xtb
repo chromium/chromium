@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">หากต้องการจัดการบัญชี Google ให้แตะปุ่ม "จัดการบัญชี"</translation>
 <translation id="1549000191223877751">ย้ายไปยังหน้าต่างอื่น</translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
+<translation id="1554532453982918912">ช่วยปรับปรุง Chrome ให้ดีขึ้นสำหรับคนที่ใช้งานในลักษณะเดียวกับคุณ</translation>
 <translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1571304935088121812">คัดลอกชื่อผู้ใช้</translation>
 <translation id="1592864538817356322">การปกป้องแบบมาตรฐาน:</translation>
@@ -252,6 +253,7 @@
 <translation id="2453860139492968684">เสร็จสิ้น</translation>
 <translation id="2459390580524506445">การค้นหาด้วยเสียงที่ได้รับการปรับปรุง</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
+<translation id="2472163211318554013">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="247737702124049222">คำอธิบายรูปภาพเปิดอยู่</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
@@ -288,6 +290,7 @@
 <translation id="2645657967708199252">การเชื่อมต่อ <ph name="CONNECTION_TYPE" /> อาจทำให้ดาวน์โหลดได้ช้า</translation>
 <translation id="2647434099613338025">เพิ่มภาษา</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" /> เป็นผู้จัดการเบราว์เซอร์</translation>
+<translation id="2650348088770008516">ปิดคำอธิบายคู่มือความเป็นส่วนตัวแล้ว</translation>
 <translation id="2650751991977523696">ดาวน์โหลดไฟล์อีกครั้งไหม</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{ไฟล์เสียง # ไฟล์}other{ไฟล์เสียง # ไฟล์}}</translation>
 <translation id="265156376773362237">การโหลดล่วงหน้าแบบมาตรฐาน</translation>
@@ -319,6 +322,7 @@
 <translation id="2818669890320396765">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">ซ่อนเนื้อหาในคลิปบอร์ดแล้ว</translation>
+<translation id="2838367486340230368">คำอธิบายคู่มือความเป็นส่วนตัวเปิดแบบครึ่งหน้า</translation>
 <translation id="2839327205551510876">เลิกติดตาม <ph name="SITE_NAME" /> แล้ว</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ตรวจสอบเมื่อ 1 วันที่ผ่านมา}other{ตรวจสอบเมื่อ # วันที่ผ่านมา}}</translation>
@@ -357,6 +361,7 @@
 <translation id="2996291259634659425">สร้างรหัสผ่าน</translation>
 <translation id="2996809686854298943">ต้องระบุ URL</translation>
 <translation id="2997081575621687554">เมื่อเว็บไซต์ Google ขอโหลดลิงก์ล่วงหน้าแบบส่วนตัว Chrome จะเข้ารหัสและโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google โดยไม่มีคุกกี้ การดำเนินการนี้จะซ่อนตัวตนของคุณจากเว็บไซต์ที่โหลดล่วงหน้า</translation>
+<translation id="3003733539450769656">เตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="3006881078666935414">ไม่มีข้อมูลการใช้งาน</translation>
 <translation id="301080557829842765">คู่มือความเป็นส่วนตัว</translation>
 <translation id="3016635187733453316">ตรวจสอบว่าอุปกรณ์นี้เชื่อมต่ออินเทอร์เน็ตอยู่</translation>
@@ -369,6 +374,7 @@
 <translation id="3037517125981011456">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3046945242843292318">ไปที่เว็บไซต์นี้ได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="3055259925215945098">ย้ายบุ๊กมาร์กแล้ว</translation>
+<translation id="3055841435094910999">ข้อมูลการใช้งาน Chrome จะส่งไปยัง Google แต่ไม่เชื่อมโยงกับคุณ\n\nหาก Chrome ขัดข้อง รายละเอียดเกี่ยวกับข้อขัดข้องอาจรวมข้อมูลส่วนบุคคลบางอย่าง\n\nหากคุณเปิดการซิงค์ เมตริกก็อาจรวมข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมไว้ด้วย</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_ONE" /> รายการ}other{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="3062802207422175757">บทความที่เกี่ยวข้องกับความสนใจของคุณใน Chrome</translation>
 <translation id="3066573403916685335">เลื่อนลง</translation>
@@ -708,6 +714,7 @@
 <translation id="5091199029769593641">เร็วๆ นี้คุณจะเห็นเรื่องราวจาก <ph name="SITE_NAME" /> เมื่อเปิดแท็บใหม่ ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่า Discover</translation>
 <translation id="5091249083535528968">ข้อมูลการใช้งานเพิ่มเติม</translation>
 <translation id="509429900233858213">มีข้อผิดพลาดเกิดขึ้น</translation>
+<translation id="5102401324271069229">หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing</translation>
 <translation id="510275257476243843">เหลือ 1 ชั่วโมง</translation>
 <translation id="5115811374190515607">ไปยัง<ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">ความสนใจ</translation>
@@ -1011,6 +1018,7 @@
 <translation id="6659594942844771486">แท็บ</translation>
 <translation id="666731172850799929">เปิดใน <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">คัดลอกรูปภาพ</translation>
+<translation id="6674044799624355221">ส่งตัวอย่างส่วนเล็กๆ ของหน้าเว็บ ไฟล์ที่ดาวน์โหลด กิจกรรมของส่วนขยาย และข้อมูลระบบเพื่อช่วยค้นหาภัยคุกคามใหม่ๆ</translation>
 <translation id="6674571176963658787">หากต้องการเริ่มต้นการซิงค์ ให้ป้อนรหัสผ่านของคุณ</translation>
 <translation id="6676840375528380067">ล้างข้อมูล Chrome ของคุณออกจากอุปกรณ์นี้ไหม</translation>
 <translation id="6684809838922667136">ปรับปรุง Chrome ให้ดีขึ้น</translation>
@@ -1086,6 +1094,7 @@
 <translation id="7085332316435785646">เลือกว่าจะรวมประวัติการเข้าชม Chrome เพื่อรับประสบการณ์ที่ปรับเปลี่ยนในแบบของคุณมากขึ้นในบริการของ Google หรือไม่</translation>
 <translation id="7088681679121566888">Chrome เป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="7093803425429738190">เพิ่มอารมณ์</translation>
+<translation id="7105047059074518658">ลงชื่อเข้าใช้เพื่อให้ท่องเว็บได้ง่ายขึ้นในอุปกรณ์ต่างๆ</translation>
 <translation id="7106762743910369165">เบราว์เซอร์ได้รับการจัดการโดยองค์กรของคุณ</translation>
 <translation id="7121362699166175603">ล้างประวัติการเข้าชมและการเติมข้อความอัตโนมัติในแถบที่อยู่เว็บ บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="7138678301420049075">อื่นๆ</translation>
@@ -1101,6 +1110,7 @@
 <translation id="7187993566681480880">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="718926126787620637">รายการโฟลเดอร์บุ๊กมาร์กเปิดอยู่ที่ระดับเต็มความสูงของหน้าจอ</translation>
 <translation id="7191430249889272776">แท็บเปิดในพื้นหลัง</translation>
+<translation id="7196215469483532480">คำอธิบายคู่มือความเป็นส่วนตัวเปิดแบบเต็มหน้า</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ดาวน์โหลดรอดำเนินการ 1 รายการ}other{ดาวน์โหลดรอดำเนินการ # รายการ}}</translation>
 <translation id="7242755609445462077">ทำสไตไลซ์ไฮไลต์วันที่ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">ตรวจสอบว่าการซิงค์ <ph name="TARGET_DEVICE_NAME" /> ใน Chrome เปิดอยู่</translation>
@@ -1200,11 +1210,13 @@
 <translation id="7757787379047923882">ข้อความที่แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">เลือกวันที่และเวลา</translation>
 <translation id="7762668264895820836">การ์ด SD <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">ลงชื่อเข้าใช้เพื่อรับฟีเจอร์เพิ่มเติมและการรักษาความปลอดภัยที่เข้มงวดที่สุดของ Chrome</translation>
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
 <translation id="7772375229873196092">ปิด <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}}</translation>
 <translation id="7778840695157240389">กลับมาดูเรื่องราวใหม่ๆ ภายหลัง</translation>
+<translation id="7780645209293383778">ลิงก์ข้อมูลนี้กับบัญชี Google เป็นการชั่วคราวเมื่อลงชื่อเข้าใช้ เพื่อปกป้องคุณในแอปต่างๆ ของ Google</translation>
 <translation id="7786595606756654269">Google Assistant มอบประสบการณ์ใช้งานด้วยเสียงที่ดียิ่งขึ้นสำหรับการค้นหาเว็บและการมีส่วนร่วมกับเว็บไซต์ที่คุณเปิดอยู่ Google Assistant จะได้รับ URL และเนื้อหาของเว็บไซต์ที่คุณใช้งานร่วมกัน</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="7798392620021911922">คืนค่าแท็บ <ph name="TAB_COUNT" /> แล้ว</translation>
@@ -1274,6 +1286,7 @@
 <translation id="8084285576995584326">ควบคุมข้อมูลในบัญชี Google ของคุณ</translation>
 <translation id="808747664143081553">เชื่อมต่อกับอุปกรณ์แล้ว</translation>
 <translation id="8088176524274673045">หากต้องการแชร์กับผู้คนที่อยู่ใกล้ๆ ให้สแกนคิวอาร์โค้ดนี้</translation>
+<translation id="8100969750121413114">ลงชื่อเข้าใช้เพื่อปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="8103578431304235997">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="8105613260829665809">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_TOS_LINK" />\nChrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_UMA_LINK" />จัดการ<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">เปิดหน้าประวัติการเข้าชม</translation>
 <translation id="8493948351860045254">เพิ่มพื้นที่ว่าง</translation>
+<translation id="8497480609928300907">คำอธิบายคู่มือความเป็นส่วนตัว</translation>
 <translation id="8497726226069778601">ที่นี่ยังไม่มีอะไรให้ดู… เลย</translation>
 <translation id="8503559462189395349">รหัสผ่าน Chrome</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>

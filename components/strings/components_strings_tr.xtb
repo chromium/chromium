@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Ayrıntıları bakın</translation>
 <translation id="1030706264415084469"><ph name="URL" /> büyük miktarda veriyi cihazınızda kalıcı olarak depolamak istiyor</translation>
 <translation id="1032854598605920125">Saat yönünde döndür</translation>
+<translation id="1033329911862281889">Gizli mod sizi internet ortamında görünmez hale getirmez:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Siteler ve bu sitelerin kullandığı hizmetler ziyaretlerinizi görebilir<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />İşverenler veya okullar tarama etkinliğini izleyebilir<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />İnternet Servis Sağlayıcıları web trafiğini izleyebilir<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Kapat</translation>
 <translation id="1036982837258183574">Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
 <translation id="1038106730571050514">Önerileri göster</translation>
 <translation id="1038842779957582377">bilinmeyen ad</translation>
 <translation id="1041998700806130099">İş sayfası mesajı</translation>
 <translation id="1048785276086539861">Ek açıklamaları düzenlediğinizde bu doküman tek sayfalı görünüme geri döner</translation>
-<translation id="1049743911850919806">Gizli mod</translation>
 <translation id="1050038467049342496">Diğer uygulamaları kapatın</translation>
 <translation id="1055184225775184556">Eklemeyi &amp;Geri Al</translation>
 <translation id="1056898198331236512">Uyarı</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">Politika önbelleği uygun</translation>
 <translation id="1130564665089811311">Sayfayı çevir düğmesi, bu sayfayı Google Çeviri'yle çevirmek için Enter'a basın</translation>
 <translation id="1131264053432022307">Kopyalanan Resim</translation>
+<translation id="1142846828089312304">Gizli modda üçüncü taraf çerezleri engelle</translation>
 <translation id="1150979032973867961">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bilgisayarınızın işletim sistemi, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="1151972924205500581">Şifre gerekiyor</translation>
 <translation id="1156303062776767266">Yerel veya paylaşılan bir dosyayı görüntülüyorsunuz</translation>
@@ -181,6 +187,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1483493594462132177">Gönder</translation>
 <translation id="1484290072879560759">Gönderim Adresi Seç</translation>
 <translation id="1492194039220927094">Politikalar aktarılabilir:</translation>
+<translation id="149293076951187737">Tüm Chrome gizli sekmelerini kapattığınızda bu sekmelerde bulunan aşağıdaki etkinlikleriniz cihazdan temizlenir:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Tarama etkinliği<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Arama geçmişi<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Formlara girilen bilgiler<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
 <translation id="1501859676467574491">Google Hesabımdaki kartları göster</translation>
 <translation id="1507202001669085618">&lt;p&gt;İnternete girmek için oturum açmanızı gerektiren bir kablosuz portal kullanıyorsanız bu hatayı görürsünüz.&lt;/p&gt;
@@ -282,6 +294,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Ağ Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Ziyaret etmek üzere olduğunuz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını gerektiren bir üst bilgi ayarladı. Ancak üst bilgi yanlış biçimlendirildiği için tarayıcı, <ph name="SITE" /> sitesiyle ilgili isteğinizi yerine getiremiyor. Kaynak politikaları
     site operatörleri tarafından sitenin güvenliğini ve diğer mülklerini yapılandırmak için kullanılabilir.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium'daki Gizli mod hakkında daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Açık sekmeleriniz burada görünür</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -523,6 +536,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2597378329261239068">Doküman şifre korumalı. Lütfen şifreyi girin.</translation>
 <translation id="2609632851001447353">Varyasyonlar</translation>
 <translation id="2610561535971892504">Kopyalamak için tıkla</translation>
+<translation id="2617988307566202237">Chrome aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Tarama geçmişiniz
+          <ph name="LIST_ITEM" />Çerezler ve site verileri
+          <ph name="LIST_ITEM" />Formlara girilen bilgiler
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Zarf)</translation>
 <translation id="2623663032199728144">Ekranlarınızla ilgili bilgileri kullanmak isteyebilir</translation>
 <translation id="2625385379895617796">Saatiniz ileri</translation>
@@ -733,12 +752,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3345782426586609320">Gözler</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
 <translation id="3360103848165129075">Ödeme işleyici sayfası</translation>
-<translation id="3361596688432910856">Chrome aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Tarama geçmişiniz
-          <ph name="LIST_ITEM" />Çerezler ve site verileri
-          <ph name="LIST_ITEM" />Formlara girilen bilgiler
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Bu politika, kullanımdan kaldırılmış <ph name="OLD_POLICY" /> politikasından otomatik olarak kopyalanmıştır. Onun yerine bu politikayı kullanmalısınız.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> sanal gerçeklik cihazınızı ve verilerinizi kullanmak istiyor</translation>
 <translation id="3366477098757335611">Kartları göster</translation>
@@ -1153,6 +1166,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4628948037717959914">Fotoğraf</translation>
 <translation id="4631649115723685955">Nakit para üstü bağlantısı oluşturuldu</translation>
 <translation id="4636930964841734540">Bilgi</translation>
+<translation id="4638670630777875591">Chromium'daki Gizli mod</translation>
 <translation id="464342062220857295">Özellik ara</translation>
 <translation id="4644670975240021822">Ters sırada ön yüz aşağı bakacak şekilde</translation>
 <translation id="4646534391647090355">İndirilenlere git</translation>
@@ -1215,12 +1229,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4819347708020428563">Ek açıklamalar varsayılan görünümde düzenlensin mi?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, hızlıca yeni bir Google E-Tablosu oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="4825507807291741242">Güçlü</translation>
-<translation id="4827402517081186284">Gizli mod sizi internet ortamında görünmez hale getirmez:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Siteler, ne zaman ziyaret ettiğinizi bilir<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />İşverenler veya okullar tarama etkinliğini izleyebilir<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />İnternet Servis Sağlayıcıları web trafiğini izleyebilir<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Yalnızca bulut kullanıcı politikası tarafından ayarlanabileceği için politika yoksayıldı.</translation>
 <translation id="483241715238664915">Uyarıları açın</translation>
 <translation id="4838327282952368871">Hayalperest</translation>
@@ -1254,6 +1262,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, aramak için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="4930153903256238152">Yüksek kapasite</translation>
+<translation id="4940163644868678279">Chrome'daki Gizli mod</translation>
 <translation id="4943872375798546930">Sonuç yok</translation>
 <translation id="4950898438188848926">Sekme değiştirme düğmesi, açık sekmeye geçmek için enter tuşuna basın, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">İşlemler</translation>
@@ -1614,6 +1623,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6120179357481664955">UPI ID'nizi hatırlıyor musunuz?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Öğe kaldırıldı</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome'daki Gizli mod hakkında daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Kabloları kontrol edin ve kullandığınız yönlendiricileri, modemleri
     veya diğer ağ cihazlarını yeniden başlatın.</translation>
 <translation id="614940544461990577">Aşağıdakileri deneyin:</translation>
@@ -1790,7 +1800,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6757797048963528358">Cihazınız uyku moduna geçti.</translation>
 <translation id="6767985426384634228">Adres Güncellensin mi?</translation>
 <translation id="6768213884286397650">Hagaki (Kartpostal)</translation>
-<translation id="6774185088257932239">Gizli mod hakkında <ph name="BEGIN_LINK" />daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Mor</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
@@ -1890,6 +1899,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7111012039238467737">(Geçerli)</translation>
 <translation id="7118618213916969306">Panoda URL'yi (<ph name="SHORT_URL" />) ara</translation>
 <translation id="7119414471315195487">Diğer sekmeleri veya programları kapatın</translation>
+<translation id="7129355289156517987">Tüm Chromium gizli sekmelerini kapattığınızda bu sekmelerde bulunan aşağıdaki etkinlikleriniz cihazdan temizlenir:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Tarama etkinliği<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Arama geçmişi<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Formlara girilen bilgiler<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Bu adrese gönderim yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="7132939140423847331">Yöneticiniz bu verilerin kopyalanmasını engellemiş.</translation>
 <translation id="7135130955892390533">Durumu göster</translation>
@@ -2008,6 +2023,12 @@ Ek ayrıntılar:
 <translation id="7485870689360869515">Hiçbir veri bulunamadı.</translation>
 <translation id="7495528107193238112">Bu içerik engellenmiştir. Sorunu gidermek için site sahibiyle iletişime geçin.</translation>
 <translation id="7497998058912824456">Doküman oluştur düğmesi, hızlıca yeni bir Google Dokümanı oluşturmak için Enter'a basın</translation>
+<translation id="7506488012654002225">Chromium aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Tarama geçmişiniz
+            <ph name="LIST_ITEM" />Çerezler ve site verileri
+            <ph name="LIST_ITEM" />Formlara girilen bilgiler
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Döndürülen politika cihaz kimliği boş veya mevcut cihaz kimliğiyle eşleşmiyor</translation>
 <translation id="7508870219247277067">Avokado Yeşili</translation>
 <translation id="7511955381719512146">Kullandığınız kablosuz bağlantı ağı, <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
@@ -2227,6 +2248,7 @@ Ek ayrıntılar:
 <translation id="8202370299023114387">Çakışma</translation>
 <translation id="8206978196348664717">Prc4 (Zarf)</translation>
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
+<translation id="8217240300496046857">Siteler sizi web'de takip eden çerezler kullanamaz. Bazı sitelerdeki özellikler düzgün çalışmayabilir.</translation>
 <translation id="8218327578424803826">Atanan Konum:</translation>
 <translation id="8220146938470311105">C7/C6 (Zarf)</translation>
 <translation id="8225771182978767009">Bu bilgisayarı kuran kişi bu siteyi engellemeyi seçmiş.</translation>
@@ -2270,12 +2292,6 @@ Ek ayrıntılar:
 <translation id="8317207217658302555">ARCore güncellensin mi?</translation>
 <translation id="831997045666694187">Akşam</translation>
 <translation id="8321476692217554900">bildirimler</translation>
-<translation id="8328484624016508118">Tüm gizli sekmeler kapatıldıktan sonra Chrome şunları temizler:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Bu cihazdaki tarama etkinliğiniz<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Bu cihazdaki arama geçmişiniz<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Formlara girilen bilgiler<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ana makinesine erişim reddedildi</translation>
 <translation id="833262891116910667">Vurgula</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> dilindeki sayfalar çevrilmeyecek</translation>

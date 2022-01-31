@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">nome sconosciuto</translation>
 <translation id="1041998700806130099">Messaggio foglio di lavoro</translation>
 <translation id="1048785276086539861">Quando modifichi le annotazioni, questo documento torna alla visualizzazione a pagina singola</translation>
-<translation id="1049743911850919806">In incognito</translation>
 <translation id="1050038467049342496">Chiudi altre app</translation>
 <translation id="1055184225775184556">&amp;Annulla aggiunta</translation>
 <translation id="1056898198331236512">Avviso</translation>
@@ -733,12 +732,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3345782426586609320">Occhi</translation>
 <translation id="3355823806454867987">Modifica impostazioni proxy...</translation>
 <translation id="3360103848165129075">Foglio per la gestione dei pagamenti</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />non salverà<ph name="END_EMPHASIS" /> le seguenti informazioni:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Cronologia di navigazione
-          <ph name="LIST_ITEM" />Cookie e dati dei siti
-          <ph name="LIST_ITEM" />Informazioni inserite nei moduli
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Questa norma è stata copiata automaticamente dalla norma obsoleta <ph name="OLD_POLICY" />. Dovresti usare invece questa norma.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> vorrebbe usare i dati e dispositivi per realtà virtuale</translation>
 <translation id="3366477098757335611">Visualizza le carte</translation>
@@ -1219,12 +1212,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4819347708020428563">Vuoi modificare le annotazioni nella visualizzazione predefinita?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo foglio Google</translation>
 <translation id="4825507807291741242">Potente</translation>
-<translation id="4827402517081186284">La modalità di navigazione in incognito non ti rende invisibile online:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />I siti rilevano la tua visita<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Datori di lavoro o scuole possono monitorare l'attività di navigazione<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />I provider di servizi Internet possono monitorare il traffico web<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ignorato perché il criterio può essere impostato solo da un utente cloud.</translation>
 <translation id="483241715238664915">Attiva gli avvisi</translation>
 <translation id="4838327282952368871">Surreale</translation>
 <translation id="4840250757394056958">Visualizza la tua cronologia di Chrome</translation>
@@ -1792,7 +1780,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6757797048963528358">Il dispositivo è entrato in modalità sospensione.</translation>
 <translation id="6767985426384634228">Vuoi aggiornare l'indirizzo?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /> sulla modalità di navigazione in incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Lilla</translation>
 <translation id="6786747875388722282">Estensioni</translation>
@@ -2272,12 +2259,6 @@ Ulteriori dettagli:
 <translation id="8317207217658302555">Vuoi aggiornare ARCore?</translation>
 <translation id="831997045666694187">Sera</translation>
 <translation id="8321476692217554900">notifiche</translation>
-<translation id="8328484624016508118">Dopo aver chiuso tutte le schede di navigazione in incognito, Chrome cancella:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />L'attività di navigazione da questo dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />La cronologia delle ricerche da questo dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Le informazioni inserite nei moduli<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Accesso a <ph name="HOST_NAME" /> negato</translation>
 <translation id="833262891116910667">Evidenzia</translation>
 <translation id="8339163506404995330">Le pagine in <ph name="LANGUAGE" /> non verranno tradotte</translation>

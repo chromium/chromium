@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1351937230027495976">मेन्यू छोटा करें</translation>
 <translation id="1364382257761975320">Chromebook अनलॉक करने के लिए, अपना फ़िंगरप्रिंट इस्तेमाल करें</translation>
+<translation id="1364618750746929654">बोली को लेख में नहीं बदला जा सका</translation>
 <translation id="1383597849754832576">स्पीच फ़ाइलें डाउनलोड नहीं की जा सकतीं. कुछ देर बाद कोशिश करें.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">चालू है</translation>
@@ -680,6 +681,7 @@
 <translation id="54609108002486618">प्रबंधित</translation>
 <translation id="5465662442746197494">सहायता चाहिए?</translation>
 <translation id="547979256943495781">शेल्फ़ स्क्रीन पर दाईं ओर है</translation>
+<translation id="5491186829646618080">फ़र्मवेयर के अपडेट उपलब्ध हैं</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">आपके एडमिन ने सभी ई-सिम प्रोफ़ाइलों को हटा दिया है. ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> कनेक्ट हो रहा है.</translation>
@@ -1178,6 +1180,7 @@
 <translation id="8876661425082386199">अपने कनेक्शन की जांच करें</translation>
 <translation id="8877788021141246043">रिमाइंडर लगाओ</translation>
 <translation id="8878886163241303700">स्क्रीन का विस्तार करना</translation>
+<translation id="888982883502837004">आपके डिवाइस के लिए, फ़र्मवेयर के अपडेट उपलब्ध हैं. अपडेट देखने और उन्हें इंस्टॉल करने के लिए क्लिक करें.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> को हमेशा के लिए मिटा दिया जाएगा</translation>
 <translation id="890616557918890486">स्रोत बदलें</translation>
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> बैटरी बची है.</translation>

@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Icono actual</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Detener</translation>
+<translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Elige los idiomas que se instalarán en este dispositivo. Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en disco. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Proyector</translation>
@@ -508,6 +509,7 @@
 <translation id="1521442365706402292">Gestionar certificados</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="152234381334907219">Contraseñas que nunca se guardan</translation>
+<translation id="1523279371236772909">Visto el mes pasado</translation>
 <translation id="1523978563989812243">Motores de conversión de texto a voz</translation>
 <translation id="1524430321211440688">Teclado</translation>
 <translation id="1524563461097350801">No, gracias</translation>
@@ -1162,6 +1164,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Añadir Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronización empezará cuando salgas de la configuración</translation>
+<translation id="2162926944953615670">No hay perfiles de eSIM disponibles</translation>
 <translation id="2163470535490402084">Conéctate a Internet para iniciar sesión en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Activar modo oscuro</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
@@ -1239,6 +1242,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2232876851878324699">El archivo contenía un certificado, que no se ha importado:</translation>
 <translation id="2233502537820838181">&amp;Más información</translation>
 <translation id="223356358902285214">Actividad en la Web y en Aplicaciones</translation>
+<translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
@@ -1854,6 +1858,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2828650939514476812">Conectar a la red Wi-Fi</translation>
 <translation id="2831430281393059038">Dispositivo admitido</translation>
 <translation id="2832124733806557606">Tu hijo/a puede usar el PIN para iniciar sesión en el dispositivo o para desbloquearlo.</translation>
+<translation id="2835177225987815960">Se borrará la configuración de búsqueda actual, incluyendo todos los interruptores asignados y las preferencias de velocidad de la búsqueda automática.</translation>
 <translation id="2835547721736623118">Servicio de reconocimiento de voz</translation>
 <translation id="2836269494620652131">Error</translation>
 <translation id="2836635946302913370">El administrador ha inhabilitado el inicio de sesión para este nombre de usuario.</translation>
@@ -3091,6 +3096,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4095264805865317199">Abrir la interfaz de usuario de la activación de datos móviles</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="4096508467498758490">Inhabilitar extensiones en modo de desarrollador</translation>
+<translation id="4096797685681362305">Visto la semana pasada</translation>
 <translation id="4097406557126260163">Aplicaciones y extensiones</translation>
 <translation id="409742781329613461">Consejos para usar Chrome</translation>
 <translation id="4097560579602855702">Buscar en Google</translation>
@@ -3646,6 +3652,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Inicio de sesión del padre o de la madre</translation>
+<translation id="4701335814944566468">Visto ayer</translation>
 <translation id="4708794300267213770">Mostrar la pantalla de bloqueo al activar el dispositivo</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
@@ -3713,6 +3720,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="479536056609751218">Página web (solo HTML)</translation>
 <translation id="4796142525425001238">Restaurar siempre</translation>
 <translation id="4798236378408895261">Adjuntar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (opción interna de Google)</translation>
+<translation id="479863874072008121">Gestionar dispositivos</translation>
 <translation id="4800839971935185386">Revisa las actualizaciones de los nombres y los iconos</translation>
 <translation id="4801448226354548035">Ocultar cuentas</translation>
 <translation id="4801512016965057443">Permitir roaming de datos móviles</translation>
@@ -6436,6 +6444,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659154729610375585">¿Salir del modo de incógnito de todas formas?</translation>
 <translation id="7659297516559011665">Solo contraseñas de este dispositivo</translation>
+<translation id="7659336857671800422">Consultar la guía de privacidad</translation>
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Ponte en contacto con el administrador para obtener permiso de inicio de sesión.</translation>
 <translation id="7661259717474717992">Permitir que los sitios guarden y consulten datos de cookies</translation>
 <translation id="7661451191293163002">No se ha podido obtener un certificado de registro.</translation>
@@ -7958,6 +7967,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9200339982498053969"><ph name="ORIGIN" /> podrá editar los archivos de <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Buscar con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Se borrarán todos los datos offline</translation>
+<translation id="9201117361710210082">Visto anteriormente</translation>
 <translation id="9201220332032049474">Opciones de bloqueo de pantalla</translation>
 <translation id="9201842707396338580">Se ha producido un error. Ponte en contacto con el propietario o el administrador del dispositivo Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Perfiles habilitados</translation>

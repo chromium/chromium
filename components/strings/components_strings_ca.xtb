@@ -14,13 +14,18 @@
 <translation id="1028781062521375153">Mostra els detalls</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vol emmagatzemar una gran quantitat de dades al dispositiu de manera permanent</translation>
 <translation id="1032854598605920125">Gira en sentit horari</translation>
+<translation id="1033329911862281889">Amb el mode d'incògnit no ets invisible en línia:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Els llocs web i els serveis que utilitzen poden veure les visites.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Les empreses o els centres educatius poden fer el seguiment de l'activitat de navegació.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Els proveïdors d'Internet poden monitorar el trànsit web.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1036982837258183574">Premeu |<ph name="ACCELERATOR" />| per sortir de la pantalla completa</translation>
 <translation id="1038106730571050514">Mostra els suggeriments</translation>
 <translation id="1038842779957582377">nom desconegut</translation>
 <translation id="1041998700806130099">Missatge del full de treball</translation>
 <translation id="1048785276086539861">Quan editis anotacions, aquest document tornarà a la visualització d'una sola pàgina</translation>
-<translation id="1049743911850919806">Incògnit</translation>
 <translation id="1050038467049342496">Tanca altres aplicacions</translation>
 <translation id="1055184225775184556">&amp;Desfés l'addició</translation>
 <translation id="1056898198331236512">Advertiment</translation>
@@ -48,6 +53,7 @@
 <translation id="112840717907525620">La memòria cau de la política està en bon estat</translation>
 <translation id="1130564665089811311">Botó Tradueix la pàgina; prem Retorn per traduir aquesta pàgina amb el Traductor de Google</translation>
 <translation id="1131264053432022307">Imatge que has copiat</translation>
+<translation id="1142846828089312304">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="1150979032973867961">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el sistema operatiu del vostre ordinador considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="1151972924205500581">Es requereix una contrasenya</translation>
 <translation id="1156303062776767266">Estàs consultant un fitxer local o compartit</translation>
@@ -181,6 +187,12 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1483493594462132177">Envia</translation>
 <translation id="1484290072879560759">Tria l'adreça d'enviament</translation>
 <translation id="1492194039220927094">Tramesa automàtica de les polítiques:</translation>
+<translation id="149293076951187737">Quan tanques totes les pestanyes d'incògnit a Chrome, la teva activitat en aquelles pestanyes s'esborra del dispositiu:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Activitat de navegació<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historial de cerques<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informació introduïda en formularis<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Torna a la pestanya</translation>
 <translation id="1501859676467574491">Mostra les targetes del Compte de Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Aquest error es mostra si utilitzeu un portal Wi-Fi en què cal que inicieu la sessió per connectar-vos a Internet.&lt;/p&gt;
@@ -281,6 +293,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1763864636252898013">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el sistema operatiu del vostre dispositiu considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prova d'executar el diagnòstic de xarxes de Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">El servidor de destinació, <ph name="ORIGIN" />, ha establert una capçalera en què se sol·licita que s'apliqui una política d'origen a totes les sol·licituds que rebi. Tanmateix, com que la capçalera no està ben formada, el navegador no pot completar la sol·licitud que has fet per a <ph name="SITE" />. Els operadors de llocs web poden fer servir les polítiques d'origen per configurar la seguretat i altres propietats d'un lloc web.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Més informació sobre el mode d'incògnit a Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Les pestanyes obertes es mostren aquí</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -522,6 +535,12 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2597378329261239068">Aquest document està protegit mitjançant contrasenya. Introduïu una contrasenya.</translation>
 <translation id="2609632851001447353">Variacions</translation>
 <translation id="2610561535971892504">Fes clic per copiar</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />no desarà<ph name="END_EMPHASIS" /> la informació següent:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />El teu historial de navegació
+          <ph name="LIST_ITEM" />Les galetes o les dades de llocs web
+          <ph name="LIST_ITEM" />La informació introduïda en formularis
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (sobre)</translation>
 <translation id="2623663032199728144">Pot demanar-te permís per utilitzar informació sobre les teves pantalles</translation>
 <translation id="2625385379895617796">El rellotge està avançat</translation>
@@ -732,12 +751,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3345782426586609320">Ulls</translation>
 <translation id="3355823806454867987">Canvia la configuració del servidor intermediari...</translation>
 <translation id="3360103848165129075">Full del gestor de pagaments</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />no desarà<ph name="END_EMPHASIS" /> la informació següent:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />El teu historial de navegació
-          <ph name="LIST_ITEM" />Les galetes i les dades de llocs web
-          <ph name="LIST_ITEM" />La informació que introdueixis en formularis
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Aquesta política s'ha copiat automàticament de la política <ph name="OLD_POLICY" />, que està obsoleta. Hauries de fer servir aquesta política.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> vol utilitzar les teves dades i els teus dispositius de realitat virtual</translation>
 <translation id="3366477098757335611">Mostra les targetes</translation>
@@ -1151,6 +1164,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Devolució de diners associada</translation>
 <translation id="4636930964841734540">Informació</translation>
+<translation id="4638670630777875591">Mode d'incògnit a Chromium</translation>
 <translation id="464342062220857295">Funcions de cerca</translation>
 <translation id="4644670975240021822">Ordre invers de cara avall</translation>
 <translation id="4646534391647090355">Porta-m'hi ara</translation>
@@ -1213,12 +1227,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4819347708020428563">Vols editar les anotacions en la visualització predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un full de càlcul de Google ràpidament</translation>
 <translation id="4825507807291741242">Potent</translation>
-<translation id="4827402517081186284">Amb el mode d'incògnit no ets invisible en línia:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Els llocs web saben quan els visites.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Les empreses o els centres educatius poden fer el seguiment de l'activitat de navegació.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Els proveïdors d'Internet poden monitorar el trànsit web.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">S'ha ignorat perquè la política només es pot establir per la política d'usuari basada en el núvol.</translation>
 <translation id="483241715238664915">Activa els advertiments</translation>
 <translation id="4838327282952368871">Somiadora</translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
@@ -1251,6 +1260,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, prem el tabulador i després Retorn per fer una cerca</translation>
 <translation id="4930153903256238152">Gran capacitat</translation>
+<translation id="4940163644868678279">Mode d'incògnit a Chrome</translation>
 <translation id="4943872375798546930">No hi ha cap resultat</translation>
 <translation id="4950898438188848926">Botó per canviar de pestanya; prem Retorn per canviar a la pestanya oberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Accions</translation>
@@ -1611,6 +1621,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6120179357481664955">Recordes el teu identificador d'UPI?</translation>
 <translation id="6124432979022149706">Connectors de Chrome Enterprise</translation>
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Més informació sobre el mode d'incògnit a Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Reviseu els cables i reinicieu els encaminadors, els mòdems o altres
         dispositius de xarxa que feu servir.</translation>
 <translation id="614940544461990577">Prova el següent:</translation>
@@ -1787,7 +1798,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6757797048963528358">El dispositiu ha entrat en mode de repòs.</translation>
 <translation id="6767985426384634228">Vols actualitzar l'adreça?</translation>
 <translation id="6768213884286397650">Hagaki (postal)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el mode d'incògnit</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensions</translation>
@@ -1887,6 +1897,12 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7111012039238467737">(Vàlid)</translation>
 <translation id="7118618213916969306">Cerca l'URL (<ph name="SHORT_URL" />) del porta-retalls</translation>
 <translation id="7119414471315195487">Tanca altres pestanyes o programes</translation>
+<translation id="7129355289156517987">Quan tanques totes les pestanyes d'incògnit a Chromium, la teva activitat en aquelles pestanyes s'esborra del dispositiu:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Activitat de navegació<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historial de cerques<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informació introduïda en formularis<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">No es pot enviar a aquesta adreça. Selecciona'n una altra.</translation>
 <translation id="7132939140423847331">L'administrador ha prohibit copiar aquestes dades.</translation>
 <translation id="7135130955892390533">Mostra l'estat</translation>
@@ -2005,6 +2021,12 @@ Detalls addicionals:
 <translation id="7485870689360869515">No s'han trobat dades.</translation>
 <translation id="7495528107193238112">Aquest contingut està bloquejat. Contacta amb el propietari del lloc web per resoldre el problema.</translation>
 <translation id="7497998058912824456">Botó Crea un document: prem Retorn per crear un document de Google ràpidament</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />no desarà<ph name="END_EMPHASIS" /> la informació següent:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />El teu historial de navegació
+          <ph name="LIST_ITEM" />Les galetes o les dades de llocs web
+          <ph name="LIST_ITEM" />La informació introduïda en formularis
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">L'identificador de dispositiu de la política que s'ha tornat és buit o no coincideix amb l'actual</translation>
 <translation id="7508870219247277067">Verd alvocat</translation>
 <translation id="7511955381719512146">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2224,6 +2246,7 @@ Detalls addicionals:
 <translation id="8202370299023114387">Conflicte</translation>
 <translation id="8206978196348664717">Prc4 (sobre)</translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
+<translation id="8217240300496046857">Els llocs web no poden utilitzar galetes que facin un seguiment de la teva activitat al web. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="8218327578424803826">Ubicació assignada:</translation>
 <translation id="8220146938470311105">C7/C6 (sobre)</translation>
 <translation id="8225771182978767009">La persona que ha configurat l'ordinador ha bloquejat aquest lloc.</translation>
@@ -2267,12 +2290,6 @@ Detalls addicionals:
 <translation id="8317207217658302555">Vols actualitzar ARCore?</translation>
 <translation id="831997045666694187">Tarda</translation>
 <translation id="8321476692217554900">notificacions</translation>
-<translation id="8328484624016508118">Quan s'han tancat totes les pestanyes d'incògnit, Chrome esborra:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />L'activitat de navegació d'aquest dispositiu.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />L'historial de cerques d'aquest dispositiu.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />La informació introduïda en formularis.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">S'ha rebutjat l'accés a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacat</translation>
 <translation id="8339163506404995330">Les pàgines en <ph name="LANGUAGE" /> no es traduiran</translation>

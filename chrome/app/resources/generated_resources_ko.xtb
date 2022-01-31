@@ -77,7 +77,7 @@
     <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 기능에는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />자녀의 Google 계정에 웹 및 앱 활동이 사용 설정되어 있다면 관련 데이터가 자녀의 Google 계정에 저장될 수 있습니다. families.google.com에서 이러한 설정과 설정을 조정하는 방법을 자세히 알아보세요.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">텍스트 커서로 페이지 탐색</translation>
 <translation id="1076698951459398590">테마 사용</translation>
 <translation id="1076766328672150609">자녀가 PIN을 사용해 기기를 잠금 해제할 수 있습니다</translation>
@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">현재 아이콘</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1108600514891325577">중지(&amp;S)</translation>
+<translation id="1108938384783527433">방문 기록 동기화</translation>
 <translation id="1110155001042129815">대기</translation>
 <translation id="1110965959145884739">이 기기에 설치할 언어를 선택하세요. 디스크 공간 절약을 위해 언어 파일은 사용자 간에 공유됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">프로젝터</translation>
@@ -511,6 +512,7 @@
 <translation id="1521442365706402292">인증서 관리</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="152234381334907219">저장하지 않음</translation>
+<translation id="1523279371236772909">지난달에 확인함</translation>
 <translation id="1523978563989812243">텍스트 음성 변환 엔진</translation>
 <translation id="1524430321211440688">키보드</translation>
 <translation id="1524563461097350801">아니요</translation>
@@ -1252,6 +1254,7 @@
 <translation id="2232876851878324699">파일에 하나의 인증서가 있지만 이 인증서를 가져올 수 없습니다.</translation>
 <translation id="2233502537820838181">추가 정보</translation>
 <translation id="223356358902285214">웹 및 앱 활동</translation>
+<translation id="2234827758954819389">개인 정보 보호 가이드</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2238379619048995541">주파수 상태 데이터</translation>
@@ -1360,7 +1363,7 @@
 <translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 자동 보고서에는 사용하는 기능, 일반적인 메모리 사용량, Android 앱 진단 및 사용 데이터, 오류 등이 포함될 수 있습니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 ChromeOS 기기 설정에서 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Google 계정에 이미 웹 및 앱 활동이 사용 설정되어 있다면 Android 데이터가 Google 계정에 저장될 수 있습니다. account.google.com에서 내 데이터를 보고 삭제하거나 계정 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">스토어에서 보기</translation>
 <translation id="2332192922827071008">환경설정 열기</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
@@ -2649,7 +2652,7 @@
 <translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 언제 어떤 기능이 사용되었는지, 일반적인 메모리 사용량은 얼마나 되는지 등의 정보가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 기능에는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" />에서 마이크에 액세스하도록 계속 허용</translation>
 <translation id="3654045516529121250">접근성 설정 확인</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{파일 1개에 영구적으로 액세스할 수 있습니다.}other{파일 #개에 영구적으로 액세스할 수 있습니다.}}</translation>
@@ -3107,6 +3110,7 @@
 <translation id="4095264805865317199">모바일 활성화 UI 열기</translation>
 <translation id="4095507791297118304">기본 디스플레이</translation>
 <translation id="4096508467498758490">개발자 모드 확장 프로그램 사용 중지</translation>
+<translation id="4096797685681362305">지난주에 확인함</translation>
 <translation id="4097406557126260163">앱 및 확장 프로그램</translation>
 <translation id="409742781329613461">Chrome 도움말</translation>
 <translation id="4097560579602855702">Google 검색</translation>
@@ -3662,6 +3666,7 @@
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4699357559218762027">(자동 실행)</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
+<translation id="4701335814944566468">어제 확인함</translation>
 <translation id="4708794300267213770">절전 모드 해제 시 잠금 화면 표시</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
@@ -3729,6 +3734,7 @@
 <translation id="479536056609751218">웹페이지, HTML만</translation>
 <translation id="4796142525425001238">항상 복원</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />블루투스 로그<ph name="END_LINK" /> 첨부(Google 사내용)</translation>
+<translation id="479863874072008121">기기 관리</translation>
 <translation id="4800839971935185386">이름 및 아이콘 업데이트 검토</translation>
 <translation id="4801448226354548035">계정 숨기기</translation>
 <translation id="4801512016965057443">모바일 데이터 로밍 허용</translation>
@@ -5234,7 +5240,7 @@
 <translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 사용한 기능, 일반적인 메모리 사용량 등의 정보가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />이 기능을 사용 중지해도 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 기능에는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">경고 - 자세한 로깅이 사용 설정되었으며 아래의 로그에 URL 또는 기타 민감한 정보가 포함될 수 있습니다. 정보를 제출해도 되는지 검토하고 확인하시기 바랍니다.</translation>
 <translation id="6387674443318562538">수직 분할</translation>
 <translation id="6388429472088318283">언어 검색</translation>
@@ -6452,6 +6458,7 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7659154729610375585">시크릿 모드를 종료하시겠습니까?</translation>
 <translation id="7659297516559011665">이 기기에만 저장되어 있는 비밀번호</translation>
+<translation id="7659336857671800422">개인 정보 보호 가이드 시작</translation>
 <translation id="7659584679870740384">더 이상 이 기기를 사용할 권한이 없습니다. 관리자에게 로그인 권한에 대해 문의하세요.</translation>
 <translation id="7661259717474717992">사이트에서 쿠키 데이터 저장 및 읽기 허용</translation>
 <translation id="7661451191293163002">등록 인증서를 확인할 수 없습니다.</translation>
@@ -7974,6 +7981,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 수정할 수 있게 됩니다.</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> 검색</translation>
 <translation id="9201023452444595544">모든 오프라인 데이터가 삭제됩니다.</translation>
+<translation id="9201117361710210082">이전에 확인함</translation>
 <translation id="9201220332032049474">화면 잠금 옵션</translation>
 <translation id="9201842707396338580">문제가 발생했습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="9203398526606335860">프로파일링 사용(&amp;P)</translation>

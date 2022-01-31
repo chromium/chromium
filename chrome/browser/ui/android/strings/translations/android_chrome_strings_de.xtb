@@ -103,6 +103,7 @@
 <translation id="1544826120773021464">Wenn Sie Ihr Google-Konto verwalten möchten, tippen Sie auf die Schaltfläche "Konto verwalten"</translation>
 <translation id="1549000191223877751">Zu anderem Fenster wechseln</translation>
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
+<translation id="1554532453982918912">Helfen Sie dabei, Chrome für andere Nutzer wie Sie zu verbessern</translation>
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
 <translation id="1571304935088121812">Nutzernamen kopieren</translation>
 <translation id="1592864538817356322">Standardschutz</translation>
@@ -252,6 +253,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2453860139492968684">Fertig</translation>
 <translation id="2459390580524506445">Verbesserte Sprachsuche</translation>
 <translation id="2461822463642141190">Aktuell</translation>
+<translation id="2472163211318554013">Wenn Sie Chrome optimal nutzen möchten, melden Sie sich an</translation>
 <translation id="247737702124049222">Bildbeschreibungen sind aktiviert</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
@@ -288,6 +290,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2645657967708199252">Ihr Download kann wegen Ihrer <ph name="CONNECTION_TYPE" />-Verbindung sehr lange dauern</translation>
 <translation id="2647434099613338025">Sprache hinzufügen</translation>
 <translation id="2649068648233607930">Ihr Browser wird von <ph name="DOMAIN" /> verwaltet</translation>
+<translation id="2650348088770008516">Erläuterungen zum Datenschutz sind geschlossen</translation>
 <translation id="2650751991977523696">Datei noch einmal herunterladen?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audiodatei}other{# Audiodateien}}</translation>
 <translation id="265156376773362237">Standard-Vorabladen</translation>
@@ -319,6 +322,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2818669890320396765">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Lesezeichen auf allen Ihren Geräten zu sehen</translation>
 <translation id="2827278682606527653">Feedkartenmenü halb geöffnet</translation>
 <translation id="2830783625999891985">Inhalte der Zwischenablage werden nicht angezeigt</translation>
+<translation id="2838367486340230368">Erläuterungen zum Datenschutz sind halb geöffnet</translation>
 <translation id="2839327205551510876">Sie folgen <ph name="SITE_NAME" /> nicht mehr</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Inkognitotab wird geschlossen}other{<ph name="TAB_COUNT_MANY" /> Inkognitotabs werden geschlossen}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Zuletzt geprüft: vor 1 Tag}other{Zuletzt geprüft: vor # Tagen}}</translation>
@@ -357,6 +361,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2996291259634659425">Passphrase erstellen</translation>
 <translation id="2996809686854298943">URL erforderlich</translation>
 <translation id="2997081575621687554">Wenn eine Google Sites-Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die verlinkten Seiten und lädt sie ohne Cookies über Google-Server vorab. Damit wird Ihre Identität vor der vorab geladenen Website verborgen.</translation>
+<translation id="3003733539450769656">Erkennt schädliche Ereignisse im Voraus und warnt Sie, bevor diese eintreten</translation>
 <translation id="3006881078666935414">Keine Nutzungsdaten</translation>
 <translation id="301080557829842765">Datenschutz</translation>
 <translation id="3016635187733453316">Prüfen Sie, ob das Gerät mit dem Internet verbunden ist</translation>
@@ -369,6 +374,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3037517125981011456">Aufforderungen für die Anmeldung in Chrome werden angezeigt</translation>
 <translation id="3046945242843292318">Diese Seite beim nächsten Mal schneller aufrufen</translation>
 <translation id="3055259925215945098">Lesezeichen verschoben</translation>
+<translation id="3055841435094910999">Es werden Informationen zur Chrome-Nutzung, die Ihrer Person nicht zugeordnet werden können, an Google gesendet\n\nFalls Chrome abstürzt, können die Details zum Absturz auch personenbezogene Daten enthalten\n\nWenn Sie die Synchronisierung aktivieren, können Messwerte auch Informationen zu besuchten URLs enthalten</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> Lesezeichen}other{<ph name="BOOKMARKS_COUNT_MANY" /> Lesezeichen}}</translation>
 <translation id="3062802207422175757">Artikel zu Ihren Interessen in Chrome</translation>
 <translation id="3066573403916685335">Nach unten</translation>
@@ -708,6 +714,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5091199029769593641">Bald werden Sie beim Öffnen eines neuen Tabs „<ph name="SITE_NAME" />“-Artikel sehen. Websites, denen Sie folgen, werden in Ihrem Google-Konto gespeichert. Sie können sie in den Discover-Einstellungen verwalten.</translation>
 <translation id="5091249083535528968">Erweiterte Nutzungsdaten</translation>
 <translation id="509429900233858213">Ein Fehler ist aufgetreten.</translation>
+<translation id="5102401324271069229">Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden</translation>
 <translation id="510275257476243843">1 Stunde übrig</translation>
 <translation id="5115811374190515607">zu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interessen</translation>
@@ -1011,6 +1018,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">In <ph name="APP_NAME" /> öffnen</translation>
 <translation id="6671495933530132209">Bild kopieren</translation>
+<translation id="6674044799624355221">Sendet eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern</translation>
 <translation id="6674571176963658787">Geben Sie Ihre Passphrase ein, um die Synchronisierung zu starten</translation>
 <translation id="6676840375528380067">Ihre Chrome-Daten von diesem Gerät löschen?</translation>
 <translation id="6684809838922667136">Chrome verbessern</translation>
@@ -1086,6 +1094,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7085332316435785646">Wählen Sie, ob der Chrome-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für Sie zu personalisieren</translation>
 <translation id="7088681679121566888">Chrome ist auf dem neuesten Stand</translation>
 <translation id="7093803425429738190">Emotion hinzufügen</translation>
+<translation id="7105047059074518658">Anmelden, um Chrome noch einfacher auf mehreren Geräten zu nutzen</translation>
 <translation id="7106762743910369165">Ihr Browser wird von Ihrer Organisation verwaltet</translation>
 <translation id="7121362699166175603">Löscht den Verlauf und Autovervollständigungen in der Adressleiste. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für Ihr Google-Konto gespeichert.</translation>
 <translation id="7138678301420049075">Sonstiges</translation>
@@ -1101,6 +1110,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7187993566681480880">Schützt Sie in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn Sie angemeldet sind.</translation>
 <translation id="718926126787620637">Liste der Lesezeichenordner ist vollständig geöffnet</translation>
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
+<translation id="7196215469483532480">Erläuterungen zum Datenschutz sind vollständig geöffnet</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 Download ausstehend}other{# Downloads ausstehend}}</translation>
 <translation id="7242755609445462077">Stilisierte Markierung <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Prüfen Sie, ob auf <ph name="TARGET_DEVICE_NAME" /> die Synchronisierung in Chrome aktiviert ist</translation>
@@ -1200,11 +1210,13 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7757787379047923882">Text geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Datum &amp; Zeit auswählen</translation>
 <translation id="7762668264895820836">SD-Karte <ph name="SD_CARD_NUMBER" /></translation>
+<translation id="7762928140712606393">Anmelden, um Zugriff auf zusätzliche Funktionen und die höchstmögliche Sicherheit in Chrome zu erhalten</translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> schließen</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
 <translation id="7778840695157240389">Kommen Sie später wieder vorbei, um neue Artikel zu lesen</translation>
+<translation id="7780645209293383778">Verknüpft diese Daten vorübergehend mit Ihrem Google-Konto, sofern Sie angemeldet sind, um Sie in Google-Apps zu schützen</translation>
 <translation id="7786595606756654269">Google Assistant bietet eine bessere Spracheingabe für die Suche im Web und für Interaktionen mit Seiten, die Sie geöffnet haben. Die URLs und Inhalte der Websites, auf denen Sie Assistant verwenden, werden an Google Assistant weitergegeben.</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> Tabs wiederhergestellt</translation>
@@ -1274,6 +1286,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8084285576995584326">Google-Kontodaten verwalten</translation>
 <translation id="808747664143081553">Mit Gerät verbunden</translation>
 <translation id="8088176524274673045">Um diesen Inhalt mit Personen in Ihrer Nähe zu teilen, bitten Sie sie, den QR-Code zu scannen</translation>
+<translation id="8100969750121413114">Anmelden, um Chrome zu personalisieren</translation>
 <translation id="8103578431304235997">Inkognitotab</translation>
 <translation id="8105613260829665809">Wenn Sie fortfahren, akzeptieren Sie damit die <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen<ph name="END_TOS_LINK" />.\nChrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_UMA_LINK" />Verwalten<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1348,6 +1361,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Verlaufsseite öffnen</translation>
 <translation id="8493948351860045254">Speicherplatz freigeben</translation>
+<translation id="8497480609928300907">Erläuterungen zum Datenschutz</translation>
 <translation id="8497726226069778601">Noch keine Seiten</translation>
 <translation id="8503559462189395349">Chrome-Passwörter</translation>
 <translation id="8503813439785031346">Nutzername</translation>

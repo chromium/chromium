@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">ไอคอนปัจจุบัน</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1108600514891325577">&amp;หยุด</translation>
+<translation id="1108938384783527433">ซิงค์ประวัติการเข้าชม</translation>
 <translation id="1110155001042129815">รอ</translation>
 <translation id="1110965959145884739">เลือกภาษาที่จะติดตั้งในอุปกรณ์นี้ ไฟล์ภาษาจะแชร์กับผู้ใช้เพื่อประหยัดพื้นที่ในดิสก์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">โปรเจ็กเตอร์</translation>
@@ -508,6 +509,7 @@
 <translation id="1521442365706402292">จัดการใบรับรอง</translation>
 <translation id="1521774566618522728">ใช้งานวันนี้</translation>
 <translation id="152234381334907219">ไม่เคยบันทึก</translation>
+<translation id="1523279371236772909">ดูในเดือนที่ผ่านมา</translation>
 <translation id="1523978563989812243">เครื่องมือการอ่านออกเสียงข้อความ</translation>
 <translation id="1524430321211440688">แป้นพิมพ์</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
@@ -1239,6 +1241,7 @@
 <translation id="2232876851878324699">ไฟล์นี้มีใบรับรองหนึ่งใบซึ่งไม่ได้นำเข้า:</translation>
 <translation id="2233502537820838181">&amp;ข้อมูลเพิ่มเติม</translation>
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
+<translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
 <translation id="2234876718134438132">การซิงค์และบริการของ Google</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2238379619048995541">ข้อมูลสถานะความถี่</translation>
@@ -3093,6 +3096,7 @@
 <translation id="4095264805865317199">เปิด UI การเปิดใช้งานเครือข่ายมือถือ</translation>
 <translation id="4095507791297118304">การแสดงผลหลัก</translation>
 <translation id="4096508467498758490">ปิดส่วนขยายโหมดนักพัฒนาซอฟต์แวร์</translation>
+<translation id="4096797685681362305">ดูในสัปดาห์ที่ผ่านมา</translation>
 <translation id="4097406557126260163">แอปและส่วนขยาย</translation>
 <translation id="409742781329613461">เคล็ดลับสำหรับ Chrome</translation>
 <translation id="4097560579602855702">ค้นหาใน Google</translation>
@@ -3648,6 +3652,7 @@
 <translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="4699357559218762027">(เรียกใช้อัตโนมัติ)</translation>
 <translation id="4701025263201366865">การลงชื่อเข้าใช้ของผู้ปกครอง</translation>
+<translation id="4701335814944566468">ดูเมื่อวานนี้</translation>
 <translation id="4708794300267213770">แสดงหน้าจอล็อกเมื่อปลุกให้ทำงานจากโหมดสลีป</translation>
 <translation id="4708849949179781599">ออกจาก <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">กู้คืนการตั้งค่า</translation>
@@ -3715,6 +3720,7 @@
 <translation id="479536056609751218">หน้าเว็บ HTML เท่านั้น</translation>
 <translation id="4796142525425001238">คืนค่าเสมอ</translation>
 <translation id="4798236378408895261">แนบ<ph name="BEGIN_LINK" />บันทึกบลูทูธ<ph name="END_LINK" /> (ใช้ภายใน Google)</translation>
+<translation id="479863874072008121">จัดการอุปกรณ์</translation>
 <translation id="4800839971935185386">ตรวจสอบการอัปเดตชื่อและไอคอน</translation>
 <translation id="4801448226354548035">ซ่อนบัญชี</translation>
 <translation id="4801512016965057443">อนุญาตการโรมมิ่งข้อมูลมือถือ</translation>
@@ -6437,6 +6443,7 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7659154729610375585">ต้องการออกจากโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="7659297516559011665">รหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="7659336857671800422">ดูคู่มือความเป็นส่วนตัว</translation>
 <translation id="7659584679870740384">คุณไม่ได้รับอนุญาตให้ใช้อุปกรณ์นี้ โปรดติดต่อผู้ดูแลระบบเพื่อขออนุญาตลงชื่อเข้าใช้</translation>
 <translation id="7661259717474717992">อนุญาตให้เว็บไซต์บันทึกและอ่านข้อมูลคุกกี้</translation>
 <translation id="7661451191293163002">ไม่สามารถรับใบรับรองการลงทะเบียน</translation>
@@ -7958,6 +7965,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> จะแก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="920045321358709304">ค้นหา <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">ระบบจะล้างข้อมูลออฟไลน์ทั้งหมด</translation>
+<translation id="9201117361710210082">ดูก่อนหน้านี้</translation>
 <translation id="9201220332032049474">ตัวเลือกการล็อกหน้าจอ</translation>
 <translation id="9201842707396338580">มีข้อผิดพลาดเกิดขึ้น โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="9203398526606335860">&amp;เปิดใช้งานการทำแฟ้มประวัติ</translation>
