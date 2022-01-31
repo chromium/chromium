@@ -29,7 +29,8 @@ enum class TrialComparisonResult {
   kIgnoredBothAuthorityInvalid = 13,
   kIgnoredBothKnownRoot = 14,
   kIgnoredBuiltinAuthorityInvalidPlatformSymantec = 15,
-  kMaxValue = kIgnoredBuiltinAuthorityInvalidPlatformSymantec
+  kIgnoredLetsEncryptExpiredRoot = 16,
+  kMaxValue = kIgnoredLetsEncryptExpiredRoot
 };
 
 NET_EXPORT_PRIVATE bool CertVerifyResultEqual(const CertVerifyResult& a,

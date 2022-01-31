@@ -12523,6 +12523,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="13" label="Ignored Authority Invalid"/>
   <int value="14" label="Ignored Known Root"/>
   <int value="15" label="Ignored Both Errors Platform Symantec"/>
+  <int value="16" label="Ignored Lets Encrypt Expired Root"/>
 </enum>
 
 <enum name="ChangePasswordUrlFetchResult">

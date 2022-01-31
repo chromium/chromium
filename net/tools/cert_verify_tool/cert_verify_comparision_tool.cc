@@ -214,6 +214,8 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
     case net::TrialComparisonResult::
         kIgnoredBuiltinAuthorityInvalidPlatformSymantec:
       return "ignored_builtin_authority_invalid_platform_symantec";
+    case net::TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot:
+      return "ignored_lets_encrypt_expired_root";
   }
 }
 
