@@ -22,6 +22,110 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="HeapProfiling.AndroidStackUnwinder"
+    enum="AndroidStackUnwinder" expires_after="2022-12-02">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The stack unwinder implementation used by the SamplingHeapProfiler. Emitted
+    on Android devices only each time the profiler is started, which happens at
+    Chrome launch when HeapProfiling.InProcess.Enabled is true.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.InProcess.Enabled" enum="BooleanEnabled"
+    expires_after="2022-12-02">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    One metric is emitted on every Chrome launch, recording whether the
+    in-process heap profiler is enabled in the browser process for this Chrome
+    session.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.InProcess.SamplesPerSnapshot" units="samples"
+    expires_after="2022-12-02">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The number of samples in a heap snapshot. Emitted once per snapshot when the
+    in-process heap profiler is enabled.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.InProcess.SnapshotInterval" units="ms"
+    expires_after="2022-12-02">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The time until the next heap snapshot is scheduled. Emitted once per
+    snapshot when the in-process heap profiler is enabled.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.ProfiledProcess.Type"
+    enum="HeapProfilingProcessType" expires_after="2021-12-12">
+  <owner>erikchen@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    One metric is emitted every 24-hours after Chrome is launched for every
+    process that is being profiled. The timer is reset if Chrome exits.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.ProfilingMode" enum="HeapProfilingMode"
+    expires_after="2021-02-25">
+  <owner>erikchen@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    One metric is emitted every 24-hours after Chrome is launched for every
+    Chrome instance that is using out of process heap profiling. The timer is
+    reset if Chrome exits.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.RecordTrace.Success" enum="BooleanSuccess"
+    expires_after="2021-02-25">
+  <owner>erikchen@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The metric is emitted each time Chrome attempts to record a memory-infra
+    trace to upload an out-of-process heap-profiling memory dump.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.SamplingInterval" units="bytes"
+    expires_after="2022-12-02">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The mean number of bytes between samples used by the SamplingHeapProfiler.
+    Emitted each time the profiler is started, which happens at Chrome launch
+    when HeapProfiling.InProcess.Enabled is true.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.UploadTrace.Size" units="bytes"
+    expires_after="2021-02-25">
+  <owner>erikchen@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The metric is emitted each time Chrome uploads a trace. It reflects the
+    uncompressed size of the trace.
+  </summary>
+</histogram>
+
+<histogram name="HeapProfiling.UploadTrace.Success" enum="BooleanSuccess"
+    expires_after="2021-02-25">
+  <owner>erikchen@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The metric is emitted each time Chrome uploads a trace. It reflects whether
+    the upload was successful.
+  </summary>
+</histogram>
+
 <histogram name="Memory.AudioService.PrivateMemoryFootprint" units="MB"
     expires_after="2023-01-10">
   <owner>marinaciocea@chromium.org</owner>
