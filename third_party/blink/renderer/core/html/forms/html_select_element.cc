@@ -1029,6 +1029,7 @@ void HTMLSelectElement::ResetImpl() {
   ResetToDefaultSelection();
   select_type_->UpdateTextStyleAndContent();
   SetNeedsValidityCheck();
+  HTMLFormControlElementWithState::ResetImpl();
 }
 
 bool HTMLSelectElement::PopupIsVisible() const {

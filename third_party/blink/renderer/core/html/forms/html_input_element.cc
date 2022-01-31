@@ -1015,6 +1015,7 @@ void HTMLInputElement::ResetImpl() {
 
   setChecked(FastHasAttribute(html_names::kCheckedAttr));
   dirty_checkedness_ = false;
+  HTMLFormControlElementWithState::ResetImpl();
 }
 
 bool HTMLInputElement::IsTextField() const {

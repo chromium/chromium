@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
@@ -1536,6 +1537,61 @@ TEST_F(FormAutofillUtilsTestWithIframesEnabled,
     EXPECT_TRUE(form_data.fields.empty());
     EXPECT_TRUE(form_data.child_frames.empty());
   }
+}
+
+// Fills a form, resets the form using <input type=reset>, and fills it again.
+// Tests that the form is actually filled on the second fill
+// (crbug.com/1291619).
+TEST_F(FormAutofillUtilsTest, FillAndResetAndFillAgainForm) {
+  LoadHTML(R"(
+    <body>
+      <form id="f">
+        <input id="f0">
+        <select id="f1">
+          <option value="Bar">Bar</option>
+          <option value="Foo">Foo</option>
+          <option value="Zoo">Zoo</option>
+        </select>
+        <input id="reset" type="reset">
+      </form>
+    </body>
+  )");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  auto field_manager = base::MakeRefCounted<FieldDataManager>();
+
+  FormData form;
+  ExtractFormData(GetFormElementById(doc, "f"), *field_manager, &form);
+  ASSERT_EQ(form.fields.size(), 2u);
+  form.fields[0].value = u"Foo";
+  form.fields[1].value = u"Foo";
+  form.fields[0].is_autofilled = true;
+  form.fields[1].is_autofilled = true;
+
+  // First fill of the form.
+  FillOrPreviewForm(form, GetFormControlElementById(doc, "f0"),
+                    mojom::RendererFormDataAction::kFill);
+  // Autofilling f0 leaves f0.UserHasEditedTheField() == false.
+  // TODO(crbug.com/1291619): Is this desired?
+  EXPECT_TRUE(GetFormControlElementById(doc, "f1").UserHasEditedTheField());
+  EXPECT_EQ(GetFormControlElementById(doc, "f0").Value().Ascii(), "Foo");
+  EXPECT_EQ(GetFormControlElementById(doc, "f1").Value().Ascii(), "Foo");
+
+  // Click reset button.
+  GetFormControlElementById(doc, "reset").SimulateClick();
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(GetFormControlElementById(doc, "f0").UserHasEditedTheField());
+  EXPECT_FALSE(GetFormControlElementById(doc, "f1").UserHasEditedTheField());
+  EXPECT_EQ(GetFormControlElementById(doc, "f0").Value().Ascii(), "");
+  EXPECT_EQ(GetFormControlElementById(doc, "f1").Value().Ascii(), "Bar");
+
+  // Fill form again.
+  FillOrPreviewForm(form, GetFormControlElementById(doc, "f0"),
+                    mojom::RendererFormDataAction::kFill);
+  // Autofilling f0 leaves f0.UserHasEditedTheField() == false.
+  // TODO(crbug.com/1291619): Is this desired?
+  EXPECT_TRUE(GetFormControlElementById(doc, "f1").UserHasEditedTheField());
+  EXPECT_EQ(GetFormControlElementById(doc, "f0").Value().Ascii(), "Foo");
+  EXPECT_EQ(GetFormControlElementById(doc, "f1").Value().Ascii(), "Foo");
 }
 
 }  // namespace
