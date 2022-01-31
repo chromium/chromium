@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
 Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 -->
 
+  <variant name=".Embedder_DefaultSearchEngine"/>
   <variant name=".Embedder_DirectURLInput"/>
   <variant name=".SpeculationRule"/>
 </variants>
@@ -1079,8 +1080,8 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
-<histogram name="Navigation.TimeToActivatePrerender{TriggerType}" units="ms"
-    expires_after="2022-07-01">
+<histogram name="Navigation.TimeToActivatePrerender{PrerenderTriggerType}"
+    units="ms" expires_after="2022-07-01">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -1091,10 +1092,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
     This metric is logged everytime prerender activation navigation commits.
   </summary>
-  <token key="TriggerType">
-    <variant name=".Embedder_DirectURLInput"/>
-    <variant name=".SpeculationRule"/>
-  </token>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram name="Navigation.TimeToReadyToCommit2" units="ms"
