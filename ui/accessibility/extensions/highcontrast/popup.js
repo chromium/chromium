@@ -5,19 +5,20 @@
 var site;
 var key1;
 var key2;
+Storage.initialize();
 
 function setRadio(name, value) {
   var radios = document.querySelectorAll('input[name="' + name + '"]');
   for (var i = 0; i < radios.length; i++) {
     radios[i].checked = (radios[i].value == value);
-    radios[i].disabled = !getEnabled();
+    radios[i].disabled = !Storage.enabled;
   }
 }
 
 function update() {
-  document.body.className = getEnabled() ? '' : 'disabled';
+  document.body.className = Storage.enabled ? '' : 'disabled';
 
-  if (getEnabled()) {
+  if (Storage.enabled) {
     $('title').innerText = chrome.i18n.getMessage('highcontrast_enabled');
     $('toggle').innerHTML =
         '<b>' + chrome.i18n.getMessage('highcontrast_disable') + '</b><br>' +
@@ -31,17 +32,18 @@ function update() {
     $('subcontrols').style.display = 'none';
   }
 
-  setRadio('keyaction', getKeyAction());
+  setRadio('keyaction', Storage.keyAction);
   if (site) {
-    setRadio('scheme', getSiteScheme(site));
-    $('make_default').disabled = (getSiteScheme(site) == getDefaultScheme());
+    const scheme = Storage.getSiteScheme(site);
+    setRadio('scheme', scheme);
+    $('make_default').disabled = (scheme == Storage.scheme);
   } else {
-    setRadio('scheme', getDefaultScheme());
+    setRadio('scheme', Storage.scheme);
   }
-  if (getEnabled()) {
+  if (Storage.enabled) {
     document.documentElement.setAttribute(
         'hc',
-        site ? 'a' + getSiteScheme(site) : 'a' + getDefaultScheme());
+        site ? 'a' + Storage.getSiteScheme(site) : 'a' + Storage.scheme);
   } else {
     document.documentElement.setAttribute('hc', 'a0');
   }
@@ -49,28 +51,28 @@ function update() {
 }
 
 function onToggle() {
-  setEnabled(!getEnabled());
+  Storage.enabled = !Storage.enabled;
   update();
 }
 
 function onForget() {
-  resetSiteSchemes();
+  Storage.resetSiteSchemes();
   update();
 }
 
 function onRadioChange(name, value) {
   switch (name) {
     case 'keyaction':
-      setKeyAction(value);
+      Storage.keyAction = value;
       break;
     case 'apply':
-      setApply(value);
+      Storage.enabled = value;
       break;
     case 'scheme':
       if (site) {
-        setSiteScheme(site, value);
+        Storage.setSiteScheme(site, value);
       } else {
-        setDefaultScheme(value);
+        Storage.scheme = value;
       }
       break;
   }
@@ -78,7 +80,7 @@ function onRadioChange(name, value) {
 }
 
 function onMakeDefault() {
-  setDefaultScheme(getSiteScheme(site));
+  Storage.scheme = Storage.getSiteScheme(site);
   update();
 }
 
