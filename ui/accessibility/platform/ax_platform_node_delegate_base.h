@@ -16,6 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 namespace ui {

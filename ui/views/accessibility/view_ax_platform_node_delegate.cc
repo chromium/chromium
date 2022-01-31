@@ -16,8 +16,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -433,6 +437,36 @@ bool ViewAXPlatformNodeDelegate::HasModalDialog() const {
 
 bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
   return AXPlatformNodeDelegateBase::IsChildOfLeaf();
+}
+
+ui::AXNodePosition::AXPositionInstance
+ViewAXPlatformNodeDelegate::CreateTextPositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  // Support text navigation only on text fields for now. Primarily this is to
+  // support navigating the address bar.
+  if (!IsDescendantOfAtomicTextField())
+    return ui::AXNodePosition::CreateNullPosition();
+
+  if (!dummy_tree_manager_) {
+    ui::AXTreeUpdate initial_state;
+    initial_state.root_id = GetData().id;
+    initial_state.nodes = {GetData()};
+    initial_state.has_tree_data = true;
+    initial_state.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    auto dummy_tree = std::make_unique<ui::AXTree>(initial_state);
+    dummy_tree_manager_ =
+        std::make_unique<ui::TestAXTreeManager>(std::move(dummy_tree));
+  } else {
+    DCHECK(dummy_tree_manager_->GetTree());
+    ui::AXTreeUpdate update;
+    update.nodes = {GetData()};
+    const_cast<ui::AXTree*>(dummy_tree_manager_->GetTree())
+        ->Unserialize(update);
+  }
+
+  return ui::AXNodePosition::CreatePosition(
+      *dummy_tree_manager_->GetRootAsAXNode(), offset, affinity);
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNSWindow() {
