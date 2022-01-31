@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
@@ -12,6 +13,7 @@
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -42,6 +44,7 @@ ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
   DependsOn(IOSUserEventServiceFactory::GetInstance());
+  DependsOn(SafeBrowsingMetricsCollectorFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
@@ -57,7 +60,11 @@ ChromePasswordProtectionServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
   return std::make_unique<ChromePasswordProtectionService>(
-      safe_browsing_service, chrome_browser_state);
+      safe_browsing_service, chrome_browser_state,
+      ios::HistoryServiceFactory::GetForBrowserState(
+          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS),
+      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
+          chrome_browser_state));
 }
 
 bool ChromePasswordProtectionServiceFactory::ServiceIsCreatedWithBrowserState()

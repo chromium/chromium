@@ -63,8 +63,11 @@ FakeSafeBrowsingService::FakeSafeBrowsingService() = default;
 
 FakeSafeBrowsingService::~FakeSafeBrowsingService() = default;
 
-void FakeSafeBrowsingService::Initialize(PrefService* prefs,
-                                         const base::FilePath& user_data_path) {
+void FakeSafeBrowsingService::Initialize(
+    PrefService* prefs,
+    const base::FilePath& user_data_path,
+    safe_browsing::SafeBrowsingMetricsCollector*
+        safe_browsing_metrics_collector) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 }
 

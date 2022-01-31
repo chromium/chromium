@@ -59,6 +59,7 @@
 #include "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -360,8 +361,12 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       application_context_->GetSafeBrowsingService();
   base::FilePath user_data_path;
   CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
+  safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
+      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
+          last_used_browser_state);
   safe_browsing_service->Initialize(last_used_browser_state->GetPrefs(),
-                                    user_data_path);
+                                    user_data_path,
+                                    safe_browsing_metrics_collector);
 
   // Set monitoring for some experimental flags.
   MonitorExperimentalSettingsChanges();

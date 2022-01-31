@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/browser/user_population.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -138,20 +139,21 @@ std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
 ChromePasswordProtectionService::ChromePasswordProtectionService(
     SafeBrowsingService* sb_service,
     ChromeBrowserState* browser_state,
+    history::HistoryService* history_service,
+    safe_browsing::SafeBrowsingMetricsCollector*
+        safe_browsing_metrics_collector,
     ChangePhishedCredentialsCallback add_phished_credentials,
     ChangePhishedCredentialsCallback remove_phished_credentials)
     : safe_browsing::PasswordProtectionService(
           sb_service->GetDatabaseManager(),
           sb_service->GetURLLoaderFactory(),
-          ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state,
-              ServiceAccessType::EXPLICIT_ACCESS),
+          history_service,
           /*pref_service=*/nullptr,
           /*token_fetcher=*/nullptr,
           browser_state->IsOffTheRecord(),
           /*identity_manager=*/nullptr,
           /*try_token_fetch=*/false,
-          /*metrics_collector=*/nullptr),
+          safe_browsing_metrics_collector),
       browser_state_(browser_state),
       add_phished_credentials_(std::move(add_phished_credentials)),
       remove_phished_credentials_(std::move(remove_phished_credentials)) {}

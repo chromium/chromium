@@ -26,7 +26,9 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
 
   // SafeBrowsingService:
   void Initialize(PrefService* prefs,
-                  const base::FilePath& user_data_path) override;
+                  const base::FilePath& user_data_path,
+                  safe_browsing::SafeBrowsingMetricsCollector*
+                      safe_browsing_metrics_collector) override;
   void ShutDown() override;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateUrlChecker(
       network::mojom::RequestDestination request_destination,

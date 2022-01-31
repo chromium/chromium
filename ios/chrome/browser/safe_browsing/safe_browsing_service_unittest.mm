@@ -29,6 +29,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
@@ -150,8 +151,13 @@ class SafeBrowsingServiceTest : public PlatformTest {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
 
     CHECK(temp_dir_.CreateUniqueTempDir());
+    safe_browsing::SafeBrowsingMetricsCollector*
+        safe_browsing_metrics_collector =
+            SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
+                browser_state_.get());
     safe_browsing_service_->Initialize(browser_state_->GetPrefs(),
-                                       temp_dir_.GetPath());
+                                       temp_dir_.GetPath(),
+                                       safe_browsing_metrics_collector);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -459,8 +465,12 @@ TEST_F(SafeBrowsingServiceInitializationTest, GetURLLoaderFactory) {
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service =
       base::MakeRefCounted<SafeBrowsingServiceImpl>();
+  safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
+      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
+          browser_state.get());
   safe_browsing_service->Initialize(browser_state->GetPrefs(),
-                                    temp_dir.GetPath());
+                                    temp_dir.GetPath(),
+                                    safe_browsing_metrics_collector);
 
   EXPECT_TRUE(safe_browsing_service->GetURLLoaderFactory());
 

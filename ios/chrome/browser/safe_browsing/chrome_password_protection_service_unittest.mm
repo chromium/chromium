@@ -24,8 +24,10 @@
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync_user_events/fake_user_event_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -89,10 +91,15 @@ class FakeChromePasswordProtectionService
   explicit FakeChromePasswordProtectionService(
       SafeBrowsingService* sb_service,
       ChromeBrowserState* browser_state,
+      history::HistoryService* history_service,
+      safe_browsing::SafeBrowsingMetricsCollector*
+          safe_browsing_metrics_collector,
       ChangePhishedCredentialsCallback add_phished_credentials,
       ChangePhishedCredentialsCallback remove_phished_credentials)
       : ChromePasswordProtectionService(sb_service,
                                         browser_state,
+                                        history_service,
+                                        safe_browsing_metrics_collector,
                                         add_phished_credentials,
                                         remove_phished_credentials),
         is_incognito_(false),
@@ -135,6 +142,10 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
 
     service_ = std::make_unique<FakeChromePasswordProtectionService>(
         safe_browsing_service_.get(), GetBrowserState(),
+        ios::HistoryServiceFactory::GetForBrowserState(
+            GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS),
+        SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
+            GetBrowserState()),
         mock_add_callback_.Get(), mock_remove_callback_.Get());
 
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();

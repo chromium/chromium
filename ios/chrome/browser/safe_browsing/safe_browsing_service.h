@@ -26,6 +26,7 @@ class SharedURLLoaderFactory;
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
 class SafeBrowsingUrlCheckerImpl;
+class SafeBrowsingMetricsCollector;
 }  // namespace safe_browsing
 
 namespace web {
@@ -44,7 +45,9 @@ class SafeBrowsingService
 
   // Called on the UI thread to initialize the service.
   virtual void Initialize(PrefService* prefs,
-                          const base::FilePath& user_data_path) = 0;
+                          const base::FilePath& user_data_path,
+                          safe_browsing::SafeBrowsingMetricsCollector*
+                              safe_browsing_metrics_collector) = 0;
 
   // Called on the UI thread to terminate the service. This must be called
   // before the IO thread is torn down.

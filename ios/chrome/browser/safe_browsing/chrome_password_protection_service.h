@@ -25,12 +25,17 @@ class GURL;
 class PrefService;
 class SafeBrowsingService;
 
+namespace history {
+class HistoryService;
+}
+
 namespace password_manager {
 class PasswordStore;
 }  // namespace password_manager
 
 namespace safe_browsing {
 class PasswordProtectionRequest;
+class SafeBrowsingMetricsCollector;
 }  // namespace safe_browsing
 
 namespace web {
@@ -47,6 +52,9 @@ class ChromePasswordProtectionService
   ChromePasswordProtectionService(
       SafeBrowsingService* sb_service,
       ChromeBrowserState* browser_state,
+      history::HistoryService* history_service,
+      safe_browsing::SafeBrowsingMetricsCollector*
+          safe_browsing_metrics_collector,
       ChangePhishedCredentialsCallback add_phished_credentials =
           base::BindRepeating(&password_manager::AddPhishedCredentials),
       ChangePhishedCredentialsCallback remove_phished_credentials =
