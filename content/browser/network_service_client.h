@@ -50,6 +50,9 @@ class NetworkServiceClient
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   BindURLLoaderNetworkServiceObserver();
 
+  // Called when SetParams() is called on the associated network service.
+  void OnNetworkServiceInitialized(network::mojom::NetworkService* service);
+
   // net::CertDatabase::Observer implementation:
   void OnCertDBChanged() override;
 

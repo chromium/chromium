@@ -1005,6 +1005,8 @@ network::mojom::NetworkService* GetNetworkService() {
       // Call SetClient before creating NetworkServiceClient, as the latter
       // might make requests to NetworkService that depend on initialization.
       (*g_network_service_remote)->SetParams(CreateNetworkServiceParams());
+      g_client->OnNetworkServiceInitialized(g_network_service_remote->get());
+
       g_network_service_is_responding = false;
       g_network_service_remote->QueryVersion(base::BindOnce(
           [](base::Time start_time, uint32_t) {
