@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_input_element.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_option_element.h"
@@ -143,6 +144,12 @@ void WebInputElement::SetShouldRevealPassword(bool value) {
 bool WebInputElement::ShouldRevealPassword() const {
   return ConstUnwrap<HTMLInputElement>()->ShouldRevealPassword();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void WebInputElement::DispatchSimulatedEnterIfLastInputInForm() {
+  Unwrap<HTMLInputElement>()->DispatchSimulatedEnterIfLastInputInForm();
+}
+#endif
 
 WebInputElement::WebInputElement(HTMLInputElement* elem)
     : WebFormControlElement(elem) {}

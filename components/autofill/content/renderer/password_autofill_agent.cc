@@ -779,6 +779,9 @@ bool PasswordAutofillAgent::FillSuggestion(
   mutable_filled_element.SetSelectionRange(element->Value().length(),
                                            element->Value().length());
 
+  // TODO(crbug.com/1283004): Submit the form if filling is caused by
+  // TouchToFill.
+
   return true;
 }
 

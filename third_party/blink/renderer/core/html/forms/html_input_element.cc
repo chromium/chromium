@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
@@ -77,6 +78,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -2104,6 +2106,19 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
         StyleChangeReasonForTracing::Create(style_change_reason::kControl));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void HTMLInputElement::DispatchSimulatedEnterIfLastInputInForm() {
+  Page* page = GetDocument().GetPage();
+  if (page && !page->GetFocusController().NextFocusableElementInForm(
+                  this, mojom::blink::FocusType::kForward)) {
+    page->GetFocusController().SetFocusedElement(this,
+                                                 GetDocument().GetFrame());
+
+    EventDispatcher::DispatchSimulatedEnterEvent(*this);
+  }
+}
+#endif
 
 bool HTMLInputElement::IsInteractiveContent() const {
   return input_type_->IsInteractiveContent();

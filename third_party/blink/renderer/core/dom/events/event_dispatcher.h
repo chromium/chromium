@@ -40,6 +40,7 @@ class Event;
 class EventDispatchHandlingState;
 class LocalFrameView;
 class Node;
+class HTMLInputElement;
 
 class EventDispatchHandlingState
     : public GarbageCollected<EventDispatchHandlingState> {
@@ -59,6 +60,7 @@ class EventDispatcher {
   static void DispatchSimulatedClick(Node&,
                                      const Event* underlying_event,
                                      SimulatedClickCreationScope);
+  static void DispatchSimulatedEnterEvent(HTMLInputElement& input_element);
 
   DispatchEventResult Dispatch();
   Node& GetNode() const { return *node_; }
