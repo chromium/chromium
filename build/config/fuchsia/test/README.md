@@ -10,8 +10,8 @@ Some fragments are explained in detail below:
 
 ### General Purpose Fragments
 
-#### system_test_facet.shard.test-cml
-Runs CFv2 tests in the "system" test realm. This is generally required for all
+#### chromium_test_facet.shard.test-cml
+Runs CFv2 tests in the "chromium" test realm. This is generally required for all
 Chromium tests that must interact with true system services.
 
 #### font_capabilities.test-cmx

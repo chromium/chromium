@@ -65,6 +65,7 @@
     {
       protocol: [
         "fuchsia.boot.ReadOnlyLog",
+        "fuchsia.media.ProfileProvider",
         "fuchsia.process.Launcher",
         "fuchsia.sys.Loader",
       ],

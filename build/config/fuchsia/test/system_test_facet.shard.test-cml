@@ -1,5 +1,0 @@
-{
-  facets: {
-    "fuchsia.test": { type: "system" },
-  },
-}

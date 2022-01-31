@@ -350,9 +350,9 @@ template("test") {
       # Collate the complete set of elements to include in the test component's
       # manifest.
       _manifest_fragments = [
+        "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
         "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
         "//build/config/fuchsia/test/minimum.shard.test-cml",
-        "//build/config/fuchsia/test/system_test_facet.shard.test-cml",
         _test_program_fragment,
       ]
 
