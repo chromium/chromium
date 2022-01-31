@@ -208,6 +208,11 @@ extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
 extern const char kAutofillEnableVirtualCardName[];
 extern const char kAutofillEnableVirtualCardDescription[];
 
+extern const char
+    kAutofillEnableVirtualCardManagementInDesktopSettingsPageName[];
+extern const char
+    kAutofillEnableVirtualCardManagementInDesktopSettingsPageDescription[];
+
 extern const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[];
 extern const char
     kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[];

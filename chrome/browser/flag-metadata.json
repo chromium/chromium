@@ -445,6 +445,11 @@
     "owners": [ "siyua", "jsaul@google.com", "aneeshali@google.com" ],
     "expiry_milestone": 100
   },
+    {
+    "name": "autofill-enable-virtual-card-management-in-desktop-settings-page",
+    "owners": [ "siyua", "jsaul@google.com"],
+    "expiry_milestone": 105
+  },
   {
     "name": "autofill-enable-virtual-cards-risk-based-authentication",
     "owners": [ "siyua", "jsaul@google.com" ],

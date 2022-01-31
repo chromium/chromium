@@ -366,6 +366,15 @@ const char kAutofillEnableVirtualCardDescription[] =
     "When enabled, if all requirements are met, Autofill will offer to use "
     "virtual credit cards in form filling.";
 
+const char kAutofillEnableVirtualCardManagementInDesktopSettingsPageName[] =
+    "Enable virtual card enrollment management in desktop payments settings "
+    "page";
+const char
+    kAutofillEnableVirtualCardManagementInDesktopSettingsPageDescription[] =
+        "When enabled, chrome://settings/payments will offer the option to "
+        "enroll in virtual card if the card is eligible and to unenroll if the "
+        "card has been enrolled.";
+
 const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[] =
     "Enable risk based authentication for Autofill Virtual Card Numbers";
 const char kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[] =

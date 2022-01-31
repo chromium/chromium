@@ -7850,6 +7850,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTailoredSecurityIntegrationDescription, kOsAll,
      FEATURE_VALUE_TYPE(safe_browsing::kTailoredSecurityIntegration)},
 
+    {"autofill-enable-virtual-card-management-in-desktop-settings-page",
+     flag_descriptions::
+         kAutofillEnableVirtualCardManagementInDesktopSettingsPageName,
+     flag_descriptions::
+         kAutofillEnableVirtualCardManagementInDesktopSettingsPageDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableVirtualCardManagementInDesktopSettingsPage)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

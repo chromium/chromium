@@ -111,6 +111,13 @@ const base::Feature kAutofillEnableUpdateVirtualCardEnrollment{
 const base::Feature kAutofillEnableVirtualCard{
     "AutofillEnableVirtualCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, in the payments settings page on desktop, virtual card
+// enrollment management will be provided so that the user can enroll/unenroll a
+// card in virtual card.
+const base::Feature kAutofillEnableVirtualCardManagementInDesktopSettingsPage{
+    "AutofillEnableVirtualCardManagementInDesktopSettingsPage",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // When enabled, virtual card retrieval will pass an optional
 // authentication based on risk level.
 const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication{

@@ -30,6 +30,8 @@ extern const base::Feature kAutofillEnableStickyManualFallbackForCards;
 extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableUpdateVirtualCardEnrollment;
 extern const base::Feature kAutofillEnableVirtualCard;
+extern const base::Feature
+    kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
 extern const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
 extern const base::Feature kAutofillFixOfferInIncognito;
