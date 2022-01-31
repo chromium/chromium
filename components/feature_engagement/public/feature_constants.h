@@ -117,7 +117,6 @@ extern const base::Feature kIPHKeyboardAccessoryBarSwipingFeature;
 extern const base::Feature kIPHKeyboardAccessoryPasswordFillingFeature;
 extern const base::Feature kIPHKeyboardAccessoryPaymentFillingFeature;
 extern const base::Feature kIPHKeyboardAccessoryPaymentOfferFeature;
-extern const base::Feature kIPHKeyboardAccessoryPaymentVirtualCardFeature;
 extern const base::Feature kIPHMicToolbarFeature;
 extern const base::Feature kIPHNewTabPageHomeButtonFeature;
 extern const base::Feature kIPHPageInfoFeature;
@@ -172,8 +171,11 @@ extern const base::Feature kIPHDiscoverFeedHeaderFeature;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+extern const base::Feature kIPHAutofillVirtualCardSuggestionFeature;
 extern const base::Feature kIPHUpdatedConnectionSecurityIndicatorsFeature;
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace feature_engagement
 

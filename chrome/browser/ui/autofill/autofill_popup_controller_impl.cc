@@ -16,6 +16,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -340,6 +342,14 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
                                           /*has_suggestions=*/false);
   mf_controller->Hide();
 #endif
+
+  if (web_contents_ &&
+      suggestion.frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(
+        web_contents_->GetBrowserContext())
+        ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
+  }
+
   delegate_->DidAcceptSuggestion(suggestion.value, suggestion.frontend_id,
                                  suggestion.backend_id, index);
 }

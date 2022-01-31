@@ -246,14 +246,12 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 
   if (virtual_card_option) {
 #if BUILDFLAG(IS_ANDROID)
-    // Set the IPH feature in order to show the IPH bubble when the virtual
-    // card is presented in the keyboard accessory.
-    suggestion.feature_for_iph =
-        feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
     suggestion.custom_icon_url = credit_card.card_art_url();
 #endif  // BUILDFLAG(IS_ANDROID)
 
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+    suggestion.feature_for_iph =
+        feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 
     gfx::Image* image = personal_data_->GetCreditCardArtImageForUrl(
         card_art_url_for_virtual_card_option);

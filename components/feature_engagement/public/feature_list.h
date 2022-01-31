@@ -143,8 +143,6 @@ DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPaymentFillingFeature,
                        "IPH_KeyboardAccessoryPaymentFilling");
 DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPaymentOfferFeature,
                        "IPH_KeyboardAccessoryPaymentOffer");
-DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPaymentVirtualCardFeature,
-                       "IPH_KeyboardAccessoryPaymentVirtualCard");
 DEFINE_VARIATION_PARAM(kIPHMicToolbarFeature, "IPH_MicToolbar");
 DEFINE_VARIATION_PARAM(kIPHNewTabPageButtonFeature, "IPH_NewTabPageHomeButton");
 DEFINE_VARIATION_PARAM(kIPHPageInfoFeature, "IPH_PageInfo");
@@ -253,6 +251,14 @@ DEFINE_VARIATION_PARAM(kIPHDesktopSharedHighlightingFeature,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+DEFINE_VARIATION_PARAM(kIPHAutofillVirtualCardSuggestionFeature,
+                       "IPH_AutofillVirtualCardSuggestion");
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_FUCHSIA)
+
 }  // namespace
 
 // Defines the array of which features should be listed in the chrome://flags
@@ -304,7 +310,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHKeyboardAccessoryPasswordFillingFeature),
         VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentFillingFeature),
         VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentOfferFeature),
-        VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentVirtualCardFeature),
         VARIATION_ENTRY(kIPHMicToolbarFeature),
         VARIATION_ENTRY(kIPHNewTabPageButtonFeature),
         VARIATION_ENTRY(kIPHPageInfoFeature),
@@ -370,6 +375,13 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDesktopSharedHighlightingFeature),
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+        VARIATION_ENTRY(kIPHAutofillVirtualCardSuggestionFeature),
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_FUCHSIA)
 };
 
 #undef DEFINE_VARIATION_PARAM

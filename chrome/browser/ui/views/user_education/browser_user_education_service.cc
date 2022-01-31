@@ -17,6 +17,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -51,6 +52,16 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
   if (registry.IsFeatureRegistered(
           feature_engagement::kIPHDesktopPwaInstallFeature))
     return;
+
+  // kIPHAutofillVirtualCardSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
+          kAutofillCreditCardSuggestionEntryElementId,
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
 
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(

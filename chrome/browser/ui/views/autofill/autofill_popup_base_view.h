@@ -12,6 +12,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "chrome/browser/ui/browser.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -66,6 +68,8 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
     return base::Time::Now() - show_time_;
   }
 
+  Browser* browser() { return browser_; }
+
  protected:
   AutofillPopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
                         views::Widget* parent_widget);
@@ -107,6 +111,8 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
  private:
   friend class AutofillPopupBaseViewTest;
 
+  class Widget;
+
   // views::Views implementation.
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
@@ -125,6 +131,12 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // eventually hide this view in the process.
   void HideController(PopupHidingReason reason);
 
+  // Return the web contents related to this.
+  content::WebContents* GetWebContents() const;
+
+  // The native view that |this|'s related widget should sit in.
+  gfx::NativeView GetParentNativeView() const;
+
   // Must return the container view for this popup.
   gfx::NativeView container_view();
 
@@ -136,6 +148,9 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
 
   // The time when the popup was shown.
   base::Time show_time_;
+
+  // The browser this popup is shown in.
+  raw_ptr<Browser> browser_;
 
   // Ensures that the menu start event is not fired redundantly.
   bool is_ax_menu_start_event_fired_ = false;
