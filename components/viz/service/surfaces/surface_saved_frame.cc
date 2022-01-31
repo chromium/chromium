@@ -299,9 +299,11 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   }
 
   // Return if the result is empty.
-  // TODO(vmpstr): We should log / trace this.
-  if (output_copy->IsEmpty())
+  if (output_copy->IsEmpty()) {
+    LOG(ERROR) << "SurfaceSavedFrame copy output result for shared index "
+               << shared_index << " is empty.";
     return;
+  }
 
   ++valid_result_count_;
   if (!frame_result_) {
