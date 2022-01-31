@@ -4,6 +4,7 @@
 
 #include "ui/events/gestures/physics_based_fling_curve.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace {

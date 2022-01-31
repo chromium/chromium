@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_FEEDBACK_SIGNAL_ACCUMULATOR_H_
 #define MEDIA_BASE_FEEDBACK_SIGNAL_ACCUMULATOR_H_
 
+#include <algorithm>
+#include <cmath>
 #include <ostream>
 
 #include "base/time/time.h"
