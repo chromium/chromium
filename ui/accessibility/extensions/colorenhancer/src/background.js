@@ -34,9 +34,8 @@ class Background {
    * Adds filter script and css to all existing tabs.
    *
    * TODO(wnwen): Verify content scripts are not being injected multiple times.
-   * @private
    */
-  injectContentScripts_() {
+  injectContentScripts() {
     this.forEachTab_(tab => chrome.scripting.executeScript({
       target: {tabId: tab.id},
       files: ['src/common.js', 'src/matrix.js', 'src/cvd.js'],
@@ -85,7 +84,6 @@ class Background {
    * @private
    */
   init_() {
-    this.injectContentScripts_();
     this.updateTabs_();
 
     chrome.runtime.onMessage.addListener(
@@ -105,3 +103,5 @@ class Background {
 }
 
 const background = new Background();
+self.addEventListener(
+    'install', background.injectContentScripts.bind(background));
