@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
@@ -92,14 +93,16 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mFaviconFetcher = faviconFetcher;
         mWebFeedSnackbarController = new WebFeedSnackbarController(
                 mContext, feedLauncher, dialogManager, snackbarManager);
-        WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl, result -> {
+        Callback<WebFeedMetadata> metadata_callback = result -> {
             initializeFavicon(result);
             initializeText(result);
             initializeChipView(result);
             if (mChipView != null && mTab.isShowingErrorPage()) {
                 mChipView.setEnabled(false);
             }
-        });
+        };
+        WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl,
+                WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION, metadata_callback);
     }
 
     private void initializeFavicon(WebFeedMetadata webFeedMetadata) {
@@ -188,8 +191,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
             });
         }
         postDelayed(()
-                            -> WebFeedBridge.getWebFeedMetadataForPage(
-                                    mTab, mUrl, this::initializeChipView),
+                            -> WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl,
+                                    WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION,
+                                    this::initializeChipView),
                 LOADING_REFRESH_TIME_MS);
     }
 

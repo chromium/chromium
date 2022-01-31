@@ -8,8 +8,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -97,13 +99,19 @@ void FetchPageCanonicalUrl(
   std::move(callback).Run(absl::nullopt);
 }
 
+// TODO(carlosk): Move this class into its own file and add tests.
 class WebFeedPageInformationFetcher
     : public base::RefCounted<WebFeedPageInformationFetcher> {
  public:
   // Fetches the canonical URL and RSS URLs for a web page, and then calls
   // `callback` with the results.
   static void Start(const PageInformation& page_info,
+                    const WebFeedPageInformationRequestReason reason,
                     base::OnceCallback<void(WebFeedPageInformation)> callback) {
+    DVLOG(2) << "PageInformationRequested reason=" << reason;
+    base::UmaHistogramEnumeration(
+        "ContentSuggestions.Feed.WebFeed.PageInformationRequested", reason);
+
     // Perform two async operations, and call `callback` only after both are
     // complete. Keep state as RefCounted, owned by the callbacks.
     auto self = base::MakeRefCounted<WebFeedPageInformationFetcher>(
@@ -263,7 +271,8 @@ static void JNI_WebFeedBridge_FollowWebFeed(
       };
   PageInformation page_info = ToNativePageInformation(env, pageInfo);
   WebFeedPageInformationFetcher::Start(
-      page_info, base::BindOnce(on_page_info_fetched, std::move(callback)));
+      page_info, WebFeedPageInformationRequestReason::kUserRequestedFollow,
+      base::BindOnce(on_page_info_fetched, std::move(callback)));
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(
@@ -301,6 +310,7 @@ static void JNI_WebFeedBridge_UnfollowWebFeed(
 static void JNI_WebFeedBridge_FindWebFeedInfoForPage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& pageInfo,
+    const int reason,
     const base::android::JavaParamRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedMetadata)> callback =
       AdaptCallbackForJava<WebFeedMetadata>(env, j_callback);
@@ -317,7 +327,8 @@ static void JNI_WebFeedBridge_FindWebFeedInfoForPage(
       };
   PageInformation page_info = ToNativePageInformation(env, pageInfo);
   WebFeedPageInformationFetcher::Start(
-      page_info, base::BindOnce(on_page_info_fetched, std::move(callback)));
+      page_info, static_cast<WebFeedPageInformationRequestReason>(reason),
+      base::BindOnce(on_page_info_fetched, std::move(callback)));
 }
 
 static void JNI_WebFeedBridge_FindWebFeedInfoForWebFeedId(

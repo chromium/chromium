@@ -92,12 +92,13 @@ public class WebFeedBridge {
      * subscribed, recently subscribed, or recommended Web Feed.
      * @param tab The tab showing the page.
      * @param url The URL for which the status is being requested.
+     * @param reason The reason why the information is being requested.
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
-    public static void getWebFeedMetadataForPage(
-            Tab tab, GURL url, Callback<WebFeedMetadata> callback) {
+    public static void getWebFeedMetadataForPage(Tab tab, GURL url,
+            @WebFeedPageInformationRequestReason int reason, Callback<WebFeedMetadata> callback) {
         WebFeedBridgeJni.get().findWebFeedInfoForPage(
-                new WebFeedPageInformation(url, tab), callback);
+                new WebFeedPageInformation(url, tab), reason, callback);
     }
 
     /**
@@ -236,8 +237,9 @@ public class WebFeedBridge {
         void followWebFeed(WebFeedPageInformation pageInfo, Callback<FollowResults> callback);
         void followWebFeedById(byte[] webFeedId, Callback<FollowResults> callback);
         void unfollowWebFeed(byte[] webFeedId, Callback<UnfollowResults> callback);
-        void findWebFeedInfoForPage(
-                WebFeedPageInformation pageInfo, Callback<WebFeedMetadata> callback);
+        void findWebFeedInfoForPage(WebFeedPageInformation pageInfo,
+                @WebFeedPageInformationRequestReason int reason,
+                Callback<WebFeedMetadata> callback);
         void findWebFeedInfoForWebFeedId(byte[] webFeedId, Callback<WebFeedMetadata> callback);
         void getAllSubscriptions(Callback<Object[]> callback);
         void refreshSubscriptions(Callback<Boolean> callback);
