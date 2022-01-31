@@ -982,16 +982,16 @@ TEST_P(NativeIOManagerTest, IncognitoQuota) {
                    blink::mojom::StorageType::kTemporary));
 }
 
-INSTANTIATE_TEST_CASE_P(,
-                        NativeIOManagerTest,
-                        ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(,
+                         NativeIOManagerTest,
+                         ::testing::Values(
 #if BUILDFLAG(IS_MAC)
-                            false,
-                            true
+                             false,
+                             true
 #else   // !BUILDFLAG(IS_MAC)
-                            false
+                             false
 #endif  // BUILDFLAG(IS_MAC)
-                            ));
+                             ));
 
 }  // namespace
 

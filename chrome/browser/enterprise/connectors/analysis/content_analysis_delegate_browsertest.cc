@@ -291,7 +291,7 @@ class ContentAnalysisDelegateBrowserTest
       : ContentAnalysisDelegateBrowserTestBase(GetParam()) {}
 };
 
-INSTANTIATE_TEST_CASE_P(, ContentAnalysisDelegateBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(, ContentAnalysisDelegateBrowserTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   // The reading of the browser DM token is blocking and happens in this test

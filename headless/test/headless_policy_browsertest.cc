@@ -72,7 +72,7 @@ class HeadlessBrowserTestWithHeadlessModePolicy
   }
 };
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     HeadlessBrowserTestWithHeadlessModePolicy,
     HeadlessBrowserTestWithHeadlessModePolicy,
     testing::Values(std::make_tuple(kHeadlessModePolicyEnabled, true),
@@ -218,9 +218,9 @@ class HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy
   CaptureStdErr capture_stderr_;
 };
 
-INSTANTIATE_TEST_CASE_P(HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
-                        HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
-                        testing::Values(true, false));
+INSTANTIATE_TEST_SUITE_P(HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
+                         HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
+                         testing::Values(true, false));
 
 // Remote debugging with ephemeral port is not working on Fuchsia, see
 // crbug.com/1209251.

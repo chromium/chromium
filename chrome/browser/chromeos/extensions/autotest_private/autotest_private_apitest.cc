@@ -171,9 +171,9 @@ class AutotestPrivateHoldingSpaceApiTest
       public ::testing::WithParamInterface<bool /* mark_time_of_first_add */> {
 };
 
-INSTANTIATE_TEST_CASE_P(All,
-                        AutotestPrivateHoldingSpaceApiTest,
-                        ::testing::Bool() /* mark_time_of_first_add */);
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutotestPrivateHoldingSpaceApiTest,
+                         ::testing::Bool() /* mark_time_of_first_add */);
 
 IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
                        HoldingSpaceAPITest) {

@@ -122,9 +122,9 @@ class MultipartDataPipeGetterParametrizedTest
   std::string metadata_ = "metadata";
 };
 
-INSTANTIATE_TEST_CASE_P(,
-                        MultipartDataPipeGetterParametrizedTest,
-                        testing::Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         MultipartDataPipeGetterParametrizedTest,
+                         testing::Bool());
 
 TEST_P(MultipartDataPipeGetterParametrizedTest, SmallFile) {
   std::string expected_body =

@@ -773,9 +773,9 @@ class HeadlessBrowserTestWithExplicitlyAllowedPorts
   bool is_port_allowed() { return GetParam(); }
 };
 
-INSTANTIATE_TEST_CASE_P(HeadlessBrowserTestWithExplicitlyAllowedPorts,
-                        HeadlessBrowserTestWithExplicitlyAllowedPorts,
-                        testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(HeadlessBrowserTestWithExplicitlyAllowedPorts,
+                         HeadlessBrowserTestWithExplicitlyAllowedPorts,
+                         testing::Values(false, true));
 
 IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithExplicitlyAllowedPorts,
                        AllowedPort) {

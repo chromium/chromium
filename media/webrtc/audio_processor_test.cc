@@ -438,9 +438,9 @@ TEST_F(AudioProcessorTest, DiscreteChannelLayout) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(AudioProcessorMultichannelAffectedTests,
-                        AudioProcessorTestMultichannel,
-                        ::testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(AudioProcessorMultichannelAffectedTests,
+                         AudioProcessorTestMultichannel,
+                         ::testing::Values(false, true));
 
 // When audio processing is performed, processed audio should be delivered as
 // soon as 10 ms of audio has been received.

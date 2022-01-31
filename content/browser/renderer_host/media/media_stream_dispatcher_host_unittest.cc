@@ -546,7 +546,7 @@ TEST_P(MediaStreamDispatcherHostStreamTypeCombinationTest,
   host_->OnGenerateStream(kPageRequestId, controls);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     MediaStreamDispatcherHostStreamTypeCombinationTest,
     ::testing::Combine(

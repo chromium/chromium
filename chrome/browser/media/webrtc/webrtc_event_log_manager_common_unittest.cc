@@ -728,7 +728,7 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
             test_case.defaults_to_logging_enabled);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     WebRtcPolicyDefaultTests,
     DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     testing::ValuesIn(

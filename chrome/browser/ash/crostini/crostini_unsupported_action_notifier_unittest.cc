@@ -189,8 +189,8 @@ TEST_P(CrostiniUnsupportedActionNotifierTest,
   notifier.OnWindowFocused({}, {});
 }
 
-INSTANTIATE_TEST_CASE_P(CrostiniUnsupportedActionNotifierTestCombination,
-                        CrostiniUnsupportedActionNotifierTest,
-                        Combine(Bool(), Bool(), Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(CrostiniUnsupportedActionNotifierTestCombination,
+                         CrostiniUnsupportedActionNotifierTest,
+                         Combine(Bool(), Bool(), Bool(), Bool()));
 
 }  // namespace crostini

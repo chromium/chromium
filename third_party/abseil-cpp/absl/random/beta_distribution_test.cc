@@ -431,18 +431,22 @@ std::string ParamName(
   return absl::StrReplaceAll(name, {{"+", "_"}, {"-", "_"}, {".", "_"}});
 }
 
-INSTANTIATE_TEST_CASE_P(
-    TestSampleStatisticsCombinations, BetaDistributionTest,
+INSTANTIATE_TEST_SUITE_P(
+    TestSampleStatisticsCombinations,
+    BetaDistributionTest,
     ::testing::Combine(::testing::Values(0.1, 0.2, 0.9, 1.1, 2.5, 10.0, 123.4),
                        ::testing::Values(0.1, 0.2, 0.9, 1.1, 2.5, 10.0, 123.4)),
     ParamName);
 
-INSTANTIATE_TEST_CASE_P(
-    TestSampleStatistics_SelectedPairs, BetaDistributionTest,
-    ::testing::Values(std::make_pair(0.5, 1000), std::make_pair(1000, 0.5),
-                      std::make_pair(900, 1000), std::make_pair(10000, 20000),
-                      std::make_pair(4e5, 2e7), std::make_pair(1e7, 1e5)),
-    ParamName);
+INSTANTIATE_TEST_SUITE_P(TestSampleStatistics_SelectedPairs,
+                         BetaDistributionTest,
+                         ::testing::Values(std::make_pair(0.5, 1000),
+                                           std::make_pair(1000, 0.5),
+                                           std::make_pair(900, 1000),
+                                           std::make_pair(10000, 20000),
+                                           std::make_pair(4e5, 2e7),
+                                           std::make_pair(1e7, 1e5)),
+                         ParamName);
 
 // NOTE: absl::beta_distribution is not guaranteed to be stable.
 TEST(BetaDistributionTest, StabilityTest) {

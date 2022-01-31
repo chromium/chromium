@@ -848,20 +848,31 @@ TEST_P(ReplaceChars, ReplacesAllOccurencesOfAnyCharInReplaceWithAReplaceChar) {
   ASSERT_EQ(expected, string_to_replace_in);
 }
 
-INSTANTIATE_TEST_CASE_P(
-    Replace, ReplaceChars,
+INSTANTIATE_TEST_SUITE_P(
+    Replace,
+    ReplaceChars,
     ::testing::Values(
         std::make_tuple("", "", "", '_'),    // empty string should remain empty
         std::make_tuple(" ", " ", "", '_'),  // no replacement string
-        std::make_tuple(" ", " ", "_-abcedf",
+        std::make_tuple(" ",
+                        " ",
+                        "_-abcedf",
                         '*'),  // replacement character not in string
-        std::make_tuple("replace", "Replace", "R",
+        std::make_tuple("replace",
+                        "Replace",
+                        "R",
                         'r'),  // replace one character
-        std::make_tuple("not_spaces__", "not\nspaces\t ", " \t\r\n",
+        std::make_tuple("not_spaces__",
+                        "not\nspaces\t ",
+                        " \t\r\n",
                         '_'),  // replace some special characters
-        std::make_tuple("c++", "cxx", "x",
+        std::make_tuple("c++",
+                        "cxx",
+                        "x",
                         '+'),  // same character multiple times
-        std::make_tuple("qvvvvvng v T", "queueing a T", "aeiou",
+        std::make_tuple("qvvvvvng v T",
+                        "queueing a T",
+                        "aeiou",
                         'v')));  // replace all voewls
 
 class StripWs : public ::testing::TestWithParam<std::tuple<string, string>> {};
@@ -873,8 +884,9 @@ TEST_P(StripWs, AlwaysStripsLeadingAndTrailingWhitespace) {
   ASSERT_EQ(expected, string_to_strip);
 }
 
-INSTANTIATE_TEST_CASE_P(
-    Strip, StripWs,
+INSTANTIATE_TEST_SUITE_P(
+    Strip,
+    StripWs,
     ::testing::Values(
         std::make_tuple("", ""),   // empty string should remain empty
         std::make_tuple("", " "),  // only ws should become empty

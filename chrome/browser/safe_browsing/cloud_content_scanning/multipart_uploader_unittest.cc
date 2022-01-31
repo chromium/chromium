@@ -324,7 +324,7 @@ class MultipartUploadDataPipeRequestTest
   }
 };
 
-INSTANTIATE_TEST_CASE_P(, MultipartUploadDataPipeRequestTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(, MultipartUploadDataPipeRequestTest, testing::Bool());
 
 // Disabled due to flakiness on Windows https://crbug.com/1286638
 #if BUILDFLAG(IS_WIN)

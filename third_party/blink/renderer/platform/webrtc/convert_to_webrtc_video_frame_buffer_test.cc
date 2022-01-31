@@ -65,7 +65,7 @@ TEST_P(ConvertToWebRtcVideoFrameBufferParamTest, ToI420) {
   EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ConvertToWebRtcVideoFrameBufferParamTest,
     ConvertToWebRtcVideoFrameBufferParamTest,
     ::testing::ValuesIn(TestParams()),

@@ -939,9 +939,9 @@ TEST(StaticAVIFTests, AlphaHasNoIspeProperty) {
 
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;
 
-INSTANTIATE_TEST_CASE_P(Parameterized,
-                        StaticAVIFColorTests,
-                        ::testing::ValuesIn(kTestParams));
+INSTANTIATE_TEST_SUITE_P(Parameterized,
+                         StaticAVIFColorTests,
+                         ::testing::ValuesIn(kTestParams));
 
 TEST_P(StaticAVIFColorTests, InspectImage) {
   const StaticColorCheckParam& param = GetParam();

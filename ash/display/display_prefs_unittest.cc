@@ -904,7 +904,7 @@ TEST_P(DisplayPrefsPublicAccountTest, StoreDisplayPrefsForPublicAccount) {
   EXPECT_EQ(1.0f, info_primary.zoom_factor());
 }
 
-INSTANTIATE_TEST_CASE_P(All, DisplayPrefsPublicAccountTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, DisplayPrefsPublicAccountTest, testing::Bool());
 
 TEST_F(DisplayPrefsTest, StorePowerStateNoLogin) {
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayPowerState));

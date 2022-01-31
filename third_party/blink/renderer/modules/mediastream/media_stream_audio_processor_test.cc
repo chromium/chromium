@@ -441,9 +441,9 @@ TEST_F(MediaStreamAudioProcessorTest, DiscreteChannelLayout) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(MediaStreamAudioProcessorMultichannelAffectedTests,
-                        MediaStreamAudioProcessorTestMultichannel,
-                        ::testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(MediaStreamAudioProcessorMultichannelAffectedTests,
+                         MediaStreamAudioProcessorTestMultichannel,
+                         ::testing::Values(false, true));
 
 // When audio processing is performed, processed audio should be delivered as
 // soon as 10 ms of audio has been received.

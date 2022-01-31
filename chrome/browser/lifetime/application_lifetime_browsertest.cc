@@ -71,10 +71,10 @@ class AttemptRestartTest : public InProcessBrowserTest,
       mock_relaunch_callback_.Get()};
 };
 
-INSTANTIATE_TEST_CASE_P(,
-                        AttemptRestartTest,
-                        testing::Values(switches::kIncognito,
-                                        switches::kGuest));
+INSTANTIATE_TEST_SUITE_P(,
+                         AttemptRestartTest,
+                         testing::Values(switches::kIncognito,
+                                         switches::kGuest));
 
 IN_PROC_BROWSER_TEST_P(AttemptRestartTest, AttemptRestartWithOTRProfiles) {
   // We will now attempt restart, prior to (crbug.com/999085)

@@ -208,16 +208,16 @@ class D3D11CopyingTexture2DWrapperTest
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 };
 
-INSTANTIATE_TEST_CASE_P(CopyingTexture2DWrapperTest,
-                        D3D11CopyingTexture2DWrapperTest,
-                        Combine(Values(S_OK, E_FAIL),
-                                Values(S_OK, E_FAIL),
-                                Values(S_OK, E_FAIL),
-                                Bool(),
-                                Bool(),
-                                Bool(),
-                                Bool(),
-                                Bool()));
+INSTANTIATE_TEST_SUITE_P(CopyingTexture2DWrapperTest,
+                         D3D11CopyingTexture2DWrapperTest,
+                         Combine(Values(S_OK, E_FAIL),
+                                 Values(S_OK, E_FAIL),
+                                 Values(S_OK, E_FAIL),
+                                 Bool(),
+                                 Bool(),
+                                 Bool(),
+                                 Bool(),
+                                 Bool()));
 
 // For ever potential return value combination for the D3D11VideoProcessor,
 // make sure that any failures result in a total failure.

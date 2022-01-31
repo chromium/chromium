@@ -128,7 +128,7 @@ TEST_P(ReportingServiceSettingsTest, FlagOverride) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     ReportingServiceSettingsTest,
     testing::Values(

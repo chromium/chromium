@@ -578,7 +578,7 @@ TEST_P(ProjectorSessionStartUnitTest, ProjectorSessionTest) {
   EXPECT_EQ(call_data.arg3()->GetBool(), success);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     SessionStartSuccessFailTest,
     ProjectorSessionStartUnitTest,
     ::testing::Values(
@@ -638,7 +638,7 @@ TEST_P(ProjectorOnboardingFlowPrefTest, OnboardingFlowPrefTest) {
   EXPECT_EQ(get_call_data.arg3()->GetInt(), 5);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     OnboardingPrefsTest,
     ProjectorOnboardingFlowPrefTest,
     ::testing::Values(ash::prefs::kProjectorGalleryOnboardingShowCount,

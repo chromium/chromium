@@ -262,7 +262,7 @@ TEST_P(ConnectorsManagerConnectorPoliciesTest, EmptyPref) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ConnectorsManagerConnectorPoliciesTest,
     ConnectorsManagerConnectorPoliciesTest,
     testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
@@ -321,9 +321,9 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(ConnectorsManagerAnalysisConnectorsTest,
-                        ConnectorsManagerAnalysisConnectorsTest,
-                        testing::ValuesIn(kAllAnalysisConnectors));
+INSTANTIATE_TEST_SUITE_P(ConnectorsManagerAnalysisConnectorsTest,
+                         ConnectorsManagerAnalysisConnectorsTest,
+                         testing::ValuesIn(kAllAnalysisConnectors));
 
 class ConnectorsManagerReportingTest
     : public ConnectorsManagerTest,
@@ -365,9 +365,9 @@ TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(ConnectorsManagerReportingTest,
-                        ConnectorsManagerReportingTest,
-                        testing::ValuesIn(kAllReportingConnectors));
+INSTANTIATE_TEST_SUITE_P(ConnectorsManagerReportingTest,
+                         ConnectorsManagerReportingTest,
+                         testing::ValuesIn(kAllReportingConnectors));
 
 class ConnectorsManagerFileSystemTest
     : public ConnectorsManagerTest,
@@ -413,8 +413,8 @@ TEST_P(ConnectorsManagerFileSystemTest, DynamicPolicies) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(ConnectorsManagerFileSystemTest,
-                        ConnectorsManagerFileSystemTest,
-                        testing::ValuesIn(kAllFileSystemConnectors));
+INSTANTIATE_TEST_SUITE_P(ConnectorsManagerFileSystemTest,
+                         ConnectorsManagerFileSystemTest,
+                         testing::ValuesIn(kAllFileSystemConnectors));
 
 }  // namespace enterprise_connectors

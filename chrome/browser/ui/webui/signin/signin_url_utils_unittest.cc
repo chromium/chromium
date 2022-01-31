@@ -52,7 +52,7 @@ TEST_P(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
   EXPECT_THAT(parsed_params, ParamsEq(params));
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     All,
     SigninURLUtilsSyncConfirmationURLTest,
     ::testing::Values(
@@ -92,7 +92,7 @@ TEST_P(SigninURLUtilsReauthConfirmationURLTest,
   EXPECT_EQ(get_access_point, access_point);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     AllAccessPoints,
     SigninURLUtilsReauthConfirmationURLTest,
     ::testing::Range(

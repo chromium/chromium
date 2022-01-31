@@ -234,7 +234,7 @@ TEST_P(FileSystemServiceSettingsTest, Test) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     FileSystemServiceSettingsTest,
     testing::Values(

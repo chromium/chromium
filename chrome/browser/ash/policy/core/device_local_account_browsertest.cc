@@ -2792,7 +2792,7 @@ IN_PROC_BROWSER_TEST_P(AmbientAuthenticationManagedGuestSessionTest,
   IsAmbientAuthAllowedForProfilesTest();
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     AmbientAuthAllPolicyValuesTest,
     AmbientAuthenticationManagedGuestSessionTest,
     testing::Values(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY,

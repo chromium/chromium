@@ -130,10 +130,10 @@ class MirroringActivityTest
   std::unique_ptr<MirroringActivity> activity_;
 };
 
-INSTANTIATE_TEST_CASE_P(Namespaces,
-                        MirroringActivityTest,
-                        testing::Values(mirroring::mojom::kWebRtcNamespace,
-                                        mirroring::mojom::kRemotingNamespace));
+INSTANTIATE_TEST_SUITE_P(Namespaces,
+                         MirroringActivityTest,
+                         testing::Values(mirroring::mojom::kWebRtcNamespace,
+                                         mirroring::mojom::kRemotingNamespace));
 
 TEST_F(MirroringActivityTest, MirrorDesktop) {
   base::HistogramTester uma_recorder;

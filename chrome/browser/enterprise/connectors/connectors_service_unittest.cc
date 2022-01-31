@@ -140,7 +140,7 @@ TEST_P(ConnectorsServiceAnalysisNoFeatureTest, AnalysisConnectors) {
                   .empty());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceAnalysisNoFeatureTest,
     testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT));
@@ -217,7 +217,7 @@ TEST_P(ConnectorsServiceReportingFeatureTest, Test) {
                  .empty());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceReportingFeatureTest,
     testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
@@ -300,7 +300,7 @@ TEST_P(ConnectorsServiceFileSystemFeatureTest, Test) {
                  .empty());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceFileSystemFeatureTest,
     testing::Combine(
@@ -382,10 +382,10 @@ TEST_P(ConnectorsServiceExemptURLsTest, FirstPartyExtensions) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_TEST_CASE_P(,
-                        ConnectorsServiceExemptURLsTest,
-                        testing::Values(FILE_ATTACHED,
-                                        FILE_DOWNLOADED,
-                                        BULK_DATA_ENTRY));
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceExemptURLsTest,
+                         testing::Values(FILE_ATTACHED,
+                                         FILE_DOWNLOADED,
+                                         BULK_DATA_ENTRY));
 
 }  // namespace enterprise_connectors

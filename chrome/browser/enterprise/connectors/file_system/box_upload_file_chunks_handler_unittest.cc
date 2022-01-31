@@ -176,9 +176,9 @@ TEST_P(BoxUploadFileChunksHandler_MultipleChunksTest,
   ASSERT_EQ(file_sha1_digest_, expected_sha);
 }
 
-INSTANTIATE_TEST_CASE_P(BoxUploadFileChunksHandlerTest,
-                        BoxUploadFileChunksHandler_MultipleChunksTest,
-                        testing::Values(8, 11, 15));
+INSTANTIATE_TEST_SUITE_P(BoxUploadFileChunksHandlerTest,
+                         BoxUploadFileChunksHandler_MultipleChunksTest,
+                         testing::Values(8, 11, 15));
 
 class BoxUploadFileChunksHandler_FailureTest
     : public BoxUploadFileChunksHandlerTest {

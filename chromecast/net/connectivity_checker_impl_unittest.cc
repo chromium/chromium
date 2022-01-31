@@ -132,11 +132,11 @@ TEST_P(ConnectivityCheckerImplTestParameterized,
 }
 
 // Test 3xx, 4xx, 5xx responses.
-INSTANTIATE_TEST_CASE_P(ConnectivityCheckerImplTestBadHttpStatus,
-                        ConnectivityCheckerImplTestParameterized,
-                        ::testing::Values(net::HTTP_TEMPORARY_REDIRECT,
-                                          net::HTTP_BAD_REQUEST,
-                                          net::HTTP_INTERNAL_SERVER_ERROR));
+INSTANTIATE_TEST_SUITE_P(ConnectivityCheckerImplTestBadHttpStatus,
+                         ConnectivityCheckerImplTestParameterized,
+                         ::testing::Values(net::HTTP_TEMPORARY_REDIRECT,
+                                           net::HTTP_BAD_REQUEST,
+                                           net::HTTP_INTERNAL_SERVER_ERROR));
 
 TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToRequestTimeout) {
   ConnectAndCheck();

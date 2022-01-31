@@ -319,9 +319,9 @@ class UserAgentUtilsTest : public testing::Test,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_CASE_P(All,
-                        UserAgentUtilsTest,
-                        /*force_major_version_to_M100*/ testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAgentUtilsTest,
+                         /*force_major_version_to_M100*/ testing::Bool());
 
 TEST_P(UserAgentUtilsTest, UserAgentStringOrdering) {
 #if BUILDFLAG(IS_ANDROID)
@@ -924,9 +924,9 @@ class UserAgentUtilsMinorVersionTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_CASE_P(All,
-                        UserAgentUtilsMinorVersionTest,
-                        /*force_major_version_in_minor*/ testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAgentUtilsMinorVersionTest,
+                         /*force_major_version_in_minor*/ testing::Bool());
 
 TEST_P(UserAgentUtilsMinorVersionTest, GetUserAgent) {
   const std::string ua = GetUserAgent();
@@ -963,9 +963,9 @@ class UserAgentUtilsMinorVersionM100Test
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_CASE_P(All,
-                        UserAgentUtilsMinorVersionM100Test,
-                        /*force_minor_version_to_M100*/ testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAgentUtilsMinorVersionM100Test,
+                         /*force_minor_version_to_M100*/ testing::Bool());
 
 TEST_P(UserAgentUtilsMinorVersionM100Test, GetUserAgent) {
   const std::string ua = GetUserAgent();

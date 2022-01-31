@@ -626,7 +626,7 @@ TEST_P(ParameterizedPageDiscardingHelperTest,
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     PageDiscardingHelperWithParamTest,
     ParameterizedPageDiscardingHelperTest,
     ::testing::Values(features::DiscardStrategy::LRU,
