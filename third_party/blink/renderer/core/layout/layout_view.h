@@ -354,6 +354,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   LogicalSize InitialContainingBlockSize() const;
 
+  TrackedDescendantsMap& SvgTextDescendantsMap();
+
  private:
   bool CanHaveChildren() const override;
 
@@ -397,6 +399,12 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   unsigned layout_counter_count_ = 0;
   unsigned layout_list_item_count_ = 0;
   bool needs_marker_counter_update_ = false;
+
+  // This map keeps track of SVG <text> descendants.
+  // LayoutNGSVGText needs to do re-layout on transform changes of any ancestor
+  // because LayoutNGSVGText's layout result depends on scaling factors
+  // computed with ancestor transforms.
+  Member<TrackedDescendantsMap> svg_text_descendants_;
 
   unsigned hit_test_count_;
   unsigned hit_test_cache_hits_;

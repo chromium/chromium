@@ -129,6 +129,7 @@ void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   visitor->Trace(fragmentation_context_);
   visitor->Trace(layout_quote_head_);
+  visitor->Trace(svg_text_descendants_);
   visitor->Trace(hit_test_cache_);
   LayoutBlockFlow::Trace(visitor);
 }
@@ -461,6 +462,12 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
 LogicalSize LayoutView::InitialContainingBlockSize() const {
   return LogicalSize(LayoutUnit(ViewLogicalWidthForBoxSizing()),
                      LayoutUnit(ViewLogicalHeightForBoxSizing()));
+}
+
+TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
+  if (!svg_text_descendants_)
+    svg_text_descendants_ = MakeGarbageCollected<TrackedDescendantsMap>();
+  return *svg_text_descendants_;
 }
 
 void LayoutView::Paint(const PaintInfo& paint_info) const {

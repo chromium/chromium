@@ -2801,8 +2801,8 @@ void Document::Shutdown() {
   }
   computed_node_mapping_.clear();
 
-  layout_view_ = nullptr;
   DetachLayoutTree();
+  layout_view_ = nullptr;
   DCHECK(!View()->IsAttached());
 
   if (this != &AXObjectCacheOwner()) {

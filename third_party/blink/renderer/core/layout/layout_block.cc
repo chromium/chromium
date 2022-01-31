@@ -119,16 +119,6 @@ static TrackedDescendantsMap& GetPercentHeightDescendantsMap() {
   return *map;
 }
 
-// This map keeps track of SVG <text> descendants.
-// LayoutNGSVGText needs to do re-layout on transform changes of any ancestor
-// because LayoutNGSVGText's layout result depends on scaling factors computed
-// with ancestor transforms.
-TrackedDescendantsMap& GetSvgTextDescendantsMap() {
-  DEFINE_STATIC_LOCAL(Persistent<TrackedDescendantsMap>, map,
-                      (MakeGarbageCollected<TrackedDescendantsMap>()));
-  return *map;
-}
-
 LayoutBlock::LayoutBlock(ContainerNode* node)
     : LayoutBox(node),
       has_margin_before_quirk_(false),
@@ -176,7 +166,7 @@ void LayoutBlock::RemoveFromGlobalMaps() {
     }
   }
   if (has_svg_text_descendants_) {
-    GetSvgTextDescendantsMap().erase(this);
+    View()->SvgTextDescendantsMap().erase(this);
     has_svg_text_descendants_ = false;
   }
 }
@@ -277,7 +267,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
                                              kLogicalHeight);
 
   if (diff.TransformChanged() && has_svg_text_descendants_) {
-    for (LayoutBox* box : *GetSvgTextDescendantsMap().at(this)) {
+    for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
       box->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
                           kMarkContainerChain);
       To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
@@ -1237,7 +1227,7 @@ void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
 void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
   NOT_DESTROYED();
   DCHECK(IsA<LayoutNGSVGText>(svg_text));
-  auto result = GetSvgTextDescendantsMap().insert(this, nullptr);
+  auto result = View()->SvgTextDescendantsMap().insert(this, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
         MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
@@ -1249,7 +1239,7 @@ void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
 void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
   NOT_DESTROYED();
   DCHECK(IsA<LayoutNGSVGText>(svg_text));
-  TrackedDescendantsMap& map = GetSvgTextDescendantsMap();
+  TrackedDescendantsMap& map = View()->SvgTextDescendantsMap();
   auto it = map.find(this);
   if (it == map.end())
     return;
