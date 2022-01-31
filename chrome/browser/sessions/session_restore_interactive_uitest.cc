@@ -156,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
 
 // TODO(https://crbug.com/1152160): Enable RestoreMinimizedWindow on Lacros
 // builds.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1291651): Flaky failures.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RestoreMinimizedWindow DISABLED_RestoreMinimizedWindow
 #else
 #define MAYBE_RestoreMinimizedWindow RestoreMinimizedWindow
