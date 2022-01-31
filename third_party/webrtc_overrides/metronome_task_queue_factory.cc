@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace blink {
 
@@ -27,16 +26,6 @@ const base::FeatureParam<base::TimeDelta> kWebRtcMetronomeTaskQueueTick{
     &kWebRtcMetronomeTaskQueue, "tick",
     // 64 Hz default value for the WebRtcMetronomeTaskQueue experiment.
     base::Hertz(64)};
-
-const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludePacer{
-    &kWebRtcMetronomeTaskQueue, "exclude_pacer", /*default_value=*/true};
-
-const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludeEncodeDecode{
-    &kWebRtcMetronomeTaskQueue, "exclude_encode_decode",
-    /*default_value=*/true};
-
-const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludeMisc{
-    &kWebRtcMetronomeTaskQueue, "exclude_misc", /*default_value=*/false};
 
 namespace {
 
@@ -222,42 +211,16 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
   explicit WebrtcMetronomeTaskQueueFactory(
       scoped_refptr<MetronomeSource> metronome_source)
-      : metronome_source_(std::move(metronome_source)),
-        high_priority_task_queue_factory_(CreateWebRtcTaskQueueFactory()),
-        exclude_pacer_(kWebRtcMetronomeTaskQueueExcludePacer.Get()),
-        exclude_encode_decode_(
-            kWebRtcMetronomeTaskQueueExcludeEncodeDecode.Get()),
-        exclude_misc_(kWebRtcMetronomeTaskQueueExcludeMisc.Get()) {}
+      : metronome_source_(std::move(metronome_source)) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
-    bool use_metronome;
-    if (name.compare("TaskQueuePacedSender") == 0) {
-      use_metronome = !exclude_pacer_;
-    } else if (name.compare("DecodingQueue") == 0 ||
-               name.compare("EncoderQueue") == 0) {
-      use_metronome = !exclude_encode_decode_;
-    } else if (priority == webrtc::TaskQueueFactory::Priority::HIGH) {
-      use_metronome = false;
-    } else {
-      use_metronome = !exclude_misc_;
-    }
-    if (!use_metronome) {
-      return high_priority_task_queue_factory_->CreateTaskQueue(name, priority);
-    }
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
         new WebRtcMetronomeTaskQueue(metronome_source_));
   }
 
  private:
   const scoped_refptr<MetronomeSource> metronome_source_;
-  // An implementation of the task queue factory whose task queues do not run on
-  // the metronome, i.e. at higher timer precision.
-  const std::unique_ptr<webrtc::TaskQueueFactory>
-      high_priority_task_queue_factory_;
-  const bool exclude_pacer_;
-  const bool exclude_encode_decode_;
-  const bool exclude_misc_;
 };
 
 }  // namespace

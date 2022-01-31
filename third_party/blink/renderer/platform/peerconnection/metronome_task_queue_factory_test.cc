@@ -164,20 +164,6 @@ TEST_F(MetronomeTaskQueueFactoryTest, CanDeleteTaskQueueWhileTasksAreInFlight) {
   EXPECT_FALSE(did_run_high_precision_delay_task);
 }
 
-TEST_F(MetronomeTaskQueueFactoryTest, HighPriorityDelayedTasksRunOffTicks) {
-  auto task_queue = task_queue_factory_->CreateTaskQueue(
-      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::HIGH);
-
-  bool did_run = false;
-  task_queue->PostDelayedTask(
-      webrtc::ToQueuedTask([&did_run]() { did_run = true; }),
-      /*milliseconds=*/1);
-
-  EXPECT_FALSE(did_run);
-  task_environment_.FastForwardBy(base::Milliseconds(1));
-  EXPECT_TRUE(did_run);
-}
-
 TEST_F(MetronomeTaskQueueFactoryTest, DelayedTasksRunInOrder) {
   auto task_queue = task_queue_factory_->CreateTaskQueue(
       "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
