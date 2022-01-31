@@ -771,6 +771,11 @@
           '--coverage-continuous-mode=1',
         ],
       },
+      'mac-osxbeta-rel': {
+        'swarming': {
+          'shards': 12,
+        },
+      },
       'mac11-arm64-rel-tests': {
         'ci_only': False,  # https://crbug.com/1234525
         'args': [
