@@ -231,7 +231,9 @@ template("apple_toolchain") {
       tool("rust_staticlib") {
         rust_outfile = "{{target_out_dir}}/{{crate_name}}.a"
         depfile = "{{output}}.d"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"$_cxx\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        rspfile = "$rust_outfile.rsp"
+        rspfile_content = "{{rustdeps}} {{externs}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"$_cxx\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -240,7 +242,10 @@ template("apple_toolchain") {
       tool("rust_rlib") {
         rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
         depfile = "{{output}}.d"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"$_cxx\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        # Do not use rsp files in this (common) case because they occupy the
+        # ninja main thread, and {{rlibs}} have shorter command lines than
+        # fully linked targets.
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"$_cxx\" $rustc_common_args {{rustdeps}} {{externs}} --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -250,7 +255,9 @@ template("apple_toolchain") {
         tool("rust_bin") {
           rust_outfile = "{{root_out_dir}}/{{crate_name}}"
           depfile = "{{output}}.d"
-          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
           description = "RUST $rust_outfile"
           rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
@@ -259,7 +266,9 @@ template("apple_toolchain") {
         tool("rust_cdylib") {
           rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dylib"
           depfile = "{{output}}.d"
-          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
           description = "RUST $rust_outfile"
           rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
@@ -268,7 +277,9 @@ template("apple_toolchain") {
         tool("rust_macro") {
           rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dylib"
           depfile = "{{output}}.d"
-          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
           description = "RUST $rust_outfile"
           rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]

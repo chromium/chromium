@@ -17,9 +17,10 @@ sys.path.append(
                  os.pardir, 'build', 'android', 'gyp'))
 from util import build_utils
 
-# This script wraps rustc for (currently) two reasons:
+# This script wraps rustc for (currently) three reasons:
 # * To work around some ldflags escaping performed by ninja/gn
 # * To remove dependencies on some environment variables from the .d file.
+# * To enable use of .rsp files.
 #
 # LDFLAGS ESCAPING
 #
@@ -46,6 +47,14 @@ from util import build_utils
 # variables (typically, all of them) are set by .gn files which ninja
 # tracks independently. So we remove them from the .d file.
 #
+# RSP files:
+#
+# We want to put the ninja/gn variables {{rustdeps}} and {{externs}}
+# in an RSP file. Unfortunately, they are space-separated variables
+# but Rust requires a newline-separated input. This script duly makes
+# the adjustment. This works around a gn issue:
+# TODO(https://bugs.chromium.org/p/gn/issues/detail?id=249): fix this
+#
 # Usage:
 #   rustc_wrapper.py --rustc <path to rustc> --depfile <path to .d file>
 #      -- <normal rustc args> LDFLAGS {{ldflags}} RUSTENV {{rustenv}}
@@ -56,12 +65,22 @@ from util import build_utils
 #
 # Both LDFLAGS and RUSTENV **MUST** be specified, in that order, even if
 # the list following them is empty.
+#
+# TODO(https://github.com/rust-lang/rust/issues/73632): avoid using rustc
+# for linking in the first place. Most of our binaries are linked using
+# clang directly, but there are some types of Rust build product which
+# must currently be created by rustc (e.g. unit test executables). As
+# part of support for using non-rustc linkers, we should arrange to extract
+# such functionality from rustc so that we can make all types of binary
+# using our clang toolchain. That will remove the need for most of this
+# script.
 
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--rustc', required=True, type=pathlib.Path)
   parser.add_argument('--depfile', type=pathlib.Path)
+  parser.add_argument('--rsp', type=pathlib.Path)
   parser.add_argument('args', metavar='ARG', nargs='+')
 
   args = parser.parse_args()
@@ -75,6 +94,14 @@ def main():
   rustenv = remaining_args[rustenv_separator + 1:]
 
   rustc_args.extend(["-Clink-arg=%s" % arg for arg in ldflags])
+
+  # Workaround for https://bugs.chromium.org/p/gn/issues/detail?id=249
+  if args.rsp:
+    with open(args.rsp) as rspfile:
+      rsp_args = [l.rstrip() for l in rspfile.read().split(' ') if l.rstrip()]
+    with open(args.rsp, 'w') as rspfile:
+      rspfile.write("\n".join(rsp_args))
+    rustc_args.append(f'@{args.rsp}')
 
   env = os.environ.copy()
   fixed_env_vars = []
