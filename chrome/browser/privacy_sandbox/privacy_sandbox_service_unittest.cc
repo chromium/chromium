@@ -27,6 +27,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
@@ -71,12 +72,16 @@ class PrivacySandboxServiceTest : public testing::Test {
 
     privacy_sandbox_service_ = std::make_unique<PrivacySandboxService>(
         PrivacySandboxSettingsFactory::GetForProfile(profile()),
-        CookieSettingsFactory::GetForProfile(profile()).get(),
-        profile()->GetPrefs(), policy_service(), sync_service(),
-        identity_test_env()->identity_manager(), mock_floc_id_provider());
+        CookieSettingsFactory::GetForProfile(profile()).get(), profile()->GetPrefs(),
+        policy_service(), sync_service(), identity_test_env()->identity_manager(),
+        mock_floc_id_provider(), GetProfileType());
   }
 
   virtual void InitializePrefsBeforeStart() {}
+
+  virtual profile_metrics::BrowserProfileType GetProfileType() {
+    return profile_metrics::BrowserProfileType::kRegular;
+  }
 
   TestingProfile* profile() { return &profile_; }
   PrivacySandboxService* privacy_sandbox_service() {
@@ -1126,4 +1131,32 @@ TEST_F(PrivacySandboxServiceTestReconciliationBlocked,
       static_cast<int>(PrivacySandboxService::SettingsPrivacySandboxEnabled::
                            kPSEnabledFlocDisabledBlockAll),
       1);
+}
+
+class PrivacySandboxServiceTestNonRegularProfile
+    : public PrivacySandboxServiceTestReconciliationBlocked {
+  profile_metrics::BrowserProfileType GetProfileType() override {
+    return profile_metrics::BrowserProfileType::kSystem;
+  }
+};
+
+TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoMetricsRecorded) {
+  // Check that non-regular profiles do not record metrics.
+  base::HistogramTester histograms;
+  const std::string histogram_name = "Settings.PrivacySandbox.Enabled";
+  ResetReconciledPref();
+
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_service()->MaybeReconcilePrivacySandboxPref();
+
+  // The histogram should remain empty.
+  histograms.ExpectTotalCount(histogram_name, 0);
 }

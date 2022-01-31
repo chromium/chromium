@@ -15,6 +15,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -65,7 +66,8 @@ class PrivacySandboxService : public KeyedService,
                         policy::PolicyService* policy_service,
                         syncer::SyncService* sync_service,
                         signin::IdentityManager* identity_manager,
-                        federated_learning::FlocIdProvider* floc_id_provider);
+                        federated_learning::FlocIdProvider* floc_id_provider,
+                        profile_metrics::BrowserProfileType profile_type);
   ~PrivacySandboxService() override;
 
   // Returns the dialog type that should be shown to the user. This consults
@@ -184,6 +186,8 @@ class PrivacySandboxService : public KeyedService,
                            NoReconciliationSandboxSettingsDisabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestReconciliationBlocked,
                            MetricsLoggingOccursCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
+                           NoMetricsRecorded);
 
   // Contains all possible privacy sandbox states, recorded on startup.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -238,6 +242,7 @@ class PrivacySandboxService : public KeyedService,
   raw_ptr<syncer::SyncService> sync_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<federated_learning::FlocIdProvider> floc_id_provider_;
+  profile_metrics::BrowserProfileType profile_type_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};

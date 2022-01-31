@@ -111,14 +111,16 @@ PrivacySandboxService::PrivacySandboxService(
     policy::PolicyService* policy_service,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
-    federated_learning::FlocIdProvider* floc_id_provider)
+    federated_learning::FlocIdProvider* floc_id_provider,
+    profile_metrics::BrowserProfileType profile_type)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       policy_service_(policy_service),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
-      floc_id_provider_(floc_id_provider) {
+      floc_id_provider_(floc_id_provider),
+      profile_type_(profile_type) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
@@ -402,6 +404,10 @@ void PrivacySandboxService::RecordPrivacySandboxHistogram(
 }
 
 void PrivacySandboxService::LogPrivacySandboxState() {
+  // Do not record metrics for non-regular profiles.
+  if (profile_type_ != profile_metrics::BrowserProfileType::kRegular)
+    return;
+
   // Check policy status first.
   std::string default_cookie_setting_provider;
   auto default_cookie_setting = cookie_settings_->GetDefaultCookieSetting(

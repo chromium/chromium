@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 
 PrivacySandboxServiceFactory* PrivacySandboxServiceFactory::GetInstance() {
   return base::Singleton<PrivacySandboxServiceFactory>::get();
@@ -48,7 +49,8 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       profile->GetProfilePolicyConnector()->policy_service(),
       SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      federated_learning::FlocIdProviderFactory::GetForProfile(profile));
+      federated_learning::FlocIdProviderFactory::GetForProfile(profile),
+      profile_metrics::GetBrowserProfileType(profile));
 }
 
 content::BrowserContext* PrivacySandboxServiceFactory::GetBrowserContextToUse(
