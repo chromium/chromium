@@ -140,6 +140,8 @@ void SharedImageBackingRawDraw::OnMemoryDump(
     base::trace_event::MemoryAllocatorDump* dump,
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t client_tracing_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  AutoLock auto_lock(this);
   if (auto tracing_id = GrBackendTextureTracingID(backend_texture_)) {
     // Add a |service_guid| which expresses shared ownership between the
     // various GPU dumps.
@@ -172,6 +174,7 @@ SharedImageBackingRawDraw::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!context_state_)
     context_state_ = context_state;
   DCHECK(context_state_ == context_state);

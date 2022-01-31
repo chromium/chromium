@@ -53,9 +53,10 @@ class SharedImageBackingRawDraw : public ClearTrackingSharedImageBacking {
   class RepresentationRaster;
   class RepresentationSkia;
 
-  void ResetPaintOpBuffer();
-  bool CreateBackendTextureAndFlushPaintOps();
-  void DestroyBackendTexture();
+  void ResetPaintOpBuffer() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  bool CreateBackendTextureAndFlushPaintOps() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void DestroyBackendTexture() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   cc::PaintOpBuffer* BeginRasterWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
@@ -66,14 +67,17 @@ class SharedImageBackingRawDraw : public ClearTrackingSharedImageBacking {
   sk_sp<SkPromiseImageTexture> BeginSkiaReadAccess();
   void EndReadAccess();
 
-  int32_t final_msaa_count_ = 0;
-  SkSurfaceProps surface_props_{};
-  absl::optional<SkColor> clear_color_;
-  sk_sp<cc::PaintOpBuffer> paint_op_buffer_;
-  base::OnceClosure paint_op_release_callback_;
-  scoped_refptr<SharedContextState> context_state_;
-  GrBackendTexture backend_texture_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
+  int32_t final_msaa_count_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
+  SkSurfaceProps surface_props_ GUARDED_BY_CONTEXT(thread_checker_){};
+  absl::optional<SkColor> clear_color_ GUARDED_BY(lock_);
+  sk_sp<cc::PaintOpBuffer> paint_op_buffer_ GUARDED_BY(lock_);
+  base::OnceClosure paint_op_release_callback_
+      GUARDED_BY_CONTEXT(thread_checker_);
+  scoped_refptr<SharedContextState> context_state_
+      GUARDED_BY_CONTEXT(thread_checker_);
+  GrBackendTexture backend_texture_ GUARDED_BY(lock_);
+  sk_sp<SkPromiseImageTexture> promise_texture_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   bool is_write_ GUARDED_BY(lock_) = false;
   int read_count_ GUARDED_BY(lock_) = 0;
