@@ -117,10 +117,6 @@ StringWrapperComparator::StringWrapperComparator(bool increasing,
 bool StringWrapperComparator::operator()(
     const reorder::SyncItemWrapper<std::u16string>& lhs,
     const reorder::SyncItemWrapper<std::u16string>& rhs) const {
-  // Folders are placed in the front of the app list in app name sort.
-  if (lhs.is_folder != rhs.is_folder)
-    return lhs.is_folder;
-
   // If the collator is not created successfully, compare the string values
   // using operators.
   if (!collator_) {
