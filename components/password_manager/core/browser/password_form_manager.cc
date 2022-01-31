@@ -18,6 +18,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -26,6 +27,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
@@ -285,12 +287,26 @@ void PasswordFormManager::Save() {
     newly_blocklisted_ = false;
   }
 
+  // This is potentially the conclusion of a password change flow. It might also
+  // not be related to such a flow at all, but the tracker will figure it out.
+  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      parsed_submitted_form_->url,
+      base::UTF16ToUTF8(GetPendingCredentials().username_value),
+      PasswordChangeSuccessTracker::EndEvent::kManualFlow);
+
   password_save_manager_->Save(observed_form(), *parsed_submitted_form_);
 
   client_->UpdateFormManagers();
 }
 
 void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
+  // This is potentially the conclusion of a password change flow. It might also
+  // not be related to such a flow at all, but the tracker will figure it out.
+  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      parsed_submitted_form_->url,
+      base::UTF16ToUTF8(GetPendingCredentials().username_value),
+      PasswordChangeSuccessTracker::EndEvent::kManualFlow);
+
   password_save_manager_->Update(credentials_to_update, observed_form(),
                                  *parsed_submitted_form_);
 

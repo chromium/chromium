@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
+#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -1106,6 +1107,11 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordOnChangePasswordForm) {
                          Pointee(saved_match_another_username)),
                      saved_match_.password_value))
       .WillOnce(SaveArg<0>(&updated_form));
+  EXPECT_CALL(
+      *client_.GetPasswordChangeSuccessTracker(),
+      OnChangePasswordFlowCompleted(
+          submitted_form.url, base::UTF16ToUTF8(saved_match_.username_value),
+          PasswordChangeSuccessTracker::EndEvent::kManualFlow));
 
   form_manager_->Save();
 
@@ -1859,6 +1865,10 @@ TEST_P(PasswordFormManagerTest, Update) {
                                      Pointee(saved_match_another_username)),
                                  saved_match_.password_value))
       .WillOnce(SaveArg<0>(&updated_form));
+  EXPECT_CALL(*client_.GetPasswordChangeSuccessTracker(),
+              OnChangePasswordFlowCompleted(
+                  submitted_form.url, base::UTF16ToUTF8(username),
+                  PasswordChangeSuccessTracker::EndEvent::kManualFlow));
   EXPECT_CALL(client_, UpdateFormManagers());
 
   const base::Time kNow = base::Time::Now();
@@ -2729,6 +2739,11 @@ class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {
         std::make_unique<NiceMock<MockPasswordSaveManager>>();
     mock_password_save_manager_ = mock_password_save_manager.get();
     EXPECT_CALL(*mock_password_save_manager_, Init(_, _, _, _));
+    // The PasswordFormManagerTestWithMockedSaver tests don't rely on the
+    // return value of GetPendingCredentials. So, it is fine to return an
+    // arbitrary form.
+    ON_CALL(*mock_password_save_manager_, GetPendingCredentials)
+        .WillByDefault(ReturnRef(saved_match_));
     form_manager_ = std::make_unique<PasswordFormManager>(
         &client_, driver_.AsWeakPtr(), observed_form, fetcher_.get(),
         std::move(mock_password_save_manager), nullptr);
@@ -2743,6 +2758,11 @@ class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {
         std::make_unique<NiceMock<MockPasswordSaveManager>>();
     mock_password_save_manager_ = mock_password_save_manager.get();
     EXPECT_CALL(*mock_password_save_manager_, Init(_, _, _, _));
+    // The PasswordFormManagerTestWithMockedSaver tests don't rely on the
+    // return value of GetPendingCredentials. So, it is fine to return an
+    // arbitrary form.
+    ON_CALL(*mock_password_save_manager_, GetPendingCredentials)
+        .WillByDefault(ReturnRef(saved_match_));
     form_manager_ = std::make_unique<PasswordFormManager>(
         &client_, PasswordFormDigest(base_auth_observed_form), fetcher_.get(),
         std::move(mock_password_save_manager));
@@ -3075,7 +3095,6 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {
     EXPECT_CALL(*mock_password_save_manager(),
                 CreatePendingCredentials(http_auth_form, _, _, true, _));
     ASSERT_TRUE(form_manager_->ProvisionallySaveHttpAuthForm(http_auth_form));
-    PasswordForm updated_form;
     // Check that the password save manager is invoked.
     EXPECT_CALL(*mock_password_save_manager(), Save(_, http_auth_form));
     form_manager_->Save();
