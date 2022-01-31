@@ -4382,8 +4382,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, InterstitialNotAffectedByHideShow) {
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
   EXPECT_TRUE(tab->GetRenderWidgetHostView()->IsShowing());
 
-  AddTabAtIndex(0, https_server_.GetURL("/ssl/google.html"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, https_server_.GetURL("/ssl/google.html"),
+                            ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(tab, browser()->tab_strip_model()->GetWebContentsAt(1));
@@ -4884,7 +4884,8 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest,
   // Open a second tab, close the first, and then trigger the network time
   // response and wait for the response; no crash should occur.
   ASSERT_TRUE(https_server_.Start());
-  AddTabAtIndex(1, https_server_.GetURL("/"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_FALSE(
+      AddTabAtIndex(1, https_server_.GetURL("/"), ui::PAGE_TRANSITION_TYPED));
   chrome::CloseWebContents(browser(), contents, false);
   ASSERT_NO_FATAL_FAILURE(CheckTimeQueryPending());
   TriggerTimeResponse();
