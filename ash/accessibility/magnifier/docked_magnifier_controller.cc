@@ -318,8 +318,10 @@ void DockedMagnifierController::OnDisplayConfigurationChanged() {
 
     // Resolution changes, screen rotation, etc. can reset the host to confine
     // the mouse cursor inside the root window. We want to make sure the cursor
-    // is confined properly outside the viewport.
-    ConfineMouseCursorOutsideViewport();
+    // is confined properly outside the viewport. But don't confine mouse if
+    // resizing.
+    if (!has_started_resize_)
+      ConfineMouseCursorOutsideViewport();
   }
 
   // A change in display configuration, such as resolution, rotation, ... etc.
@@ -388,31 +390,40 @@ void DockedMagnifierController::MaybePerformViewportResizing(
   float magnifier_height = root_bounds.height() / screen_height_divisor_;
 
   // If user releases left mouse button, or any other mouse button is pressed,
-  // stop resizing.
+  // ignore and stop resizing.
   if (!event->IsOnlyLeftMouseButton() ||
       event->type() == ui::ET_MOUSE_RELEASED) {
-    has_started_resize_ = false;
+    if (has_started_resize_) {
+      has_started_resize_ = false;
+      ConfineMouseCursorOutsideViewport();
+    }
     return;
   }
-
+  float root_y = event->root_location_f().y();
   float new_screen_height_divisor =
-      root_bounds.height() / (event->y() + resize_offset_);
+      root_bounds.height() / (root_y + resize_offset_);
 
+  const int separator_top = separator_layer_->bounds().y();
+  const int separator_bottom = separator_layer_->bounds().bottom();
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
-      // User clicks separator to start resizing Docked Magnifier.
-      if (!has_started_resize_ && event->y() >= magnifier_height &&
-          event->y() <= magnifier_height + kSeparatorHeight) {
-        resize_offset_ = magnifier_height - event->y();
+      // User clicks within separator to start resizing Docked Magnifier.
+      // Subtracting one is needed to capture when mouse is at the very top.
+      if (!has_started_resize_ && root_y >= separator_top - 1 &&
+          root_y <= separator_bottom) {
+        resize_offset_ = magnifier_height - root_y;
         has_started_resize_ = true;
+        RootWindowController::ForWindow(current_source_root_window_)
+            ->ash_host()
+            ->ConfineCursorToRootWindow();
       }
       break;
     case ui::ET_MOUSE_DRAGGED:
       // User continues holding and drags separator to resize Docked Magnifier.
-      if (has_started_resize_ &&
-          new_screen_height_divisor >= kMinScreenHeightDivisor &&
-          new_screen_height_divisor <= kMaxScreenHeightDivisor) {
-        screen_height_divisor_ = new_screen_height_divisor;
+      if (has_started_resize_) {
+        screen_height_divisor_ =
+            base::clamp(new_screen_height_divisor, kMinScreenHeightDivisor,
+                        kMaxScreenHeightDivisor);
         OnDisplayConfigurationChanged();
       }
       break;
@@ -731,7 +742,11 @@ void DockedMagnifierController::ConfineMouseCursorOutsideViewport() {
 
   gfx::Rect confine_bounds =
       current_source_root_window_->GetBoundsInRootWindow();
-  const int docked_height = separator_layer_->bounds().bottom();
+  const auto viewport_bounds = magnifier_utils::GetViewportWidgetBoundsInRoot(
+      current_source_root_window_, screen_height_divisor_);
+  const int docked_height = ::features::IsDockedMagnifierResizingEnabled()
+                                ? viewport_bounds.height()
+                                : separator_layer_->bounds().bottom();
   confine_bounds.Offset(0, docked_height);
   confine_bounds.set_height(confine_bounds.height() - docked_height);
   RootWindowController::ForWindow(current_source_root_window_)

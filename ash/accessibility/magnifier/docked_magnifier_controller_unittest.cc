@@ -848,7 +848,7 @@ TEST_F(DockedMagnifierTest, ResizeDockedMagnifier) {
             viewport_widget->GetWindowBoundsInScreen());
 }
 
-// Tests to verify dragging about separator does not resize docked magnifier.
+// Tests to verify dragging above separator does not resize docked magnifier.
 TEST_F(DockedMagnifierTest, DragAboveSeparatorDoesNotResizeDockedMagnifier) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
@@ -871,9 +871,9 @@ TEST_F(DockedMagnifierTest, DragAboveSeparatorDoesNotResizeDockedMagnifier) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
             viewport_widget->GetWindowBoundsInScreen());
 
-  // Move cursor 1px above the docked magnifier separator, in the viewport area,
+  // Move cursor 2px above the docked magnifier separator, in the viewport area,
   // where dragging should not work.
-  gfx::Point mouse_location(400, viewport_height - 1);
+  gfx::Point mouse_location(400, viewport_height - 2);
   GetEventGenerator()->MoveMouseTo(mouse_location);
 
   // Drag 100 pixels down.
