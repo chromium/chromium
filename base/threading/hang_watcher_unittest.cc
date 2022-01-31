@@ -70,7 +70,7 @@ class BlockingThread : public DelegateSimpleThread::Delegate {
     // happens on the right thread.
     base::ScopedClosureRunner unregister_closure =
         base::HangWatcher::RegisterThread(
-            base::HangWatcher::ThreadType::kUIThread);
+            base::HangWatcher::ThreadType::kMainThread);
 
     WatchHangsInScope scope(timeout_);
     wait_until_entered_scope_.Signal();
@@ -114,7 +114,8 @@ class HangWatcherTest : public testing::Test {
 
   HangWatcherTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-    hang_watcher_.InitializeOnMainThread();
+    hang_watcher_.InitializeOnMainThread(
+        HangWatcher::ProcessType::kBrowserProcess);
 
     hang_watcher_.SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
@@ -210,7 +211,7 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   // Create a hang.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
@@ -229,7 +230,7 @@ TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
 TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   // Create a hang.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
@@ -251,7 +252,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
 TEST_F(HangWatcherTest, NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   WatchHangsInScope expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
@@ -291,7 +292,7 @@ TEST_F(HangWatcherTest,
        NewSeparateWatchHangsInScopeAfterInvalidationDetectsHang) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   {
     WatchHangsInScope expires_instantly(base::TimeDelta{});
@@ -319,7 +320,7 @@ TEST_F(HangWatcherTest,
 TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   // Start a WatchHangsInScope that expires right away. Then advance
   // time to make sure no hang is detected.
@@ -345,7 +346,7 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
 TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   // Start a WatchHangsInScope that expires right away. Then advance
   // time to make sure no hang is detected.
@@ -376,7 +377,7 @@ TEST_F(HangWatcherTest, NestedScopes) {
   // threaded.
   auto current_hang_watch_state =
       base::internal::HangWatchState::CreateHangWatchStateForCurrentThread(
-          HangWatcher::ThreadType::kUIThread);
+          HangWatcher::ThreadType::kMainThread);
 
   ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
   base::TimeTicks original_deadline = current_hang_watch_state->GetDeadline();
@@ -593,7 +594,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
   {
     // Start a WatchHangsInScope that expires right away. Ensures that
     // the first monitor will detect a hang.
@@ -641,7 +642,7 @@ TEST_F(HangWatcherSnapshotTest, DISABLED_HungThreadIDs) {
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   BlockingThread blocking_thread(&monitor_event_, base::TimeDelta{});
   blocking_thread.StartAndWaitForScopeEntered();
@@ -796,7 +797,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
 
   // Register a thread,
   unregister_thread_closure_ =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   run_loop.Run();
 
@@ -825,7 +826,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest, NoMonitorOnOverSleep) {
 
   // Register a thread.
   unregister_thread_closure_ =
-      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   // Unblock the test thread. All waits were perceived as oversleeping so all
   // monitoring was inhibited.
@@ -844,7 +845,8 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
  public:
   WatchHangsInScopeBlockingTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-    hang_watcher_.InitializeOnMainThread();
+    hang_watcher_.InitializeOnMainThread(
+        HangWatcher::ProcessType::kBrowserProcess);
 
     hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
       capture_started_.Signal();
@@ -869,7 +871,7 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
 
     // Register the test main thread for hang watching.
     unregister_thread_closure_ =
-        HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+        HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
   }
 
   void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
@@ -1133,7 +1135,7 @@ TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
            kArbitraryDeadline;
   }));
 
-  // Clearing kIgnoreHang is unafected by deadline or flags change.
+  // Clearing kIgnoreHang is unaffected by deadline or flags change.
   deadline_.UnsetIgnoreCurrentWatchHangsInScope();
   ASSERT_FALSE(deadline_.IsFlagSet(
       HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));

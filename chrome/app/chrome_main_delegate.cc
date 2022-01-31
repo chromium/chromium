@@ -717,7 +717,19 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
       InitializeOnMainThread();
 #endif
 
-  base::HangWatcher::InitializeOnMainThread();
+  // Initialize the HangWatcher.
+  base::HangWatcher::ProcessType hang_watcher_process_type;
+  if (process_type.empty()) {
+    hang_watcher_process_type = base::HangWatcher::ProcessType::kBrowserProcess;
+  } else if (process_type == switches::kGpuProcess) {
+    hang_watcher_process_type = base::HangWatcher::ProcessType::kGPUProcess;
+  } else if (process_type == switches::kRendererProcess) {
+    hang_watcher_process_type =
+        base::HangWatcher::ProcessType::kRendererProcess;
+  } else {
+    hang_watcher_process_type = base::HangWatcher::ProcessType::kUnknownProcess;
+  }
+  base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type);
 
   base::internal::TimerBase::InitializeFeatures();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();

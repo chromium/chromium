@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/common/content_export.h"
@@ -55,9 +54,6 @@ class ContentMainRunnerImpl : public ContentMainRunner {
                  bool start_minimal_browser);
 
   bool is_browser_main_loop_started_ = false;
-
-  // The hang watcher is leaked to make sure it survives all watched threads.
-  raw_ptr<base::HangWatcher> hang_watcher_;
 
   // Unregisters UI thread from hang watching on destruction.
   // NOTE: The thread should be unregistered before HangWatcher stops so this

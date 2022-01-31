@@ -13,6 +13,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -35,16 +36,19 @@ namespace {
 
 // Defines how much logging happens when the HangWatcher monitors the threads.
 // Logging levels are set per thread type through Finch. It's important that
-// the order of the enum members stay the and that their numerical
+// the order of the enum members stay the same and that their numerical
 // values be in increasing order. The implementation of
 // ThreadTypeLoggingLevelGreaterOrEqual() depends on it.
 enum class LoggingLevel { kNone = 0, kUmaOnly = 1, kUmaAndCrash = 2 };
 
 HangWatcher* g_instance = nullptr;
 std::atomic<bool> g_use_hang_watcher{false};
+std::atomic<HangWatcher::ProcessType> g_hang_watcher_process_type{
+    HangWatcher::ProcessType::kBrowserProcess};
+
 std::atomic<LoggingLevel> g_threadpool_log_level{LoggingLevel::kNone};
 std::atomic<LoggingLevel> g_io_thread_log_level{LoggingLevel::kNone};
-std::atomic<LoggingLevel> g_ui_thread_log_level{LoggingLevel::kNone};
+std::atomic<LoggingLevel> g_main_thread_log_level{LoggingLevel::kNone};
 
 // Indicates whether HangWatcher::Run() should return after the next monitoring.
 std::atomic<bool> g_keep_monitoring{true};
@@ -59,20 +63,34 @@ void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
   // not make sense.
   const bool any_thread_hung = count >= 1;
 
-  switch (thread_type) {
-    case HangWatcher::ThreadType::kIOThread:
-      UMA_HISTOGRAM_BOOLEAN(
-          "HangWatcher.IsThreadHung.BrowserProcess."
-          "IOThread",
-          any_thread_hung);
+  const HangWatcher::ProcessType process_type =
+      g_hang_watcher_process_type.load(std::memory_order_relaxed);
+  switch (process_type) {
+    case HangWatcher::ProcessType::kUnknownProcess:
       break;
-    case HangWatcher::ThreadType::kUIThread:
-      UMA_HISTOGRAM_BOOLEAN(
-          "HangWatcher.IsThreadHung.BrowserProcess."
-          "UIThread",
-          any_thread_hung);
+
+    case HangWatcher::ProcessType::kBrowserProcess:
+      switch (thread_type) {
+        case HangWatcher::ThreadType::kIOThread:
+          UMA_HISTOGRAM_BOOLEAN(
+              "HangWatcher.IsThreadHung.BrowserProcess."
+              "IOThread",
+              any_thread_hung);
+          break;
+        case HangWatcher::ThreadType::kMainThread:
+          UMA_HISTOGRAM_BOOLEAN(
+              "HangWatcher.IsThreadHung.BrowserProcess."
+              "UIThread",
+              any_thread_hung);
+          break;
+        case HangWatcher::ThreadType::kThreadPoolThread:
+          // Not recorded for now.
+          break;
+      }
       break;
-    case HangWatcher::ThreadType::kThreadPoolThread:
+
+    case HangWatcher::ProcessType::kGPUProcess:
+    case HangWatcher::ProcessType::kRendererProcess:
       // Not recorded for now.
       break;
   }
@@ -86,8 +104,8 @@ bool ThreadTypeLoggingLevelGreaterOrEqual(HangWatcher::ThreadType thread_type,
     case HangWatcher::ThreadType::kIOThread:
       return g_io_thread_log_level.load(std::memory_order_relaxed) >=
              logging_level;
-    case HangWatcher::ThreadType::kUIThread:
-      return g_ui_thread_log_level.load(std::memory_order_relaxed) >=
+    case HangWatcher::ThreadType::kMainThread:
+      return g_main_thread_log_level.load(std::memory_order_relaxed) >=
              logging_level;
     case HangWatcher::ThreadType::kThreadPoolThread:
       return g_threadpool_log_level.load(std::memory_order_relaxed) >=
@@ -102,6 +120,7 @@ bool ThreadTypeLoggingLevelGreaterOrEqual(HangWatcher::ThreadType thread_type,
 const Feature kEnableHangWatcher{"EnableHangWatcher",
                                  FEATURE_ENABLED_BY_DEFAULT};
 
+// Browser process.
 constexpr base::FeatureParam<int> kIOThreadLogLevel{
     &kEnableHangWatcher, "io_thread_log_level",
     static_cast<int>(LoggingLevel::kUmaOnly)};
@@ -110,6 +129,28 @@ constexpr base::FeatureParam<int> kUIThreadLogLevel{
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kThreadPoolLogLevel{
     &kEnableHangWatcher, "threadpool_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+
+// GPU process.
+constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
+    &kEnableHangWatcher, "gpu_process_io_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kGPUProcessMainThreadLogLevel{
+    &kEnableHangWatcher, "gpu_process_main_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kGPUProcessThreadPoolLogLevel{
+    &kEnableHangWatcher, "gpu_process_threadpool_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+
+// Renderer process.
+constexpr base::FeatureParam<int> kRendererProcessIOThreadLogLevel{
+    &kEnableHangWatcher, "renderer_process_io_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kRendererProcessMainThreadLogLevel{
+    &kEnableHangWatcher, "renderer_process_main_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kRendererProcessThreadPoolLogLevel{
+    &kEnableHangWatcher, "renderer_process_threadpool_log_level",
     static_cast<int>(LoggingLevel::kUmaOnly)};
 
 // static
@@ -226,27 +267,64 @@ WatchHangsInScope::~WatchHangsInScope() {
 }
 
 // static
-void HangWatcher::InitializeOnMainThread() {
+void HangWatcher::InitializeOnMainThread(ProcessType process_type) {
   DCHECK(!g_use_hang_watcher);
   DCHECK(g_io_thread_log_level == LoggingLevel::kNone);
-  DCHECK(g_ui_thread_log_level == LoggingLevel::kNone);
+  DCHECK(g_main_thread_log_level == LoggingLevel::kNone);
   DCHECK(g_threadpool_log_level == LoggingLevel::kNone);
 
-  g_use_hang_watcher.store(base::FeatureList::IsEnabled(kEnableHangWatcher),
-                           std::memory_order_relaxed);
+  const bool enable_hang_watcher =
+      base::FeatureList::IsEnabled(kEnableHangWatcher);
+  g_use_hang_watcher.store(enable_hang_watcher, std::memory_order_relaxed);
+
+  // Keep the process type.
+  g_hang_watcher_process_type.store(process_type, std::memory_order_relaxed);
 
   // If hang watching is disabled as a whole there is no need to read the
   // params.
-  if (g_use_hang_watcher.load(std::memory_order_relaxed)) {
-    g_threadpool_log_level.store(
-        static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
-        std::memory_order_relaxed);
-    g_io_thread_log_level.store(
-        static_cast<LoggingLevel>(kIOThreadLogLevel.Get()),
-        std::memory_order_relaxed);
-    g_ui_thread_log_level.store(
-        static_cast<LoggingLevel>(kUIThreadLogLevel.Get()),
-        std::memory_order_relaxed);
+  if (!enable_hang_watcher)
+    return;
+
+  // Retrieve thread-specific config for hang watching.
+  switch (process_type) {
+    case HangWatcher::ProcessType::kUnknownProcess:
+      break;
+
+    case HangWatcher::ProcessType::kBrowserProcess:
+      g_threadpool_log_level.store(
+          static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
+          std::memory_order_relaxed);
+      g_io_thread_log_level.store(
+          static_cast<LoggingLevel>(kIOThreadLogLevel.Get()),
+          std::memory_order_relaxed);
+      g_main_thread_log_level.store(
+          static_cast<LoggingLevel>(kUIThreadLogLevel.Get()),
+          std::memory_order_relaxed);
+      break;
+
+    case HangWatcher::ProcessType::kGPUProcess:
+      g_threadpool_log_level.store(
+          static_cast<LoggingLevel>(kGPUProcessThreadPoolLogLevel.Get()),
+          std::memory_order_relaxed);
+      g_io_thread_log_level.store(
+          static_cast<LoggingLevel>(kGPUProcessIOThreadLogLevel.Get()),
+          std::memory_order_relaxed);
+      g_main_thread_log_level.store(
+          static_cast<LoggingLevel>(kGPUProcessMainThreadLogLevel.Get()),
+          std::memory_order_relaxed);
+      break;
+
+    case HangWatcher::ProcessType::kRendererProcess:
+      g_threadpool_log_level.store(
+          static_cast<LoggingLevel>(kRendererProcessThreadPoolLogLevel.Get()),
+          std::memory_order_relaxed);
+      g_io_thread_log_level.store(
+          static_cast<LoggingLevel>(kRendererProcessIOThreadLogLevel.Get()),
+          std::memory_order_relaxed);
+      g_main_thread_log_level.store(
+          static_cast<LoggingLevel>(kRendererProcessMainThreadLogLevel.Get()),
+          std::memory_order_relaxed);
+      break;
   }
 }
 
@@ -254,7 +332,7 @@ void HangWatcher::UnitializeOnMainThreadForTesting() {
   g_use_hang_watcher.store(false, std::memory_order_relaxed);
   g_threadpool_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
   g_io_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
-  g_ui_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
+  g_main_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
 }
 
 // static
@@ -276,7 +354,7 @@ bool HangWatcher::IsIOThreadHangWatchingEnabled() {
 
 // static
 bool HangWatcher::IsCrashReportingEnabled() {
-  if (g_ui_thread_log_level.load(std::memory_order_relaxed) ==
+  if (g_main_thread_log_level.load(std::memory_order_relaxed) ==
       LoggingLevel::kUmaAndCrash) {
     return true;
   }
@@ -318,6 +396,14 @@ HangWatcher::HangWatcher()
 
   DCHECK(!g_instance);
   g_instance = this;
+}
+
+// static
+void HangWatcher::CreateHangWatcherInstance() {
+  DCHECK(!g_instance);
+  g_instance = new base::HangWatcher();
+  // The hang watcher is leaked to make sure it survives all watched threads.
+  ANNOTATE_LEAKING_OBJECT_PTR(g_instance);
 }
 
 #if !BUILDFLAG(IS_NACL)

@@ -662,6 +662,16 @@ RunOtherNamedProcessTypeMain(const std::string& process_type,
     {switches::kGpuProcess, GpuMain},
   };
 
+  // The hang watcher needs to be started once the feature list is available
+  // but before the IO thread is started.
+  base::ScopedClosureRunner unregister_thread_closure;
+  if (base::HangWatcher::IsEnabled()) {
+    base::HangWatcher::CreateHangWatcherInstance();
+    unregister_thread_closure = base::HangWatcher::RegisterThread(
+        base::HangWatcher::ThreadType::kMainThread);
+    base::HangWatcher::GetInstance()->Start();
+  }
+
   for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name) {
       auto exit_code =
@@ -1086,11 +1096,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     // The hang watcher needs to be started once the feature list is available
     // but before the IO thread is started.
     if (base::HangWatcher::IsEnabled()) {
-      hang_watcher_ = new base::HangWatcher();
+      base::HangWatcher::CreateHangWatcherInstance();
       unregister_thread_closure_ = base::HangWatcher::RegisterThread(
-          base::HangWatcher::ThreadType::kUIThread);
-      hang_watcher_->Start();
-      ANNOTATE_LEAKING_OBJECT_PTR(hang_watcher_);
+          base::HangWatcher::ThreadType::kMainThread);
+      base::HangWatcher::GetInstance()->Start();
     }
 
     if (has_thread_pool) {

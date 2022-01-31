@@ -105,10 +105,19 @@ class BASE_EXPORT WatchHangsInScope {
 // within a single process. This instance must outlive all monitored threads.
 class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
  public:
+  // Describes the type of a process for logging purposes.
+  enum class ProcessType {
+    kUnknownProcess = 0,
+    kBrowserProcess = 1,
+    kGPUProcess = 2,
+    kRendererProcess = 3,
+    kMax = kRendererProcess
+  };
+
   // Describes the type of a thread for logging purposes.
   enum class ThreadType {
     kIOThread = 0,
-    kUIThread = 1,
+    kMainThread = 1,
     kThreadPoolThread = 2,
     kMax = kThreadPoolThread
   };
@@ -130,12 +139,14 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   HangWatcher(const HangWatcher&) = delete;
   HangWatcher& operator=(const HangWatcher&) = delete;
 
+  static void CreateHangWatcherInstance();
+
   // Returns a non-owning pointer to the global HangWatcher instance.
   static HangWatcher* GetInstance();
 
   // Initializes HangWatcher. Must be called once on the main thread during
   // startup while single-threaded.
-  static void InitializeOnMainThread();
+  static void InitializeOnMainThread(ProcessType process_type);
 
   // Returns the values that were set through InitializeOnMainThread() to their
   // default value. Used for testing since in prod initialization should happen
