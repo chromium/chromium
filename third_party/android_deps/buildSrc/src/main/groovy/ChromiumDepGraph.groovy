@@ -127,7 +127,8 @@ class ChromiumDepGraph {
             description: 'Only contains necessary framework & Xerces2 classes',
             url: 'http://nekohtml.sourceforge.net/index.html',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            overrideLatest: true),
         org_apache_ant_ant: new PropertyOverride(
             url: 'https://ant.apache.org/',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
@@ -521,9 +522,9 @@ class ChromiumDepGraph {
 
     private DependencyDescription buildDepDescription(
             String id, ResolvedDependency dependency, ResolvedArtifact artifact, List<String> childModules) {
-        String pomUrl
+        String pomUrl, repoUrl
         GPathResult pomContent
-        (pomUrl, pomContent) = computePomFromArtifact(artifact)
+        (repoUrl, pomUrl, pomContent) = computePomFromArtifact(artifact)
 
         List<LicenseSpec> licenses = []
         if (!skipLicenses) {
@@ -552,6 +553,7 @@ class ChromiumDepGraph {
                 directoryName: id.toLowerCase(),
                 fileName: artifact.file.name,
                 fileUrl: fileUrl,
+                repoUrl: repoUrl,
                 description: description,
                 url: pomContent.url?.text(),
                 displayName: displayName,
@@ -615,6 +617,7 @@ class ChromiumDepGraph {
                 description = fallbackProperties.description ?: description
                 url = fallbackProperties.url ?: url
                 cipdSuffix = fallbackProperties.cipdSuffix ?: cipdSuffix
+                overrideLatest = fallbackProperties.overrideLatest ?: false
                 // Boolean properties require explicit null checks instead of only when truish.
                 if (fallbackProperties.generateTarget != null) {
                     generateTarget = fallbackProperties.generateTarget
@@ -701,7 +704,7 @@ class ChromiumDepGraph {
                 GPathResult content = new XmlSlurper(
                         false /* validating */, false /* namespaceAware */).parse(fileUrl)
                 logger.debug("Succeeded in resolving url $fileUrl")
-                return [fileUrl, content]
+                return [repoUrl, fileUrl, content]
             } catch (any) {
                 logger.debug("Failed in resolving url $fileUrl")
             }
@@ -730,6 +733,10 @@ class ChromiumDepGraph {
         String group, name, version, extension, displayName, description, url
         List<LicenseSpec> licenses
         String fileName, fileUrl
+        // |repoUrl| is the url to the repo that hosts this dep's artifact
+        // (|fileUrl|). Basically |fileurl|.startswith(|repoUrl|). |url| is the
+        // project homepage as supplied by the developer.
+        String repoUrl
         // The local directory name to store the files like artifact, license file, 3pp subdirectory, and etc. Must be
         // lowercase since 3pp uses the directory name as part of the CIPD names. However CIPD does not allow uppercase
         // in names.
@@ -740,6 +747,10 @@ class ChromiumDepGraph {
         ComponentIdentifier componentId
         List<String> children
         String cipdSuffix
+        // When set overrides the version downloaded by the 3pp fetch script to
+        // be, instead of the latest available, the resolved version by gradle
+        // in this run.
+        Boolean overrideLatest
 
     }
 
@@ -760,6 +771,9 @@ class ChromiumDepGraph {
         Boolean exclude
         // Set to false to skip creation of BUILD.gn target.
         Boolean generateTarget
+        // Set to override the 3pp fetch script returing the latest version and
+        // instead forcibly return the version required by gradle.
+        Boolean overrideLatest
 
     }
 

@@ -11,28 +11,44 @@ from __future__ import print_function
 import argparse
 import json
 import os
+import re
+import urllib2
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.jar'
-_FILE_NAME = 'maven-repository-metadata-2.2.1.jar'
-_FILE_VERSION = '2.2.1'
+_REPO_URL = 'https://repo.maven.apache.org/maven2'
+_GROUP_NAME = 'org/apache/maven'
+_MODULE_NAME = 'maven-repository-metadata'
+_FILE_EXT = 'jar'
+_OVERRIDE_LATEST = None
 
 
 def do_latest():
-    print(_FILE_VERSION)
+    if _OVERRIDE_LATEST is not None:
+        print(_OVERRIDE_LATEST)
+        return
+    maven_metadata_url = '{}/{}/{}/maven-metadata.xml'.format(
+        _REPO_URL, _GROUP_NAME, _MODULE_NAME)
+    metadata = urllib2.urlopen(maven_metadata_url).read()
+    # Do not parse xml with the python included parser since it is susceptible
+    # to maliciously crafted xmls. Only use regular expression parsing to be
+    # safe. RE should be enough to handle what we need to extract.
+    match = re.search('<latest>([^<]+)</latest>', metadata)
+    if match:
+        latest = match.group(1)
+    else:
+        # if no latest info was found just hope the versions are sorted and the
+        # last one is the latest (as is commonly the case).
+        latest = re.findall('<version>([^<]+)</version>', metadata)[-1]
+    print(latest)
 
 
 def get_download_url(version):
-    if _FILE_URL.endswith('.jar'):
-        ext = '.jar'
-    elif _FILE_URL.endswith('.aar'):
-        ext = '.aar'
-    else:
-        raise Exception('Unsupported extension for %s' % _FILE_URL)
+    file_url = '{0}/{1}/{2}/{3}/{2}-{3}.{4}'.format(_REPO_URL, _GROUP_NAME,
+                                                    _MODULE_NAME, version,
+                                                    _FILE_EXT)
 
     partial_manifest = {
-        'url': [_FILE_URL],
-        'name': [_FILE_NAME],
-        'ext': ext,
+        'url': [file_url],
+        'ext': '.' + _FILE_EXT,
     }
     print(json.dumps(partial_manifest))
 

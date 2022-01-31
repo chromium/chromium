@@ -11,28 +11,44 @@ from __future__ import print_function
 import argparse
 import json
 import os
+import re
+import urllib2
 
-_FILE_URL = 'https://dl.google.com/dl/android/maven2/android/arch/core/runtime/1.1.1/runtime-1.1.1.aar'
-_FILE_NAME = 'runtime-1.1.1.aar'
-_FILE_VERSION = '1.1.1'
+_REPO_URL = 'https://dl.google.com/dl/android/maven2'
+_GROUP_NAME = 'android/arch/core'
+_MODULE_NAME = 'runtime'
+_FILE_EXT = 'aar'
+_OVERRIDE_LATEST = None
 
 
 def do_latest():
-    print(_FILE_VERSION)
+    if _OVERRIDE_LATEST is not None:
+        print(_OVERRIDE_LATEST)
+        return
+    maven_metadata_url = '{}/{}/{}/maven-metadata.xml'.format(
+        _REPO_URL, _GROUP_NAME, _MODULE_NAME)
+    metadata = urllib2.urlopen(maven_metadata_url).read()
+    # Do not parse xml with the python included parser since it is susceptible
+    # to maliciously crafted xmls. Only use regular expression parsing to be
+    # safe. RE should be enough to handle what we need to extract.
+    match = re.search('<latest>([^<]+)</latest>', metadata)
+    if match:
+        latest = match.group(1)
+    else:
+        # if no latest info was found just hope the versions are sorted and the
+        # last one is the latest (as is commonly the case).
+        latest = re.findall('<version>([^<]+)</version>', metadata)[-1]
+    print(latest)
 
 
 def get_download_url(version):
-    if _FILE_URL.endswith('.jar'):
-        ext = '.jar'
-    elif _FILE_URL.endswith('.aar'):
-        ext = '.aar'
-    else:
-        raise Exception('Unsupported extension for %s' % _FILE_URL)
+    file_url = '{0}/{1}/{2}/{3}/{2}-{3}.{4}'.format(_REPO_URL, _GROUP_NAME,
+                                                    _MODULE_NAME, version,
+                                                    _FILE_EXT)
 
     partial_manifest = {
-        'url': [_FILE_URL],
-        'name': [_FILE_NAME],
-        'ext': ext,
+        'url': [file_url],
+        'ext': '.' + _FILE_EXT,
     }
     print(json.dumps(partial_manifest))
 
