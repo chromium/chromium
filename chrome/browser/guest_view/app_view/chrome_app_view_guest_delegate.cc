@@ -9,6 +9,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
+#include "content/public/browser/web_contents.h"
 
 namespace extensions {
 
