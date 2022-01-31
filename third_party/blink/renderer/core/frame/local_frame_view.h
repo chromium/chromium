@@ -1026,8 +1026,17 @@ class CORE_EXPORT LocalFrameView final
 
   Member<FragmentAnchor> fragment_anchor_;
 
+  // Scrollable areas which either:
+  //  - are user-scrollable, visible to hit testing, and do in fact overflow, or
+  //  - overflow in the block flow direction (needed for LayoutFromRootObject()
+  //    to get scroll anchoring right).
+  // TODO(abotella): According to skobes, every usage of scrollable_areas_ other
+  // than LayoutFromRootObject() can be switched to use user_scrollable_areas_.
+  // If so, scrollable_areas_ should probably be renamed and used only for areas
+  // which overflow in the block flow direction.
   Member<ScrollableAreaSet> scrollable_areas_;
   Member<ScrollableAreaSet> animating_scrollable_areas_;
+  // Scrollable areas which are user-scrollable, whether they overflow or not.
   Member<ScrollableAreaSet> user_scrollable_areas_;
   Member<ObjectSet> viewport_constrained_objects_;
   // Number of entries in viewport_constrained_objects_ that are sticky.

@@ -441,11 +441,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
       const PhysicalRect&,
       const mojom::blink::ScrollIntoViewParamsPtr&) override;
 
-  // Returns true if scrollable area is in the FrameView's collection of
-  // scrollable areas. This can only happen if we're scrollable, visible to hit
-  // test, and do in fact overflow. This means that 'overflow: hidden' or
-  // 'pointer-events: none' layers never get added to the FrameView's
-  // collection.
+  // Returns true if the scrollable area is user-scrollable, visible to hit
+  // testing, and it does in fact overflow. This means this method will return
+  // false for 'overflow: hidden' and 'pointer-events: none'.
   bool ScrollsOverflow() const { return scrolls_overflow_; }
 
   // Rectangle encompassing the scroll corner and resizer rect.
