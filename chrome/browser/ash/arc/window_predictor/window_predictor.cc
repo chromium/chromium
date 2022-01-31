@@ -6,8 +6,55 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
+#include "chromeos/ui/base/window_state_type.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace arc {
+
+namespace {
+
+// Pre-defined screen size for ARC. See ArcLaunchParamsModifier.java in ARC
+// codebase.
+
+// Screen size of Nexus 5x
+constexpr gfx::Size kDefaultPortraitPhoneSize(412, 732);
+constexpr gfx::Size kDefaultLandscapeTabletSize(1064, 600);
+
+// In ARC R and above, the uniform scale factor is applied on ARC window render
+// process.
+// TODO(sstan): Replace by calculating from real display scale factor.
+constexpr float kArcUniformScaleFactor = 1.2;
+
+gfx::Size GetPhoneSize(bool is_disp_landscape) {
+  auto result = kDefaultPortraitPhoneSize;
+  if (is_disp_landscape)
+    result.Transpose();
+  return ScaleToCeiledSize(result, kArcUniformScaleFactor);
+}
+
+gfx::Size GetTabletSize(bool is_disp_landscape) {
+  auto result = kDefaultLandscapeTabletSize;
+  if (!is_disp_landscape)
+    result.Transpose();
+  return ScaleToCeiledSize(result, kArcUniformScaleFactor);
+}
+
+// Get window bounds in the middle of a display in global coordinate.
+gfx::Rect GetMiddleBounds(const display::Display& display,
+                          const gfx::Size& size) {
+  // Shrink size if it larger then display size.
+  // TODO(sstan): ARC P and R has different behavior for caption bar, verify if
+  // it need consider the caption bar.
+  auto shrink_size = size;
+  shrink_size.SetToMin(display.work_area_size());
+
+  auto bounds_rect = display.work_area();
+  bounds_rect.ClampToCenteredSize(shrink_size);
+  return bounds_rect;
+}
+
+}  // namespace
 
 // static
 WindowPredictor* WindowPredictor::GetInstance() {
@@ -30,8 +77,38 @@ void WindowPredictor::MaybeCreateAppLaunchHandler(Profile* profile) {
 arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
     const ArcAppListPrefs::AppInfo& app_info,
     arc::mojom::WindowInfoPtr window_info) {
-  // TODO(sstan): Generate window bounds based on display info and the
-  // info saved in ArcAppListPrefs.
+  // TODO(sstan): Consider fallback case.
+  // TODO(sstan): Verify the affect from per-display density.
+  // TODO(sstan): Consider multi display case.
+  if (!window_info)
+    return nullptr;
+  auto disp = display::Display::GetDefaultDisplay();
+  if (window_info->display_id != display::kInvalidDisplayId) {
+    display::Screen::GetScreen()->GetDisplayWithDisplayId(
+        window_info->display_id, &disp);
+  }
+
+  const auto& layout = app_info.initial_window_layout;
+  switch (layout.type) {
+    case arc::mojom::WindowSizeType::kMaximize:
+      window_info->state =
+          static_cast<int32_t>(chromeos::WindowStateType::kMaximized);
+      break;
+    case arc::mojom::WindowSizeType::kTabletSize:
+      window_info->state =
+          static_cast<int32_t>(chromeos::WindowStateType::kNormal);
+      window_info->bounds =
+          GetMiddleBounds(disp, GetTabletSize(disp.is_landscape()));
+      break;
+    case arc::mojom::WindowSizeType::kPhoneSize:
+    case arc::mojom::WindowSizeType::kUnknown:
+    default:
+      window_info->state =
+          static_cast<int32_t>(chromeos::WindowStateType::kNormal);
+      window_info->bounds =
+          GetMiddleBounds(disp, GetPhoneSize(disp.is_landscape()));
+  }
+
   return window_info;
 }
 
