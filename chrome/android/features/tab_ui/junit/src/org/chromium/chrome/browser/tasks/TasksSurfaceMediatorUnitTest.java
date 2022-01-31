@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_S
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -91,6 +92,7 @@ public class TasksSurfaceMediatorUnitTest {
     @Test
     public void initialization() {
         verify(mPropertyModel).set(eq(IS_TAB_CAROUSEL_VISIBLE), eq(true));
+        verify(mPropertyModel).set(eq(IS_TAB_CAROUSEL_TITLE_VISIBLE), eq(true));
         verify(mPropertyModel)
                 .set(eq(FAKE_SEARCH_BOX_CLICK_LISTENER), mFakeboxClickListenerCaptor.capture());
         verify(mPropertyModel)

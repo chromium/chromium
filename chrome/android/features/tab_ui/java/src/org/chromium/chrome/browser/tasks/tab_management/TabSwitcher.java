@@ -140,6 +140,11 @@ public interface TabSwitcher {
          */
         @VisibleForTesting
         default void showTabSelectionEditor(List<Tab> tabs) {}
+
+        /**
+         * @return Whether the tab switcher title is visible.
+         */
+        boolean showTabSwitcherTitle();
     }
 
     /**

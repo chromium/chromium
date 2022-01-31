@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_S
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
@@ -168,6 +169,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
         doReturn(false).when(mNormalTabModel).isIncognito();
         doReturn(true).when(mIncognitoTabModel).isIncognito();
+        doReturn(true).when(mMainTabGridController).showTabSwitcherTitle();
         doReturn(mSecondaryTasksSurfaceController)
                 .when(mSecondaryTasksSurfaceInitializer)
                 .initialize();
@@ -320,6 +322,7 @@ public class StartSurfaceMediatorUnitTest {
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
     }
 
     @Test
@@ -339,15 +342,18 @@ public class StartSurfaceMediatorUnitTest {
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
 
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
 
         doReturn(1).when(mNormalTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
     }
 
     @Test
@@ -371,10 +377,12 @@ public class StartSurfaceMediatorUnitTest {
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
 
         mTabModelObserverCaptor.getValue().tabClosureUndone(mock(Tab.class));
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
 
         doReturn(2).when(mNormalTabModel).getCount();
         mediator.setOverviewState(StartSurfaceState.SHOWN_TABSWITCHER);
@@ -383,6 +391,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(0).when(mNormalTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false);
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
     }
 
@@ -518,6 +527,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
@@ -528,6 +538,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
@@ -540,6 +551,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
 
         mediator.startedHiding();
@@ -568,6 +580,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
@@ -601,6 +614,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
@@ -618,6 +632,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
     }
 
@@ -642,6 +657,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
@@ -653,6 +669,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
@@ -666,6 +683,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
@@ -1178,6 +1196,27 @@ public class StartSurfaceMediatorUnitTest {
         mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
         verify(mSecondaryTasksSurfaceController, times(1)).showOverview(true);
+    }
+
+    @Test
+    public void singeTabSwitcherHideTabSwitcherTitle() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        doReturn(false).when(mMainTabGridController).showTabSwitcherTitle();
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true, false);
+
+        doReturn(2).when(mNormalTabModel).getCount();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
+        mediator.showOverview(false);
+        mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
     }
 
     private StartSurfaceMediator createStartSurfaceMediator(

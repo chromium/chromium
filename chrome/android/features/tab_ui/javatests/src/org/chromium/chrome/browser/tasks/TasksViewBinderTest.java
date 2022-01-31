@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGN
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
@@ -95,10 +96,19 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
     public void testSetTabCarouselMode() {
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, true);
         assertTrue(isViewVisible(R.id.carousel_tab_switcher_container));
-        assertTrue(isViewVisible(R.id.tab_switcher_title));
 
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, false);
         assertFalse(isViewVisible(R.id.carousel_tab_switcher_container));
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetTabCarouselTitle() {
+        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, true);
+        assertTrue(isViewVisible(R.id.tab_switcher_title));
+
+        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, false);
         assertFalse(isViewVisible(R.id.tab_switcher_title));
     }
 

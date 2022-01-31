@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGN
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
@@ -878,6 +879,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         if (isVisible == mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) return;
 
         mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, isVisible);
+        mPropertyModel.set(
+                IS_TAB_CAROUSEL_TITLE_VISIBLE, isVisible && mController.showTabSwitcherTitle());
     }
 
     private void setMVTilesVisibility(boolean isVisible) {

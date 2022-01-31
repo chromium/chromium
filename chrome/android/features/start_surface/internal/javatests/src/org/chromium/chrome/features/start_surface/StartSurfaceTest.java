@@ -356,7 +356,7 @@ public class StartSurfaceTest {
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_title))
-                .check(matches(isDisplayed()));
+                .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
                 .check(matches(isDisplayed()));
         onView(withId(org.chromium.chrome.tab_ui.R.id.single_tab_view))
