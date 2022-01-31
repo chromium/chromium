@@ -5,9 +5,12 @@
 #include <iostream>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/process/process.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 
@@ -43,11 +46,25 @@ void FixExecutionPriorities() {
   ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 }
 
+void MaybeIncreaseTestTimeouts(int argc, char** argv) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kTestLauncherTimeout)) {
+    command_line->AppendSwitchASCII(switches::kTestLauncherTimeout, "60000");
+  }
+  if (!command_line->HasSwitch(switches::kUiTestActionTimeout)) {
+    command_line->AppendSwitchASCII(switches::kUiTestActionTimeout, "30000");
+  }
+}
+
 }  // namespace
 
 #endif  // BUILDFLAG(IS_WIN)
 
 int main(int argc, char** argv) {
+  base::CommandLine::Init(argc, argv);
+  base::ScopedClosureRunner reset_command_line(
+      base::BindOnce(&base::CommandLine::Reset));
+
 #if BUILDFLAG(IS_WIN)
   std::cerr << "Process priority: " << base::Process::Current().GetPriority()
             << std::endl;
@@ -59,10 +76,15 @@ int main(int argc, char** argv) {
   // swarming task runs with a priority below normal.
   FixExecutionPriorities();
 
+  // Change the test timeout defaults if the command line arguments to override
+  // them are not present.
+  MaybeIncreaseTestTimeouts(argc, argv);
+
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
 #endif
+
   base::TestSuite test_suite(argc, argv);
   chrome::RegisterPathProvider();
   return base::LaunchUnitTestsSerially(
