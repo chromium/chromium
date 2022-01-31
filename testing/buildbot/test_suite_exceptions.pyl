@@ -3606,8 +3606,6 @@
         'args': [
           '--gtest_filter=-org.chromium.weblayer.test.MediaCaptureTest.*',
         ],
-        # TODO(crbug.com/1137474): Remove after the test suite is green.
-        'experiment_percentage': 100,
       },
     },
   },
