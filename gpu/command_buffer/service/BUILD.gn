@@ -243,6 +243,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image_backing_gl_image.h",
     "shared_image_backing_gl_texture.cc",
     "shared_image_backing_gl_texture.h",
+    "shared_image_backing_raw_draw.cc",
+    "shared_image_backing_raw_draw.h",
     "shared_image_backing_shared_memory.cc",
     "shared_image_backing_shared_memory.h",
     "shared_image_factory.cc",

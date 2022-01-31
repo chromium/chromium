@@ -8,12 +8,10 @@
 #include <memory>
 
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
-#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
 
-class GPU_GLES2_EXPORT SharedImageBackingFactoryRawDraw
-    : public SharedImageBackingFactory {
+class SharedImageBackingFactoryRawDraw : public SharedImageBackingFactory {
  public:
   SharedImageBackingFactoryRawDraw();
   ~SharedImageBackingFactoryRawDraw() override;
