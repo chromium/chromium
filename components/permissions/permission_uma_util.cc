@@ -1056,7 +1056,7 @@ void PermissionUmaUtil::RecordDSEEffectiveSetting(
 // static
 void PermissionUmaUtil::RecordPermissionPredictionSource(
     PermissionPredictionSource prediction_source) {
-  base::UmaHistogramEnumeration("Permissions.PredictionService.PredictionType",
+  base::UmaHistogramEnumeration("Permissions.PredictionService.PredictionSource",
                                 prediction_source);
 }
 
