@@ -154,45 +154,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpPwaInstall": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "WithToolbar",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:pwa_install_iph_trigger;comparator:<10;window:1;storage:360",
-                        "event_used": "name:pwa_install_menu_clicked;comparator:<3;window:90;storage:360",
-                        "session_rate": "any",
-                        "session_rate_impact": "none",
-                        "x_iph_replaces_toolbar": "false",
-                        "x_min_engagement_for_iph": "2"
-                    },
-                    "enable_features": [
-                        "IPH_PwaInstallAvailableFeature"
-                    ]
-                },
-                {
-                    "name": "WithoutToolbar",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:pwa_install_iph_trigger;comparator:<10;window:1;storage:360",
-                        "event_used": "name:pwa_install_menu_clicked;comparator:<3;window:90;storage:360",
-                        "session_rate": "any",
-                        "session_rate_impact": "none",
-                        "x_iph_replaces_toolbar": "true",
-                        "x_min_engagement_for_iph": "2"
-                    },
-                    "enable_features": [
-                        "IPH_PwaInstallAvailableFeature"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMediaPickerVideoSupport": [
         {
             "platforms": [
