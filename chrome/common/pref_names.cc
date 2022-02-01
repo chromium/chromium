@@ -2068,9 +2068,6 @@ const char kWebAppsIsolationState[] = "web_apps.isolation_state";
 const char kWebAppsUrlHandlerInfo[] = "web_apps.url_handler_info";
 #endif
 
-const char kWebAppsUserDisplayModeCleanedUp[] =
-    "web_apps.user_display_mode_cleaned_up";
-
 // A string representing the last version of Chrome that System Web Apps were
 // updated for.
 const char kSystemWebAppLastUpdateVersion[] =

@@ -465,17 +465,6 @@ const char kFeatureUsageDailySampleESim[] = "feature_usage.daily_sample.ESim";
 const char kFeatureUsageDailySampleFingerprint[] =
     "feature_usage.daily_sample.Fingerprint";
 
-// Deprecated 12/2020
-const char kLocalSearchServiceSyncMetricsDailySample[] =
-    "local_search_service_sync.metrics.daily_sample";
-const char kLocalSearchServiceSyncMetricsCrosSettingsCount[] =
-    "local_search_service_sync.metrics.cros_settings_count";
-const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
-    "local_search_service_sync.metrics.help_app_count";
-
-// Deprecated 12/2020
-const char kFirstRunTrialGroup[] = "help_app_first_run.trial_group";
-
 // Deprecated 10/2021
 const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
 
@@ -485,19 +474,6 @@ const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
 // Deprecated 10/2021
 const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 12/2020
-const char kAssistantPrivacyInfoShownInLauncher[] =
-    "ash.launcher.assistant_privacy_info_shown";
-
-const char kAssistantPrivacyInfoDismissedInLauncher[] =
-    "ash.launcher.assistant_privacy_info_dismissed";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 12/2020
-const char kAssistantQuickAnswersEnabled[] =
-    "settings.voice_interaction.quick_answers.enabled";
 
 // Deprecated 01/2021
 const char kGoogleServicesHostedDomain[] = "google.services.hosted_domain";
@@ -749,13 +725,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kTabStripStackedLayout, false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterStringPref(kFirstRunTrialGroup, std::string());
-
-  registry->RegisterInt64Pref(kLocalSearchServiceSyncMetricsDailySample, 0);
-  registry->RegisterIntegerPref(kLocalSearchServiceSyncMetricsHelpAppCount, 0);
-  registry->RegisterIntegerPref(kLocalSearchServiceSyncMetricsCrosSettingsCount,
-                                0);
-
   registry->RegisterInt64Pref(kFeatureUsageDailySampleESim, 0);
   registry->RegisterIntegerPref(kTimesHIDDialogShown, 0);
   registry->RegisterStringPref(kSplitSettingsSyncTrialGroup, std::string());
@@ -801,16 +770,6 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  registry->RegisterBooleanPref(prefs::kWebAppsUserDisplayModeCleanedUp, false);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kAssistantPrivacyInfoShownInLauncher, 0);
-  registry->RegisterBooleanPref(kAssistantPrivacyInfoDismissedInLauncher,
-                                false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  registry->RegisterBooleanPref(kAssistantQuickAnswersEnabled, true);
 
   registry->RegisterStringPref(kGoogleServicesHostedDomain, std::string());
 
@@ -1573,12 +1532,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 12/2020.
-  local_state->ClearPref(kFirstRunTrialGroup);
-  local_state->ClearPref(kLocalSearchServiceSyncMetricsDailySample);
-  local_state->ClearPref(kLocalSearchServiceSyncMetricsCrosSettingsCount);
-  local_state->ClearPref(kLocalSearchServiceSyncMetricsHelpAppCount);
-
   // Added 5/2021
   local_state->ClearPref(kFeatureUsageDailySampleESim);
 
@@ -1652,19 +1605,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
       profile_prefs);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 12/2020
-  profile_prefs->ClearPref(kAssistantPrivacyInfoShownInLauncher);
-  profile_prefs->ClearPref(kAssistantPrivacyInfoDismissedInLauncher);
-
   // Added 10/2021
   profile_prefs->ClearPref(kHasCameraAppMigratedToSWA);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 12/2020
-  profile_prefs->ClearPref(prefs::kWebAppsUserDisplayModeCleanedUp);
-
-  // Added 12/2020
-  profile_prefs->ClearPref(kAssistantQuickAnswersEnabled);
 
   // Added 01/2021
   profile_prefs->ClearPref(kGoogleServicesHostedDomain);
