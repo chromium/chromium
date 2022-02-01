@@ -66,8 +66,11 @@
 #if defined(ARCH_CPU_X86_64)
 #include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
 #endif  // defined(X86_64)
-#include "chromeos/system/core_scheduling.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/system/core_scheduling.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/renderer/pepper/pepper_plugin_registry.h"
@@ -150,11 +153,15 @@ int RendererMain(MainFunctionParams parameters) {
         command_line.GetSwitchValueASCII(switches::kLang);
     base::i18n::SetICUDefaultLocale(locale);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
   // When we start the renderer on ChromeOS if the system has core scheduling
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)
   using UserspaceSwapInit =
       chromeos::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
@@ -166,7 +173,7 @@ int RendererMain(MainFunctionParams parameters) {
         << "Unable to complete presandbox userspace swap initialization";
   }
 #endif  // defined(ARCH_CPU_X86_64)
-#endif  // defined(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (command_line.HasSwitch(switches::kTimeZoneForTesting)) {
     std::string time_zone =

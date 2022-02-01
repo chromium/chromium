@@ -545,12 +545,11 @@ target(link_target_type, "renderer") {
     deps += [ "//sandbox:sandbox_buildflags" ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/system:system" ]
+  }
   if (is_chromeos_ash) {
-    deps += [
-      "//chromeos:chromeos_export",
-      "//chromeos/system:system",
-    ]
-
+    deps += [ "//chromeos:chromeos_export" ]
     if (target_cpu == "x64") {
       deps += [ "//chromeos/memory/userspace_swap" ]
     }
