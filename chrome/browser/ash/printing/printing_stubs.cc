@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/printing/printing_stubs.h"
+#include "chrome/browser/ash/printing/printing_stubs.h"
 
 namespace chromeos {
 

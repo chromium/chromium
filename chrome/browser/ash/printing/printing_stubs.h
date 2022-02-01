@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINTING_STUBS_H_
-#define CHROME_BROWSER_CHROMEOS_PRINTING_PRINTING_STUBS_H_
+#ifndef CHROME_BROWSER_ASH_PRINTING_PRINTING_STUBS_H_
+#define CHROME_BROWSER_ASH_PRINTING_PRINTING_STUBS_H_
 
 #include <string>
 #include <vector>
 
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -45,4 +45,4 @@ class StubPrinterConfigurer : public PrinterConfigurer {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PRINTING_PRINTING_STUBS_H_
+#endif  // CHROME_BROWSER_ASH_PRINTING_PRINTING_STUBS_H_

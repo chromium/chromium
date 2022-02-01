@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PRINTING_TEST_CUPS_PRINTERS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_PRINTING_TEST_CUPS_PRINTERS_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_PRINTING_TEST_CUPS_PRINTERS_MANAGER_H_
+#define CHROME_BROWSER_ASH_PRINTING_TEST_CUPS_PRINTERS_MANAGER_H_
 
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ash/printing/printing_stubs.h"
 #include "chrome/browser/chromeos/printing/printers_map.h"
-#include "chrome/browser/chromeos/printing/printing_stubs.h"
 #include "chromeos/printing/cups_printer_status.h"
 
 namespace chromeos {
@@ -42,4 +42,4 @@ class TestCupsPrintersManager : public StubCupsPrintersManager {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PRINTING_TEST_CUPS_PRINTERS_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_PRINTING_TEST_CUPS_PRINTERS_MANAGER_H_

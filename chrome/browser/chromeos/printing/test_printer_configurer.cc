@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 
 #include "base/callback.h"
-#include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
+#include "chrome/browser/ash/printing/test_cups_printers_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 
 namespace chromeos {

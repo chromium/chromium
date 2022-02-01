@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 
 namespace chromeos {
 

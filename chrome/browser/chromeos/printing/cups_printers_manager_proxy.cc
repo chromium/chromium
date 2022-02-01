@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 
 namespace chromeos {
