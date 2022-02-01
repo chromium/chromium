@@ -56,7 +56,7 @@ std::string EmptyComponentLoaderPolicy::GetMetricsSuffix() const {
 void LoadEmptyComponent(
     component_updater::ComponentLoaderPolicyVector& policies) {
   if (!base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewEmptyComponent)) {
+          android_webview::features::kWebViewEmptyComponentLoaderPolicy)) {
     return;
   }
 

@@ -35,8 +35,8 @@ const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
 
 // Fake empty component to measure component updater performance impact on
 // WebView clients.
-const base::Feature kWebViewEmptyComponent{"WebViewEmptyComponentLoaderPolicy",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kWebViewEmptyComponentLoaderPolicy{
+    "WebViewEmptyComponentLoaderPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, passive mixed content (Audio/Video/Image subresources loaded
 // over HTTP on HTTPS sites) will be autoupgraded to HTTPS, and the load will be

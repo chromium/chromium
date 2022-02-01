@@ -52186,7 +52186,6 @@ from previous Chrome versions.
   <int value="-1301167148" label="WebViewZeroCopyVideo:disabled"/>
   <int value="-1298273481" label="http2-grease-settings"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
-  <int value="-1296499702" label="WebViewEmptyComponent:enabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
   <int value="-1294944922" label="Canvas2dStaysGPUOnReadback:disabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
@@ -52532,7 +52531,6 @@ from previous Chrome versions.
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
   <int value="-1056310158" label="disable-memory-pressure-chromeos"/>
-  <int value="-1055902091" label="WebViewEmptyComponent:disabled"/>
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
   <int value="-1052782474" label="enable-cloud-devices"/>
@@ -53098,6 +53096,7 @@ from previous Chrome versions.
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
+  <int value="-653505852" label="WebViewEmptyComponentLoaderPolicy:disabled"/>
   <int value="-652144124" label="BorealisBigGl:enabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
   <int value="-650388312" label="ClipboardHistoryScreenshotNudge:enabled"/>
@@ -55874,6 +55873,7 @@ from previous Chrome versions.
   <int value="1371907429" label="enable-wallet-card-import"/>
   <int value="1372680885" label="enable-mtp-write-support"/>
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
+  <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
