@@ -113,6 +113,57 @@ TEST_F(MetronomeTaskQueueFactoryTest, NormalPriorityDelayedTasksRunOnTicks) {
   EXPECT_EQ(task_run_counter, 3);
 }
 
+TEST_F(MetronomeTaskQueueFactoryTest,
+       NormalPriorityHighPrecisionDelayedTasksRunOutsideTicks) {
+  auto task_queue = task_queue_factory_->CreateTaskQueue(
+      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
+
+  bool did_run = false;
+  task_queue->PostDelayedHighPrecisionTask(
+      webrtc::ToQueuedTask([&did_run]() { did_run = true; }),
+      /*milliseconds=*/1);
+
+  EXPECT_FALSE(did_run);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(did_run);
+}
+
+TEST_F(MetronomeTaskQueueFactoryTest, CanDeleteTaskQueueWhileTasksAreInFlight) {
+  auto task_queue = task_queue_factory_->CreateTaskQueue(
+      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
+
+  bool did_run_post_task = false;
+  task_queue->PostTask(webrtc::ToQueuedTask(
+      [&did_run_post_task]() { did_run_post_task = true; }));
+  bool did_run_low_precision_delay_task = false;
+  task_queue->PostDelayedTask(
+      webrtc::ToQueuedTask([&did_run_low_precision_delay_task]() {
+        did_run_low_precision_delay_task = true;
+      }),
+      /*milliseconds=*/1);
+  bool did_run_high_precision_delay_task = false;
+  task_queue->PostDelayedHighPrecisionTask(
+      webrtc::ToQueuedTask([&did_run_high_precision_delay_task]() {
+        did_run_high_precision_delay_task = true;
+      }),
+      /*milliseconds=*/1);
+
+  EXPECT_FALSE(did_run_post_task);
+  EXPECT_FALSE(did_run_low_precision_delay_task);
+  EXPECT_FALSE(did_run_high_precision_delay_task);
+  task_queue.reset();
+
+  // The PostTask is executed, but not the delayed tasks.
+  EXPECT_TRUE(did_run_post_task);
+  EXPECT_FALSE(did_run_low_precision_delay_task);
+  EXPECT_FALSE(did_run_high_precision_delay_task);
+
+  // The delayed tasks never run because they have been cancelled.
+  task_environment_.FastForwardBy(kMetronomeTick);
+  EXPECT_FALSE(did_run_low_precision_delay_task);
+  EXPECT_FALSE(did_run_high_precision_delay_task);
+}
+
 TEST_F(MetronomeTaskQueueFactoryTest, HighPriorityDelayedTasksRunOffTicks) {
   auto task_queue = task_queue_factory_->CreateTaskQueue(
       "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::HIGH);

@@ -50,6 +50,8 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
   void PostTask(std::unique_ptr<webrtc::QueuedTask> task) override;
   void PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
                        uint32_t milliseconds) override;
+  void PostDelayedHighPrecisionTask(std::unique_ptr<webrtc::QueuedTask> task,
+                                    uint32_t milliseconds) override;
 
  private:
   struct DelayedTaskInfo {
@@ -63,6 +65,9 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
   };
 
   // Runs a single PostTask-task.
+  static void MaybeRunTask(WebRtcMetronomeTaskQueue* metronome_task_queue,
+                           scoped_refptr<base::RefCountedData<bool>> is_active,
+                           std::unique_ptr<webrtc::QueuedTask> task);
   void RunTask(std::unique_ptr<webrtc::QueuedTask> task);
 
   void UpdateWakeupTime() EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -71,6 +76,8 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
 
   const scoped_refptr<MetronomeSource> metronome_source_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Value of |is_active_| is checked and set on |task_runner_|.
+  const scoped_refptr<base::RefCountedData<bool>> is_active_;
   scoped_refptr<MetronomeSource::ListenerHandle> listener_handle_;
   base::Lock lock_;
   // The next delayed task gets assigned this ID which then increments. Used for
@@ -100,7 +107,8 @@ bool WebRtcMetronomeTaskQueue::DelayedTaskInfo::operator<(
 WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue(
     scoped_refptr<MetronomeSource> metronome_source)
     : metronome_source_(std::move(metronome_source)),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+      is_active_(new base::RefCountedData<bool>(true)) {
   listener_handle_ = metronome_source_->AddListener(
       task_runner_,
       base::BindRepeating(&WebRtcMetronomeTaskQueue::OnMetronomeTick,
@@ -109,13 +117,19 @@ WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue(
   DCHECK(listener_handle_);
 }
 
+void Deactivate(scoped_refptr<base::RefCountedData<bool>> is_active,
+                base::WaitableEvent* event) {
+  is_active->data = false;
+  event->Signal();
+}
+
 void WebRtcMetronomeTaskQueue::Delete() {
   // Ensure OnMetronomeTick() will not be invoked again.
   metronome_source_->RemoveListener(listener_handle_);
   // Ensure there are no in-flight PostTask-tasks when deleting.
   base::WaitableEvent event;
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
-                                                   base::Unretained(&event)));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&Deactivate, is_active_, &event));
   event.Wait();
   delete this;
 }
@@ -127,6 +141,15 @@ void WebRtcMetronomeTaskQueue::PostTask(
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WebRtcMetronomeTaskQueue::RunTask,
                                 base::Unretained(this), std::move(task)));
+}
+
+void WebRtcMetronomeTaskQueue::MaybeRunTask(
+    WebRtcMetronomeTaskQueue* metronome_task_queue,
+    scoped_refptr<base::RefCountedData<bool>> is_active,
+    std::unique_ptr<webrtc::QueuedTask> task) {
+  if (!is_active->data)
+    return;
+  metronome_task_queue->RunTask(std::move(task));
 }
 
 void WebRtcMetronomeTaskQueue::RunTask(
@@ -146,6 +169,18 @@ void WebRtcMetronomeTaskQueue::PostDelayedTask(
                       next_task_id_++),
       std::move(task)));
   UpdateWakeupTime();
+}
+
+void WebRtcMetronomeTaskQueue::PostDelayedHighPrecisionTask(
+    std::unique_ptr<webrtc::QueuedTask> task,
+    uint32_t milliseconds) {
+  // The posted task might outlive |this|, but access to |this| is guarded by
+  // the ref-counted |is_active_| flag.
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WebRtcMetronomeTaskQueue::MaybeRunTask,
+                     base::Unretained(this), is_active_, std::move(task)),
+      base::Milliseconds(milliseconds));
 }
 
 // EXCLUSIVE_LOCKS_REQUIRED(lock_)
