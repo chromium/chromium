@@ -23293,6 +23293,34 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PageInfo.AdPersonalization.ManageInterestClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User selected &quot;Manage interests&quot; from Page Info Ads
+    Personalization subpage.
+  </description>
+</action>
+
+<action name="PageInfo.AdPersonalization.OpenedWithFledge">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Page Info Ads personalization subpage opened with only FLEDGE present.
+  </description>
+</action>
+
+<action name="PageInfo.OpenedWithAdsPersonalization">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened Page Info with an Ads Personalization row present.
+  </description>
+</action>
+
 <action name="PageLoad" not_user_triggered="true">
   <obsolete>
     Deprecated. Not a good representation of user behaviour for page loads.

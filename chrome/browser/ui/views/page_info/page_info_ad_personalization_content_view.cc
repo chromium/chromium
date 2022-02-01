@@ -34,7 +34,9 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   AddChildView(std::make_unique<PageInfoHoverButton>(
       base::BindRepeating(
           [](PageInfoAdPersonalizationContentView* view) {
-            // TODO(olesiamarukhno): Record metrics.
+            view->presenter_->RecordPageInfoAction(
+                PageInfo::PageInfoAction::
+                    PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
             view->ui_delegate_->ShowPrivacySandboxSettings();
           },
           this),

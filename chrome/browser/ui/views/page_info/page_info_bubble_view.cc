@@ -222,7 +222,8 @@ void PageInfoBubbleView::OpenAboutThisSitePage(
 }
 
 void PageInfoBubbleView::OpenAdPersonalizationPage() {
-  // TODO(olesiamarukhno): Record an action.
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
   page_container_->SwitchToPage(
       view_factory_->CreateAdPersonalizationPageView());
 }

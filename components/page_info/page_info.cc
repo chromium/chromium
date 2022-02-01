@@ -439,6 +439,38 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
       security_state::GetSafetyTipHistogramName(
           "Security.SafetyTips.PageInfo.Action", safety_tip_info_.status),
       action, PAGE_INFO_COUNT);
+
+  // TODO(crbug.com/1286276): Add more user actions.
+  // Log user actions for metrics related to "Ad personalization".
+  auto* settings = GetPageSpecificContentSettings();
+  if (!settings)
+    return;
+
+  switch (action) {
+    case PageInfoAction::PAGE_INFO_OPENED:
+#if !BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/1286276): Handle Topics metrics.
+      if (settings->HasJoinedUserToInterestGroup()) {
+        base::RecordAction(
+            base::UserMetricsAction("PageInfo.OpenedWithAdsPersonalization"));
+      }
+#endif
+      break;
+    case PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED:
+#if !BUILDFLAG(IS_ANDROID)
+      if (settings->HasJoinedUserToInterestGroup()) {
+        base::RecordAction(base::UserMetricsAction(
+            "PageInfo.AdPersonalization.OpenedWithFledge"));
+      }
+#endif
+      break;
+    case PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED:
+      base::RecordAction(base::UserMetricsAction(
+          "PageInfo.AdPersonalization.ManageInterestClicked"));
+      break;
+    default:
+      break;
+  }
 }
 
 void PageInfo::UpdatePermissions() {
