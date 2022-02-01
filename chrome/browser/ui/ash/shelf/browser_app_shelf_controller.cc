@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "extensions/common/constants.h"
+#include "components/app_constants/constants.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -127,7 +127,7 @@ void BrowserAppShelfController::ShelfItemAdded(int index) {
   if (!BrowserAppShelfControllerShouldHandleApp(app_id, profile_)) {
     return;
   }
-  bool running = (app_id == extension_misc::kLacrosAppId)
+  bool running = (app_id == app_constants::kLacrosAppId)
                      ? browser_app_instance_registry_.IsLacrosBrowserRunning()
                      : browser_app_instance_registry_.IsAppRunning(app_id);
   UpdateShelfItemStatus(item,
@@ -190,8 +190,8 @@ void BrowserAppShelfController::MaybeUpdateWindowProperties(
             return instance.window == window;
           });
   const char* browser_app_id = crosapi::browser_util::IsLacrosWindow(window)
-                                   ? extension_misc::kLacrosAppId
-                                   : extension_misc::kChromeAppId;
+                                   ? app_constants::kLacrosAppId
+                                   : app_constants::kChromeAppId;
   // App ID of the window is set to the app ID of the active tab. If the active
   // tab has no app, app ID of the window is set to the browser's ID.
   // Shelf ID of the window is set to the app's item on the shelf, if the item

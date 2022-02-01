@@ -7691,6 +7691,7 @@ test("unit_tests") {
       "//chrome:unit_tests_pak",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views",
+      "//components/app_constants",
       "//components/constrained_window",
       "//components/global_media_controls",
       "//components/media_message_center",

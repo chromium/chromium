@@ -117,6 +117,7 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -459,7 +460,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     std::string error;
     extension_chrome_ = Extension::Create(
         base::FilePath(), ManifestLocation::kUnpacked, manifest,
-        Extension::NO_FLAGS, extension_misc::kChromeAppId, &error);
+        Extension::NO_FLAGS, app_constants::kChromeAppId, &error);
     extension1_ = Extension::Create(
         base::FilePath(), ManifestLocation::kUnpacked, manifest,
         Extension::NO_FLAGS, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", &error);
@@ -533,7 +534,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
 
     // Set an empty pinned pref to begin with.
     syncer::SyncChangeList sync_list;
-    InsertAddPinChange(&sync_list, 0, extension_misc::kChromeAppId);
+    InsertAddPinChange(&sync_list, 0, app_constants::kChromeAppId);
     SendPinChanges(sync_list, true);
     EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
@@ -557,13 +558,13 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     InsertAddPinChange(user_a, 3, extension_platform_app_->id());
     InsertAddPinChange(user_a, 4, web_app::kGoogleDocsAppId);
     InsertAddPinChange(user_a, 5, extension5_->id());
-    InsertAddPinChange(user_a, 6, extension_misc::kChromeAppId);
+    InsertAddPinChange(user_a, 6, app_constants::kChromeAppId);
 
     // Set user b preferences.
     InsertAddPinChange(user_b, 0, extension6_->id());
     InsertAddPinChange(user_b, 1, extension7_->id());
     InsertAddPinChange(user_b, 2, extension8_->id());
-    InsertAddPinChange(user_b, 3, extension_misc::kChromeAppId);
+    InsertAddPinChange(user_b, 3, app_constants::kChromeAppId);
   }
 
   void TearDown() override {
@@ -789,7 +790,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   // Set the index at which the chrome icon should be.
   void SetShelfChromeIconIndex(int index) {
     DCHECK(
-        app_list_syncable_service_->GetPinPosition(extension_misc::kChromeAppId)
+        app_list_syncable_service_->GetPinPosition(app_constants::kChromeAppId)
             .IsValid());
     syncer::StringOrdinal chrome_position;
     chrome_position = index == 0 ? GeneratePinPosition(0).CreateBefore()
@@ -800,11 +801,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     sync_pb::EntitySpecifics specifics;
     sync_pb::AppListSpecifics* app_list_specifics =
         specifics.mutable_app_list();
-    app_list_specifics->set_item_id(extension_misc::kChromeAppId);
+    app_list_specifics->set_item_id(app_constants::kChromeAppId);
     app_list_specifics->set_item_type(sync_pb::AppListSpecifics::TYPE_APP);
     app_list_specifics->set_item_pin_ordinal(chrome_position.ToInternalValue());
     syncer::SyncData sync_data = syncer::SyncData::CreateLocalData(
-        extension_misc::kChromeAppId, "Test", specifics);
+        app_constants::kChromeAppId, "Test", specifics);
     sync_list.push_back(syncer::SyncChange(
         FROM_HERE, syncer::SyncChange::ACTION_UPDATE, sync_data));
     app_list_syncable_service_->ProcessSyncChanges(FROM_HERE, sync_list);
@@ -1790,7 +1791,7 @@ TEST_P(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   // extension 1, 3 are pinned by user
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
-  InsertAddPinChange(&sync_list, 1, extension_misc::kChromeAppId);
+  InsertAddPinChange(&sync_list, 1, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
   SendPinChanges(sync_list, true);
 
@@ -1909,7 +1910,7 @@ TEST_P(ChromeShelfControllerTest,
 
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
-  InsertAddPinChange(&sync_list, 1, extension_misc::kChromeAppId);
+  InsertAddPinChange(&sync_list, 1, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list, 2, extension2_->id());
   InsertAddPinChange(&sync_list, 3, web_app::kGmailAppId);
   SendPinChanges(sync_list, true);
@@ -1963,14 +1964,14 @@ TEST_P(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
   InsertAddPinChange(&sync_list1, 0, web_app::kGmailAppId);
   InsertAddPinChange(&sync_list1, 1, extension1_->id());
   InsertAddPinChange(&sync_list1, 2, extension2_->id());
-  InsertAddPinChange(&sync_list1, 3, extension_misc::kChromeAppId);
+  InsertAddPinChange(&sync_list1, 3, app_constants::kChromeAppId);
   SendPinChanges(sync_list1, true);
   EXPECT_EQ("Gmail, App1, App2, Chrome", GetPinnedAppStatus());
 
   syncer::SyncChangeList sync_list2;
   InsertAddPinChange(&sync_list2, 0, extension2_->id());
   InsertAddPinChange(&sync_list2, 1, web_app::kGmailAppId);
-  InsertAddPinChange(&sync_list2, 2, extension_misc::kChromeAppId);
+  InsertAddPinChange(&sync_list2, 2, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list2, 3, extension1_->id());
   SendPinChanges(sync_list2, true);
   EXPECT_EQ("App2, Gmail, Chrome, App1", GetPinnedAppStatus());
@@ -3086,15 +3087,15 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   std::unique_ptr<Browser> profile2_browser =
       CreateBrowserAndTabWithProfile(profile2, kWebAppName, kWebAppUrl);
 
-  EXPECT_EQ(std::vector<std::string>(
-                {extension_misc::kChromeAppId, installed_app_id}),
-            GetAppsShownInShelf());
+  EXPECT_EQ(
+      std::vector<std::string>({app_constants::kChromeAppId, installed_app_id}),
+      GetAppsShownInShelf());
 
   // Switch to the secondary user, and verify the app only installed in the
   // primary profile is removed from the model.
   SwitchActiveUser(account_id2);
 
-  EXPECT_EQ(std::vector<std::string>({extension_misc::kChromeAppId}),
+  EXPECT_EQ(std::vector<std::string>({app_constants::kChromeAppId}),
             GetAppsShownInShelf());
 
   chrome::CloseTab(profile2_browser.get());
@@ -3339,7 +3340,7 @@ TEST_P(ChromeShelfControllerTest, SyncUpdates) {
   InitShelfController();
 
   syncer::SyncChangeList sync_list;
-  InsertAddPinChange(&sync_list, 10, extension_misc::kChromeAppId);
+  InsertAddPinChange(&sync_list, 10, app_constants::kChromeAppId);
   SendPinChanges(sync_list, true);
 
   std::vector<std::string> expected_pinned_apps;
@@ -3448,7 +3449,7 @@ TEST_P(ChromeShelfControllerTest, BrowserMenuGeneration) {
   // Check that the browser list is empty at this time.
   ash::ShelfItem item_browser;
   item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
-  item_browser.id = ash::ShelfID(extension_misc::kChromeAppId);
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
   CheckAppMenu(shelf_controller_.get(), item_browser, 0, nullptr);
 
   // Now make the created browser() visible by showing its browser window.
@@ -3485,7 +3486,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   ash::ShelfItem item_browser;
   item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
-  item_browser.id = ash::ShelfID(extension_misc::kChromeAppId);
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
 
   // Check that the menu is empty.
   chrome::NewTab(browser());
@@ -3546,7 +3547,7 @@ TEST_P(ChromeShelfControllerTest, V1AppMenuGeneration) {
   // Check the menu content.
   ash::ShelfItem item_browser;
   item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
-  item_browser.id = ash::ShelfID(extension_misc::kChromeAppId);
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
 
   ash::ShelfItem item_gmail;
   item_gmail.type = ash::TYPE_PINNED_APP;
@@ -3603,7 +3604,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Check the menu content.
   ash::ShelfItem item_browser;
   item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
-  item_browser.id = ash::ShelfID(extension_misc::kChromeAppId);
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
 
   ash::ShelfItem item_gmail;
   item_gmail.type = ash::TYPE_PINNED_APP;
@@ -4687,7 +4688,7 @@ TEST_P(ChromeShelfControllerTest, CheckPositionConflict) {
   AddWebApp(web_app::kGmailAppId);
 
   syncer::SyncChangeList sync_list;
-  InsertAddPinChange(&sync_list, 0, extension_misc::kChromeAppId);
+  InsertAddPinChange(&sync_list, 0, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list, 1, extension1_->id());
   InsertAddPinChange(&sync_list, 1, extension2_->id());
   InsertAddPinChange(&sync_list, 1, web_app::kGmailAppId);
@@ -4696,7 +4697,7 @@ TEST_P(ChromeShelfControllerTest, CheckPositionConflict) {
   EXPECT_EQ("Chrome, App1, App2, Gmail", GetPinnedAppStatus());
 
   const syncer::StringOrdinal position_chrome =
-      app_list_syncable_service_->GetPinPosition(extension_misc::kChromeAppId);
+      app_list_syncable_service_->GetPinPosition(app_constants::kChromeAppId);
   const syncer::StringOrdinal position_1 =
       app_list_syncable_service_->GetPinPosition(extension1_->id());
   const syncer::StringOrdinal position_2 =
@@ -4715,8 +4716,8 @@ TEST_P(ChromeShelfControllerTest, CheckPositionConflict) {
 
   // Expect sync positions for only Chrome is updated and its resolution is
   // after all duplicated ordinals.
-  EXPECT_TRUE(position_3.LessThan(app_list_syncable_service_->GetPinPosition(
-      extension_misc::kChromeAppId)));
+  EXPECT_TRUE(position_3.LessThan(
+      app_list_syncable_service_->GetPinPosition(app_constants::kChromeAppId)));
   EXPECT_TRUE(position_1.Equals(
       app_list_syncable_service_->GetPinPosition(extension1_->id())));
   EXPECT_TRUE(position_1.Equals(
@@ -4736,7 +4737,7 @@ TEST_P(ChromeShelfControllerTest, SyncOffLocalUpdate) {
   extension_service_->AddExtension(extension2_.get());
 
   syncer::SyncChangeList sync_list;
-  InsertAddPinChange(&sync_list, 0, extension_misc::kChromeAppId);
+  InsertAddPinChange(&sync_list, 0, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list, 1, extension1_->id());
   InsertAddPinChange(&sync_list, 1, extension2_->id());
   SendPinChanges(sync_list, true);

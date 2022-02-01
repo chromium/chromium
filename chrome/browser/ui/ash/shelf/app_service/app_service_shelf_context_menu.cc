@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -316,8 +317,8 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
   size_t shortcut_index = menu_items->items.size();
   for (size_t i = index; i < menu_items->items.size(); i++) {
     // For Chrome browser, add the close item before the app info item.
-    if ((item().id.app_id == extension_misc::kChromeAppId ||
-         item().id.app_id == extension_misc::kLacrosAppId) &&
+    if ((item().id.app_id == app_constants::kChromeAppId ||
+         item().id.app_id == app_constants::kLacrosAppId) &&
         menu_items->items[i]->command_id == ash::SHOW_APP_INFO) {
       BuildChromeAppMenu(menu_model.get());
     }

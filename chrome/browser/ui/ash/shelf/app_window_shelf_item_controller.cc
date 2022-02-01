@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
-#include "extensions/common/constants.h"
+#include "components/app_constants/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
 
@@ -188,7 +188,7 @@ void AppWindowShelfItemController::ItemSelected(
   // Otherwise, fallthrough to minimize or activate or advance.
   // TODO(sammiequon): This feature should only be for lacros browser and not
   // lacros PWAs. Revisit when there is a way to differentiate the two.
-  if (app_id() == extension_misc::kLacrosAppId &&
+  if (app_id() == app_constants::kLacrosAppId &&
       ShouldLaunchNewLacrosWindow(*event, filtered_windows)) {
     crosapi::BrowserManager::Get()->NewWindow(
         /*incognito=*/false, /*should_trigger_session_restore=*/true);

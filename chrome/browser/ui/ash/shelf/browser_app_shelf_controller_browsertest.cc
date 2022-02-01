@@ -37,15 +37,15 @@
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 
-using ::extension_misc::kChromeAppId;
-using ::extension_misc::kLacrosAppId;
+using ::app_constants::kChromeAppId;
+using ::app_constants::kLacrosAppId;
 using ::testing::AnyOf;
 using ::testing::Eq;
 

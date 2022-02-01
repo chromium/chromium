@@ -35,6 +35,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/sync_error_factory.h"
@@ -1535,7 +1536,7 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
 
   // Chrome is an existing app to transfer attributes to.
   scoped_refptr<extensions::Extension> chrome =
-      MakeApp(kSomeAppName, extension_misc::kChromeAppId,
+      MakeApp(kSomeAppName, app_constants::kChromeAppId,
               extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
   InstallExtension(chrome.get());
 
@@ -1555,9 +1556,9 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
   ASSERT_TRUE(webstore_sync_item);
 
   const app_list::AppListSyncableService::SyncItem* chrome_sync_item =
-      GetSyncItem(extension_misc::kChromeAppId);
+      GetSyncItem(app_constants::kChromeAppId);
   const ChromeAppListItem* chrome_item =
-      model_updater->FindItem(extension_misc::kChromeAppId);
+      model_updater->FindItem(app_constants::kChromeAppId);
   ASSERT_TRUE(chrome_item);
   ASSERT_TRUE(chrome_sync_item);
 
@@ -1578,7 +1579,7 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
 
   // Perform attributes transfer to existing Chrome app.
   EXPECT_TRUE(app_list_syncable_service()->TransferItemAttributes(
-      extensions::kWebStoreAppId, extension_misc::kChromeAppId));
+      extensions::kWebStoreAppId, app_constants::kChromeAppId));
   // Perform attributes transfer to the future Youtube app.
   EXPECT_TRUE(app_list_syncable_service()->TransferItemAttributes(
       extensions::kWebStoreAppId, extension_misc::kYoutubeAppId));

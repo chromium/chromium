@@ -59,6 +59,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
@@ -472,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
 
   // First browser launch time should be recorded.
   const base::Time time_recorded1 =
-      prefs->GetLastLaunchTime(extension_misc::kChromeAppId);
+      prefs->GetLastLaunchTime(app_constants::kChromeAppId);
   EXPECT_NE(base::Time(), time_recorded1);
 
   // Create an incognito browser so that we can close the regular one without
@@ -482,14 +483,14 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   EXPECT_EQ(1U, chrome::GetBrowserCount(profile_otr));
   // Creating incognito browser should not update the launch time.
   EXPECT_EQ(time_recorded1,
-            prefs->GetLastLaunchTime(extension_misc::kChromeAppId));
+            prefs->GetLastLaunchTime(app_constants::kChromeAppId));
 
   // Close the regular browser.
   CloseBrowserSynchronously(chrome::FindBrowserWithProfile(profile));
   EXPECT_EQ(0U, chrome::GetBrowserCount(profile));
   // Recorded the launch time should not update.
   EXPECT_EQ(time_recorded1,
-            prefs->GetLastLaunchTime(extension_misc::kChromeAppId));
+            prefs->GetLastLaunchTime(app_constants::kChromeAppId));
 
   // Launch another regular browser.
   const base::Time time_before_launch = base::Time::Now();
@@ -499,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   EXPECT_EQ(1U, chrome::GetBrowserCount(profile));
 
   const base::Time time_recorded2 =
-      prefs->GetLastLaunchTime(extension_misc::kChromeAppId);
+      prefs->GetLastLaunchTime(app_constants::kChromeAppId);
   EXPECT_LE(time_before_launch, time_recorded2);
   EXPECT_GE(time_after_launch, time_recorded2);
 
@@ -508,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
                               /*should_trigger_session_restore=*/true);
   EXPECT_EQ(2U, chrome::GetBrowserCount(profile));
   EXPECT_EQ(time_recorded2,
-            prefs->GetLastLaunchTime(extension_misc::kChromeAppId));
+            prefs->GetLastLaunchTime(app_constants::kChromeAppId));
 }
 
 // Browser Test for AppListClient that observes search result changes.
@@ -632,7 +633,7 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,
                        NoDemoModeAppLaunchSourceReported) {
   EXPECT_FALSE(ash::DemoSession::IsDeviceInDemoMode());
-  LaunchChromeAppListItem(extension_misc::kChromeAppId);
+  LaunchChromeAppListItem(app_constants::kChromeAppId);
 
   // Should see 0 apps launched from the Launcher in the histogram when not in
   // Demo mode.
@@ -651,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest, DemoModeAppLaunchSourceReported) {
   // (ChromeAppListItem) is used for all types of apps
   // (ARC, extension, etc), so launching just the browser suffices
   // to test all these cases.
-  LaunchChromeAppListItem(extension_misc::kChromeAppId);
+  LaunchChromeAppListItem(app_constants::kChromeAppId);
 
   // Should see 1 app launched from the Launcher in the histogram.
   histogram_tester_->ExpectUniqueSample(

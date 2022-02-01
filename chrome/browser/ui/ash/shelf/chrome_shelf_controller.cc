@@ -92,6 +92,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
@@ -110,7 +111,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/resources/grit/ui_resources.h"
 
-using extension_misc::kChromeAppId;
+using app_constants::kChromeAppId;
 using extension_misc::kGmailAppId;
 
 namespace {

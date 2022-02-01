@@ -55,6 +55,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -430,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, CaptureBrowserUrlsTest) {
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
   // Find |browser| window's app restore data.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(browser_window_id);
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
@@ -462,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, CaptureIncognitoBrowserTest) {
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
   // Find |browser| window's app restore data.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(incognito_browser_window_id);
   // Created incognito window is NOT in restore list
@@ -512,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(app_id_to_launch_list.size(), 2u);
 
   // Find |browser| window's app restore data.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(browser_window_id);
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
@@ -1016,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithPWA) {
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
   ASSERT_TRUE(restore_data->HasAppTypeBrowser());
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(pwa_window_id);
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
@@ -1067,9 +1068,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
   // Test that |pwa_browser|'s restore data is saved under the Chrome browser
-  // app id extension_misc::kChromeAppId, not Youtube app id
+  // app id app_constants::kChromeAppId, not Youtube app id
   // extension_misc::kYoutubeAppId.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(pwa_window_id);
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
@@ -1233,7 +1234,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
   // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(browser_window_id);
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
@@ -1283,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(1u, app_id_to_launch_list.size());
 
   // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_FALSE(iter == app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(incognito_browser_window_id);
   // Created incognito window is NOT in restore list.
@@ -1498,7 +1499,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(1u, app_id_to_launch_list.size());
   ASSERT_TRUE(restore_data->HasAppTypeBrowser());
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(pwa_window_id);
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
@@ -1552,9 +1553,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(1u, app_id_to_launch_list.size());
 
   // Test that `pwa_browser`'s restore data is saved under the Chrome browser
-  // app id extension_misc::kChromeAppId, not Youtube app id
+  // app id app_constants::kChromeAppId, not Youtube app id
   // extension_misc::kYoutubeAppId.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_TRUE(iter != app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(pwa_window_id);
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
@@ -1611,7 +1612,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(2u, app_id_to_launch_list.size());
 
   // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
   ASSERT_NE(iter, app_id_to_launch_list.end());
   auto app_restore_data_iter = iter->second.find(browser_window_id);
   ASSERT_NE(iter->second.end(), app_restore_data_iter);

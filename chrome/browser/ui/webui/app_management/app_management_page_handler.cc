@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -49,8 +50,8 @@ const char* kAppIdsWithHiddenMoreSettings[] = {
 };
 
 const char* kAppIdsWithHiddenPinToShelf[] = {
-    extension_misc::kChromeAppId,
-    extension_misc::kLacrosAppId,
+    app_constants::kChromeAppId,
+    app_constants::kLacrosAppId,
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

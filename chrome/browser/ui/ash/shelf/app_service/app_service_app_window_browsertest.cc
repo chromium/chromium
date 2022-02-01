@@ -42,13 +42,13 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, AshBrowserWindow) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank")));
 
   auto instances = app_service_proxy_->InstanceRegistry().GetInstances(
-      extension_misc::kChromeAppId);
+      app_constants::kChromeAppId);
   EXPECT_EQ(1u, instances.size());
   auto* instance = *instances.begin();
   EXPECT_EQ(instance->Window(), instance->Window()->GetToplevelWindow());
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
   // Create a fake Lacros window. The native window owns the widget.
   views::Widget* widget = CreateExoWindow("org.chromium.lacros.12345");
 
-  using extension_misc::kLacrosAppId;
+  using app_constants::kLacrosAppId;
   auto instances =
       app_service_proxy_->InstanceRegistry().GetInstances(kLacrosAppId);
   EXPECT_EQ(1u, instances.size());
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
             GetAppInstanceState(kLacrosAppId, (*instances.begin())->Window()));
 
   instances = app_service_proxy_->InstanceRegistry().GetInstances(
-      extension_misc::kLacrosAppId);
+      app_constants::kLacrosAppId);
   EXPECT_EQ(1u, instances.size());
   auto* instance = *instances.begin();
   EXPECT_EQ(instance->Window(), instance->Window()->GetToplevelWindow());

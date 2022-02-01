@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/common/chrome_features.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
@@ -87,7 +88,7 @@ BrowserAppShelfItemController::GetAppMenuItems(
   for (const auto& pair : GetMatchingInstances(filter_predicate)) {
     int command_id = pair.first;
     base::UnguessableToken id = pair.second;
-    if (shelf_id().app_id == extension_misc::kLacrosAppId) {
+    if (shelf_id().app_id == app_constants::kLacrosAppId) {
       const apps::BrowserWindowInstance* instance =
           registry_.GetBrowserWindowInstanceById(id);
       DCHECK(instance);
@@ -130,7 +131,7 @@ void BrowserAppShelfItemController::Close() {
 
 void BrowserAppShelfItemController::OnBrowserWindowAdded(
     const apps::BrowserWindowInstance& instance) {
-  if (!(shelf_id().app_id == extension_misc::kLacrosAppId &&
+  if (!(shelf_id().app_id == app_constants::kLacrosAppId &&
         crosapi::browser_util::IsLacrosWindow(instance.window))) {
     // Only handle Lacros browser windows.
     return;
@@ -147,7 +148,7 @@ void BrowserAppShelfItemController::OnBrowserWindowAdded(
 
 void BrowserAppShelfItemController::OnBrowserWindowRemoved(
     const apps::BrowserWindowInstance& instance) {
-  if (!(shelf_id().app_id == extension_misc::kLacrosAppId &&
+  if (!(shelf_id().app_id == app_constants::kLacrosAppId &&
         crosapi::browser_util::IsLacrosWindow(instance.window))) {
     // Only handle Lacros browser windows.
     return;
@@ -189,7 +190,7 @@ BrowserAppShelfItemController::GetMatchingInstances(
   for (const auto& pair : command_to_instance_map_) {
     base::UnguessableToken id = pair.second;
     aura::Window* window = nullptr;
-    if (shelf_id().app_id == extension_misc::kLacrosAppId) {
+    if (shelf_id().app_id == app_constants::kLacrosAppId) {
       const apps::BrowserWindowInstance* instance =
           registry_.GetBrowserWindowInstanceById(id);
       DCHECK(instance);

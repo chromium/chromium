@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "components/app_constants/constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/model/string_ordinal.h"
@@ -158,7 +159,7 @@ TEST_F(ChromeShelfPrefsTest, AddChromePinNoExistingOrdinal) {
   shelf_prefs_->EnsureChromePinned(&syncable_service_);
 
   // Check that chrome now has a valid ordinal.
-  EXPECT_TRUE(syncable_service_.item_map_[extension_misc::kChromeAppId]
+  EXPECT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
 }
 
@@ -166,15 +167,15 @@ TEST_F(ChromeShelfPrefsTest, AddChromePinExistingOrdinal) {
   // Set up the initial ordinals.
   syncer::StringOrdinal initial_ordinal =
       syncer::StringOrdinal::CreateInitialOrdinal();
-  syncable_service_.item_map_[extension_misc::kChromeAppId] =
-      MakeSyncItem(extension_misc::kChromeAppId, initial_ordinal);
+  syncable_service_.item_map_[app_constants::kChromeAppId] =
+      MakeSyncItem(app_constants::kChromeAppId, initial_ordinal);
 
   shelf_prefs_->EnsureChromePinned(&syncable_service_);
 
   // Check that the chrome ordinal did not change.
-  ASSERT_TRUE(syncable_service_.item_map_[extension_misc::kChromeAppId]
+  ASSERT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
-  auto& pin_ordinal = syncable_service_.item_map_[extension_misc::kChromeAppId]
+  auto& pin_ordinal = syncable_service_.item_map_[app_constants::kChromeAppId]
                           ->item_pin_ordinal;
   EXPECT_TRUE(pin_ordinal.Equals(initial_ordinal));
 }
@@ -183,7 +184,7 @@ TEST_F(ChromeShelfPrefsTest, AddDefaultApps) {
   shelf_prefs_->EnsureChromePinned(&syncable_service_);
   shelf_prefs_->AddDefaultApps(&pref_service_, &syncable_service_);
 
-  ASSERT_TRUE(syncable_service_.item_map_[extension_misc::kChromeAppId]
+  ASSERT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
 
   // Check that a pin was added for the gmail app.
@@ -203,7 +204,7 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
 
   // Pinned apps should have the chrome app as the first item.
   ASSERT_GE(pinned_apps_strs.size(), 1u);
-  EXPECT_EQ(pinned_apps_strs[0], extension_misc::kChromeAppId);
+  EXPECT_EQ(pinned_apps_strs[0], app_constants::kChromeAppId);
 
   // Pinned apps should have the gmail app.
   EXPECT_TRUE(base::Contains(pinned_apps_strs, extension_misc::kGmailAppId));

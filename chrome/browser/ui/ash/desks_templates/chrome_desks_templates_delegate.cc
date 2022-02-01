@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -42,7 +43,6 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_manager.h"
-#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -246,7 +246,7 @@ ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
       apps::AppServiceProxyFactory::GetForProfile(user_profile)
           ->AppRegistryCache();
   const apps::mojom::AppType app_type = app_registry_cache.GetAppType(app_id);
-  if (app_id != extension_misc::kChromeAppId &&
+  if (app_id != app_constants::kChromeAppId &&
       (app_type == apps::mojom::AppType::kChromeApp ||
        app_type == apps::mojom::AppType::kWeb)) {
     // If these values are not present, we will not be able to restore the

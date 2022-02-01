@@ -28,10 +28,10 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/app_constants/constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -143,7 +143,7 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When Google Play Store is enabled and the Settings app is available, show
   // the "Manage supported links" link for Chrome.
-  if (app->id() == extension_misc::kChromeAppId &&
+  if (app->id() == app_constants::kChromeAppId &&
       arc::IsArcPlayStoreEnabledForProfile(profile)) {
     const ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
     if (arc_app_list_prefs &&

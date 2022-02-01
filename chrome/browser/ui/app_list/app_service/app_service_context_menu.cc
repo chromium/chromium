@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -364,8 +365,8 @@ void AppServiceContextMenu::OnGetMenuModel(
     BuildExtensionAppShortcutsMenu(menu_model.get());
 
   // Create default items for non-Remote apps.
-  if (app_id() != extension_misc::kChromeAppId &&
-      app_id() != extension_misc::kLacrosAppId &&
+  if (app_id() != app_constants::kChromeAppId &&
+      app_id() != app_constants::kLacrosAppId &&
       app_type_ != apps::AppType::kUnknown &&
       app_type_ != apps::AppType::kRemote) {
     app_list::AppContextMenu::BuildMenu(menu_model.get());

@@ -22,10 +22,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
+#include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/sync/model/model_type_store.h"
-#include "extensions/common/constants.h"
 
 namespace {
 
@@ -285,7 +285,7 @@ void DesksTemplatesClient::RecordWindowAndTabCountHistogram(
   for (const auto& iter : launch_list) {
     // Since apps aren't guaranteed to have the url field set up correctly, this
     // is necessary to ensure things are not double-counted.
-    if (iter.first != extension_misc::kChromeAppId) {
+    if (iter.first != app_constants::kChromeAppId) {
       ++window_count;
       ++total_count;
       continue;

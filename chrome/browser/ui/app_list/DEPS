@@ -2,6 +2,7 @@ include_rules = [
   "+ash/app_list/model",
   "+ash/resources",
   "+ash/strings",
+  "+components/app_constants",
   "+components/services/app_service/public",
 ]
 

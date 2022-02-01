@@ -1,5 +1,6 @@
 include_rules = [
- "+extensions/components/native_app_window"
+  "+extensions/components/native_app_window",
+  "+components/app_constants",
 ]
 
 specific_include_rules = {

@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -287,7 +288,7 @@ syncer::StringOrdinal GetFirstPinnedAppPosition(
   for (const auto& sync_peer : syncable_service->sync_items()) {
     if (!sync_peer.second->item_pin_ordinal.IsValid())
       continue;
-    if (exclude_chrome && sync_peer.first == extension_misc::kChromeAppId)
+    if (exclude_chrome && sync_peer.first == app_constants::kChromeAppId)
       continue;
     if (!position.IsValid() ||
         sync_peer.second->item_pin_ordinal.LessThan(position)) {
@@ -335,7 +336,7 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
     const std::vector<std::string>& app_ids) {
   // Chrome must be pinned at this point.
   const syncer::StringOrdinal chrome_position =
-      syncable_service->GetPinPosition(extension_misc::kChromeAppId);
+      syncable_service->GetPinPosition(app_constants::kChromeAppId);
   DCHECK(chrome_position.IsValid());
 
   // New pins are inserted after this position.
@@ -409,11 +410,11 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   if (crosapi::browser_util::IsLacrosEnabled() &&
       ash::ProfileHelper::IsPrimaryProfile(profile_)) {
     syncer::StringOrdinal lacros_position =
-        syncable_service->GetPinPosition(extension_misc::kLacrosAppId);
+        syncable_service->GetPinPosition(app_constants::kLacrosAppId);
     if (!lacros_position.IsValid()) {
       // If Lacros isn't already pinned, add it to the right of the Chrome icon.
       InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-          syncable_service, {extension_misc::kLacrosAppId});
+          syncable_service, {app_constants::kLacrosAppId});
     }
   }
 
@@ -564,10 +565,10 @@ void ChromeShelfPrefs::MigrateFilesChromeAppToSWA(
 void ChromeShelfPrefs::EnsureChromePinned(
     app_list::AppListSyncableService* syncable_service) {
   syncer::StringOrdinal chrome_position =
-      syncable_service->GetPinPosition(extension_misc::kChromeAppId);
+      syncable_service->GetPinPosition(app_constants::kChromeAppId);
   if (!chrome_position.IsValid()) {
     chrome_position = CreateFirstPinPosition(syncable_service);
-    syncable_service->SetPinPosition(extension_misc::kChromeAppId,
+    syncable_service->SetPinPosition(app_constants::kChromeAppId,
                                      chrome_position);
   }
 }
@@ -624,7 +625,7 @@ PrefService* ChromeShelfPrefs::GetPrefs() {
 
 bool ChromeShelfPrefs::IsSyncItemValid(const std::string& id,
                                        ShelfControllerHelper* helper) {
-  return id == extension_misc::kChromeAppId ||
+  return id == app_constants::kChromeAppId ||
          helper->IsValidIDForCurrentUser(id);
 }
 
