@@ -51892,6 +51892,7 @@ from previous Chrome versions.
   <int value="-1491304576" label="ProgressBarThrottle:disabled"/>
   <int value="-1490298774" label="enable-captive-portal-bypass-proxy-option"/>
   <int value="-1488744539" label="QuickUnlockFingerprint:enabled"/>
+  <int value="-1488329159" label="ScreenAI:enabled"/>
   <int value="-1487243228" label="NewUsbBackend:disabled"/>
   <int value="-1486728231" label="Win10TabSearchCaptionButton:disabled"/>
   <int value="-1486521264" label="UseMediaHistoryStore:disabled"/>
@@ -56193,6 +56194,7 @@ from previous Chrome versions.
   <int value="1613738524" label="ForceAppLanguagePrompt:enabled"/>
   <int value="1614309501" label="DataSaverLiteModeRebranding:enabled"/>
   <int value="1614596813" label="CloseButtonsInactiveTabs:disabled"/>
+  <int value="1615515373" label="ScreenAI:disabled"/>
   <int value="1615988672" label="GrantNotificationsToDSE:enabled"/>
   <int value="1616418306" label="AssistAutoCorrect:disabled"/>
   <int value="1616782064" label="shelf-dense-clamshell"/>
@@ -56946,6 +56948,7 @@ from previous Chrome versions.
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
   <int value="2139520082" label="EnableRestrictedWebApis:disabled"/>
+  <int value="2140205372" label="ScreenAI"/>
   <int value="2140453427"
       label="MigrateDefaultChromeAppToWebAppsGSuite:enabled"/>
   <int value="2141067485" label="SystemWebApps:enabled"/>

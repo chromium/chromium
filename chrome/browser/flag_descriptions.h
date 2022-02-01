@@ -2173,6 +2173,9 @@ extern const char kOmniboxPedalsBatch3NonEnglishDescription[];
 extern const char kOmniboxPedalsTranslationConsoleName[];
 extern const char kOmniboxPedalsTranslationConsoleDescription[];
 
+extern const char kScreenAIName[];
+extern const char kScreenAIDescription[];
+
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 

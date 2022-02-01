@@ -738,6 +738,11 @@ const base::Feature kRunVideoCaptureServiceInBrowserProcess{
 const base::Feature kSavePageAsWebBundle{"SavePageAsWebBundle",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables using Screen AI library to add metadata for accessibility tools.
+#if !BUILDFLAG(IS_ANDROID)
+const base::Feature kScreenAI{"ScreenAI", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Browser-side feature flag for Secure Payment Confirmation (SPC) that also
 // controls the render side feature state. SPC initial launch is intended
 // only for Mac devices with Touch ID and and Windows devices with

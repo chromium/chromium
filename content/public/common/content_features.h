@@ -176,6 +176,9 @@ CONTENT_EXPORT extern const base::Feature kRenderDocument;
 CONTENT_EXPORT extern const base::Feature
     kRunVideoCaptureServiceInBrowserProcess;
 CONTENT_EXPORT extern const base::Feature kSavePageAsWebBundle;
+#if !BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT extern const base::Feature kScreenAI;
+#endif
 CONTENT_EXPORT extern const base::Feature kSecurePaymentConfirmation;
 CONTENT_EXPORT extern const base::Feature kSecurePaymentConfirmationDebug;
 CONTENT_EXPORT extern const base::Feature

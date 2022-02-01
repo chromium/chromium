@@ -3795,6 +3795,11 @@ const char kReadLaterDescription[] =
     "Click on the Bookmark icon or right click on a tab to add tabs to a "
     "reading list.";
 
+const char kScreenAIName[] = "Screen AI";
+const char kScreenAIDescription[] =
+    "Enables Screen AI local machine intelligence library to use the screen "
+    "snapshots to add metadata for accessibility tools.";
+
 const char kSCTAuditingName[] = "SCT auditing";
 const char kSCTAuditingDescription[] =
     "Enables SCT auditing for users who have opted in to Safe Browsing "

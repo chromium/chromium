@@ -7871,6 +7871,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTailoredSecurityIntegrationDescription, kOsAll,
      FEATURE_VALUE_TYPE(safe_browsing::kTailoredSecurityIntegration)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"screen-ai", flag_descriptions::kScreenAIName,
+     flag_descriptions::kScreenAIDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kScreenAI)},
+#endif
+
     {"autofill-enable-virtual-card-management-in-desktop-settings-page",
      flag_descriptions::
          kAutofillEnableVirtualCardManagementInDesktopSettingsPageName,
