@@ -49,17 +49,25 @@ std::string GenerateHistogramName(const std::string& histogram_base_name,
 
 // Called by MojoBinderPolicyApplier. This function records the Mojo interface
 // that causes MojoBinderPolicyApplier to cancel prerendering.
-void RecordPrerenderCancelledInterface(const std::string& interface_name) {
+void RecordPrerenderCancelledInterface(
+    const std::string& interface_name,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
   const PrerenderCancelledInterface interface_type =
       GetCancelledInterfaceType(interface_name);
   base::UmaHistogramEnumeration(
-      "Prerender.Experimental.PrerenderCancelledInterface", interface_type);
+      GenerateHistogramName(
+          "Prerender.Experimental.PrerenderCancelledInterface", trigger_type,
+          embedder_histogram_suffix),
+      interface_type);
   if (interface_type == PrerenderCancelledInterface::kUnknown) {
     // These interfaces can be required by embedders, or not set to kCancel
     // expclitly, e.g., channel-associated interfaces. Record these interfaces
     // with the sparse histogram to ensure all of them are tracked.
     base::UmaHistogramSparse(
-        "Prerender.Experimental.PrerenderCancelledUnknownInterface",
+        GenerateHistogramName(
+            "Prerender.Experimental.PrerenderCancelledUnknownInterface",
+            trigger_type, embedder_histogram_suffix),
         InterfaceNameHasher(interface_name));
   }
 }

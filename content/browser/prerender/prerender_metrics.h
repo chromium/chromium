@@ -62,7 +62,10 @@ enum class PrerenderCrossOriginRedirectionDomain {
   kMaxValue = kCrossDomain
 };
 
-void RecordPrerenderCancelledInterface(const std::string& interface_name);
+void RecordPrerenderCancelledInterface(
+    const std::string& interface_name,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 

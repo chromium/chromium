@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   host_observer.WaitForDestroyed();
   EXPECT_EQ(0u, console_observer.messages().size());
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       4 /*PrerenderCancelledInterface::kSyncEncryptionKeysExtension*/, 1);
 
   prerender_helper().NavigatePrimaryPage(prerendering_url);

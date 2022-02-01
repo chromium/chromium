@@ -1923,10 +1923,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // in production, so histogram_tester should log
   // PrerenderCancelledInterface::kUnkown here.
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface."
+      "SpeculationRule",
       InterfaceNameHasher(mojom::TestInterfaceForCancel::Name_), 1);
   SetBrowserClientForTesting(old_browser_client);
 }
@@ -1974,10 +1975,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // in production, so histogram_tester should log
   // PrerenderCancelledInterface::kUnkown here.
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface."
+      "SpeculationRule",
       InterfaceNameHasher(mojom::TestInterfaceForCancel::Name_), 1);
 }
 
@@ -2695,7 +2697,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kGamepadMonitor, 1);
 }
 
@@ -2781,10 +2783,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface."
+      "SpeculationRule",
       InterfaceNameHasher(mojom::PepperHost::Name_), 1);
 
   // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
@@ -2799,10 +2802,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 2);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 2);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface."
+      "SpeculationRule",
       InterfaceNameHasher(mojom::PepperHost::Name_), 2);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -2855,7 +2859,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructor) {
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kNotificationService, 1);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
