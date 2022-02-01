@@ -819,6 +819,11 @@ crbug.com/1044742 [ Win ] external/wpt/css/compositing/mix-blend-mode/mix-blend-
 crbug.com/1044742 [ Linux ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-parent-with-text.html [ Failure ]
 crbug.com/1044742 [ Linux ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-mask.html [ Failure ]
 
+crbug.com/1271275 external/wpt/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ Failure ]
+crbug.com/1271275 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg-basic.html [ Failure ]
+crbug.com/1271275 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg.html [ Failure ]
+crbug.com/1271275 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter.html [ Failure ]
+
 # Minor pixel differences
 crbug.com/1056492 external/wpt/svg/painting/reftests/marker-path-001.svg [ Failure ]
 
@@ -3215,10 +3220,6 @@ crbug.com/626703 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/p
 crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Skip Timeout ]
-crbug.com/626703 external/wpt/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ Failure ]
-crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg-basic.html [ Failure ]
-crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg.html [ Failure ]
-crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter.html [ Failure ]
 crbug.com/626703 external/wpt/domxpath/xpath-evaluate-crash.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/data-urls/processing.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
