@@ -4,9 +4,11 @@
 
 #include "chrome/browser/fuchsia/element_manager_impl.h"
 
+#include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
 
 #include "base/command_line.h"
+#include "base/fuchsia/process_context.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,7 +19,7 @@ namespace {
 class TestElementManagerImpl : public testing::Test {
  public:
   TestElementManagerImpl()
-      : element_manager_(test_context_.additional_services(),
+      : element_manager_(base::ComponentContextForProcess()->outgoing().get(),
                          base::BindLambdaForTesting(
                              [&](const base::CommandLine& command_line) {
                                received_command_line_ = command_line;
