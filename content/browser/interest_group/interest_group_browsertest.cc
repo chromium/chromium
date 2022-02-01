@@ -220,7 +220,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         /*`enabled_features`=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kParakeet,
-         blink::features::kFledge, blink::features::kAllowURNsInIframes},
+         blink::features::kFledge, blink::features::kAllowURNsInIframes,
+         blink::features::kBiddingAndScoringDebugReportingAPI},
         /*disabled_features=*/
         {blink::features::kFencedFrames});
   }
@@ -1904,8 +1905,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                             "/interest_group/trusted_bidding_signals.json"),
       /*trusted_bidding_signals_keys=*/{{"key1"}},
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
       /*ad_components=*/absl::nullopt)));
 
   std::string auction_config = JsReplace(
@@ -1957,8 +1957,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                             "/interest_group/trusted_bidding_signals.json"),
       /*trusted_bidding_signals_keys=*/{{"key1"}},
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
       /*ad_components=*/absl::nullopt)));
 
   std::string auction_config = JsReplace(
@@ -2128,8 +2127,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
       /*trusted_bidding_signals_url=*/absl::nullopt,
       /*trusted_bidding_signals_keys=*/{},
       /*user_bidding_signals=*/"{}",
-      /*ads=*/
-      {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
       /*ad_components=*/absl::nullopt)));
   std::string auction_config = JsReplace(
       R"({
@@ -2142,9 +2140,137 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 }
 
-// Runs auction just like the above test, but runs with fenced frames enabled
-// and expects to receive a URN URL to be used. After the auction, loads the URL
-// in a fenced frame, and expects the correct URL is loaded.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithDebugReporting) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad1_url = https_server_->GetURL("c.test", "/echo?render_winner");
+  GURL ad2_url = https_server_->GetURL("c.test", "/echo?render_bikes");
+  GURL ad3_url = https_server_->GetURL("c.test", "/echo?render_shoes");
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"winner",
+      /*bidding_url=*/
+      https_server_->GetURL(
+          "a.test", "/interest_group/bidding_logic_with_debugging_report.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/{{{ad1_url, /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt)));
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"bikes",
+      /*bidding_url=*/
+      https_server_->GetURL(
+          "a.test", "/interest_group/bidding_logic_with_debugging_report.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/{{{ad2_url, /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt)));
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"shoes",
+      /*bidding_url=*/
+      https_server_->GetURL(
+          "a.test", "/interest_group/bidding_logic_with_debugging_report.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/{{{ad3_url, /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt)));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    auctionSignals: {x: 1},
+    sellerSignals: {yet: 'more', info: 1},
+    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+                })",
+      test_origin,
+      https_server_->GetURL(
+          "a.test", "/interest_group/decision_logic_with_debugging_report.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // Check ResourceRequest structs of report requests.
+  const GURL kExpectedReportUrls[] = {
+      // Return value from seller's ReportResult() method.
+      https_server_->GetURL("a.test", "/echo?report_seller"),
+      // Return value from winning bidder's ReportWin() method.
+      https_server_->GetURL("a.test", "/echo?report_bidder"),
+      // Debugging report URL from seller for win report.
+      https_server_->GetURL("a.test", "/echo?seller_debug_report_win/winner"),
+      // Debugging report URL from winning bidder for win report.
+      https_server_->GetURL("a.test", "/echo?bidder_debug_report_win/winner"),
+      // Debugging report URL from seller for loss report.
+      https_server_->GetURL("a.test", "/echo?seller_debug_report_loss/bikes"),
+      https_server_->GetURL("a.test", "/echo?seller_debug_report_loss/shoes"),
+      // Debugging report URL from losing bidders for loss report.
+      https_server_->GetURL("a.test", "/echo?bidder_debug_report_loss/bikes"),
+      https_server_->GetURL("a.test", "/echo?bidder_debug_report_loss/shoes")};
+
+  for (const auto& expected_report_url : kExpectedReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+
+    // Wait for the report URL to be fetched, which only happens after the
+    // auction has completed.
+    WaitForURL(expected_report_url);
+
+    absl::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(expected_report_url);
+    ASSERT_TRUE(request);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+              request->credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
+    EXPECT_EQ(test_origin, request->request_initiator);
+
+    EXPECT_TRUE(request->headers.IsEmpty());
+
+    ASSERT_TRUE(request->trusted_params);
+    const net::IsolationInfo& isolation_info =
+        request->trusted_params->isolation_info;
+    EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+              isolation_info.request_type());
+    EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
+    EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+  }
+
+  // The reporting requests should use different NIKs to prevent the requests
+  // from being correlated.
+  EXPECT_NE(url_loader_monitor.GetRequestInfo(kExpectedReportUrls[0])
+                ->trusted_params->isolation_info.network_isolation_key(),
+            url_loader_monitor.GetRequestInfo(kExpectedReportUrls[2])
+                ->trusted_params->isolation_info.network_isolation_key());
+  EXPECT_NE(url_loader_monitor.GetRequestInfo(kExpectedReportUrls[2])
+                ->trusted_params->isolation_info.network_isolation_key(),
+            url_loader_monitor.GetRequestInfo(kExpectedReportUrls[3])
+                ->trusted_params->isolation_info.network_isolation_key());
+  EXPECT_NE(url_loader_monitor.GetRequestInfo(kExpectedReportUrls[2])
+                ->trusted_params->isolation_info.network_isolation_key(),
+            url_loader_monitor.GetRequestInfo(kExpectedReportUrls[4])
+                ->trusted_params->isolation_info.network_isolation_key());
+}
+
+// Runs auction just like test InterestGroupBrowserTest.RunAdAuctionWithWinner,
+// but runs with fenced frames enabled and expects to receive a URN URL to be
+// used. After the auction, loads the URL in a fenced frame, and expects the
+// correct URL is loaded.
 IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinner) {
   URLLoaderMonitor url_loader_monitor;
@@ -2393,10 +2519,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                             "/interest_group/trusted_bidding_signals.json"),
       /*trusted_bidding_signals_keys=*/{{"key1"}},
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
-      /*ad_components=*/
-      {{{component_url, "{ad:'component metadata'}"}}})));
+      /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ad_components=*/{{{component_url, "{ad:'component metadata'}"}}})));
 
   std::string auction_config = JsReplace(
       R"({
@@ -2588,9 +2712,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       /*trusted_bidding_signals_url=*/absl::nullopt,
       /*trusted_bidding_signals_keys=*/absl::nullopt,
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad1_url,
-         /*metadata=*/absl::nullopt}}},
+      /*ads=*/{{{ad1_url, /*metadata=*/absl::nullopt}}},
       /*ad_components=*/absl::nullopt)));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
@@ -2605,8 +2727,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                             "/interest_group/trusted_bidding_signals.json"),
       /*trusted_bidding_signals_keys=*/{{"key1"}},
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad2_url, /*metadata=*/absl::nullopt}}},
+      /*ads=*/{{{ad2_url, /*metadata=*/absl::nullopt}}},
       /*ad_components=*/absl::nullopt)));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
@@ -2619,8 +2740,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       /*trusted_bidding_signals_url=*/absl::nullopt,
       /*trusted_bidding_signals_keys=*/absl::nullopt,
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad3_url, /*metadata=*/absl::nullopt}}},
+      /*ads=*/{{{ad3_url, /*metadata=*/absl::nullopt}}},
       /*ad_components=*/absl::nullopt)));
 
   std::string auction_config = JsReplace(
@@ -2665,8 +2785,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
       /*trusted_bidding_signals_url=*/absl::nullopt,
       /*trusted_bidding_signals_keys=*/absl::nullopt,
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad1_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ads=*/{{{ad1_url, "{ad:'metadata', here:[1,2]}"}}},
       /*ad_components=*/absl::nullopt)));
 
   GURL test_url2 = https_server_->GetURL("b.test", "/page_with_iframe.html");
@@ -2684,8 +2803,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
       /*trusted_bidding_signals_url=*/absl::nullopt,
       /*trusted_bidding_signals_keys=*/absl::nullopt,
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad2_url, /*metadata=*/absl::nullopt}}},
+      /*ads=*/{{{ad2_url, /*metadata=*/absl::nullopt}}},
       /*ad_components=*/absl::nullopt)));
 
   // Both owners have one interest group in storage, and both interest groups
@@ -2829,8 +2947,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                             "/interest_group/trusted_bidding_signals.json"),
       /*trusted_bidding_signals_keys=*/{{"key1"}},
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-      /*ads=*/
-      {{{ad_url, "{ad:'metadata', here : [1,2] }"}}},
+      /*ads=*/{{{ad_url, "{ad:'metadata', here : [1,2] }"}}},
       /*ad_components=*/absl::nullopt)));
 
   std::string auction_config = JsReplace(
@@ -4236,8 +4353,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       /*update_url=*/absl::nullopt, trusted_bidding_signals_url,
       /*trusted_bidding_signals_keys=*/{{"key1"}},
       /*user_bidding_signals=*/absl::nullopt,
-      /*ads=*/
-      {{{ad_url, /*metadata=*/absl::nullopt}}},
+      /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
       /*ad_components=*/absl::nullopt)));
 
   std::string auction_config = JsReplace(
@@ -4994,6 +5110,110 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
                             https_server_->GetURL(
                                 "a.test", "/interest_group/decision_logic.js")),
                         b_iframe));
+}
+
+// forDebuggingOnly.reportAdAuctionLoss() and
+// forDebuggingOnly.reportAdAuctionWin() APIs will be disabled (available but do
+// nothing) when feature kBiddingAndScoringDebugReportingAPI is disabled.
+class InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kBiddingAndScoringDebugReportingAPI);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest,
+    RunAdAuctionWithDebugReporting) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_winner");
+  GURL ad2_url = https_server_->GetURL("c.test", "/echo?render_bikes");
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"winner",
+      /*bidding_url=*/
+      https_server_->GetURL(
+          "a.test", "/interest_group/bidding_logic_with_debugging_report.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ad_components=*/absl::nullopt)));
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"bikes",
+      /*bidding_url=*/
+      https_server_->GetURL(
+          "a.test", "/interest_group/bidding_logic_with_debugging_report.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/{{{ad2_url, /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt)));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    auctionSignals: {x: 1},
+    sellerSignals: {yet: 'more', info: 1},
+    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+                })",
+      test_origin,
+      https_server_->GetURL(
+          "a.test", "/interest_group/decision_logic_with_debugging_report.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  // Check ResourceRequest structs of report requests.
+  const GURL kExpectedReportUrls[] = {
+      https_server_->GetURL("a.test", "/echo?report_seller"),
+      https_server_->GetURL("a.test", "/echo?report_bidder")};
+
+  for (const auto& expected_report_url : kExpectedReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+
+    // Wait for the report URL to be fetched, which only happens after the
+    // auction has completed.
+    WaitForURL(expected_report_url);
+
+    absl::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(expected_report_url);
+    ASSERT_TRUE(request);
+  }
+
+  // No requests should be sent to forDebuggingOnly reporting URLs when
+  // feature kBiddingAndScoringDebugReportingAPI is disabled.
+  const GURL kDebuggingReportUrls[] = {
+      // Debugging report URL from winner for win report.
+      https_server_->GetURL("a.test", "/echo?bidder_debug_report_win/winner"),
+      // Debugging report URL from losing bidder for loss report.
+      https_server_->GetURL("a.test", "/echo?bidder_debug_report_loss/bikes"),
+      // Debugging report URL from seller for loss report.
+      https_server_->GetURL("a.test", "/echo?seller_debug_report_loss/bikes"),
+      // Debugging report URL from seller for win report.
+      https_server_->GetURL("a.test", "/echo?seller_debug_report_win/winner")};
+  for (const auto& debugging_report_url : kDebuggingReportUrls) {
+    absl::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(debugging_report_url);
+    ASSERT_FALSE(request);
+  }
 }
 
 }  // namespace

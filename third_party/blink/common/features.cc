@@ -981,6 +981,11 @@ const base::Feature kAdInterestGroupAPIRestrictedPolicyByDefault{
     "AdInterestGroupAPIRestrictedPolicyByDefault",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+// Feature flag to enable debug reporting APIs.
+const base::Feature kBiddingAndScoringDebugReportingAPI{
+    "BiddingAndScoringDebugReportingAPI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables URN URLs like those produced by FLEDGE auctions to be displayed by
 // iframes (instead of requiring fenced frames). This is only intended to be
 // enabled as part of the FLEDGE origin trial.

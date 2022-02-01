@@ -55,6 +55,18 @@ interface SellerWorklet {
   //  of 0 indicates either an error running the script, or that the script
   //  indicated the bid should not be used.
   //
+  // `debug_loss_report_url` The URL to request if this bid does not win the
+  // auction. It's requested if the auction runs to completion and this is not
+  // the winning bid, including the case that this worklet rejects this bid
+  // outright, giving it a score <= 0. This field has the debug prefix because
+  // it's part of an interim reporting API that will be replaced with
+  // standardized reporting APIs once available. It must be a valid HTTPS URL.
+  //
+  // `debug_win_report_url` The URL to request if this bid wins the auction.
+  // This field has the debug prefix because it's part of an interim reporting
+  // API that will be replaced with standardized reporting APIs once available.
+  // It must be a valid HTTPS URL.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if `score` is positive, nor should it be assumed to be non-empty if
@@ -67,7 +79,10 @@ interface SellerWorklet {
           url.mojom.Url browser_signal_render_url,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
           uint32 browser_signal_bidding_duration_msecs) =>
-              (double score, array<string> errors);
+              (double score,
+              url.mojom.Url? debug_loss_report_url,
+              url.mojom.Url? debug_win_report_url,
+              array<string> errors);
 
   // Hint to the worklet to send a network request for any needed trusted
   // signals data now. SellerWorklets normally wait briefy for there to be a

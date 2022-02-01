@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
@@ -404,14 +405,18 @@ void BidderWorklet::V8State::GenerateBid(
     PostErrorBidCallbackToUserThread(std::move(callback));
     return;
   }
-
   base::TimeTicks start = base::TimeTicks::Now();
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
+  v8::Local<v8::ObjectTemplate> global_template =
+      v8::ObjectTemplate::New(isolate);
+  ForDebuggingOnlyBindings for_debugging_only_bindings(v8_helper_.get(),
+                                                       global_template);
+
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Local<v8::Context> context = v8_helper_->CreateContext(global_template);
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
@@ -635,7 +640,9 @@ void BidderWorklet::V8State::GenerateBid(
                      mojom::BidderWorkletBid::New(
                          std::move(ad_json), bid, std::move(render_url),
                          std::move(ad_component_urls),
-                         base::TimeTicks::Now() - start /* bid_duration */),
+                         /*bid_duration=*/base::TimeTicks::Now() - start),
+                     for_debugging_only_bindings.TakeLossReportUrl(),
+                     for_debugging_only_bindings.TakeWinReportUrl(),
                      std::move(errors_out)));
 }
 
@@ -680,9 +687,12 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
     GenerateBidCallbackInternal callback,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  user_thread_->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                                   mojom::BidderWorkletBidPtr(),
-                                                   std::move(error_msgs)));
+  user_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), mojom::BidderWorkletBidPtr(),
+                     /*debug_loss_report_url=*/absl::nullopt,
+                     /*debug_win_report_url=*/absl::nullopt,
+                     std::move(error_msgs)));
 }
 
 void BidderWorklet::ResumeIfPaused() {
@@ -841,6 +851,8 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
 void BidderWorklet::DeliverBidCallbackOnUserThread(
     GenerateBidTaskList::iterator task,
     mojom::BidderWorkletBidPtr bid,
+    absl::optional<GURL> debug_loss_report_url,
+    absl::optional<GURL> debug_win_report_url,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -850,7 +862,9 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     error_msgs.emplace_back(
         std::move(task->trusted_bidding_signals_error_msg).value());
   }
-  std::move(task->callback).Run(std::move(bid), error_msgs);
+  std::move(task->callback)
+      .Run(std::move(bid), debug_loss_report_url, debug_win_report_url,
+           error_msgs);
   generate_bid_tasks_.erase(task);
 }
 

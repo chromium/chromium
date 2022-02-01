@@ -53,6 +53,8 @@ source_set("auction_worklet") {
     "console.h",
     "debug_command_queue.cc",
     "debug_command_queue.h",
+    "for_debugging_only_bindings.cc",
+    "for_debugging_only_bindings.h",
     "report_bindings.cc",
     "report_bindings.h",
     "seller_worklet.cc",

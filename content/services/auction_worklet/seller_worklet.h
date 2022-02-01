@@ -158,7 +158,10 @@ class SellerWorklet : public mojom::SellerWorklet {
     // Different signatures protect against passing the wrong callback to
     // V8State, and avoids having to make a copy of the errors vector.
     using ScoreAdCallbackInternal =
-        base::OnceCallback<void(double score, std::vector<std::string> errors)>;
+        base::OnceCallback<void(double score,
+                                absl::optional<GURL> debug_loss_report_url,
+                                absl::optional<GURL> debug_win_report_url,
+                                std::vector<std::string> errors)>;
     using ReportResultCallbackInternal =
         base::OnceCallback<void(absl::optional<std::string> signals_for_winner,
                                 absl::optional<GURL> report_url,
@@ -200,9 +203,12 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     void FinishInit();
 
-    void PostScoreAdCallbackToUserThread(ScoreAdCallbackInternal callback,
-                                         double score,
-                                         std::vector<std::string> errors);
+    void PostScoreAdCallbackToUserThread(
+        ScoreAdCallbackInternal callback,
+        double score,
+        absl::optional<GURL> debug_loss_report_url,
+        absl::optional<GURL> debug_win_report_url,
+        std::vector<std::string> errors);
 
     void PostReportResultCallbackToUserThread(
         ReportResultCallbackInternal callback,
@@ -248,9 +254,12 @@ class SellerWorklet : public mojom::SellerWorklet {
   // calls scoreAd().
   void ScoreAdIfReady(ScoreAdTaskList::iterator task);
 
-  void DeliverScoreAdCallbackOnUserThread(ScoreAdTaskList::iterator task,
-                                          double score,
-                                          std::vector<std::string> errors);
+  void DeliverScoreAdCallbackOnUserThread(
+      ScoreAdTaskList::iterator task,
+      double score,
+      absl::optional<GURL> debug_loss_report_url,
+      absl::optional<GURL> debug_win_report_url,
+      std::vector<std::string> errors);
 
   // Runs the specified queued ReportWinTask. All code must already be loaded by
   // the time this is invoked.

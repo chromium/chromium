@@ -65,7 +65,7 @@ class BidderWorklet : public mojom::BidderWorklet {
   // invoked asynchronously, once a bid has been generated or a fatal error has
   // occurred.
   //
-  // Data is cached and will be reused ReportWin().
+  // Data is cached and will be reused by ReportWin().
   BidderWorklet(scoped_refptr<AuctionV8Helper> v8_helper,
                 bool pause_for_debugger_on_start,
                 mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -172,6 +172,8 @@ class BidderWorklet : public mojom::BidderWorklet {
     // must be invoked on the main sequence, and passed to the V8State.
     using GenerateBidCallbackInternal =
         base::OnceCallback<void(mojom::BidderWorkletBidPtr bid,
+                                absl::optional<GURL> debug_loss_report_url,
+                                absl::optional<GURL> debug_win_report_url,
                                 std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
         base::OnceCallback<void(absl::optional<GURL> report_url,
@@ -209,6 +211,7 @@ class BidderWorklet : public mojom::BidderWorklet {
         ReportWinCallbackInternal callback,
         const absl::optional<GURL>& report_url,
         std::vector<std::string> errors);
+
     void PostErrorBidCallbackToUserThread(
         GenerateBidCallbackInternal callback,
         std::vector<std::string> error_msgs = std::vector<std::string>());
@@ -263,9 +266,12 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   // Invokes the `callback` of `task` with the provided values, and removes
   // `task` from `generate_bid_tasks_`.
-  void DeliverBidCallbackOnUserThread(GenerateBidTaskList::iterator task,
-                                      mojom::BidderWorkletBidPtr bid,
-                                      std::vector<std::string> error_msgs);
+  void DeliverBidCallbackOnUserThread(
+      GenerateBidTaskList::iterator task,
+      mojom::BidderWorkletBidPtr bid,
+      absl::optional<GURL> debug_loss_report_url,
+      absl::optional<GURL> debug_win_report_url,
+      std::vector<std::string> error_msgs);
 
   // Invokes the `callback` of `task` with the provided values, and removes
   // `task` from `report_win_tasks_`.

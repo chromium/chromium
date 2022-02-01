@@ -89,6 +89,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                          absl::optional<GURL> render_url,
                          absl::optional<std::vector<GURL>> ad_component_urls,
                          std::vector<GURL> report_urls,
+                         std::vector<GURL> debug_loss_report_urls,
+                         std::vector<GURL> debug_win_report_urls,
                          std::vector<std::string> errors);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;

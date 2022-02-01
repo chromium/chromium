@@ -432,6 +432,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     absl::optional<GURL> render_url,
     absl::optional<std::vector<GURL>> ad_component_urls,
     std::vector<GURL> report_urls,
+    std::vector<GURL> debug_loss_report_urls,
+    std::vector<GURL> debug_win_report_urls,
     std::vector<std::string> errors) {
   // Delete the AuctionRunner. Since all arguments are passed by value, they're
   // all safe to used after this has been done.
@@ -479,6 +481,14 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
   for (const GURL& report_url : report_urls) {
     FetchReport(factory, report_url, origin(),
+                GetFrame()->BuildClientSecurityState());
+  }
+  for (const auto& debug_loss_report_url : debug_loss_report_urls) {
+    FetchReport(factory, debug_loss_report_url, origin(),
+                GetFrame()->BuildClientSecurityState());
+  }
+  for (const auto& debug_win_report_url : debug_win_report_urls) {
+    FetchReport(factory, debug_win_report_url, origin(),
                 GetFrame()->BuildClientSecurityState());
   }
 }

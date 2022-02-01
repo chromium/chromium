@@ -45,13 +45,21 @@ class CONTENT_EXPORT AuctionRunner {
   // `report_urls` Reporting URLs returned by seller worklet reportResult()
   //  methods and the winning bidder's reportWin() methods, if any.
   //
+  // `debug_loss_report_urls` URLs to use for reporting loss result to bidders
+  // and the seller. Empty if no report should be sent.
+  //
+  // `debug_win_report_urls` URLs to use for reporting win result to bidders and
+  // the seller. Empty if no report should be sent.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
   using RunAuctionCallback = base::OnceCallback<void(
       AuctionRunner* auction_runner,
-      const absl::optional<GURL> render_url,
-      const absl::optional<std::vector<GURL>> ad_component_urls,
-      const std::vector<GURL> report_urls,
+      absl::optional<GURL> render_url,
+      absl::optional<std::vector<GURL>> ad_component_urls,
+      std::vector<GURL> report_urls,
+      std::vector<GURL> debug_loss_report_urls,
+      std::vector<GURL> debug_win_report_urls,
       std::vector<std::string> errors)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be
@@ -200,6 +208,16 @@ class CONTENT_EXPORT AuctionRunner {
     raw_ptr<const blink::InterestGroup::Ad> bid_ad = nullptr;
 
     double seller_score = 0;
+
+    // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
+    // forDebuggingOnly.reportAdAuctionWin(url) called in generateBid().
+    absl::optional<GURL> bidder_debug_loss_report_url;
+    absl::optional<GURL> bidder_debug_win_report_url;
+
+    // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
+    // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd().
+    absl::optional<GURL> seller_debug_loss_report_url;
+    absl::optional<GURL> seller_debug_win_report_url;
   };
 
   AuctionRunner(
@@ -271,6 +289,8 @@ class CONTENT_EXPORT AuctionRunner {
   // scoring the bid, if there is one.
   void OnGenerateBidComplete(BidState* state,
                              auction_worklet::mojom::BidderWorkletBidPtr bid,
+                             const absl::optional<GURL>& debug_loss_report_url,
+                             const absl::optional<GURL>& debug_win_report_url,
                              const std::vector<std::string>& errors);
 
   // True if all bid results and the seller script load are complete.
@@ -281,6 +301,8 @@ class CONTENT_EXPORT AuctionRunner {
   // Callback from ScoreBid().
   void OnBidScored(BidState* state,
                    double score,
+                   const absl::optional<GURL>& debug_loss_report_url,
+                   const absl::optional<GURL>& debug_win_report_url,
                    const std::vector<std::string>& errors);
 
   std::string AdRenderFingerprint(const BidState* state);
@@ -391,6 +413,11 @@ class CONTENT_EXPORT AuctionRunner {
   // for it to deal with, so the AuctionRunner itself can be deleted at the end
   // of the auction.
   std::vector<GURL> report_urls_;
+
+  // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
+  // forDebuggingOnly.reportAdAuctionWin(url).
+  std::vector<GURL> debug_loss_report_urls_;
+  std::vector<GURL> debug_win_report_urls_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;

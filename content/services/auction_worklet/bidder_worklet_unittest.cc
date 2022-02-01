@@ -10,11 +10,13 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -29,6 +31,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -61,14 +64,17 @@ std::string ToyWasm() {
 // Creates generateBid() scripts with the specified result value, in raw
 // Javascript. Allows returning generateBid() arguments, arbitrary values,
 // incorrect types, etc.
-std::string CreateGenerateBidScript(const std::string& raw_return_value) {
+std::string CreateGenerateBidScript(const std::string& raw_return_value,
+                                    const std::string& extra_code = "") {
   constexpr char kGenerateBidScript[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
+      %s;
       return %s;
     }
   )";
-  return base::StringPrintf(kGenerateBidScript, raw_return_value.c_str());
+  return base::StringPrintf(kGenerateBidScript, extra_code.c_str(),
+                            raw_return_value.c_str());
 }
 
 // Returns a working script, primarily for testing failure cases where it
@@ -76,6 +82,14 @@ std::string CreateGenerateBidScript(const std::string& raw_return_value) {
 static std::string CreateBasicGenerateBidScript() {
   return CreateGenerateBidScript(
       R"({ad: ["ad"], bid:1, render:"https://response.test/"})");
+}
+
+// Returns a working script which calls forDebuggingOnly.reportAdAuctionLoss()
+// and forDebuggingOnly.reportAdAuctionWin() if corresponding url is provided.
+static std::string CreateBasicGenerateBidScriptWithDebuggingReport(
+    const std::string& extra_code) {
+  return CreateGenerateBidScript(
+      R"({ad: ["ad"], bid:1, render:"https://response.test/"})", extra_code);
 }
 
 // Creates bidder worklet script with a reportWin() function with the specified
@@ -93,16 +107,26 @@ std::string CreateReportWinScript(const std::string& function_body) {
 
 class BidderWorkletTest : public testing::Test {
  public:
-  BidderWorkletTest() {
-    SetDefaultParameters();
+  BidderWorkletTest() { SetDefaultParameters(); }
+
+  ~BidderWorkletTest() override = default;
+
+  void SetUp() override {
+    // v8_helper_ needs to be created here instead of the constructor, because
+    // this test fixture has a subclass that initializes a ScopedFeatureList in
+    // in their constructor, which needs to be done BEFORE other threads are
+    // started in multithreaded test environments so that no other threads use
+    // it when it's being initiated.
+    // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;drc=60124005e97ae2716b0fb34187d82da6019b571f;l=37
     v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
   }
 
-  ~BidderWorkletTest() override {
+  void TearDown() override {
     // Release the V8 helper and process all pending tasks. This is to make sure
     // there aren't any pending tasks between the V8 thread and the main thread
     // that will result in UAFs. These lines are not necessary for any test to
-    // pass.
+    // pass. This needs to be done before a subclass resets ScopedFeatureList,
+    // so no thread queries it while it's being modified.
     v8_helper_.reset();
     task_environment_.RunUntilIdle();
   }
@@ -145,10 +169,15 @@ class BidderWorkletTest : public testing::Test {
   void RunGenerateBidWithReturnValueExpectingResult(
       const std::string& raw_return_value,
       mojom::BidderWorkletBidPtr expected_bid,
-      std::vector<std::string> expected_errors = std::vector<std::string>()) {
+      std::vector<std::string> expected_errors = std::vector<std::string>(),
+      const absl::optional<GURL>& expected_debug_loss_report_url =
+          absl::nullopt,
+      const absl::optional<GURL>& expected_debug_win_report_url =
+          absl::nullopt) {
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(raw_return_value), std::move(expected_bid),
-        expected_errors);
+        expected_errors, expected_debug_loss_report_url,
+        expected_debug_win_report_url);
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -156,17 +185,27 @@ class BidderWorkletTest : public testing::Test {
   void RunGenerateBidWithJavascriptExpectingResult(
       const std::string& javascript,
       mojom::BidderWorkletBidPtr expected_bid,
-      std::vector<std::string> expected_errors = std::vector<std::string>()) {
+      std::vector<std::string> expected_errors = std::vector<std::string>(),
+      const absl::optional<GURL>& expected_debug_loss_report_url =
+          absl::nullopt,
+      const absl::optional<GURL>& expected_debug_win_report_url =
+          absl::nullopt) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
-    RunGenerateBidExpectingResult(std::move(expected_bid), expected_errors);
+    RunGenerateBidExpectingResult(std::move(expected_bid), expected_errors,
+                                  expected_debug_loss_report_url,
+                                  expected_debug_win_report_url);
   }
 
   // Loads and runs a generateBid() script, expecting the provided result.
   void RunGenerateBidExpectingResult(
       mojom::BidderWorkletBidPtr expected_bid,
-      std::vector<std::string> expected_errors = std::vector<std::string>()) {
+      std::vector<std::string> expected_errors = std::vector<std::string>(),
+      const absl::optional<GURL>& expected_debug_loss_report_url =
+          absl::nullopt,
+      const absl::optional<GURL>& expected_debug_win_report_url =
+          absl::nullopt) {
     auto bidder_worklet = CreateWorkletAndGenerateBid();
 
     EXPECT_EQ(expected_bid.is_null(), bid_.is_null());
@@ -181,6 +220,8 @@ class BidderWorkletTest : public testing::Test {
                     ::testing::ElementsAreArray(*expected_bid->ad_components));
       }
     }
+    EXPECT_EQ(expected_debug_loss_report_url, bid_debug_loss_report_url_);
+    EXPECT_EQ(expected_debug_win_report_url, bid_debug_win_report_url_);
     EXPECT_EQ(expected_errors, bid_errors_);
   }
 
@@ -317,6 +358,8 @@ class BidderWorkletTest : public testing::Test {
         per_buyer_signals_, browser_signal_seller_origin_,
         CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindOnce([](mojom::BidderWorkletBidPtr bid,
+                          const absl::optional<GURL>& debug_loss_report_url,
+                          const absl::optional<GURL>& debug_win_report_url,
                           const std::vector<std::string>& errors) {
           ADD_FAILURE() << "Callback should not be invoked.";
         }));
@@ -337,13 +380,14 @@ class BidderWorkletTest : public testing::Test {
     return bidder_worklet;
   }
 
-  const mojom::BidderWorkletBidPtr& bid() const { return bid_; }
-  const std::vector<std::string> bid_errors() const { return bid_errors_; }
-
   void GenerateBidCallback(mojom::BidderWorkletBidPtr bid,
+                           const absl::optional<GURL>& debug_loss_report_url,
+                           const absl::optional<GURL>& debug_win_report_url,
                            const std::vector<std::string>& errors) {
     bid_ = std::move(bid);
-    bid_errors_ = std::move(errors);
+    bid_debug_loss_report_url_ = debug_loss_report_url;
+    bid_debug_win_report_url_ = debug_win_report_url;
+    bid_errors_ = errors;
     load_script_run_loop_->Quit();
   }
 
@@ -426,6 +470,8 @@ class BidderWorkletTest : public testing::Test {
 
   // Values passed to the GenerateBidCallback().
   mojom::BidderWorkletBidPtr bid_;
+  absl::optional<GURL> bid_debug_loss_report_url_;
+  absl::optional<GURL> bid_debug_win_report_url_;
   std::vector<std::string> bid_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -893,7 +939,7 @@ TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: Date().toString(), bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBidPtr() /* expected_bid */,
-      {"https://url.test/:4 Uncaught ReferenceError: Date is not defined."});
+      {"https://url.test/:5 Uncaught ReferenceError: Date is not defined."});
 }
 
 TEST_F(BidderWorkletTest, GenerateBidLogAndError) {
@@ -970,6 +1016,8 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
                   mojom::BidderWorkletBidPtr bid,
+                  const absl::optional<GURL>& debug_loss_report_url,
+                  const absl::optional<GURL>& debug_win_report_url,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(bid_value, bid->bid);
                 EXPECT_EQ(base::NumberToString(bid_value), bid->ad);
@@ -1053,17 +1101,20 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
-        base::BindLambdaForTesting([&run_loop, &num_generate_bid_calls, i](
-                                       mojom::BidderWorkletBidPtr bid,
-                                       const std::vector<std::string>& errors) {
-          EXPECT_EQ(base::NumberToString(i), bid->ad);
-          EXPECT_EQ(i + 1, bid->bid);
-          EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-          EXPECT_TRUE(errors.empty());
-          ++num_generate_bid_calls;
-          if (num_generate_bid_calls == kNumGenerateBidCalls)
-            run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop, &num_generate_bid_calls, i](
+                mojom::BidderWorkletBidPtr bid,
+                const absl::optional<GURL>& debug_loss_report_url,
+                const absl::optional<GURL>& debug_win_report_url,
+                const std::vector<std::string>& errors) {
+              EXPECT_EQ(base::NumberToString(i), bid->ad);
+              EXPECT_EQ(i + 1, bid->bid);
+              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_TRUE(errors.empty());
+              ++num_generate_bid_calls;
+              if (num_generate_bid_calls == kNumGenerateBidCalls)
+                run_loop.Quit();
+            }));
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -1142,17 +1193,20 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
-        base::BindLambdaForTesting([&run_loop, &num_generate_bid_calls, i](
-                                       mojom::BidderWorkletBidPtr bid,
-                                       const std::vector<std::string>& errors) {
-          EXPECT_EQ(base::NumberToString(i), bid->ad);
-          EXPECT_EQ(i + 1, bid->bid);
-          EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-          EXPECT_TRUE(errors.empty());
-          ++num_generate_bid_calls;
-          if (num_generate_bid_calls == kNumGenerateBidCalls)
-            run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop, &num_generate_bid_calls, i](
+                mojom::BidderWorkletBidPtr bid,
+                const absl::optional<GURL>& debug_loss_report_url,
+                const absl::optional<GURL>& debug_win_report_url,
+                const std::vector<std::string>& errors) {
+              EXPECT_EQ(base::NumberToString(i), bid->ad);
+              EXPECT_EQ(i + 1, bid->bid);
+              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_TRUE(errors.empty());
+              ++num_generate_bid_calls;
+              if (num_generate_bid_calls == kNumGenerateBidCalls)
+                run_loop.Quit();
+            }));
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -1237,17 +1291,20 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
-        base::BindLambdaForTesting([&run_loop, &num_generate_bid_calls, i](
-                                       mojom::BidderWorkletBidPtr bid,
-                                       const std::vector<std::string>& errors) {
-          EXPECT_EQ(base::NumberToString(i), bid->ad);
-          EXPECT_EQ(i + 1, bid->bid);
-          EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-          EXPECT_TRUE(errors.empty());
-          ++num_generate_bid_calls;
-          if (num_generate_bid_calls == kNumGenerateBidCalls)
-            run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop, &num_generate_bid_calls, i](
+                mojom::BidderWorkletBidPtr bid,
+                const absl::optional<GURL>& debug_loss_report_url,
+                const absl::optional<GURL>& debug_win_report_url,
+                const std::vector<std::string>& errors) {
+              EXPECT_EQ(base::NumberToString(i), bid->ad);
+              EXPECT_EQ(i + 1, bid->bid);
+              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_TRUE(errors.empty());
+              ++num_generate_bid_calls;
+              if (num_generate_bid_calls == kNumGenerateBidCalls)
+                run_loop.Quit();
+            }));
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -1311,17 +1368,20 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
-        base::BindLambdaForTesting([&run_loop, &num_generate_bid_calls, i](
-                                       mojom::BidderWorkletBidPtr bid,
-                                       const std::vector<std::string>& errors) {
-          EXPECT_EQ(base::NumberToString(i), bid->ad);
-          EXPECT_EQ(i + 1, bid->bid);
-          EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-          EXPECT_TRUE(errors.empty());
-          ++num_generate_bid_calls;
-          if (num_generate_bid_calls == kNumGenerateBidCalls)
-            run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop, &num_generate_bid_calls, i](
+                mojom::BidderWorkletBidPtr bid,
+                const absl::optional<GURL>& debug_loss_report_url,
+                const absl::optional<GURL>& debug_win_report_url,
+                const std::vector<std::string>& errors) {
+              EXPECT_EQ(base::NumberToString(i), bid->ad);
+              EXPECT_EQ(i + 1, bid->bid);
+              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_TRUE(errors.empty());
+              ++num_generate_bid_calls;
+              if (num_generate_bid_calls == kNumGenerateBidCalls)
+                run_loop.Quit();
+            }));
 
     // Send one request at a time.
     bidder_worklet->SendPendingSignalsRequests();
@@ -1938,24 +1998,43 @@ TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("http://http.not.allowed.test"))",
       absl::nullopt /* expected_report_url */,
-      {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
+      {"https://url.test/:10 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("file:///file.not.allowed.test"))",
       absl::nullopt /* expected_report_url */,
-      {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
+      {"https://url.test/:10 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo(""))", absl::nullopt /* expected_report_url */,
-      {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
+      {"https://url.test/:10 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test");sendReportTo("https://foo.test"))",
       absl::nullopt /* expected_report_url */,
-      {"https://url.test/:9 Uncaught TypeError: sendReportTo may be called at "
+      {"https://url.test/:10 Uncaught TypeError: sendReportTo may be called at "
        "most once."});
+}
+
+// Debug win/loss reporting APIs should do nothing when feature
+// kBiddingAndScoringDebugReportingAPI is not enabled. It will not fail
+// generateBid().
+TEST_F(BidderWorkletTest, ForDebuggingOnlyReports) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
@@ -2064,7 +2143,7 @@ TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test/" + Date().toString()))",
       absl::nullopt /* expected_report_url */,
-      {"https://url.test/:9 Uncaught ReferenceError: Date is not defined."});
+      {"https://url.test/:10 Uncaught ReferenceError: Date is not defined."});
 }
 
 TEST_F(BidderWorkletTest, ReportWinInterestGroupName) {
@@ -2701,6 +2780,128 @@ TEST_F(BidderWorkletTest, UnloadWhilePaused) {
 
   // This won't terminate if the V8 thread is still blocked in debugger.
   task_environment_.RunUntilIdle();
+}
+
+class BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest
+    : public BidderWorkletTest {
+ public:
+  BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kBiddingAndScoringDebugReportingAPI);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test forDebuggingOnly.reportAdAuctionLoss() and
+// forDebuggingOnly.reportAdAuctionWin() called in scoreAd().
+TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReports) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
+            forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+      /*expected_errors=*/{}, GURL("https://loss.url"),
+      GURL("https://win.url"));
+
+  // It's OK to call one API but not the other.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+      /*expected_errors=*/{}, GURL("https://loss.url"),
+      /*expected_debug_win_report_url=*/absl::nullopt);
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+      /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/absl::nullopt,
+      GURL("https://win.url"));
+
+  // There should be no debugging report URLs when generateBid() returns invalid
+  // value type.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:"invalid", render:"https://response.test/"})",
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
+            forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      {"https://url.test/ generateBid() return value has incorrect structure."},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt);
+}
+
+TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportsInvalidParameter) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss(null))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      {"https://url.test/:4 Uncaught TypeError: "
+       "reportAdAuctionLoss requires 1 string parameter."});
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionWin([5]))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      {"https://url.test/:4 Uncaught TypeError: "
+       "reportAdAuctionWin requires 1 string parameter."});
+
+  std::vector<std::string> non_https_urls = {"http://report.url",
+                                             "file:///foo/", "Not a URL"};
+  for (const auto& url : non_https_urls) {
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateBasicGenerateBidScriptWithDebuggingReport(base::StringPrintf(
+            R"(forDebuggingOnly.reportAdAuctionLoss("%s"))", url.c_str())),
+        /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+        {"https://url.test/:4 Uncaught TypeError: "
+         "reportAdAuctionLoss must be passed a valid HTTPS url."});
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateBasicGenerateBidScriptWithDebuggingReport(base::StringPrintf(
+            R"(forDebuggingOnly.reportAdAuctionWin("%s"))", url.c_str())),
+        /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+        {"https://url.test/:4 Uncaught TypeError: "
+         "reportAdAuctionWin must be passed a valid HTTPS url."});
+  }
+
+  // No message if caught, but still no debug report URLs.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(try {forDebuggingOnly.reportAdAuctionLoss("http://loss.url")}
+            catch (e) {})"),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+      /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt);
+}
+
+TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportsMultiCalls) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
+            forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      {"https://url.test/:5 Uncaught TypeError: "
+       "reportAdAuctionLoss may be called at most once."});
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
+            forDebuggingOnly.reportAdAuctionWin("https://win.url2"))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      {"https://url.test/:5 Uncaught TypeError: "
+       "reportAdAuctionWin may be called at most once."});
 }
 
 }  // namespace

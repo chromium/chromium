@@ -72,7 +72,9 @@ const blink::InterestGroup::Ad* FindMatchingAd(
 // blink::mojom::InterestGroupAd within `bid`.
 const blink::InterestGroup::Ad* ValidateBidAndGetAd(
     const auction_worklet::mojom::BidderWorkletBid& bid,
-    const blink::InterestGroup& interest_group) {
+    const blink::InterestGroup& interest_group,
+    const absl::optional<GURL>& debug_loss_report_url,
+    const absl::optional<GURL>& debug_win_report_url) {
   if (bid.bid <= 0 || std::isnan(bid.bid) || !std::isfinite(bid.bid)) {
     mojo::ReportBadMessage("Invalid bid value");
     return nullptr;
@@ -113,6 +115,18 @@ const blink::InterestGroup::Ad* ValidateBidAndGetAd(
         return nullptr;
       }
     }
+  }
+
+  // Validate `debug_loss_report_url` and `debug_win_report_url`, if present.
+  if (debug_loss_report_url.has_value() &&
+      !IsUrlValid(debug_loss_report_url.value())) {
+    mojo::ReportBadMessage("Invalid bidder debugging loss report URL");
+    return nullptr;
+  }
+  if (debug_win_report_url.has_value() &&
+      !IsUrlValid(debug_win_report_url.value())) {
+    mojo::ReportBadMessage("Invalid bidder debugging win report URL");
+    return nullptr;
   }
 
   return matching_ad;
@@ -165,9 +179,18 @@ void AuctionRunner::FailAuction(AuctionResult result,
 
   ClosePipes();
 
-  std::move(callback_).Run(this, /*render_url=*/absl::nullopt,
-                           /*ad_component_urls=*/absl::nullopt,
-                           /*report_urls=*/{}, errors_);
+  // No win report when the auction fails.
+  debug_win_report_urls_.clear();
+  // If the auction failed not due to all bids got rejected, no debug report
+  // should be sent.
+  if (result != AuctionResult::kAllBidsRejected)
+    debug_loss_report_urls_.clear();
+
+  std::move(callback_).Run(
+      this, /*render_url=*/absl::nullopt,
+      /*ad_component_urls=*/absl::nullopt,
+      /*report_urls=*/{}, std::move(debug_loss_report_urls_),
+      std::move(debug_win_report_urls_), std::move(errors_));
 }
 
 void AuctionRunner::StartAuction(
@@ -350,6 +373,8 @@ void AuctionRunner::OnBidderWorkletGenerateBidFatalError(
     // specific one.
     OnGenerateBidComplete(
         bid_state, auction_worklet::mojom::BidderWorkletBidPtr(),
+        /*debug_loss_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/absl::nullopt,
         {base::StrCat({bid_state->bidder.interest_group.bidding_url->spec(),
                        " crashed while trying to run generateBid()."})});
     return;
@@ -357,12 +382,17 @@ void AuctionRunner::OnBidderWorkletGenerateBidFatalError(
 
   // Otherwise, use error message from the worklet.
   OnGenerateBidComplete(bid_state,
-                        auction_worklet::mojom::BidderWorkletBidPtr(), errors);
+
+                        auction_worklet::mojom::BidderWorkletBidPtr(),
+                        /*debug_loss_report_url=*/absl::nullopt,
+                        /*debug_win_report_url=*/absl::nullopt, errors);
 }
 
 void AuctionRunner::OnGenerateBidComplete(
     BidState* state,
     auction_worklet::mojom::BidderWorkletBidPtr bid,
+    const absl::optional<GURL>& debug_loss_report_url,
+    const absl::optional<GURL>& debug_win_report_url,
     const std::vector<std::string>& errors) {
   DCHECK(!state->bid_result);
   DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
@@ -371,15 +401,23 @@ void AuctionRunner::OnGenerateBidComplete(
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
-  // Release the worklet. If it wins the auction, it will it will be requested
-  // again to invoke its ReportWin() method.
+  // Release the worklet. If it wins the auction, it will be requested again to
+  // invoke its ReportWin() method.
   state->worklet_handle.reset();
 
   // Ignore invalid bids.
   if (bid) {
-    state->bid_ad = ValidateBidAndGetAd(*bid, state->bidder.interest_group);
-    if (!state->bid_ad)
+    state->bid_ad =
+        ValidateBidAndGetAd(*bid, state->bidder.interest_group,
+                            debug_loss_report_url, debug_win_report_url);
+    if (state->bid_ad) {
+      state->bidder_debug_loss_report_url = std::move(debug_loss_report_url);
+    } else {
       bid.reset();
+    }
+  } else {
+    // Bidders who do not bid are allowed to get loss report.
+    state->bidder_debug_loss_report_url = std::move(debug_loss_report_url);
   }
 
   if (!bid) {
@@ -395,6 +433,7 @@ void AuctionRunner::OnGenerateBidComplete(
     return;
   }
 
+  state->bidder_debug_win_report_url = std::move(debug_win_report_url);
   state->bid_result = std::move(bid);
   state->state = BidState::State::kWaitingOnSellerWorkletLoad;
   if (seller_worklet_received_)
@@ -427,14 +466,34 @@ void AuctionRunner::ScoreBid(BidState* state) {
   }
 }
 
-void AuctionRunner::OnBidScored(BidState* state,
-                                double score,
-                                const std::vector<std::string>& errors) {
+void AuctionRunner::OnBidScored(
+    BidState* state,
+    double score,
+    const absl::optional<GURL>& debug_loss_report_url,
+    const absl::optional<GURL>& debug_win_report_url,
+    const std::vector<std::string>& errors) {
   DCHECK_EQ(state->state, BidState::State::kSellerScoringBid);
   state->seller_score = score;
   --outstanding_bids_;
   state->state = BidState::State::kScoringComplete;
+  // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
+  // URL, the auction should fail because the worklet is compromised.
+  if (debug_loss_report_url.has_value() &&
+      !IsUrlValid(debug_loss_report_url.value())) {
+    mojo::ReportBadMessage("Invalid seller debugging loss report URL");
+    FailAuction(AuctionResult::kBadMojoMessage);
+    return;
+  }
+  if (debug_win_report_url.has_value() &&
+      !IsUrlValid(debug_win_report_url.value())) {
+    mojo::ReportBadMessage("Invalid seller debugging win report URL");
+    FailAuction(AuctionResult::kBadMojoMessage);
+    return;
+  }
   errors_.insert(errors_.end(), errors.begin(), errors.end());
+
+  state->seller_debug_loss_report_url = std::move(debug_loss_report_url);
+  state->seller_debug_win_report_url = std::move(debug_win_report_url);
 
   // A score <= 0 means the seller rejected the bid.
   if (score > 0) {
@@ -488,6 +547,28 @@ void AuctionRunner::MaybeCompleteAuction() {
       interest_group_manager_->RecordInterestGroupBid(
           bid_state.bidder.interest_group.owner,
           bid_state.bidder.interest_group.name);
+    }
+  }
+
+  if (top_bidder_ && top_bidder_->bidder_debug_win_report_url.has_value()) {
+    debug_win_report_urls_.push_back(
+        top_bidder_->bidder_debug_win_report_url.value());
+  }
+  if (top_bidder_ && top_bidder_->seller_debug_win_report_url.has_value()) {
+    debug_win_report_urls_.push_back(
+        top_bidder_->seller_debug_win_report_url.value());
+  }
+
+  for (BidState& bid_state : bid_states_) {
+    if (top_bidder_ && (&bid_state == top_bidder_))
+      continue;
+    if (bid_state.bidder_debug_loss_report_url.has_value()) {
+      debug_loss_report_urls_.push_back(
+          bid_state.bidder_debug_loss_report_url.value());
+    }
+    if (bid_state.seller_debug_loss_report_url.has_value()) {
+      debug_loss_report_urls_.push_back(
+          bid_state.seller_debug_loss_report_url.value());
     }
   }
 
@@ -653,9 +734,11 @@ void AuctionRunner::ReportSuccess() {
       top_bidder_->bidder.interest_group.owner,
       top_bidder_->bidder.interest_group.name, ad_metadata);
 
-  std::move(callback_).Run(this, top_bidder_->bid_result->render_url,
-                           top_bidder_->bid_result->ad_components,
-                           std::move(report_urls_), std::move(errors_));
+  std::move(callback_).Run(
+      this, top_bidder_->bid_result->render_url,
+      top_bidder_->bid_result->ad_components, std::move(report_urls_),
+      std::move(debug_loss_report_urls_), std::move(debug_win_report_urls_),
+      std::move(errors_));
 }
 
 void AuctionRunner::ClosePipes() {

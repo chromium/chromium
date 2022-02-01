@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -19,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
@@ -43,6 +45,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
@@ -50,6 +53,15 @@ using auction_worklet::TestDevToolsAgentClient;
 
 namespace content {
 namespace {
+
+const char kBidder1DebugLossReportUrl[] =
+    "https://bidder1-debug-loss-reporting.com/";
+const char kBidder1DebugWinReportUrl[] =
+    "https://bidder1-debug-win-reporting.com/";
+const char kBidder2DebugLossReportUrl[] =
+    "https://bidder2-debug-loss-reporting.com/";
+const char kBidder2DebugWinReportUrl[] =
+    "https://bidder2-debug-win-reporting.com/";
 
 // 0 `num_component_urls` means no component URLs, as opposed to an empty list
 // (which isn't tested at this layer).
@@ -61,7 +73,9 @@ std::string MakeBidScript(const url::Origin& seller,
                           const std::string& interest_group_name,
                           bool has_signals,
                           const std::string& signal_key,
-                          const std::string& signal_val) {
+                          const std::string& signal_val,
+                          const std::string& debug_loss_report_url = "",
+                          const std::string& debug_win_report_url = "") {
   // TODO(morlovich): Use JsReplace.
   constexpr char kBidScript[] = R"(
     const seller = "%s";
@@ -71,6 +85,8 @@ std::string MakeBidScript(const url::Origin& seller,
     const interestGroupOwner = "%s";
     const interestGroupName = "%s";
     const hasSignals = %s;
+    const debugLossReportUrl = "%s";
+    const debugWinReportUrl = "%s";
 
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
@@ -136,6 +152,10 @@ std::string MakeBidScript(const url::Origin& seller,
         if (browserSignals.prevWins[i][1].winner !== -i)
           throw new Error("prevWin MD not what passed in");
       }
+      if (debugLossReportUrl)
+        forDebuggingOnly.reportAdAuctionLoss(debugLossReportUrl);
+      if (debugWinReportUrl)
+        forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl);
       return result;
     }
 
@@ -184,6 +204,7 @@ std::string MakeBidScript(const url::Origin& seller,
       kBidScript, seller.Serialize().c_str(), bid.c_str(), render_url.c_str(),
       num_ad_components, interest_group_owner.Serialize().c_str(),
       interest_group_name.c_str(), has_signals ? "true" : "false",
+      debug_loss_report_url.c_str(), debug_win_report_url.c_str(),
       signal_key.c_str(), signal_val.c_str());
 }
 
@@ -205,11 +226,14 @@ constexpr char kReportWinExpectNullAuctionSignals[] = R"(
 
 std::string MakeDecisionScript(
     const GURL& decision_logic_url,
-    absl::optional<GURL> send_report_url = absl::nullopt) {
+    absl::optional<GURL> send_report_url = absl::nullopt,
+    const std::string& debug_loss_report_url = "",
+    const std::string& debug_win_report_url = "") {
   constexpr char kCheckingAuctionScript[] = R"(
     const decisionLogicUrl = "%s";
     const sendReportUrl = "%s";
-
+    const debugLossReportUrl = "%s";
+    const debugWinReportUrl = "%s";
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                      browserSignals) {
       if (adMetadata.bidKey !== ("data for " + bid)) {
@@ -250,6 +274,10 @@ std::string MakeDecisionScript(
         throw new Error("biddingDurationMsec is not a number. huh");
       if (browserSignals.biddingDurationMsec < 0)
         throw new Error("biddingDurationMsec should be non-negative.");
+      if (debugLossReportUrl)
+        forDebuggingOnly.reportAdAuctionLoss(debugLossReportUrl + bid);
+      if (debugWinReportUrl)
+        forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl + bid);
 
       return bid * 2;
     }
@@ -271,21 +299,28 @@ std::string MakeDecisionScript(
 
   return base::StringPrintf(
       kCheckingAuctionScript, decision_logic_url.spec().c_str(),
-      send_report_url ? send_report_url->spec().c_str() : "");
+      send_report_url ? send_report_url->spec().c_str() : "",
+      debug_loss_report_url.c_str(), debug_win_report_url.c_str());
 }
 
-std::string MakeAuctionScript(
-    const GURL& decision_logic_url =
-        GURL("https://adstuff.publisher1.com/auction.js")) {
-  return MakeDecisionScript(decision_logic_url, /*send_report_url=*/GURL(
-                                "https://reporting.example.com"));
+std::string MakeAuctionScript(const GURL& decision_logic_url = GURL(
+                                  "https://adstuff.publisher1.com/auction.js"),
+                              const std::string& debug_loss_report_url = "",
+                              const std::string& debug_win_report_url = "") {
+  return MakeDecisionScript(
+      decision_logic_url,
+      /*send_report_url=*/GURL("https://reporting.example.com"),
+      debug_loss_report_url, debug_win_report_url);
 }
 
 std::string MakeAuctionScriptNoReportUrl(
     const GURL& decision_logic_url =
-        GURL("https://adstuff.publisher1.com/auction.js")) {
+        GURL("https://adstuff.publisher1.com/auction.js"),
+    const std::string& debug_loss_report_url = "",
+    const std::string& debug_win_report_url = "") {
   return MakeDecisionScript(decision_logic_url,
-                            /*send_report_url=*/absl::nullopt);
+                            /*send_report_url=*/absl::nullopt,
+                            debug_loss_report_url, debug_win_report_url);
 }
 
 const char kAuctionScriptRejects2[] = R"(
@@ -305,6 +340,29 @@ const char kBasicReportResult[] = R"(
 
 std::string MakeAuctionScriptReject2() {
   return std::string(kAuctionScriptRejects2) + kBasicReportResult;
+}
+
+std::string MakeAuctionScriptReject1And2WithDebugReporting(
+    const std::string& debug_loss_report_url = "",
+    const std::string& debug_win_report_url = "") {
+  constexpr char kReject1And2WithDebugReporting[] = R"(
+    const debugLossReportUrl = "%s";
+    const debugWinReportUrl = "%s";
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      let result = bid + 1;
+      if (bid === 1 || bid === 2)
+        result = -1;
+      if (debugLossReportUrl)
+        forDebuggingOnly.reportAdAuctionLoss(debugLossReportUrl + bid);
+      if (debugWinReportUrl)
+        forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl + bid);
+      return result;
+    }
+  )";
+  return base::StringPrintf(kReject1And2WithDebugReporting,
+                            debug_loss_report_url.c_str(),
+                            debug_win_report_url.c_str()) +
+         kBasicReportResult;
 }
 
 // Sorts a vector of PreviousWinPtr so that the most recent wins are last.
@@ -408,18 +466,23 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       absl::optional<double> bid,
       const GURL& render_url = GURL(),
       absl::optional<std::vector<GURL>> ad_component_urls = absl::nullopt,
-      base::TimeDelta duration = base::TimeDelta()) {
+      base::TimeDelta duration = base::TimeDelta(),
+      const absl::optional<GURL>& debug_loss_report_url = absl::nullopt,
+      const absl::optional<GURL>& debug_win_report_url = absl::nullopt) {
     WaitForGenerateBid();
 
     if (!bid.has_value()) {
       std::move(generate_bid_callback_)
-          .Run(/*bid=*/nullptr, /*errors=*/std::vector<std::string>());
+          .Run(/*bid=*/nullptr, debug_loss_report_url,
+               /*debug_win_report_url=*/absl::nullopt,
+               /*errors=*/std::vector<std::string>());
       return;
     }
 
     std::move(generate_bid_callback_)
         .Run(auction_worklet::mojom::BidderWorkletBid::New(
                  "ad", *bid, render_url, ad_component_urls, duration),
+             debug_loss_report_url, debug_win_report_url,
              /*errors=*/std::vector<std::string>());
   }
 
@@ -820,6 +883,8 @@ class AuctionRunnerTest : public testing::Test,
     absl::optional<GURL> ad_url;
     absl::optional<std::vector<GURL>> ad_component_urls;
     std::vector<GURL> report_urls;
+    std::vector<GURL> debug_loss_report_urls;
+    std::vector<GURL> debug_win_report_urls;
     std::vector<std::string> errors;
 
     // Metadata about `bidder1` and `bidder2`, pulled from the
@@ -975,6 +1040,8 @@ class AuctionRunnerTest : public testing::Test,
                          absl::optional<GURL> ad_url,
                          absl::optional<std::vector<GURL>> ad_component_urls,
                          std::vector<GURL> report_urls,
+                         std::vector<GURL> debug_loss_report_urls,
+                         std::vector<GURL> debug_win_report_urls,
                          std::vector<std::string> errors) {
     DCHECK(auction_run_loop_);
     DCHECK(!auction_complete_);
@@ -988,6 +1055,8 @@ class AuctionRunnerTest : public testing::Test,
     result_.bidder1_prev_wins.clear();
     result_.bidder2_bid_count = -1;
     result_.bidder2_prev_wins.clear();
+    result_.debug_loss_report_urls = std::move(debug_loss_report_urls);
+    result_.debug_win_report_urls = std::move(debug_win_report_urls);
 
     // Retrieve bid count and previous wins for kBidder1 (and subsequently
     // kBidder2).
@@ -2794,7 +2863,9 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     auto score_ad_params = seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(7, score_ad_params.bid);
-    std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
+    std::move(score_ad_params.callback)
+        .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+             /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
     // Finish the auction.
     seller_worklet->WaitForReportResult();
@@ -2856,13 +2927,17 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(7, score_ad_params.bid);
-  std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Score Bidder2's bid.
   score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Bidder1 crashes while running ReportWin.
   seller_worklet->WaitForReportResult();
@@ -2887,6 +2962,35 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
                                   kBidder1Url.spec().c_str())));
   CheckHistograms(AuctionRunner::AuctionResult::kWinningBidderWorkletCrashed,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// Should not have any debugging win/loss report URLs after auction when feature
+// kBiddingAndScoringDebugReportingAPI is not enabled.
+TEST_F(AuctionRunnerTest, ForDebuggingOnlyReporting) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(GURL("https://adstuff.publisher1.com/auction.js"),
+                        "https://seller-debug-loss-reporting.com/",
+                        "https://seller-debug-win-reporting.com/"));
+
+  const Result& res = RunStandardAuction();
+  // Bidder 2 won the auction.
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+
+  EXPECT_EQ(0u, res.debug_loss_report_urls.size());
+  EXPECT_EQ(0u, res.debug_win_report_urls.size());
 }
 
 // If the seller crashes at several points in the auction, the auction fails.
@@ -2942,12 +3046,16 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       bidder1_worklet.reset();
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(5, score_ad_params.bid);
-      std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
+      std::move(score_ad_params.callback)
+          .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+               /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       // Score Bidder2's bid.
       EXPECT_EQ(kBidder2, score_ad_params2.interest_group_owner);
       EXPECT_EQ(7, score_ad_params2.bid);
-      std::move(score_ad_params2.callback).Run(/*score=*/11, /*errors=*/{});
+      std::move(score_ad_params2.callback)
+          .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+               /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       seller_worklet->WaitForReportResult();
       DCHECK_EQ(CrashPhase::kReportResult, crash_phase);
@@ -3020,7 +3128,9 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       auto score_ad_params = seller_worklet->WaitForScoreAd();
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
-      std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
+      std::move(score_ad_params.callback)
+          .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+               /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       // Finish the auction.
       seller_worklet->WaitForReportResult();
@@ -3100,7 +3210,9 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       auto score_ad_params = seller_worklet->WaitForScoreAd();
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
-      std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
+      std::move(score_ad_params.callback)
+          .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+               /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       // Finish the auction.
       seller_worklet->WaitForReportResult();
@@ -3316,7 +3428,9 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Bidder1 never gets to report anything, since the seller providing a bad
   // report URL aborts the auction.
@@ -3362,7 +3476,9 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
@@ -3415,7 +3531,9 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(7, score_ad_params.bid);
-  std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Finish the auction.
   seller_worklet->WaitForReportResult();
@@ -3467,7 +3585,9 @@ TEST_F(AuctionRunnerTest, Tie) {
     auto score_ad_params = seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
-    std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
+    std::move(score_ad_params.callback)
+        .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+             /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
     // Bidder2 returns a bid, which is then scored.
     bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/5,
@@ -3475,7 +3595,9 @@ TEST_F(AuctionRunnerTest, Tie) {
     score_ad_params = seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
-    std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
+    std::move(score_ad_params.callback)
+        .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+             /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
     // Need to flush the service pipe to make sure the AuctionRunner has
     // received the score.
     seller_worklet->Flush();
@@ -3593,13 +3715,17 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
             break;
           case Event::kBid1Scored:
             std::move(score_ad_params1.callback)
-                .Run(/*score=*/bidder1_wins ? 11 : 9, /*errors=*/{});
+                .Run(/*score=*/bidder1_wins ? 11 : 9,
+                     /*debug_loss_report_url=*/absl::nullopt,
+                     /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment_.RunUntilIdle();
             break;
           case Event::kBid2Scored:
             std::move(score_ad_params2.callback)
-                .Run(/*score=*/10, /*errors=*/{});
+                .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+                     /*debug_win_report_url=*/absl::nullopt,
+                     /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment_.RunUntilIdle();
             break;
@@ -3629,6 +3755,328 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
       }
     }
   }
+}
+
+// Enable and test forDebuggingOnly.reportAdAuctionLoss() and
+// forDebuggingOnly.reportAdAuctionWin() APIs.
+class AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest
+    : public AuctionRunnerTest {
+ public:
+  AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kBiddingAndScoringDebugReportingAPI);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReporting) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(GURL("https://adstuff.publisher1.com/auction.js"),
+                        "https://seller-debug-loss-reporting.com/",
+                        "https://seller-debug-win-reporting.com/"));
+
+  const Result& res = RunStandardAuction();
+  // Bidder 2 won the auction.
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+
+  EXPECT_EQ(2u, res.debug_loss_report_urls.size());
+  EXPECT_THAT(res.debug_loss_report_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder1DebugLossReportUrl),
+                  GURL("https://seller-debug-loss-reporting.com/1")));
+
+  EXPECT_EQ(2u, res.debug_win_report_urls.size());
+  EXPECT_THAT(res.debug_win_report_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder2DebugWinReportUrl),
+                  GURL("https://seller-debug-win-reporting.com/2")));
+}
+
+// Should send loss report to seller and bidders when auction fails due to
+// AllBidsRejected.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingAuctionFailAllBidsRejected) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScriptReject1And2WithDebugReporting(
+          "https://seller-debug-loss-reporting.com/",
+          "https://seller-debug-win-reporting.com/"));
+
+  const Result& res = RunStandardAuction();
+  // No winner since both bidders are rejected by seller.
+  EXPECT_FALSE(res.ad_url);
+
+  EXPECT_EQ(4u, res.debug_loss_report_urls.size());
+  EXPECT_THAT(
+      res.debug_loss_report_urls,
+      testing::UnorderedElementsAre(
+          GURL(kBidder1DebugLossReportUrl), GURL(kBidder2DebugLossReportUrl),
+          GURL("https://seller-debug-loss-reporting.com/1"),
+          GURL("https://seller-debug-loss-reporting.com/2")));
+
+  EXPECT_EQ(0u, res.debug_win_report_urls.size());
+}
+
+// Loss report URLs should be dropped when the seller worklet fails to load.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingSellerWorkletFailToLoad) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+
+  StartStandardAuction();
+  // Wait for the bids to be generated.
+  task_environment_.RunUntilIdle();
+  // The seller script fails to load.
+  url_loader_factory_.AddResponse(kSellerUrl.spec(), "", net::HTTP_NOT_FOUND);
+  // Wait for the auction to complete.
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors,
+              testing::ElementsAre(
+                  "Failed to load https://adstuff.publisher1.com/auction.js "
+                  "HTTP status = 404 Not Found."));
+
+  // There should be no debug win report URLs.
+  EXPECT_EQ(0u, result_.debug_win_report_urls.size());
+  // Bidders' debug loss report URLs should be dropped as well.
+  EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+}
+
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingBidderBadUrls) {
+  const struct TestCase {
+    const char* expected_error_message;
+    absl::optional<GURL> bidder_debug_loss_report_url;
+    absl::optional<GURL> bidder_debug_win_report_url;
+  } kTestCases[] = {
+      {
+          "Invalid bidder debugging loss report URL",
+          GURL("http://bidder-debug-loss-report.com/"),
+          GURL("http://bidder-debug-win-report.com/"),
+      },
+      {
+          "Invalid bidder debugging win report URL",
+          GURL("https://bidder-debug-loss-report.com/"),
+          GURL("http://bidder-debug-win-report.com/"),
+      },
+      {
+          "Invalid bidder debugging loss report URL",
+          GURL("file:///foo/"),
+          GURL("https://bidder-debug-win-report.com/"),
+      },
+      {
+          "Invalid bidder debugging loss report URL",
+          GURL("Not a URL"),
+          GURL("https://bidder-debug-win-report.com/"),
+      },
+  };
+  for (const auto& test_case : kTestCases) {
+    StartStandardAuctionWithMockService();
+    auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+    ASSERT_TRUE(seller_worklet);
+    auto bidder1_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+    ASSERT_TRUE(bidder1_worklet);
+    auto bidder2_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+    ASSERT_TRUE(bidder2_worklet);
+
+    // Only Bidder1 bids, to keep things simple.
+    bidder1_worklet->InvokeGenerateBidCallback(
+        /*bid=*/5, GURL("https://ad1.com/"),
+        /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+        test_case.bidder_debug_loss_report_url,
+        test_case.bidder_debug_win_report_url);
+    bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
+
+    // Since there's no acceptable bid, the seller worklet is never asked to
+    // score a bid.
+    auction_run_loop_->Run();
+    EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
+
+    // No bidder won.
+    EXPECT_FALSE(result_.ad_url);
+    EXPECT_EQ(5, result_.bidder1_bid_count);
+    EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+
+    EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+    EXPECT_EQ(0u, result_.debug_win_report_urls.size());
+  }
+}
+
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingSellerBadUrls) {
+  const struct TestCase {
+    const char* expected_error_message;
+    absl::optional<GURL> seller_debug_loss_report_url;
+    absl::optional<GURL> seller_debug_win_report_url;
+  } kTestCases[] = {
+      {
+          "Invalid seller debugging loss report URL",
+          GURL("http://seller-debug-loss-report.com/"),
+          GURL("http://seller-debug-win-report.com/"),
+      },
+      {
+          "Invalid seller debugging win report URL",
+          GURL("https://seller-debug-loss-report.com/"),
+          GURL("http://seller-debug-win-report.com/"),
+      },
+      {
+          "Invalid seller debugging loss report URL",
+          GURL("file:///foo/"),
+          GURL("https://seller-debug-win-report.com/"),
+      },
+      {
+          "Invalid seller debugging loss report URL",
+          GURL("Not a URL"),
+          GURL("https://seller-debug-win-report.com/"),
+      },
+  };
+  for (const auto& test_case : kTestCases) {
+    StartStandardAuctionWithMockService();
+    auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+    ASSERT_TRUE(seller_worklet);
+    auto bidder1_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+    ASSERT_TRUE(bidder1_worklet);
+    auto bidder2_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+    ASSERT_TRUE(bidder2_worklet);
+
+    // Only Bidder1 bids, to keep things simple.
+    bidder1_worklet->InvokeGenerateBidCallback(
+        /*bid=*/5, GURL("https://ad1.com/"),
+        /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+        GURL("https://bidder-debug-loss-report.com/"),
+        GURL("https://bidder-debug-win-report.com/"));
+    bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
+
+    auto score_ad_params = seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+    EXPECT_EQ(5, score_ad_params.bid);
+    std::move(score_ad_params.callback)
+        .Run(/*score=*/10, test_case.seller_debug_loss_report_url,
+             test_case.seller_debug_win_report_url, /*errors=*/{});
+    auction_run_loop_->Run();
+    EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
+
+    // No bidder won.
+    EXPECT_FALSE(result_.ad_url);
+    EXPECT_EQ(5, result_.bidder1_bid_count);
+    EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+
+    EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+    EXPECT_EQ(0u, result_.debug_win_report_urls.size());
+  }
+}
+
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingGoodAndBadUrl) {
+  StartStandardAuctionWithMockService();
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  // Bidder1 returns a bid, which is then scored.
+  bidder1_worklet->InvokeGenerateBidCallback(
+      /*bid=*/5, GURL("https://ad1.com/"),
+      /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+      GURL(kBidder1DebugLossReportUrl), GURL(kBidder1DebugWinReportUrl));
+  // The bidder pipe should be closed after it bids.
+  EXPECT_TRUE(bidder1_worklet->PipeIsClosed());
+  bidder1_worklet.reset();
+  EXPECT_EQ("", TakeBadMessage());
+
+  // Bidder2 returns a bid with an invalid debug report url. This could only
+  // happen when the bidder worklet is compromised. It will be filtered out
+  // and not be scored.
+  bidder2_worklet->InvokeGenerateBidCallback(
+      /*bid=*/10, GURL("https://ad2.com/"),
+      /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+      GURL("http://not-https.com/"), GURL(kBidder2DebugWinReportUrl));
+  // The bidder pipe should be closed after it bids.
+  EXPECT_TRUE(bidder2_worklet->PipeIsClosed());
+  bidder2_worklet.reset();
+  EXPECT_EQ("Invalid bidder debugging loss report URL", TakeBadMessage());
+
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10, GURL("https://seller-debug-loss-reporting.com/1"),
+           GURL("https://seller-debug-win-reporting.com/1"), /*errors=*/{});
+
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback(
+      GURL("https://seller.report.result/"));
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  bidder1_worklet->WaitForReportWin();
+  bidder1_worklet->InvokeReportWinCallback(GURL("https://bidder1.report.win/"));
+  auction_run_loop_->Run();
+
+  // Bidder1 won. Bidder2 was filtered out as an invalid bid because its debug
+  // loss report url is not a valid HTTPS URL.
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  ASSERT_EQ(3u, result_.bidder2_prev_wins.size());
+
+  // Bidder2 lost, but debug_loss_report_urls is empty because bidder2's
+  // `debug_loss_report_url` is not a valid HTTPS URL. There's no seller debug
+  // loss report url neither because bidder2 was filtered out and its bid was
+  // not scored by seller.
+  EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+  EXPECT_EQ(2u, result_.debug_win_report_urls.size());
+  EXPECT_THAT(result_.debug_win_report_urls,
+              testing::UnorderedElementsAre(
+                  kBidder1DebugWinReportUrl,
+                  "https://seller-debug-win-reporting.com/1"));
 }
 
 }  // namespace

@@ -123,6 +123,17 @@ interface BidderWorklet {
   // `bid` If the worklet is successfully loaded and chooses to bid in the
   //  auction, contains information about the bid. Null otherwise.
   //
+  // `debug_loss_report_url` The URL to request if the auction runs to
+  // completion and this bid does not win. All bidders are allowed to send loss
+  // report, including those who does not bid. This field has the debug prefix
+  // because it's part of an interim reporting API that will be replaced with
+  // standardized reporting APIs once available. It must be a valid HTTPS URL.
+  //
+  // `debug_win_report_url` The URL to request if the auction runs to completion
+  // and this bid wins. This field has the debug prefix because it's part of an
+  // interim reporting API that will be replaced with standardized reporting
+  // APIs once available. It must be a valid HTTPS URL.
+  //
   // `errors` The various error messages to be used for debugging. These are too
   //  sensitive for the renderer to see. There may be errors even when a bid
   //  is offered, and there may be no errors when there's no bid. Includes
@@ -135,6 +146,8 @@ interface BidderWorklet {
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time) => (
           BidderWorkletBid? bid,
+          url.mojom.Url? debug_loss_report_url,
+          url.mojom.Url? debug_win_report_url,
           array<string> errors);
 
   // Sends pending bidding signals URL requests, if any. Unlike with
