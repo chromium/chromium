@@ -4,6 +4,8 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram.h"
@@ -291,6 +293,23 @@ void PrivacySandboxService::GetFledgeJoiningEtldPlusOneForDisplay(
   interest_group_manager_->GetAllInterestGroupJoiningOrigins(base::BindOnce(
       &PrivacySandboxService::ConvertFledgeJoiningTopFramesForDisplay,
       weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+std::vector<std::string>
+PrivacySandboxService::GetBlockedFledgeJoiningTopFramesForDisplay() const {
+  auto* pref_value =
+      pref_service_->GetDictionary(prefs::kPrivacySandboxFledgeJoinBlocked);
+  DCHECK(pref_value->is_dict());
+
+  std::vector<std::string> blocked_top_frames;
+
+  for (auto entry : pref_value->DictItems())
+    blocked_top_frames.emplace_back(entry.first);
+
+  // Apply a lexographic ordering to match other settings permission surfaces.
+  std::sort(blocked_top_frames.begin(), blocked_top_frames.end());
+
+  return blocked_top_frames;
 }
 
 void PrivacySandboxService::Shutdown() {

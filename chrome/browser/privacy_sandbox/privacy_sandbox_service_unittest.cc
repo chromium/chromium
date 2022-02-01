@@ -107,6 +107,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   PrivacySandboxService* privacy_sandbox_service() {
     return privacy_sandbox_service_.get();
   }
+  PrivacySandboxSettings* privacy_sandbox_settings() {
+    return PrivacySandboxSettingsFactory::GetForProfile(profile());
+  }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
@@ -390,12 +393,11 @@ TEST_F(PrivacySandboxServiceTest, IsFlocIdResettable) {
 TEST_F(PrivacySandboxServiceTest, UserResetFlocID) {
   // Check that the PrivacySandboxSettings is informed, and the appropriate
   // actions are logged, in response to a user resetting the floc id.
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile());
-  EXPECT_EQ(base::Time(), privacy_sandbox_settings->FlocDataAccessibleSince());
+  EXPECT_EQ(base::Time(),
+            privacy_sandbox_settings()->FlocDataAccessibleSince());
 
   privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
-  privacy_sandbox_settings->AddObserver(&observer);
+  privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true)).Times(2);
 
   base::UserActionTester user_action_tester;
@@ -404,7 +406,8 @@ TEST_F(PrivacySandboxServiceTest, UserResetFlocID) {
 
   privacy_sandbox_service()->ResetFlocId(/*user_initiated=*/true);
 
-  EXPECT_NE(base::Time(), privacy_sandbox_settings->FlocDataAccessibleSince());
+  EXPECT_NE(base::Time(),
+            privacy_sandbox_settings()->FlocDataAccessibleSince());
   ASSERT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.ResetFloc"));
 
@@ -545,6 +548,32 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
     privacy_sandbox_service()->GetFledgeJoiningEtldPlusOneForDisplay(callback);
     EXPECT_TRUE(callback_called);
   }
+}
+
+TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
+  // Confirm that blocked FLEDGE top frame eTLD+1's are correctly produced
+  // for display.
+  const std::vector<std::string> sites = {"google.com", "example.com",
+                                          "google.com.au"};
+  for (const auto& site : sites)
+    privacy_sandbox_settings()->SetFledgeJoiningAllowed(site, false);
+
+  // Sites should be returned in lexographical order.
+  auto returned_sites =
+      privacy_sandbox_service()->GetBlockedFledgeJoiningTopFramesForDisplay();
+  ASSERT_EQ(3u, returned_sites.size());
+  EXPECT_EQ(returned_sites[0], sites[1]);
+  EXPECT_EQ(returned_sites[1], sites[0]);
+  EXPECT_EQ(returned_sites[2], sites[2]);
+
+  // Settings a site back to allowed should appropriately remove it from the
+  // display list.
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("google.com", true);
+  returned_sites =
+      privacy_sandbox_service()->GetBlockedFledgeJoiningTopFramesForDisplay();
+  ASSERT_EQ(2u, returned_sites.size());
+  EXPECT_EQ(returned_sites[0], sites[1]);
+  EXPECT_EQ(returned_sites[1], sites[2]);
 }
 
 class PrivacySandboxServiceTestReconciliationBlocked

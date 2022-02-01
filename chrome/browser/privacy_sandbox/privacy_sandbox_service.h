@@ -152,6 +152,10 @@ class PrivacySandboxService : public KeyedService,
   void GetFledgeJoiningEtldPlusOneForDisplay(
       base::OnceCallback<void(std::vector<std::string>)> callback);
 
+  // Returns the set of top frames which are blocked from joining the profile to
+  // an interest group.
+  std::vector<std::string> GetBlockedFledgeJoiningTopFramesForDisplay() const;
+
   // KeyedService:
   void Shutdown() override;
 
