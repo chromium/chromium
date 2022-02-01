@@ -264,6 +264,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     // Disable dr-dc on webview.
     features.DisableIfNotSet(::features::kEnableDrDc);
+
+    // TODO(crbug.com/1100993): Web Bluetooth is not yet supported on WebView.
+    features.DisableIfNotSet(::features::kWebBluetooth);
   }
 
   android_webview::RegisterPathProvider();

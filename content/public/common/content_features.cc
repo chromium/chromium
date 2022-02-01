@@ -1055,6 +1055,11 @@ const base::Feature kWebAuthCable{"WebAuthenticationCable",
 const base::Feature kWebAuthConditionalUI{"WebAuthenticationConditionalUI",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the Web Bluetooth API is enabled:
+// https://webbluetoothcg.github.io/web-bluetooth/
+const base::Feature kWebBluetooth{"WebBluetooth",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether Web Bluetooth should use the new permissions backend. The
 // new permissions backend uses ChooserContextBase, which is used by other
 // device APIs, such as WebUSB. When enabled, WebBluetoothWatchAdvertisements

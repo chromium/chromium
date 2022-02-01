@@ -297,6 +297,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableVideoPlaybackQuality, features::kVideoPlaybackQuality},
     {wf::EnableVideoWakeLockOptimisationHiddenMuted,
      media::kWakeLockOptimisationHiddenMuted},
+    {wf::EnableWebBluetooth, features::kWebBluetooth, kSetOnlyIfOverridden},
     {wf::EnableWebBluetoothGetDevices,
      features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
     {wf::EnableWebBluetoothWatchAdvertisements,

@@ -265,6 +265,7 @@ CONTENT_EXPORT extern const base::Feature kWebAssemblyTrapHandler;
 CONTENT_EXPORT extern const base::Feature kWebAuth;
 CONTENT_EXPORT extern const base::Feature kWebAuthCable;
 CONTENT_EXPORT extern const base::Feature kWebAuthConditionalUI;
+CONTENT_EXPORT extern const base::Feature kWebBluetooth;
 CONTENT_EXPORT extern const base::Feature kWebBluetoothNewPermissionsBackend;
 CONTENT_EXPORT extern const base::Feature kWebBluetoothBondOnDemand;
 CONTENT_EXPORT extern const base::Feature kWebBundles;
