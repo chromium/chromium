@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_PERMISSIONS_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_PERMISSIONS_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#include <UIKit/UIKit.h>
 
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_user_data.h"
@@ -26,8 +26,8 @@ class PermissionsBannerRequestConfig
   // The button text.
   NSString* button_text() const { return button_text_; }
 
-  // The name of the banner's icon image.
-  NSString* icon_image_name() const { return icon_image_name_; }
+  // The banner's icon image.
+  UIImage* icon_image() const { return icon_image_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(PermissionsBannerRequestConfig);
@@ -38,7 +38,7 @@ class PermissionsBannerRequestConfig
 
   NSString* title_text_;
   NSString* button_text_;
-  NSString* icon_image_name_ = nil;
+  UIImage* icon_image_ = nil;
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;

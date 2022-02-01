@@ -52,7 +52,7 @@
 
   [self.consumer setTitleText:config->title_text()];
   [self.consumer setButtonText:config->button_text()];
-  [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+  [self.consumer setIconImage:config->icon_image()];
   [self.consumer setPresentsModal:NO];
 }
 

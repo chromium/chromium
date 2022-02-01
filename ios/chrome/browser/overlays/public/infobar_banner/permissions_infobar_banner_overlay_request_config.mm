@@ -9,8 +9,9 @@
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h"
+#import "ios/chrome/browser/web/permissions_infobar_delegate.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/permissions/permissions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -24,9 +25,9 @@ using infobars::InfoBar;
 namespace {
 
 // Name of the camera icon image for the permissions banner.
-NSString* const kCameraIconImageName = @"infobar_reading_list";
+NSString* const kCameraImageName = @"infobar_permissions_camera";
 // Name of the microphone icon image for the permissions banner.
-NSString* const kMicrophoneIconImageName = @"infobar_reading_list";
+NSString* const kMicrophoneSystemImageName = @"mic.fill";
 
 }  // namespace
 
@@ -35,13 +36,25 @@ OVERLAY_USER_DATA_SETUP_IMPL(PermissionsBannerRequestConfig);
 PermissionsBannerRequestConfig::PermissionsBannerRequestConfig(InfoBar* infobar)
     : infobar_(infobar) {
   DCHECK(infobar_);
-  // TODO(crbug.com/1289645): Retrieve permissions from a delegate.
-
-  // TODO(crbug.com/1289645): Use appropriate images.
-  icon_image_name_ = kCameraIconImageName;
-
-  title_text_ = @"Placeholder";
-
+  PermissionsInfoBarDelegate* delegate =
+      static_cast<PermissionsInfoBarDelegate*>(infobar_->delegate());
+  NSArray<NSNumber*>* accessible_permissions =
+      delegate->GetMostRecentlyAccessiblePermissions();
+  if ([accessible_permissions containsObject:@(web::PermissionCamera)]) {
+    // Camera access is enabled.
+    icon_image_ = [UIImage imageNamed:kCameraImageName];
+    title_text_ =
+        [accessible_permissions containsObject:@(web::PermissionMicrophone)]
+            ? l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_AND_MICROPHONE_ACCESSIBLE)
+            : l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE);
+  } else {
+    // Only microphone access is enabled.
+    icon_image_ = [UIImage systemImageNamed:kMicrophoneSystemImageName];
+    title_text_ = l10n_util::GetNSString(
+        IDS_IOS_PERMISSIONS_INFOBAR_BANNER_MICROPHONE_ACCESSIBLE);
+  }
   button_text_ = l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE);
 }
 
