@@ -37,6 +37,23 @@ DictationE2ETestBase = class extends E2ETestBase {
     this.lastSetTimeoutCallback = null;
     this.lastSetDelay = -1;
 
+    this.commandStrings = {
+      DELETE_PREV_CHAR: 'delete',
+      NAV_PREV_CHAR: 'move to the previous character',
+      NAV_NEXT_CHAR: 'move to the next character',
+      NAV_PREV_LINE: 'move to the previous line',
+      NAV_NEXT_LINE: 'move to the next line',
+      COPY_SELECTED_TEXT: 'copy',
+      PASTE_TEXT: 'paste',
+      CUT_SELECTED_TEXT: 'cut',
+      UNDO_TEXT_EDIT: 'undo',
+      REDO_ACTION: 'redo',
+      SELECT_ALL_TEXT: 'select all',
+      UNSELECT_TEXT: 'unselect',
+      LIST_COMMANDS: 'help',
+      NEW_LINE: 'new line',
+    };
+
     // Re-initialize AccessibilityCommon with mock APIs.
     const reinit = module => {
       accessibilityCommon = new module.AccessibilityCommon();
@@ -193,11 +210,17 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   /**
    * Enables commands feature for testing.
    */
-  async setCommandsEnabledForTest(enabled) {
+  setCommandsEnabledForTest(enabled) {
     this.mockAccessibilityPrivate.enableFeatureForTest(
         this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
         enabled);
-    accessibilityCommon.dictation_.initialize_();
+  }
+
+  /** Enables hints feature for testing. */
+  setHintsEnabledForTest(enabled) {
+    this.mockAccessibilityPrivate.enableFeatureForTest(
+        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_HINTS,
+        enabled);
   }
 
   /**
@@ -231,7 +254,32 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   async waitForDictationWithCommands() {
     await this.waitForDictationModule();
     await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
-    await this.setCommandsEnabledForTest(true);
+    this.setCommandsEnabledForTest(true);
+    this.mockAccessibilityPrivate.isFeatureEnabled(
+        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
+        (enabled) => {
+          assertTrue(enabled);
+        });
+    accessibilityCommon.dictation_.initialize_();
+  }
+
+  /** Sets up Dictation with commands and hints enabled. */
+  async waitForDictationWithCommandsAndHints() {
+    await this.waitForDictationModule();
+    await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
+    this.setCommandsEnabledForTest(true);
+    this.setHintsEnabledForTest(true);
+    this.mockAccessibilityPrivate.isFeatureEnabled(
+        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
+        (enabled) => {
+          assertTrue(enabled);
+        });
+    this.mockAccessibilityPrivate.isFeatureEnabled(
+        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_HINTS,
+        (enabled) => {
+          assertTrue(enabled);
+        });
+    accessibilityCommon.dictation_.initialize_();
   }
 
   /** @return {InputTextStrategy} */

@@ -300,6 +300,7 @@ chrome.accessibilityPrivate.AcceleratorAction = {
 chrome.accessibilityPrivate.AccessibilityFeature = {
   ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
   DICTATION_COMMANDS: 'dictationCommands',
+  DICTATION_HINTS: 'dictationHints',
 };
 
 /**

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BubbleProperties} from './constants.js';
 import {InputController} from './input_controller.js';
 import {Macro} from './macros/macro.js';
 import {MacroName} from './macros/macro_names.js';
@@ -33,6 +34,9 @@ export class Dictation {
     /** @private {boolean} */
     this.commandsFeatureEnabled_ = false;
 
+    /** @private {boolean} */
+    this.hintsFeatureEnabled_ = false;
+
     /** @private {string} */
     this.localePref_ = '';
 
@@ -52,10 +56,13 @@ export class Dictation {
     this.endTone_ = new Audio('dictation/earcons/audio_end.wav');
 
     /** @private {?number} */
-    this.timeoutId_ = null;
+    this.stopTimeoutId_ = null;
 
     /** @private {?number} */
     this.clearUITextTimeoutId_ = null;
+
+    /** @private {?number} */
+    this.showHintsTimeoutId_ = null;
 
     /** @private {string} */
     this.interimText_ = '';
@@ -112,6 +119,12 @@ export class Dictation {
             this.speechParser_.setCommandsEnabled(this.localePref_);
           }
         });
+
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_HINTS,
+        (result) => {
+          this.hintsFeatureEnabled_ = result;
+        });
   }
 
   /**
@@ -136,10 +149,27 @@ export class Dictation {
    * @private
    */
   setStopTimeout_(durationMs) {
-    if (this.timeoutId_ !== null) {
-      clearTimeout(this.timeoutId_);
+    if (this.stopTimeoutId_ !== null) {
+      clearTimeout(this.stopTimeoutId_);
     }
-    this.timeoutId_ = setTimeout(() => this.stopDictation_(), durationMs);
+    this.stopTimeoutId_ = setTimeout(() => this.stopDictation_(), durationMs);
+  }
+
+  /**
+   * Sets the timeout to show hints in the bubble UI.
+   * @param {!Array<string>} hints
+   * @private
+   */
+  setHintsTimeout_(hints) {
+    if (!this.hintsFeatureEnabled_ || !this.commandsFeatureEnabled_) {
+      return;
+    }
+
+    if (this.showHintsTimeoutId_ !== null) {
+      clearTimeout(this.showHintsTimeoutId_);
+    }
+    this.showHintsTimeoutId_ = setTimeout(
+        () => this.showHints_(hints), Dictation.Timeouts.SHOW_HINTS_MS);
   }
 
   /**
@@ -199,10 +229,7 @@ export class Dictation {
     }
 
     // Clear any timeouts.
-    if (this.timeoutId_ !== null) {
-      clearTimeout(this.timeoutId_);
-      this.timeoutId_ = null;
-    }
+    this.clearTimeoutIds_();
 
     if (this.commandsFeatureEnabled_) {
       this.inputController_.commitText(this.interimText_);
@@ -308,6 +335,10 @@ export class Dictation {
     // Record metrics.
     this.metricsUtils_ = new MetricsUtils(type, this.localePref_);
     this.metricsUtils_.recordSpeechRecognitionStarted();
+
+    // TODO(crbug.com/1252037): Replace this with message IDs once hint strings
+    // have been finalized and added to the codebase.
+    this.setHintsTimeout_(['Sample hint']);
   }
 
   /**
@@ -383,8 +414,10 @@ export class Dictation {
     // although SODA does not seem to do that. The newline character looks wrong
     // here.
     this.interimText_ = text;
-    this.inputController_.showBubble(
-        /*icon=*/ IconType.HIDDEN, /*text=*/ this.interimText_);
+    this.inputController_.showBubble({
+      icon: IconType.HIDDEN,
+      text: this.interimText_,
+    });
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
@@ -402,7 +435,7 @@ export class Dictation {
     }
 
     this.interimText_ = '';
-    this.inputController_.showBubble(/*icon=*/ IconType.STANDBY);
+    this.inputController_.showBubble({icon: IconType.STANDBY});
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
@@ -431,7 +464,7 @@ export class Dictation {
     }
     this.interimText_ = '';
     this.inputController_.showBubble(
-        /*icon=*/ IconType.MACRO_SUCCESS, /*text=*/ transcript);
+        {icon: IconType.MACRO_SUCCESS, text: transcript});
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
@@ -457,12 +490,26 @@ export class Dictation {
 
     this.interimText_ = '';
     // TODO(crbug.com/1252037): Finalize string and internationalization.
-    this.inputController_.showBubble(
-        /*icon=*/ IconType.MACRO_FAIL,
-        /*text=*/ `Failed to run command: ` + transcript);
+    this.inputController_.showBubble({
+      icon: IconType.MACRO_FAIL,
+      text: `Failed to run command: ${transcript}`
+    });
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
+  }
+
+  /**
+   * Shows hints in the UI bubble.
+   * @param {!Array<string>} hints
+   * @private
+   */
+  showHints_(hints) {
+    if (!this.hintsFeatureEnabled_ || !this.commandsFeatureEnabled_) {
+      return;
+    }
+
+    this.inputController_.showBubble({icon: IconType.STANDBY, hints});
   }
 
   /**
@@ -479,6 +526,22 @@ export class Dictation {
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
+    }
+  }
+
+  /** @private */
+  clearTimeoutIds_() {
+    if (this.stopTimeoutId_ !== null) {
+      clearTimeout(this.stopTimeoutId_);
+      this.stopTimeoutId_ = null;
+    }
+    if (this.clearUITextTimeoutId_ !== null) {
+      clearTimeout(this.clearUITextTimeoutId_);
+      this.clearUITextTimeoutId_ = null;
+    }
+    if (this.showHintsTimeoutId_ !== null) {
+      clearTimeout(this.showHintsTimeoutId_);
+      this.showHintsTimeoutId_ = null;
     }
   }
 
@@ -525,5 +588,6 @@ Dictation.Timeouts = {
   NO_SPEECH_MS: 10 * 1000,
   NO_NEW_SPEECH_MS: 5 * 1000,
   NO_FOCUSED_IME_MS: 500,
-  SHOW_COMMAND_MESSAGE_MS: 2000,
+  SHOW_COMMAND_MESSAGE_MS: 2 * 1000,
+  SHOW_HINTS_MS: 2 * 1000,
 };

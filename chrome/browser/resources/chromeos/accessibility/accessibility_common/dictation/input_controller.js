@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BubbleProperties} from './constants.js';
+
 const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
 
 /**
@@ -135,13 +137,16 @@ export class InputController {
   }
 
   /**
-   * Shows the bubble UI with the given text.
-   * @param {!IconType} icon
-   * @param {string=} text
+   * Shows the bubble UI with the given properties.
+   * @param {!BubbleProperties} props
    */
-  showBubble(icon, text) {
-    chrome.accessibilityPrivate.updateDictationBubble(
-        {visible: true, icon, text});
+  showBubble(props) {
+    chrome.accessibilityPrivate.updateDictationBubble({
+      visible: true,
+      icon: props.icon,
+      text: props.text,
+      hints: props.hints
+    });
   }
 
   /** Hides the bubble UI. */

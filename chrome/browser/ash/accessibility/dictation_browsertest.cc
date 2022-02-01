@@ -9,6 +9,8 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/dictation_bubble_controller.h"
+#include "ash/system/accessibility/dictation_bubble_view.h"
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/metrics/metrics_hashes.h"
@@ -730,18 +732,18 @@ class DictationExtensionTest : public DictationBaseTest {
 
   // Retrieves the number of times pre-edit text (composition text) is updated.
   int GetUpdatePreeditTextCallCount() {
-    DCHECK(input_context_handler_);
+    EXPECT_TRUE(input_context_handler_);
     return input_context_handler_->update_preedit_text_call_count();
   }
 
   // Retrieves the number of times commit text is updated.
   int GetCommitTextCallCount() {
-    DCHECK(input_context_handler_);
+    EXPECT_TRUE(input_context_handler_);
     return input_context_handler_->commit_text_call_count();
   }
 
   void WaitForCompositionText(const std::u16string& value) {
-    DCHECK(input_context_handler_);
+    EXPECT_TRUE(input_context_handler_);
     SuccessWaiter waiter(
         base::BindRepeating(&DictationExtensionTest::CompositionTextEquals,
                             base::Unretained(this), value));
@@ -750,7 +752,7 @@ class DictationExtensionTest : public DictationBaseTest {
   }
 
   void WaitForCommitText(const std::u16string& value) {
-    DCHECK(input_context_handler_);
+    EXPECT_TRUE(input_context_handler_);
     SuccessWaiter waiter(
         base::BindRepeating(&DictationExtensionTest::CommitTextEquals,
                             base::Unretained(this), value));
@@ -764,13 +766,13 @@ class DictationExtensionTest : public DictationBaseTest {
   }
 
   bool CompositionTextEquals(const std::u16string& value) {
-    DCHECK(input_context_handler_);
+    EXPECT_TRUE(input_context_handler_);
     return value == input_context_handler_->last_update_composition_arg()
                         .composition_text.text;
   }
 
   bool CommitTextEquals(const std::u16string& value) {
-    DCHECK(input_context_handler_);
+    EXPECT_TRUE(input_context_handler_);
     return value == input_context_handler_->last_commit_text();
   }
 
@@ -1160,6 +1162,191 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
   histogram_tester_.ExpectUniqueSample(/*name=*/kMacroRecognizedMetric,
                                        /*sample=*/kInputTextViewMetricValue,
                                        /*expected_bucket_count=*/1);
+}
+
+// Tests the behavior of the Dictation bubble UI.
+class DictationUITest : public DictationCommandsExtensionTest {
+ protected:
+  DictationUITest() {}
+  ~DictationUITest() override = default;
+  DictationUITest(const DictationUITest&) = delete;
+  DictationUITest& operator=(const DictationUITest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationCommandsExtensionTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilityDictationHints);
+  }
+
+  void WaitForVisibility(bool visible) {
+    SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasVisibility,
+                                             base::Unretained(this), visible));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void WaitForVisibleIcon(DictationBubbleIconType icon) {
+    SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasVisibleIcon,
+                                             base::Unretained(this), icon));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void WaitForVisibleText(const std::u16string& text) {
+    SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasText,
+                                             base::Unretained(this), text));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void WaitForVisibleHints(const std::vector<std::u16string>& hints) {
+    SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasVisibleHints,
+                                             base::Unretained(this), hints));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
+ private:
+  // Helpers for SuccessWaiters above.
+  bool HasVisibility(bool expected) {
+    return GetController()->widget_->IsVisible() == expected;
+  }
+
+  bool HasVisibleIcon(DictationBubbleIconType expected) {
+    return GetVisibleIcon() == expected;
+  }
+
+  bool HasText(const std::u16string& expected) { return GetText() == expected; }
+
+  bool HasVisibleHints(const std::vector<std::u16string>& expected) {
+    std::vector<std::u16string> actual =
+        GetController()->dictation_bubble_view_->GetVisibleHintsForTesting();
+    if (expected.size() != actual.size())
+      return false;
+
+    for (size_t i = 0; i < expected.size(); ++i) {
+      if (expected[i] != actual[i])
+        return false;
+    }
+
+    return true;
+  }
+
+  // Additional helpers and accessors.
+
+  DictationBubbleIconType GetVisibleIcon() {
+    EXPECT_GE(1, IsStandbyViewVisible() + IsMacroSucceededImageVisible() +
+                     IsMacroFailedImageVisible())
+        << "No more than one icon should be visible!";
+    if (IsStandbyViewVisible())
+      return DictationBubbleIconType::kStandby;
+    if (IsMacroSucceededImageVisible())
+      return DictationBubbleIconType::kMacroSuccess;
+    if (IsMacroFailedImageVisible())
+      return DictationBubbleIconType::kMacroFail;
+    return DictationBubbleIconType::kHidden;
+  }
+
+  bool IsVisible() { return GetController()->widget_->IsVisible(); }
+
+  std::u16string GetText() {
+    return GetController()->dictation_bubble_view_->GetTextForTesting();
+  }
+
+  bool IsStandbyViewVisible() {
+    return GetController()
+        ->dictation_bubble_view_->IsStandbyViewVisibleForTesting();
+  }
+
+  bool IsMacroSucceededImageVisible() {
+    return GetController()
+        ->dictation_bubble_view_->IsMacroSucceededImageVisibleForTesting();
+  }
+
+  bool IsMacroFailedImageVisible() {
+    return GetController()
+        ->dictation_bubble_view_->IsMacroFailedImageVisibleForTesting();
+  }
+
+  DictationBubbleController* GetController() {
+    DictationBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetDictationBubbleControllerForTest();
+    EXPECT_TRUE(controller);
+    return controller;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationUITest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationUITest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
+  // Send an interim speech result.
+  SendFakeSpeechResultAndWait(/*transcript=*/"Testing", /*is_final=*/false);
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kHidden);
+  WaitForVisibleText(u"Testing");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
+  // Perform a command.
+  SendFinalFakeSpeechResultAndWait("Select all");
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kMacroSuccess);
+  WaitForVisibleText(u"Select all");
+  // UI should return to standby mode after a timeout.
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleText(std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest,
+                       ResetsToStandbyModeAfterFinalSpeechResult) {
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  // Send an interim speech result.
+  SendFakeSpeechResultAndWait(/*transcript=*/"Testing", /*is_final=*/false);
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kHidden);
+  WaitForVisibleText(u"Testing");
+  // Send a final speech result. UI should return to standby mode.
+  SendFinalFakeSpeechResultAndWait("Testing 123");
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleText(std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  // The UI should be hidden when Dictation deactivates.
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  WaitForVisibility(false);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  // Hints should show up after a few seconds without speech.
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleHints(std::vector<std::u16string>{u"Sample hint"});
 }
 
 // TODO(1266696): DictationCommandsExtensionTest.Help is failing on

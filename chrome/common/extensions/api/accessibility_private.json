@@ -234,7 +234,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "enhancedNetworkVoices", "dictationCommands" ],
+        "enum": [ "enhancedNetworkVoices", "dictationCommands", "dictationHints" ],
         "description": "Subset of accessibility features."
       },
       {

@@ -59,6 +59,7 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
  private:
   friend class AccessibilityPrivateApiTest;
   friend class DictationBubbleControllerTest;
+  friend class DictationUITest;
 
   // Performs initialization if necessary.
   void MaybeInitialize();
