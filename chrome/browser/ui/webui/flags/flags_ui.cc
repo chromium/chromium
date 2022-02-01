@@ -157,83 +157,69 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
 void FlagsUI::AddStrings(content::WebUIDataSource* source) {
   // Strings added here are all marked a non-translatable, so they are not
   // actually localized.
-  source->AddLocalizedString(flags_ui::kFlagsRestartNotice,
-                             IDS_FLAGS_UI_RELAUNCH_NOTICE);
-  source->AddLocalizedString("available", IDS_FLAGS_UI_AVAILABLE_FEATURE);
-  source->AddLocalizedString("clear-search", IDS_FLAGS_UI_CLEAR_SEARCH);
-  source->AddLocalizedString("disabled", IDS_FLAGS_UI_DISABLED_FEATURE);
-  source->AddLocalizedString("enabled", IDS_FLAGS_UI_ENABLED_FEATURE);
-  source->AddLocalizedString("experiment-enabled",
-                             IDS_FLAGS_UI_EXPERIMENT_ENABLED);
-  source->AddLocalizedString("heading", IDS_FLAGS_UI_TITLE);
-  source->AddLocalizedString("no-results", IDS_FLAGS_UI_NO_RESULTS);
-  source->AddLocalizedString("not-available-platform",
-                             IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM);
-  source->AddLocalizedString("page-warning", IDS_FLAGS_UI_PAGE_WARNING);
-  source->AddLocalizedString("page-warning-explanation",
-                             IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION);
-  source->AddLocalizedString("relaunch", IDS_FLAGS_UI_RELAUNCH);
-  source->AddLocalizedString("reset", IDS_FLAGS_UI_PAGE_RESET);
-  source->AddLocalizedString("reset-acknowledged",
-                             IDS_FLAGS_UI_RESET_ACKNOWLEDGED);
-  source->AddLocalizedString("search-label", IDS_FLAGS_UI_SEARCH_LABEL);
-  source->AddLocalizedString("search-placeholder",
-                             IDS_FLAGS_UI_SEARCH_PLACEHOLDER);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+    {flags_ui::kFlagsRestartNotice, IDS_FLAGS_UI_RELAUNCH_NOTICE},
+    {"available", IDS_FLAGS_UI_AVAILABLE_FEATURE},
+    {"clear-search", IDS_FLAGS_UI_CLEAR_SEARCH},
+    {"disabled", IDS_FLAGS_UI_DISABLED_FEATURE},
+    {"enabled", IDS_FLAGS_UI_ENABLED_FEATURE},
+    {"experiment-enabled", IDS_FLAGS_UI_EXPERIMENT_ENABLED},
+    {"heading", IDS_FLAGS_UI_TITLE},
+    {"no-results", IDS_FLAGS_UI_NO_RESULTS},
+    {"not-available-platform", IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM},
+    {"page-warning", IDS_FLAGS_UI_PAGE_WARNING},
+    {"page-warning-explanation", IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION},
+    {"relaunch", IDS_FLAGS_UI_RELAUNCH},
+    {"reset", IDS_FLAGS_UI_PAGE_RESET},
+    {"reset-acknowledged", IDS_FLAGS_UI_RESET_ACKNOWLEDGED},
+    {"search-label", IDS_FLAGS_UI_SEARCH_LABEL},
+    {"search-placeholder", IDS_FLAGS_UI_SEARCH_PLACEHOLDER},
 #if BUILDFLAG(IS_CHROMEOS)
-  source->AddLocalizedString("os-flags-link", IDS_FLAGS_UI_OS_FLAGS_LINK);
-  source->AddLocalizedString("os-flags-text1", IDS_FLAGS_UI_OS_FLAGS_TEXT1);
-  source->AddLocalizedString("os-flags-text2", IDS_FLAGS_UI_OS_FLAGS_TEXT2);
+    {"os-flags-link", IDS_FLAGS_UI_OS_FLAGS_LINK},
+    {"os-flags-text1", IDS_FLAGS_UI_OS_FLAGS_TEXT1},
+    {"os-flags-text2", IDS_FLAGS_UI_OS_FLAGS_TEXT2},
 #endif
-  source->AddLocalizedString("title", IDS_FLAGS_UI_TITLE);
-  source->AddLocalizedString("unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE);
-  source->AddLocalizedString("searchResultsSingular",
-                             IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR);
-  source->AddLocalizedString("searchResultsPlural",
-                             IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL);
+    {"title", IDS_FLAGS_UI_TITLE},
+    {"unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE},
+    {"searchResultsSingular", IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR},
+    {"searchResultsPlural", IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL}
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 // static
 void FlagsDeprecatedUI::AddStrings(content::WebUIDataSource* source) {
-  source->AddLocalizedString(flags_ui::kFlagsRestartNotice,
-                             IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE);
-  source->AddLocalizedString("available",
-                             IDS_DEPRECATED_FEATURES_AVAILABLE_FEATURE);
-  source->AddLocalizedString("clear-search", IDS_DEPRECATED_UI_CLEAR_SEARCH);
-  source->AddLocalizedString("disabled",
-                             IDS_DEPRECATED_FEATURES_DISABLED_FEATURE);
-  source->AddLocalizedString("enabled",
-                             IDS_DEPRECATED_FEATURES_ENABLED_FEATURE);
-  source->AddLocalizedString("experiment-enabled",
-                             IDS_DEPRECATED_UI_EXPERIMENT_ENABLED);
-  source->AddLocalizedString("heading", IDS_DEPRECATED_FEATURES_HEADING);
-  source->AddLocalizedString("no-results", IDS_DEPRECATED_FEATURES_NO_RESULTS);
-  source->AddLocalizedString("not-available-platform",
-                             IDS_DEPRECATED_FEATURES_NOT_AVAILABLE_ON_PLATFORM);
   source->AddString("page-warning", std::string());
-  source->AddLocalizedString("page-warning-explanation",
-                             IDS_DEPRECATED_FEATURES_PAGE_WARNING_EXPLANATION);
-  source->AddLocalizedString("relaunch", IDS_DEPRECATED_FEATURES_RELAUNCH);
-  source->AddLocalizedString("reset", IDS_DEPRECATED_FEATURES_PAGE_RESET);
-  source->AddLocalizedString("reset-acknowledged",
-                             IDS_DEPRECATED_UI_RESET_ACKNOWLEDGED);
-  source->AddLocalizedString("search-label", IDS_FLAGS_UI_SEARCH_LABEL);
-  source->AddLocalizedString("search-placeholder",
-                             IDS_DEPRECATED_FEATURES_SEARCH_PLACEHOLDER);
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+    {flags_ui::kFlagsRestartNotice, IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE},
+    {"available", IDS_DEPRECATED_FEATURES_AVAILABLE_FEATURE},
+    {"clear-search", IDS_DEPRECATED_UI_CLEAR_SEARCH},
+    {"disabled", IDS_DEPRECATED_FEATURES_DISABLED_FEATURE},
+    {"enabled", IDS_DEPRECATED_FEATURES_ENABLED_FEATURE},
+    {"experiment-enabled", IDS_DEPRECATED_UI_EXPERIMENT_ENABLED},
+    {"heading", IDS_DEPRECATED_FEATURES_HEADING},
+    {"no-results", IDS_DEPRECATED_FEATURES_NO_RESULTS},
+    {"not-available-platform",
+     IDS_DEPRECATED_FEATURES_NOT_AVAILABLE_ON_PLATFORM},
+    {"page-warning-explanation",
+     IDS_DEPRECATED_FEATURES_PAGE_WARNING_EXPLANATION},
+    {"relaunch", IDS_DEPRECATED_FEATURES_RELAUNCH},
+    {"reset", IDS_DEPRECATED_FEATURES_PAGE_RESET},
+    {"reset-acknowledged", IDS_DEPRECATED_UI_RESET_ACKNOWLEDGED},
+    {"search-label", IDS_FLAGS_UI_SEARCH_LABEL},
+    {"search-placeholder", IDS_DEPRECATED_FEATURES_SEARCH_PLACEHOLDER},
 #if BUILDFLAG(IS_CHROMEOS)
-  source->AddLocalizedString("os-flags-link",
-                             IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_LINK);
-  source->AddLocalizedString("os-flags-text1",
-                             IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1);
-  source->AddLocalizedString("os-flags-text2",
-                             IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT2);
+    {"os-flags-link", IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_LINK},
+    {"os-flags-text1", IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1},
+    {"os-flags-text2", IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT2},
 #endif
-  source->AddLocalizedString("title", IDS_DEPRECATED_FEATURES_TITLE);
-  source->AddLocalizedString("unavailable",
-                             IDS_DEPRECATED_FEATURES_UNAVAILABLE_FEATURE);
-  source->AddLocalizedString("searchResultsSingular",
-                             IDS_ENTERPRISE_UI_SEARCH_RESULTS_SINGULAR);
-  source->AddLocalizedString("searchResultsPlural",
-                             IDS_ENTERPRISE_UI_SEARCH_RESULTS_PLURAL);
+    {"title", IDS_DEPRECATED_FEATURES_TITLE},
+    {"unavailable", IDS_DEPRECATED_FEATURES_UNAVAILABLE_FEATURE},
+    {"searchResultsSingular", IDS_ENTERPRISE_UI_SEARCH_RESULTS_SINGULAR},
+    {"searchResultsPlural", IDS_ENTERPRISE_UI_SEARCH_RESULTS_PLURAL}
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 template <class T>
