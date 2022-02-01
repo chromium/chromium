@@ -257,7 +257,6 @@
 <translation id="1244265436519979884">ලිනක්ස් ප්‍රතිසාධනය දැන් සිදු වෙමින් පවතියි</translation>
 <translation id="1244303850296295656">දිගු දෝෂය</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ස්ථාපනය කළ නොහැකි විය: රූප URL <ph name="HTTP_ERROR" /> දෝෂ කේතයක් ලබා දුණි. කරුණාකර ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
-<translation id="1247071602516579380">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් ටැබ්ලටය</translation>
 <translation id="1251366534849411931">අපේක්‍ෂිත විවෘත රැළි කඹය: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">මෙය වෙබ් අඩවිවලින් සහ ස්ථාපිත යෙදුම්වලින් ගබඩා කරනු ලැබූ දත්ත <ph name="TOTAL_USAGE" /> ක් හිස් කරයි</translation>
 <translation id="1251578593170406502">ජංගම දත්ත ජාල සඳහා ස්කෑන් කරමින්...</translation>
@@ -446,7 +445,6 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> තේරිණි</translation>
 <translation id="1442851588227551435">ක්‍රියාකාරී Kerberos ප්‍රවේශපත්‍රය සකසන්න</translation>
 <translation id="1444628761356461360">උපාංග හිමිකරු විසින් සැකසුම් කළමනාකරණය කර ඇත, <ph name="OWNER_EMAIL" />.</translation>
-<translation id="1445005312224723356">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් දුරකථනය</translation>
 <translation id="144518587530125858">තේමාව සඳහා '<ph name="IMAGE_PATH" />' ප්‍රවේශනය කළ නොහැකි විය.</translation>
 <translation id="1449191289887455076">පැවරුම තහවුරු කර <ph name="RESPONSE" /> “<ph name="CURRENTKEY" />” නැවත ඔබන්න.</translation>
 <translation id="1451375123200651445">වෙබ් පිටුව, තනි ගොනුව</translation>
@@ -799,7 +797,6 @@
 <translation id="1790976235243700817">ප්‍රවේශය ඉවත් කරන්න</translation>
 <translation id="1791662854739702043">ස්ථාපිත</translation>
 <translation id="1792619191750875668">දීර්ඝ කළ සංදර්ශකය</translation>
-<translation id="1793625608969726781">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, පරිගණකය, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> කිසි විටක නොපෙන්වන්න</translation>
 <translation id="1794791083288629568">අපට මෙම ගැටලුව විසඳීමට උදවු වීමට ප්‍රතිපෝෂණ එවන්න.</translation>
 <translation id="1795214765651529549">පැරණි එක භාවිත කරන්න</translation>
@@ -870,7 +867,6 @@
 <translation id="1855079636134697549">කැමරාව ක්‍රියාත්මකයි</translation>
 <translation id="1856715684130786728">ස්ථානය එක් කරන්න...</translation>
 <translation id="1858585891038687145">මෘදුකාංග සාදන්නන් හඳුනා ගැනීම සඳහා මෙම සහතිකය මත විශ්වාසය තබන්න</translation>
-<translation id="1859787252990099899">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් නොදන්නා උපාංගය</translation>
 <translation id="1861262398884155592">මෙම ෆෝල්ඩරය හිස්ය</translation>
 <translation id="1862311223300693744">ඔබ යම් විශේෂ VPN, ප්‍රොක්සි, ෆයර්වෝලය හෝ NAS මෘදුකාංගය
     ස්ථාපනය කර තිබේද?</translation>
@@ -1186,7 +1182,6 @@
 <translation id="2179416702468739594">ලබා ගත හැකි පැතිකඩවල් සොයමින්. මෙය ඔබගේ ජංගම දුරකථන ජාලය මිනිත්තු කිහිපයකට විසන්ධි වීමට හේතු විය හැකිය.</translation>
 <translation id="2180620921879609685">ඕනෑම පිටුවක අන්තර්ගතය අවහිර කරන්න</translation>
 <translation id="2182058453334755893">ඔබේ පසුරු පුවරුවට පිටපත් කළා</translation>
-<translation id="2183027945672030611">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ක්‍රීඩා පාලකය, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">අඩවි හට හඬ වාදනය කළ හැකි වේලාව තේරීමට Chrome හට ඉඩ දෙන්න (නිර්දේශිත)</translation>
 <translation id="2186711480981247270">වෙනත් උපාංගයකින් බෙදා ගත් පිටුව</translation>
 <translation id="2187675480456493911">ඔබේ ගිණුම මත අනෙකුත් උපාංග සමඟ සමමුහූර්ත කෙරේ. අනෙකුත් පරිශීලකයින් විසින් වෙනස් කරන ලද සැකසීම් සමමුහූර්ත නොකරේ. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
@@ -1254,7 +1249,6 @@
 <translation id="2242687258748107519">ගොනු තොරතුරු</translation>
 <translation id="2246549592927364792">Google වෙතින් රූප විස්තර ලබා ගන්නද?</translation>
 <translation id="2247738527273549923">මෙම උපාංගය ඔබගේ සංවිධානය මගින් කළමනාකරණය කෙරේ</translation>
-<translation id="2249061317998743208">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් ක්‍රීඩා පාලකය</translation>
 <translation id="2249111429176737533">පටිත්ත කළ කවුළුව ලෙස විවෘත කරන්න</translation>
 <translation id="2249605167705922988">උ දා. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">පද්ධති දැක්මෙන් විවෘත කරන්න</translation>
@@ -1690,7 +1684,6 @@
 <translation id="2673135533890720193">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය කියවන්න</translation>
 <translation id="2674764818721168631">අක්‍රිය</translation>
 <translation id="2678063897982469759">යළි-සබල කරන්න</translation>
-<translation id="2678676117809690850">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, දුරකථනය, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">ඉතිහාසය</translation>
 <translation id="2681124317993121768">අමුත්තන්ගේ පැතිකඩවල් සඳහා සහය නොදක්වයි</translation>
 <translation id="2682498795777673382">ඔබේ මාපියන්ගෙන් යාවත්කාලීනය</translation>
@@ -1902,6 +1895,7 @@
 <translation id="287205682142673348">තොට යොමු කිරීම</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> එක් කරන්න...</translation>
 <translation id="2872961005593481000">වසන්න</translation>
+<translation id="2873995907777332853">සියලු කුකි අවහිර කිරීම පිළිබඳ විස්තර පෙන්වන්න</translation>
 <translation id="2874939134665556319">පෙර ඛණ්ඩය</translation>
 <translation id="2875698561019555027">(Chrome දෝෂ සහිත පිටු)</translation>
 <translation id="2876336351874743617">ඇඟිල්ල 2</translation>
@@ -2035,7 +2029,6 @@
 <translation id="3007771295016901659">අනුපත් පටිත්ත</translation>
 <translation id="3008232374986381779">ඔබගේ <ph name="DEVICE_TYPE" /> හි Linux මෙවලම්, සංස්කාරක සහ, IDE ධාවනය කරන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">අවසර යළි සකසන්න</translation>
-<translation id="3008396025115884998">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් ශ්‍රව්‍ය උපාංගය</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{යාවත්කාලීනයක් බාගැනීමට <ph name="MANAGER" /> හට අද ඔබ Wi-Fi වෙත සම්බන්ධ වීමට අවශ්‍යය. නැති නම්, මනුගත සම්බන්ධතාවකින් බාගන්න (ගාස්තු අදාළ විය හැකිය).}one{<ph name="MANAGER" /> හට ඔබ Wi-Fi වෙත සම්බන්ධ වී නියමිත වේලාවට පෙර යාවත්කාලීනයක් බාගැනීම අවශ්‍යය. නැති නම්, මනුගත සම්බන්ධතාවකින් බාගන්න (ගාස්තු අදාළ විය හැකිය).}other{<ph name="MANAGER" /> හට ඔබ Wi-Fi වෙත සම්බන්ධ වී නියමිත වේලාවට පෙර යාවත්කාලීනයක් බාගැනීම අවශ්‍යය. නැති නම්, මනුගත සම්බන්ධතාවකින් බාගන්න (ගාස්තු අදාළ විය හැකිය).}}</translation>
 <translation id="3009300415590184725">ජංගම දත්ත සේවා පිහිටුම් ක්‍රියාවලිය අවලංගු කිරීමට අවශ්‍ය බව සහතිකද?</translation>
 <translation id="3009779501245596802">සුචිගත කළ දත්ත සමුදාය</translation>
@@ -2141,7 +2134,6 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙත යැවීමට අසමත් විය}one{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙත යැවීමට අසමත් විය}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙත යැවීමට අසමත් විය}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> උදව්</translation>
 <translation id="3118654181216384296">ලිනක්ස් ආරම්භ කිරීමට සුළු මොහොතකින් නැවත උත්සාහ කරන්න.</translation>
-<translation id="3119689272338239690">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, නොදන්යනා උපාංග වර්ගය, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">ඔබ විකාශය කළේ කුමන අන්තර්ගතය/URL ද?</translation>
 <translation id="3120430004221004537">මෙහි දෙන ලද මෙහෙයුමක් සඳහා ප්‍රමාණවත් නොවන සංකේතනය: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2168,7 +2160,6 @@
 <translation id="3143754809889689516">ආරම්භයේ සිට ධාවන කරන්න</translation>
 <translation id="3144647712221361880">ලෙස සබැඳිය විවෘත කරන්න</translation>
 <translation id="3149510190863420837">Chrome යෙදුම්</translation>
-<translation id="3150622786624965651">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ක්‍රීඩා පාලකය.</translation>
 <translation id="3150693969729403281">දැන් ආරක්‍ෂක පරීක්‍ෂාව ධාවන කරන්න</translation>
 <translation id="3150927491400159470">දැඩි නැවුම් කිරීම</translation>
 <translation id="315116470104423982">ජංගම දත්ත</translation>
@@ -2208,6 +2199,7 @@
 <translation id="3189187154924005138">විශාල කර්සරය</translation>
 <translation id="3190558889382726167">මුරපදය සුරැකිණි</translation>
 <translation id="3192947282887913208">ශ්‍රව්‍ය ගොනුව</translation>
+<translation id="3194786596445804250">තෙවන පාර්ශ්ව කුකි අවහිර කිරීම පිළිබඳ විස්තර පෙන්වන්න</translation>
 <translation id="3197453258332670132">දකුණු-ක්ලික් කිරීමකින් හෝ දිගු එබුමකින්, ඔබගේ පෙළ තේරීම සඳහා අදාළ තතු පෙන්වන්න</translation>
 <translation id="3199127022143353223">සේවාදායක</translation>
 <translation id="3200061262156232574">ඔබගේ සාප්පු කරත්තය තුළ</translation>
@@ -2373,7 +2365,6 @@
 <translation id="339178315942519818">ඔබේ <ph name="DEVICE_TYPE" /> හි ඔබේ කතාබස් යෙදුම් වෙතින් දැනුම්දීම් බලන්න</translation>
 <translation id="3393554941209044235">Chrome ලේඛන විශ්ලේෂණය</translation>
 <translation id="3394850431319394743">ආරක්ෂිත අන්තර්ගතය වාදනය කිරීම සඳහා හැඳුනුම්කාරක භාවිත කිරීමට ඉඩ දේ</translation>
-<translation id="3395403082745257596">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, නොදන්නා උපාංග වර්ගය.</translation>
 <translation id="3396744558790608201">ඔබ වෙබය බ්‍රවුස් කරන විට සහ සාප්පු යාමේදී ඔබ දකින දෘශ්‍ය අන්තර්ගතය පිළිබඳ වැඩිදුර දැන ගැනීමට අඩවියේ ඕනෑම ප්‍රදේශයක් සෙවීමට දකුණ ක්ලික් කර “Google Lens සමඟ රූප සොයන්න” තෝරන්න.</translation>
 <translation id="3396800784455899911">"පිළිගන්න සහ දිගටම පවත්වාගෙන යන්න" බොත්තම ක්ලික් කිරීමෙන්, ඔබ මෙම සේවාවන් සඳහා ඉහත විස්තර කළ Google ක්‍රියා කරවීම්වලට එකඟ වේ.</translation>
 <translation id="339722927132407568">ෆ්‍රීසස්</translation>
@@ -2668,7 +2659,6 @@
 <translation id="3682824389861648626">චලන සීමාන්තිකය</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> තිර බෙදාගැනීම් ඉල්ලීමක්</translation>
 <translation id="3685598397738512288">ලිනක්ස් USB මනාප</translation>
-<translation id="3686786761304157917">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, යතුරු පුවරුව, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">මෙම ගොනුව ලිවීමට උත්සාහ කිරීමේදී දෝෂයක් ඇති විය: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">ඔබ යෙදුම තුළ විවෘත කරන ගොනු සහ ෆෝල්ඩර වෙතට ලියන්න</translation>
 <translation id="3688526734140524629">නාලිකාව වෙනස් කරන්න</translation>
@@ -2771,7 +2761,6 @@
 <translation id="3778740492972734840">ප්‍රවර්ධක මෙවලම්</translation>
 <translation id="3778868487658107119">එයින් ප්‍රශ්න අසන්න. දේවල් කිරීමට එයට කියන්න. එය හැමවිටම උදවු කිරීමට සූදානම්, ඔබේම Google වේ.</translation>
 <translation id="3781742599892759500">ලිනක්ස් මයික්‍රොෆෝන ප්‍රවේශය</translation>
-<translation id="3782488227140539029">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, වීඩියෝ කැමරාව, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="378312418865624974">මෙම පරිගණකය සඳහා අනුපම අනන්‍යකාරකයක් කියවන්න</translation>
 <translation id="3784472333786002075">කුකී යනු වෙබ් අඩවිවලින් නිර්මාණ කෙරෙන ගොනු වේ. කුකී වර්ග දෙකක් තිබේ: පළවෙනි පාර්ශ්ව කුකී ඔබ පැමිණෙන වෙබ් අඩවියෙන් නිර්මාණ කෙරේ. වෙබ් අඩවිය ලිපින තීරුවේ පෙන්වනු ලැබේ. තෙවන පාර්ශ්ව කුකී වෙනත් වෙබ් අඩවිවලින් නිර්මාණ කෙරේ. මෙම වෙබ් අඩවිවලට ඔබ පැමිණෙන වෙබ් අඩවිය මත ඔබ දකින රූප හෝ දැන්වීම් වැනි සමහර අන්තර්ගත හිමි වේ.</translation>
 <translation id="3785308913036335955">යෙදුම් කෙටිමං පෙන්වන්න</translation>
@@ -3698,7 +3687,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4759238208242260848">බාගැනීම්</translation>
 <translation id="4761104368405085019">මයික්‍රොෙෆෝනය භාවිතා කරන්න</translation>
 <translation id="4762718786438001384">උපාංග තැටි ඉඩ දරුණු ලෙස අඩුය</translation>
-<translation id="4762898026821161650">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් පරිගණකය</translation>
 <translation id="4763408175235639573">ඔබ මෙම පිටුව බැලූ විට පහත කුකී සකසන ලදී</translation>
 <translation id="4765582662863429759">Android පණිවුඩවලට ඔබේ දුරකථනයෙන් ඔබේ Chromebook වෙත පාඨ පිළියැවීමට අවසර දෙයි</translation>
 <translation id="4768332406694066911">ඔබව හඳුනා ගන්නා මෙම සංවිධාන වෙතින් වන සහතික ඔබට තිබේ</translation>
@@ -3923,7 +3911,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="499165176004408815">ඉහළ විලක්ෂණයක් භාවිත කරන්න</translation>
 <translation id="4992458225095111526">Powerwash තහවුරු කරන්න</translation>
 <translation id="4992473555164495036">ඔබේ පරිපාලක ලබා ගත හැකි ආදාන ක්‍රම සීමා කර ඇත.</translation>
-<translation id="4992984395680162305">QR කේතයක් ස්කෑන් කිරීම මගින් මෙම උපාංග සම්බන්ධ කර ඇත.</translation>
 <translation id="4994474651455208930">නාමාවලි සඳහා වන පෙරනිමි හසුරු බවට පත් වීමට විමසීම සඳහා අඩවිවලට ඉඩ දෙන්න</translation>
 <translation id="4994754230098574403">පිහිටුවමින්...</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM හමු නොවීය}=1{<ph name="VM_TYPE" /> VM 1ක් හමු විය: <ph name="VM_NAME_LIST" />}one{<ph name="VM_TYPE" /> VM {NUM_VMS}ක් හමු විය: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS}ක් හමු විය: <ph name="VM_NAME_LIST" />}}</translation>
@@ -4154,7 +4141,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5243522832766285132">කරුණාකර සුළු මොහොතකින් නැවත උත්සාහ කරන්න</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> වෙත සමමුහුර්ත කරමින්</translation>
 <translation id="5245610266855777041">පාසල් ගිණුමක් සමඟ පටන් ගන්න</translation>
-<translation id="5246036036039717045">ඔබ Chrome හි ඒවාට පුරා ඇති නිසා මෙම උපාංග ආරක්ෂක යතුරු ලෙස භාවිත කළ හැකිය.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> බිඳ වැටී තිබේ. යෙදුම නැවත ඇරඹීමට මෙම බැලූනය මත ක්ලික් කරන්න.</translation>
 <translation id="5247051749037287028">සංදර්ශන නාමය (විකල්පමය)</translation>
 <translation id="5249624017678798539">බාගැනීම අවසන් වීමට පෙර බ්‍රව්සරය බිඳවැටිනි.</translation>
@@ -4227,7 +4213,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5319359161174645648">Google විසින් Chrome නිර්දේශ කරයි</translation>
 <translation id="5319712128756744240">නව උපාංගය යුගල කරන්න</translation>
 <translation id="5320135788267874712">නව උපාංග නම</translation>
-<translation id="532043380734099846">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, මූසිකය, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">සේවාදායකය වෙත ළඟාවිය නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="5324300749339591280">යෙදුම් ලැයිස්තුව</translation>
 <translation id="5324780743567488672">ඔබගේ ස්ථානය භාවිතා කර කාල කලාපය ස්වයංක්‍රියව සකසන්න</translation>
@@ -4257,7 +4242,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="535123479159372765">අනෙකුත් උපාංගයෙන් පිටපත් කළ පාඨය</translation>
 <translation id="5352033265844765294">කාල මුද්‍රා තැබීම</translation>
 <translation id="5353252989841766347">Chrome වෙතින් මුරපද නිර්යාත කරන්න</translation>
-<translation id="5354531123814675522">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ටැබ්ලටය, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">සහකරුට ඔබට දැනුම් දීම් පෙන්වීමට අවසර දෙන්න</translation>
 <translation id="5355191726083956201">වැඩිදියුණු කළ ආරක්ෂාව සක්‍රීයයි</translation>
 <translation id="5355926466126177564">"<ph name="EXTENSION_NAME" />" දිගුව ඔබ Omnibox වෙතින් සොයන විට කුමන පිටුව පෙන්වන්නේද යන්න වෙනස් කර තිබේ.</translation>
@@ -4494,7 +4478,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5585898376467608182">ඔබේ උපාංගයේ ගබඩාව අඩුයි. <ph name="APP_NAME" /> භාවිත කිරීමට අවම වශයෙන් <ph name="MINIMUM_SPACE" />ක හිස් ඉඩක් අවශ්‍යයි. නිදහස් ඉඩ වැඩි කිරීමට, උපාංගයෙන් ගොනු මකන්න.</translation>
 <translation id="5585912436068747822">හැඩසවිගැන්වීම අසාර්ථකයි</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
-<translation id="5589101568518637088">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, යතුරු පුවරුව.</translation>
 <translation id="558918721941304263">යෙදුම් පූරණය වේ...</translation>
 <translation id="5592595402373377407">තවම ප්‍රමාණවත් දත්ත නොමැත.</translation>
 <translation id="5595485650161345191">ලිපිනය සංස්කරණය</translation>
@@ -4697,7 +4680,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5817918615728894473">යුගල කරන්න</translation>
 <translation id="581840385858998009">වෝල්පේපර, අවතාර, තිර සුරැකුම සහ තවත් දේ අභිරුචිකරණය කරන්න</translation>
 <translation id="5821565227679781414">කෙටිමාර්ගය සාදන්න</translation>
-<translation id="5822095611691580107">වම් බඩ් බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="5825412242012995131">සක්‍රීය (නිර්දේශිතයි)</translation>
 <translation id="5826395379250998812">ඔබේ <ph name="DEVICE_TYPE" /> ඔබේ දුරකථනය සමඟ සම්බන්ධ කරන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">අර්ධ විනිවිද</translation>
@@ -5156,7 +5138,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6294759976468837022">ස්වයං-ස්කෑන් කිරීමේ වේගය</translation>
 <translation id="6295158916970320988">සියලු අඩවි</translation>
 <translation id="6295855836753816081">සුරකිමින්...</translation>
-<translation id="6297132509712149399">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, දුරකථනය.</translation>
 <translation id="629730747756840877">ගිණුම</translation>
 <translation id="6298962879096096191">Android යෙදුම් ස්ථාපනය කිරීමට Google Play භාවිත කරන්න</translation>
 <translation id="6300177430812514606">දත්ත යැවීම හෝ ලැබීම අවසන් කිරීමට ඉඩ නොදේ</translation>
@@ -5311,6 +5292,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6455264371803474013">විශේෂිත අඩවි මත</translation>
 <translation id="6455894534188563617">&amp;අලුත් ෆෝල්ඩරය</translation>
 <translation id="645705751491738698">JavaScript දිගටම අවහිර කරන්න</translation>
+<translation id="6458347417133445570">සියලු කුකිවලට ඉඩ දීම ගැන විස්තර පෙන්වන්න</translation>
 <translation id="6458701200018867744">උඩුගත කිරීම අසාර්ථක විය (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Find සඳහා තෝරාගැනීම භාවිත කරන්න</translation>
 <translation id="6459799433792303855">සක්‍රිය කවුළුව වෙනත් සංදර්ශකයකට මාරු කරන ලදි.</translation>
@@ -5450,7 +5432,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6601612474695404578">සමහර වෙබ් අඩවි ඒවායේ පිටු පූරණ කිරීමට තෙවන පාර්ශ්ව කුකී භාවිත කරයි. වෙබ් අඩවියක් ක්‍රියා නොකරන්නේ නම්, ඔබට කුකී අනුමත කර උත්සාහ කළ හැක.</translation>
 <translation id="6602937173026466876">ඔබේ මුද්‍රකයන්ට ප්‍රවේශය</translation>
 <translation id="6602956230557165253">ගවේශනය කිරීම වම් හා දකුණු ඊතල යතුරු භාවිත කරන්න.</translation>
-<translation id="6602998402703530379">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, වීඩියෝ කැමරාව.</translation>
 <translation id="6603185457265641428">ඉතිහාසය සමමුහුර්ත කරන්නේද යන්න තෝරන්න</translation>
 <translation id="6605847144724004692">තවමත් කිසිදු පරිශීලකයෙකු විසින් අගයා නැත.</translation>
 <translation id="6606671997164410857">ඔබ දැනටමත් වෙනත් උපාංගයක Google සහායක පිහිටුවා ඇති බව පෙනේ. මෙම උපාංගයෙහි තිර සන්දර්භය ක්‍රියාත්මක කිරීමෙන් ඔබගේ සහායකගෙන් තවත් බොහෝ දේ ලබා ගන්න.</translation>
@@ -5473,7 +5454,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> තුළ සංවේදී හෝ අනතුරුදායක අන්තර්ගතය ඇත. එහි හිමිකරුට නිවැරදි කිරිමට කියන්න.</translation>
 <translation id="6624687053722465643">රසැති</translation>
 <translation id="6628328486509726751">උඩුගත විය <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
-<translation id="663065535202460123">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, මූසිකය.</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> හට ඔබ වෙනුවෙන් සහතිකයක් සත්‍යාපනය කිරීමට සැමවිටම එයට ස්ථිර ප්‍රවේශයක් අවශ්‍යයි.</translation>
 <translation id="6635362468090274700">ඔබ ඔබව දෘශ්‍යමාන කරන තුරු කිසිවෙකුට ඔබ සමඟ බෙදා ගත නොහැකිය.<ph name="BR" /><ph name="BR" />ඔබව තාවකාලිකව දෘශ්‍යමාන කිරීමට, තත්ත්ව ප්‍රදේශය විවෘත කරන්න, ඉන්පසු ළඟ දෘශ්‍යතාව ක්‍රියාත්මක කරන්න.</translation>
 <translation id="6635674640674343739">ජාල සබැඳුම ස්ථාපනය කළ නොහැකිය. ඔබේ ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
@@ -5807,7 +5787,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="69739764870135975">Google ඔබගේ පෙරනිමි සෙවීම් යන්ත්‍රය ද වන්නේ නම්, ඔබ වඩා හොඳ, සන්දර්භානුකූලව අදාළ යෝජනා දකිනු ඇත</translation>
 <translation id="6974609594866392343">නොබැඳි ආදර්ශන ප්‍රකාරය</translation>
 <translation id="697508444536771064">Linux වසන්න</translation>
-<translation id="6977739184256564679">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ටැබ්ලටය.</translation>
 <translation id="6978121630131642226">සෙවීම් යාන්ත්‍රණ</translation>
 <translation id="6979044105893951891">කළමනා කෙරෙන ආරාධිත සැසි දියත් කරන්න සහ එයින් පිටවන්න</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -5828,7 +5807,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6991665348624301627">ගමනාන්තයක් තෝරන්න</translation>
 <translation id="6992554835374084304">උසස් අක්‍ෂර පරීක්‍ෂාව සක්‍රීය කරන්න</translation>
 <translation id="6993000214273684335">නම් නොකළ සමූහයකින් ටැබය ඉවත් කරන ලදි - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993889405941892667">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, පරිගණකය.</translation>
 <translation id="6994069045767983299">වර්ණ අපවර්තනය</translation>
 <translation id="6995899638241819463">දත්ත කඩ කිරීමකින් මුරපද අනාවරණ කෙරෙන්නේ නම් ඔබට අවවාද කරයි</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ක්‍රියාකාරකම් ලොගය</translation>
@@ -5899,7 +5877,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ආරක්‍ෂක පරීක්‍ෂාව 1 විනාඩියකට පෙර ධාවන විය}one{ආරක්‍ෂක පරීක්‍ෂාව විනාඩි {NUM_MINS} කට පෙර ධාවන විය}other{ආරක්‍ෂක පරීක්‍ෂාව විනාඩි {NUM_MINS} කට පෙර ධාවන විය}}</translation>
 <translation id="7057767408836081338">යෙදුම් දත්ත ලබා ගැනීම අසාර්ථක විය, කෙසේ වෙතත් යෙදුම ධාවන කිරීමට උත්සාහ කෙරේ...</translation>
 <translation id="7058024590501568315">සැඟවුණු ජාලය</translation>
-<translation id="70582545822664495">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් මූසිකය</translation>
 <translation id="7059858479264779982">ස්වයං-දියත්කිරීමට සකසන්න</translation>
 <translation id="7062222374113411376">මෑතකදී වසා දැමූ අඩවි වලට දත්ත යැවීම සහ ලැබීම අවසන් කිරීමට ඉඩ ලබා දෙන්න (නිර්දේශිතයි)</translation>
 <translation id="7063129466199351735">කෙටිමාර්ග සැකසෙමින්...</translation>
@@ -6070,7 +6047,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7257173066616499747">Wi-Fi ජාල</translation>
 <translation id="725758059478686223">මුද්‍රණ සේවාව</translation>
 <translation id="7257666756905341374">ඔබ පිටපත් කර අලවන දත්ත කියවන්න</translation>
-<translation id="7258006747130724016">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් වීඩියෝ කැමරාව</translation>
 <translation id="7258192266780953209">පරිණාමන</translation>
 <translation id="7258225044283673131">යෙදුම ප්‍රතිචාර නොදක්වයි. යෙදුම වැසීමට "බලෙන් වසන්න" තෝරන්න.</translation>
 <translation id="7262004276116528033">පුරනය වීමේ සේවාව <ph name="SAML_DOMAIN" /> වෙතින් සත්කාර කරනු ලැබේ</translation>
@@ -6743,6 +6719,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7919210519031517829">ත<ph name="DURATION" /></translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> හට <ph name="FILENAME" /> බැලිය හැක</translation>
 <translation id="7920482456679570420">ඔබට අක්ෂර වින්‍යාස පරීක්ෂාව විසින් මග හරිනු ලැබීමට අවශ්‍ය වචන එක් කරන්න</translation>
+<translation id="7922935920104868876">අප්‍රසිද්ධ ප්‍රකාරය තුළ තෙවන පාර්ශ්ව කුකි අවහිර කිරීම පිළිබඳ විස්තර පෙන්වන්න</translation>
 <translation id="7924358170328001543">තොට යොමු කිරීමේ දෝෂයයි</translation>
 <translation id="7925108652071887026">ස්වයං පිරවුම් දත්ත</translation>
 <translation id="792514962475806987">ඈඳන ලද විශාලන මට්ටම:</translation>
@@ -6860,7 +6837,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8037117027592400564">සංශ්ලේෂණය කළ කථනය භාවිතා කරමින් කථා කළ සියලු පෙළ කියවන්න</translation>
 <translation id="8037357227543935929">විමසන්න (පෙරනිමි)</translation>
 <translation id="803771048473350947">ගොනුව</translation>
-<translation id="8038399858950372766">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> නම් යතුරුපුවරුව</translation>
 <translation id="8041089156583427627">ප්‍රතිපෝෂණ යවන්න</translation>
 <translation id="8042142357103597104">පාඨ පාරාන්ධතාව</translation>
 <translation id="8042331986490021244">ඔබගේ මුරපද Google මුරපද කළමනාකරු වෙත සුරැකීමට පෙර ඔබගේ උපාංගයේ සංකේතනය කර ඇත</translation>
@@ -6907,6 +6883,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8076492880354921740">පටිති</translation>
 <translation id="8076835018653442223">ඔබේ උපාංගයේ ස්ථානීය ගොනුවලට ප්‍රවේශය ඔබේ පරිපාලක අබල කර ඇත</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Android යෙදුම් සමඟ භාවිත කිරීමට ගිණුම් තිබේ</translation>
 <translation id="8081989000209387414">ADB නිදොස් කිරීම අබල කරන්නද?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" සමඟ යුගල කරන්නේද?</translation>
 <translation id="8082390128630131497">ADB නිදොස් කිරීම අබල කිරීම මෙම <ph name="DEVICE_TYPE" /> කර්මාන්තශාලා සැකසුම් වෙත යළි සකසයි. සියලුම පරිශීලක ගිණුම් සහ අභ්‍යන්තර දත්ත මකනු ලැබේ.</translation>
@@ -7165,6 +7142,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8342861492835240085">එකතුවක් තෝරන්න</translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
 <translation id="834785183489258869">අප්‍රසිද්ධව සිටින අතරතුර, විවිධ අඩවි හරහා ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට, උදාහරණයක් වශයෙන්, වෙළඳ දැන්වීම් පෞද්ගලිකකරණය කිරීමට අඩවිවලට ඔබගේ කුකි භාවිත කළ නොහැකිය. සමහර අඩවිවල විශේෂාංග ක්‍රියා නොකළ හැකිය.</translation>
+<translation id="8349499562373871073">ඔබට Android යෙදුම් සමඟ භාවිත කිරීමට පවතින ගිණුමක් තෝරා ගැනීමට හෝ නව Google ගිණුමක් එක් කිරීමට හැකිය. ඔබ Android යෙදුමකට පිරූ පසු, ඔබගේ ගිණුම වෙනත් Android යෙදුම් සමඟ භාවිත කළ හැකිය. ඔබට Android යෙදුම් ප්‍රවේශය <ph name="LINK_BEGIN" />සැකසීම් &gt; ගිණුම්<ph name="LINK_END" /> තුළ වෙනස් කළ හැකිය.</translation>
 <translation id="8350789879725387295">ඩොකය තුළ පන්හිඳ මෙවලම්</translation>
 <translation id="8351316842353540018">සැම විටම a11y විකල්ප පෙන්වන්න</translation>
 <translation id="8351419472474436977">මෙම දිගුව ඔබගේ ප්‍රොක්සි සැකසීම්වල පාලනය ගෙන ඇත, ඉන් අදහස් වන්නේ ඔබ සබැඳිව කරන ඕනෑම දෙයක් වෙනස් කිරීමට, බිඳී යාමට, හෝ හොරෙන් අසා සිටීමට හැකි බවයි. මෙම වෙනස් වීම සිදු වූයේ ඇයිදැයි ඔබට ව්ශ්වාස නැතිනම්, ඔබට බොහෝ විට එය අවශ්‍ය නොවිය හැක.</translation>
@@ -7275,7 +7253,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8475313423285172237">ඔබේ පරිගණකයේ වෙනත් වැඩසටහනක් දිගුවක් එක් කර ඇති අතර එයින් Chrome ක්‍රියා කරන ආකරය වෙනස් විය හැකිය.</translation>
 <translation id="8477241577829954800">අබිබවන ලද</translation>
 <translation id="8477384620836102176">සාමාන්‍ය</translation>
-<translation id="8479109005219657634">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ශ්‍රව්‍ය උපාංගය, බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">වලංගු නොවන කේතයකි. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="8480082892550707549">ඔබ මීට පෙර මෙම අඩවියෙන් ගොනු බාගත කර තිබෙන විට පවා, අඩවිය තාවකාලිකව අනාරක්ෂිත විය හැකිය (අනවසරයෙන් ඇතුළු වී). මෙම ගොනුව පසුව බාගැනීමට උත්සාහ කරන්න.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> වෙතින් වන නොදන්නා උපාංගය</translation>
@@ -7558,7 +7535,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <ph name="DOMAIN" /> හට ඔබ ඔබගේ ස්මාර්ට් කාඩ්පත ඇතුළු කර තබා ගැනීමට අවශ්‍යයි.}one{ඔබගේ <ph name="DEVICE_TYPE" /> තත්පර #කින් ස්වයංක්‍රියව අගුලු දමනු ඇත.
 <ph name="DOMAIN" /> හට ඔබ ඔබගේ ස්මාර්ට් කාඩ්පත ඇතුළු කර තබා ගැනීමට අවශ්‍යයි.}other{ඔබගේ <ph name="DEVICE_TYPE" /> තත්පර #කින් ස්වයංක්‍රියව අගුලු දමනු ඇත.
 <ph name="DOMAIN" /> හට ඔබ ඔබගේ ස්මාර්ට් කාඩ්පත ඇතුළු කර තබා ගැනීමට අවශ්‍යයි.}}</translation>
-<translation id="8777259617149177596">කොපු බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8777628254805677039">මූල මුරපදය</translation>
 <translation id="8779944680596936487">ඔවුන්ගේම අඩවියේ ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම බැලීමට අඩවිවලට කුකි භාවිත කිරීමට පමණක් හැකිය.</translation>
 <translation id="8780123805589053431">Google වෙතින් රූප විස්තර ලබා ගන්න</translation>
@@ -7913,7 +7889,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> සඳහා සැකසීම් පිටුව විවෘත කරන්න</translation>
 <translation id="9128870381267983090">ජාලයට සබඳ වන්න</translation>
 <translation id="9130015405878219958">අවලංගු ප්‍රකාරය ඇතුළු කෙරිණි.</translation>
-<translation id="9130215884425927484">උපාංග <ph name="DEVICE_COUNT" />කින් <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ශ්‍රව්‍ය උපාංගය.</translation>
 <translation id="9131487537093447019">බ්ලූටූත් උපාංග වෙත පණිවිඩ යවන්න සහ ඒවායින් පණිවිඩ ලබා ගන්න.</translation>
 <translation id="9134066738478820307">අඩවි ආරක්ෂිත අන්තර්ගතය වාදනය කිරීමට හැඳුනුම්කාරක භාවිත කළ හැකිය</translation>
 <translation id="913411432238655354">ආරම්භයේදී යෙදුම් ප්‍රතිසාධනය කරන්න</translation>
@@ -7957,7 +7932,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="916964310188958970">ඇයි මෙම යෝජනාව?</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">වත්මන් දෘශ්‍යතා සැකසීම සියලු සම්බන්ධතාය</translation>
-<translation id="9170199455952690202">දකුණු බඩ් බැටරි මට්ටම <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9170848237812810038">&amp;පසුගමනය</translation>
 <translation id="9170884462774788842">වෙනත් වැඩසටහනක් Chrome  වැඩ කරන ආකාරය වෙනස් කළ හැකි තේමාවක් එකතු කරන ලදි.</translation>
 <translation id="917350715406657904">ඔබ ඔබේ මාපියන් <ph name="APP_NAME" /> සඳහා සකසා ඇති කාල සීමාවට ළඟා විය. ඔබට එය හෙට <ph name="TIME_LIMIT" />කට භාවිත කළ හැක.</translation>

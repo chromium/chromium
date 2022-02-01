@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ietilpināt skenēšanas apgabalā</translation>
 <translation id="1387854245479784695">Visu kodolu apkopojums</translation>
+<translation id="1394661041439318933">Futrāļa akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Vārteju var ehotestēt</translation>
 <translation id="1398634363027580500">Ļoti liels HTTPS latentums</translation>
 <translation id="1413240736185167732">Neizdevās — filtra kļūme</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Man ir atslēgu pāris</translation>
+<translation id="1451536289672181509">Ierīce ir tastatūra.</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> pārvalda šo ierīci un, iespējams, var pārraudzīt jūsu darbību.</translation>
 <translation id="1478594628797167447">Skeneris</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Katru dienu mainīt fona tapetes attēlu</translation>
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
+<translation id="1668469839109562275">Iebūvēts VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS atrisinātāja pieejamība</translation>
 <translation id="1715359911173058521">Savienojumā ar skeneri radās problēma. Pārbaudiet tīkla vai USB savienojumu un mēģiniet vēlreiz.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2104796393919810494">Labošana pabeigta</translation>
+<translation id="2105810540595158374">Ierīce ir spēļu vadāmierīce.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Pieejamais apjoms: <ph name="AVAILABLE_MEMORY" /> GB no <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Ievadiet savu lietotājvārdu un paroli vai skenējiet QR kodu</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
+<translation id="3031560714565892478">Ierīce ir videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Beigu punkts</translation>
 <translation id="3069085583900247081">Testēšana neizdevās</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
 <translation id="3102119246920354026">Kešatmiņa</translation>
 <translation id="3122464029669770682">Maksa par daļas vienību</translation>
+<translation id="3124039320086536031">Ierīce ir pievienota.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vai noņemt lapu?}=1{Vai noņemt {PAGE_NUMBER}. lapu?}zero{Vai noņemt {PAGE_NUMBER}. lapu?}one{Vai noņemt {PAGE_NUMBER}. lapu?}other{Vai noņemt {PAGE_NUMBER}. lapu?}}</translation>
 <translation id="315116470104423982">Mobilie dati</translation>
 <translation id="3156846309055100599">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana…</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS latentums ievērojami pārsniedz pieļaujamo slieksni</translation>
 <translation id="3328783797891415197">Tiek veikta pārbaude</translation>
+<translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3369013195428705271">Vai tiešām vēlaties notīrīt visu drukāšanas vēsturi? Netiks notīrīti drukas uzdevumi, kas tiek izpildīti.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380">Notiek <ph name="PAGE_NUM" />. lapas skenēšana. Pabeigti: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukāšana</translation>
 <translation id="3462187165860821523">Notiek ierīces <ph name="DEVICE_NAME" /> atjaunināšana</translation>
+<translation id="3484914941826596830">Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Atjaunināšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="3486220673238053218">definīcija</translation>
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3954678691475912818">Ierīces veids nav zināms.</translation>
 <translation id="3966286471246132217">Lai iegūtu precīzākus rezultātus, līdz pārbaudes beigām aizveriet visas lietotnes.</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="4891842000192098784">Izturība</translation>
+<translation id="4897058166682006107">Kreisās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4917385247580444890">Spēcīgs</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
 <translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
@@ -321,6 +331,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5346687412805619883">Lokālais tīkls</translation>
 <translation id="5358174242040570474">Radās kļūda. Mēģiniet vēlreiz izvēlēties fona tapeti vai atkārtoti atveriet lietotni.</translation>
 <translation id="5372659122375744710">Wi-Fi tīkls nav drošs</translation>
+<translation id="5400907029458559844">Notiek ierīces pievienošana.</translation>
 <translation id="5401938042319910061">Izpildīt visas pārbaudes</translation>
 <translation id="5423849171846380976">Aktivizēts</translation>
 <translation id="5430931332414098647">Tūlītēja piesaiste</translation>
@@ -382,6 +393,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
+<translation id="6319207335391420837">Ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
 <translation id="6325525973963619867">Neizdevās</translation>
 <translation id="6340526405444716530">Personalizēšana</translation>
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
@@ -414,6 +426,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6704062477274546131">DNS atrise</translation>
 <translation id="6747215703636344499">Apturēts — izvades paliktnis ir pilns</translation>
 <translation id="6749473226660745022">Fotoattēli</translation>
+<translation id="6753452347192452143">Ierīce ir dators.</translation>
 <translation id="6756731097889387912">Nevarēja atcelt skenēšanu</translation>
 <translation id="6766275201586212568">DNS atrisināšanas kļūmes</translation>
 <translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>
@@ -431,12 +444,14 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6992266763844448459">Atlasiet šo opciju, ja ierīces īpašumtiesības netiek mainītas, piemēram, ja ierīce tiek nodota citai personai tajā pašā organizācijā.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
 <translation id="7040230719604914234">Mobilo sakaru operators</translation>
+<translation id="7041549558901442110">Ierīce nav pievienota.</translation>
 <translation id="7058278511608979688">Beigt un saglabāt</translation>
 <translation id="7059230779847288458">Notiek uzlāde. Atlikušais laiks līdz pilnai uzlādei: <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Ierīces sagatavošana</translation>
 <translation id="708426984172631313">APTURĒTA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Neizdevās — autorizācija neizdevās</translation>
+<translation id="7103252855940681301"><ph name="INDEX" />. ierīce no <ph name="COUNT" />, nosaukums: <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
@@ -471,6 +486,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7502658306369382406">IPv6 adrese</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostikas pārbaudes</translation>
+<translation id="7551123448725492271">Ierīce ir audio ierīce.</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB skārienekrāns</translation>
@@ -478,6 +494,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="763165478673169849">Pēdējās atiestatīšanas laiks</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
+<translation id="7656388927906093505">Ierīce ir pele.</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
 <translation id="7701040980221191251">Nav</translation>
@@ -574,6 +591,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8855781559874488009">Nevar izveidot savienojumu ar HTTP vietnēm, ja ir iespējots ugunsmūris</translation>
 <translation id="8863888432376731307">Pieejama informācija par vaicājumu “<ph name="QUERY" />”: <ph name="INTENT" /> un daudz kas cits</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Ierīce ir planšetdators.</translation>
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>
 <translation id="8898840733695078011">Signāla stiprums</translation>
 <translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>
@@ -584,11 +602,13 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8930622219860340959">Bezvadu</translation>
 <translation id="8936793075252196307">Klienta IP adrese</translation>
 <translation id="8945750210906526975">Iekšējais skārienpaliktnis</translation>
+<translation id="894617464444543719">Ierīce ir tālrunis.</translation>
 <translation id="8968751544471797276">Uzlādes ātrums</translation>
 <translation id="8970109610781093811">Izpildīt vēlreiz</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenēt}=1{Skenēt {NUMBER_OF_PAGES}. lapu}zero{Skenēt {NUMBER_OF_PAGES}. lapu}one{Skenēt {NUMBER_OF_PAGES}. lapu}other{Skenēt {NUMBER_OF_PAGES}. lapu}}</translation>
 <translation id="8994273342647807496">Notiek instalēšana — <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Ierīces akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>

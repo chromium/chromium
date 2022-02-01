@@ -404,7 +404,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3264259168916048410">Bilgisayarınız bir sitede oturum açmak için bu cihazı kullanmak istiyor</translation>
 <translation id="3265534588625245297">Takip ettiğiniz siteleri yönetin</translation>
 <translation id="3269093882174072735">Resim yükle</translation>
-<translation id="3269956123044984603">Diğer cihazlarınızdaki sekmelerinize ulaşmak için Android hesap ayarlarından "Verileri otomatik senkronize et" seçeneğini etkinleştirin.</translation>
 <translation id="3280562213547448728">Sesli arama</translation>
 <translation id="3282568296779691940">Chrome'da oturum aç</translation>
 <translation id="3284510035090979597">Proaktif Yardım</translation>
@@ -917,7 +916,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6303969859164067831">Oturumu ve senkronizasyonu kapat</translation>
 <translation id="6312687380483398334">Web uygulamaları (sessiz)</translation>
 <translation id="6316139424528454185">Android sürümü desteklenmiyor</translation>
-<translation id="6324034347079777476">Android sistem senkronizasyonu devre dışı</translation>
 <translation id="6324916366299863871">Kısayolu düzenleyin</translation>
 <translation id="6324977638108296054">Seçili metne bağlantı oluşturulamıyor</translation>
 <translation id="6324997754869598316">(Hata <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6900532703269623216">Gelişmiş koruma</translation>
 <translation id="6903907808598579934">Senkronizasyonu aç</translation>
 <translation id="6909589135458168665">Sayfaları Önceden Yükleme</translation>
-<translation id="6929699136511445623">Android sistem senkronizasyonunu etkinleştir</translation>
 <translation id="6942665639005891494">Dosyaların indirileceği varsayılan konumu istediğiniz zaman Ayarlar menü seçeneğini kullanarak değiştirebilirsiniz</translation>
 <translation id="694267552845942083">Şu anda Senkronizasyon ayarlarınızı özelleştiriyorsunuz. Senkronizasyonu etkinleştirme işlemini tamamlamak için ekranın altına yakın bir yerde bulunan Onayla düğmesine dokunun. Yukarı git</translation>
 <translation id="6945221475159498467">Seç</translation>
@@ -1161,7 +1158,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7581273696622423628">Ankete katıl</translation>
 <translation id="7583262514280211622">Okuma listenizi burada bulabilirsiniz</translation>
 <translation id="7588219262685291874">Cihazın Pil Tasarrufu özelliği açık olduğunda koyu tema açılır</translation>
-<translation id="7593557518625677601">Chrome Senkronizasyonu'nu başlatmak için Android ayarlarını açın ve Android sistem senkronizasyonunu yeniden etkinleştirin</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> kaynağının <ph name="TOP_ORIGIN" /> için bu kişinin siz olduğunu doğrulamasına izin verin</translation>
 <translation id="7596558890252710462">İşletim sistemi</translation>
 <translation id="7605594153474022051">Senkronizasyon çalışmıyor</translation>

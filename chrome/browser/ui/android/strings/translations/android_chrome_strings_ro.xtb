@@ -404,7 +404,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3264259168916048410">Computerul solicită permisiunea de a folosi dispozitivul pentru conectarea la un site</translation>
 <translation id="3265534588625245297">Gestionează site-urile pe care le urmărești</translation>
 <translation id="3269093882174072735">Încarcă imaginea</translation>
-<translation id="3269956123044984603">Pentru a accesa filele de pe alte dispozitive, activează opțiunea „Sincronizează automat datele” în setările Android din Contul Google.</translation>
 <translation id="3280562213547448728">Căutare vocală</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3284510035090979597">Ajutor proactiv</translation>
@@ -473,6 +472,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3716182511346448902">Această pagină folosește prea multă memorie, prin urmare Chrome a întrerupt-o.</translation>
 <translation id="3721119614952978349">Tu și Google</translation>
 <translation id="3737319253362202215">Setări de traducere</translation>
+<translation id="3737402728074743863">Pentru a folosi dispozitivul drept cheie de securitate, setează o blocare a ecranului</translation>
 <translation id="3738139272394829648">Atinge pentru a căuta</translation>
 <translation id="3739899004075612870">Marcat în <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Căutarea vocală nu este disponibilă pe acest dispozitiv</translation>
@@ -916,7 +916,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6303969859164067831">Deconectează-te și dezactivează sincronizarea</translation>
 <translation id="6312687380483398334">Aplicații web (silențioase)</translation>
 <translation id="6316139424528454185">Versiunea Android nu este acceptată</translation>
-<translation id="6324034347079777476">Sincronizarea de sistem Android este dezactivată</translation>
 <translation id="6324916366299863871">Editează o comandă rapidă</translation>
 <translation id="6324977638108296054">Nu se poate crea linkul spre evidențiere</translation>
 <translation id="6324997754869598316">(Eroare <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6900532703269623216">Protecție îmbunătățită</translation>
 <translation id="6903907808598579934">Activează sincronizarea</translation>
 <translation id="6909589135458168665">Preîncarcă paginile</translation>
-<translation id="6929699136511445623">Activează sincronizarea sistemului Android</translation>
 <translation id="6942665639005891494">Schimbă oricând locația de descărcare prestabilită folosind opțiunea din meniul Setări</translation>
 <translation id="694267552845942083">Personalizezi setările de sincronizare. Pentru a finaliza activarea sincronizării, atinge butonul Confirmă din partea de jos a ecranului. Navighează în sus</translation>
 <translation id="6945221475159498467">Selectează</translation>
@@ -1160,7 +1158,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7581273696622423628">Participă la sondaj</translation>
 <translation id="7583262514280211622">Aici vei vedea lista de lectură</translation>
 <translation id="7588219262685291874">Activează tema întunecată când este activată Economisirea bateriei pentru dispozitiv</translation>
-<translation id="7593557518625677601">Deschide setările Android și reactivează sincronizarea sistemului Android pentru a porni sincronizarea Chrome</translation>
 <translation id="7594687499944811403">Permite ca <ph name="EMBEDDED_ORIGIN" /> să-ți verifice identitatea pentru <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistem de operare</translation>
 <translation id="7605594153474022051">Sincronizarea nu funcționează</translation>

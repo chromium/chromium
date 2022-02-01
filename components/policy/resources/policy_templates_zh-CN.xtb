@@ -207,6 +207,9 @@
       此政策不适用于自助服务终端用户。
 
       警告：如果此政策设为 Wipe 和 MinimalMigrate，系统会移除本地数据。</translation>
+<translation id="1250597158212586309">如果此政策已启用或未设置，系统会为用户提供选项，以便关闭/恢复密码泄露警示。
+
+      如果此设置已停用，用户将无法关闭密码泄露警示。如果此设置已启用，用户将能够关闭密码泄露警示。</translation>
 <translation id="1252536192437793850">允许网站请求用户授权其访问串行端口</translation>
 <translation id="1255159327956066463">启用“ghost 窗口”功能</translation>
 <translation id="125655429495551011">如果此政策设为一个字符串，系统会将该字符串用作 DHCP 请求中的设备主机名。该字符串可以包含变量 <ph name="ASSET_ID_PLACEHOLDER" />、<ph name="SERIAL_NUM_PLACEHOLDER" />、<ph name="MAC_ADDR_PLACEHOLDER" />、<ph name="MACHINE_NAME_PLACEHOLDER" />、<ph name="LOCATION_PLACEHOLDER" />。系统会先将这些变量替换为设备上的相应值，然后再将该字符串用作主机名。替换后的字符串应是有效的主机名（符合 RFC 1035 第 3.1 节中的规定）。
@@ -874,6 +877,7 @@
 
       连接到 <ph name="CLOUD_PRINT_NAME" />的打印机会被视为<ph name="PRINTER_TYPE_CLOUD" />打印机，其余打印机则会归类为<ph name="PRINTER_TYPE_LOCAL" />打印机。
       注意：如果您未在某个字段中输入值，则意味着所有打印机都符合此项属性。例如，如果不指定网络连接状态，那么进行打印预览时，系统将会查找所有类型的打印机（<ph name="PRINTER_TYPE_LOCAL" />和<ph name="PRINTER_TYPE_CLOUD" />）。正则表达式的格式必须遵循 JavaScript RegExp 语法，并在匹配时区分大小写。</translation>
+<translation id="2004382785802837840">不允许关闭密码泄露警示</translation>
 <translation id="2005506794355327448">当设备的盖子合上后应执行的操作</translation>
 <translation id="2006530844219044261">电源管理</translation>
 <translation id="2008514891623783266">WebRTC 的 IP 处理政策</translation>
@@ -1296,6 +1300,7 @@
 <translation id="2435232509335686514">与<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />对所下载文件的处理方式有关的配置政策</translation>
 <translation id="2436302465999055995">将 <ph name="LACROS_NAME" /> 设为唯一可用的浏览器（尚未实施）</translation>
 <translation id="2439187682308339104">不允许任何网站通过 WebHID API 请求对 HID 设备的访问权限</translation>
+<translation id="2439733504887695659">允许关闭针对所输入凭据的密码泄露警示</translation>
 <translation id="2448315169529769573">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />便会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果此政策已停用，系统会关闭指标和诊断数据报告功能。
 
        如果此政策未设置，在不受管理的设备上，指标和诊断数据报告功能会保持关闭状态；但在受管理的设备上，该功能会保持开启状态。</translation>
@@ -3145,6 +3150,7 @@
 
           要查看示例格式，请访问 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
 <translation id="467449052039111439">打开网址列表</translation>
+<translation id="4674542060943819878">允许关闭密码泄露警示</translation>
 <translation id="4674871290487541952">在对扩展程序更新和安装进行完整性检查时允许使用不安全的算法</translation>
 <translation id="4680961954980851756">启用自动填充</translation>
 <translation id="4685721728282448265">已为 TLS 启用 CECPQ2 后量子密钥协议算法</translation>

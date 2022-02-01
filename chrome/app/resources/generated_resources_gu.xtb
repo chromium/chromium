@@ -255,7 +255,6 @@
 <translation id="1244265436519979884">હાલમાં Linuxને પહેલાંના જેવું કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="1244303850296295656">એક્સટેંશન ભૂલ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ઇન્સ્ટૉલ કરી શક્યાં નહીં: છબીના URL દ્વારા ભૂલનો કોડ <ph name="HTTP_ERROR" /> પરત આપવામાં આવ્યો છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
-<translation id="1247071602516579380"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનું ટૅબ્લેટ</translation>
 <translation id="1251366534849411931">અપેક્ષિત ખુલતો વાંકળિયો કૌંસ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">આમ કરવાથી સાઇટ અને ઇન્સ્ટૉલ કરેલી ઍપ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="TOTAL_USAGE" /> ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="1251578593170406502">મોબાઇલ ડેટા નેટવર્ક માટે સ્કૅન કરી રહ્યાં છીએ…</translation>
@@ -444,7 +443,6 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> પસંદ કરી</translation>
 <translation id="1442851588227551435">સક્રિય Kerberos ટિકિટ સેટ કરો</translation>
 <translation id="1444628761356461360">આ સેટિંગ ડિવાઇસના માલિક <ph name="OWNER_EMAIL" /> દ્વારા મેનેજ થાય છે.</translation>
-<translation id="1445005312224723356"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનો ફોન</translation>
 <translation id="144518587530125858">થીમ માટે '<ph name="IMAGE_PATH" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="1449191289887455076">સોંપણી કન્ફર્મ કરવા માટે, ફરી “<ph name="CURRENTKEY" />” દબાવો અને <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">વેબપેજ, એકલ ફાઇલ</translation>
@@ -767,6 +765,7 @@
 <translation id="176587472219019965">&amp;નવી વિંડો</translation>
 <translation id="1766575458646819543">પૂર્ણ-સ્ક્રીનથી બહાર નીકળ્યાં</translation>
 <translation id="1766957085594317166">તમારા Google એકાઉન્ટમાં પાસવર્ડને સુરક્ષિત રીતે સાચવો અને પછી તમારે તેને ક્યારેય ટાઇપ કરવા પડશે નહીં</translation>
+<translation id="1767043563165955993">Android ઍપ સાથે ઉપયોગ કરો</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> માટે પ્રતિસાદ મોકલો.</translation>
 <translation id="1768278914020124551">અરેરે! લૉગઑન સર્વરનો સંપર્ક કરવામાં સમસ્યા આવી હતી. કૃપા કરીને તમારું નેટવર્ક કનેક્શન અને ડોમેન નામ તપાસો, ત્યાર બાદ ફરીથી પ્રયાસ કરો.</translation>
 <translation id="1769104665586091481">નવી &amp;વિંડોમાં લિંક ખોલો</translation>
@@ -796,7 +795,6 @@
 <translation id="1790976235243700817">ઍક્સેસ કાઢી નાખો</translation>
 <translation id="1791662854739702043">ઇન્સ્ટોલ કરેલું</translation>
 <translation id="1792619191750875668">વિસ્તૃત ડિસ્પ્લે</translation>
-<translation id="1793625608969726781"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, કમ્પ્યુટર, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> ક્યારેય બતાવશો નહીં</translation>
 <translation id="1794791083288629568">આ સમસ્યાને ઠીક કરવામાં અમારી સહાય કરવા માટે પ્રતિસાદ મોકલો.</translation>
 <translation id="1795214765651529549">ક્લાસિકનો ઉપયોગ કરો</translation>
@@ -867,7 +865,6 @@
 <translation id="1855079636134697549">કૅમેરા ચાલુ કર્યો છે</translation>
 <translation id="1856715684130786728">સ્થાન ઉમેરો...</translation>
 <translation id="1858585891038687145">સૉફ્ટવેર માર્કર્સને ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
-<translation id="1859787252990099899"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનું અજાણ્યું ડિવાઇસ</translation>
 <translation id="1861262398884155592">આ ફોલ્ડર ખાલી છે</translation>
 <translation id="1862311223300693744">શું તમે કોઈ વિશિષ્ટ VPN, પ્રૉક્સી, ફાયરવૉલ અથવા NAS સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે?</translation>
 <translation id="1863182668524159459">કોઈ સીરિયલ પોર્ટ મળ્યાં નથી</translation>
@@ -1104,6 +1101,7 @@
 <translation id="2113479184312716848">Open &amp;File...</translation>
 <translation id="2113921862428609753">અધિકારી માહિતી ઍક્સેસ</translation>
 <translation id="2114326799768592691">&amp;ફ્રેમ ફરીથી લોડ કરો</translation>
+<translation id="2114413269775311385">Android ઍપ સાથે આ એકાઉન્ટનો ઉપયોગ કરો. તમે <ph name="LINK_BEGIN" />ઍપ સેટિંગ<ph name="LINK_END" />માં જઈને Android ઍપની પરવાનગીઓને નિયંત્રિત કરી શકો છો.</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> દ્વારા ફોટો</translation>
 <translation id="2114995631896158695">કોઈ સિમ કાર્ડ શામેલ નથી</translation>
 <translation id="2116619964159595185">ઓછી-ઊર્જાવાળું બીકન, સ્વાસ્થ્ય કે ફિટનેસ ટ્રૅકર અથવા સ્માર્ટ લાઇટ બલ્બનું સેટઅપ કરવા કે તેને સિંક કરવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરે છે</translation>
@@ -1182,7 +1180,6 @@
 <translation id="2179416702468739594">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આને કારણે કદાચ થોડીવાર માટે તમારું મોબાઇલ નેટવર્ક ડિસ્કનેક્ટ થઈ શકે છે.</translation>
 <translation id="2180620921879609685">કોઈપણ પેજ પરનું કન્ટેન્ટ બ્લૉક કરો</translation>
 <translation id="2182058453334755893">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવ્યું</translation>
-<translation id="2183027945672030611"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ગેમ કન્ટ્રોલર, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">સાઇટ સાઉન્ડ ક્યારે ચલાવી શકે તે Chromeને પસંદ કરવા દો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="2186711480981247270">કોઈ અન્ય ડિવાઇસ પરથી પેજ શેર કરવામાં આવ્યું છે</translation>
 <translation id="2187675480456493911">તમારા એકાઉન્ટ પરના અન્ય ડિવાઇસ સાથે સિંક કરેલું. અન્ય વપરાશકર્તાઓ દ્વારા બદલવામાં આવેલા સેટિંગ સિંક કરવામાં આવશે નહીં. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -1250,7 +1247,6 @@
 <translation id="2242687258748107519">ફાઇલ માહિતી</translation>
 <translation id="2246549592927364792">Google તરફથી છબીનાં વર્ણનો મેળવીએ?</translation>
 <translation id="2247738527273549923">તમારું ડિવાઇસ તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે</translation>
-<translation id="2249061317998743208"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનું ગેમ કન્ટ્રોલર</translation>
 <translation id="2249111429176737533">ટૅબવાળી વિંડો તરીકે ખોલો</translation>
 <translation id="2249605167705922988">ઉદા. ત. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">સિસ્ટમ દર્શક સાથે ખોલો</translation>
@@ -1684,7 +1680,6 @@
 <translation id="2673135533890720193">તમારો બ્રાઉઝિંગ ઇતિહાસ વાંચો</translation>
 <translation id="2674764818721168631">બંધ</translation>
 <translation id="2678063897982469759">ફરી ચાલુ કરો</translation>
-<translation id="2678676117809690850"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ફોન, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">Hi&amp;story</translation>
 <translation id="2681124317993121768">અતિથિની પ્રોફાઇલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="2682498795777673382">તમારા માતાપિતા પાસે અપડેટ કરાવો</translation>
@@ -2031,7 +2026,6 @@
 <translation id="3007771295016901659">ડુપ્લિકેટ ટૅબ</translation>
 <translation id="3008232374986381779">તમારા <ph name="DEVICE_TYPE" /> પર Linux સાધનો, એડિટર અને IDEs ચલાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
-<translation id="3008396025115884998"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનું ઑડિયો ડિવાઇસ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે અપડેટ ડાઉનલોડ કરવા માટે આજે વાઇ-ફાઇ સાથે કનેક્ટ કરો. અથવા મીટર્ડ (ડેટા નિયંત્રણ) કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં વાઇ-ફાઇ સાથે કનેક્ટ કરો અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ (ડેટા નિયંત્રણ) કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં વાઇ-ફાઇ સાથે કનેક્ટ કરો અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ (ડેટા નિયંત્રણ) કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).}}</translation>
 <translation id="3009300415590184725">શું તમે ખરેખર મોબાઇલ ડેટા સેવા સેટઅપ પ્રક્રિયાને રદ કરવા માંગો છો?</translation>
 <translation id="3009779501245596802">અનુક્રમિત ડેટાબેસેસ</translation>
@@ -2137,7 +2131,6 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ને <ph name="ATTACHMENTS" /> મોકલવામાં નિષ્ફળ રહ્યાં}one{<ph name="DEVICE_NAME" />ને <ph name="ATTACHMENTS" /> મોકલવામાં નિષ્ફળ રહ્યાં}other{<ph name="DEVICE_NAME" />ને <ph name="ATTACHMENTS" /> મોકલવામાં નિષ્ફળ રહ્યાં}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> સહાય</translation>
 <translation id="3118654181216384296">કૃપા કરીને થોડીવારમાં ફરી Linux ચાલુ કરવાનો પ્રયાસ કરો.</translation>
-<translation id="3119689272338239690"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ડિવાઇસનો પ્રકાર અજાણ, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">તમે કઈ કન્ટેન્ટ/URL કાસ્ટ કરી રહ્યા હતા?</translation>
 <translation id="3120430004221004537">આના પર આપેલા ઑપરેશન માટે અપૂરતું એન્ક્રિપ્શન: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2164,7 +2157,6 @@
 <translation id="3143754809889689516">શરૂઆતથી ચલાવો</translation>
 <translation id="3144647712221361880">આ રીતે લિંક ખોલો</translation>
 <translation id="3149510190863420837">Chrome ઍપ્લિકેશનો</translation>
-<translation id="3150622786624965651"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, ગેમ કન્ટ્રોલર.</translation>
 <translation id="3150693969729403281">હમણાં જ સલામતી માટે તપાસ ચલાવો</translation>
 <translation id="3150927491400159470">સખત રીતે ફરીથી લોડ કરો</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
@@ -2370,7 +2362,6 @@
 <translation id="339178315942519818">તમારા <ph name="DEVICE_TYPE" /> પર તમારી ચૅટ ઍપના નોટિફિકેશન જુઓ</translation>
 <translation id="3393554941209044235">Chromeના દસ્તાવેજનું વિશ્લેષણ</translation>
 <translation id="3394850431319394743">સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, ઓળખકર્તાઓનો ઉપયોગ કરવાની મંજૂરી છે</translation>
-<translation id="3395403082745257596"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, ડિવાઇસનો પ્રકાર અજાણ.</translation>
 <translation id="3396744558790608201">તમે જ્યારે વેબ બ્રાઉઝ કરો કે ખરીદી કરો, ત્યારે તમને દેખાઈ રહેલા વિઝ્યુઅલ કન્ટેન્ટ વિશે વધુ જાણવા સાઇટના કોઈપણ વિભાગમાં શોધવા માટે, રાઇટ ક્લિક કરીને “Google Lens વડે છબીઓ શોધો” પસંદ કરો.</translation>
 <translation id="3396800784455899911">"સ્વીકારો અને ચાલુ રાખો" બટન પર ક્લિક કરીને, તમે આ Google સેવાઓ માટે ઉપર વર્ણવેલી પ્રક્રિયા સાથે સંમત થાઓ છો.</translation>
 <translation id="339722927132407568">થોભી જતો</translation>
@@ -2665,7 +2656,6 @@
 <translation id="3682824389861648626">ગતિવિધિનો થ્રેશોલ્ડ</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> સ્ક્રીન શેરિંગ વિનંતી</translation>
 <translation id="3685598397738512288">Linuxના USBની પસંદગી માટેના સેટિંગ</translation>
-<translation id="3686786761304157917"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, કીબોર્ડ, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">ફાઇલ લખવાનો પ્રયાસ કરતી વખતે ભૂલ આવી હતી: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">તમે ઍપ્લિકેશનમાં ખોલો છે તે ફાઇલો અને ફોલ્ડરોમાં લખો</translation>
 <translation id="3688526734140524629">ચેનલ બદલો</translation>
@@ -2768,7 +2758,6 @@
 <translation id="3778740492972734840">&amp;વિકાસકર્તા  ટુલ્સ</translation>
 <translation id="3778868487658107119">તેને પ્રશ્નો પૂછો. તેને વસ્તુઓ કરવા માટે કહો. આ તમારું વ્યક્તિગત Google છે, હંમેશા મદદ કરવા માટે તૈયાર છે.</translation>
 <translation id="3781742599892759500">માઇક્રોફોનને Linuxનો ઍક્સેસ આપવાના સેટિંગ</translation>
-<translation id="3782488227140539029"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, વીડિયો કૅમેરા, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="378312418865624974">આ કમ્પ્યુટર માટે અનન્ય ઓળખકર્તાને વાંચો</translation>
 <translation id="3784472333786002075">કુકી એ વેબસાઇટ દ્વારા બનાવવામાં આવેલી ફાઇલો છે. કુકી બે પ્રકારની હોય છે: પહેલા પક્ષની કુકી જે તમે મુલાકાત લો છો તે સાઇટ દ્વારા બનાવવામાં આવે છે. સાઇટ ઍડ્રેસ બાર પર બતાવવામાં આવે છે. ત્રીજા પક્ષની કુકી અન્ય સાઇટ દ્વારા બનાવવામાં આવે છે. અમુક પ્રકારનું કન્ટેન્ટ આ સાઇટની માલિકીનું હોય છે, જેમ કે તમે મુલાકાત લો છો તે વેબસાઇટ પર તમે જુઓ છો તે જાહેરાતો અથવા છબીઓ.</translation>
 <translation id="3785308913036335955">ઍપ્લિકેશનો શોર્ટકટ બતાવો</translation>
@@ -2952,6 +2941,7 @@
 <translation id="3943582379552582368">&amp;પાછળ</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3945513714196326460">ટૂંકું નામ અજમાવી જુઓ</translation>
+<translation id="3947643756376959257">Chromecast અથવા ટીવી પર બતાવવામાં આવેલો ઍક્સેસ કોડ દાખલ કરો.</translation>
 <translation id="3948027458879361203">હોસ્ટનું નામ બદલો</translation>
 <translation id="3948116654032448504">છબી માટે <ph name="SEARCH_ENGINE" /> પર &amp;શોધો</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> નીચેના ફોલ્ડરોમાં સાચવેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
@@ -3193,12 +3183,14 @@
 <translation id="4210048056321123003">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="421182450098841253">બુકમાર્ક બાર &amp;બતાવો</translation>
 <translation id="4211851069413100178">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. આ <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" /> માલિક દ્વારા લાગુ કરવામાં આવેલ છે. માલિક, Googleને આ ડિવાઇસ માટે નિદાન અને વપરાશ ડેટા મોકલવાનું પસંદ કરી શકે છે. જો તમારી વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK2" />વધુ જાણો<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Android ઍપ સાથે ઉપયોગ કરવાનું રોકો</translation>
 <translation id="42126664696688958">નિકાસ કરો</translation>
 <translation id="42137655013211669">સર્વર દ્વારા આ સંસાધનની અ‍ૅક્સેસ નિષિદ્ધ હતી.</translation>
 <translation id="4217571870635786043">ડિક્ટેશન</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">સક્રિયકરણ દરમ્યાન એક ભૂલ આવી.</translation>
 <translation id="4225397296022057997">બધી સાઇટ પર</translation>
+<translation id="4227605727325220318">નવો Android ફોન ઉમેરો</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}one{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}other{કેટલાક એક્સ્ટેન્શન મંજૂરી ધરાવતા નથી}}</translation>
 <translation id="4231095370974836764">Google Playમાંથી તમારા <ph name="DEVICE_TYPE" /> પર ઍપ અને ગેમ ઇન્સ્ટૉલ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosની ગોઠવણી કરો</translation>
@@ -3694,7 +3686,6 @@
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4761104368405085019">તમારા માઇક્રોફોનનો ઉપયોગ કરો</translation>
 <translation id="4762718786438001384">ઉપકરણ ડિસ્ક સ્થાન અત્યંત ઓછું છે</translation>
-<translation id="4762898026821161650"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનું કમ્પ્યુટર</translation>
 <translation id="4763408175235639573">જ્યારે તમે આ પેજ જોયું, ત્યારે નીચેની કુકી સેટ થઈ હતી</translation>
 <translation id="4765582662863429759">Android Messagesને તમારા ફોન પરથી તમારી Chromebook પર ટેક્સ્ટને પ્રસારિત કરવાની મંજૂરી આપે છે</translation>
 <translation id="4768332406694066911">તમારી પાસે આ સંસ્થાઓના પ્રમાણપત્ર છે કે જે તમને ઓળખે છે</translation>
@@ -3919,7 +3910,6 @@
 <translation id="499165176004408815">ઉચ્ચ કોન્ટ્રાસ્ટ મોડનો ઉપયોગ કરો</translation>
 <translation id="4992458225095111526">Powerwash ની પુષ્ટિ કરો</translation>
 <translation id="4992473555164495036">તમારા વ્યવસ્થાપકે ઉપલબ્ધ ઇનપુટ પદ્ધતિઓને મર્યાદિત કરેલ છે.</translation>
-<translation id="4992984395680162305">QR કોડ સ્કૅન કરીને આ ડિવાઇસ લિંક કરવામાં આવ્યા હતા.</translation>
 <translation id="4994474651455208930">પ્રોટોકૉલ માટે ડિફૉલ્ટ હૅન્ડલર બનવા માટે સાઇટને પૂછવાની મંજૂરી આપો</translation>
 <translation id="4994754230098574403">સેટ કરી રહ્યા છીએ</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{કોઈ <ph name="VM_TYPE" /> VMs મળ્યું નથી}=1{1 <ph name="VM_TYPE" /> VM મળ્યું: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VMs મળ્યું: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VMs મળ્યા: <ph name="VM_NAME_LIST" />}}</translation>
@@ -4150,7 +4140,6 @@
 <translation id="5243522832766285132">કૃપા કરીને થોડીવારમાં ફરી પ્રયાસ કરો</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> પર સમન્વયિત કરી રહ્યાં છે</translation>
 <translation id="5245610266855777041">સ્કૂલ એકાઉન્ટ વડે શરૂઆત કરો</translation>
-<translation id="5246036036039717045">આ ડિવાઇસનો ઉપયોગ સિક્યુરિટી કી તરીકે થઈ શકે છે કારણ કે તમે તેના પર Chromeમાં સાઇન ઇન કર્યું છે.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ક્રેશ થયું છે. એપ્લિકેશનને ફરીથી પ્રારંભ કરવા માટે આ બલૂન ક્લિક કરો.</translation>
 <translation id="5247051749037287028">ડિસ્પ્લે નામ (વૈકલ્પિક)</translation>
 <translation id="5249624017678798539">ડાઉનલોડ પૂર્ણ થતા પહેલાં બ્રાઉઝર ક્રેશ થયું.</translation>
@@ -4223,7 +4212,6 @@
 <translation id="5319359161174645648">Google Chromeની ભલામણ કરે છે</translation>
 <translation id="5319712128756744240">નવા ડિવાઇસ સાથે જોડાણ કરો</translation>
 <translation id="5320135788267874712">ડિવાઇસનું નવું નામ</translation>
-<translation id="532043380734099846"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, માઉસ, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">સર્વર પહોંચની બહાર હોઇ શકે છે. પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="5324300749339591280">ઍપની સૂચિ</translation>
 <translation id="5324780743567488672">તમારા સ્થાનનો ઉપયોગ કરીને ઑટોમૅટિક રીતે સમય ઝોન સેટ કરો</translation>
@@ -4253,7 +4241,6 @@
 <translation id="535123479159372765">અન્ય ડિવાઇસમાંથી કૉપિ કરવામાં આવેલી ટેક્સ્ટ</translation>
 <translation id="5352033265844765294">ટાઇમ સ્ટેમ્પિંગ</translation>
 <translation id="5353252989841766347">Chrome માંથી પાસવર્ડ્સનો નિકાસ કરો</translation>
-<translation id="5354531123814675522"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ટૅબ્લેટ, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">Assistantને તમને નોટિફિકેશન બતાવવાની મંજૂરી આપે છે.</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="5355926466126177564">જ્યારે તમે ઑમ્નિબૉક્સથી શોધ કરો છો ત્યારે જે પેજ દર્શાવવામાં આવે છે તે <ph name="EXTENSION_NAME" /> એક્સટેન્શને બદલ્યું છે.</translation>
@@ -4490,7 +4477,6 @@
 <translation id="5585898376467608182">તમારા ડિવાઇસમાં સ્ટોરેજ સ્પેસ ઓછી છે. <ph name="APP_NAME" />નો ઉપયોગ કરવા માટે ઓછામાં ઓછી <ph name="MINIMUM_SPACE" /> સ્પેસ ખાલી હોવી જરૂરી છે. ખાલી સ્પેસ વધારવા માટે, ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="5585912436068747822">ફોર્મેટિંગ નિષ્ફળ થયું</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
-<translation id="5589101568518637088"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, કીબોર્ડ.</translation>
 <translation id="558918721941304263">ઍપ્લિકેશનો લોડ કરી રહ્યું છે...</translation>
 <translation id="5592595402373377407">હજુ સુધી પર્યાપ્ત ડેટા ઉપલબ્ધ નથી.</translation>
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
@@ -4693,7 +4679,6 @@
 <translation id="5817918615728894473">જોડી કરો</translation>
 <translation id="581840385858998009">વૉલપેપર, અવતાર અને સ્ક્રીનસેવર જેવું બીજું ઘણું કસ્ટમાઇઝ કરો</translation>
 <translation id="5821565227679781414">શૉર્ટકટ બનાવો</translation>
-<translation id="5822095611691580107">ડાબા ઇયરબડમાં બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />% છે.</translation>
 <translation id="5825412242012995131">ચાલુ કરો (સુઝાવ આપેલ)</translation>
 <translation id="5826395379250998812">તમારા <ph name="DEVICE_TYPE" />ને તમારા ફોન સાથે કનેક્ટ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">અર્ધ-પારદર્શક</translation>
@@ -4737,6 +4722,7 @@
 <translation id="5862109781435984885">શેલ્ફમાં સ્ટાઇલસનાં સાધનો બતાવો</translation>
 <translation id="5862319196656206789">કનેક્ટ કરેલાં ડિવાઇસ સેટઅપ કરો</translation>
 <translation id="5863445608433396414">ડિબગીંગ સુવિધાઓ ચાલુ કરો</translation>
+<translation id="5864147196375746035">મેનેજ કરેલા ડિવાઇસ પર કાસ્ટ કરો</translation>
 <translation id="5864195618110239517">મીટર્ડ કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="5864754048328252126">ચાર્જિંગ દરમ્યાનની નિષ્ક્રિય ક્રિયા</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" />ને ટૂંક સમયમાં થોભાવવામાં આવશે</translation>
@@ -5153,7 +5139,6 @@ USB ડિવાઇસ</translation>
 <translation id="6294759976468837022">ઑટો-સ્કૅનની ઝડપ</translation>
 <translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="6295855836753816081">સાચવી રહ્યું છે...</translation>
-<translation id="6297132509712149399"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, ફોન.</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
 <translation id="6298962879096096191">Android ઍપ્લિકેશનોને ઇન્સ્ટૉલ કરવા માટે Google Play નો ઉપયોગ કરો</translation>
 <translation id="6300177430812514606">ડેટા મોકલવા કે પ્રાપ્ત કરવાનું સમાપ્ત કરવાની મંજૂરી નથી</translation>
@@ -5450,7 +5435,6 @@ USB ડિવાઇસ</translation>
 <translation id="6601612474695404578">અમુક સાઇટ તેમના પેજ લોડ કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરે છે. જો સાઇટ કામ કરતી ન હોય, તો તમે કુકીને મંજૂરી આપીને પ્રયાસ કરી શકો છો.</translation>
 <translation id="6602937173026466876">તમારા પ્રિન્ટરને ઍક્સેસ કરો</translation>
 <translation id="6602956230557165253">નૅવિગેટ કરવા માટે ડાબી અને જમણી Arrow કીનો ઉપયોગ કરો.</translation>
-<translation id="6602998402703530379"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, વીડિયો કૅમેરા.</translation>
 <translation id="6603185457265641428">ઇતિહાસ સિંક કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="6605847144724004692">કોઈ વપરાશકર્તાએ હજુ રેટ કરેલ નથી.</translation>
 <translation id="6606671997164410857">એવું લાગે છે કે તમે પહેલેથી જ અન્ય ડિવાઇસ પર Google Assistantનું સેટઅપ કરી લીધું છે. આ ડિવાઇસ પર સ્ક્રીન સંદર્ભ ચાલુ કરીને તમારા Assistantનો હજી પણ વધુ લાભ મેળવો.</translation>
@@ -5473,7 +5457,6 @@ USB ડિવાઇસ</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" />માં સંવેદનશીલ અથવા જોખમી કન્ટેન્ટ છે. તેના માલિકને તેને સુધારવાનું કહો.</translation>
 <translation id="6624687053722465643">મીઠાશ</translation>
 <translation id="6628328486509726751">અપલોડ કર્યું <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
-<translation id="663065535202460123"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, માઉસ.</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> ને તમારા વતી પોતાની પ્રમાણિત કરવા માટે પ્રમાણપત્રની કાયમી અ‍ૅક્સેસ જોઈએ છે.</translation>
 <translation id="6635362468090274700">જ્યાં સુધી તમે પોતાને દૃશ્યક્ષમ ન કરો, ત્યાં સુધી કોઈપણ વ્યક્તિ તમારી સાથે શેર કરી શકશે નહીં.<ph name="BR" /><ph name="BR" />થોડા સમય માટે પોતાને દૃશ્યક્ષમ કરવા માટે, સ્ટેટસ એરિયા ખોલો અને તેના પછી 'નજીકની દૃશ્યતા' ચાલુ કરો.</translation>
 <translation id="6635674640674343739">નેટવર્ક કનેક્શન સ્થાપિત કરી શકાતું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
@@ -5807,7 +5790,6 @@ USB ડિવાઇસ</translation>
 <translation id="69739764870135975">જો Google તમારું ડિફૉલ્ટ શોધ એન્જિન પણ હોય, તો તમને બહેતર અને સંદર્ભ સાથે સંબંધિત સૂચનો જોવા મળશે</translation>
 <translation id="6974609594866392343">ઑફલાઇન ડેમો મોડ</translation>
 <translation id="697508444536771064">Linux શટ ડાઉન કરો</translation>
-<translation id="6977739184256564679"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, ટૅબ્લેટ.</translation>
 <translation id="6978121630131642226">શોધ એન્જિન</translation>
 <translation id="6979044105893951891">મેનેજ કરેલા અતિથિ સત્રો લૉન્ચ કરો અને બહાર નીકળો</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -5828,7 +5810,6 @@ USB ડિવાઇસ</translation>
 <translation id="6991665348624301627">ગંતવ્ય પસંદ કરો</translation>
 <translation id="6992554835374084304">વધુ સારી બનાવાયેલી જોડણીની તપાસ ચાલુ કરો</translation>
 <translation id="6993000214273684335">નામ વિનાના ગ્રૂપ - <ph name="GROUP_CONTENTS" />માંથી ટૅબ કાઢી નાખવામાં આવી</translation>
-<translation id="6993889405941892667"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, કમ્પ્યુટર.</translation>
 <translation id="6994069045767983299">રંગો ઉલટાવો</translation>
 <translation id="6995899638241819463">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - પ્રવૃત્તિ લૉગ</translation>
@@ -5899,7 +5880,6 @@ USB ડિવાઇસ</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{સલામતી માટે તપાસ 1 મિનિટ અગાઉ કરવામાં આવી હતી}one{સલામતી માટે તપાસ {NUM_MINS} મિનિટ અગાઉ કરવામાં આવી હતી}other{સલામતી માટે તપાસ {NUM_MINS} મિનિટ અગાઉ કરવામાં આવી હતી}}</translation>
 <translation id="7057767408836081338">ઍપનો ડેટા મેળવવામાં નિષ્ફળ રહ્યાં, તેમ છતાં હજી પણ ઍપ ચલાવવાનો પ્રયાસ કરી રહ્યાં છીએ...</translation>
 <translation id="7058024590501568315">છુપાવવામાં આવેલું નેટવર્ક</translation>
-<translation id="70582545822664495"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનું માઉસ</translation>
 <translation id="7059858479264779982">સ્વતઃ-લોંચ સેટ કરો</translation>
 <translation id="7062222374113411376">ડેટા મોકલવાનું અને મેળવવાનું સમાપ્ત કરવા માટે તાજેતરમાં બંધ કરેલી સાઇટને મંજૂરી આપો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="7063129466199351735">શોર્ટકટ્સની પ્રક્રિયા કરી રહ્યું છે...</translation>
@@ -5924,6 +5904,7 @@ USB ડિવાઇસ</translation>
 <translation id="7086672505018440886">Chromeની લૉગ ફાઇલોનો આર્કાઇવમાં સમાવેશ કરો.</translation>
 <translation id="7088434364990739311">અપડેટ તપાસ પ્રારંભ કરવામાં નિષ્ફળ થયું (ભૂલ કોડ <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">આ ડિવાઇસને વ્યવસ્થાપક દ્વારા જોગવાઈ દૂર કરેલી સ્થિતિમાં મૂકવામાં આવ્યું છે. નોંધણી માટે તેને ચાલુ કરવા, કૃપા કરીને તમારા વ્યવસ્થાપકને ડિવાઇસને બાકી સ્થિતિમાં મૂકવા દો.</translation>
+<translation id="7090160970140261931">વેબસાઇટ અને Android ઍપ સાથે ઉપયોગ કરવા માટે, તમે તમારા <ph name="DEVICE_TYPE" />માં વધારાના એકાઉન્ટ ઉમેરી શકો છો. Android ઍપ સાથે ક્યા એકાઉન્ટનો ઉપયોગ કરવામાં આવે, તે પણ તમે નિયંત્રિત કરી શકો છો.</translation>
 <translation id="7093220653036489319">ઝડપી જવાબો</translation>
 <translation id="7093416310351037609">ડેટાની સલામતી અને સુરક્ષિતતા માટે, તમારી સંસ્થા મુજબ યોગ્યતા ધરાવતા બધા ડાઉનલોડ તમારી સંસ્થાના <ph name="WEB_DRIVE" /> એકાઉન્ટમાં સાચવવા જરૂરી છે.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6070,7 +6051,6 @@ USB ડિવાઇસ</translation>
 <translation id="7257173066616499747">Wi-Fi નેટવર્ક્સ</translation>
 <translation id="725758059478686223">પ્રિન્ટિંગ સેવા</translation>
 <translation id="7257666756905341374">તમે કૉપિ અને પેસ્ટ કરો એ ડેટાને વાંચો</translation>
-<translation id="7258006747130724016"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનો વીડિયો કૅમેરા</translation>
 <translation id="7258192266780953209">રૂપાંતરણો</translation>
 <translation id="7258225044283673131">ઍપ્લિકેશન ચાલી રહી નથી. ઍપ બંધ કરવા માટે "ફરજિયાત બંધ" પસંદ કરો.</translation>
 <translation id="7262004276116528033">આ સાઇન-ઇન સેવા <ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ થયેલી છે.</translation>
@@ -6858,7 +6838,6 @@ USB ડિવાઇસ</translation>
 <translation id="8037117027592400564">સિન્થેસાઇઝ કરેલ વાણીનો ઉપયોગ કરીને બધી બોલાયેલ ટેક્સ્ટને વાંચો</translation>
 <translation id="8037357227543935929">પૂછો (ડિફૉલ્ટ)</translation>
 <translation id="803771048473350947">ફાઇલ</translation>
-<translation id="8038399858950372766"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" /> નામનું કીબોર્ડ</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8042142357103597104">ટેક્સ્ટની અસ્પષ્ટતા</translation>
 <translation id="8042331986490021244">તમારા પાસવર્ડ Google પાસવર્ડ મેનેજર પર સાચવવામાં આવે તે પહેલાં તેમને તમારા ડિવાઇસ પર એન્ક્રિપ્ટ કરવામાં આવે છે</translation>
@@ -6980,6 +6959,7 @@ USB ડિવાઇસ</translation>
 <translation id="8147900440966275470"><ph name="NUM" /> ટૅબ મળી છે</translation>
 <translation id="8148760431881541277">સાઇન ઇન કરવાનું મર્યાદિત કરવાના સેટિંગ</translation>
 <translation id="8149564499626272569">USB કેબલનો ઉપયોગ કરીને તમારા ફોન મારફતે ચકાસો</translation>
+<translation id="815114315010033526">તેને બદલે QR કોડનો ઉપયોગ કરો</translation>
 <translation id="8151638057146502721">ગોઠવો</translation>
 <translation id="8154790740888707867">કોઇ ફાઇલ નથી</translation>
 <translation id="8154912474061769055">અમુક સુવિધાઓ ઘણી સાઇટ પર કામ કરી શકશે નહીં</translation>
@@ -7005,6 +6985,7 @@ USB ડિવાઇસ</translation>
 <translation id="8176332201990304395">ગુલાબી અને સફેદ</translation>
 <translation id="8177196903785554304">નેટવર્ક વિગતો</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ટૅબને નવી વિંડોમાં ખસેડો}one{ટૅબને નવી વિંડોમાં ખસેડો}other{ટૅબને નવી વિંડોમાં ખસેડો}}</translation>
+<translation id="8179188928355984576">Android ઍપ સાથે ઉપયોગ કરવામાં આવ્યો નથી</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" આ તપાસાયેલા સ્થાનોમાં ફોટા, વીડિયો અને સાઉન્ડ ફાઇલોને વાંચી શકે છે.</translation>
 <translation id="8181215761849004992">ડોમેન જોડી શકાતું નથી. અમારી પાસે ઉપકરણો ઉમેરવા માટેના વિશેષાધિકાર છે કે નહીં તે જોવા માટે તમારું એકાઉન્ટ ચેક કરો.</translation>
@@ -7275,7 +7256,6 @@ USB ડિવાઇસ</translation>
 <translation id="8475313423285172237">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક એક્સ્ટેંશન ઉમેર્યું જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
 <translation id="8477241577829954800">જૂનું થયેલું</translation>
 <translation id="8477384620836102176">&amp;સામાન્ય</translation>
-<translation id="8479109005219657634"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ઑડિયો ડિવાઇસ, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">અમાન્ય કોડ. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="8480082892550707549">જો તમે પહેલાં પણ આ સાઇટ પરથી ફાઇલો ડાઉનલોડ કરી હોય તેમ છતાં એ સાઇટ હંગામી રીતે અસુરક્ષિત (હૅક કરેલી) હોઈ શકે છે. આ ફાઇલને પછીથી ડાઉનલોડ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> તરફથી અજાણ્યું ઉપકરણ</translation>
@@ -7558,7 +7538,6 @@ USB ડિવાઇસ</translation>
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}one{તમારું <ph name="DEVICE_TYPE" /> # સેકન્ડમાં ઑટોમૅટિક રીતે લૉક થઈ જશે.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}other{તમારું <ph name="DEVICE_TYPE" /> # સેકન્ડમાં ઑટોમૅટિક રીતે લૉક થઈ જશે.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}}</translation>
-<translation id="8777259617149177596">કેસમાં બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />% છે.</translation>
 <translation id="8777628254805677039">રુટ પાસવર્ડ</translation>
 <translation id="8779944680596936487">અલગ-અલગ સાઇટ પોતપોતાની સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર કુકીનો ઉપયોગ કરી શકશે</translation>
 <translation id="8780123805589053431">Google તરફથી છબીનાં વર્ણનો મેળવો</translation>
@@ -7913,7 +7892,6 @@ USB ડિવાઇસ</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> માટેનું સેટિંગ પેજ ખોલો</translation>
 <translation id="9128870381267983090">નેટવર્કથી કનેક્ટ કરો</translation>
 <translation id="9130015405878219958">અમાન્ય મોડ દાખલ થયો.</translation>
-<translation id="9130215884425927484"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, ઑડિયો ડિવાઇસ.</translation>
 <translation id="9131487537093447019">બ્લૂટૂથ ડિવાઇસ પરથી મેસેજ મોકલો અને મેળવો.</translation>
 <translation id="9134066738478820307">સાઇટ સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, ઓળખકર્તાઓનો ઉપયોગ કરી શકે છે</translation>
 <translation id="913411432238655354">સ્ટાર્ટઅપ કરતી વખતે ઍપને રિસ્ટોર કરો</translation>
@@ -7957,7 +7935,6 @@ USB ડિવાઇસ</translation>
 <translation id="916964310188958970">આ સૂચન શા માટે?</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">હાલના સેટિંગ અનુસાર બધા સંપર્કો જોઈ શકે છે</translation>
-<translation id="9170199455952690202">જમણા ઇયરબડમાં બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />% છે.</translation>
 <translation id="9170848237812810038">&amp;પૂર્વવત્ કરો</translation>
 <translation id="9170884462774788842">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક થીમ ઉમેરી જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> માટે તમારા માતાપિતાએ સેટ કરેલી સમયમર્યાદાએ તમે પહોંચી ગયા છો. તમે આવતી કાલે <ph name="TIME_LIMIT" /> માટે તેનો ઉપયોગ કરી શકશો.</translation>

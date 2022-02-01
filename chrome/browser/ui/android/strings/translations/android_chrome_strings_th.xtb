@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">คอมพิวเตอร์ต้องการใช้อุปกรณ์นี้เพื่อลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="3265534588625245297">จัดการเว็บไซต์ที่คุณติดตาม</translation>
 <translation id="3269093882174072735">โหลดภาพ</translation>
-<translation id="3269956123044984603">เปิด "ข้อมูลการซิงค์อัตโนมัติ" ในการตั้งค่าบัญชี Android เพื่อรับแท็บจากอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="3280562213547448728">ค้นหาด้วยเสียง</translation>
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3284510035090979597">ความช่วยเหลือแบบเสนอโดยไม่ต้องขอ</translation>
@@ -473,6 +472,7 @@
 <translation id="3716182511346448902">หน้านี้ใช้หน่วยความจำมากเกินไป Chrome จึงหยุดหน้าชั่วคราว</translation>
 <translation id="3721119614952978349">คุณและ Google</translation>
 <translation id="3737319253362202215">การตั้งค่าการแปล</translation>
+<translation id="3737402728074743863">หากต้องการใช้อุปกรณ์เครื่องนี้เป็นคีย์ความปลอดภัย ให้ตั้งค่าการล็อกหน้าจอ</translation>
 <translation id="3738139272394829648">แตะเพื่อค้นหา</translation>
 <translation id="3739899004075612870">บุ๊กมาร์กไว้ใน <ph name="PRODUCT_NAME" /> แล้ว</translation>
 <translation id="3740525748616366977">การค้นหาด้วยเสียงไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
@@ -916,7 +916,6 @@
 <translation id="6303969859164067831">ออกจากระบบและปิดการซิงค์</translation>
 <translation id="6312687380483398334">เว็บแอป (ไม่ส่งเสียงหรือแสดงให้เห็น)</translation>
 <translation id="6316139424528454185">ไม่รองรับ Android เวอร์ชันนี้</translation>
-<translation id="6324034347079777476">ปิดใช้การซิงค์ระบบ Android อยู่</translation>
 <translation id="6324916366299863871">แก้ไขทางลัด</translation>
 <translation id="6324977638108296054">สร้างลิงก์ไปยังไฮไลต์ไม่ได้</translation>
 <translation id="6324997754869598316">(ข้อผิดพลาด <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@
 <translation id="6900532703269623216">การปกป้องที่ปรับปรุงแล้ว</translation>
 <translation id="6903907808598579934">เปิดการซิงค์</translation>
 <translation id="6909589135458168665">โหลดหน้าเว็บล่วงหน้า</translation>
-<translation id="6929699136511445623">เปิดใช้การซิงค์ระบบ Android</translation>
 <translation id="6942665639005891494">เปลี่ยนตำแหน่งเริ่มต้นในการดาวน์โหลดได้ทุกเมื่อโดยใช้ตัวเลือกเมนู "การตั้งค่า"</translation>
 <translation id="694267552845942083">ขณะนี้คุณกำลังปรับแต่งการตั้งค่าการซิงค์ แตะปุ่ม "ยืนยัน" ใกล้ด้านล่างของหน้าจอเพื่อเปิดการซิงค์ให้เสร็จสิ้น กลับ</translation>
 <translation id="6945221475159498467">เลือก</translation>
@@ -1160,7 +1158,6 @@
 <translation id="7581273696622423628">ตอบแบบสำรวจ</translation>
 <translation id="7583262514280211622">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
 <translation id="7588219262685291874">เปิดธีมสีเข้มเมื่อโหมดประหยัดแบตเตอรี่ของอุปกรณ์เปิดอยู่</translation>
-<translation id="7593557518625677601">เปิดการตั้งค่า Android และเปิดการซิงค์ Android ใหม่เพื่อเริ่มการซิงค์ของ Chrome</translation>
 <translation id="7594687499944811403">ให้ <ph name="EMBEDDED_ORIGIN" /> ยืนยันตัวตนของคุณสำหรับ <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">ระบบปฏิบัติการ</translation>
 <translation id="7605594153474022051">การซิงค์ไม่ทำงาน</translation>

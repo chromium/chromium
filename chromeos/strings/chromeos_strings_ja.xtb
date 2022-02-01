@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1387854245479784695">すべてのコアの合計値です</translation>
+<translation id="1394661041439318933">デバイスのケースのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
 <translation id="1398634363027580500">HTTPS レイテンシが非常に高くなっています</translation>
 <translation id="1413240736185167732">失敗 - フィルタエラー</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">入力した鍵ペアを使用</translation>
+<translation id="1451536289672181509">デバイスの種類はキーボードです。</translation>
 <translation id="1468664791493211953">クーポン</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> はこのデバイスを管理しており、アクティビティを監視できる可能性があります。</translation>
 <translation id="1478594628797167447">スキャナ</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2104796393919810494">修復を完了しました</translation>
+<translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB 使用可能</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
+<translation id="3031560714565892478">デバイスの種類はビデオカメラです。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">エンドポイント</translation>
 <translation id="3069085583900247081">テストに失敗しました</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">デバイスは接続されています。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ページを削除しますか？}=1{ページ {PAGE_NUMBER} を削除しますか？}other{ページ {PAGE_NUMBER} を削除しますか？}}</translation>
 <translation id="315116470104423982">モバイル データ</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
+<translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ページ目をスキャンしています。<ph name="PERCENTAGE_VALUE" />% 完了。</translation>
 <translation id="3459509316159669723">印刷</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> を更新しています</translation>
+<translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
 <translation id="3941014780699102620">ホストを解決できませんでした</translation>
 <translation id="3942420633017001071">診断</translation>
+<translation id="3954678691475912818">デバイスの種類は不明です。</translation>
 <translation id="3966286471246132217">より正確な結果を得るには、テストが完了するまですべてのアプリを閉じてください。</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
 <translation id="4891842000192098784">ストレス</translation>
+<translation id="4897058166682006107">デバイスの左イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="4917385247580444890">強い</translation>
 <translation id="4917889632206600977">停止 - 用紙切れ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">ローカル ネットワーク</translation>
 <translation id="5358174242040570474">エラーが発生しました。壁紙を選択しなおすか、アプリをもう一度開いてみてください。</translation>
 <translation id="5372659122375744710">Wi-Fi ネットワークが保護されていません</translation>
+<translation id="5400907029458559844">デバイスは接続中です。</translation>
 <translation id="5401938042319910061">ルーティンをすべて実行</translation>
 <translation id="5423849171846380976">有効</translation>
 <translation id="5430931332414098647">インスタント テザリング</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
 <translation id="6325525973963619867">失敗しました</translation>
 <translation id="6340526405444716530">カスタマイズ</translation>
 <translation id="636850387210749493">企業の登録</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6747215703636344499">停止 - 排紙トレイがいっぱいです</translation>
 <translation id="6749473226660745022">写真</translation>
+<translation id="6753452347192452143">デバイスの種類はパソコンです。</translation>
 <translation id="6756731097889387912">スキャンをキャンセルできませんでした</translation>
 <translation id="6766275201586212568">DNS 解決に失敗しました</translation>
 <translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">デバイスの所有者が変わらない場合は、このオプションを選択します。たとえば、組織内の他の人がデバイスを使う場合などです。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7040230719604914234">携帯通信会社</translation>
+<translation id="7041549558901442110">デバイスは接続されていません。</translation>
 <translation id="7058278511608979688">終了して保存</translation>
 <translation id="7059230779847288458">充電中、フル充電まで <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">デバイスの準備</translation>
 <translation id="708426984172631313">停止中</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失敗 - 認証に失敗しました</translation>
+<translation id="7103252855940681301">デバイス <ph name="INDEX" />/<ph name="COUNT" />、名前: <ph name="NAME" />。</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">IPv6 アドレス</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">ルーティン診断</translation>
+<translation id="7551123448725492271">デバイスの種類はオーディオ機器です。</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB タッチスクリーン</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
 <translation id="763165478673169849">前回のリセット時間</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
+<translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7701040980221191251">なし</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">ファイアウォールを介して HTTP ウェブサイトに接続できません</translation>
 <translation id="8863888432376731307">「<ph name="QUERY" />」の <ph name="INTENT" /> の取得など</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>
 <translation id="8898840733695078011">電波強度</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">ワイヤレス</translation>
 <translation id="8936793075252196307">クライアント IP アドレス</translation>
 <translation id="8945750210906526975">内部タッチパッド</translation>
+<translation id="894617464444543719">デバイスの種類はスマートフォンです。</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページをスキャン}other{{NUMBER_OF_PAGES} ページをスキャン}}</translation>
 <translation id="8994273342647807496">インストールしています - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="9003704114456258138">周波数</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS の解決のレイテンシが高くなっています</translation>

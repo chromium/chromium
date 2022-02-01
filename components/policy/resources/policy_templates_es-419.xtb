@@ -91,6 +91,7 @@
 <translation id="1082802595100075771">Permite que los usuarios usen un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
 <translation id="1087437665304381368">Esta política controla solo el modo de desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las Opciones para desarrolladores de Android, deberás configurar la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La lista de políticas de Chrome Enterprise cambia de sitio. Guarda <ph name="POLICY_DOCUMENTATION_URL" /> en tus favoritos.</translation>
+<translation id="1091765729282771296">Permitir que los sitios soliciten al usuario acceso a un dispositivo HID</translation>
 <translation id="1095209545735032039">Bloquea la API de Serial en estos sitios</translation>
 <translation id="1096105751829466145">Proveedor de búsqueda predeterminado</translation>
 <translation id="1099282607296956954">Permite el aislamiento de todos los sitios</translation>
@@ -1334,6 +1335,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2435052056904485763">Lista de servidores de delegación de Kerberos permitidos</translation>
 <translation id="2435232509335686514">Política de configuración del modo en que <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> maneja los archivos descargados</translation>
 <translation id="2436302465999055995">Seleccionar <ph name="LACROS_NAME" /> como el único navegador disponible (aún no se implementó)</translation>
+<translation id="2439187682308339104">No permitir que ningún sitio solicite acceso a los dispositivos HID a través de la API de WebHID</translation>
 <translation id="2448315169529769573">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> informará a Google sobre las métricas de uso y los datos de diagnóstico, incluidos los informes de fallas. Si inhabilitas la política, se desactivarán los informes sobre datos de diagnóstico y métricas.
 
        Si no la estableces, se desactivarán los informes sobre datos de diagnóstico y métricas en dispositivos no administrados y se activarán en dispositivos administrados.</translation>
@@ -2829,6 +2831,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
           Si no la estableces, la función para resaltar el signo de intercalación estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="4183229833636799228">Configuración predeterminada de <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="4187576366596772431">Bloquear la API de WebHID en estos sitios</translation>
 <translation id="4192388905594723944">URL para la validación del token de autenticación del cliente de acceso remoto</translation>
 <translation id="4203643479966921607">Si habilitas la política o no la estableces, se activará <ph name="PRODUCT_NAME" />, que los usuarios pueden ejecutar desde el menú de la app, los menús contextuales de la página, los controles de contenido multimedia en los sitios web compatibles con Cast y el ícono de la barra de herramientas de Cast (si se muestra).
 
@@ -4563,6 +4566,21 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si no estableces esta política o la lista está vacía, se podrá acceder a todos los esquemas que aparecen en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Envía información sobre el sistema</translation>
+<translation id="6352714113109004581">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen qué sitios pueden pedir a los usuarios permiso para acceder a un dispositivo HID.
+
+      Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
+
+      En el caso de los patrones de URL que no coincidan con la política, tendrán prioridad los elementos de esta lista, en este orden:
+
+        * La política <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> (si hay alguna coincidencia)
+
+        * La política <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (si se establece)
+
+        * La configuración personal de los usuarios
+
+      Los patrones de URL no deben entrar en conflicto con <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL coincide con ambas políticas, no prevalece ninguna de las dos.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="6353890097388312479">Si estableces la política en All (0) o no la estableces, los usuarios podrán editar la configuración de confianza para todos los certificados de CA, importar certificados mediante el administrador de certificados y quitar los certificados importados por el usuario. Si la estableces en UserOnly (1), los usuarios podrán administrar solo los certificados importados por el usuario, pero no podrán cambiar la configuración de confianza de los certificados integrados. Si la estableces en None (2), los usuarios podrán ver los certificados de CA, pero no los podrán administrar.</translation>
 <translation id="6362856770865555544">Si la habilitas o no la estableces, se activará la optimización de WPAD (detección automática de proxy web) en <ph name="PRODUCT_NAME" />.
 
@@ -5968,6 +5986,11 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="793473937901685727">Establecer la disponibilidad de certificados para apps de ARC</translation>
 <translation id="7937766917976512374">Permitir o rechazar la captura de video</translation>
 <translation id="7941975817681987555">No predecir acciones de la red en ninguna conexión de red</translation>
+<translation id="7946350455013548764">Si estableces la política en 3, los sitios web podrán solicitar acceso a los dispositivos HID. Si estableces la política en 2, los sitios no podrán acceder a los dispositivos HID.
+
+      Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.
+
+      Esta política puede anularse para patrones de <ph name="URL_LABEL" />específicos a través de las políticas de <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7951605113561734721">Especifica los Certificados de cliente de todo el dispositivo que deben inscribirse con el protocolo de administración de dispositivos.</translation>
 <translation id="7952007677054834789">Configura las páginas que deben cargarse en el inicio, la página principal y la página Nueva pestaña predeterminadas en <ph name="PRODUCT_NAME" />, y evita que los usuarios las cambien.
 
@@ -6198,6 +6221,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8220023426952118761">Tasa de descarga deseada en kbit/s.</translation>
 <translation id="8220156281401380422">Configura la lista de mensajería nativa permitida</translation>
 <translation id="822055204938220476">Lista de direcciones URL que pueden permanecer en modo pantalla completa sin mostrar una notificación</translation>
+<translation id="8225579382697740712">Controlar el uso de la API de WebHID</translation>
 <translation id="8229912067600517877">Habilitar las Herramientas para desarrolladores</translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
 <translation id="8239109177194627162">Inhabilitar Autocompletar para las tarjetas de crédito</translation>
@@ -6555,6 +6579,21 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8543108307976719751">Impide las conexiones de acceso remoto a esta máquina</translation>
 <translation id="8544375438507658205">Procesador HTML predeterminado para <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite que los mensajes SMS se sincronicen desde el teléfono con la Chromebook</translation>
+<translation id="8553955290407912156">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen qué sitios no pueden pedir a los usuarios permiso para acceder a un dispositivo HID.
+
+      Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
+
+      En el caso de los patrones de URL que no coincidan con la política, tendrán prioridad los elementos de esta lista, en este orden:
+
+        * La política <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> (si hay alguna coincidencia)
+
+        * La política <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (si se establece)
+
+        * La configuración personal de los usuarios
+
+      Los patrones de URL no pueden entrar en conflicto con <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />. Si una URL coincide con ambas políticas, no prevalece ninguna de las dos.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8566842294717252664">Ocultar ícono de Web Store en la página Nueva pestaña y el Selector de aplicaciones</translation>
 <translation id="8571314270766672278">Revierte y restablece el dispositivo en el cambio a una versión inferior del canal (intenta preservar la inscripción)</translation>
 <translation id="8571871284943706125">Informa los eventos de sesiones de CRD en los dispositivos inscriptos para los usuarios afiliados.
@@ -6645,6 +6684,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si inhabilitas la política o no la estableces, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>
 <translation id="867708016260789630">Forzar que el modo restringido de YouTube sea, al menos, moderado</translation>
+<translation id="8677853537025397834">Permitir la API de WebHID en estos sitios</translation>
 <translation id="8685024486845674965">La advertencia de la protección de la contraseña se activa cuando se vuelve a usar la contraseña</translation>
 <translation id="8685680544554917389">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> podrá reproducir contenido multimedia de forma automática. Si estableces la política como falsa, <ph name="PRODUCT_NAME" /> dejará de reproducir contenido multimedia de forma automática.
 

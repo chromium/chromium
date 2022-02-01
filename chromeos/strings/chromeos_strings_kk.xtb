@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Сканерлеу аймағына сәйкестендіру</translation>
 <translation id="1387854245479784695">Бұл – барлық ядролар жинағы.</translation>
+<translation id="1394661041439318933">Қаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">Шлюздің байланысын тексеруге болады</translation>
 <translation id="1398634363027580500">HTTPS кідірісі өте жоғары.</translation>
 <translation id="1413240736185167732">Сәтсіз: сүзгі қатесі шықты</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Кілттер жұбы өзімде бар</translation>
+<translation id="1451536289672181509">Бұл — пернетақта.</translation>
 <translation id="1468664791493211953">Ұсыныстар</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> құрылғыңызды басқарады және әрекетіңізді де бақылауы мүмкін.</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
 <translation id="2104796393919810494">Жөндеу аяқталды</translation>
+<translation id="2105810540595158374">Бұл — ойын контроллері.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-нұсқа</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ГБ қолжетімді.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Пайдаланушы аты мен құпия сөзді енгізіңіз немесе QR кодын сканерлеңіз.</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
 <translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
+<translation id="3031560714565892478">Бұл — бейнекамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Соңғы нүкте</translation>
 <translation id="3069085583900247081">Тексерілмеді.</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Сәтсіз: тоқтатылды</translation>
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
+<translation id="3124039320086536031">Құрылғы жалғанды.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Бетті өшіру керек пе?}=1{{PAGE_NUMBER}-бетті өшіру керек пе?}other{{PAGE_NUMBER}-бетті өшіру керек пе?}}</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-бет сканерленуде…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3328783797891415197">Тексерілуде</translation>
+<translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3368922792935385530">Қосылған</translation>
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-бет сканерленуде. <ph name="PERCENTAGE_VALUE" />% орындалды.</translation>
 <translation id="3459509316159669723">Басып шығару</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> жаңартылуда</translation>
+<translation id="3484914941826596830">Микробағдарлама жаңартылып жатқанда, сыртқы құрылғыны ажыратпаңыз немесе компьютерді өшірмеңіз. Бұл терезені кішірейте аласыз. Бұл жаңарту бірнеше минутқа созылып, ол кезде сыртқы құрылғы жұмыс істемей қалуы мүмкін.</translation>
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
@@ -193,6 +200,7 @@
 <translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
 <translation id="3941014780699102620">Хост атауы түрлендірілмеді.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
+<translation id="3954678691475912818">Құрылғының түрі белгісіз.</translation>
 <translation id="3966286471246132217">Нәтижелер нақтырақ болу үшін, сынақ аяқталғанша барлық қолданбаларды жабыңыз.</translation>
 <translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
@@ -274,6 +282,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
 <translation id="4891842000192098784">Стресс</translation>
+<translation id="4897058166682006107">Сол құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
@@ -320,6 +329,7 @@
 <translation id="5346687412805619883">Жергілікті желі</translation>
 <translation id="5358174242040570474">Бірдеңе дұрыс болмады. Тұсқағазды қайта таңдап көріңіз немесе қолданбаны қайта ашыңыз.</translation>
 <translation id="5372659122375744710">WiFi желісі қауіпсіз емес.</translation>
+<translation id="5400907029458559844">Құрылғы жалғануда.</translation>
 <translation id="5401938042319910061">Барлық әрекеттер тізімін іске қосу</translation>
 <translation id="5423849171846380976">Белсендірілген</translation>
 <translation id="5430931332414098647">Жылдам тетеринг</translation>
@@ -381,6 +391,7 @@
 <translation id="6278428485366576908">Тақырып</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тексерісінен бас тартылды.</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> құрылғысының микробағдарламасын жаңарту</translation>
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="6340526405444716530">Жекелендіру</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
@@ -413,6 +424,7 @@
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
 <translation id="6749473226660745022">Фотосуреттер</translation>
+<translation id="6753452347192452143">Бұл — компьютер.</translation>
 <translation id="6756731097889387912">Сканерлеуді тоқтату мүмкін болмады.</translation>
 <translation id="6766275201586212568">DNS ажыратымдылықтары сәтсіз болды.</translation>
 <translation id="6768237774506518020">DNS ажыратымдылығының ақау көрсеткіші жоғары.</translation>
@@ -429,12 +441,14 @@
 <translation id="6992266763844448459">Бұл құрылғының иесі өзгермесе (мысалы, құрылғы ұйымдағы басқа адамға берілсе), осы опцияны таңдаңыз.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7041549558901442110">Құрылғы жалғанбаған.</translation>
 <translation id="7058278511608979688">Аяқтау және сақтау</translation>
 <translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Құрылғыңызды дайындаңыз</translation>
 <translation id="708426984172631313">ТОҚТАТЫЛДЫ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Орындалмады – авторизация жасалмады</translation>
+<translation id="7103252855940681301"><ph name="NAME" /> атты құрылғы, <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
@@ -469,6 +483,7 @@
 <translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Диагностикалық режим</translation>
+<translation id="7551123448725492271">Бұл — аудио құрылғы.</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсорлық экраны</translation>
@@ -476,6 +491,7 @@
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="763165478673169849">Соңғы рет нөлденген уақыт</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
+<translation id="7656388927906093505">Бұл — тінтуір.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
 <translation id="7701040980221191251">Жоқ</translation>
@@ -572,6 +588,7 @@
 <translation id="8855781559874488009">Брандмауэр арқылы HTTP веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" сөзіне қандай <ph name="INTENT" /> берілетінін тағы басқа мүмкіндіктерді көріңіз</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Бұл — планшет.</translation>
 <translation id="8881098542468797602">Тексеріс сәтті аяқталды.</translation>
 <translation id="8898840733695078011">Сигнал күші</translation>
 <translation id="8910721771319628100">Әдепкі желі кідірісі шекті мәннен асады.</translation>
@@ -582,11 +599,13 @@
 <translation id="8930622219860340959">Сымсыз</translation>
 <translation id="8936793075252196307">Клиенттің IP мекенжайы</translation>
 <translation id="8945750210906526975">Ішкі сенсорлық тақта</translation>
+<translation id="894617464444543719">Бұл — телефон.</translation>
 <translation id="8968751544471797276">Зарядталу жылдамдығы</translation>
 <translation id="8970109610781093811">Қайта тексеру</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканерлеу}=1{{NUMBER_OF_PAGES} бетті сканерлеу}other{{NUMBER_OF_PAGES} бетті сканерлеу}}</translation>
 <translation id="8994273342647807496">Орнатылуда – <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Құрылғының батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="9003704114456258138">Жиілік</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ажыратымдылығының кідірісі жоғары.</translation>

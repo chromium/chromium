@@ -404,7 +404,6 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3264259168916048410">Počítač vyžaduje, aby sa na prihlásenie na danom webe použilo toto zariadenie</translation>
 <translation id="3265534588625245297">Spravujte weby, ktoré sledujete</translation>
 <translation id="3269093882174072735">Načítať obrázok</translation>
-<translation id="3269956123044984603">Ak chcete získať karty z vašich ďalších zariadení, zapnite v nastaveniach účtu Android možnosť Automaticky synchronizovať dáta.</translation>
 <translation id="3280562213547448728">Hlasové vyhľadávanie</translation>
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3284510035090979597">Proaktívna pomoc</translation>
@@ -917,7 +916,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6303969859164067831">Odhlásiť sa a vypnúť synchronizáciu</translation>
 <translation id="6312687380483398334">Webové aplikácie (ticho)</translation>
 <translation id="6316139424528454185">Verzia Androidu nie je podporovaná</translation>
-<translation id="6324034347079777476">Synchronizácia systému Android je zakázaná</translation>
 <translation id="6324916366299863871">Upraviť skratku</translation>
 <translation id="6324977638108296054">Odkaz na zvýraznenie sa nedá vytvoriť</translation>
 <translation id="6324997754869598316">(Chyba <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6900532703269623216">Rozšírená ochrana</translation>
 <translation id="6903907808598579934">Zapnúť synchronizáciu</translation>
 <translation id="6909589135458168665">Prednačítavanie stránok</translation>
-<translation id="6929699136511445623">Povoliť synchronizáciu systému Android</translation>
 <translation id="6942665639005891494">Kedykoľvek zmeniť predvolené umiestnenie stiahnutých súborov pomocou možnosti ponuky Nastavenia</translation>
 <translation id="694267552845942083">Momentálne prispôsobujete nastavenia synchronizácie. Ak chcete dokončiť zapnutie synchronizácie, klepnite na tlačidlo Potvrdiť v dolnej časti obrazovky. Prejsť hore</translation>
 <translation id="6945221475159498467">Vybrať</translation>
@@ -1161,7 +1158,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7581273696622423628">Zúčastniť sa prieskumu</translation>
 <translation id="7583262514280211622">Tu nájdete svoj čitateľský zoznam</translation>
 <translation id="7588219262685291874">Zapnúť tmavý motív, keď je v zariadení zapnutý šetrič batérie</translation>
-<translation id="7593557518625677601">V nastaveniach Androidu spustite synchronizáciu Chromu opätovným povolením synchronizácie Androidu</translation>
 <translation id="7594687499944811403">Umožnite službe <ph name="EMBEDDED_ORIGIN" />, aby overila vašu totožnosť pre web <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operačný systém</translation>
 <translation id="7605594153474022051">Synchronizácia nefunguje</translation>

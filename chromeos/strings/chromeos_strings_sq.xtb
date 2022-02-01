@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
 <translation id="1387854245479784695">Kjo është një përmbledhje e të gjitha të dhënave kryesore</translation>
+<translation id="1394661041439318933">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kasë.</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
 <translation id="1398634363027580500">Vonesë shumë e lartë në HTTPS</translation>
 <translation id="1413240736185167732">Dështoi - Filtri dështoi</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Kam një çift çelësash</translation>
+<translation id="1451536289672181509">Pajisja është një tastierë.</translation>
 <translation id="1468664791493211953">Ofertat</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
 <translation id="1478594628797167447">Skaner</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Ndryshoje çdo ditë imazhin e sfondit</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
+<translation id="1668469839109562275">VPN e integruar</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
 <translation id="1715359911173058521">Ka një problem komunikimi me skanerin. Kontrollo lidhjen e rrjetit ose lidhjen USB dhe provo përsëri.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2104796393919810494">Riparimi përfundoi</translation>
+<translation id="2105810540595158374">Pajisja është një kontrollues loje.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB nga <ph name="TOTAL_MEMORY" /> GB të disponueshme</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Fut emrin e përdoruesit dhe fjalëkalimin ose skano kodin tënd QR</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
+<translation id="3031560714565892478">Pajisja është një video-kamerë.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Pika përfundimtare</translation>
 <translation id="3069085583900247081">Testi dështoi</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
 <translation id="3102119246920354026">Memoria specifike</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Pajisja është lidhur.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Të hiqet faqja?}=1{Të hiqet faqja {PAGE_NUMBER}?}other{Të hiqet faqja {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
 <translation id="3156846309055100599">Po skanon faqen <ph name="PAGE_NUMBER" />...</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
+<translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380">Po skanon faqen <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% e përfunduar.</translation>
 <translation id="3459509316159669723">Po printon</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> po përditësohet</translation>
+<translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
+<translation id="3954678691475912818">Lloji i pajisjes është i panjohur.</translation>
 <translation id="3966286471246132217">Për rezultate më të sakta, mbylli të gjitha aplikacionet derisa të përfundojë testi.</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
 <translation id="4891842000192098784">Tensioni</translation>
+<translation id="4897058166682006107">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e majtë.</translation>
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
@@ -320,6 +330,7 @@
 <translation id="5346687412805619883">Rrjeti lokal</translation>
 <translation id="5358174242040570474">Ndodhi një gabim. Provo të zgjedhësh sërish një imazh sfondi ose të rihapësh aplikacionin.</translation>
 <translation id="5372659122375744710">Rrjeti Wi-Fi nuk është i sigurt</translation>
+<translation id="5400907029458559844">Pajisja po lidhet.</translation>
 <translation id="5401938042319910061">Ekzekuto të gjitha rutinat</translation>
 <translation id="5423849171846380976">U aktivizua</translation>
 <translation id="5430931332414098647">Ndarja e internetit në çast</translation>
@@ -381,6 +392,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
+<translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Dështoi</translation>
 <translation id="6340526405444716530">Personalizimi</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
@@ -413,6 +425,7 @@
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
 <translation id="6749473226660745022">Fotografitë</translation>
+<translation id="6753452347192452143">Pajisja është një kompjuter.</translation>
 <translation id="6756731097889387912">Skanimi nuk mund të anulohej</translation>
 <translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
 <translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
@@ -430,12 +443,14 @@
 <translation id="6992266763844448459">Zgjidh këtë opsion nëse zotërimi i pajisjes nuk do të ndryshojë. Për shembull, pajisja po transferohet te një person tjetër brenda një organizate.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
+<translation id="7041549558901442110">Pajisja nuk është lidhur.</translation>
 <translation id="7058278511608979688">Mbaro dhe ruaj</translation>
 <translation id="7059230779847288458">Po karikohet, <ph name="TIME_VALUE" /> derisa të mbushet</translation>
 <translation id="7068619307603204412">Përgatit pajisjen</translation>
 <translation id="708426984172631313">NDALOI</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Dështoi - Autorizimi dështoi</translation>
+<translation id="7103252855940681301">Pajisja <ph name="INDEX" /> nga <ph name="COUNT" /> me emrin <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -470,6 +485,7 @@
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
+<translation id="7551123448725492271">Pajisja është një pajisje audio.</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
@@ -477,6 +493,7 @@
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="763165478673169849">Koha e rivendosjes së fundit</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
+<translation id="7656388927906093505">Pajisja është një maus.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7701040980221191251">Asnjë</translation>
@@ -573,6 +590,7 @@
 <translation id="8855781559874488009">Nuk mund të lidhesh me sajtet e uebit HTTP nëpërmjet murit mbrojtës</translation>
 <translation id="8863888432376731307">Merr <ph name="INTENT" /> për "<ph name="QUERY" />" dhe më shumë</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Pajisja është një tablet.</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
 <translation id="8898840733695078011">Fuqia e sinjalit</translation>
 <translation id="8910721771319628100">Rrjeti i parazgjedhur është mbi pragun e vonesës</translation>
@@ -583,11 +601,13 @@
 <translation id="8930622219860340959">Me valë</translation>
 <translation id="8936793075252196307">Adresa IP e klientit</translation>
 <translation id="8945750210906526975">Blloku i brendshëm me prekje</translation>
+<translation id="894617464444543719">Pajisja është një telefon.</translation>
 <translation id="8968751544471797276">Shpejtësia e karikimit</translation>
 <translation id="8970109610781093811">Ekzekuto përsëri</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skano}=1{Skano faqen {NUMBER_OF_PAGES}}other{Skano faqen {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Po instalohet - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
 <translation id="9003704114456258138">Frekuenca</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Rezolucioni i DNS-së ka vonesë të lartë</translation>

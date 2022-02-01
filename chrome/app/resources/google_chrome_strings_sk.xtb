@@ -67,6 +67,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2574930892358684005">Používateľ <ph name="EXISTING_USER" /> je už do tohto profilu Chromu prihlásený. Ak chcete oddeliť svoje prehliadanie, Chrome vám môže vytvoriť vlastný profil.</translation>
 <translation id="2580411288591421699">Nie je možné nainštalovať rovnakú verziu prehliadača Google Chrome, ako je aktuálne spustená verzia. Zavrite Google Chrome a skúste znova.</translation>
 <translation id="2586406160782125153">Táto akcia odstráni zo zariadenia údaje prehliadania. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať na tento účet. Ak nechcete, aby mali weby či aplikácie prístup k informáciám o vašom účte, použite režim pre hostí v prehliadači Chrome. Účty Google môžete spravovať aj v <ph name="LINK_2_BEGIN" />Nastaveniach<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome nemôže skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="2644798301485385923">Systém Chrome OS</translation>
 <translation id="2652691236519827073">Otvoriť odkaz na novej &amp;karte Chromu</translation>

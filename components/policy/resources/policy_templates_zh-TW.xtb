@@ -91,6 +91,7 @@
 <translation id="1082802595100075771">讓使用者選擇使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="1087437665304381368">這項政策只能控管 <ph name="PRODUCT_OS_NAME" />開發人員模式。如要禁止他人存取 Android 開發人員選項，則必須設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome Enterprise 政策清單的網址已變更！請將你的書籤更新為 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
+<translation id="1091765729282771296">允許網站要求使用者授予 HID 裝置的存取權</translation>
 <translation id="1095209545735032039">封鎖這些網站上的 Serial API</translation>
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
@@ -206,6 +207,9 @@
       這項政策不適用於資訊站使用者。
 
       警告：如果設為 Wipe 和 MinimalMigrate，系統會移除本機資料。</translation>
+<translation id="1250597158212586309">如果將這項政策設為 Enabled 或不設定，使用者可以選擇要關閉或還原密碼遭到外洩的防護警示。
+
+      如果停用這項設定，使用者將無法關閉密碼遭到外洩的相關警示。如果啟用這項設定，使用者就可以關閉密碼遭到外洩的相關警示。</translation>
 <translation id="1252536192437793850">允許網站要求使用者授予序列埠的存取權</translation>
 <translation id="1255159327956066463">啟用 ghost 視窗功能</translation>
 <translation id="125655429495551011">你可以透過這項政策設定字串，DHCP 要求會使用該字串做為裝置主機名稱。字串包括下列變數：<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="SERIAL_NUM_PLACEHOLDER" />、<ph name="MAC_ADDR_PLACEHOLDER" />、<ph name="MACHINE_NAME_PLACEHOLDER" />、<ph name="LOCATION_PLACEHOLDER" />，系統會先用裝置的值替換這些變數，再將字串用於主機名稱。替換後的值必須是有效的主機名稱 (根據 RFC 1035 文件第 3.1 條的規定)。
@@ -826,6 +830,30 @@
 
       在預設狀態下，系統會停用這項企業政策。</translation>
 <translation id="1949584741547056205">快速解答</translation>
+<translation id="1951288262199783797">你可以啟用這項政策以建立檔案類型副檔名字典和對應的網域清單，這些網域就不會針對特定檔案類型副檔名顯示下載警告。這樣企業管理員可以針對與所列網域相關聯的檔案，封鎖特定檔案類型副檔名的下載警告。舉例來說，如果「jnlp」副檔名與「website1.com」相關聯，使用者從「website1.com」下載「jnlp」檔案時不會看到警告訊息，但從「website2.com」下載「jnlp」檔案時就會看到警告訊息。
+
+      如果檔案位於這項政策指定的網域，且符合設定的檔案類型副檔名，仍必須遵守非檔案類型副檔名安全性警告的相關限制，例如複合型內容下載警告和安全瀏覽警告。
+
+      如果停用或不設定這項政策，則會觸發副檔名下載警告的檔案類型仍會向使用者顯示警告訊息。
+
+      如果啟用這項政策：
+
+      * 網址模式的格式必須符合 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns 中的規定。
+      * 提供的檔案類型副檔名必須是小寫的 ASCII。列出檔案類型副檔名時，請勿加入開頭的分隔符，因此請輸入「jnlp」，而非「.jnlp」。
+
+      範例：
+
+      以下範例值會針對 *.example.com 網域停用 swf、exe 和 jnlp 的檔案類型副檔名下載警告。在其他網域上，系統會針對 exe 和 jnlp 檔案顯示檔案類型副檔名下載警告，但不會針對 swf 檔案顯示。
+
+      [
+        { "file_extension": "jnlp", "domains": ["example.com"] },
+        { "file_extension": "exe", "domains": ["example.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+      請注意，雖然前一個範例的設定是針對所有網域的「swf」檔案停用檔案類型副檔名警告，但基於安全考量，不建議將這種停用警告訊息的做法套用到所有網域的任何危險檔案類型副檔名。這只是用來說明設定方式而已。
+
+      如果啟用這項政策，且 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> 和 DownloadRestrictions 政策設為封鎖危險檔案類型，則系統會優先採用 DownloadRestrictions 的禁止下載設定。比方說，如果這項政策設為可從「website1.com」下載「exe」副檔名，且 DownloadRestrictions 設為封鎖惡意下載內容和危險檔案類型，則系統仍會禁止從所有網域下載「exe」副檔名。如果 DownloadRestrictions 未設定為封鎖危險檔案類型，那麼從指定網域下載這項政策設定的檔案類型時，系統就不會顯示檔案類型副檔名下載警告。進一步瞭解 DownloadRestrictions 政策 (https://chromeenterprise.google/policies/?policy=DownloadRestrictions)。</translation>
 <translation id="1960416154405676350">啟用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
 <translation id="1961091374249454164">這項政策僅適用於受管理的訪客工作階段。
       你可以透過本政策指定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能 (請見 <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />)。
@@ -879,6 +907,7 @@
       已連上 <ph name="CLOUD_PRINT_NAME" />的印表機屬於 <ph name="PRINTER_TYPE_CLOUD" /> 類型，其他印表機則是 <ph name="PRINTER_TYPE_LOCAL" /> 類型。
 
       注意：略過欄位即表示對相關值不設限。舉例來說，如果不指定連線能力，系統在執行預覽列印時會尋找所有類型的印表機，包括 <ph name="PRINTER_TYPE_LOCAL" /> 和 <ph name="PRINTER_TYPE_CLOUD" /> 印表機。規則運算式模式須符合 JavaScript RegExp 語法，且比對機制須區分大小寫。</translation>
+<translation id="2004382785802837840">停用關閉密碼遭到外洩的防護警示</translation>
 <translation id="2005506794355327448">機蓋蓋上時採取的動作</translation>
 <translation id="2006530844219044261">電源管理</translation>
 <translation id="2008514891623783266">WebRTC 的 IP 處理政策</translation>
@@ -1299,6 +1328,8 @@
 <translation id="2435052056904485763">Kerberos 委派伺服器許可清單</translation>
 <translation id="2435232509335686514"><ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> 的下載檔案處理方式配置政策</translation>
 <translation id="2436302465999055995">將 <ph name="LACROS_NAME" /> 設為唯一可用的瀏覽器 (尚未實作)</translation>
+<translation id="2439187682308339104">不允許任何網站透過 WebHID API 要求 HID 裝置的存取權</translation>
+<translation id="2439733504887695659">針對已輸入的憑證啟用關閉密碼遭到外洩的防護警示</translation>
 <translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
 
        如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
@@ -1730,6 +1761,7 @@
       如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於該使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這位使用者。</translation>
 <translation id="2964373560810620158">禁止使用者使用 <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="2968177167006045252">允許網站使用 SharedArrayBuffers</translation>
+<translation id="2969568582351417848">針對網域上的特定檔案類型，停用檔案類型副檔名下載警告</translation>
 <translation id="2969797921412053304">這項政策會設定哪些網址可在登入畫面的 SAML 流程中，取得使用裝置身分遠端認證機制的存取權。
 
       具體來說，如果網址符合這項政策提供的其中一種模式，系統會允許該網址接收 HTTP 標頭 (其中包含對遠端認證機制驗證問題的回覆)，以認證裝置身分及裝置狀態。
@@ -2776,6 +2808,7 @@
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用插入點醒目顯示，但使用者隨時可以啟用。</translation>
 <translation id="4183229833636799228"><ph name="FLASH_PLUGIN_NAME" /> 預設設定</translation>
+<translation id="4187576366596772431">封鎖這些網站上的 WebHID API</translation>
 <translation id="4192388905594723944">用於驗證遠端存取用戶端驗證憑證的網址</translation>
 <translation id="4203643479966921607">如果將這項政策設為啟用或不設定，系統會開啟 <ph name="PRODUCT_NAME" />，使用者可以從應用程式選單、頁面內容選單、支援 Cast 網站的媒體控制項，以及 Cast 工具列圖示 (如有顯示) 中將其啟動。
 
@@ -3102,6 +3135,16 @@
 <translation id="4617338332148204752">在 <ph name="PRODUCT_FRAME_NAME" /> 內略過中繼標記檢查</translation>
 <translation id="4624417808625504735">禁止 JavaScript 在這些網站上使用 JIT</translation>
 <translation id="4625915093043961294">設定擴充功能安裝許可清單</translation>
+<translation id="4631165564645497047">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 會使用內建的憑證驗證器執行伺服器憑證驗證作業。
+      如果停用這項設定，則 <ph name="PRODUCT_NAME" /> 會使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
+      如果未設定這項政策，系統可能會使用內建或舊版的憑證驗證器。
+
+      我們計劃將這項政策從 <ph name="PRODUCT_OS_NAME" /> 81 版中移除，屆時也將停止支援 <ph name="PRODUCT_OS_NAME" />的舊版憑證驗證器。
+
+     我們計劃將這項政策從 Linux 適用的 <ph name="PRODUCT_NAME" /> 83 版中移除，屆時也將停止支援 Linux 的舊版憑證驗證器。
+
+      我們計劃將這項政策從 Mac OS X 適用的 <ph name="PRODUCT_NAME" /> 104 版中移除，屆時也將停止支援 Mac OS X 的舊版憑證驗證器。
+      </translation>
 <translation id="4632343302005518762">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型</translation>
 <translation id="4632566332417930481">禁止在由企業政策安裝的擴充功能中使用開發人員工具，允許在其他情況下使用開發人員工具</translation>
 <translation id="4635284822166984665">裝置開始充電的時間 (根據裝置當地時區)。</translation>
@@ -3140,6 +3183,7 @@
 
           如需模式範例，請參閱 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
 <translation id="467449052039111439">開啟網址清單</translation>
+<translation id="4674542060943819878">啟用關閉密碼遭到外洩的防護警示</translation>
 <translation id="4674871290487541952">針對擴充功能更新與安裝作業進行完整性檢查時，允許使用不安全的演算法</translation>
 <translation id="4680961954980851756">啟用自動填入</translation>
 <translation id="4685721728282448265">已啟用傳輸層安全標準 (TLS) 的 CECPQ2 後量子金鑰協議</translation>
@@ -4477,6 +4521,20 @@
 
       如果不設定這項政策或是清單保留空白，系統將可在 <ph name="PRODUCT_NAME" /> 中存取所有網路通訊協定配置。</translation>
 <translation id="6338982178236723271">回報系統資訊</translation>
+<translation id="6352714113109004581">你可以透過這項政策建立網址模式清單，用於指定可要求使用者授予 HID 裝置存取權的網站。
+
+      如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
+      針對不符合政策的網址模式，系統會依序優先採用下列項目：
+
+        * <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> (如符合)、
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (如已設定)，或是
+
+        * 使用者的個人設定。
+
+      網址模式不得與 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策衝突。如果網址同時符合兩項政策，系統不會優先採用任何一項政策。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="6353890097388312479">如果將這項政策設為 All (值為 0) 或不設定，使用者將可透過「憑證管理員」編輯所有 CA 憑證的信任設定、移除使用者匯入的憑證以及匯入憑證。如果將這項政策設為 UserOnly (值為 1)，使用者只能管理使用者匯入的憑證，無法變更內建憑證的信任設定。如果設為 None (值為 2)，使用者只能查看 CA 憑證，而無法進行管理。</translation>
 <translation id="6362856770865555544">如果將這項政策設為啟用或不設定，系統會開啟 <ph name="PRODUCT_NAME" /> 中的 WPAD (網路 Proxy 自動探索) 最佳化功能。
 
@@ -5875,6 +5933,9 @@
 <translation id="793473937901685727">設定 ARC 應用程式的憑證可用性</translation>
 <translation id="7937766917976512374">允許或拒絕擷取視訊</translation>
 <translation id="7941975817681987555">無論使用任何網路連線，皆不預測網路動作</translation>
+<translation id="7946350455013548764">如果將這項政策設為 3，網站即可要求存取 HID 裝置。如果將這項政策設為 2，系統會拒絕網站存取 HID 裝置。如果不設定，網站可要求存取權，但使用者可以變更這項設定。
+
+      你可以將特定<ph name="URL_LABEL" />模式列於 <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策中，藉此覆寫這項政策。</translation>
 <translation id="7951605113561734721">指定應使用裝置管理通訊協定註冊的裝置通用用戶端憑證。</translation>
 <translation id="7952007677054834789">設定 <ph name="PRODUCT_NAME" /> 的起始載入頁面、預設首頁和預設新分頁，並禁止使用者變更這些設定。
 
@@ -6105,6 +6166,7 @@
 <translation id="8220023426952118761">理想的下載速率 (kbit/秒)。</translation>
 <translation id="8220156281401380422">設定內建訊息傳遞許可清單</translation>
 <translation id="822055204938220476">允許保持全螢幕模式且不顯示通知的網址清單</translation>
+<translation id="8225579382697740712">控管 WebHID 使用權限</translation>
 <translation id="8229912067600517877">啟用開發人員工具</translation>
 <translation id="8238421250255592181">布林值標記，表示螢幕小鍵盤是否能提供自動完成功能。</translation>
 <translation id="8239109177194627162">停用信用卡的自動填入功能</translation>
@@ -6431,6 +6493,20 @@
 <translation id="8543108307976719751">禁止與這部裝置建立遠端存取連線</translation>
 <translation id="8544375438507658205">預設 <ph name="PRODUCT_FRAME_NAME" /> 的 HTML 轉譯器</translation>
 <translation id="8544465954173828789">允許將簡訊從手機同步至 Chromebook。</translation>
+<translation id="8553955290407912156">你可以透過這項政策建立網址模式清單，用於指定無法要求使用者授予 HID 裝置存取權的網站。
+
+      如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
+      針對不符合政策的網址模式，系統會依序優先採用下列項目：
+
+        * <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> (如符合)、
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (如已設定)，或是
+
+        * 使用者的個人設定。
+
+      網址模式不得與 <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> 政策衝突。如果網址同時符合兩項政策，系統不會優先採用任何一項政策。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="8566842294717252664">在新分頁和應用程式啟動畫面中隱藏線上應用程式商店</translation>
 <translation id="8571314270766672278">在版本降級時復原和重設裝置，並嘗試保留註冊狀態</translation>
 <translation id="8571871284943706125">在已註冊的裝置上為關聯使用者回報 CRD 工作階段。
@@ -6521,6 +6597,7 @@
 
       如果將這項政策設為停用或不設定，遠端存取主機即可與任何本機使用者建立關聯。</translation>
 <translation id="867708016260789630">強制執行中度以上的 YouTube 嚴格篩選模式</translation>
+<translation id="8677853537025397834">允許這些網站上的 WebHID API</translation>
 <translation id="8685024486845674965">密碼遭到重複使用時，會觸發密碼保護警告</translation>
 <translation id="8685680544554917389">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 即可自動播放媒體。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 不會自動播放媒體。
 

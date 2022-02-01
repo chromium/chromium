@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
 <translation id="1387854245479784695">यह सभी कोर एक साथ दिखाता है</translation>
+<translation id="1394661041439318933">डिवाइस के केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
 <translation id="1398634363027580500">एचटीटीपीएस अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">मेरे पास कुंजी का जोड़ा है</translation>
+<translation id="1451536289672181509">डिवाइस एक कीबोर्ड है.</translation>
 <translation id="1468664791493211953">ऑफ़र</translation>
 <translation id="1476467821656042872">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है और यह आपकी गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">ईआईडी</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
 <translation id="2104796393919810494">मरम्मत का काम पूरा हुआ</translation>
+<translation id="2105810540595158374">डिवाइस एक गेम कंट्रोलर है.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, वर्शन <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> जीबी में से <ph name="AVAILABLE_MEMORY" /> जीबी उपलब्ध है</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
+<translation id="3031560714565892478">डिवाइस एक वीडियो कैमरा है.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3069085583900247081">टेस्ट असफल रहा</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">प्रिंट नहीं हो पाया - प्रिंटर बंद हो गया</translation>
 <translation id="3102119246920354026">संचय</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">डिवाइस कनेक्ट है.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{पेज को हटाना चाहते हैं?}=1{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}one{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}other{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}}</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />गीगाहर्ट्ज़</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
+<translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> को स्कैन किया जा रहा है. <ph name="PERCENTAGE_VALUE" />% पूरा हो गया.</translation>
 <translation id="3459509316159669723">प्रिंट करना</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट हो रहा है</translation>
+<translation id="3484914941826596830">फ़र्मवेयर के अपडेट होने तक, इस बाहरी डिवाइस को डिसकनेक्ट न करें या अपने कंप्यूटर को शट डाउन न करें. इस विंडो को छोटा किया जा सकता है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं. हो सकता है कि इस दौरान आपका बाहरी डिवाइस काम न करे.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3954678691475912818">डिवाइस किस तरह का है, इसके बारे में जानकारी नहीं है.</translation>
 <translation id="3966286471246132217">ज़्यादा सटीक नतीजों के लिए, टेस्ट पूरा होने तक सभी ऐप्लिकेशन बंद रखें.</translation>
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
+<translation id="4897058166682006107">डिवाइस के बाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="4917385247580444890">मज़बूत</translation>
 <translation id="4917889632206600977">बंद हो गया - काग़ज़ खत्म हो गया</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">लोकल नेटवर्क</translation>
 <translation id="5358174242040570474">कोई गड़बड़ी हुई. कोई वॉलपेपर चुनकर कोशिश करें या ऐप्लिकेशन को फिर से खोलें.</translation>
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
+<translation id="5400907029458559844">डिवाइस कनेक्ट हो रहा है.</translation>
 <translation id="5401938042319910061">सभी रूटीन चलाएं</translation>
 <translation id="5423849171846380976">सक्रिय हुआ</translation>
 <translation id="5430931332414098647">इंस्टैंट टेदरिंग</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> के लिए फ़र्मवेयर अपडेट करें</translation>
 <translation id="6325525973963619867">विफल</translation>
 <translation id="6340526405444716530">मनमुताबिक बनाना</translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6747215703636344499">बंद हो गया - आउटपुट भर गया</translation>
 <translation id="6749473226660745022">फ़ोटो</translation>
+<translation id="6753452347192452143">डिवाइस एक कंप्यूटर है.</translation>
 <translation id="6756731097889387912">स्कैन करने की प्रोसेस रद्द नहीं हो सकी</translation>
 <translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
 <translation id="6768237774506518020">डीएनएस रिज़ॉल्यूशन नहीं हो पाने की बढ़ी हुई दर</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">अगर डिवाइस के मालिकाना हक में बदलाव नहीं हो रहा है, तो यह विकल्प चुनें. उदाहरण के लिए, जब डिवाइस को संगठन के ही किसी अन्य व्यक्ति को ट्रांसफ़र किया जा रहा हो.</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
+<translation id="7041549558901442110">डिवाइस कनेक्ट नहीं है.</translation>
 <translation id="7058278511608979688">बंद करें और सेव करें</translation>
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
 <translation id="7068619307603204412">अपने डिवाइस को तैयार करें</translation>
 <translation id="708426984172631313">रोका गया</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
+<translation id="7103252855940681301"><ph name="COUNT" /> में से <ph name="INDEX" /> डिवाइस, जिसका नाम <ph name="NAME" /> है.</translation>
 <translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">IPv6 पता</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">डाइग्नोस्टिक्स रूटीन</translation>
+<translation id="7551123448725492271">डिवाइस एक ऑडियो डिवाइस है.</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन मैनेज करता है</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">यूएसबी टचस्क्रीन</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">इसके बारे में ज़्यादा जानने के लिए सहायता केंद्र पर जाएं</translation>
 <translation id="763165478673169849">आखिर में रीसेट किया गया समय</translation>
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
+<translation id="7656388927906093505">डिवाइस एक माउस है.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">फ़ायरवॉल के ज़रिए, एचटीटीपी वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" और बाकी चीज़ों के लिए <ph name="INTENT" /> पाएं</translation>
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
+<translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">वायरलेस</translation>
 <translation id="8936793075252196307">क्लाइंट का आईपी पता</translation>
 <translation id="8945750210906526975">टचपैड</translation>
+<translation id="894617464444543719">डिवाइस एक फ़ोन है.</translation>
 <translation id="8968751544471797276">चार्ज होने की दर</translation>
 <translation id="8970109610781093811">फिर से चलाएं</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्कैन करें}=1{{NUMBER_OF_PAGES} स्कैन करें}one{{NUMBER_OF_PAGES} स्कैन करें}other{{NUMBER_OF_PAGES} स्कैन करें}}</translation>
 <translation id="8994273342647807496">इंस्टॉल हो रहा है - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">डिवाइस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">डीएनएस रिज़ॉल्यूशन के इंतज़ार का समय ज़्यादा है</translation>

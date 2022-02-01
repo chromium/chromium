@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Potrivește în funcție de zona de scanare</translation>
 <translation id="1387854245479784695">Aceasta este o valoare cumulată pentru toate nucleele</translation>
+<translation id="1394661041439318933">Nivelul bateriei carcasei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway-ul acceptă testul de ping</translation>
 <translation id="1398634363027580500">Latență foarte mare a solicitărilor HTTPS</translation>
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Am o pereche de chei</translation>
+<translation id="1451536289672181509">Dispozitivul este o tastatură.</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
 <translation id="1478594628797167447">Scaner</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Schimbă zilnic imaginea de fundal</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
+<translation id="1668469839109562275">Rețea VPN încorporată</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
 <translation id="1715359911173058521">Există o problemă de comunicare cu scanerul. Verifică-ți conexiunea USB sau la rețea și încearcă din nou.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2104796393919810494">Reparația a fost terminată</translation>
+<translation id="2105810540595158374">Dispozitivul este un controler de jocuri.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Introdu numele de utilizator și parola sau scanează codul QR</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
+<translation id="3031560714565892478">Dispozitivul este o cameră video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punct final</translation>
 <translation id="3069085583900247081">Testul nu a reușit</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
 <translation id="3102119246920354026">Memoria cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Dispozitivul este conectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Elimini pagina?}=1{Elimini pagina {PAGE_NUMBER}?}few{Elimini pagina {PAGE_NUMBER}?}other{Elimini pagina {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Date mobile</translation>
 <translation id="3156846309055100599">Se scanează pagina <ph name="PAGE_NUMBER" />...</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
+<translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
 <translation id="3462187165860821523">Se actualizează dispozitivul <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Nu deconecta dispozitivul extern și nu închide computerul în timpul actualizării firmware-ului. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
 <translation id="3942420633017001071">Diagnosticare</translation>
+<translation id="3954678691475912818">Tipul dispozitivului este necunoscut.</translation>
 <translation id="3966286471246132217">Pentru rezultate mai precise, închide toate aplicațiile până la încheierea testului.</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="397105322502079400">Se calculează...</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="4891842000192098784">Stres</translation>
+<translation id="4897058166682006107">Nivelul bateriei căștii stângi a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
@@ -321,6 +331,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5346687412805619883">Rețea locală</translation>
 <translation id="5358174242040570474">A apărut o eroare. Încearcă din nou să alegi o imagine de fundal sau redeschide aplicația.</translation>
 <translation id="5372659122375744710">Rețeaua Wi-Fi nu este sigură</translation>
+<translation id="5400907029458559844">Dispozitivul se conectează.</translation>
 <translation id="5401938042319910061">Rulează toate rutinele</translation>
 <translation id="5423849171846380976">Activat</translation>
 <translation id="5430931332414098647">Tethering instantaneu</translation>
@@ -382,6 +393,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6278428485366576908">Temă</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
+<translation id="6319207335391420837">Actualizează firmware-ul pentru <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="6340526405444716530">Personalizare</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
@@ -414,6 +426,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
 <translation id="6749473226660745022">Fotografii</translation>
+<translation id="6753452347192452143">Dispozitivul este un computer.</translation>
 <translation id="6756731097889387912">Nu s-a putut anula scanarea</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
@@ -431,12 +444,14 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6992266763844448459">Selectează această opțiune dacă nu se schimbă calitatea de proprietar al dispozitivului. De exemplu, dispozitivul este transferat unei alte persoane din organizație.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7041549558901442110">Dispozitivul nu este conectat.</translation>
 <translation id="7058278511608979688">Finalizează și salvează</translation>
 <translation id="7059230779847288458">Se încarcă, <ph name="TIME_VALUE" /> până la încărcarea completă</translation>
 <translation id="7068619307603204412">Pregătește dispozitivul</translation>
 <translation id="708426984172631313">OPRIT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nu a reușit – Autorizarea nu a reușit</translation>
+<translation id="7103252855940681301">Dispozitivul <ph name="INDEX" /> din <ph name="COUNT" /> numit <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server de nume}few{Servere de nume}other{Servere de nume}}</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
@@ -471,6 +486,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7502658306369382406">Adresă IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Rutine de diagnosticare</translation>
+<translation id="7551123448725492271">Dispozitivul este un dispozitiv audio.</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ecran tactil USB</translation>
@@ -478,6 +494,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7620771111601174153">Află mai multe din Centrul de ajutor</translation>
 <translation id="763165478673169849">Data ultimei resetări</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
+<translation id="7656388927906093505">Dispozitivul este un mouse.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
 <translation id="7701040980221191251">Niciuna</translation>
@@ -574,6 +591,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8855781559874488009">Nu se poate conecta la site-uri HTTP prin firewall</translation>
 <translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Dispozitivul este o tabletă.</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>
 <translation id="8898840733695078011">Puterea semnalului</translation>
 <translation id="8910721771319628100">Rețeaua prestabilită depășește pragul de latență</translation>
@@ -584,11 +602,13 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8936793075252196307">Adresa IP a clientului</translation>
 <translation id="8945750210906526975">Touchpad intern</translation>
+<translation id="894617464444543719">Dispozitivul este un telefon.</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanează}=1{Scanează {NUMBER_OF_PAGES} pagină}few{Scanează {NUMBER_OF_PAGES} pagini}other{Scanează {NUMBER_OF_PAGES} de pagini}}</translation>
 <translation id="8994273342647807496">Se instalează – <ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="8997710128084572139">Nivelul bateriei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frecvență</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Rezolvarea DNS are latență mare</translation>

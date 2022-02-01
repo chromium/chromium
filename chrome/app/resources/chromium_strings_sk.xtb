@@ -226,6 +226,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nové okno</translation>
+<translation id="7342713658732509484">Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať na tento účet. Ak nechcete, aby mali weby či aplikácie prístup k informáciám o vašom účte, použite režim pre hostí v prehliadači Chromium. Účty Google môžete spravovať aj v <ph name="LINK_2_BEGIN" />Nastaveniach<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Tu nájdete svoj obsah na webe, záložky a ďalšie položky prehliadača Chromium.</translation>
 <translation id="7349591376906416160">Správca systému nakonfiguroval Chromium, aby <ph name="TARGET_URL_HOSTNAME" /> otváral v prehliadači <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7398989605938454041">Profilmi prehliadača Chromium môžete oddeliť všetok svoj obsah v prehliadači Chromium. Jednoduchšie tak rozdelíte prácu a zábavu.</translation>

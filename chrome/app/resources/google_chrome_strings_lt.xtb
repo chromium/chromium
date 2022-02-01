@@ -69,6 +69,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2574930892358684005">Naudotojas (<ph name="EXISTING_USER" />) jau yra prisijungęs prie šio „Chrome“ profilio. Kad naršytumėte atskirai, „Chrome“ gali sukurti jums atskirą profilį.</translation>
 <translation id="2580411288591421699">Negalima įdiegti tos pačios „Google Chrome“ versijos, kuri dabar paleista. Uždarykite „Google Chrome“ ir bandykite dar kartą.</translation>
 <translation id="2586406160782125153">Atlikus šį veiksmą bus ištrinti naršymo duomenys iš šio įrenginio. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taikomi šiai paskyrai. Jei nenorite, kad svetainės ar programos pasiektų jūsų paskyros informaciją, naudokite „Chrome“ naršyklės svečio režimą. Be to, galite tvarkyti „Google“ paskyras skiltyje <ph name="LINK_2_BEGIN" />„Nustatymai“<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">„Chrome“ negali tikrinti naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2644798301485385923">„Chrome“ OS sistema</translation>
 <translation id="2652691236519827073">Atidaryti nuorodą naujame „Chrome“ &amp;skirtuke</translation>

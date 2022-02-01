@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कॅन क्षेत्रावर फिट करा</translation>
 <translation id="1387854245479784695">हे सर्व कोअरचे एकत्रीकरण आहे</translation>
+<translation id="1394661041439318933">डिव्हाइसच्या केसच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="1397738625398125236">गेटवेला पिंग करता येते</translation>
 <translation id="1398634363027580500">अत्युच्च HTTPS लेटन्सी</translation>
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">माझ्याकडे कीपेअर आहे</translation>
+<translation id="1451536289672181509">डिव्हाइस हे कीबोर्ड आहे.</translation>
 <translation id="1468664791493211953">ऑफर</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> हे डिव्हाइस व्यवस्थापित करतो आणि तो तुमच्या अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
 <translation id="1478594628797167447">स्कॅनर</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2104796393919810494">निराकरण करणे पूर्ण झाले आहे</translation>
+<translation id="2105810540595158374">डिव्हाइस हे गेम नियंत्रक आहे.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">तुमचे वापरकर्ता नाव आणि पासवर्ड एंटर करा किंवा तुमचा QR कोड स्कॅन करा</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
+<translation id="3031560714565892478">डिव्हाइस हे व्हिडिओ कॅमेरा आहे.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3069085583900247081">चाचणी करता आली नाही</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">अयशस्वी झाले - थांबले आहे</translation>
 <translation id="3102119246920354026">कॅशे  </translation>
 <translation id="3122464029669770682">सीपीयू</translation>
+<translation id="3124039320086536031">डिव्हाइस हे कनेक्ट केलेले आहे.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{{PAGE_NUMBER} पेज काढून टाकायचे का?}other{{PAGE_NUMBER} पेज काढून टाकायची का?}}</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3328783797891415197">चाचणी रन होत आहे</translation>
+<translation id="3340011300870565703">डिव्हाइसच्या उजव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> पेज स्कॅन करत आहे. <ph name="PERCENTAGE_VALUE" />% पूर्ण झाले.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट होत आहे</translation>
+<translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">कोणतेही डिव्हाइस कनेक्ट केले नाही</translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3954678691475912818">डिव्हाइसचा प्रकार अज्ञात आहे.</translation>
 <translation id="3966286471246132217">आणखी अचूक परिणामांसाठी, चाचणी पूर्ण होईपर्यंत सर्व अ‍ॅप्स बंद करा.</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
 <translation id="4891842000192098784">ताण</translation>
+<translation id="4897058166682006107">डिव्हाइसच्या डाव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">स्थानिक नेटवर्क</translation>
 <translation id="5358174242040570474">काहीतरी चूक झाली. वॉलपेपर पुन्हा निवडण्याचा प्रयत्न करा किंवा अ‍ॅप पुन्हा उघडा.</translation>
 <translation id="5372659122375744710">वायफाय नेटवर्क सुरक्षित नाही</translation>
+<translation id="5400907029458559844">डिव्हाइस कनेक्ट होत आहे.</translation>
 <translation id="5401938042319910061">सर्व दिनक्रम रन करा</translation>
 <translation id="5423849171846380976">सक्रिय</translation>
 <translation id="5430931332414098647">झटपट टेदरिंग</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> वर फर्मवेअर अपडेट करा</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="6340526405444716530">पर्सनलायझेशन</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
 <translation id="6749473226660745022">फोटो</translation>
+<translation id="6753452347192452143">डिव्हाइस हे कॉंप्युटर आहे.</translation>
 <translation id="6756731097889387912">स्कॅनिंग रद्द करता आले नाही</translation>
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">डिव्हाइसची मालकी बदलत नसल्यास, हा पर्याय निवडा. उदाहरणार्थ, डिव्हाइस हे संस्थेमधील दुसऱ्या व्यक्तीकडे ट्रान्सफर केले जात आहे.</translation>
 <translation id="7028979494427204405">हे डिव्हाइस <ph name="MANAGER" /> व्यवस्थापित करतो आणि भेट दिलेली वेबपेज, पासवर्ड आणि ईमेलसह सर्व वापरकर्ता अ‍ॅक्टिव्हिटीचा त्याला अ‍ॅक्सेस आहे.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
+<translation id="7041549558901442110">डिव्हाइस हे कनेक्ट केलेले नाही.</translation>
 <translation id="7058278511608979688">संपवा आणि सेव्ह करा</translation>
 <translation id="7059230779847288458">चार्ज होत आहे, <ph name="TIME_VALUE" /> मध्ये पूर्ण होईल</translation>
 <translation id="7068619307603204412">तुमचे डिव्हाइस तयार आहे</translation>
 <translation id="708426984172631313">थांबवली</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">अयशस्वी झाले - ऑथोरायझेशन करता आले नाही</translation>
+<translation id="7103252855940681301"><ph name="NAME" /> नावाची <ph name="COUNT" /> पैकी <ph name="INDEX" /> डिव्हाइस.</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">IPv6 पत्ता</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">निदानाशी संबंधित रूटीन</translation>
+<translation id="7551123448725492271">डिव्हाइस हे ऑडिओ डिव्हाइस आहे.</translation>
 <translation id="7561454561030345039">ही कृती तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केली जाते</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रीन</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">मदत केंद्र मध्ये अधिक जाणून घ्या</translation>
 <translation id="763165478673169849">अंतिम रीसेट केल्याची वेळ</translation>
 <translation id="7648838807254605802">उच्च HTTPS लेटन्सी</translation>
+<translation id="7656388927906093505">डिव्हाइस हे माउस आहे.</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7690294790491645610">नवीन पासवर्ड कन्फर्म करा</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">फायरवॉलद्वारे HTTP वेबसाइटशी कनेक्ट करू शकत नाही</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" आणि आणखी बऱ्याच गोष्टींसाठी <ph name="INTENT" /> मिळवा</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">डिव्हाइस हे टॅबलेट आहे.</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
 <translation id="8898840733695078011">सिग्नल सामर्थ्य</translation>
 <translation id="8910721771319628100">डीफॉल्ट नेटवर्क लेटन्सी सीमेच्या वर आहे</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">बिनतारी</translation>
 <translation id="8936793075252196307">क्लायंटचा आयपी अ‍ॅड्रेस</translation>
 <translation id="8945750210906526975">अंतर्गत टचपॅड</translation>
+<translation id="894617464444543719">डिव्हाइस हे फोन आहे.</translation>
 <translation id="8968751544471797276">चार्ज करण्याचा रेट</translation>
 <translation id="8970109610781093811">पुन्हा चालवा</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{{NUMBER_OF_PAGES} पेज स्कॅन करा}other{{NUMBER_OF_PAGES} पेज स्कॅन करा}}</translation>
 <translation id="8994273342647807496">इंस्टॉल करत आहे - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">डिव्हाइसच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="9003704114456258138">वारंवारता</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS रिझोल्यूशनची लेटन्सी जास्त आहे</translation>

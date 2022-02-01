@@ -65,6 +65,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Wenn Sie Ihre Browsingaktivitäten getrennt halten möchten, kann Chrome für Sie ein eigenes Profil einrichten.</translation>
 <translation id="2580411288591421699">Die Google Chrome-Version kann nicht installiert werden, da sie aktuell ausgeführt wird. Schließen Sie Google Chrome und versuchen Sie es erneut.</translation>
 <translation id="2586406160782125153">Dadurch werden Ihre Browserdaten von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
+<translation id="260478105521939126">Berechtigungen, die Sie Websites und Apps bereits gewährt haben, gelten möglicherweise für dieses Konto. Wenn Sie nicht möchten, dass Websites oder Apps Zugriff auf Ihre Kontoinformationen haben, können Sie den Gastmodus des Chrome-Browsers verwenden. Sie können Ihre Google-Konten auch in den <ph name="LINK_2_BEGIN" />Einstellungen<ph name="LINK_2_END" /> verwalten.</translation>
 <translation id="2622559029861875898">Chrome kann nicht nach Aktualisierungen suchen. Überprüfen Sie Ihre Internetverbindung.</translation>
 <translation id="2644798301485385923">Chrome OS-System</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>

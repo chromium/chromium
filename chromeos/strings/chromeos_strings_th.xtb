@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">พอดีกับพื้นที่สแกน</translation>
 <translation id="1387854245479784695">นี่เป็นการรวม Core ทั้งหมด</translation>
+<translation id="1394661041439318933">อุปกรณ์มีระดับแบตเตอรี่ของเคส <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">ปิงเกตเวย์ได้</translation>
 <translation id="1398634363027580500">เวลาในการตอบสนองของ HTTPS สูงมาก</translation>
 <translation id="1413240736185167732">ไม่สำเร็จ - ตัวกรองล้มเหลว</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ฉันมีคู่คีย์</translation>
+<translation id="1451536289672181509">อุปกรณ์เป็นแป้นพิมพ์</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2104796393919810494">ซ่อมเสร็จแล้ว</translation>
+<translation id="2105810540595158374">อุปกรณ์เป็นอุปกรณ์ควบคุมเกม</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ใช้ได้ <ph name="AVAILABLE_MEMORY" /> GB จาก <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
+<translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ปลายทาง</translation>
 <translation id="3069085583900247081">การทดสอบไม่สำเร็จ</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">ไม่สำเร็จ - หยุดทำงาน</translation>
 <translation id="3102119246920354026">แคช</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">อุปกรณ์เชื่อมต่ออยู่</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{นำหน้าออกไหม}=1{นำหน้าที่ {PAGE_NUMBER} ออกไหม}other{นำหน้าที่ {PAGE_NUMBER} ออกไหม}}</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
+<translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">กำลังสแกนหน้า <ph name="PAGE_NUM" /> เสร็จแล้ว <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="3459509316159669723">การพิมพ์</translation>
 <translation id="3462187165860821523">กำลังอัปเดต <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การอัปเดตอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
 <translation id="3942420633017001071">การวินิจฉัย</translation>
+<translation id="3954678691475912818">อุปกรณ์เป็นประเภทที่ไม่รู้จัก</translation>
 <translation id="3966286471246132217">ปิดแอปทั้งหมดจนกว่าการทดสอบจะเสร็จสมบูรณ์เพื่อให้ได้ผลลัพธ์ที่ถูกต้องยิ่งขึ้น</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">อย่ารอช้า รีบเลือกรหัสผ่านใหม่</translation>
 <translation id="4891842000192098784">ประสิทธิภาพเมื่อเพิ่มแรงกดดัน</translation>
+<translation id="4897058166682006107">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างซ้าย <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
 <translation id="4921665434385737356">ชาร์จ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">เครือข่ายภายใน</translation>
 <translation id="5358174242040570474">เกิดข้อผิดพลาด ลองเลือกวอลเปเปอร์อีกครั้งหรือเปิดแอปใหม่</translation>
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
+<translation id="5400907029458559844">อุปกรณ์กำลังเชื่อมต่อ</translation>
 <translation id="5401938042319910061">เรียกใช้กิจวัตรทั้งหมด</translation>
 <translation id="5423849171846380976">เปิดอยู่</translation>
 <translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">ยกเลิกการทดสอบ<ph name="TEST_NAME" />แล้ว</translation>
+<translation id="6319207335391420837">อัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">ล้มเหลว</translation>
 <translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
 <translation id="6749473226660745022">รูปภาพ</translation>
+<translation id="6753452347192452143">อุปกรณ์เป็นคอมพิวเตอร์</translation>
 <translation id="6756731097889387912">ยกเลิกการสแกนไม่ได้</translation>
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">เลือกตัวเลือกนี้หากไม่ได้เปลี่ยนแปลงการเป็นเจ้าของอุปกรณ์ เช่น โอนอุปกรณ์ไปให้บุคคลอื่นภายในองค์กร</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
 <translation id="7040230719604914234">โอเปอเรเตอร์</translation>
+<translation id="7041549558901442110">อุปกรณ์ไม่ได้เชื่อมต่ออยู่</translation>
 <translation id="7058278511608979688">สิ้นสุดและบันทึก</translation>
 <translation id="7059230779847288458">กำลังชาร์จ อีก <ph name="TIME_VALUE" />จะเต็ม</translation>
 <translation id="7068619307603204412">เตรียมอุปกรณ์ให้พร้อม</translation>
 <translation id="708426984172631313">หยุดแล้ว</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ไม่สำเร็จ - การให้สิทธิ์ไม่สำเร็จ</translation>
+<translation id="7103252855940681301">อุปกรณ์ <ph name="INDEX" /> จาก <ph name="COUNT" /> มีชื่อว่า <ph name="NAME" /></translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
+<translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">หน้าจอสัมผัส USB</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
 <translation id="763165478673169849">เวลารีเซ็ตล่าสุด</translation>
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
+<translation id="7656388927906093505">อุปกรณ์เป็นเมาส์</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTP</translation>
 <translation id="8863888432376731307">รับ <ph name="INTENT" /> สำหรับ "<ph name="QUERY" />" และอื่นๆ</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">อุปกรณ์เป็นแท็บเล็ต</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">ไร้สาย</translation>
 <translation id="8936793075252196307">ที่อยู่ IP ของไคลเอ็นต์</translation>
 <translation id="8945750210906526975">ทัชแพดภายใน</translation>
+<translation id="894617464444543719">อุปกรณ์เป็นโทรศัพท์</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>
 <translation id="8970109610781093811">ทำงานอีกครั้ง</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{สแกน}=1{สแกนหน้า {NUMBER_OF_PAGES}}other{สแกนหน้า {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">กำลังติดตั้ง - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">อุปกรณ์มีแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="9003704114456258138">ความถี่</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">การแปลง DNS มีเวลาในการตอบสนองสูง</translation>

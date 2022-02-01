@@ -404,7 +404,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3264259168916048410">Teie arvuti soovib seda seadet kasutada saidile sisselogimiseks</translation>
 <translation id="3265534588625245297">Hallake jälgitavaid saite</translation>
 <translation id="3269093882174072735">Laadi kujutis</translation>
-<translation id="3269956123044984603">Vahelehtede hankimiseks oma teistest seadmetest lülitage Androidi kontoseadetes sisse valik „Andmete automaatne sünkroonimine”.</translation>
 <translation id="3280562213547448728">Häälotsing</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3284510035090979597">Ennetav abi</translation>
@@ -473,6 +472,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3716182511346448902">Chrome peatas selle lehe, kuna see kasutab liiga palju mälu.</translation>
 <translation id="3721119614952978349">Teie ja Google</translation>
 <translation id="3737319253362202215">Tõlke seaded</translation>
+<translation id="3737402728074743863">Selle seadme kasutamiseks turvavõtmena määrake ekraanilukk</translation>
 <translation id="3738139272394829648">Puudutage otsimiseks</translation>
 <translation id="3739899004075612870">Teenuses <ph name="PRODUCT_NAME" /> järjehoidj. lisatud</translation>
 <translation id="3740525748616366977">Selles seadmes pole häälotsing saadaval</translation>
@@ -916,7 +916,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6303969859164067831">Logi välja ja lülita sünkroonimine välja</translation>
 <translation id="6312687380483398334">Veebirakendused (vaiksed)</translation>
 <translation id="6316139424528454185">Seda Androidi versiooni ei toetata</translation>
-<translation id="6324034347079777476">Androidi süsteemi sünkroonimine on keelatud</translation>
 <translation id="6324916366299863871">Otsetee muutmine</translation>
 <translation id="6324977638108296054">Esiletõstu linki ei õnnestu luua</translation>
 <translation id="6324997754869598316">(Viga <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6900532703269623216">Parem kaitse</translation>
 <translation id="6903907808598579934">Lülita sünkroonimine sisse</translation>
 <translation id="6909589135458168665">Lehtede eellaadimine</translation>
-<translation id="6929699136511445623">Luba Androidi süsteemi sünkroonimine</translation>
 <translation id="6942665639005891494">Allalaadimise vaikeasukohta saab menüü Seaded valikuga alati muuta</translation>
 <translation id="694267552845942083">Kohandate praegu oma sünkroonimisseadeid. Sünkroonimise sisselülitamiseks puudutage ekraani alaosas nuppu Kinnita. Navigeeri üles</translation>
 <translation id="6945221475159498467">Vali</translation>
@@ -1160,7 +1158,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7581273696622423628">Osalege küsitluses</translation>
 <translation id="7583262514280211622">Oma lugemisloendi leiate siit</translation>
 <translation id="7588219262685291874">Aktiveeri tume teema, kui akusäästja on seadmes sisse lülitatud</translation>
-<translation id="7593557518625677601">Chrome'i sünkroonimise alustamiseks avage Androidi seaded ja lubage uuesti Androidi süsteemi sünkroonimine</translation>
 <translation id="7594687499944811403">Lubage teenusel <ph name="EMBEDDED_ORIGIN" /> kinnitada teie isik teenuse <ph name="TOP_ORIGIN" /> jaoks</translation>
 <translation id="7596558890252710462">Operatsioonisüsteem</translation>
 <translation id="7605594153474022051">Sünkroonimine ei tööta</translation>

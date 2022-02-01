@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">За розміром області сканування</translation>
 <translation id="1387854245479784695">Це зведені дані для всіх ядер</translation>
+<translation id="1394661041439318933">Рівень заряду акумулятора чохла – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюз можна перевірити</translation>
 <translation id="1398634363027580500">дуже велика затримка HTTPS</translation>
 <translation id="1413240736185167732">Не надруковано – помилка фільтра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">У мене є пара ключів</translation>
+<translation id="1451536289672181509">Це клавіатура.</translation>
 <translation id="1468664791493211953">Пропозиції</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> керує цим пристроєм і може відстежувати ваші дії.</translation>
 <translation id="1478594628797167447">Сканери</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Більше налаштувань</translation>
 <translation id="2104796393919810494">Ремонт завершено</translation>
+<translation id="2105810540595158374">Це ігровий контролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
+<translation id="3031560714565892478">Це відеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3056720590588772262">Кінцева точка</translation>
 <translation id="3069085583900247081">Перевірку не пройдено</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦП</translation>
+<translation id="3124039320086536031">Пристрій підключено.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}many{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
 <translation id="3156846309055100599">Сканування сторінки <ph name="PAGE_NUMBER" />…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
+<translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Сканування сторінки <ph name="PAGE_NUM" />. Виконано <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Друк</translation>
 <translation id="3462187165860821523">Пристрій <ph name="DEVICE_NAME" /> оновлюється</translation>
+<translation id="3484914941826596830">Поки мікропрограма оновлюється, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Оновлення може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
 <translation id="3486220673238053218">визначення</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Немає підключених пристроїв</translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
 <translation id="3942420633017001071">Діагностика</translation>
+<translation id="3954678691475912818">Невідомий тип пристрою.</translation>
 <translation id="3966286471246132217">Щоб отримати точніші результати, закрийте всі додатки, доки перевірка не завершиться.</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="397105322502079400">Обчислення...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Негайно виберіть новий</translation>
 <translation id="4891842000192098784">Стрес</translation>
+<translation id="4897058166682006107">Рівень заряду акумулятора лівого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4917385247580444890">Потужний</translation>
 <translation id="4917889632206600977">Зупинено – закінчився папір</translation>
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">Локальна мережа</translation>
 <translation id="5358174242040570474">Сталася помилка. Виберіть фоновий малюнок знову або ще раз відкрийте додаток.</translation>
 <translation id="5372659122375744710">Мережа Wi-Fi ненадійна</translation>
+<translation id="5400907029458559844">Підключення пристрою.</translation>
 <translation id="5401938042319910061">Виконати всі послідовності дій</translation>
 <translation id="5423849171846380976">Активовано</translation>
 <translation id="5430931332414098647">Миттєва точка доступу</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Тест "<ph name="TEST_NAME" />" скасовано</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" />: оновіть мікропрограму на пристрої</translation>
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="6340526405444716530">Персоналізація</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
 <translation id="6749473226660745022">Фото</translation>
+<translation id="6753452347192452143">Це комп’ютер.</translation>
 <translation id="6756731097889387912">Не вдалося скасувати сканування</translation>
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">Виберіть цей варіант, якщо власник пристрою не змінюється. Наприклад, коли він передається іншій особі в межах організації.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7041549558901442110">Пристрій не підключено.</translation>
 <translation id="7058278511608979688">Завершити та зберегти</translation>
 <translation id="7059230779847288458">Заряджається (<ph name="TIME_VALUE" /> до повного зарядження)</translation>
 <translation id="7068619307603204412">Підготуйте пристрій</translation>
 <translation id="708426984172631313">ЗУПИНЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Не вдалося – помилка авторизації</translation>
+<translation id="7103252855940681301">Пристрій <ph name="INDEX" /> з <ph name="COUNT" />: "<ph name="NAME" />".</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">Адреса IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Послідовності дій для діагностики</translation>
+<translation id="7551123448725492271">Це аудіопристрій.</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сенсорний екран USB</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
 <translation id="763165478673169849">Час останнього скидання</translation>
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
+<translation id="7656388927906093505">Це миша.</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
 <translation id="7701040980221191251">Немає</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">Не вдається підключитися до веб-сайтів HTTP через брандмауер</translation>
 <translation id="8863888432376731307">Шукати <ph name="INTENT" /> для запиту "<ph name="QUERY" />" тощо</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Це планшет.</translation>
 <translation id="8881098542468797602">Перевірку пройдено</translation>
 <translation id="8898840733695078011">Рівень сигналу</translation>
 <translation id="8910721771319628100">Затримка мережі за умовчанням задовга</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">Бездротове</translation>
 <translation id="8936793075252196307">IP-адреса клієнта</translation>
 <translation id="8945750210906526975">Вбудована сенсорна панель</translation>
+<translation id="894617464444543719">Це телефон.</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}many{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
 <translation id="8994273342647807496">Встановлення – <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Рівень заряду акумулятора пристрою – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Велика затримка перетворення DNS</translation>

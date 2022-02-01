@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">අඩවියකට පිරීම සඳහා ඔබගේ පරිගණකයට මෙම උපාංගය භාවිත කිරීමට අවශ්‍යය</translation>
 <translation id="3265534588625245297">ඔබ අනුගමනය කරන අඩවි කළමනාකරණය කරන්න</translation>
 <translation id="3269093882174072735">රූපය පූරණය කරන්න</translation>
-<translation id="3269956123044984603">ඔබගේ වෙනත් උපාංග වෙතින් ඔබගේ ටැබ ලබා ගැනීමට, Android ගිණුම් සැකසීම් තුළ "දත්ත ස්වයංක්‍රීය-සමමුහුර්තය" ක්‍රියාත්මක කරන්න.</translation>
 <translation id="3280562213547448728">හඬ සෙවීම</translation>
 <translation id="3282568296779691940">Chrome වෙත පුරන්න</translation>
 <translation id="3284510035090979597">කල්තියා උදවු</translation>
@@ -917,7 +916,6 @@
 <translation id="6303969859164067831">වරනය වී සමමුහුව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="6312687380483398334">වෙබ් යෙදුම් (නිහඬ)</translation>
 <translation id="6316139424528454185">Android අනුවාදයට සහය දක්වනු නොලැබේ</translation>
-<translation id="6324034347079777476">Android පද්ධති සම්මුහුර්තය අබලයි</translation>
 <translation id="6324916366299863871">කෙටිමඟ සංස්කරණය</translation>
 <translation id="6324977638108296054">උද්දීපනයට සබැඳිය තැනිය නොහැකිය</translation>
 <translation id="6324997754869598316">(දෝෂය <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@
 <translation id="6900532703269623216">වැඩිදියුණු කළ ආරක්ෂාව</translation>
 <translation id="6903907808598579934">සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="6909589135458168665">පිටු පූර්ව පූරණය කරන්න</translation>
-<translation id="6929699136511445623">Android පද්ධති සමමුහුර්තය සබල කරන්න</translation>
 <translation id="6942665639005891494">සැකසීමේ මෙනු විකල්පය භාවිතයෙන් ඕනැම වේලාවක පෙරනිමි බාගැනීමේ ස්ථානය වෙනස් කරන්න</translation>
 <translation id="694267552845942083">ඔබ දැනට ඔබගේ සමමුහුර්ත සැකසීම් අභිරුචිකරණය කරමින් සිටී. සමමුහුර්තය ක්‍රියාත්මක කිරීම අවසන් කිරීමට, තිරයේ පහළම ළඟ ඇති තහවුරු කිරීමේ බොත්තම තට්ටු කරන්න. ඉහළට සංචාලනය කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
@@ -1161,7 +1158,6 @@
 <translation id="7581273696622423628">සමීක්ෂණය ගන්න</translation>
 <translation id="7583262514280211622">ඔබට ඔබගේ කියවීම් ලැයිස්තුව මෙහි හමු වනු ඇත</translation>
 <translation id="7588219262685291874">ඔබේ උපාංගයේ බැටරි සුරැකුම සක්‍රීයව තිබෙන විට අඳුරු තේමාව සක්‍රීය කරන්න</translation>
-<translation id="7593557518625677601">Android සැකසීම් විවෘත කර Chrome සමමුහු. ඇරඹීමට Android පද්ධති සමමු. යළි සබල කර.</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> හට <ph name="TOP_ORIGIN" /> සඳහා ඒ ඔබ බව සත්‍යාපනය කිරීමට ඉඩ දෙමු</translation>
 <translation id="7596558890252710462">මෙහෙයුම් පද්ධති</translation>
 <translation id="7605594153474022051">සමමුහුර්තය වැඩ නොකරයි</translation>

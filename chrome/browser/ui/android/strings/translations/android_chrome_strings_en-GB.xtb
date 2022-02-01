@@ -404,7 +404,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3264259168916048410">Your computer wants to use this device to sign in to a site</translation>
 <translation id="3265534588625245297">Manage the sites that you follow</translation>
 <translation id="3269093882174072735">Load image</translation>
-<translation id="3269956123044984603">To get your tabs from your other devices, turn on “Auto-sync data” in Android account settings.</translation>
 <translation id="3280562213547448728">Voice search</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3284510035090979597">Proactive help</translation>
@@ -917,7 +916,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6312687380483398334">Web apps (quiet)</translation>
 <translation id="6316139424528454185">Android version is unsupported</translation>
-<translation id="6324034347079777476">Android system sync disabled</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6324977638108296054">Can’t create link to highlight</translation>
 <translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6909589135458168665">Preload pages</translation>
-<translation id="6929699136511445623">Enable Android system sync</translation>
 <translation id="6942665639005891494">Change the default download location at any time using the Settings menu option</translation>
 <translation id="694267552845942083">You are currently customising your Sync settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
 <translation id="6945221475159498467">Select</translation>
@@ -1161,7 +1158,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7581273696622423628">Take survey</translation>
 <translation id="7583262514280211622">You’ll find your reading list here</translation>
 <translation id="7588219262685291874">Turn on dark theme when your device's Battery Saver is on</translation>
-<translation id="7593557518625677601">Open Android settings and re-enable Android system sync to start Chrome sync</translation>
 <translation id="7594687499944811403">Let <ph name="EMBEDDED_ORIGIN" /> verify that it's you for <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operating system</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>

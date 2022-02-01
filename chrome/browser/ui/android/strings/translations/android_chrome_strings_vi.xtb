@@ -404,7 +404,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3264259168916048410">Máy tính của bạn muốn sử dụng thiết bị này để đăng nhập vào một trang web</translation>
 <translation id="3265534588625245297">Quản lý các trang web mà bạn theo dõi</translation>
 <translation id="3269093882174072735">Tải hình ảnh</translation>
-<translation id="3269956123044984603">Để có các thẻ từ các thiết bị khác của bạn, hãy bật “Tự động đồng bộ hóa dữ liệu” trong cài đặt tài khoản Android.</translation>
 <translation id="3280562213547448728">Tìm kiếm bằng giọng nói</translation>
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3284510035090979597">Trợ giúp chủ động</translation>
@@ -473,6 +472,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3716182511346448902">Chrome đã tạm dừng trang này vì trang dùng quá nhiều bộ nhớ.</translation>
 <translation id="3721119614952978349">Bạn và Google</translation>
 <translation id="3737319253362202215">Cài đặt bản dịch</translation>
+<translation id="3737402728074743863">Để dùng thiết bị này làm khoá bảo mật, hãy đặt khoá màn hình</translation>
 <translation id="3738139272394829648">Chạm để tìm kiếm</translation>
 <translation id="3739899004075612870">Đã đánh dấu trang trong <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Không dùng được tính năng Tìm kiếm bằng giọng nói trên thiết bị này</translation>
@@ -916,7 +916,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6312687380483398334">Ứng dụng web (im lặng)</translation>
 <translation id="6316139424528454185">Phiên bản Android không được hỗ trợ</translation>
-<translation id="6324034347079777476">Đồng bộ hóa hệ thống Android đã bị tắt</translation>
 <translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
 <translation id="6324977638108296054">Không thể tạo đường liên kết đến văn bản được làm nổi bật</translation>
 <translation id="6324997754869598316">(Lỗi <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
 <translation id="6909589135458168665">Tải trước các trang</translation>
-<translation id="6929699136511445623">Bật tính năng đồng bộ hóa hệ thống Android</translation>
 <translation id="6942665639005891494">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào bằng cách sử dụng tùy chọn menu Cài đặt</translation>
 <translation id="694267552845942083">Bạn hiện đang tùy chỉnh các chế độ cài đặt Đồng bộ hóa của mình. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
 <translation id="6945221475159498467">Chọn</translation>
@@ -1160,7 +1158,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7581273696622423628">Thực hiện khảo sát</translation>
 <translation id="7583262514280211622">Bạn sẽ thấy danh sách đọc ở đây</translation>
 <translation id="7588219262685291874">Bật giao diện tối khi Trình tiết kiệm pin trên thiết bị đang bật</translation>
-<translation id="7593557518625677601">Mở c.đặt Android &amp; bật lại đ.bộ hóa hệ thống Android để b.đầu đồng bộ hóa Chrome</translation>
 <translation id="7594687499944811403">Cho phép <ph name="EMBEDDED_ORIGIN" /> xác minh danh tính của bạn trên <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Hệ điều hành</translation>
 <translation id="7605594153474022051">Đồng bộ hóa không hoạt động</translation>

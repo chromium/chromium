@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্কেনৰ ক্ষেত্ৰত খাপ খুৱাওক</translation>
 <translation id="1387854245479784695">এইটো হৈছে আটাইবোৰ ক’ৰৰ এটা সমষ্টি</translation>
+<translation id="1394661041439318933">ডিভাইচটোৰ কেছত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="1397738625398125236">গে’টৱে’ পিং কৰিব পৰা যায়</translation>
 <translation id="1398634363027580500">HTTPSৰ অতি বেছি বিলম্বতা</translation>
 <translation id="1413240736185167732">বিফল হৈছে - ফিল্টাৰ বিফল হৈছে</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">মোৰ এটা কী পেয়াৰ আছে</translation>
+<translation id="1451536289672181509">ডিভাইচটো এখন কীব’ৰ্ড।</translation>
 <translation id="1468664791493211953">অ'ফাৰসমূহ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে তথা আপোনাৰ কাৰ্যকলাপো নিৰীক্ষণ কৰিব পাৰে।</translation>
 <translation id="1478594628797167447">স্কেনাৰ</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
 <translation id="2104796393919810494">মেৰামতি সম্পূৰ্ণ হৈছে</translation>
+<translation id="2105810540595158374">ডিভাইচটো এটা গে’ম নিয়ন্ত্ৰক।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> জিবিৰ <ph name="AVAILABLE_MEMORY" /> জিবি উপলব্ধ আছে</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
+<translation id="3031560714565892478">ডিভাইচটো এটা ভিডিঅ’ কেমেৰা।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
 <translation id="3056720590588772262">এণ্ডপইণ্ট</translation>
 <translation id="3069085583900247081">পৰীক্ষা বিফল হৈছে</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">বিফল হৈছে - বন্ধ হৈছে</translation>
 <translation id="3102119246920354026">কেশ্ব</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">ডিভাইচটো সংযোগ কৰা হৈছে।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{পৃষ্ঠাখন আঁতৰাবনে?}=1{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}one{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}other{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}}</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বৰৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> গিগাহাৰ্টজ</translation>
 <translation id="3310640316857623290">DNSৰ বিলম্বতা যথেষ্ট পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
+<translation id="3340011300870565703">ডিভাইচটোৰ সোঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369013195428705271">আপুনি সকলো প্ৰিণ্টৰ ইতিহাস নিশ্চিতভাৱে মচিব বিচাৰেনে? আপোনাৰ চলি থকা প্ৰিণ্টৰ কামসমূহ মচা নহয়।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে। <ph name="PERCENTAGE_VALUE" />% সম্পূৰ্ণ হ’ল।</translation>
 <translation id="3459509316159669723">প্ৰিণ্টিং</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> আপডে’ট কৰি থকা হৈছে</translation>
+<translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">কোনো ডিভাইচ সংযোগ কৰি থোৱা নাই</translation>
 <translation id="3941014780699102620">হ’ষ্ট সম্পৰ্কীয় সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="3942420633017001071">ডায়েগনষ্টিক্স</translation>
+<translation id="3954678691475912818">অজ্ঞাত প্ৰকাৰৰ ডিভাইচ।</translation>
 <translation id="3966286471246132217">অধিক সঠিক ফলাফলৰ বাবে, পৰীক্ষাটো সম্পূৰ্ণ নোহোৱালৈকে আটাইবোৰ এপ্ বন্ধ কৰক।</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4891842000192098784">চাপ</translation>
+<translation id="4897058166682006107">ডিভাইচটোৰ বাওঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="4917385247580444890">শক্তিশালী</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">স্থানীয় নেটৱৰ্ক</translation>
 <translation id="5358174242040570474">কিবা ভুল হ’ল। পুনৰ এখন ৱালপেপাৰ বাছনি কৰি অথবা পুনৰ এপ্‌টো খুলি চেষ্টা কৰি চাওক।</translation>
 <translation id="5372659122375744710">ৱাই-ফাইৰ নেটৱৰ্কটো সুৰক্ষিত নহয়</translation>
+<translation id="5400907029458559844">ডিভাইচটো সংযোগ হৈ আছে।</translation>
 <translation id="5401938042319910061">সকলো ৰুটিন চলাওক</translation>
 <translation id="5423849171846380976">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5430931332414098647">তাৎক্ষণিক টেথাৰিং কৰাৰ সুবিধা</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">এআৰচি</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" />ত ফাৰ্মৱেৰ আপডে’ট কৰক</translation>
 <translation id="6325525973963619867">বিফল হৈছে</translation>
 <translation id="6340526405444716530">ব্যক্তিগতকৰণ</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
 <translation id="6747215703636344499">বন্ধ হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
 <translation id="6749473226660745022">ফট’</translation>
+<translation id="6753452347192452143">ডিভাইচটো এটা কম্পিউটাৰ।</translation>
 <translation id="6756731097889387912">স্কেনিং বাতিল কৰিব পৰা নগ’ল</translation>
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
 <translation id="6768237774506518020">DNSৰ সমাধান বিফল হোৱাৰ হাৰ উচ্চ</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">যদি ডিভাইচটোৰ মালিকীস্বত্ব সলনি হোৱা নাই, তেন্তে এই বিকল্পটো বাছনি কৰক। উদাহৰণস্বৰূপে, ডিভাইচটো এটা প্ৰতিষ্ঠানৰ ভিতৰতে এগৰাকী বেলেগ ব্যক্তিলৈ স্থানান্তৰ কৰি থকা হৈছে।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7040230719604914234">অপাৰেটৰ</translation>
+<translation id="7041549558901442110">ডিভাইচটো সংযোগ কৰা হোৱা নাই।</translation>
 <translation id="7058278511608979688">সমাপ্ত কৰি ছেভ কৰক</translation>
 <translation id="7059230779847288458">চাৰ্জ কৰি থকা হৈছে, সম্পূৰ্ণ হ’বলৈ <ph name="TIME_VALUE" /> বাকী</translation>
 <translation id="7068619307603204412">আপোনাৰ ডিভাইচটো সাজু কৰক</translation>
 <translation id="708426984172631313">বন্ধ হৈছে</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">বিফল হৈছে - কৰ্তৃত্ব প্ৰদান কৰাটো বিফল হৈছে</translation>
+<translation id="7103252855940681301"><ph name="COUNT" /> টা ডিভাইচৰ ভিতৰত <ph name="INDEX" />তম ডিভাইচ, যাৰ নাম <ph name="NAME" />।</translation>
 <translation id="7134436342991564651">{0,plural, =1{নে'ম ছার্ভাৰ}one{নে'ম ছার্ভাৰ}other{নে'ম ছার্ভাৰ}}</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">IPv6 ঠিকনা</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">ডায়গন’ষ্টিক ৰুটিন</translation>
+<translation id="7551123448725492271">ডিভাইচটো এটা অডিঅ’ ডিভাইচ।</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">ইউএছবি টাচ্চস্ক্ৰীন</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
+<translation id="7656388927906093505">ডিভাইচটো এটা মাউচ।</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>
 <translation id="7701040980221191251">নাই</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">ফায়াৰৱালৰ জৰিয়তে HTTP ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />"ৰ বাবে <ph name="INTENT" /> আৰু বহুতো পাওক</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
 <translation id="8898840733695078011">ছিগনেলৰ ক্ষমতা</translation>
 <translation id="8910721771319628100">ডিফ’ল্ট নেটৱৰ্ক বিলম্বতাৰ সীমাৰ ওপৰত আছে</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">বেতাঁৰ</translation>
 <translation id="8936793075252196307">ক্লায়েণ্টৰ আইপি ঠিকনা</translation>
 <translation id="8945750210906526975">অভ্যন্তৰীণ টাচ্চপেড</translation>
+<translation id="894617464444543719">ডিভাইচটো এটা ফ’ন।</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্কেন কৰক}=1{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}one{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}other{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}}</translation>
 <translation id="8994273342647807496">ইনষ্টল কৰি থকা হৈছে - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">ডিভাইচটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ৰিজ’লিউশ্বনটোত অধিক বিলম্বতা আছে</translation>

@@ -404,7 +404,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3264259168916048410">Vaše računalo želi koristiti ovaj uređaj za prijavu na web-lokaciju</translation>
 <translation id="3265534588625245297">Upravljajte web-lokacijama koje pratite</translation>
 <translation id="3269093882174072735">Učitaj sliku</translation>
-<translation id="3269956123044984603">Da bi se prikazale kartice s vaših ostalih uređaja, uključite "Automatsku sinkronizaciju podataka" u postavkama računa na Androidu.</translation>
 <translation id="3280562213547448728">Glasovno pretraživanje</translation>
 <translation id="3282568296779691940">Prijavite se u Chrome</translation>
 <translation id="3284510035090979597">Proaktivna pomoć</translation>
@@ -917,7 +916,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6303969859164067831">Odjava i isključivanje sinkronizacije</translation>
 <translation id="6312687380483398334">Web-aplikacije (tiho)</translation>
 <translation id="6316139424528454185">Verzija Androida nije podržana</translation>
-<translation id="6324034347079777476">Sinkronizacija sustava Android onemogućena</translation>
 <translation id="6324916366299863871">Uređivanje prečaca</translation>
 <translation id="6324977638108296054">Izrada veze na istaknuti tekst nije uspjela</translation>
 <translation id="6324997754869598316">(Pogreška <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6900532703269623216">Poboljšana zaštita</translation>
 <translation id="6903907808598579934">Uključi sinkronizaciju</translation>
 <translation id="6909589135458168665">Predučitavanje stranica</translation>
-<translation id="6929699136511445623">Omogućite sinkronizaciju sustava Android</translation>
 <translation id="6942665639005891494">Zadanu lokaciju preuzimanja možete promijeniti kad god želite putem opcije u izborniku Postavke</translation>
 <translation id="694267552845942083">Trenutačno prilagođavate postavke sinkronizacije. Da biste dovršili uključivanje sinkronizacije, dodirnite gumb Potvrdi pri dnu zaslona. Natrag</translation>
 <translation id="6945221475159498467">Odaberi</translation>
@@ -1161,7 +1158,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7581273696622423628">Ispunite anketu</translation>
 <translation id="7583262514280211622">Ovdje ćete pronaći svoj popis za čitanje</translation>
 <translation id="7588219262685291874">Uključi tamnu temu kada je uključena Štednja baterije na uređaju</translation>
-<translation id="7593557518625677601">U postavkama omogućite sink. sustava Android da se pokrene Chrome sinkronizacija</translation>
 <translation id="7594687499944811403">Dopustite da <ph name="EMBEDDED_ORIGIN" /> potvrdi da ste to vi za <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativni sustav</translation>
 <translation id="7605594153474022051">Sinkronizacija ne radi</translation>

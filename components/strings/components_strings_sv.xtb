@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Visa information</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vill lagra stora mängder data permanent på din enhet</translation>
 <translation id="1032854598605920125">Rotera medurs</translation>
+<translation id="1033329911862281889">Inkognitoläget gör dig inte osynlig online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Webbplatser och tjänster de använder kan se ditt besök<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Din arbetsgivare eller skola kan spåra webbaktivitet<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internetleverantören kan övervaka webbtrafik<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1036982837258183574">Tryck på |<ph name="ACCELERATOR" />| för att stänga helskärmen</translation>
 <translation id="1038106730571050514">Visa förslag</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Cacheminnet för policyn är OK</translation>
 <translation id="1130564665089811311">Knappen Översätt sida, tryck på Retur om du vill översätta sidan med Google Översätt</translation>
 <translation id="1131264053432022307">Bilden som du kopierade</translation>
+<translation id="1142846828089312304">Blockera cookies från tredje part i inkognitoläge</translation>
 <translation id="1150979032973867961">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom datorns operativsystem inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="1151972924205500581">Lösenord krävs</translation>
 <translation id="1156303062776767266">Detta är en lokal eller delad fil</translation>
@@ -180,6 +187,12 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1483493594462132177">Skicka</translation>
 <translation id="1484290072879560759">Välj leveransadress</translation>
 <translation id="1492194039220927094">Skicka principer:</translation>
+<translation id="149293076951187737">När du stänger inkognitoflikar i Chrome rensas följande aktivitet i flikarna från denna enhet:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Webbaktivitet<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Sökhistorik<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Uppgifter som anges i formulär<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1501859676467574491">Visa kort från ditt Google-konto</translation>
 <translation id="1507202001669085618">&lt;p&gt;Felmeddelandet visas om du använder en wifi-portal där du måste logga in innan du kommer ut på internet.&lt;/p&gt;
@@ -285,6 +298,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
     inställningen har fel format, och därför går det inte att slutföra begäran
     om <ph name="SITE" /> i webbläsaren. Ursprungsprinciper kan användas av
     webbplatsoperatörer för att konfigurera säkerhetsfunktioner och andra funktioner för webbplatser.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Läs mer om inkognitoläge i Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Öppna flikar visas här</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -527,6 +541,12 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2597378329261239068">Dokumentet är lösenordsskyddat. Ange ett lösenord.</translation>
 <translation id="2609632851001447353">Varianter</translation>
 <translation id="2610561535971892504">Klicka för att kopiera</translation>
+<translation id="2617988307566202237">Följande information sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chrome:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Din webbhistorik
+          <ph name="LIST_ITEM" />Cookies och webbplatsdata
+          <ph name="LIST_ITEM" />Uppgifter som anges i formulär
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (kuvert)</translation>
 <translation id="2623663032199728144">Får begära att använda information om dina skärmar</translation>
 <translation id="2625385379895617796">Klockan går före</translation>
@@ -593,6 +613,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2850739647070081192">Invite (kuvert)</translation>
 <translation id="2856444702002559011">En angripare kan försöka stjäla dina uppgifter från <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (t.ex. lösenord, meddelanden eller kreditkortsuppgifter). <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Påträngande eller vilseledande annonser visas på den här webbplatsen.</translation>
+<translation id="286512204874376891">Ett virtuellt kort döljer det riktiga kortet och skyddar dig från eventuella bedrägerier. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Vänlig</translation>
 <translation id="2876489322757410363">Om du betalar i ett externt program sker inte det i inkognitoläge. Vill du fortsätta?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera Säker webbsökning med mera i inställningarna för Chrome</translation>
@@ -713,6 +734,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3252266817569339921">franska</translation>
 <translation id="3257954757204451555">Vem står bakom informationen?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa en ny händelse i Google Kalender</translation>
+<translation id="3261488570342242926">Läs mer om virtuella kort</translation>
 <translation id="3264837738038045344">Knappen Hantera inställningar för Chrome: tryck på Retur om du vill öppna Chrome-inställningarna</translation>
 <translation id="3266793032086590337">Värde (konflikt)</translation>
 <translation id="3268451620468152448">Öppna flikar</translation>
@@ -1157,6 +1179,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Cashback länkad</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4638670630777875591">Inkognitoläge i Chromium</translation>
 <translation id="464342062220857295">Sökfunktioner</translation>
 <translation id="4644670975240021822">Motsatt ordning – framsidan nedåt</translation>
 <translation id="4646534391647090355">Gå dit nu</translation>
@@ -1252,6 +1275,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill söka</translation>
 <translation id="4930153903256238152">Hög kapacitet</translation>
+<translation id="4940163644868678279">Inkognitoläge i Chrome</translation>
 <translation id="4943872375798546930">Inga resultat</translation>
 <translation id="4950898438188848926">Knapp för flikbyte. Tryck på retur för att byta till den öppna fliken <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Åtgärder</translation>
@@ -1612,6 +1636,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6120179357481664955">Vill du spara UPI-id?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Objektet har tagits bort</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Läs mer om inkognitoläge i Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Kontrollera kablar och starta om routrar, modem och andra nätverksenheter
     som används.</translation>
 <translation id="614940544461990577">Testa att</translation>
@@ -1886,6 +1911,12 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7111012039238467737">(Giltigt)</translation>
 <translation id="7118618213916969306">Sök efter webbadressen i Urklipp, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Stäng andra flikar eller program</translation>
+<translation id="7129355289156517987">När du stänger inkognitoflikar i Chromium rensas följande aktivitet i flikarna från denna enhet:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Webbaktivitet<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Sökhistorik<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Uppgifter som anges i formulär<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Det går inte att skicka till den här adressen. Välj en annan adress.</translation>
 <translation id="7132939140423847331">Administratören tillåter inte att denna data kopieras.</translation>
 <translation id="7135130955892390533">Visa status</translation>
@@ -2004,6 +2035,12 @@ Mer information.
 <translation id="7485870689360869515">Ingen data hittades.</translation>
 <translation id="7495528107193238112">Det här innehållet har blockerats. Kontakta webbplatsägaren om du vill åtgärda problemet.</translation>
 <translation id="7497998058912824456">Knappen Skapa Google-dokument: tryck på Retur om du snabbt vill skapa ett nytt Google-dokument</translation>
+<translation id="7506488012654002225">Följande information sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chromium:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Din webbhistorik
+          <ph name="LIST_ITEM" />Cookies och webbplatsdata
+          <ph name="LIST_ITEM" />Uppgifter som anges i formulär
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Enhets-id för returnerad princip är tomt eller matchar inte nuvarande enhets-id</translation>
 <translation id="7508870219247277067">Avokadogrön</translation>
 <translation id="7511955381719512146">wifi-nätverket du använder kanske kräver att du besöker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2223,6 +2260,7 @@ Mer information.
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (kuvert)</translation>
 <translation id="8211406090763984747">Anslutningen är säker</translation>
+<translation id="8217240300496046857">Webbplatser kan inte använda cookies som spårar dig på webben. Funktioner på vissa webbplatser kan sluta fungera.</translation>
 <translation id="8218327578424803826">Tilldelad plats:</translation>
 <translation id="8220146938470311105">C7/C6 (kuvert)</translation>
 <translation id="8225771182978767009">Personen som konfigurerade datorn har valt att blockera den här webbplatsen.</translation>

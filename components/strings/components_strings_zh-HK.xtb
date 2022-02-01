@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">查看詳情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在您的裝置上永久儲存大量數據</translation>
 <translation id="1032854598605920125">順時針方向旋轉</translation>
+<translation id="1033329911862281889">無痕模式無法讓你在網路上不留痕跡：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />網站及其使用的服務可以查看造訪記錄<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />雇主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />網際網路服務供應商可以監控網路流量<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1036982837258183574">按下 |<ph name="ACCELERATOR" />| 即可退出全螢幕</translation>
 <translation id="1038106730571050514">顯示建議</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1130564665089811311">翻譯網頁按鈕，㩒一下 Enter 鍵就可以透過 Google 翻譯翻譯呢個網頁</translation>
 <translation id="1131264053432022307">您複製的圖片</translation>
+<translation id="1142846828089312304">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="1150979032973867961">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得您電腦的操作系統的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="1151972924205500581">請輸入密碼</translation>
 <translation id="1156303062776767266">您正在查看本機或共用檔案</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1484290072879560759">選擇付運地址</translation>
 <translation id="1492194039220927094">政策推送：</translation>
+<translation id="149293076951187737">關閉所有 Chrome 無痕分頁後，系統會將你在這些分頁上的活動記錄從這部裝置上清除：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />瀏覽活動<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />搜尋記錄<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1501859676467574491">顯示您 Google 帳戶中的付款卡</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您正在使用的 Wi-Fi 入口網站需要登入才能連線至網絡，便會看到此錯誤訊息。&lt;/p&gt;
@@ -211,7 +224,7 @@
 <translation id="1567040042588613346">此政策運作正常，但與其他地方設定的值相同，並已取代該值。</translation>
 <translation id="1569487616857761740">輸入到期日</translation>
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
-<translation id="1581767074483369314">註冊虛擬卡片</translation>
+<translation id="1581767074483369314">註冊虛擬卡</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
 <translation id="1586541204584340881">您已安裝的擴充程式</translation>
@@ -281,6 +294,7 @@
 <translation id="1763864636252898013">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得您裝置的操作系統的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="1772163372082567643">您的目標伺服器「<ph name="ORIGIN" />」已設定標題要求為收到的所有要求套用來源政策。不過，由於該標題格式錯誤，因此瀏覽器無法完成您向 <ph name="SITE" /> 提出的要求。網站網絡供應商可使用來源政策設定網站的安全性及其他屬性。</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />進一步瞭解 Chromium 無痕模式<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">您最近開啟的分頁會在這裡顯示</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -373,7 +387,7 @@
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102134110707549001">建議安全性強的密碼…</translation>
 <translation id="2102495993840063010">Android 應用程式</translation>
-<translation id="2106249949168291652">已儲存。要透過虛擬卡片進一步保護卡片的安全嗎？</translation>
+<translation id="2106249949168291652">已儲存。要透過虛擬卡來提升卡的安全性嗎？</translation>
 <translation id="2107021941795971877">列印支援</translation>
 <translation id="2108755909498034140">重新啟動您的電腦</translation>
 <translation id="2111166930115883695">按一下空格鍵即可開始遊戲</translation>
@@ -523,13 +537,19 @@
 <translation id="2597378329261239068">此文件受到密碼保護，請輸入密碼。</translation>
 <translation id="2609632851001447353">變化</translation>
 <translation id="2610561535971892504">點擊複製</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />你的瀏覽記錄
+          <ph name="LIST_ITEM" />Cookie 和網站資料
+          <ph name="LIST_ITEM" />在表單中輸入的資訊
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (信封)</translation>
 <translation id="2623663032199728144">可要求使用螢幕中的資料</translation>
 <translation id="2625385379895617796">您時鐘的時間過快</translation>
 <translation id="262745152991669301">可要求連接 USB 裝置</translation>
 <translation id="2629325967560697240">如要獲得 Chrome 最高程度的安全防護，請<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />啟用強化保護功能<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
-<translation id="2638001509205834345">要進一步保護卡片的安全嗎？</translation>
+<translation id="2638001509205834345">要提升卡的安全性嗎？</translation>
 <translation id="2639739919103226564">狀態：</translation>
 <translation id="264810637653812429">找不到任何兼容的裝置。</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" />，<ph name="CITY" /></translation>
@@ -589,6 +609,7 @@
 <translation id="2850739647070081192">Invite (信封)</translation>
 <translation id="2856444702002559011">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取您的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
+<translation id="286512204874376891">虛擬卡片會偽裝成實體卡片，保護你免受潛在詐欺事件的侵擾。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">友善</translation>
 <translation id="2876489322757410363">即將退出無痕模式，改用外部應用程式付款。要繼續嗎？</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理安全瀏覽之類嘅功能</translation>
@@ -662,7 +683,7 @@
 <translation id="3113284927548439113">第三批</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> 要求您備份資料，並歸還此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="3116158981186517402">粘合</translation>
-<translation id="311958134571892113">已連結到</translation>
+<translation id="311958134571892113">已連結以下卡：</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />嘗試執行連線診斷<ph name="END_LINK" />。</translation>
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
@@ -709,6 +730,7 @@
 <translation id="3252266817569339921">法文</translation>
 <translation id="3257954757204451555">這項資料是由誰提供？</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 日曆度快速建立新活動</translation>
+<translation id="3261488570342242926">瞭解虛擬卡片</translation>
 <translation id="3264837738038045344">管理 Chrome 設定按鈕，㩒一下 Enter 鍵就可以前往 Chrome 設定</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
@@ -1147,6 +1169,7 @@
 <translation id="4628948037717959914">相片</translation>
 <translation id="4631649115723685955">已連結現金回贈</translation>
 <translation id="4636930964841734540">資訊</translation>
+<translation id="4638670630777875591">Chromium 無痕模式</translation>
 <translation id="464342062220857295">搜尋功能</translation>
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
 <translation id="4646534391647090355">立即前往下載中心</translation>
@@ -1242,6 +1265,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以搵</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4940163644868678279">Chrome 無痕模式</translation>
 <translation id="4943872375798546930">沒有結果</translation>
 <translation id="4950898438188848926">分頁切換按鈕，㩒一下 Enter 鍵就可以轉去開以下嘅分頁：<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">動作</translation>
@@ -1602,6 +1626,7 @@
 <translation id="6120179357481664955">要記住您的 UPI ID 嗎？</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">項目已移除</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />進一步瞭解 Chrome 無痕模式<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">檢查連接線，或重新啟動路由器、數據機或其他使用中的
     網絡裝置。</translation>
 <translation id="614940544461990577">建議做法：</translation>
@@ -1876,6 +1901,12 @@
 <translation id="7111012039238467737">(有效)</translation>
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
+<translation id="7129355289156517987">關閉所有 Chromium 無痕分頁後，系統會將你在這些分頁上的活動記錄從這部裝置上清除：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />瀏覽活動<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />搜尋記錄<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">無法運送至此地址，請選取其他地址。</translation>
 <translation id="7132939140423847331">管理員已禁止複製此資料。</translation>
 <translation id="7135130955892390533">顯示狀態</translation>
@@ -1936,6 +1967,7 @@
 <translation id="7334320624316649418">重做重新排序(&amp;R)</translation>
 <translation id="7335157162773372339">可要求使用攝錄機</translation>
 <translation id="7337248890521463931">顯示更多行</translation>
+<translation id="7337418456231055214">尚未填寫虛擬卡號嗎？點選卡片資料即可複製。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">無法在您的平台上使用。</translation>
 <translation id="733923710415886693">伺服器憑證並未透過憑證透明度政策披露。</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -1994,6 +2026,12 @@
 <translation id="7485870689360869515">找不到任何數據。</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="7497998058912824456">建立文件掣，㩒一下 Enter 鍵就可以快速建立新嘅 Google 文件</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />你的瀏覽記錄
+          <ph name="LIST_ITEM" />Cookie 和網站資料
+          <ph name="LIST_ITEM" />在表單中輸入的資訊
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">傳回的政策裝置識別碼為空白或與目前裝置識別碼不符</translation>
 <translation id="7508870219247277067">牛油果色</translation>
 <translation id="7511955381719512146">目前使用的 Wi-Fi 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
@@ -2213,6 +2251,7 @@
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8206978196348664717">Prc4 (信封)</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
+<translation id="8217240300496046857">網站無法使用 Cookie 來追蹤你在網路上的活動。某些網站的功能可能無法正常運作。</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (信封)</translation>
 <translation id="8225771182978767009">設定此電腦的用戶已封鎖此網站。</translation>

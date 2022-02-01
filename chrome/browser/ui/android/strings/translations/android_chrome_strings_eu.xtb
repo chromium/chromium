@@ -404,7 +404,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3264259168916048410">Ordenagailuak gailua erabili nahi du webgune batean saioa hasteko</translation>
 <translation id="3265534588625245297">Kudeatu jarraitzaile zaituzten webguneak</translation>
 <translation id="3269093882174072735">Kargatu irudia</translation>
-<translation id="3269956123044984603">Beste gailuetako fitxak eskura izateko, aktibatu "Sinkronizatu datuak automatikoki" aukera Android kontuaren ezarpenetan.</translation>
 <translation id="3280562213547448728">Ahozko bilaketa</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3284510035090979597">Laguntza proaktiboa</translation>
@@ -473,6 +472,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3716182511346448902">Chrome-k orri hau pausatu du memoria gehiegi erabiltzen duelako.</translation>
 <translation id="3721119614952978349">Google eta zu</translation>
 <translation id="3737319253362202215">Itzulpenaren ezarpenak</translation>
+<translation id="3737402728074743863">Gailua segurtasun-giltza gisa erabiltzeko, ezarri pantailaren blokeoa</translation>
 <translation id="3738139272394829648">Sakatu bilatzeko</translation>
 <translation id="3739899004075612870">Egin da laster-marka <ph name="PRODUCT_NAME" />-n</translation>
 <translation id="3740525748616366977">Ahozko bilaketa ez dago erabilgarri gailu honetan</translation>
@@ -916,7 +916,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6303969859164067831">Amaitu saioa eta desaktibatu sinkronizazioa</translation>
 <translation id="6312687380483398334">Sareko aplikazioak (audioa eta jakinarazpenak desaktibatuta)</translation>
 <translation id="6316139424528454185">Android-en bertsio bateraezina</translation>
-<translation id="6324034347079777476">Desgaitu da Android sistemarekin sinkronizatzeko aukera</translation>
 <translation id="6324916366299863871">Editatu lasterbidea</translation>
 <translation id="6324977638108296054">Ezin da sortu nabarmendutako testurako estekarik</translation>
 <translation id="6324997754869598316">(Errorea: <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6900532703269623216">Babes hobetua</translation>
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
 <translation id="6909589135458168665">Kargatu orriak aurrez</translation>
-<translation id="6929699136511445623">Gaitu Android sistemarekin sinkronizatzeko aukera</translation>
 <translation id="6942665639005891494">Deskargen kokapen lehenetsia aldatzeko, erabili Ezarpenak menuko aukera</translation>
 <translation id="694267552845942083">Sinkronizazio-ezarpenak pertsonalizatzen ari zara. Sinkronizazioa aktibatzen amaitzeko, sakatu pantailaren behealdean dagoen "Berretsi" botoia. Joan gora</translation>
 <translation id="6945221475159498467">Hautatu</translation>
@@ -1160,7 +1158,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7581273696622423628">Erantzun inkestari</translation>
 <translation id="7583262514280211622">Irakurketa-zerrenda aurkituko duzu hemen</translation>
 <translation id="7588219262685291874">Aktibatu gai iluna gailuaren bateria-aurrezlea aktibatuta dagoenean</translation>
-<translation id="7593557518625677601">Ireki Android-en ezarpenak eta gaitu Android sistemaren sinkronizazioa Chrome sinkronizatzeko</translation>
 <translation id="7594687499944811403">Utzi zeu zarela egiaztatzen <ph name="EMBEDDED_ORIGIN" /> webguneari <ph name="TOP_ORIGIN" /> webgunearen zerbitzua erabili ahal izateko</translation>
 <translation id="7596558890252710462">Sistema eragilea</translation>
 <translation id="7605594153474022051">Sinkronizazioa ez dabil.</translation>

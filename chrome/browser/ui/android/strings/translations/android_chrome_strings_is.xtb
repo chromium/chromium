@@ -404,7 +404,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3264259168916048410">Tölvan vill nota þetta tæki til að skrá inn á vefsvæði</translation>
 <translation id="3265534588625245297">Stjórna vefsvæðunum sem þú fylgir</translation>
 <translation id="3269093882174072735">Hlaða mynd</translation>
-<translation id="3269956123044984603">Kveiktu á „Samstilla gögn sjálfkrafa“ í reikningsstillingum Android til að fá aðgang að flipunum þínum í öðrum tækjum.</translation>
 <translation id="3280562213547448728">Raddleit</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3284510035090979597">Hjálp að fyrra bragði</translation>
@@ -473,6 +472,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3716182511346448902">Chrome stöðvaði þessa síðu því hún notar of mikið minni.</translation>
 <translation id="3721119614952978349">Þú og Google</translation>
 <translation id="3737319253362202215">Þýðingarstillingar</translation>
+<translation id="3737402728074743863">Stilltu skjálás til að nota þetta tæki sem öryggislykil</translation>
 <translation id="3738139272394829648">Snertileit</translation>
 <translation id="3739899004075612870">Bókamerki bætt við <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Raddleit er ekki í boði í þessu tæki</translation>
@@ -916,7 +916,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6303969859164067831">Skrá út og slökkva á samstillingu</translation>
 <translation id="6312687380483398334">Vefforrit (þögult)</translation>
 <translation id="6316139424528454185">Android útgáfa ekki studd</translation>
-<translation id="6324034347079777476">Slökkt á samstillingu Android kerfis</translation>
 <translation id="6324916366299863871">Breyta flýtileið</translation>
 <translation id="6324977638108296054">Ekki er hægt að búa til tengil í merktan texta</translation>
 <translation id="6324997754869598316">(Villa <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6900532703269623216">Aukin vörn</translation>
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
 <translation id="6909589135458168665">Forhlaða síðum</translation>
-<translation id="6929699136511445623">Virkja samstillingu Android kerfis</translation>
 <translation id="6942665639005891494">Þú getur breytt staðsetningu niðurhals hvenær sem er með því að nota valkostinn í stillingavalmyndinni</translation>
 <translation id="694267552845942083">Þú ert að sérstilla samstillingu. Til að ljúka við að kveikja á samstillingu skaltu ýta á hnappinn „Staðfesta“ neðarlega á skjánum. Fara upp</translation>
 <translation id="6945221475159498467">Velja</translation>
@@ -1160,7 +1158,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7581273696622423628">Svara könnun</translation>
 <translation id="7583262514280211622">Þú finnur leslistann þinn hér</translation>
 <translation id="7588219262685291874">Kveikja á dökku þema þegar rafhlöðusparnaður er virkur í tækinu</translation>
-<translation id="7593557518625677601">Kveiktu á samstillingu kerfis í Android stillingum til að samstilla Chrome</translation>
 <translation id="7594687499944811403">Leyfa <ph name="EMBEDDED_ORIGIN" /> að staðfesta að þetta sért þú fyrir <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Stýrikerfi</translation>
 <translation id="7605594153474022051">Samstilling virkar ekki</translation>

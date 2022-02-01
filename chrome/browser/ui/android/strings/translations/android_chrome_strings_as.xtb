@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">আপোনাৰ কম্পিউটাৰটোৱে এটা ছাইটত ছাইন ইন কৰিবলৈ এই ডিভাইচটো ব্যৱহাৰ কৰিব বিচাৰে</translation>
 <translation id="3265534588625245297">আপুনি ফ'ল' কৰা ছাইটসমূহ পৰিচালনা কৰক</translation>
 <translation id="3269093882174072735">ছবি ল’ড কৰক</translation>
-<translation id="3269956123044984603">আপোনাৰ অন্য ডিভাইচৰ টেব এইটোত পাবলৈ Android একাউণ্ট ছেটিঙত "ডেটা স্বয়ংক্রিয়ভাৱে ছিংক কৰক" অন কৰক।</translation>
 <translation id="3280562213547448728">কণ্ঠধ্বনিৰ দ্বাৰা সন্ধান</translation>
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="3284510035090979597">আগতীয়া সহায়</translation>
@@ -473,6 +472,7 @@
 <translation id="3716182511346448902">এই পৃষ্ঠাটোৱে বহুত বেছি মেম’ৰি খৰচ কৰে, সেয়েহে Chromeএ ইয়াক প’জ কৰিছে৷</translation>
 <translation id="3721119614952978349">আপুনি আৰু Google</translation>
 <translation id="3737319253362202215">অনুবাদৰ ছেটিং</translation>
+<translation id="3737402728074743863">এই ডিভাইচটোক এটা সুৰক্ষা সম্পৰ্কীয় চাবি হিচাপে ব্যৱহাৰ কৰিবলৈ, এটা স্ক্ৰীন লক ছেট কৰক</translation>
 <translation id="3738139272394829648">সন্ধান কৰিবলৈ স্পর্শ কৰক</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />ত বুকমার্ক কৰা হৈছে</translation>
 <translation id="3740525748616366977">এই ডিভাইচটোত কণ্ঠধ্বনিৰ দ্বাৰা সন্ধান কৰাৰ সুবিধাটো উপলব্ধ নহয়</translation>
@@ -916,7 +916,6 @@
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
 <translation id="6312687380483398334">ৱেব এপ্‌সমূহ (নীৰৱ)</translation>
 <translation id="6316139424528454185">Android সংস্কৰণটো নচলে</translation>
-<translation id="6324034347079777476">Android ছিষ্টেম ছিংক কৰাটো অক্ষম কৰা হ’ল</translation>
 <translation id="6324916366299863871">শ্বৰ্টকাট সম্পাদনা কৰক</translation>
 <translation id="6324977638108296054">হাইলাইটৰ লিংক সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="6324997754869598316">(আসোঁৱাহ <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@
 <translation id="6900532703269623216">বৰ্ধিত সুৰক্ষা</translation>
 <translation id="6903907808598579934">ছিংক অন কৰক</translation>
 <translation id="6909589135458168665">পৃষ্ঠা আগতীয়াকৈ ল’ড কৰক</translation>
-<translation id="6929699136511445623">Android ছিষ্টেম ছিংক অন কৰক</translation>
 <translation id="6942665639005891494">ছেটিংসমূহ-ৰ মেনুৰ বিকল্পটো ব্যৱহাৰ কৰি ডিফ’ল্ট ডাউনল’ডৰ অৱস্থান যিকোনো সময়তে সলনি কৰক</translation>
 <translation id="694267552845942083">আপুনি বৰ্তমান আপোনাৰ ছিংক কৰাৰ ছেটিং কাষ্টমাইজ কৰি আছে। ছিংক কৰাৰ সুবিধাটো অন কৰাটো সম্পূৰ্ণ কৰিবলৈ স্ক্ৰীনখনৰ একেবাৰে তলিৰ কাষত থকা নিশ্চিত কৰক বুটামটো টিপক। ওপৰলৈ যাওক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
@@ -1160,7 +1158,6 @@
 <translation id="7581273696622423628">সমীক্ষাত ভাগ লওক</translation>
 <translation id="7583262514280211622">ইয়াত আপুনি নিজৰ পঢ়াৰ সূচীখন বিচাৰি পাব</translation>
 <translation id="7588219262685291874">আপোনাৰ ডিভাইচৰ বেটাৰী সঞ্চয়কাৰী অন থাকিলে গাঢ় ৰঙৰ থীম অন কৰক।</translation>
-<translation id="7593557518625677601">Chrome ছিংক আৰম্ভ কৰিবলৈ Android ছেটিংসমূহ খোলক আৰু Android ছিষ্টেম ছিংক পুনৰ সক্ষম কৰক</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" />ৰ বাবে এগৰাকী আপুনিয়েই বুলি <ph name="EMBEDDED_ORIGIN" />ক সত্যাপন কৰিবলৈ দিয়ক</translation>
 <translation id="7596558890252710462">অপাৰেটিং ছিষ্টেম</translation>
 <translation id="7605594153474022051">ছিংক কৰিব পৰা নাই</translation>

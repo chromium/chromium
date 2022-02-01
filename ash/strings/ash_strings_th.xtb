@@ -296,6 +296,7 @@
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
+<translation id="301282384882049174">แชร์โดยผู้ดูแลระบบ</translation>
 <translation id="3017687597151988916">กำหนดพื้นที่สำหรับการเลือกเป็นหน้าต่าง</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3036649622769666520">เปิดไฟล์</translation>
@@ -924,6 +925,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">เปลี่ยนกลับไปเป็นความละเอียดเดิมภายใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
+<translation id="718361511487535372">เปิดใน Google ปฏิทิน</translation>
 <translation id="7188494361780961876">เมนูได้ย้ายไปอยู่ที่มุมซ้ายบนของหน้าจอ</translation>
 <translation id="7189412385142492784">ดาวศุกร์อยู่ไกลแค่ไหน</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Chromebook นี้ต้องรีสตาร์ทเพื่อใช้การอัปเดต ซึ่งอาจใช้เวลาถึง 1 นาที</translation>

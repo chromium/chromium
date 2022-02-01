@@ -208,6 +208,9 @@
       Dit beleid is niet van toepassing op kiosk-gebruikers.
 
       Waarschuwing: Met Wipe en MinimalMigrate worden lokale gegevens verwijderd.</translation>
+<translation id="1250597158212586309">Als je het beleid toepast of niet instelt, krijgt de gebruiker de optie om meldingen voor gehackte wachtwoorden af te wijzen/te herstellen.
+
+      Als je deze instelling uitzet, kunnen gebruikers meldingen over gehackte wachtwoorden niet afwijzen. Als je deze instelling aanzet, kunnen gebruikers meldingen over gehackte wachtwoorden afwijzen.</translation>
 <translation id="1252536192437793850">Sites toestaan om gebruikers toestemming te vragen voor toegang tot een seriële poort</translation>
 <translation id="1255159327956066463">De functie voor ghostvenster aanzetten</translation>
 <translation id="125655429495551011">Als je het beleid instelt op een tekenreeks, wordt de tekenreeks tijdens het DHCP-verzoek gebruikt als hostnaam van het apparaat. De tekenreeks kan de variabelen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> en <ph name="LOCATION_PLACEHOLDER" /> bevatten, die worden vervangen door waarden op het apparaat voordat de tekenreeks als hostnaam wordt gebruikt. De waarden moeten worden vervangen door een geldige hostnaam volgens RFC 1035, gedeelte 3.1.
@@ -875,6 +878,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Printers die aan <ph name="CLOUD_PRINT_NAME" /> zijn gekoppeld, worden als printers van het type <ph name="PRINTER_TYPE_CLOUD" /> beschouwd. De overige printers worden geclassificeerd als <ph name="PRINTER_TYPE_LOCAL" />.
 
       Opmerking: Als een veld wordt overgeslagen, betekent dit dat alle waarden overeenkomen. Als je bijvoorbeeld geen connectiviteit specificeert, wordt bij een afdrukvoorbeeld gezocht naar alle soorten printers, <ph name="PRINTER_TYPE_LOCAL" /> en <ph name="PRINTER_TYPE_CLOUD" />. Reguliere-expressiepatronen moeten de RegExp-syntaxis voor JavaScript volgen en namen komen alleen overeen als ook het hoofdlettergebruik klopt (hoofdlettergevoelig).</translation>
+<translation id="2004382785802837840">Afwijzen van meldingen over gehackte wachtwoorden uitzetten</translation>
 <translation id="2005506794355327448">Actie die moet worden ondernomen als de klep wordt gesloten</translation>
 <translation id="2006530844219044261">Energiebeheer</translation>
 <translation id="2008514891623783266">Het IP-gebruiksbeleid van WebRTC</translation>
@@ -1294,6 +1298,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2435232509335686514">Configuratiebeleid voor de verwerking van gedownloade bestanden door de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2436302465999055995">Van <ph name="LACROS_NAME" /> de enige beschikbare browser maken (nog niet geïmplementeerd)</translation>
 <translation id="2439187682308339104">Geen enkele site toestemming geven om toegang te vragen tot HID-apparaten via de WebHID API</translation>
+<translation id="2439733504887695659">Afwijzen van meldingen over gehackte wachtwoorden aanzetten voor de opgegeven inloggegevens</translation>
 <translation id="2448315169529769573">Als je het beleid toepast, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid niet toepast, worden er geen statistieken en diagnostische gegevens gerapporteerd.
 
        Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
@@ -3145,6 +3150,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 
           Ga voor voorbeeldpatronen naar https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Een lijst met URL's openen</translation>
+<translation id="4674542060943819878">Afwijzen van meldingen over gehackte wachtwoorden aanzetten</translation>
 <translation id="4674871290487541952">Onbeveiligde algoritmen toestaan in integriteitscontroles bij updates en installaties van extensies</translation>
 <translation id="4680961954980851756">Automatisch invullen aanzetten</translation>
 <translation id="4685721728282448265">CECPQ2 (post-quantum sleutelovereenkomst) staat aan voor TLS</translation>

@@ -69,6 +69,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2574930892358684005">Korisnik <ph name="EXISTING_USER" /> je već prijavljen na ovaj Chrome profil. Da bi vam pregledanje bilo razdvojeno, Chrome može da napravi zaseban profil za vas.</translation>
 <translation id="2580411288591421699">Nije moguće instalirati verziju Google Chrome pregledača koja je ista kao trenutno pokrenuta verzija. Zatvorite Google Chrome i pokušajte ponovo.</translation>
 <translation id="2586406160782125153">Ovim ćete izbrisati podatke pregledanja sa uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj nalog. Ako ne želite da veb-sajtovi ili aplikacije pristupaju informacijama o nalogu, koristite Režim gosta u Chrome pregledaču. Google nalozima možete da upravljate i u <ph name="LINK_2_BEGIN" />Podešavanjima<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
 <translation id="2644798301485385923">Sistem Chrome OS</translation>
 <translation id="2652691236519827073">Otvori link u novoj Chrome &amp;kartici</translation>

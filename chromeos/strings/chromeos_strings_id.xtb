@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sesuaikan dengan area pindai</translation>
 <translation id="1387854245479784695">Ini merupakan gabungan dari semua core</translation>
+<translation id="1394661041439318933">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai casing.</translation>
 <translation id="1397738625398125236">Gateway Dapat Di-ping</translation>
 <translation id="1398634363027580500">Latensi HTTPS sangat tinggi</translation>
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Saya memiliki pasangan kunci</translation>
+<translation id="1451536289672181509">Perangkat adalah keyboard.</translation>
 <translation id="1468664791493211953">Penawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> akan mengelola perangkat ini dan mungkin dapat memantau aktivitas Anda.</translation>
 <translation id="1478594628797167447">Pemindai</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2104796393919810494">Perbaikan selesai</translation>
+<translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
+<translation id="3031560714565892478">Perangkat adalah kamera video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Pengujian gagal</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Gagal - Berhenti</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Perangkat terhubung.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Hapus halaman?}=1{Hapus halaman {PAGE_NUMBER}?}other{Hapus halaman {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
+<translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Memindai halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Pencetakan</translation>
 <translation id="3462187165860821523">Mengupdate <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Saat firmware sedang diupdate, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Update ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama update.</translation>
 <translation id="3486220673238053218">definisi</translation>
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
 <translation id="3942420633017001071">Diagnosis</translation>
+<translation id="3954678691475912818">Jenis perangkat tidak diketahui.</translation>
 <translation id="3966286471246132217">Untuk hasil yang lebih akurat, tutup semua aplikasi sampai pengujian selesai.</translation>
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="397105322502079400">Menghitung...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="4891842000192098784">Tegangan</translation>
+<translation id="4897058166682006107">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kiri.</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
@@ -322,6 +331,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5346687412805619883">Jaringan Lokal</translation>
 <translation id="5358174242040570474">Terjadi error. Coba pilih wallpaper lagi atau buka aplikasi lagi.</translation>
 <translation id="5372659122375744710">Jaringan Wi-Fi tidak aman</translation>
+<translation id="5400907029458559844">Perangkat sedang menghubungkan.</translation>
 <translation id="5401938042319910061">Jalankan Semua Rutinitas</translation>
 <translation id="5423849171846380976">Diaktifkan</translation>
 <translation id="5430931332414098647">Tethering Instan</translation>
@@ -383,6 +393,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
+<translation id="6319207335391420837">Update firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="6340526405444716530">Personalisasi</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
@@ -415,6 +426,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
 <translation id="6747215703636344499">Dihentikan - Baki hasil cetak penuh</translation>
 <translation id="6749473226660745022">Foto</translation>
+<translation id="6753452347192452143">Perangkat adalah komputer.</translation>
 <translation id="6756731097889387912">Tidak dapat membatalkan pemindaian</translation>
 <translation id="6766275201586212568">Resolusi DNS gagal</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
@@ -432,12 +444,14 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6992266763844448459">Pilih opsi ini jika kepemilikan perangkat tidak berubah. Misalnya, perangkat sedang ditransfer kepada pengguna lain dalam organisasi.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7041549558901442110">Perangkat tidak terhubung.</translation>
 <translation id="7058278511608979688">Akhiri &amp; simpan</translation>
 <translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
 <translation id="7068619307603204412">Siapkan perangkat Anda</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
+<translation id="7103252855940681301">Perangkat <ph name="INDEX" /> dari <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
@@ -472,6 +486,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Rutinitas Diagnostik</translation>
+<translation id="7551123448725492271">Perangkat adalah perangkat audio.</translation>
 <translation id="7561454561030345039">Tindakan ini dikelola oleh administrator Anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Layar sentuh USB</translation>
@@ -479,6 +494,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
 <translation id="763165478673169849">Waktu Reset Terakhir</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
+<translation id="7656388927906093505">Perangkat adalah mouse.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
@@ -575,6 +591,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8855781559874488009">Tidak dapat terhubung melewati firewall ke situs HTTP</translation>
 <translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan lainnya</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Perangkat adalah tablet.</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8898840733695078011">Kekuatan sinyal</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
@@ -585,11 +602,13 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8930622219860340959">Nirkabel</translation>
 <translation id="8936793075252196307">Alamat IP klien</translation>
 <translation id="8945750210906526975">Touchpad internal</translation>
+<translation id="894617464444543719">Perangkat adalah ponsel.</translation>
 <translation id="8968751544471797276">Kecepatan pengisian daya</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Pindai}=1{Pindai halaman {NUMBER_OF_PAGES}}other{Pindai halaman {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Menginstal - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai.</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Resolusi DNS memiliki latensi tinggi</translation>

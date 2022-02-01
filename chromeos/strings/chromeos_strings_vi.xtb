@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Vừa với vùng quét</translation>
 <translation id="1387854245479784695">Đây là số liệu tổng hợp của tất cả lõi</translation>
+<translation id="1394661041439318933">Hộp đựng còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="1397738625398125236">Có thể ping cổng vào</translation>
 <translation id="1398634363027580500">Yêu cầu HTTPS có độ trễ rất cao</translation>
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tôi có một cặp khóa</translation>
+<translation id="1451536289672181509">Thiết bị là bàn phím.</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> quản lý thiết bị này và có thể giám sát hoạt động của bạn.</translation>
 <translation id="1478594628797167447">Máy quét</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Chế độ cài đặt khác</translation>
 <translation id="2104796393919810494">Đã hoàn tất quá trình sửa chữa</translation>
+<translation id="2105810540595158374">Thiết bị là tay điều khiển trò chơi.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Còn <ph name="AVAILABLE_MEMORY" /> GB/<ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Nhập tên người dùng và mật khẩu hoặc quét mã QR</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
+<translation id="3031560714565892478">Thiết bị là máy quay video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Điểm cuối</translation>
 <translation id="3069085583900247081">Không kiểm tra được</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
 <translation id="3102119246920354026">Bộ nhớ đệm</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Thiết bị đã được kết nối.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Xóa trang?}=1{Xóa trang {PAGE_NUMBER}?}other{Xóa trang {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3156846309055100599">Đang quét trang <ph name="PAGE_NUMBER" />...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
+<translation id="3340011300870565703">Tai nghe phải còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Đang quét trang <ph name="PAGE_NUM" />. Ðã quét được <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">In</translation>
 <translation id="3462187165860821523">Đang cập nhật <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
 <translation id="3941014780699102620">Không phân giải được máy chủ</translation>
 <translation id="3942420633017001071">Chẩn đoán</translation>
+<translation id="3954678691475912818">Không xác định được loại thiết bị.</translation>
 <translation id="3966286471246132217">Để có kết quả chính xác hơn, hãy đóng tất cả các ứng dụng cho đến khi quá trình kiểm tra hoàn tất.</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="397105322502079400">Đang tính...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="4891842000192098784">Độ ổn định</translation>
+<translation id="4897058166682006107">Tai nghe trái còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
 <translation id="4921665434385737356">Đã sạc <ph name="RATE" /> trong <ph name="NUM_SECONDS" /> giây.</translation>
@@ -322,6 +331,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5346687412805619883">Mạng cục bộ</translation>
 <translation id="5358174242040570474">Đã xảy ra lỗi. Hãy thử chọn lại hình nền hoặc mở lại ứng dụng.</translation>
 <translation id="5372659122375744710">Mạng Wi-Fi không bảo mật</translation>
+<translation id="5400907029458559844">Thiết bị đang kết nối.</translation>
 <translation id="5401938042319910061">Chạy tất cả quy trình</translation>
 <translation id="5423849171846380976">Đã kích hoạt</translation>
 <translation id="5430931332414098647">Chia sẻ Internet tức thì</translation>
@@ -383,6 +393,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Đã hủy quá trình kiểm tra <ph name="TEST_NAME" /></translation>
+<translation id="6319207335391420837">Cập nhật chương trình cơ sở cho <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="6340526405444716530">Cá nhân hóa</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
@@ -415,6 +426,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6704062477274546131">Phân giải DNS</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
 <translation id="6749473226660745022">Ảnh</translation>
+<translation id="6753452347192452143">Thiết bị là máy tính.</translation>
 <translation id="6756731097889387912">Không thể hủy quá trình quét</translation>
 <translation id="6766275201586212568">Quá trình phân giải DNS không thành công</translation>
 <translation id="6768237774506518020">Tỷ lệ lỗi cao trong quá trình phân giải DNS</translation>
@@ -432,12 +444,14 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6992266763844448459">Chọn lựa chọn này nếu quyền sở hữu thiết bị không thay đổi. Ví dụ: thiết bị đang được chuyển cho một người khác trong cùng một tổ chức.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="7040230719604914234">Nhà mạng</translation>
+<translation id="7041549558901442110">Thiết bị chưa được kết nối.</translation>
 <translation id="7058278511608979688">Kết thúc và lưu</translation>
 <translation id="7059230779847288458">Đang sạc, còn <ph name="TIME_VALUE" /> nữa là pin đầy</translation>
 <translation id="7068619307603204412">Chuẩn bị thiết bị của bạn</translation>
 <translation id="708426984172631313">ĐÃ DỪNG</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Không thành công – Ủy quyền không thành công</translation>
+<translation id="7103252855940681301">Thiết bị <ph name="INDEX" />/<ph name="COUNT" /> tên là <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Máy chủ định danh}other{Các máy chủ định danh}}</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144878232160441200">Thử lại</translation>
@@ -472,6 +486,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Quy trình chẩn đoán</translation>
+<translation id="7551123448725492271">Thiết bị là thiết bị âm thanh.</translation>
 <translation id="7561454561030345039">Quản trị viên của bạn quản lý thao tác này</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Màn hình cảm ứng USB</translation>
@@ -479,6 +494,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7620771111601174153">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
 <translation id="763165478673169849">Lần đặt lại cuối</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
+<translation id="7656388927906093505">Thiết bị là chuột.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7701040980221191251">Không có</translation>
@@ -575,6 +591,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8855781559874488009">Không thể kết nối với các trang web HTTP qua tường lửa</translation>
 <translation id="8863888432376731307">Nhận <ph name="INTENT" /> cho "<ph name="QUERY" />" và nhiều thông tin khác</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Thiết bị là máy tính bảng.</translation>
 <translation id="8881098542468797602">Đã kiểm tra thành công</translation>
 <translation id="8898840733695078011">Cường độ tín hiệu</translation>
 <translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>
@@ -585,11 +602,13 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8930622219860340959">Không dây</translation>
 <translation id="8936793075252196307">Địa chỉ IP khách hàng</translation>
 <translation id="8945750210906526975">Bàn di chuột tích hợp sẵn</translation>
+<translation id="894617464444543719">Thiết bị là điện thoại.</translation>
 <translation id="8968751544471797276">Tốc độ sạc</translation>
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Quét}=1{Quét trang {NUMBER_OF_PAGES}}other{Quét trang {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Đang cài đặt – <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Thiết bị còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="9003704114456258138">Tần số</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Quá trình phân giải DNS có độ trễ cao</translation>

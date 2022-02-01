@@ -256,7 +256,6 @@
 <translation id="1244265436519979884">Linux ပြန်ယူခြင်းကို လောလောဆယ် လုပ်ဆောင်နေသည်</translation>
 <translation id="1244303850296295656">အိတ်စတန်းရှင်း မှားယွင်းမှု</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ထည့်သွင်း၍ မရပါ- ကွန်ပျူတာစနစ်မိတ္တူ URL က <ph name="HTTP_ERROR" /> အမှားကုဒ် ပြန်ပို့သည်။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။</translation>
-<translation id="1247071602516579380"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော တက်ဘလက်</translation>
 <translation id="1251366534849411931">အဖွင့် တွန့်ကွင်းတစ်ခု လိုနေသည်- <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ဤလုပ်ဆောင်ချက်က ဝဘ်ဆိုက်များနှင့် ထည့်သွင်းထားသော အက်ပ်များက သိမ်းထားသည့် ဒေတာ <ph name="TOTAL_USAGE" /> ကို ရှင်းထုတ်လိုက်ပါမည်</translation>
 <translation id="1251578593170406502">မိုဘိုင်း ဒေတာကွန်ရက်များ ရှာဖွေနေသည်...</translation>
@@ -445,7 +444,6 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ရွေးချယ်ထားသည်</translation>
 <translation id="1442851588227551435">အသုံးပြုနေသော Kerberos လက်မှတ် သတ်မှတ်ရန်</translation>
 <translation id="1444628761356461360">ဤကြိုတင်ချိန်ညှိချက်များအား စက်ပစ္စည်း၏ ပိုင်ရှင် <ph name="OWNER_EMAIL" /> မှ စီမံသည်။</translation>
-<translation id="1445005312224723356"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော ဖုန်းအမည်</translation>
 <translation id="144518587530125858">အရောင်အဖွဲ့အတွက် '<ph name="IMAGE_PATH" />' အားဖွင့်၍မရပါ။</translation>
 <translation id="1449191289887455076">သတ်မှတ်မှုကို အတည်ပြုရန် “<ph name="CURRENTKEY" />” ထပ်နှိပ်ပြီး <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">ဝဘ်စာမျက်နှာ၊ ဖိုင် တစ်ခုတည်း</translation>
@@ -780,6 +778,7 @@
 <translation id="176587472219019965">ဝင်ဒိုး အသစ်</translation>
 <translation id="1766575458646819543">မျက်နှာပြင်အပြည့်မှ ထွက်ထားသည်</translation>
 <translation id="1766957085594317166">စကားဝှက်များကို သင်၏ Google အကောင့်တွင် လုံခြုံစွာ သိမ်းထားခြင်းဖြင့် ၎င်းတို့ကို ထပ်မံရိုက်ထည့်စရာ လိုတော့မည်မဟုတ်ပါ</translation>
+<translation id="1767043563165955993">Android အက်ပ်များနှင့် သုံးရန်</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> အတွက် အကြံပြုချက် ပို့ပါ။</translation>
 <translation id="1768278914020124551">အကောင့်ထဲသို့ ဝင်ရောက်မှု ဆာဗာကို ချိတ်ဆက်ရာတွင် ပြဿနာရှိနေသည်။ သင်၏ ကွန်ရက်ချိတ်ဆက်မှုနှင့် ဒိုမိန်းအမည်ကို စစ်ဆေးပြီး ထပ်လုပ်ကြည့်ပါ။</translation>
 <translation id="1769104665586091481">ဝင်ဒိုး &amp;အသစ် ထဲမှာ လင့် ဖွင့်ပေးရန်</translation>
@@ -809,7 +808,6 @@
 <translation id="1790976235243700817">အသုံးပြုခွင့်ကို ဖယ်ရှားရန်</translation>
 <translation id="1791662854739702043">ထည့်သွင်းပြီးပါပြီ</translation>
 <translation id="1792619191750875668">ထပ်တိုးထားသည့် မျက်နှာပြင် ပြသမှု</translation>
-<translation id="1793625608969726781">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" />၊ ကွန်ပျူတာ၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> ကို ဘယ်တော့မှ မပြပါနှင့်</translation>
 <translation id="1794791083288629568">ဤပြဿနာကို ဖြေရှင်းရာတွင် ကူညီပေးရန် အကြံပြုချက် ပေးပို့ပါ။</translation>
 <translation id="1795214765651529549">ဂန္ထဝင်ကို အသုံးပြုရန်</translation>
@@ -880,7 +878,6 @@
 <translation id="1855079636134697549">ကင်မရာ ဖွင့်ထားသည်</translation>
 <translation id="1856715684130786728">တည်နေရာ ထည့်ပေးရန်...</translation>
 <translation id="1858585891038687145">ဆော့ဝဲပြုလုပ်သူများ၏ အထောက်အထားအဖြစ် ဤအသိအမှတ်ပြုလက်မှတ်ကို ယုံကြည်ပါ</translation>
-<translation id="1859787252990099899"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမျိုးအမည်မသိ ကိရိယာ</translation>
 <translation id="1861262398884155592">ဤဖိုင်တွဲတွင် မည်သည့်အရာမျှ မရှိပါ</translation>
 <translation id="1862311223300693744">သင့်တွင် အထူး VPN၊ ပရောက်စီ၊ firewall သို့မဟုတ် NAS ဆော့ဖ်ဝဲ ထည့်သွင်းထားသလား။</translation>
 <translation id="1863182668524159459">အစဉ်လိုက်ပို့တ်များ မရှိပါ</translation>
@@ -1117,6 +1114,7 @@
 <translation id="2113479184312716848">ဖိုင်ဖွင့်ရန်...</translation>
 <translation id="2113921862428609753">လုပ်ပိုင်ခွင့် အချက်အလက်များကို ရယူခြင်း</translation>
 <translation id="2114326799768592691">ပြန်ဖွင့်ပါ &amp;Frame</translation>
+<translation id="2114413269775311385">ဤအကောင့်ကို Android အက်ပ်များနှင့် သုံးရန်။ <ph name="LINK_BEGIN" />အက်ပ်ဆက်တင်များ<ph name="LINK_END" /> တွင် Android အက်ပ်များအတွက် ခွင့်ပြုချက်များကို ထိန်းချုပ်နိုင်သည်။</translation>
 <translation id="2114896190328250491">ရိုက်ကူးသူ- <ph name="NAME" /></translation>
 <translation id="2114995631896158695">ဆင်းမ်ကတ် ထည့်မထားပါ</translation>
 <translation id="2116619964159595185">စွမ်းအင်နိမ့်အချက်ပြမီး၊ ကျန်းမာရေး (သို့) ကြံ့ခိုင်ရေး ခြေရာခံစက် (သို့) အဆင့်မြင့်မီးလုံး စနစ်ထည့်သွင်းခြင်း (သို့) စင့်ခ်လုပ်ခြင်းကဲ့သို့ ဝန်ဆောင်မှုများအတွက် ဘလူးတုသ်သုံးစက်များနှင့် ဝဘ်ဆိုက်များက ချိတ်ဆက်လေ့ရှိသည်</translation>
@@ -1195,7 +1193,6 @@
 <translation id="2179416702468739594">ရနိုင်သောပရိုဖိုင်များ ရှာနေသည်။ ၎င်းက သင့်မိုဘိုင်းကွန်ရက်ကို မိနစ်အနည်းငယ်ကြာ ချိတ်ဆက်မှု ရပ်ထားနိုင်သည်။</translation>
 <translation id="2180620921879609685">စာမျက်နှာအားလုံးတွင် အကြောင်းအရာကို ပိတ်ထားခြင်း</translation>
 <translation id="2182058453334755893">'သင့်ကလစ်ဘုတ်' သို့ မိတ္တူကူးထားသည်</translation>
-<translation id="2183027945672030611">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" /> ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ ဂိမ်းခလုတ်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">ဝဘ်ဆိုက်များ အသံဖွင့်နိုင်ခြင်းရှိမရှိကို Chrome အား ရွေးချယ်ခွင့်ပေးပါ (အကြံပြုထားသည်)</translation>
 <translation id="2186711480981247270">စက်နောက်တစ်ခုမှ မျှဝေထားသော စာမျက်နှာ</translation>
 <translation id="2187675480456493911">သင့်အကောင့်ရှိ အခြားစက်များနှင့် စင့်ခ်လုပ်ထားသည်။ အခြားအသုံးပြုသူများ ပြုပြင်ထားသော ဆက်တင်များကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -1263,7 +1260,6 @@
 <translation id="2242687258748107519">ဖိုင် အချက်လက်</translation>
 <translation id="2246549592927364792">Google မှ ပုံအကြောင်းအရာများ ရယူမလား။</translation>
 <translation id="2247738527273549923">သင်၏စက်ပစ္စည်းကို သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည်</translation>
-<translation id="2249061317998743208"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော ဂိမ်းခလုတ်</translation>
 <translation id="2249111429176737533">တဘ်ဝင်းဒိုးအဖြစ် ဖွင့်ရန်</translation>
 <translation id="2249605167705922988">ဥပမာ၊ ၁-၅၊ ၈၊ ၁၁-၁၃</translation>
 <translation id="2251218783371366160">စနစ် ကြည့်ရှုမှုဖြင့် ဖွင့်ရန်</translation>
@@ -1699,7 +1695,6 @@
 <translation id="2673135533890720193">သင်၏ ဘရောင်ဇာ မှတ်တမ်းကို ဖတ်ကြည့်ရန်</translation>
 <translation id="2674764818721168631">ပိတ်ရန်</translation>
 <translation id="2678063897982469759">ပြန်ဖွင့်ထားရန်</translation>
-<translation id="2678676117809690850">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" /> ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ ဖုန်း၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">မှတ်&amp;တမ်း</translation>
 <translation id="2681124317993121768">ဧည့်သည်ပရိုဖိုင်များကို ပံ့ပိုးမထားပါ</translation>
 <translation id="2682498795777673382">သင့်မိဘထံမှ အပ်ဒိတ်</translation>
@@ -2045,7 +2040,6 @@
 <translation id="3007771295016901659">တဘ်ကို ပွားယူရန်</translation>
 <translation id="3008232374986381779">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Linux ကိရိယာ၊ တည်းဖြတ်စနစ်နှင့် IDE များဖွင့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ရန်</translation>
-<translation id="3008396025115884998"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော အသံစက်ပစ္စည်း</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Wi-Fi သို့ ယနေ့ချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်ရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ သို့မဟုတ် အခမဲ့ မဟုတ်သော ချိတ်ဆက်မှုမှ ဒေါင်းလုဒ်လုပ်ပါ (ဒေတာသုံးစွဲခ ကျသင့်နိုင်သည်)။}other{နောက်ဆုံးသတ်မှတ်ရက် မတိုင်မီ Wi-Fi သို့ချိတ်ဆက်ပြီး အပ်ဒိတ်ဒေါင်းလုဒ်လုပ်ရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ သို့မဟုတ် အခမဲ့ မဟုတ်သော ချိတ်ဆက်မှုမှ ဒေါင်းလုဒ်လုပ်ပါ (ဒေတာသုံးစွဲခ ကျသင့်နိုင်သည်)။}}</translation>
 <translation id="3009300415590184725">မိုဘိုင်းအချက်လက်ဝန်ဆောင်မှု တပ်ဆင်ခြင်းလုပ်ငန်းကို ပယ်ဖျက်ရန် သင်လိုလားပါသလား?</translation>
 <translation id="3009779501245596802">လမ်းညွှန်ထားသည့် ဒေတာဘေ့စ်များ</translation>
@@ -2151,7 +2145,6 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ခုကို <ph name="DEVICE_NAME" /> သို့ ပို့၍မရပါ}other{<ph name="ATTACHMENTS" /> ခုကို <ph name="DEVICE_NAME" /> သို့ ပို့၍မရပါ}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" />အကူအညီ</translation>
 <translation id="3118654181216384296">ခဏအကြာတွင် Linux ကို ထပ်မံစတင်ကြည့်ပါ။</translation>
-<translation id="3119689272338239690">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" />ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ အမျိုးအမည်မသိ ကိရိယာ၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">မည်သည့် အကြောင်းအရာ/URL ကို ကာစ်လုပ်နေသလဲ။</translation>
 <translation id="3120430004221004537">"<ph name="DEVICE_NAME" />" ရှိလုပ်ဆောင်မှုအတွက် လုံခြုံအောင်ပြုလုပ်ခြင်း လုံလောက်မှုမရှိပါ။</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2178,7 +2171,6 @@
 <translation id="3143754809889689516">အစမှ ကစားရန်</translation>
 <translation id="3144647712221361880">လင့်ကို ...အဖြစ် ဖွင့်ပါ</translation>
 <translation id="3149510190863420837">Chrome အက်ပ်များ</translation>
-<translation id="3150622786624965651">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> ဂိမ်းခလုတ်။</translation>
 <translation id="3150693969729403281">လုံခြုံရေး စစ်ဆေးမှု ယခု လုပ်ဆောင်ပါ</translation>
 <translation id="3150927491400159470">ဟာ့ဒ် ပြန်တင်ရန်</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
@@ -2383,7 +2375,6 @@
 <translation id="339178315942519818">သင့် <ph name="DEVICE_TYPE" /> တွင် သင်၏ချတ်အက်ပ်များမှ အကြောင်းကြားချက်များကို ကြည့်နိုင်သည်</translation>
 <translation id="3393554941209044235">Chrome မှတ်တမ်းဖိုင် စိတ်ဖြာလေ့လာချက်</translation>
 <translation id="3394850431319394743">ကာကွယ်ထားသည့် အကြောင်းအရာကို ဖွင့်ရန် သတ်မှတ်မှုစနစ်များ သုံးခွင့်ပြုထားသည်</translation>
-<translation id="3395403082745257596">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> အမျိုးအမည်မသိ စက်အမျိုးအစား။</translation>
 <translation id="3396744558790608201">ဝဘ်ပေါ်တွင် ကြည့်ရှုဝယ်ယူနေစဉ် သင်တွေ့သည့် ကြည့်စရာအကြောင်းအရာအကြောင်း ပိုမိုလေ့လာရန် ဝဘ်ဆိုက်၏မည်သည့်အစိတ်အပိုင်းကိုမဆို ရှာဖွေရန်အတွက် “Google Lens ဖြင့် ပုံရှာရန်” ကိုရွေးပြီး ညာဘက်ခလုတ်နှိပ်နိုင်သည်။</translation>
 <translation id="3396800784455899911">"လက်ခံပြီး ရှေ့ဆက်ရန်" ခလုတ်ကို နှိပ်ခြင်းဖြင့် ဤ Google ဝန်ဆောင်မှုများအတွက် အထက်ဖော်ပြပါ စီမံဆောင်ရွက်မှုများကို သဘောတူရာရောက်ပါသည်။</translation>
 <translation id="339722927132407568">ရပ်သွားသည်</translation>
@@ -2678,7 +2669,6 @@
 <translation id="3682824389861648626">လှုပ်ရှားမှု ခံနိုင်စွမ်း</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> မျက်နှာပြင် မျှဝေရန် တောင်းဆိုချက်</translation>
 <translation id="3685598397738512288">Linux USB သတ်မှတ်ချက်များ</translation>
-<translation id="3686786761304157917">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" /> ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ ကီးဘုတ်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">ဒီဖိုင်ကို ရေးရန် ကြိုးစားစဉ် အမှား တစ်ခု ကြုံခဲ့ရ: <ph name="ERROR_TEXT" />။</translation>
 <translation id="3688507211863392146">သင်က အပလီကေးရှင်း ထဲမှာ ဖွင့်ခဲ့သည်ကို ဖိုင်များ နှင့် ဖိုလ်ဒါများသို့ ရေးရန်</translation>
 <translation id="3688526734140524629">ချာနယ် ပြောင်းရန်</translation>
@@ -2781,7 +2771,6 @@
 <translation id="3778740492972734840">ပြုစုသူ ကိရိယာများ</translation>
 <translation id="3778868487658107119">၎င်းကို မေးခွန်းများမေးပါ။ အလုပ်များ စေခိုင်းပါ။ ၎င်းသည် သင့်ကိုယ်ပိုင် Google ဖြစ်ပြီး အကူအညီပေးရန် အမြဲအသင့်ရှိနေပါသည်။</translation>
 <translation id="3781742599892759500">Linux မိုက်ခရိုဖုန်း သုံးခွင့်</translation>
-<translation id="3782488227140539029">စက် <ph name="DEVICE_COUNT" /> ခုမှ<ph name="DEVICE_INDEX" /> ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ ဗီဒီယိုကင်မရာ၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="378312418865624974">ဒီကွန်ပျူတာ အတွက် ပင်ကိုယ် နံပါတ်စဉ်</translation>
 <translation id="3784472333786002075">ကွတ်ကီးများဟူသည်မှာ ဝဘ်ဆိုက်များက ပြုလုပ်ထားသော ဖိုင်များဖြစ်သည်။ ကွက်ကီးနှစ်မျိုး ရှိပါသည်− ပင်မကွတ်ကီးများကို သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်က ပြုလုပ်ခြင်းဖြစ်သည်။ ဝဘ်ဆိုက်ကို လိပ်စာဘားတွင် ပြထားသည်။ ပြင်ပကွတ်ကီးများကို အခြားဝဘ်ဆိုက်များက ပြုလုပ်ခြင်းဖြစ်သည်။ ဤဝဘ်ဆိုက်များတွင် သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်ပေါ်တွင် တွေ့ရသည့်ကြော်ငြာ သို့မဟုတ် ပုံများကဲ့သို့ အကြောင်းအရာအချို့ ပါဝင်သည်။</translation>
 <translation id="3785308913036335955">အက်ပ်များ ဖြတ်လမ်းကို ပြပေးရန်</translation>
@@ -2964,6 +2953,7 @@
 <translation id="3943582379552582368">&amp;နောက်သို့</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
 <translation id="3945513714196326460">ပိုတိုသည့်အမည် စမ်းကြည့်ပါ</translation>
+<translation id="3947643756376959257">Chromecast (သို့) TV တွင် ပြထားသော ဝင်ခွင့်ကုဒ် ထည့်နိုင်သည်။</translation>
 <translation id="3948027458879361203">စက်အမည်ပြောင်းရန်</translation>
 <translation id="3948116654032448504">ပုံကို <ph name="SEARCH_ENGINE" />ဖြင့် ရှာရန်</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> က အောက်ပါဖိုင်တွဲများ အတွင်းရှိ ဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
@@ -3205,12 +3195,14 @@
 <translation id="4210048056321123003">ပကတိအသွင် စက်စနစ်ကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="421182450098841253">&amp;စာညှပ် ဘားကို ပြရန်</translation>
 <translation id="4211851069413100178">အသုံးပြုမှုနှင့် အမှားရှာဖွေမှုဒေတာ ပို့ပါ။ အမှားရှာဖွေမှု၊ စက်ပစ္စည်းနှင့်အက်ပ် အသုံးပြုမှုဒေတာများကို Google သို့ အလိုအလျောက်ပို့၍ Android အသုံးပြုမှု ပိုမိုကောင်းမွန်လာစေရန် ကူညီပါ။ ၎င်းက စနစ်နှင့် အက်ပ်တည်ငြိမ်မှု၊ အခြား တိုးတက်ပြင်ဆင်မှုများအတွက် ပံ့ပိုးပေးပါမည်။ စုစည်းထားသော ဒေတာအချို့က Google အက်ပ်နှင့် Android ဆော့ဖ်ဝဲအင်ဂျင်နီယာများကဲ့သို့ ပါတနာများကို ကူညီပေးပါမည်။ ဤ <ph name="BEGIN_LINK1" />ဆက်တင်<ph name="END_LINK1" /> ကို ပိုင်ရှင်ဖြစ်သူက သတ်မှတ်ထားခြင်းဖြစ်သည်။ ပိုင်ရှင်သည် ဤစက်ပစ္စည်းအတွက် ပြဿနာအဖြေရှာခြင်းနှင့် အသုံးပြုမှုဒေတာများကို Google သို့ ပို့ရန် ရွေးချယ်နိုင်ပါသည်။ သင်၏ထပ်တိုး 'ဝဘ်နှင့် အက်ပ်လုပ်ဆောင်ချက်' ကို ဖွင့်ထားသည့်အခါ ဤဒေတာကို သင့် Google အကောင့်သို့ သိမ်းသွားပါမည်။ <ph name="BEGIN_LINK2" />ပိုမိုလေ့လာရန်<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Android အက်ပ်များနှင့် သုံးခြင်းကို ရပ်ရန်</translation>
 <translation id="42126664696688958">တင်ပို့ရန်</translation>
 <translation id="42137655013211669">ဤရင်းမြစ်သို့ ဝင်ရောက်သုံးခြင်းအား ဆာဗာမှ တားမြစ်ထား၏</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">စတင်နေစဉ်အတွင်း အမှားဖြစ်သွားသည်။</translation>
 <translation id="4225397296022057997">ဝဘ်ဆိုက်များ အားလုံးတွင်</translation>
+<translation id="4227605727325220318">Android ဖုန်းအသစ် ထည့်ရန်</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ဤနောက်ဆက်တွဲကို ခွင့်မပြုပါ}other{နောက်ဆက်တွဲအချို့ကို ခွင့်မပြုပါ}}</translation>
 <translation id="4231095370974836764">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Google Play မှ အက်ပ်နှင့် ဂိမ်းများ ထည့်သွင်းပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ကို စီစဉ်သတ်မှတ်ပါ</translation>
@@ -3707,7 +3699,6 @@
 <translation id="4759238208242260848">ဒေါင်းလုဒ်များ</translation>
 <translation id="4761104368405085019">သင့်မိုက်ခရိုဖုန်းကို အသုံးပြုရန်</translation>
 <translation id="4762718786438001384">စက်ပစ္စည်း၏ သိုလှောင်ခန်းအလွန်နည်းနေပါသည်</translation>
-<translation id="4762898026821161650"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော ကွန်ပျူတာ</translation>
 <translation id="4763408175235639573">ဤစာမျက်နှာကို သင်ကြည့်ခဲ့ချိန်၌ အောက်ပါကွတ်ကီးများကို သတ်မှတ်ထားပါသည်</translation>
 <translation id="4765582662863429759">သင့်ဖုန်းမှ သင်၏ Chromebook သို့ စာတိုမက်ဆေ့ဂျ်များ ထပ်ဆင့်ပို့ရန် Android Messages ကို ခွင့်ပြုပါ</translation>
 <translation id="4768332406694066911">ဤအဖွဲ့အစည်းများမှနေ၍ သင်၏ အထောက်အထား အသိအမှတ်ပြုလက်မှတ်များ သင့်ထံတွင်ရှိပါသည်</translation>
@@ -3932,7 +3923,6 @@
 <translation id="499165176004408815">ဖြူမဲခြားနားချက် မြင့်မားသည့် မုဒ်ကို သုံးရန်</translation>
 <translation id="4992458225095111526">Powerwash အား အတည်ပြုရန်</translation>
 <translation id="4992473555164495036">စီမံခန့်ခွဲသူက ရရှိနိုင်သော လက်ကွက်များကို ကန့်သတ်ထားသည်။</translation>
-<translation id="4992984395680162305">ဤစက်များကို QR ကုဒ် စကင်ဖတ်ခြင်းဖြင့် ချိတ်ဆက်ထားသည်။</translation>
 <translation id="4994474651455208930">လုပ်ထုံးလုပ်နည်းများအား မူရင်းစီမံသူများအဖြစ် ဆိုက်များကို တောင်းဆိုခွင့်ပြုပါ</translation>
 <translation id="4994754230098574403">စနစ်ထည့်သွင်းနေပါသည်</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM မရှိပါ}=1{<ph name="VM_TYPE" /> VM 1 ခု တွေ့သည်-<ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS} ခု တွေ့သည်- <ph name="VM_NAME_LIST" />}}</translation>
@@ -4163,7 +4153,6 @@
 <translation id="5243522832766285132">ခေတ္တအကြာတွင် ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> သို့စင့်ခ်လုပ်နေသည်</translation>
 <translation id="5245610266855777041">ကျောင်းသုံးအကောင့်ဖြင့် စတင်ခြင်း</translation>
-<translation id="5246036036039717045">သင်သည် ဤစက်များတွင် Chrome ကို လက်မှတ်ထိုးဝင်ထားသည့်အတွက် ၎င်းတို့ကို လုံခြုံရေးကီးများအဖြစ် အသုံးပြုနိုင်သည်။</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> မှာ ပျက်စီးသွားပြီ။ အက်ပ်ကို ပြန်ဖွင့်ရန် ဒီပူဖောင်းကို န။</translation>
 <translation id="5247051749037287028">ဖော်ပြရန်အမည် (ချန်လှပ်ထားနိုင်သည်)</translation>
 <translation id="5249624017678798539">ဒေါင်းလုဒ် မပြီးခင် ဘရောင်ဇာ ပျက်ကျသွားသည်။</translation>
@@ -4236,7 +4225,6 @@
 <translation id="5319359161174645648">Google က Chrome ကို အသုံးပြုရန် အကြံပြုထားပါသည်</translation>
 <translation id="5319712128756744240">စက်အသစ် တွဲချိတ်ရန်</translation>
 <translation id="5320135788267874712">စက်ပစ္စည်းအသစ်အမည်</translation>
-<translation id="532043380734099846">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" /> ခုမြောက်၊<ph name="DEVICE_NAME" />၊ မောက်စ်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">ဆာဗာကိုဆက်သွယ်၍မရသေးပါ။ နောက်မှထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5324300749339591280">အက်ပ်စာရင်း</translation>
 <translation id="5324780743567488672">သင့်တည်နေရာကို အသုံးပြု၍ စံတော်ချိန်ကို အလိုအလျောက်သတ်မှတ်မည်</translation>
@@ -4266,7 +4254,6 @@
 <translation id="535123479159372765">အခြားစက်မှ မိတ္တူကူးထားသည့် စာသား</translation>
 <translation id="5352033265844765294">အချိန် တံဆိပ်ထုနေ</translation>
 <translation id="5353252989841766347">Chrome မှစကားဝှက်များကို ထုတ်ယူပါ</translation>
-<translation id="5354531123814675522">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" /> ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ တက်ဘလက်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">သင့်အား အကြောင်းကြားချက်များ ပြနိုင်ရန် Assistant ကို ခွင့်ပြုပါ</translation>
 <translation id="5355191726083956201">'အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှု' ကို ဖွင့်ထားသည်</translation>
 <translation id="5355926466126177564">Omnibox မှ သင်ရှာဖွေသောအခါ စာမျက်နှာမှ ပြသသည်များကို တိုးချဲလိုင်း "<ph name="EXTENSION_NAME" />" မှ ပြောင်းလဲခဲ့၏။</translation>
@@ -4503,7 +4490,6 @@
 <translation id="5585898376467608182">သင့်စက်တွင် သိုလှောင်ခန်း နည်းနေသည်။ <ph name="APP_NAME" /> အသုံးပြုရန် အနည်းဆုံး နေရာလွတ် <ph name="MINIMUM_SPACE" /> ရှိရန် လိုအပ်သည်။ နေရာလွတ်ပိုရရန် စက်မှ ဖိုင်များကို ဖျက်ပါ။</translation>
 <translation id="5585912436068747822">ပုံစံချမှု မအောင်မြင်ခဲ့ပါ</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
-<translation id="5589101568518637088">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> ကီးဘုတ်။</translation>
 <translation id="558918721941304263">အက်ပ်များကို တင်နေသည်...</translation>
 <translation id="5592595402373377407">လုံလောက်သည့် ဒေတာမရနိုင်သေးပါ။</translation>
 <translation id="5595485650161345191">လိပ်စာ တည်းဖြတ်ရန်</translation>
@@ -4706,7 +4692,6 @@
 <translation id="5817918615728894473">တွဲချိတ်ပါ</translation>
 <translation id="581840385858998009">နောက်ခံ၊ ချန်နယ်ပုံ၊ ဖန်သားပြင်နားချိန်နှင့် အခြားအရာများကို စိတ်ကြိုက်ပြင်ဆင်ပါ</translation>
 <translation id="5821565227679781414">ဖြတ်လမ်း ပြုလုပ်ရန်</translation>
-<translation id="5822095611691580107">ဘယ်ဘက်နားကြပ် ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%။</translation>
 <translation id="5825412242012995131">ဖွင့်ရန် (အကြံပြုထားသည်)</translation>
 <translation id="5826395379250998812">သင်၏ <ph name="DEVICE_TYPE" /> ကို သင့်ဖုန်းနှင့် ချိတ်ဆက်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">တစ်စိတ်တစ်ပိုင်း ထွင်းဖောက်မြင်ရသည်</translation>
@@ -4750,6 +4735,7 @@
 <translation id="5862109781435984885">စင်ပေါ်တွင် စတိုင်လပ်စ်ခဲတံတူးလ်ကို ပြပါ</translation>
 <translation id="5862319196656206789">ချိတ်ဆက်ထားသည့် စက်များ စနစ်ထည့်သွင်းရန်</translation>
 <translation id="5863445608433396414">ချို့ယွင်းချက်ရှာဖွေပြုပြင်သော အင်္ဂါရပ်များကို လုပ်ဆောင်ပါ</translation>
+<translation id="5864147196375746035">စီမံထားသောစက်ပစ္စည်းသို့ ကာစ်လုပ်ရန်</translation>
 <translation id="5864195618110239517">အခမဲ့ မဟုတ်သော ချိတ်ဆက်မှု အသုံးပြုရန်</translation>
 <translation id="5864754048328252126">အားသွင်းနေစဉ် လုပ်ဆောင်ချက်ကို ဆိုင်းငံ့ထားပါ</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> သည် မကြာမီ ခဏရပ်ပါမည်</translation>
@@ -5164,7 +5150,6 @@
 <translation id="6294759976468837022">အော်တိုစကင်ဖတ်ခြင်း မြန်နှုန်း</translation>
 <translation id="6295158916970320988">ဆိုဒ်များအားလုံး</translation>
 <translation id="6295855836753816081">သိမ်းဆည်းနေသည်...</translation>
-<translation id="6297132509712149399">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> ဖုန်း။</translation>
 <translation id="629730747756840877">အကောင့်</translation>
 <translation id="6298962879096096191">Android အက်ပ်များကို ထည့်သွင်းရန် Google Play ကို အသုံးပြုပါ</translation>
 <translation id="6300177430812514606">ဒေတာပို့ခြင်း (သို့) လက်ခံခြင်းတို့ကို အပြီးသတ်ရန် ခွင့်ပြုမထားပါ</translation>
@@ -5458,7 +5443,6 @@
 <translation id="6601612474695404578">အချို့ဝဘ်ဆိုက်များက ၎င်းတို့၏စာမျက်နှာများ ဖွင့်ရန် ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို အသုံးပြုသည်။ ဝဘ်ဆိုက်တစ်ခု အလုပ်မလုပ်ပါက ကွတ်ကီးများကို ခွင့်ပြုကြည့်နိုင်ပါသည်။</translation>
 <translation id="6602937173026466876">သင့်ပုံနှိပ်စက်များကို အသုံးပြုရန်</translation>
 <translation id="6602956230557165253">သွားလာရန် ဘယ်ညာ မြားများကို အသုံးပြုပါ။</translation>
-<translation id="6602998402703530379">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> ဗီဒီယိုကင်မရာ။</translation>
 <translation id="6603185457265641428">မှတ်တမ်းကို စင့်ခ်လုပ်၊ မလုပ် ရွေးချယ်ခြင်း</translation>
 <translation id="6605847144724004692">မည်သည့် အသုံးပြုသူကမျှ အဆင့်သတ်မှတ်မထားရသေးပါ။</translation>
 <translation id="6606671997164410857">စက်နောက်တစ်ခုတွင် Google Assistant ကို စနစ်ထည့်သွင်းပြီးပုံ ရပါသည်။ ဤစက်တွင် ‘ဖန်သားပြင်’ အကြောင်းအရာ ဖွင့်ခြင်းဖြင့် Assistant ကို အကောင်းဆုံးအသုံးပြုနိုင်သည်။</translation>
@@ -5481,7 +5465,6 @@
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> တွင် သတိထားရသော သို့မဟုတ် အန္တရာယ်ရှိသော အကြောင်းအရာ ပါဝင်သည်။ ၎င်း၏ပိုင်ရှင်ကို ပြင်ခိုင်းပါ။</translation>
 <translation id="6624687053722465643">ချိုသာမှု</translation>
 <translation id="6628328486509726751">တင်ပြီး <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
-<translation id="663065535202460123">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> မောက်စ်။</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> သည် သင့်ကိုယ်စား ၎င်းကိုယ်တိုင် စစ်မှန်ကြောင်း သက်သေပြရန်အတွက် သက်သေခံလက်မှတ်တစ်ခုသို့ အမြဲဝင်သုံးခွင့် ရလိုသည်။</translation>
 <translation id="6635362468090274700">သင့်ကိုယ်သင် ဖျောက်မထားမှသာ အခြားသူများက သင်နှင့် မျှဝေနိုင်ပါမည်။<ph name="BR" /><ph name="BR" />သင့်ကို ယာယီမြင်နိုင်ရန် အခြေအနေပြနေရာတွင် 'အနီးတစ်ဝိုက် မြင်နိုင်မှု' ကိုဖွင့်ပါ။</translation>
 <translation id="6635674640674343739">ကွန်ရက်ချိတ်ဆက်မှု စတင်၍မရပါ။ သင့်ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -5815,7 +5798,6 @@
 <translation id="69739764870135975">Google သည် သင်၏မူရင်းရှာဖွေရေး အင်ဂျင်လည်းဖြစ်ပါက အကြောင်းအရာ အပေါ်မူတည်သည့် ပိုကောင်းမွန်သော သက်ဆိုင်ရာအကြံပြုချက်များကို မြင်ရပါမည်</translation>
 <translation id="6974609594866392343">အော့ဖ်လိုင်း သရုပ်ပြမုဒ်</translation>
 <translation id="697508444536771064">Linux ကို အပြီးပိတ်ရန်</translation>
-<translation id="6977739184256564679">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> တက်ဘလက်။</translation>
 <translation id="6978121630131642226">ရှာဖွေရေး အင်ဂျင်များ</translation>
 <translation id="6979044105893951891">စီမံခန့်ခွဲထားသည့် ဧည့်သည်စက်ရှင်များကို ဖွင့်ခြင်းနှင့် ပိတ်ခြင်း</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -5836,7 +5818,6 @@
 <translation id="6991665348624301627">သွားမည့်နေရာကို ရွေးရန်</translation>
 <translation id="6992554835374084304">အဆင့်မြင့် စာလုံးပေါင်းစစ်ဆေးခြင်းကို ဖွင့်ပါ</translation>
 <translation id="6993000214273684335">အမည်ပေးမထားသော အုပ်စုမှ တဘ်ကို ဖယ်ရှားလိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993889405941892667">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> ကွန်ပျူတာ။</translation>
 <translation id="6994069045767983299">အရောင်များကို ပြောင်းပြန်လှန်ရန်</translation>
 <translation id="6995899638241819463">ဒေတာကျိုးပေါက်မှုတွင် စကားဝှက်များ ဖော်ထုတ်ခံရသည့်အခါ သင့်ကို သတိပေးခြင်း</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - လုပ်ဆောင်ချက်မှတ်တမ်း</translation>
@@ -5907,7 +5888,6 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ပြီးခဲ့သည့် ၁ မိနစ်က လုံခြုံရေး စစ်ဆေးခဲ့သည်}other{ပြီးခဲ့သည့် {NUM_MINS} မိနစ်က လုံခြုံရေး စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="7057767408836081338">အက်ပ်ဒေတာရယူ၍ မရပါ၊ မည်သို့ဖြစ်စေ အက်ပ်ကိုဖွင့်ရန် ကြိုးစားနေသည်...</translation>
 <translation id="7058024590501568315">ဖျောက်ထားသော ကွန်ရက်</translation>
-<translation id="70582545822664495"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော မောက်စ်</translation>
 <translation id="7059858479264779982">အော်တို-ဖွင့်တင်သို့ သတ်မှတ်ရန်</translation>
 <translation id="7062222374113411376">မကြာသေးမီက ပိတ်လိုက်သည့် ဆိုက်များတွင် ဒေတာများ ပို့ခြင်းနှင့် လက်ခံခြင်းကို အဆုံးသတ်ရန် ခွင့်ပြုပါ (အကြံပြုထားသည်)</translation>
 <translation id="7063129466199351735">ဖြတ်လမ်းများကို လုပ်ဆောင်နေသည်...</translation>
@@ -5932,6 +5912,7 @@
 <translation id="7086672505018440886">မှတ်တမ်းတွင် Chrome မှတ်တမ်းဖိုင်များ ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="7088434364990739311">မွမ်းမံမှုစစ်ဆေးခြင်း စတင်ရန်မအောင်မြင်ပါ (မှားယွင်းသည့် ကုဒ် <ph name="ERROR" />)။</translation>
 <translation id="7088674813905715446">ဒီကိရိယာကို စီမံအုပ်ချုပ်သူက စီမံဆောင်ရွက်ခြင်း မရှိတော့သည့် အခြေအနေမှာ ထားရှိပါသည်။ ၎င်းကို စာရင်းပေးနိုင်ရန် အတွက်၊ ကျေးဇူးပြုပြီး သင့် စီမံအုပ်ချုပ်သူအား ဆိုင်းငံ့ အခြေအနေမှာ ထားရှိရန် ပြောပါ။</translation>
+<translation id="7090160970140261931">သင်၏ <ph name="DEVICE_TYPE" /> တွင် ဝဘ်ဆိုက်များ၊ Android အက်ပ်များနှင့် သုံးရန် အခြားအကောင့်များ ထည့်နိုင်သည်။ မည်သည့်အကောင့်များကို Android အက်ပ်များနှင့် သုံးမည်ကိုလည်း ထိန်းချုပ်နိုင်သည်။</translation>
 <translation id="7093220653036489319">အမြန်အဖြေများ</translation>
 <translation id="7093416310351037609">ဒေတာဘေးကင်းမှုနှင့် လုံခြုံမှုအတွက် သင့်အဖွဲ့အစည်းသည် ၎င်း၏ <ph name="WEB_DRIVE" /> အကောင့်တွင် သိမ်းရန် အကျုံးဝင်သောဒေါင်းလုဒ်အားလုံး လိုအပ်သည်။</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6078,7 +6059,6 @@
 <translation id="7257173066616499747">ကြိုးမဲ့ကွန်ယက်များ</translation>
 <translation id="725758059478686223">ပုံနှိပ်ခြင်း ဝန်ဆောင်မှု</translation>
 <translation id="7257666756905341374">သင်က ကူးယူလျက် ကပ်ပေးသည့် ဒေတာကို ဖတ်ရန်</translation>
-<translation id="7258006747130724016"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော ဗီဒီယိုကင်မရာ</translation>
 <translation id="7258192266780953209">ပြောင်းလဲမှုများ</translation>
 <translation id="7258225044283673131">ဤအပလီကေးရှင်းက တုံ့ပြန်မှုမရှိပါ။ အက်ပ်ကိုပိတ်ရန် "မဖြစ်မနေပိတ်ရန်" ကို ရွေးပါ။</translation>
 <translation id="7262004276116528033">ဤ လက်မှတ်ထိုး ဝင်ရေး ဝန်ဆောင်မှုကို <ph name="SAML_DOMAIN" />မှ စီမံပေးပါသည်</translation>
@@ -6870,7 +6850,6 @@
 <translation id="8037117027592400564">ဖန်တီး နှုတ်စကားကို အသုံးပြုပြီး ပြောကြားခဲ့သည့် စာသား အားလုံးကို ဖတ်ရန်</translation>
 <translation id="8037357227543935929">မေးရန် (မူရင်း)</translation>
 <translation id="803771048473350947">ဖိုင်</translation>
-<translation id="8038399858950372766"><ph name="DEVICE_COUNT" /> အနက် စက် <ph name="DEVICE_INDEX" />၊ <ph name="DEVICE_NAME" /> အမည်ရှိသော ကီးဘုတ်</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="8042142357103597104">စာသား အလင်းပိတ်နှုန်း</translation>
 <translation id="8042331986490021244">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပြီးပါပြီ</translation>
@@ -6991,6 +6970,7 @@
 <translation id="8147900440966275470">တဘ် <ph name="NUM" /> ခု တွေ့သည်</translation>
 <translation id="8148760431881541277">လက်မှတ်ထိုးဝင်မှု ကန့်သတ်ရန်</translation>
 <translation id="8149564499626272569">USB ကြိုးဖြင့် သင့်ဖုန်းကို စိစစ်ရန်</translation>
+<translation id="815114315010033526">ထိုအစား QR ကုဒ် သုံးရန်</translation>
 <translation id="8151638057146502721">ပြုပြင်</translation>
 <translation id="8154790740888707867">ဖိုင်  မရှိ</translation>
 <translation id="8154912474061769055">ဝဘ်ဆိုက်များစွာရှိ ဝန်ဆောင်မှုများ အလုပ်မလုပ်နိုင်လောက်ပါ</translation>
@@ -7016,6 +6996,7 @@
 <translation id="8176332201990304395">ပန်းရောင်နှင့် အဖြူ</translation>
 <translation id="8177196903785554304">ကွန်ရက် အသေးစိတ်</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{တဘ်ကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{တဘ်များကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}}</translation>
+<translation id="8179188928355984576">Android အက်ပ်များနှင့် မသုံးပါ</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" သည် ပုံများ၊ ဗီဒီယို၊ နှင့်အသံဖိုင်များကို အမှန်ခြစ်ထားသည့် တည်နေရာများတွင် ဖတ်နိုင်ပြီး ဖျက်နိုင်ပါသည်။</translation>
 <translation id="8181215761849004992">ဒိုမိန်းသို့ ချိတ်ဆက်၍မရပါ။ စက်ပစ္စည်းများ ထည့်သွင်းရန် လုံလောက်သည့် လုပ်ပိုင်ခွင့်များ ရှိမရှိ သိရန် သင်၏အကောင့်ကို စစ်ဆေးပါ။</translation>
@@ -7285,7 +7266,6 @@
 <translation id="8475313423285172237">Chrome အလုပ်လုပ်ပုံ ပြောင်းလဲသွားစေမည့် တိုးချဲ့မှုကို သင့်ကွန်ပျူတာ ထဲက အခြား ပရိုဂရမ်မှ ထည့်ပေးခဲ့သည်။</translation>
 <translation id="8477241577829954800">အစားထိုးပြီး</translation>
 <translation id="8477384620836102176">&amp;အထွေထွေ</translation>
-<translation id="8479109005219657634">စက် <ph name="DEVICE_COUNT" /> ခုမှ<ph name="DEVICE_INDEX" /> ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ အသံစက်ပစ္စည်း၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">ကုဒ် မမှန်ကန်ပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="8480082892550707549">ဤဆိုက်မှ ဖိုင်များကို ဒေါင်းလုဒ်လုပ်ခဲ့ဖူးလျှင်ပင် ဤဆိုက်သည် ယာယီအားဖြင့် လုံခြုံမှု မရှိနိုင်ပါ (အဟက်ခံထားရခြင်း ဖြစ်နိုင်သည်)။ ဤဖိုင်ကို နောက်မှ ဒေါင်းလုဒ်လုပ်ကြည့်ပါ။</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> မှ အမည်မသိ စက်ပစ္စည်း</translation>
@@ -7567,7 +7547,6 @@
 <translation id="8775653927968399786">{0,plural, =1{သင်၏ <ph name="DEVICE_TYPE" /> ကို # စက္ကန့်အကြာတွင် အလိုအလျောက်လော့ခ်ချလိုက်ပါမည်။
 သင့်စမတ်ကတ်ကို ထည့်သွင်းထားရန် <ph name="DOMAIN" /> က သတ်မှတ်ထားသည်။}other{သင်၏ <ph name="DEVICE_TYPE" /> ကို # စက္ကန့်အကြာတွင် အလိုအလျောက်လော့ခ်ချလိုက်ပါမည်။
 သင့်စမတ်ကတ်ကို ထည့်သွင်းထားရန် <ph name="DOMAIN" /> က သတ်မှတ်ထားသည်။}}</translation>
-<translation id="8777259617149177596">နားကြပ်ဘူး ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%။</translation>
 <translation id="8777628254805677039">root စကားဝှက်</translation>
 <translation id="8779944680596936487">ဝဘ်ဆိုက်များသည် ၎င်းတို့ပေါ်ရှိ သင်၏ကြည့်ရှုခြင်းများကို မြင်ရရန်အတွက်သာ ကွတ်ကီးများကို သုံးနိုင်သည်</translation>
 <translation id="8780123805589053431">Google မှ ပုံအကြောင်းအရာများ ရယူရန်</translation>
@@ -7922,7 +7901,6 @@
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> အတွက် ဆက်တင်များစာမျက်နှာကို ဖွင့်ပေးသည်</translation>
 <translation id="9128870381267983090">ကွန်ယက်သို့ ချိတ်ဆက်ပါ</translation>
 <translation id="9130015405878219958">ဝင်လိုက်သည့် မုဒ် မမှန်ပါ။</translation>
-<translation id="9130215884425927484">စက် <ph name="DEVICE_COUNT" /> ခုအနက် <ph name="DEVICE_INDEX" /> ခုမြောက် <ph name="DEVICE_NAME" /> အသံစက်ပစ္စည်း။</translation>
 <translation id="9131487537093447019">ဘလူးတုသ် ကိရိယာများ ထံသို့ စာများပို့ပါ၊ စာများကို လက်ခံယူပါ။</translation>
 <translation id="9134066738478820307">ဝဘ်ဆိုက်များသည် ကာကွယ်ထားသည့် အကြောင်းအရာကို ဖွင့်ရန် သတ်မှတ်မှုစနစ်များ သုံးနိုင်သည်</translation>
 <translation id="913411432238655354">စတင်ချိန်တွင် အက်ပ်များပြန်ယူခြင်း</translation>
@@ -7966,7 +7944,6 @@
 <translation id="916964310188958970">ဘာကြောင့် ဤအကြံပြုချက် ပေးပါသလဲ။</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">လက်ရှိ မြင်နိုင်မှုဆက်တင်ကို အဆက်အသွယ်အားလုံး အဖြစ် သတ်မှတ်ထားသည်</translation>
-<translation id="9170199455952690202">ညာဘက်နားကြပ် ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%။</translation>
 <translation id="9170848237812810038">&amp;တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="9170884462774788842">Chrome အလုပ်လုပ်ပုံပေါင်းလဲသွားစေမည့် အရောင်အဖွဲ့ တစ်ခုကို သင့်ကွန်ပျူတာရှိ အခြား ပရိုဂရမ်မှ ပေါင်းထည့်ခဲ့သည်။</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> အတွက် သင့်မိဘသတ်မှတ်ထားသော အချိန်ကန့်သတ်ချက် ပြည့်သွားပြီ။ မနက်ဖြန်တွင် ၎င်းကို <ph name="TIME_LIMIT" /> ကြာ အသုံးပြုနိုင်သည်။</translation>

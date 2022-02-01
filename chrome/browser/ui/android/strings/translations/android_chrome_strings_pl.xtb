@@ -404,7 +404,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3264259168916048410">Twój komputer chce użyć tego urządzenia, aby umożliwić Ci zalogowanie się na stronie</translation>
 <translation id="3265534588625245297">Zarządzaj obserwowanymi witrynami</translation>
 <translation id="3269093882174072735">Wczytaj obraz</translation>
-<translation id="3269956123044984603">Aby korzystać z kart ze swoich pozostałych urządzeń, włącz opcję „Autosynchronizacja danych” w ustawieniach konta na urządzeniu z Androidem.</translation>
 <translation id="3280562213547448728">Wyszukiwanie głosowe</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3284510035090979597">Aktywna pomoc</translation>
@@ -917,7 +916,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
 <translation id="6312687380483398334">Aplikacje internetowe (wyciszenie)</translation>
 <translation id="6316139424528454185">Ta wersja Androida jest nieobsługiwana</translation>
-<translation id="6324034347079777476">Synchronizacja systemu Android jest wyłączona</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6324977638108296054">Nie udało się utworzyć linku do podświetlenia</translation>
 <translation id="6324997754869598316">(Błąd <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6900532703269623216">Silniejsza ochrona</translation>
 <translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6909589135458168665">Wstępne wczytywanie stron</translation>
-<translation id="6929699136511445623">Włącz synchronizację systemu Android</translation>
 <translation id="6942665639005891494">W dowolnej chwili w Ustawieniach możesz zmienić domyślną lokalizację pobierania</translation>
 <translation id="694267552845942083">W tej chwili dostosowujesz ustawienia synchronizacji. Aby zakończyć włączanie synchronizacji, na dole ekranu kliknij przycisk Potwierdź. Przejdź wyżej</translation>
 <translation id="6945221475159498467">Wybierz</translation>
@@ -1161,7 +1158,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7581273696622423628">Wypełnij ankietę</translation>
 <translation id="7583262514280211622">Tu znajdziesz swoją listę Do przeczytania</translation>
 <translation id="7588219262685291874">Włącz ciemny motyw, gdy na urządzeniu jest aktywne oszczędzanie baterii</translation>
-<translation id="7593557518625677601">Otwórz ustawienia Androida i ponownie włącz jego synchronizację, by uruchomić Synchronizację Chrome</translation>
 <translation id="7594687499944811403">Pozwól stronie <ph name="EMBEDDED_ORIGIN" /> sprawdzać Twoją tożsamość, gdy korzystasz ze strony <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">System operacyjny</translation>
 <translation id="7605594153474022051">Synchronizacja nie działa</translation>

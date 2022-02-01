@@ -91,6 +91,7 @@
 <translation id="1082802595100075771">Zulassen, dass Nutzer einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="1087437665304381368">Mit dieser Richtlinie wird nur der <ph name="PRODUCT_OS_NAME" />-Entwicklermodus gesteuert. Wenn Sie den Zugriff auf Android-Entwickleroptionen verhindern möchten, müssen Sie die Richtlinie "<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />" konfigurieren.</translation>
 <translation id="1087707496788636333">Die Adresse der Chrome Enterprise-Richtlinienliste wird geändert. Bitte ändern Sie sie in Ihren Lesezeichen zu <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
+<translation id="1091765729282771296">Websites dürfen den Nutzer um Zugriff auf HID-Geräte bitten</translation>
 <translation id="1095209545735032039">Serial API auf diesen Websites blockieren</translation>
 <translation id="1096105751829466145">Standardsuchmaschine</translation>
 <translation id="1099282607296956954">Website-Isolierung für jede Website aktivieren</translation>
@@ -207,6 +208,9 @@
       Diese Richtlinie gilt nicht für Kiosknutzer.
 
       Warnung: Bei den Einstellungen „Wipe“ und „MinimalMigrate“ werden lokale Daten entfernt.</translation>
+<translation id="1250597158212586309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, haben Nutzer die Möglichkeit, Warnungen zu gehackten Passwörtern zu schließen und wiederherzustellen.
+
+      Wird die Richtlinie deaktiviert, können Nutzer Warnungen zu gehackten Passwörtern nicht schließen. Ist sie aktiv, können Nutzer Warnungen zu gehackten Passwörtern schließen.</translation>
 <translation id="1252536192437793850">Websites erlauben, den Nutzer um Zugriff auf einen seriellen Port zu bitten</translation>
 <translation id="1255159327956066463">Funktion für das ghost-Dialogfeld aktivieren</translation>
 <translation id="125655429495551011">Wird für die Richtlinie ein String festgelegt, wird er während der DHCP-Anfrage als Gerätehostname verwendet. Die Variablen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> und <ph name="LOCATION_PLACEHOLDER" /> des Strings können durch Werte auf dem Gerät ersetzt werden, bevor der String als Hostname verwendet wird. Das Ergebnis muss ein gültiger Hostname gemäß RFC 1035, Abschnitt 3.1 sein.
@@ -903,6 +907,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Mit <ph name="CLOUD_PRINT_NAME" /> verbundene Drucker werden als <ph name="PRINTER_TYPE_CLOUD" /> klassifiziert, alle anderen als <ph name="PRINTER_TYPE_LOCAL" />.
 
       Hinweis: Wenn Sie ein Feld auslassen, gelten alle Werte als übereinstimmend. Wenn Sie z. B. keinen Wert für die Konnektivität angeben, wird die Erkennung sämtlicher Druckertypen, <ph name="PRINTER_TYPE_LOCAL" /> und <ph name="PRINTER_TYPE_CLOUD" />, über die Druckvorschau gestartet. Reguläre Ausdrücke müssen in der RegExp-Syntax von JavaScript angegeben werden und es wird zwischen Groß- und Kleinschreibung unterschieden.</translation>
+<translation id="2004382785802837840">Schließen von Warnungen zu gehackten Passwörtern deaktivieren</translation>
 <translation id="2005506794355327448">Auszuführende Aktion, wenn das Gerät zugeklappt wird.</translation>
 <translation id="2006530844219044261">Energieverwaltung</translation>
 <translation id="2008514891623783266">Richtlinie für das IP-Handling von WebRTC</translation>
@@ -1321,6 +1326,8 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2435052056904485763">Zulassungsliste für Kerberos-Bevollmächtigungs-Server</translation>
 <translation id="2435232509335686514">Konfigurationsrichtlinie für den Umgang mit heruntergeladenen Dateien durch den <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2436302465999055995"><ph name="LACROS_NAME" /> als einzigen verfügbaren Browser festlegen (noch nicht implementiert)</translation>
+<translation id="2439187682308339104">Websites nicht erlauben, den Nutzer über die WebHID API um Zugriff auf HID-Geräte zu bitten</translation>
+<translation id="2439733504887695659">Schließen von Warnungen zu gehackten Passwörtern für eingegebene Anmeldedaten aktivieren</translation>
 <translation id="2448315169529769573">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Nutzungsdaten und Fehlerberichte, inklusive Absturzberichte, an Google. Ist die Richtlinie deaktiviert, werden Nutzungsdaten und Fehlerberichte nicht gemeldet.
 
        Ist sie nicht konfiguriert, werden Nutzungsdaten und Fehlerberichte nur für verwaltete Geräte gemeldet.</translation>
@@ -2814,6 +2821,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4183229833636799228">"<ph name="FLASH_PLUGIN_NAME" />" als Standardeinstellung</translation>
+<translation id="4187576366596772431">WebHID API auf diesen Websites blockieren</translation>
 <translation id="4192388905594723944">URL zur Überprüfung des Client-Authentifizierungs-Tokens für den Remotezugriff</translation>
 <translation id="4203643479966921607">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
 
@@ -3179,6 +3187,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
           Beispielmuster finden Sie unter https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">URL-Liste öffnen</translation>
+<translation id="4674542060943819878">Schließen von Warnungen zu gehackten Passwörtern aktivieren</translation>
 <translation id="4674871290487541952">Unsichere Algorithmen in Integritätsprüfungen bei Erweiterungsupdates und -installationen erlauben</translation>
 <translation id="4680961954980851756">„Automatisches Ausfüllen“ aktivieren</translation>
 <translation id="4685721728282448265">CECPQ2-Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS aktiviert</translation>
@@ -4537,6 +4546,21 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Falls diese Richtlinie nicht konfiguriert oder die Liste leer ist, besteht in <ph name="PRODUCT_NAME" /> Zugriff auf alle Schemas.</translation>
 <translation id="6338982178236723271">Systeminformationen melden</translation>
+<translation id="6352714113109004581">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer bitten dürfen, ihnen Zugriff auf ein HID-Gerät zu gewähren.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
+
+      Bei URL-Mustern, die nicht der Richtlinie entsprechen, hat Folgendes Vorrang (in dieser Reihenfolge):
+
+        * <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> (falls eine Übereinstimmung besteht)
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (falls konfiguriert)
+
+        * Die persönlichen Einstellungen des Nutzers
+
+      URL-Muster dürfen nicht im Konflikt mit <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="6353890097388312479">Wenn die Richtlinie auf „Alle“ (0) gesetzt oder nicht konfiguriert ist, können Nutzer Vertrauenseinstellungen für alle CA-Zertifikate bearbeiten, von Nutzern importierte Zertifikate entfernen und Zertifikate mit dem Zertifikat-Manager importieren. Wenn die Richtlinie auf „Nur Nutzer“ (1) gesetzt ist, können Nutzer zwar von Nutzern importierte Zertifikate verwalten, aber die Vertrauenseinstellungen integrierter Zertifikate nicht ändern. Ist sie auf „Keine“ (2) gesetzt, können Nutzer CA-Zertifikate ansehen, aber nicht verwalten.</translation>
 <translation id="6362856770865555544">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die WPAD (Web Proxy Auto-Discovery)-Optimierung in <ph name="PRODUCT_NAME" /> aktiviert.
 
@@ -5943,6 +5967,11 @@ werden abgelehnt.</translation>
 <translation id="793473937901685727">Verfügbarkeit von Zertifikaten für ARC-Apps festlegen</translation>
 <translation id="7937766917976512374">Videoaufzeichnung gestatten oder ablehnen</translation>
 <translation id="7941975817681987555">Netzwerkaktionen nicht über Netzwerkverbindungen vervollständigen</translation>
+<translation id="7946350455013548764">Wenn die Richtlinie auf 3 gesetzt ist, dürfen Websites um Zugriff auf HID-Geräte bitten. Ist sie auf 2 gesetzt, wird der Zugriff auf HID-Geräte verweigert.
+
+      Wenn sie nicht konfiguriert ist, können Websites um Zugriff bitten, aber Nutzer können diese Einstellung ändern.
+
+      Die Richtlinie kann für bestimmte <ph name="URL_LABEL" />-Muster überschrieben werden. Hierfür stehen die Richtlinien <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> zur Verfügung.</translation>
 <translation id="7951605113561734721">Diese Richtlinie gibt geräteübergreifende Clientzertifikate an, die über das Geräteverwaltungsprotokoll registriert werden sollen.</translation>
 <translation id="7952007677054834789">Hiermit werden die Seiten konfiguriert, die beim Start geladen werden: die standardmäßige Startseite und die Standardseite "Neuer Tab" in <ph name="PRODUCT_NAME" />. Außerdem wird verhindert, dass Nutzer diese Einstellungen ändern.
 
@@ -6173,6 +6202,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 <translation id="8220023426952118761">Gewünschte Download-Rate in kbit/s.</translation>
 <translation id="8220156281401380422">Zulassungsliste für natives Messaging konfigurieren</translation>
 <translation id="822055204938220476">Liste mit URLs, die im Vollbildmodus bleiben dürfen, ohne dass eine Benachrichtigung angezeigt werden muss</translation>
+<translation id="8225579382697740712">Verwendung der WebHID API verwalten</translation>
 <translation id="8229912067600517877">Entwicklertools aktivieren</translation>
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
 <translation id="8239109177194627162">„Automatisches Ausfüllen“ für Kreditkarten deaktivieren</translation>
@@ -6522,6 +6552,21 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8543108307976719751">Verbindungen per Remotezugriff verhindern</translation>
 <translation id="8544375438507658205">Standardanwendung für HTML-Darstellung in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
+<translation id="8553955290407912156">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht bitten dürfen, ihnen Zugriff auf ein HID-Gerät zu gewähren.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
+
+      Bei URL-Mustern, die nicht der Richtlinie entsprechen, hat Folgendes Vorrang (in dieser Reihenfolge):
+
+        * <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> (falls eine Übereinstimmung besteht)
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (falls konfiguriert)
+
+        * Die persönlichen Einstellungen des Nutzers
+
+      URL-Muster dürfen nicht im Konflikt mit <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
 <translation id="8571871284943706125">Mit dieser Richtlinie wird festgelegt, ob Ereignisse in CRD-Sitzungen auf registrierten Geräten für verknüpfte Nutzer gemeldet werden.
@@ -6612,6 +6657,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, kann der Host für den Remotezugriff mit jedem lokalen Nutzer verknüpft sein.</translation>
 <translation id="867708016260789630">Auf YouTube mindestens den eingeschränkten Modus „Moderat“ erzwingen</translation>
+<translation id="8677853537025397834">WebHID API auf diesen Websites erlauben</translation>
 <translation id="8685024486845674965">Die Passwortschutzwarnung wird durch die Wiederverwendung eines Passworts ausgelöst</translation>
 <translation id="8685680544554917389">Wenn die Richtlinie auf "True" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien automatisch abspielen. Wenn die Richtlinie auf "False" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien nicht mehr automatisch abspielen.
 

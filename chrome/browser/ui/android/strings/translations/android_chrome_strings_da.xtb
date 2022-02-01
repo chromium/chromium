@@ -404,7 +404,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3264259168916048410">Din computer anmoder om at anvende denne enhed til login på et website</translation>
 <translation id="3265534588625245297">Administrer de websites, du følger</translation>
 <translation id="3269093882174072735">Indlæs billede</translation>
-<translation id="3269956123044984603">Aktivér "Automatisk synkronisering af data" i kontoindstillingerne for Android for at få adgang til dine faner på dine andre enheder.</translation>
 <translation id="3280562213547448728">Stemmesøgning</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3284510035090979597">Proaktiv hjælp</translation>
@@ -917,7 +916,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6312687380483398334">Webapps (lydløs)</translation>
 <translation id="6316139424528454185">Android-versionen understøttes ikke</translation>
-<translation id="6324034347079777476">Synkronisering af Android-systemet blev deaktiveret</translation>
 <translation id="6324916366299863871">Rediger genvej</translation>
 <translation id="6324977638108296054">Der kan ikke oprettes et link til fremhævning</translation>
 <translation id="6324997754869598316">(fejl <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
 <translation id="6909589135458168665">Forudindlæs sider</translation>
-<translation id="6929699136511445623">Aktivér synkronisering af Android-system</translation>
 <translation id="6942665639005891494">Du kan til enhver tid ændre standardplaceringen for downloads via menuen Indstillinger</translation>
 <translation id="694267552845942083">Du er i øjeblikket ved at tilpasse dine indstillinger for Synkronisering. Afslut aktiveringen af Synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
 <translation id="6945221475159498467">Vælg</translation>
@@ -1161,7 +1158,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7581273696622423628">Deltag i undersøgelsen</translation>
 <translation id="7583262514280211622">Her finder du din læseliste</translation>
 <translation id="7588219262685291874">Aktivér mørkt tema, når enhedens batterisparefunktion er aktiveret</translation>
-<translation id="7593557518625677601">Åbn Android-indstillinger, og genaktiver synkronisering af Android-systemet for at starte Chrome-synkroniseringen</translation>
 <translation id="7594687499944811403">Tillad, at <ph name="EMBEDDED_ORIGIN" /> bekræfter din identitet for <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativsystem</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>

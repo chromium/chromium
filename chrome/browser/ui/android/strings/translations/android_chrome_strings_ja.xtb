@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">パソコンからサイトへのログインにこのデバイスを使用するよう求められています</translation>
 <translation id="3265534588625245297">フォローするサイトを管理</translation>
 <translation id="3269093882174072735">画像を読み込む</translation>
-<translation id="3269956123044984603">他のデバイスと同じタブを使用するには、Android のアカウント設定で [データの自動同期] を有効にします。</translation>
 <translation id="3280562213547448728">音声検索</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3284510035090979597">アクティブ サポート</translation>
@@ -473,6 +472,7 @@
 <translation id="3716182511346448902">このページは大量のメモリを使用しているため、Chrome により一時停止されました。</translation>
 <translation id="3721119614952978349">Google の設定</translation>
 <translation id="3737319253362202215">翻訳設定</translation>
+<translation id="3737402728074743863">このデバイスをセキュリティ キーとして使用するには、画面ロックを設定してください</translation>
 <translation id="3738139272394829648">タップして検索</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> にブックマークしました</translation>
 <translation id="3740525748616366977">音声検索はこのデバイスではご利用いただけません</translation>
@@ -916,7 +916,6 @@
 <translation id="6303969859164067831">ログアウトして同期をオフにする</translation>
 <translation id="6312687380483398334">ウェブアプリ（サイレント）</translation>
 <translation id="6316139424528454185">Android のバージョンはサポートされていません</translation>
-<translation id="6324034347079777476">Android システムの同期が無効です</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
 <translation id="6324977638108296054">選択箇所へのリンクを作成できません</translation>
 <translation id="6324997754869598316">（エラー <ph name="ERROR_CODE" />）</translation>
@@ -1044,7 +1043,6 @@
 <translation id="6900532703269623216">保護強化機能</translation>
 <translation id="6903907808598579934">同期を有効にする</translation>
 <translation id="6909589135458168665">ページをプリロードする</translation>
-<translation id="6929699136511445623">Android システムの同期を有効にする</translation>
 <translation id="6942665639005891494">デフォルトのダウンロード保存先は [設定] メニューでいつでも変更できます</translation>
 <translation id="694267552845942083">同期の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="6945221475159498467">選択</translation>
@@ -1160,7 +1158,6 @@
 <translation id="7581273696622423628">アンケートに答える</translation>
 <translation id="7583262514280211622">リーディング リストはここに表示されます</translation>
 <translation id="7588219262685291874">デバイスがバッテリー セーバー モードの場合にダークモードを有効にする</translation>
-<translation id="7593557518625677601">Chrome の同期を開始するには、Android の設定で Android システムの同期を再度有効にします</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> で <ph name="TOP_ORIGIN" /> の代わりに本人確認を行います</translation>
 <translation id="7596558890252710462">オペレーティング システム</translation>
 <translation id="7605594153474022051">同期が機能していません</translation>

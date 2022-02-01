@@ -404,7 +404,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3264259168916048410">Votre ordinateur demande à utiliser cet appareil pour se connecter à un site</translation>
 <translation id="3265534588625245297">Gérez les sites auxquels vous êtes abonnés</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
-<translation id="3269956123044984603">Pour synchroniser vos onglets sur vos autres appareils, activez « Synchroniser automatiquement les données » dans les paramètres de compte Android.</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3284510035090979597">Aide proactive</translation>
@@ -916,7 +915,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6312687380483398334">Applications Web (mode silencieux)</translation>
 <translation id="6316139424528454185">Version Android non compatible</translation>
-<translation id="6324034347079777476">La synchronisation du système Android est désactivée</translation>
 <translation id="6324916366299863871">Modifier un raccourci</translation>
 <translation id="6324977638108296054">Impossible de créer un lien vers l'élément en surbrillance</translation>
 <translation id="6324997754869598316">(Erreur <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1042,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6909589135458168665">Précharger les pages</translation>
-<translation id="6929699136511445623">Activer la synchronisation système pour Android</translation>
 <translation id="6942665639005891494">Vous pouvez changer le dossier de téléchargement par défaut en tout temps grâce à l'option de menu Paramètres.</translation>
 <translation id="694267552845942083">Vous êtes en train de personnaliser vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir en haut</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
@@ -1160,7 +1157,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7581273696622423628">Répondre au sondage</translation>
 <translation id="7583262514280211622">Vous trouverez votre liste de lecture ici</translation>
 <translation id="7588219262685291874">Activer le thème sombre lorsque la fonction Économiseur de pile de votre appareil est activée</translation>
-<translation id="7593557518625677601">Ouvr. param. Android et réact. sync. syst. Android pour commencer sync. Chrome</translation>
 <translation id="7594687499944811403">Laissez <ph name="EMBEDDED_ORIGIN" /> vérifier qu'il s'agit bien de vous pour <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Système d'exploitation</translation>
 <translation id="7605594153474022051">La synchronisation ne fonctionne pas</translation>

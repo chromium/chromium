@@ -87,6 +87,7 @@
 <translation id="1082802595100075771">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得するかどうかをユーザーが選択できる</translation>
 <translation id="1087437665304381368">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のデベロッパー モードのみを管理します。Android 開発者向けオプションへのアクセスを禁止するには、<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> ポリシーを設定する必要があります。</translation>
 <translation id="1087707496788636333">Chrome Enterprise ポリシーのリストは別のページに移動しました。ブックマークを <ph name="POLICY_DOCUMENTATION_URL" /> に変更してください。</translation>
+<translation id="1091765729282771296">サイトが HID デバイスへのアクセスをユーザーに要求することを許可する</translation>
 <translation id="1095209545735032039">シリアル API をブロックするサイトを指定します</translation>
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>
 <translation id="1099282607296956954">すべてのサイトに対してサイト分離を有効にする</translation>
@@ -1248,6 +1249,7 @@
 <translation id="2435052056904485763">Kerberos 委任サーバーの許可リスト</translation>
 <translation id="2435232509335686514">ダウンロードされたファイルを処理する <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> の設定ポリシー</translation>
 <translation id="2436302465999055995"><ph name="LACROS_NAME" /> のみを使用可能なブラウザにする（未実装）</translation>
+<translation id="2439187682308339104">どのサイトにも WebHID API 経由での HID デバイスへのアクセス要求を許可しない</translation>
 <translation id="2448315169529769573">このポリシーを有効に設定すると、<ph name="PRODUCT_OS_NAME" /> から Google に、使用状況に関する統計情報と診断データが送信されます。このポリシーを無効に設定すると、統計情報と診断データは送信されません。
 
        このポリシーを未設定のままにすると、統計情報と診断データの送信は管理対象外のデバイスではオフになり、管理対象のデバイスではオンになります。</translation>
@@ -2710,6 +2712,7 @@
 
           このポリシーを設定しない場合、テキストカーソルによるハイライト表示は初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
 <translation id="4183229833636799228">デフォルトの <ph name="FLASH_PLUGIN_NAME" /> 設定</translation>
+<translation id="4187576366596772431">WebHID API をブロックするサイトを指定します</translation>
 <translation id="4192388905594723944">リモート アクセス クライアントの認証トークンを検証するための URL</translation>
 <translation id="4203643479966921607">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> がオンになり、ユーザーはアプリメニュー、ページ コンテキスト メニュー、Cast 対応ウェブサイトのメディア コントロール、Cast ツールバー アイコン（表示されている場合）から起動できます。
 
@@ -4371,6 +4374,21 @@
 
       このポリシーを設定しないか、リストを空白にした場合、すべてのスキームが <ph name="PRODUCT_NAME" /> でアクセス可能になります。</translation>
 <translation id="6338982178236723271">システム情報を報告する</translation>
+<translation id="6352714113109004581">このポリシーでは、HID デバイスへのアクセス許可をユーザーに要求できるサイトの URL パターンリストを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      URL がポリシーの URL パターンと一致しない場合は、次の順に適用されます。
+
+        *<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />（一致する場合）
+
+        *<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />（指定されている場合）
+
+        *ユーザーの個人設定
+
+      URL パターンは、<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="6353890097388312479">このポリシーを All（0）に設定するか未設定のままにした場合、ユーザーは、すべての CA 証明書の信頼設定の編集、ユーザーが取り込んだ証明書の削除、証明書マネージャーによる証明書の取り込みを行うことができます。このポリシーを UserOnly（1）に設定した場合、ユーザーは、ユーザーが取り込んだ証明書のみを管理でき、組み込みの証明書の信頼設定を変更することはできません。このポリシーを None（2）に設定した場合、ユーザーは CA 証明書を表示できます（管理はできません）。</translation>
 <translation id="6362856770865555544">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> で WPAD（ウェブプロキシ自動検出）の最適化が有効になります。
 
@@ -5714,6 +5732,11 @@
 <translation id="793473937901685727">ARC アプリで証明書を使用できるかどうかを設定します</translation>
 <translation id="7937766917976512374">動画キャプチャを許可または拒否する</translation>
 <translation id="7941975817681987555">ネットワーク接続でネットワーク動作を予測しない</translation>
+<translation id="7946350455013548764">このポリシーを 3 に設定した場合、ウェブサイトは、HID デバイスへのアクセスを要求できます。このポリシーを 2 に設定した場合、HID デバイスへのアクセスは許可されません。
+
+      このポリシーを未設定のままにした場合、ウェブサイトによるアクセス要求は許可されますが、ユーザーはこの設定を変更できます。
+
+      特定の <ph name="URL_LABEL" /> パターンに対しては、<ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> ポリシーと <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> ポリシーを使ってこのポリシーをオーバーライドできます</translation>
 <translation id="7951605113561734721">デバイス管理プロトコルを使用した登録が必要なデバイス共通のクライアント証明書を指定します。</translation>
 <translation id="7952007677054834789"><ph name="PRODUCT_NAME" /> の起動時に読み込むページ、デフォルトのホームページ、デフォルトの新しいタブページを設定し、ユーザーがこの設定を変更できないようにします。
 
@@ -5936,6 +5959,7 @@
 <translation id="8220023426952118761">希望するダウンロード速度（キロビット/秒）です。</translation>
 <translation id="8220156281401380422">ネイティブ メッセージングの許可リストを設定する</translation>
 <translation id="822055204938220476">通知なしでの全画面モードの継続を許可する URL のリスト</translation>
+<translation id="8225579382697740712">WebHID API の使用を管理する</translation>
 <translation id="8229912067600517877">デベロッパー ツールを有効にする</translation>
 <translation id="8238421250255592181">画面キーボードでオートコンプリートを有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="8239109177194627162">クレジット カードの自動入力を無効にする</translation>
@@ -6266,6 +6290,21 @@
 <translation id="8543108307976719751">このパソコンへのリモート アクセス接続を許可しない</translation>
 <translation id="8544375438507658205"><ph name="PRODUCT_FRAME_NAME" /> のデフォルトの HTML レンダラ</translation>
 <translation id="8544465954173828789">スマートフォンから Chromebook への SMS メッセージの同期を許可する。</translation>
+<translation id="8553955290407912156">このポリシーでは、HID デバイスへのアクセス許可をユーザーに要求できないサイトの URL パターンリストを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      URL がポリシーの URL パターンと一致しない場合は、次の順に適用されます。
+
+        *<ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />（一致する場合）
+
+        *<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />（指定されている場合）
+
+        *ユーザーの個人設定
+
+      URL パターンは、<ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="8566842294717252664">新しいタブページとアプリ ランチャーでウェブストアを非表示にする</translation>
 <translation id="8571314270766672278">チャンネル ダウングレードでデバイスをロールバックしてリセットし、登録を維持する</translation>
 <translation id="8571871284943706125">登録デバイスでの関連付けられたユーザーの CRD セッション イベントを報告します。
@@ -6354,6 +6393,7 @@
 
       このポリシーを無効に設定するか未設定のままにした場合、リモート アクセス ホストは任意のローカル ユーザーと関連付けられます。</translation>
 <translation id="867708016260789630">YouTube の「中」以上の制限付きモードを強制的に適用する</translation>
+<translation id="8677853537025397834">WebHID API を許可するサイトを指定します</translation>
 <translation id="8685024486845674965">パスワードが再使用されたときに、パスワード保護について警告する</translation>
 <translation id="8685680544554917389">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> でメディアの自動再生が可能になります。このポリシーを False に設定した場合、<ph name="PRODUCT_NAME" /> でメディアは自動再生されません。
 

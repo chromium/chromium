@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">您的電腦想透過此裝置登入網站</translation>
 <translation id="3265534588625245297">管理您追蹤的網站</translation>
 <translation id="3269093882174072735">載入圖片</translation>
-<translation id="3269956123044984603">如要取得其他裝置上的分頁，請在 Android 帳戶設定中開啟「自動同步資料」功能。</translation>
 <translation id="3280562213547448728">語音搜尋</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3284510035090979597">主動提供協助</translation>
@@ -473,6 +472,7 @@
 <translation id="3716182511346448902">這個網頁使用過多記憶體，因此 Chrome 已暫停顯示這個網頁。</translation>
 <translation id="3721119614952978349">您和 Google</translation>
 <translation id="3737319253362202215">翻譯設定</translation>
+<translation id="3737402728074743863">如要將這部裝置當做安全金鑰使用，請設定螢幕鎖定功能</translation>
 <translation id="3738139272394829648">輕觸搜尋</translation>
 <translation id="3739899004075612870">已在 <ph name="PRODUCT_NAME" /> 中新增書籤</translation>
 <translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
@@ -916,7 +916,6 @@
 <translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
 <translation id="6316139424528454185">此 Android 版本不受支援</translation>
-<translation id="6324034347079777476">Android 系統同步處理功能已停用</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6324977638108296054">無法建立突顯文字的連結</translation>
 <translation id="6324997754869598316">(錯誤代碼：<ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@
 <translation id="6900532703269623216">強化保護功能</translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
 <translation id="6909589135458168665">預先載入網頁</translation>
-<translation id="6929699136511445623">啟用 Android 系統同步</translation>
 <translation id="6942665639005891494">用「設定」選單選項，隨時更改預設嘅下載位置</translation>
 <translation id="694267552845942083">你自訂緊同步設定。㩒一下畫面底部附近嘅 [確認] 掣，就可以完成打開同步處理功能嘅程序喇。向上瀏覽</translation>
 <translation id="6945221475159498467">選取</translation>
@@ -1160,7 +1158,6 @@
 <translation id="7581273696622423628">填寫問卷調查</translation>
 <translation id="7583262514280211622">這裡會顯示您的閱讀清單</translation>
 <translation id="7588219262685291874">在裝置開啟「省電模式」後啟用深色主題背景</translation>
-<translation id="7593557518625677601">如要啟動 Chrome 同步功能，請開啟 Android 設定並重新啟用 Android 系統同步處理功能</translation>
 <translation id="7594687499944811403">讓 <ph name="EMBEDDED_ORIGIN" /> 為 <ph name="TOP_ORIGIN" /> 驗證您的身份</translation>
 <translation id="7596558890252710462">作業系統</translation>
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>

@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">কোনও সাইটে সাইন-ইন করার জন্য আপনার কম্পিউটার এই ডিভাইসটি ব্যবহার করতে চায়</translation>
 <translation id="3265534588625245297">আপনার ফলো করা সাইটগুলি ম্যানেজ করুন</translation>
 <translation id="3269093882174072735">ছবি লোড করুন</translation>
-<translation id="3269956123044984603">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, Android অ্যাকাউন্ট সেটিংসে "ডেটা অটো-সিঙ্ক" চালু করুন।</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
 <translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3284510035090979597">আগেভাগে সহায়তা</translation>
@@ -919,7 +918,6 @@
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
 <translation id="6312687380483398334">ওয়েব অ্যাপ (কোনও রকম আওয়াজ ছাড়া)</translation>
 <translation id="6316139424528454185">এই Android ভার্সন সমর্থিত নয়</translation>
-<translation id="6324034347079777476">Android সিস্টেম সিঙ্ক অক্ষম করা হয়েছে</translation>
 <translation id="6324916366299863871">শর্টকার্ট এডিট করুন</translation>
 <translation id="6324977638108296054">হাইলাইট করা টেক্সটের লিঙ্ক কপি করা যাচ্ছে না</translation>
 <translation id="6324997754869598316">(সমস্যা <ph name="ERROR_CODE" />)</translation>
@@ -1047,7 +1045,6 @@
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
 <translation id="6903907808598579934">সিঙ্ক চালু করুন</translation>
 <translation id="6909589135458168665">পৃষ্ঠা প্রিলোড করা</translation>
-<translation id="6929699136511445623">Android সিস্টেম সিঙ্ক চালু করুন</translation>
 <translation id="6942665639005891494">সেটিংস মেনুর বিকল্পে গিয়ে যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="694267552845942083">এখন আপনার সিঙ্ক সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা "কনফার্ম করুন" বোতামে ট্যাপ করে সিঙ্ক চালু করুন। উপরের দিকে নেভিগেট করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
@@ -1163,7 +1160,6 @@
 <translation id="7581273696622423628">সমীক্ষায় যোগ দিন</translation>
 <translation id="7583262514280211622">আপনি নিজের পড়ার তালিকা এখানে খুঁজে পাবেন</translation>
 <translation id="7588219262685291874">আপনার ডিভাইস ব্যাটারি সেভারে চললে গাঢ় থিম চালু করুন</translation>
-<translation id="7593557518625677601">Android সেটিংস খুলে Chrome সিঙ্ক শুরু করতে Android সিস্টেমকে পুনরায় সক্ষম করুন</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" />-এর জন্য <ph name="EMBEDDED_ORIGIN" />-কে আপনার পরিচয় যাচাই করতে দিন</translation>
 <translation id="7596558890252710462">অপারেটিং সিস্টেম</translation>
 <translation id="7605594153474022051">সিঙ্ক কাজ করছে না</translation>

@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1387854245479784695">המדד הזה נצבר מכל הליבות</translation>
+<translation id="1394661041439318933">רמת הטעינה של סוללת הנרתיק במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
 <translation id="1398634363027580500">‏משך זמן אחזור HTTPS ארוך מאוד</translation>
 <translation id="1413240736185167732">נכשלה – הסינון נכשל</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">יש לי זוג מפתחות</translation>
+<translation id="1451536289672181509">המכשיר הוא מקלדת.</translation>
 <translation id="1468664791493211953">מבצעים</translation>
 <translation id="1476467821656042872">הניהול של המכשיר הזה נעשה מהדומיין <ph name="MANAGER" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="1478594628797167447">סורק</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2104796393919810494">התיקון הושלם</translation>
+<translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">‏הנפח הזמין: GB<ph name="AVAILABLE_MEMORY" /> מתוך GB<ph name="TOTAL_MEMORY" /></translation>
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
+<translation id="3031560714565892478">המכשיר הוא מצלמת וידאו.</translation>
 <translation id="3054177598518735801">mA<ph name="CURRENT_VALUE" /></translation>
 <translation id="3056720590588772262">‏נקודת קצה (endpoint)</translation>
 <translation id="3069085583900247081">הבדיקה נכשלה</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
 <translation id="3102119246920354026">מטמון</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">המכשיר מחובר.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{להסיר את הדף?}=1{להסיר את דף {PAGE_NUMBER}?}two{להסיר את דף {PAGE_NUMBER}?}many{להסיר את דף {PAGE_NUMBER}?}other{להסיר את דף {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3156846309055100599">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" />...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
+<translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> בתהליך עדכון</translation>
+<translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
+<translation id="3954678691475912818">סוג המכשיר לא ידוע.</translation>
 <translation id="3966286471246132217">כדי לקבל תוצאות מדויקות יותר, סוגרים את כל האפליקציות עד להשלמת הבדיקה.</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4891842000192098784">בדיקת עומסים</translation>
+<translation id="4897058166682006107">רמת הטעינה של האוזנייה השמאלית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
@@ -322,6 +331,7 @@
 <translation id="5346687412805619883">רשת מקומית</translation>
 <translation id="5358174242040570474">משהו השתבש. כדאי לנסות לבחור טפט מחדש או לפתוח מחדש את האפליקציה.</translation>
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
+<translation id="5400907029458559844">המכשיר בתהליך התחברות.</translation>
 <translation id="5401938042319910061">הרצה של כל התרחישים</translation>
 <translation id="5423849171846380976">מופעל</translation>
 <translation id="5430931332414098647">שיתוף אינטרנט מיידי בין ניידים</translation>
@@ -383,6 +393,7 @@
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
+<translation id="6319207335391420837">יש לעדכן את הקושחה של <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="6340526405444716530">התאמה אישית</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
@@ -415,6 +426,7 @@
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
 <translation id="6749473226660745022">תמונות</translation>
+<translation id="6753452347192452143">המכשיר הוא מחשב.</translation>
 <translation id="6756731097889387912">לא ניתן היה לבטל את הסריקה</translation>
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
@@ -432,12 +444,14 @@
 <translation id="6992266763844448459">צריך לבחור באפשרות הזו אם הבעלות על המכשיר לא משתנה. לדוגמה: המכשיר מועבר למשתמש אחר באותו ארגון.</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
+<translation id="7041549558901442110">המכשיר לא מחובר.</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>
 <translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
 <translation id="7068619307603204412">הכנת המכשיר</translation>
 <translation id="708426984172631313">הופסקה</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
+<translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}two{שרתי שמות}many{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
@@ -472,6 +486,7 @@
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">תרחישי אבחון</translation>
+<translation id="7551123448725492271">המכשיר הוא התקן אודיו.</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏מסך מגע של USB</translation>
@@ -479,6 +494,7 @@
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
+<translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7701040980221191251">אין</translation>
@@ -575,6 +591,7 @@
 <translation id="8855781559874488009">‏לא ניתן להתחבר עם חומת אש לאתרי HTTP</translation>
 <translation id="8863888432376731307">לקבלת ה<ph name="INTENT" /> עבור "<ph name="QUERY" />" ועוד</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">המכשיר הוא טאבלט.</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
 <translation id="8898840733695078011">עוצמת אות</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
@@ -585,11 +602,13 @@
 <translation id="8930622219860340959">אלחוטי</translation>
 <translation id="8936793075252196307">‏כתובת ה-IP של הלקוח</translation>
 <translation id="8945750210906526975">לוח מגע פנימי</translation>
+<translation id="894617464444543719">המכשיר הוא טלפון.</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{סריקה}=1{סריקת דף {NUMBER_OF_PAGES}}two{סריקת דף {NUMBER_OF_PAGES}}many{סריקת דף {NUMBER_OF_PAGES}}other{סריקת דף {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">בתהליך התקנה – <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">רמת הטעינה של הסוללה במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="9003704114456258138">תדר</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>

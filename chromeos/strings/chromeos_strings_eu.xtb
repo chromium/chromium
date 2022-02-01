@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Egokitu eskanea daitekeen eremura</translation>
 <translation id="1387854245479784695">Nukleo guztien multzokatze bat da hau</translation>
+<translation id="1394661041439318933">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren kutxari.</translation>
 <translation id="1397738625398125236">Ping egin dakioke atebideari</translation>
 <translation id="1398634363027580500">HTTPS eskaeren latentzia oso luzea</translation>
 <translation id="1413240736185167732">Hutsegitea - Iragazkiak huts egin du</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Gako pare bat dut</translation>
+<translation id="1451536289672181509">Gailua teklatu bat da.</translation>
 <translation id="1468664791493211953">Eskaintzak</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta baliteke zure jardueren jarraipena egin ahal izatea.</translation>
 <translation id="1478594628797167447">Eskanerra</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Aldatu egunero horma-paperaren irudia</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Geldituta: ez dago tintarik</translation>
+<translation id="1668469839109562275">VPN integratua</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS bidezko ebazlea badago</translation>
 <translation id="1715359911173058521">Arazo bat izan da eskanerrarekin komunikatzean. Egiaztatu sarea edo USB bidezko konexioa behar bezala funtzionatzen ari direla eta saiatu berriro.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EIDa</translation>
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2104796393919810494">Osatu da konponketa</translation>
+<translation id="2105810540595158374">Gailua bideo-jokoen kontrolagailu bat da.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> bertsioa</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB daude erabilgarri</translation>
 <translation id="2141644705054017895">% <ph name="PERCENTAGE_VALUE" /></translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Idatzi erabiltzaile-izena eta pasahitza, edo eskaneatu QR kodea</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
 <translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
+<translation id="3031560714565892478">Gailua bideo-kamera bat da.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Amaiera-puntua</translation>
 <translation id="3069085583900247081">Probak huts egin du</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
 <translation id="3102119246920354026">Cachea</translation>
 <translation id="3122464029669770682">PUZ</translation>
+<translation id="3124039320086536031">Gailua konektatuta dago.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Orria kendu nahi duzu?}=1{{PAGE_NUMBER}. orria kendu nahi duzu?}other{{PAGE_NUMBER}. orria kendu nahi duzu?}}</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. orria eskaneatzen…</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNSaren latentzia onartzen den atalasetik askoz gorago dago</translation>
 <translation id="3328783797891415197">Abian da proba</translation>
+<translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3369013195428705271">Ziur inprimatze-historia guztia garbitu nahi duzula? Ez dira garbituko abian dauden inprimatze-lanak.</translation>
 <translation id="3434107140712555581">% <ph name="BATTERY_PERCENTAGE" /></translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />garren orria eskaneatzen. % <ph name="PERCENTAGE_VALUE" /> osatuta.</translation>
 <translation id="3459509316159669723">Inprimaketa</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> gailua eguneratzen</translation>
+<translation id="3484914941826596830">Firmwarea eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="3486220673238053218">definizioa</translation>
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
 <translation id="3942420633017001071">Diagnostikoak</translation>
+<translation id="3954678691475912818">Gailu mota ezezaguna da.</translation>
 <translation id="3966286471246132217">Emaitza zehatzagoak lortzeko, itxi aplikazio guztiak proba osatu arte.</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
 <translation id="4891842000192098784">Estresa</translation>
+<translation id="4897058166682006107">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren ezkerreko aurikularrari.</translation>
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> segundo behar izan dira <ph name="RATE" /> kargatzeko.</translation>
@@ -321,6 +331,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5346687412805619883">Tokiko sarea</translation>
 <translation id="5358174242040570474">Arazo bat izan da. Saiatu berriro horma-papera aukeratzen edo ireki berriro aplikazioa.</translation>
 <translation id="5372659122375744710">Wifi-sarea ez da segurua</translation>
+<translation id="5400907029458559844">Gailua konektatzen ari da.</translation>
 <translation id="5401938042319910061">Exekutatu errutina guztiak</translation>
 <translation id="5423849171846380976">Aktibatuta</translation>
 <translation id="5430931332414098647">Konexioa bizkor partekatzeko eginbidea</translation>
@@ -382,6 +393,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> neurtzeko proba bertan behera utzi da</translation>
+<translation id="6319207335391420837">Eguneratu firmwarea <ph name="DEVICE_NAME" /> gailuan</translation>
 <translation id="6325525973963619867">Huts egin du</translation>
 <translation id="6340526405444716530">Pertsonalizazioa</translation>
 <translation id="636850387210749493">Erregistratu erakundean</translation>
@@ -414,6 +426,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6704062477274546131">DNS bidezko ebazpena</translation>
 <translation id="6747215703636344499">Geldituta: irteera-erretilua beteta dago</translation>
 <translation id="6749473226660745022">Argazkiak</translation>
+<translation id="6753452347192452143">Gailua ordenagailu bat da.</translation>
 <translation id="6756731097889387912">Ezin izan da bertan behera utzi eskaneatzeko prozesua</translation>
 <translation id="6766275201586212568">huts egin dute DNS bidezko ebazpenek</translation>
 <translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
@@ -431,12 +444,14 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6992266763844448459">Hautatu aukera hau gailuak jabe bera izaten jarraituko badu. Esate baterako, hemendik aurrera erakunde bereko beste norbaitek erabili behar badu.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="7040230719604914234">Operadorea</translation>
+<translation id="7041549558901442110">Gailua ez dago konektatuta.</translation>
 <translation id="7058278511608979688">Amaitu eta gorde</translation>
 <translation id="7059230779847288458">Kargatzen; <ph name="TIME_VALUE" /> geratzen dira guztiz kargatu arte</translation>
 <translation id="7068619307603204412">Prestatu gailua</translation>
 <translation id="708426984172631313">GELDITUTA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Baimena emateko prozesuak huts egin du</translation>
+<translation id="7103252855940681301"><ph name="INDEX" />/<ph name="COUNT" /> gailua (<ph name="NAME" />).</translation>
 <translation id="7134436342991564651">{0,plural, =1{Izenen zerbitzaria}other{Izenen zerbitzariak}}</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
@@ -471,6 +486,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7502658306369382406">IPv6 helbidea</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostiko-errutinak</translation>
+<translation id="7551123448725492271">Gailua audio-gailu bat da.</translation>
 <translation id="7561454561030345039">Administratzaileak kudeatzen du ekintza hau</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB bidezko ukipen-pantaila</translation>
@@ -478,6 +494,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7620771111601174153">Lortu informazio gehiago laguntza-zentroan</translation>
 <translation id="763165478673169849">Azken berrezartzearen ordua</translation>
 <translation id="7648838807254605802">HTTPS eskaeren latentzia luzea</translation>
+<translation id="7656388927906093505">Gailua sagu bat da.</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
@@ -574,6 +591,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8855781559874488009">Ezin da konektatu HTTP darabilten webguneetara suebakiaren bidez</translation>
 <translation id="8863888432376731307">Eskuratu "<ph name="QUERY" />" adierazpenaren <ph name="INTENT" /> eta beste</translation>
 <translation id="8868741746785112895">GUIDa</translation>
+<translation id="8876270629542503161">Gailua tableta bat da.</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>
 <translation id="8898840733695078011">Seinalearen indarra</translation>
 <translation id="8910721771319628100">Sare lehenetsia latentziaren atalasetik gora dago</translation>
@@ -584,11 +602,13 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8930622219860340959">Hari gabekoa</translation>
 <translation id="8936793075252196307">Bezeroaren IP helbidea</translation>
 <translation id="8945750210906526975">Ukipen-panel integratua</translation>
+<translation id="894617464444543719">Gailua telefono bat da.</translation>
 <translation id="8968751544471797276">Kargatze-abiadura</translation>
 <translation id="8970109610781093811">Abiarazi berriro</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Eskaneatu}=1{Eskaneatu {NUMBER_OF_PAGES} orria}other{Eskaneatu {NUMBER_OF_PAGES} orri}}</translation>
 <translation id="8994273342647807496">Instalatzen (% <ph name="PERCENTAGE_VALUE" />)</translation>
+<translation id="8997710128084572139">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuari.</translation>
 <translation id="9003704114456258138">Maiztasuna</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS bidezko ebazpenak latentzia handia dauka</translation>

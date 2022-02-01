@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pritaikyti pagal nuskaitomą sritį</translation>
 <translation id="1387854245479784695">Tai nurodo apibendrintus visų branduolių duomenis</translation>
+<translation id="1394661041439318933">Įrenginio dėklo akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="1397738625398125236">Galima patikrinti tinklų sietuvo ryšį</translation>
 <translation id="1398634363027580500">Labai didelė HTTPS delsa</translation>
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Turiu raktų porą</translation>
+<translation id="1451536289672181509">Įrenginys yra klaviatūra.</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2104796393919810494">Baigta taisyti</translation>
+<translation id="2105810540595158374">Įrenginys yra žaidimų valdiklis.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Įveskite naudotojo vardą ir slaptažodį arba nuskaitykite QR kodą</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
+<translation id="3031560714565892478">Įrenginys yra vaizdo kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Galutinis taškas</translation>
 <translation id="3069085583900247081">Bandymas nepavyko</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Nepavyko – sustabdyta</translation>
 <translation id="3102119246920354026">Talpykla</translation>
 <translation id="3122464029669770682">Centrinis procesorius</translation>
+<translation id="3124039320086536031">Įrenginys prijungtas.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}many{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
+<translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> proc.</translation>
@@ -165,6 +171,7 @@
 <translation id="345898999683440380">Nuskaitomas <ph name="PAGE_NUM" /> psl. Atlikta: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
 <translation id="3462187165860821523">Atnaujinamas įrenginys „<ph name="DEVICE_NAME" />“</translation>
+<translation id="3484914941826596830">Kol programinė aparatinė įranga atnaujinama, neatjunkite išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Šis atnaujinimo procesas gali užtrukti kelias minutes ir tuo metu jūsų išorinis įrenginys gali neveikti.</translation>
 <translation id="3486220673238053218">apibrėžimas</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Nėra susieto įrenginio</translation>
 <translation id="3941014780699102620">Nepavyko nustatyti prieglobos pavadinimo</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3954678691475912818">Nežinomas įrenginio tipas.</translation>
 <translation id="3966286471246132217">Jei reikia tikslesnių rezultatų, uždarykite visas programas, kol bandymas bus baigtas.</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4891842000192098784">Įtampa</translation>
+<translation id="4897058166682006107">Įrenginio kairiosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="4917385247580444890">Stiprus</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
 <translation id="4921665434385737356">Įkrauta: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
@@ -322,6 +331,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5346687412805619883">Vietinis tinklas</translation>
 <translation id="5358174242040570474">Kažkas ne taip. Pabandykite pasirinkti ekrano foną dar kartą arba atidaryti programą iš naujo.</translation>
 <translation id="5372659122375744710">„Wi-Fi“ tinklas nesaugus</translation>
+<translation id="5400907029458559844">Prijungiamas įrenginys.</translation>
 <translation id="5401938042319910061">Vykdyti visas veiksmų sekas</translation>
 <translation id="5423849171846380976">Suaktyvinta</translation>
 <translation id="5430931332414098647">Momentinis įrenginio kaip modemo naudojimas</translation>
@@ -383,6 +393,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
+<translation id="6319207335391420837">„<ph name="DEVICE_NAME" />“ programinės aparatinės įrangos naujinys</translation>
 <translation id="6325525973963619867">Nepavyko</translation>
 <translation id="6340526405444716530">Suasmeninimas</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
@@ -415,6 +426,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
 <translation id="6747215703636344499">Sustabdyta – išvestis pilna</translation>
 <translation id="6749473226660745022">Nuotraukos</translation>
+<translation id="6753452347192452143">Įrenginys yra kompiuteris.</translation>
 <translation id="6756731097889387912">Nepavyko atšaukti nuskaitymo</translation>
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
@@ -432,12 +444,14 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6992266763844448459">Pasirinkite šią parinktį, jei įrenginio nuosavybės teisė nėra keičiama. Pvz., įrenginys perduodamas kitam asmeniui organizacijoje.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="7040230719604914234">Operatorius</translation>
+<translation id="7041549558901442110">Įrenginys neprijungtas.</translation>
 <translation id="7058278511608979688">Baigti ir išsaugoti</translation>
 <translation id="7059230779847288458">Kraunama, <ph name="TIME_VALUE" />, kol bus įkrauta</translation>
 <translation id="7068619307603204412">Įrenginio paruošimas</translation>
 <translation id="708426984172631313">SUSTABDYTA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nepavyko – patvirtinti nepavyko</translation>
+<translation id="7103252855940681301"><ph name="INDEX" /> įrenginys iš <ph name="COUNT" /> pav. „<ph name="NAME" />“.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
@@ -472,6 +486,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7502658306369382406">„IPv6“ adresas</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostikos veiksmų sekos</translation>
+<translation id="7551123448725492271">Įrenginys yra garso įrenginys.</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB jutiklinis ekranas</translation>
@@ -479,6 +494,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
 <translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
+<translation id="7656388927906093505">Įrenginys yra pelė.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
 <translation id="7701040980221191251">Nėra</translation>
@@ -575,6 +591,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8855781559874488009">Nepavyko prisijungti per užkardą prie HTTP svetainių</translation>
 <translation id="8863888432376731307">Jums bus pateiktas „<ph name="QUERY" />“ <ph name="INTENT" /> ir dar daugiau</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Įrenginys yra planšetinis kompiuteris.</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>
 <translation id="8898840733695078011">Signalo stiprumas</translation>
 <translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>
@@ -585,11 +602,13 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8930622219860340959">Belaidis</translation>
 <translation id="8936793075252196307">Kliento IP adresas</translation>
 <translation id="8945750210906526975">Vidinė jutiklinė dalis</translation>
+<translation id="894617464444543719">Įrenginys yra telefonas.</translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Nuskaityti}=1{Nuskaityti {NUMBER_OF_PAGES} puslapį}one{Nuskaityti {NUMBER_OF_PAGES} puslapį}few{Nuskaityti {NUMBER_OF_PAGES} puslapį}many{Nuskaityti {NUMBER_OF_PAGES} puslapį}other{Nuskaityti {NUMBER_OF_PAGES} puslapį}}</translation>
 <translation id="8994273342647807496">Diegiama – <ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="8997710128084572139">Įrenginio akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="9003704114456258138">Dažnis</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS pavadinimų konvertavimo delsa didelė</translation>

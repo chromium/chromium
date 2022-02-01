@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">साइटवर साइन इन करण्यासाठी तुमच्या कॉंप्युटरला हे डिव्हाइस वापरायचे आहे</translation>
 <translation id="3265534588625245297">तुम्ही फॉलो करत असलेल्या साइट व्यवस्थापित करा</translation>
 <translation id="3269093882174072735">इमेज लोड करा</translation>
-<translation id="3269956123044984603">तुमच्या अन्य डिव्हाइसवरून तुमचे टॅब मिळविण्यासाठी, Android खाते सेटिंग्ज मधील “डेटा ऑटो-सिंक करा” सुरू करा.</translation>
 <translation id="3280562213547448728">व्हॉइस शोध</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3284510035090979597">प्रोअ‍ॅक्टिव्ह मदत</translation>
@@ -473,6 +472,7 @@
 <translation id="3716182511346448902">हे पेज खूपच जास्त मेमरी वापरत असल्यामुळे Chrome ने ते थांबवून ठेवलेले आहे.</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
 <translation id="3737319253362202215">भाषांतराची सेटिंग्ज</translation>
+<translation id="3737402728074743863">हे डिव्हाइस सिक्युरिटी की म्हणून वापरण्यासाठी, स्क्रीन लॉक सेट करा</translation>
 <translation id="3738139272394829648">शोधण्यासाठी स्विच करा</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> मध्ये बुकमार्क केले</translation>
 <translation id="3740525748616366977">या डिव्हाइसवर व्हॉइस शोध उपलब्ध नाही</translation>
@@ -916,7 +916,6 @@
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6312687380483398334">वेब अ‍ॅप्स (शांत)</translation>
 <translation id="6316139424528454185">Android आवृत्तीला सपोर्ट नाही</translation>
-<translation id="6324034347079777476">Android सिस्‍टीम सिंक अक्षम केले</translation>
 <translation id="6324916366299863871">शॉर्टकट संपादित करा</translation>
 <translation id="6324977638108296054">हायलाइट करण्यासाठी लिंक तयार करू शकत नाही</translation>
 <translation id="6324997754869598316">(एरर <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@
 <translation id="6900532703269623216">वर्धित संरक्षण</translation>
 <translation id="6903907808598579934">सिंक सुरू करा</translation>
 <translation id="6909589135458168665">पेज प्रीलोड करा</translation>
-<translation id="6929699136511445623">Android सिस्‍टमचे सिंक सुरू करा</translation>
 <translation id="6942665639005891494">सेटिंग्ज मेनू पर्याय वापरून केव्हाही डीफॉल्ट डाउनलोड स्थान बदला</translation>
 <translation id="694267552845942083">तुम्ही सध्या तुमची सिंक सेटिंग्ज कस्टमाइझ करत आहात. सिंक सुरू करणे पूर्ण करण्यासाठी, स्क्रीनच्या तळाशी असलेल्या कंफर्म करा बटणावर टॅप करा. वर नेव्‍हिगेट करा</translation>
 <translation id="6945221475159498467">निवडा</translation>
@@ -1160,7 +1158,6 @@
 <translation id="7581273696622423628">सर्वेक्षण घ्या</translation>
 <translation id="7583262514280211622">तुम्हाला तुमची वाचन सूची येथे आढळेल</translation>
 <translation id="7588219262685291874">तुमच्या डिव्हाइसचे बॅटरी सेव्हर सुरू असेल तेव्हा गडद थीम सुरू करा</translation>
-<translation id="7593557518625677601">Chrome सिंक सुरू करण्यासाठी Android सेटिंग्ज उघडा आणि Android सिस्टम सिंक पुन्हा सक्षम करा</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> ला <ph name="TOP_ORIGIN" /> साठी हे तुम्हीच आहात याची पडताळणी करू द्या</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
 <translation id="7605594153474022051">सिंक कार्य करत नाही</translation>

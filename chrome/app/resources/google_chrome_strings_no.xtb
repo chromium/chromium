@@ -64,6 +64,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget på denne Chrome-profilen. For å holde surfingen din atskilt kan Chrome opprette en egen profil til deg.</translation>
 <translation id="2580411288591421699">Google Chrome-versjonen du prøver å installere, kjører allerede. Lukk Google Chrome og forsøk å installere på nytt.</translation>
 <translation id="2586406160782125153">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne kontoen. Hvis du ikke vil at nettsteder eller apper skal ha tilgang til kontoinformasjonen din, kan du bruke gjestemodus i Chrome-nettleseren. Du kan også administrere Google-kontoene dine i <ph name="LINK_2_BEGIN" />innstillingene<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome kan ikke se etter oppdateringer. Prøv å kontrollere internettilkoblingen.</translation>
 <translation id="2644798301485385923">Chrome OS</translation>
 <translation id="2652691236519827073">Åpne linken i en ny &amp;fane i Chrome</translation>

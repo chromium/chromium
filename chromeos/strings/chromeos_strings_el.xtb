@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
 <translation id="1387854245479784695">Αυτή είναι μια αθροιστική προβολή όλων των πυρήνων</translation>
+<translation id="1394661041439318933">Η μπαταρία θήκης της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Η πύλη λαμβάνει ping</translation>
 <translation id="1398634363027580500">Πολύ μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Έχω ένα ζεύγος κλειδιών</translation>
+<translation id="1451536289672181509">Η συσκευή είναι πληκτρολόγιο.</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
 <translation id="1476467821656042872">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και μπορεί να έχει τη δυνατότητα να παρακολουθεί τη δραστηριότητά σας.</translation>
 <translation id="1478594628797167447">Σαρωτής</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Καθημερινή αλλαγή εικόνας ταπετσαρίας</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1662989795263954667">Διακοπή - Τελείωσε το μελάνι</translation>
+<translation id="1668469839109562275">Ενσωματωμένο VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Παρουσία επίλυσης DNS</translation>
 <translation id="1715359911173058521">Υπάρχει κάποιο πρόβλημα επικοινωνίας με τον σαρωτή. Ελέγξτε τη σύνδεση δικτύου ή USB και δοκιμάστε ξανά.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Περισσότερες ρυθμίσεις</translation>
 <translation id="2104796393919810494">Η επιδιόρθωση ολοκληρώθηκε</translation>
+<translation id="2105810540595158374">Η συσκευή είναι χειριστήριο παιχνιδιού.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, έκδοση <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Διαθέσιμα <ph name="AVAILABLE_MEMORY" /> GB από τα <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Εισαγάγετε το όνομα χρήστη και τον κωδικό πρόσβασής σας ή σαρώστε τον κωδικό QR σας</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
+<translation id="3031560714565892478">Η συσκευή είναι κάμερα βίντεο.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Σημείο λήξης</translation>
 <translation id="3069085583900247081">Αποτυχία δοκιμής</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">Σφάλμα - Σταμάτησε</translation>
 <translation id="3102119246920354026">Κρυφή μνήμη</translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
+<translation id="3124039320086536031">Η συσκευή είναι συνδεδεμένη.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Κατάργηση σελίδας;}=1{Κατάργηση σελίδας {PAGE_NUMBER};}other{Κατάργηση σελίδας {PAGE_NUMBER};}}</translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
 <translation id="3156846309055100599">Σάρωση σελίδας <ph name="PAGE_NUMBER" />…</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
+<translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380">Σάρωση σελίδας <ph name="PAGE_NUM" />. Ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Εκτύπωση</translation>
 <translation id="3462187165860821523">Ενημέρωση <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Κατά την ενημέρωση του υλικολογισμικού, μην αποσυνδέσετε αυτήν την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά για αυτήν την ενημέρωση και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
 <translation id="3486220673238053218">ορισμός</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Δεν υπάρχει συνδεδεμένη συσκευή</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
 <translation id="3942420633017001071">Διαγνωστικά</translation>
+<translation id="3954678691475912818">Ο τύπος συσκευής είναι άγνωστος.</translation>
 <translation id="3966286471246132217">Για πιο ακριβή αποτελέσματα, κλείστε όλες τις εφαρμογές έως ότου ολοκληρωθεί ο έλεγχος.</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="4891842000192098784">Καταπόνηση</translation>
+<translation id="4897058166682006107">Η μπαταρία αριστερού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4917385247580444890">Ισχυρό</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
@@ -321,6 +331,7 @@
 <translation id="5346687412805619883">Τοπικό δίκτυο</translation>
 <translation id="5358174242040570474">Κάτι δεν πήγε καλά. Δοκιμάστε να επιλέξετε ξανά μια ταπετσαρία ή να επαναλάβετε το άνοιγμα της εφαρμογής.</translation>
 <translation id="5372659122375744710">Το δίκτυο Wi-Fi δεν είναι ασφαλές.</translation>
+<translation id="5400907029458559844">Η συσκευή συνδέεται.</translation>
 <translation id="5401938042319910061">Εκτέλεση όλων των ρουτινών</translation>
 <translation id="5423849171846380976">Ενεργοποιημένο</translation>
 <translation id="5430931332414098647">Άμεση σύνδεση</translation>
@@ -382,6 +393,7 @@
 <translation id="6278428485366576908">Θέμα</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Η δοκιμή <ph name="TEST_NAME" /> ακυρώθηκε</translation>
+<translation id="6319207335391420837">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="6340526405444716530">Εξατομίκευση</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
@@ -414,6 +426,7 @@
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6747215703636344499">Διακοπή - Ο δίσκος εξόδου είναι γεμάτος</translation>
 <translation id="6749473226660745022">Φωτογραφίες</translation>
+<translation id="6753452347192452143">Η συσκευή είναι υπολογιστής.</translation>
 <translation id="6756731097889387912">Δεν ήταν δυνατή η ακύρωση της σάρωσης.</translation>
 <translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
 <translation id="6768237774506518020">Υψηλό ποσοστό αποτυχίας ανάλυσης DNS</translation>
@@ -431,12 +444,14 @@
 <translation id="6992266763844448459">Ορίστε αυτήν την επιλογή εάν δεν αλλάζει η ιδιοκτησία της συσκευής. Για παράδειγμα, η συσκευή μεταβιβάζεται σε ένα άλλο άτομο εντός ενός οργανισμού.</translation>
 <translation id="7028979494427204405">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="7040230719604914234">Χειριστής</translation>
+<translation id="7041549558901442110">Η συσκευή δεν είναι συνδεδεμένη.</translation>
 <translation id="7058278511608979688">Λήξη και αποθήκευση</translation>
 <translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
 <translation id="7068619307603204412">Προετοιμασία της συσκευής</translation>
 <translation id="708426984172631313">ΔΙΑΚΟΠΗΚΕ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Αποτυχία - Ο έλεγχος ταυτότητας απέτυχε</translation>
+<translation id="7103252855940681301">Συσκευή <ph name="INDEX" /> από <ph name="COUNT" /> με όνομα <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Διακομιστής ονομάτων}other{Διακομιστές ονομάτων}}</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
@@ -471,6 +486,7 @@
 <translation id="7502658306369382406">Διεύθυνση IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Ρουτίνες διαγνωστικών στοιχείων</translation>
+<translation id="7551123448725492271">Η συσκευή είναι συσκευή ήχου.</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Επιφάνεια αφής USB</translation>
@@ -478,6 +494,7 @@
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
+<translation id="7656388927906093505">Η συσκευή είναι ποντίκι.</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
 <translation id="7701040980221191251">Καμία</translation>
@@ -574,6 +591,7 @@
 <translation id="8855781559874488009">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP.</translation>
 <translation id="8863888432376731307">Αποκτήστε το <ph name="INTENT" /> για "<ph name="QUERY" />" και περισσότερα</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
 <translation id="8898840733695078011">Ισχύς σήματος</translation>
 <translation id="8910721771319628100">Ο λανθάνων χρόνος του προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
@@ -584,11 +602,13 @@
 <translation id="8930622219860340959">Ασύρματο</translation>
 <translation id="8936793075252196307">Διεύθυνση IP εφαρμογής-πελάτη</translation>
 <translation id="8945750210906526975">Ενσωματωμένη οθόνη αφής</translation>
+<translation id="894617464444543719">Η συσκευή είναι τηλέφωνο.</translation>
 <translation id="8968751544471797276">Ρυθμός φόρτισης</translation>
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Σάρωση}=1{Σάρωση σελίδας {NUMBER_OF_PAGES}}other{Σάρωση σελίδας {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Γίνεται εγκατάσταση - <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Η μπαταρία της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Συχνότητα</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Η επίλυση DNS έχει υψηλό λανθάνοντα χρόνο</translation>

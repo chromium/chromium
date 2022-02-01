@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">컴퓨터가 사이트에 로그인하기 위해 기기를 사용하려고 합니다.</translation>
 <translation id="3265534588625245297">팔로우하는 사이트 관리</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
-<translation id="3269956123044984603">다른 기기에서 탭을 가져오려면 Android 계정 설정에서 '데이터 자동 동기화'를 사용 설정하세요.</translation>
 <translation id="3280562213547448728">음성 검색</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3284510035090979597">능동적 지원</translation>
@@ -917,7 +916,6 @@
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6312687380483398334">웹 앱(무음)</translation>
 <translation id="6316139424528454185">지원되지 않는 Android 버전입니다.</translation>
-<translation id="6324034347079777476">Android 시스템 동기화 사용 안함</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6324977638108296054">하이라이트 링크를 만들 수 없음</translation>
 <translation id="6324997754869598316">(오류 <ph name="ERROR_CODE" />)</translation>
@@ -1045,7 +1043,6 @@
 <translation id="6900532703269623216">향상된 보호 모드</translation>
 <translation id="6903907808598579934">동기화 사용 설정</translation>
 <translation id="6909589135458168665">페이지 미리 로드</translation>
-<translation id="6929699136511445623">Android 시스템 동기화 사용 설정</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
@@ -1161,7 +1158,6 @@
 <translation id="7581273696622423628">설문조사 참여</translation>
 <translation id="7583262514280211622">여기에서 읽기 목록 확인</translation>
 <translation id="7588219262685291874">기기 절전 모드 사용 시 어두운 테마 사용 설정</translation>
-<translation id="7593557518625677601">Android 설정을 열고 Android 시스템 동기화를 다시 사용 설정하여 Chrome 동기화를 시작합니다.</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" />에서 서비스를 사용하기 위해 <ph name="EMBEDDED_ORIGIN" />에서 본인 여부를 확인하도록 허용합니다.</translation>
 <translation id="7596558890252710462">운영체제</translation>
 <translation id="7605594153474022051">동기화가 작동하지 않음</translation>

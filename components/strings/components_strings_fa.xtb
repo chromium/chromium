@@ -224,6 +224,7 @@
 <translation id="1567040042588613346">این خط‌مشی درست کار می‌کند اما مقدار یکسانی در جای دیگری تنظیم شده است که این خط‌مشی آن را جایگزین می‌کند.</translation>
 <translation id="1569487616857761740">وارد کردن تاریخ انقضا</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581767074483369314">ثبت‌نام در کارت مجازی</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">هنگام نمایش این صفحه وب مشکلی پیش آمد.</translation>
 <translation id="1586541204584340881">افزونه‌هایی که نصب کرده‌اید</translation>
@@ -390,6 +391,7 @@
 <translation id="2101225219012730419">نسخه:</translation>
 <translation id="2102134110707549001">پیشنهاد گذرواژه قوی…</translation>
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
+<translation id="2106249949168291652">ذخیره شد. می‌خواهید آن را با کارت مجازی ایمن‌تر کنیم؟</translation>
 <translation id="2107021941795971877">پشتیبان‌های چاپ</translation>
 <translation id="2108755909498034140">رایانه را راه‌اندازی مجدد کنید</translation>
 <translation id="2111166930115883695">برای بازی کردن، کلید «فاصله» را فشار دهید</translation>
@@ -551,6 +553,7 @@
 <translation id="262745152991669301">‏می‌تواند برای اتصال به دستگاه‌های USB درخواست دهد</translation>
 <translation id="2629325967560697240">‏برای بهره‌مندی از بالاترین سطح امنیت در Chrome، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />«محافظت بهبودیافته» را روشن کنید<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">‏نشانی IP سرور <ph name="HOST_NAME" /> پیدا نشد.</translation>
+<translation id="2638001509205834345">می‌خواهید کارتتان ایمن‌تر شود؟</translation>
 <translation id="2639739919103226564">وضعیت:</translation>
 <translation id="264810637653812429">هیچ دستگاه سازگاری پیدا نشد.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />، <ph name="COUNTRY" /></translation>
@@ -684,6 +687,7 @@
 <translation id="3113284927548439113">نوبت کاری سوم</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را برگردانید.</translation>
 <translation id="3116158981186517402">روکش‌دار کردن</translation>
+<translation id="311958134571892113">پیوندداده‌شده با</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />عیب‌یابی اتصال را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">رفتن به <ph name="DOMAIN" /></translation>
@@ -2383,6 +2387,7 @@
 <translation id="8669306706049782872">از اطلاعات صفحه‌نمایش‌هایتان برای باز کردن و جای‌گذاری پنجره‌ها استفاده کند</translation>
 <translation id="867224526087042813">امضا</translation>
 <translation id="8676424191133491403">بدون تأخیر</translation>
+<translation id="8679903780129190080">بله، موافقم</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />، پاسخ، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">صفحه وب در <ph name="PAGE" /> نمی‌تواند بارگیری شود، زیرا:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

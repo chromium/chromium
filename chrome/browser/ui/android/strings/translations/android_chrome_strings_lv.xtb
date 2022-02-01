@@ -404,7 +404,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3264259168916048410">Jūsu datorā tiek pieprasīta atļauja izmantot šo ierīci, lai pierakstītos vietnē</translation>
 <translation id="3265534588625245297">Pārvaldiet vietnes, kurām sekojat</translation>
 <translation id="3269093882174072735">Ielādēt attēlu</translation>
-<translation id="3269956123044984603">Lai būtu pieejamas cilnes no citām jūsu ierīcēm, Android konta iestatījumos ieslēdziet iestatījumu “Automātiski sinhronizēt datus”.</translation>
 <translation id="3280562213547448728">Meklēšana ar balsi</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3284510035090979597">Aktīva palīdzība</translation>
@@ -473,6 +472,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3716182511346448902">Šī lapa izmanto pārāk daudz atmiņas, tādēļ Chrome to apturēja.</translation>
 <translation id="3721119614952978349">Jūs un Google</translation>
 <translation id="3737319253362202215">Tulkošanas iestatījumi</translation>
+<translation id="3737402728074743863">Lai šo ierīci varētu izmantot kā drošības atslēgu, iestatiet ekrāna bloķēšanu.</translation>
 <translation id="3738139272394829648">Meklēšana pieskaroties</translation>
 <translation id="3739899004075612870">Pievienota grāmatzīme pārlūkā <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Meklēšana ar balsi šajā ierīcē nav pieejama.</translation>
@@ -916,7 +916,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6303969859164067831">Izrakstīties un izslēgt sinhronizēšanu</translation>
 <translation id="6312687380483398334">Tīmekļa lietotnes (bez skaņas)</translation>
 <translation id="6316139424528454185">Neatbalstīta Android versija</translation>
-<translation id="6324034347079777476">Android sistēmas sinhronizācija atspējota</translation>
 <translation id="6324916366299863871">Saīsnes rediģēšana</translation>
 <translation id="6324977638108296054">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
 <translation id="6324997754869598316">(<ph name="ERROR_CODE" />. kļūda)</translation>
@@ -1044,7 +1043,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6900532703269623216">Uzlabota aizsardzība</translation>
 <translation id="6903907808598579934">Ieslēgt sinhronizāciju</translation>
 <translation id="6909589135458168665">Lapu iepriekšēja ielāde</translation>
-<translation id="6929699136511445623">Iespējot Android sistēmas sinhronizāciju</translation>
 <translation id="6942665639005891494">Noklusējuma lejupielādes vietu var mainīt jebkurā laikā, izmantojot izvēlnes Iestatījumi opciju.</translation>
 <translation id="694267552845942083">Pašlaik jūs pielāgojat sinhronizācijas iestatījumus. Lai pabeigtu sinhronizācijas ieslēgšanu, pieskarieties pogai “Apstiprināt” ekrāna apakšdaļā. Pārvietoties augšup</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
@@ -1160,7 +1158,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7581273696622423628">Piedalīties aptaujā</translation>
 <translation id="7583262514280211622">Šeit varēsiet skatīt savu lasīšanas sarakstu</translation>
 <translation id="7588219262685291874">Ieslēgt tumšo motīvu, kad ierīcē ir ieslēgts akumulatora enerģijas taupīšanas režīms</translation>
-<translation id="7593557518625677601">Lai sāktu Chrome sinhronizēšanu, atveriet Android iestatījumus un atkārtoti iespējojiet Android sistēmas sinhronizēšanu</translation>
 <translation id="7594687499944811403">Ļaujiet <ph name="EMBEDDED_ORIGIN" /> apstiprināt jūsu identitāti <ph name="TOP_ORIGIN" /> vārdā.</translation>
 <translation id="7596558890252710462">Operētājsistēma</translation>
 <translation id="7605594153474022051">Sinhronizācija nedarbojas</translation>

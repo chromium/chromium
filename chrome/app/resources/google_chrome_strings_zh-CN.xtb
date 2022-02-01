@@ -64,6 +64,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。Chrome 可为您创建一份专属的个人资料，以将您的浏览数据与该用户的浏览数据分隔开来。</translation>
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
 <translation id="2586406160782125153">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
+<translation id="260478105521939126">您已向网站和应用授予的权限可能会应用于此帐号。如果不想让网站或应用获取您的帐号信息，请在 Chrome 浏览器中使用访客模式登录。您还可在<ph name="LINK_2_BEGIN" />设置<ph name="LINK_2_END" />部分中管理您的 Google 帐号。</translation>
 <translation id="2622559029861875898">Chrome 无法检查是否有更新。请检查您的互联网连接。</translation>
 <translation id="2644798301485385923">Chrome 操作系统</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>

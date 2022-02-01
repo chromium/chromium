@@ -256,7 +256,6 @@
 <translation id="1244265436519979884">Probíhá obnovování kontejneru systému Linux</translation>
 <translation id="1244303850296295656">Chyba rozšíření</translation>
 <translation id="1246863218384630739">Položku <ph name="VM_NAME" /> se nepodařilo nainstalovat: adresa URL obrazu vrátila kód chyby <ph name="HTTP_ERROR" />. Obraťte se na administrátora.</translation>
-<translation id="1247071602516579380">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, tablet pojmenovaný <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Je očekávána levá složená závorka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tímto vymažete <ph name="TOTAL_USAGE" /> dat, která uložily weby a nainstalované aplikace</translation>
 <translation id="1251578593170406502">Vyhledávání mobilních datových sítí…</translation>
@@ -445,7 +444,6 @@
 <translation id="144283815522798837">Vybrané položky: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Nastavit aktivní lístek Kerberos</translation>
 <translation id="1444628761356461360">Toto nastavení spravuje vlastník zařízení, <ph name="OWNER_EMAIL" />.</translation>
-<translation id="1445005312224723356">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, telefon pojmenovaný <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Pro motiv nelze načíst bitovou kopii „<ph name="IMAGE_PATH" />“.</translation>
 <translation id="1449191289887455076">Pokud chcete potvrdit přiřazení a <ph name="RESPONSE" />, znovu stiskněte klávesu <ph name="CURRENTKEY" /></translation>
 <translation id="1451375123200651445">Webová stránka, jeden soubor</translation>
@@ -801,7 +799,6 @@
 <translation id="1790976235243700817">Odebrat přístup</translation>
 <translation id="1791662854739702043">Nainstalováno</translation>
 <translation id="1792619191750875668">Sekundární obrazovka</translation>
-<translation id="1793625608969726781">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, počítač, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1794051631868188691">Nikdy nezobrazovat <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Odeslat zpětnou vazbu, která nám pomůže při řešení tohoto problému</translation>
 <translation id="1795214765651529549">Použít klasický motiv</translation>
@@ -872,7 +869,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1855079636134697549">Kamera je zapnutá</translation>
 <translation id="1856715684130786728">Přidat polohu...</translation>
 <translation id="1858585891038687145">Důvěřovat tomuto certifikátu při ověřování identity výrobců softwaru</translation>
-<translation id="1859787252990099899">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, neznámé zařízení pojmenované <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Tato složka je prázdná</translation>
 <translation id="1862311223300693744">Používáte zvláštní VPN, proxy, firewall nebo software NAS?</translation>
 <translation id="1863182668524159459">Nebyly nalezeny žádné sériové porty</translation>
@@ -1187,7 +1183,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2179416702468739594">Probíhá vyhledávání dostupných profilů. V důsledku této akce můžete být na několik minut odpojeni od mobilní sítě.</translation>
 <translation id="2180620921879609685">Blokovat obsah na všech stránkách</translation>
 <translation id="2182058453334755893">Zkopírováno do schránky</translation>
-<translation id="2183027945672030611">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, herní ovladač, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="2184515124301515068">Nechat Chrome zvolit, kdy weby mohou přehrávat zvuk (doporučeno)</translation>
 <translation id="2186711480981247270">Stránka byla sdílena z jiného zařízení</translation>
 <translation id="2187675480456493911">Synchronizuje se s jinými zařízeními v účtu. Změny nastavení provedené jinými uživateli se nesynchronizují. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -1255,7 +1250,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2242687258748107519">Informace o souboru</translation>
 <translation id="2246549592927364792">Získávat popisy obrázků z Googlu?</translation>
 <translation id="2247738527273549923">Zařízení spravuje vaše organizace</translation>
-<translation id="2249061317998743208">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, herní ovladač pojmenovaný <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Otevřít jako okno na kartě</translation>
 <translation id="2249605167705922988">např. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Otevřít pomocí systémového prohlížeče</translation>
@@ -1688,7 +1682,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2673135533890720193">Čtení vaší historie procházení</translation>
 <translation id="2674764818721168631">Vypnuto</translation>
 <translation id="2678063897982469759">Znovu aktivovat</translation>
-<translation id="2678676117809690850">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, telefon, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="268053382412112343">&amp;Historie</translation>
 <translation id="2681124317993121768">Profily hostů nejsou podporovány</translation>
 <translation id="2682498795777673382">Novinka od rodiče</translation>
@@ -2033,7 +2026,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3007771295016901659">Duplikovat kartu</translation>
 <translation id="3008232374986381779">Spouštějte na svém zařízení <ph name="DEVICE_TYPE" /> nástroje, editory a prostředí IDE pro Linux. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
-<translation id="3008396025115884998">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, zvukové zařízení pojmenované <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Organizace <ph name="MANAGER" /> vyžaduje, abyste se dnes za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}few{Organizace <ph name="MANAGER" /> vyžaduje, abyste se do stanoveného termínu za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}many{Organizace <ph name="MANAGER" /> vyžaduje, abyste se do stanoveného termínu za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}other{Organizace <ph name="MANAGER" /> vyžaduje, abyste se do stanoveného termínu za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}}</translation>
 <translation id="3009300415590184725">Opravdu chcete zrušit proces nastavení služby mobilních dat?</translation>
 <translation id="3009779501245596802">Indexované databáze</translation>
@@ -2139,7 +2131,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Odeslání dat (<ph name="ATTACHMENTS" />) do zařízení <ph name="DEVICE_NAME" /> se nezdařilo}few{Odeslání dat (<ph name="ATTACHMENTS" />) do zařízení <ph name="DEVICE_NAME" /> se nezdařilo}many{Odeslání dat (<ph name="ATTACHMENTS" />) do zařízení <ph name="DEVICE_NAME" /> se nezdařilo}other{Odeslání dat (<ph name="ATTACHMENTS" />) do zařízení <ph name="DEVICE_NAME" /> se nezdařilo}}</translation>
 <translation id="3118319026408854581">Nápověda aplikace <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Zkuste Linux spustit znovu za chvíli.</translation>
-<translation id="3119689272338239690">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, neznámý typ zařízení, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3119948370277171654">Jaký obsah / adresu URL jste odesílali?</translation>
 <translation id="3120430004221004537">Šifrování je pro danou operaci na zařízení <ph name="DEVICE_NAME" /> nedostatečné.</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2166,7 +2157,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3143754809889689516">Přehrát od začátku</translation>
 <translation id="3144647712221361880">Otevřít odkaz jako</translation>
 <translation id="3149510190863420837">Aplikace Chrome</translation>
-<translation id="3150622786624965651">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, herní ovladač.</translation>
 <translation id="3150693969729403281">Spustit bezpečnostní kontrolu</translation>
 <translation id="3150927491400159470">Úplné opětovné načtení</translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
@@ -2371,7 +2361,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="339178315942519818">Zobrazovat oznámení z chatovacích aplikací v zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Analýza dokumentů Chrome</translation>
 <translation id="3394850431319394743">Povolení používat identifikátory k přehrávání chráněného obsahu</translation>
-<translation id="3395403082745257596">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, neznámý typ zařízení.</translation>
 <translation id="3396744558790608201">Kliknutím pravým tlačítkem myši a výběrem možnosti Vyhledat obrázky pomocí Google Lens můžete vyhledat libovolnou část webu a získat tak další informace o vizuálním obsahu, který vidíte při procházení a nakupování na webu.</translation>
 <translation id="3396800784455899911">Kliknutím na tlačítko Přijmout a pokračovat vyjadřujete souhlas se zpracováním popsaným výše pro tyto služby Google.</translation>
 <translation id="339722927132407568">Zamrzá</translation>
@@ -2666,7 +2655,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3682824389861648626">Limit pohybu</translation>
 <translation id="3683524264665795342">Požadavek na sdílení obrazovky s aplikací <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">Předvolby USB pro Linux</translation>
-<translation id="3686786761304157917">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, klávesnice, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="368789413795732264">Došlo k chybě při pokusu o zápis souboru: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Zapisovat do souborů a složek, které v aplikaci otevřete</translation>
 <translation id="3688526734140524629">Změnit kanál</translation>
@@ -2769,7 +2757,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3778740492972734840">&amp;Nástroje pro vývojáře</translation>
 <translation id="3778868487658107119">Můžete mu zadávat dotazy. Můžete mu udělovat příkazy. Je to váš osobní Google a je vám neustále k službám.</translation>
 <translation id="3781742599892759500">Přístup Linuxu k mikrofonu</translation>
-<translation id="3782488227140539029">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamera, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="378312418865624974">Číst jedinečný identifikátor tohoto počítače</translation>
 <translation id="3784472333786002075">Cookies jsou soubory vytvářené webovými stránkami. Existují dva typy souborů cookie: Soubory cookie první strany jsou vytvářeny navštíveným webem. Web je uveden na adresním řádku. Soubory cookie třetích stran jsou vytvářeny ostatními weby. Tyto weby na navštívené stránce vlastní nějaký obsah, např. reklamy nebo obrázky.</translation>
 <translation id="3785308913036335955">Zobrazit zástupce aplikací</translation>
@@ -3694,7 +3681,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
 <translation id="4761104368405085019">Používat mikrofon</translation>
 <translation id="4762718786438001384">Na disku zařízení je kriticky málo místa</translation>
-<translation id="4762898026821161650">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, počítač pojmenovaný <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Při zobrazení této stránky byly nastaveny následující soubory cookie</translation>
 <translation id="4765582662863429759">Povoluje Zprávám pro Android předávat zprávy SMS z telefonu do Chromebooku</translation>
 <translation id="4768332406694066911">Od následujících organizací máte certifikáty, které vás identifikují</translation>
@@ -3919,7 +3905,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="499165176004408815">Použít režim s vysokým kontrastem</translation>
 <translation id="4992458225095111526">Potvrdit obnovení pomocí funkce Powerwash</translation>
 <translation id="4992473555164495036">Administrátor omezil dostupné metody zadávání.</translation>
-<translation id="4992984395680162305">Tato zařízení byla propojena naskenováním QR kódu.</translation>
 <translation id="4994474651455208930">Povolit dotazy stránek, zda je chcete použít jako výchozí obslužný nástroj protokolů</translation>
 <translation id="4994754230098574403">Nastavování</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nebyly nalezeny žádné virtuální počítače typu <ph name="VM_TYPE" />}=1{Byl nalezen 1 virtuální počítač typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Byly nalezeny {NUM_VMS} virtuální počítače typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Bylo nalezeno {NUM_VMS} virtuálního počítače typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Bylo nalezeno {NUM_VMS} virtuálních počítačů typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
@@ -4150,7 +4135,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5243522832766285132">Zkuste to znovu za okamžik</translation>
 <translation id="5244474230056479698">Údaje se synchronizují do účtu <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Začínáme se školním účtem</translation>
-<translation id="5246036036039717045">Tato zařízení lze používat jako bezpečnostní klíč, protože jste v nich přihlášeni do Chromu.</translation>
 <translation id="5246282308050205996">Aplikace <ph name="APP_NAME" /> selhala. Klinutím na tuto bublinu aplikaci restartujete.</translation>
 <translation id="5247051749037287028">Zobrazovaný název (volitelné)</translation>
 <translation id="5249624017678798539">Prohlížeč před dokončením stahování selhal.</translation>
@@ -4223,7 +4207,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5319359161174645648">Google doporučuje prohlížeč Chrome</translation>
 <translation id="5319712128756744240">Spárovat nové zařízení</translation>
 <translation id="5320135788267874712">Nový název zařízení</translation>
-<translation id="532043380734099846">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, myš, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="532247166573571973">Server pravděpodobně není dostupný. Zkuste to znovu později.</translation>
 <translation id="5324300749339591280">Seznam aplikací</translation>
 <translation id="5324780743567488672">Nastavit časové pásmo automaticky podle polohy</translation>
@@ -4253,7 +4236,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="535123479159372765">Text zkopírovaný z jiného zařízení</translation>
 <translation id="5352033265844765294">Časové razítko</translation>
 <translation id="5353252989841766347">Export hesel z Chromu</translation>
-<translation id="5354531123814675522">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tablet, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5355099869024327351">Povolit Asistentovi zobrazovat vám oznámení</translation>
 <translation id="5355191726083956201">Je zapnutá vylepšená ochrana</translation>
 <translation id="5355926466126177564">Rozšíření <ph name="EXTENSION_NAME" /> změnilo stránku, která se zobrazí při vyhledávání z omniboxu.</translation>
@@ -4490,7 +4472,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5585898376467608182">V zařízení dochází úložný prostor. K použití aplikace <ph name="APP_NAME" /> je potřeba alespoň <ph name="MINIMUM_SPACE" /> volného místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
 <translation id="5585912436068747822">Formátování se nezdařilo</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
-<translation id="5589101568518637088">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, klávesnice.</translation>
 <translation id="558918721941304263">Načítání aplikací...</translation>
 <translation id="5592595402373377407">Zatím není k dispozici dostatek dat.</translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
@@ -4692,7 +4673,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5817918615728894473">Spárovat</translation>
 <translation id="581840385858998009">Upravit tapetu, avatara, spořič obrazovky a další nastavení</translation>
 <translation id="5821565227679781414">Vytvořit zástupce</translation>
-<translation id="5822095611691580107">Stav baterie levého sluchátka: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="5825412242012995131">Zapnout (doporučeno)</translation>
 <translation id="5826395379250998812">Propojte své zařízení <ph name="DEVICE_TYPE" /> s telefonem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Polotransparentní</translation>
@@ -5151,7 +5131,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6294759976468837022">Rychlost automatického prohledávání</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6295855836753816081">Ukládání...</translation>
-<translation id="6297132509712149399">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, telefon.</translation>
 <translation id="629730747756840877">Účet</translation>
 <translation id="6298962879096096191">Používat Google Play k instalaci aplikací pro Android</translation>
 <translation id="6300177430812514606">Zákaz dokončovat odeslání a příjem dat</translation>
@@ -5447,7 +5426,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6601612474695404578">Některé weby k načítání svých stránek používají soubory cookie třetích stran. Pokud web nefunguje, můžete zkusit povolit soubory cookie.</translation>
 <translation id="6602937173026466876">Přístup k vašim tiskárnám</translation>
 <translation id="6602956230557165253">K navigaci použijte šipky vlevo a vpravo.</translation>
-<translation id="6602998402703530379">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamera.</translation>
 <translation id="6603185457265641428">Zvolte, zda chcete synchronizovat historii</translation>
 <translation id="6605847144724004692">Zatím neohodnoceno žádnými uživateli.</translation>
 <translation id="6606671997164410857">Zdá se, že už jste si Asistenta Google nastavili na jiném zařízení. Když si zapnete Kontext obrazovky, budete moci Asistenta využívat ještě lépe.</translation>
@@ -5470,7 +5448,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6624535038674360844">Obsah souboru <ph name="FILE_NAME" /> je citlivý nebo nebezpečný. Požádejte vlastníka o nápravu.</translation>
 <translation id="6624687053722465643">Zákusek</translation>
 <translation id="6628328486509726751">Nahráno <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
-<translation id="663065535202460123">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, myš.</translation>
 <translation id="6630752851777525409">Rozšíření <ph name="EXTENSION_NAME" /> požaduje trvalý přístup k certifikátu, aby se vaším jménem mohlo ověřit.</translation>
 <translation id="6635362468090274700">Nikdo s vámi nemůže sdílet obsah, dokud se nenastavíte jako viditelní.<ph name="BR" /><ph name="BR" />Chcete-li být viditelní dočasně, otevřete stavovou oblast a pak zapněte Viditelnost nablízko.</translation>
 <translation id="6635674640674343739">Nelze navázat síťové připojení. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
@@ -5804,7 +5781,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="69739764870135975">Pokud je Google zároveň váš výchozí vyhledávač, budou se zobrazovat lepší, kontextově relevantní návrhy</translation>
 <translation id="6974609594866392343">Ukázkový režim offline</translation>
 <translation id="697508444536771064">Ukončit Linux</translation>
-<translation id="6977739184256564679">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tablet.</translation>
 <translation id="6978121630131642226">Vyhledávače</translation>
 <translation id="6979044105893951891">Spouštět a ukončovat spravované relace hostů</translation>
 <translation id="6979158407327259162">Disk Google</translation>
@@ -5825,7 +5801,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6991665348624301627">Vybrat cíl</translation>
 <translation id="6992554835374084304">Zapnout vylepšenou kontrolu pravopisu</translation>
 <translation id="6993000214273684335">Karta byla odstraněna ze skupiny bez názvu – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993889405941892667">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, počítač.</translation>
 <translation id="6994069045767983299">Převrácené barvy</translation>
 <translation id="6995899638241819463">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – protokol aktivit</translation>
@@ -5896,7 +5871,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Bezpečnostní kontrola proběhla před jednou minutou}few{Bezpečnostní kontrola proběhla před {NUM_MINS} minutami}many{Bezpečnostní kontrola proběhla před {NUM_MINS} minuty}other{Bezpečnostní kontrola proběhla před {NUM_MINS} minutami}}</translation>
 <translation id="7057767408836081338">Nepodařilo se získat data aplikace, ale stejně zkusíme aplikaci spustit…</translation>
 <translation id="7058024590501568315">Skrytá síť</translation>
-<translation id="70582545822664495">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, myš pojmenovaná <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Nastavit na automatické spouštění</translation>
 <translation id="7062222374113411376">Povolit nedávno zavřeným webům dokončit odeslání a příjem dat (doporučeno)</translation>
 <translation id="7063129466199351735">Zpracování zástupců...</translation>
@@ -6067,7 +6041,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7257173066616499747">Sítě Wi-Fi</translation>
 <translation id="725758059478686223">Služba tisku</translation>
 <translation id="7257666756905341374">Číst data, která kopírujete a vkládáte</translation>
-<translation id="7258006747130724016">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, videokamera pojmenovaná <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Transformace</translation>
 <translation id="7258225044283673131">Aplikace neodpovídá. Chcete-li ji zavřít, vyberte Ukončit aplikaci.</translation>
 <translation id="7262004276116528033">Přihlašovací služba je hostována doménou <ph name="SAML_DOMAIN" />.</translation>
@@ -6859,7 +6832,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8037117027592400564">Číst veškerý text vyslovovaný pomocí syntetické řeči</translation>
 <translation id="8037357227543935929">Zeptat se (výchozí)</translation>
 <translation id="803771048473350947">Soubor</translation>
-<translation id="8038399858950372766">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, klávesnice pojmenovaná <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8042142357103597104">Neprůhlednost textu</translation>
 <translation id="8042331986490021244">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována</translation>
@@ -7274,7 +7246,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8475313423285172237">Jiný program ve vašem počítači nainstaloval rozšíření, které může měnit funkce Chromu.</translation>
 <translation id="8477241577829954800">Nahrazen</translation>
 <translation id="8477384620836102176">&amp;Obecné</translation>
-<translation id="8479109005219657634">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, zvukové zařízení, stav baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="8479176401914456949">Neplatný kód. Zkuste to znovu.</translation>
 <translation id="8480082892550707549">Stránky mohou být přechodně nebezpečné (napadené) i v případě, že jste z nich již v minulosti soubory stahovali. Zkuste soubor stáhnout později.</translation>
 <translation id="8480869669560681089">Neznámé zařízení od dodavatele <ph name="VENDOR_NAME" /></translation>
@@ -7558,7 +7529,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}many{Zařízení <ph name="DEVICE_TYPE" /> se za # sekundy automaticky zamkne.
 <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}other{Zařízení <ph name="DEVICE_TYPE" /> se za # sekund automaticky zamkne.
 <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}}</translation>
-<translation id="8777259617149177596">Stav baterie pouzdra: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8777628254805677039">heslo uživatele root</translation>
 <translation id="8779944680596936487">Weby mohou pomocí souborů cookie sledovat pouze aktivitu prohlížení na svém vlastním webu</translation>
 <translation id="8780123805589053431">Získat popisy obrázků z Googlu</translation>
@@ -7913,7 +7883,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9128335130883257666">Otevřít stránku nastavení <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Připojit k síti</translation>
 <translation id="9130015405878219958">Byl zadán neplatný režim.</translation>
-<translation id="9130215884425927484">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, zvukové zařízení.</translation>
 <translation id="9131487537093447019">Odesílání zpráv do zařízení Bluetooth a přijímání zpráv ze zařízení Bluetooth</translation>
 <translation id="9134066738478820307">Weby mohou k přehrávání chráněného obsahu používat identifikátory</translation>
 <translation id="913411432238655354">Při spuštění obnovit aplikace</translation>
@@ -7957,7 +7926,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="916964310188958970">Proč tento návrh?</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Aktuální nastavení viditelnosti je Všechny kontakty</translation>
-<translation id="9170199455952690202">Stav baterie pravého sluchátka: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9170848237812810038">Z&amp;pět</translation>
 <translation id="9170884462774788842">Jiný program ve vašem počítači nainstaloval motiv, který může měnit funkce Chromu.</translation>
 <translation id="917350715406657904">Byl vyčerpán časový limit, který pro aplikaci <ph name="APP_NAME" /> nastavili rodiče. Zítra ji budeš moci používat <ph name="TIME_LIMIT" />.</translation>

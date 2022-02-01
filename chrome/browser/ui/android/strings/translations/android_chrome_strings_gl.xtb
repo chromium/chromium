@@ -404,7 +404,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3264259168916048410">O ordenador require que se use este dispositivo para iniciar sesión nun sitio</translation>
 <translation id="3265534588625245297">Xestiona os sitios que segues</translation>
 <translation id="3269093882174072735">Cargar imaxe</translation>
-<translation id="3269956123044984603">Activa Sincronización automática de datos, na configuración da conta de Android, para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="3280562213547448728">Busca por voz</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3284510035090979597">Axuda proactiva</translation>
@@ -473,6 +472,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3716182511346448902">Esta páxina utiliza demasiada memoria, así que Chrome pausouna.</translation>
 <translation id="3721119614952978349">Ti e Google</translation>
 <translation id="3737319253362202215">Configuración da tradución</translation>
+<translation id="3737402728074743863">Para poder usar este dispositivo como chave de seguranza, define un bloqueo de pantalla</translation>
 <translation id="3738139272394829648">Tocar para buscar</translation>
 <translation id="3739899004075612870">Engadiuse aos marcadores en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">A busca por voz non está dispoñible neste dispositivo</translation>
@@ -916,7 +916,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6303969859164067831">Pechar sesión e desactivar a sincronización</translation>
 <translation id="6312687380483398334">Aplicacións web (silenciadas)</translation>
 <translation id="6316139424528454185">Versión Android non compatible</translation>
-<translation id="6324034347079777476">A sincronización do sistema Android está desactivada</translation>
 <translation id="6324916366299863871">Editar atallo</translation>
 <translation id="6324977638108296054">Non se puido crear unha ligazón ao texto destacado</translation>
 <translation id="6324997754869598316">(Erro <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6900532703269623216">Protección mellorada</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6909589135458168665">Precargar páxinas</translation>
-<translation id="6929699136511445623">Activar sincronización do sistema Android</translation>
 <translation id="6942665639005891494">Cambia a localización de descarga predeterminada en calquera momento usando a opción do menú Configuración</translation>
 <translation id="694267552845942083">Estás personalizando a configuración da sincronización. Pera rematar de activar a sincronización, toca o botón Confirmar, situado preto da parte inferior da pantalla. Desprazarse cara arriba</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
@@ -1160,7 +1158,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7581273696622423628">Completar enquisa</translation>
 <translation id="7583262514280211622">Aquí atoparás a túa lista de lectura</translation>
 <translation id="7588219262685291874">Activa o tema escuro cando estea activada a función do dispositivo Aforro de batería</translation>
-<translation id="7593557518625677601">Sincronizar Chrome: abre a config. de Android e sincroniza de novo o seu sistema</translation>
 <translation id="7594687499944811403">Permite que <ph name="EMBEDDED_ORIGIN" /> verifique a túa identidade para <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
 <translation id="7605594153474022051">A sincronización non funciona</translation>

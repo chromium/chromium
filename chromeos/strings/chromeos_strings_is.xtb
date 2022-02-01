@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
 <translation id="1387854245479784695">Þetta er samansafn allra kjarna</translation>
+<translation id="1394661041439318933">Rafhleðsla hulsturs er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Ekki er hægt að ping-prófa gátt</translation>
 <translation id="1398634363027580500">Mjög langur HTTPS-biðtími</translation>
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ég er með lyklasett</translation>
+<translation id="1451536289672181509">Tækið er lyklaborð.</translation>
 <translation id="1468664791493211953">Tilboð</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> hefur umsjón með þessu tæki og getur hugsanlega fylgst með því sem þú gerir.</translation>
 <translation id="1478594628797167447">Skanni</translation>
@@ -53,6 +55,7 @@
 <translation id="1643449475550628585">Skipta daglega um veggfóðursmynd</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1662989795263954667">Stöðvað – blekið er búið</translation>
+<translation id="1668469839109562275">Innbyggt VPN</translation>
 <translation id="1703835215927279855">Bréf</translation>
 <translation id="1706391837335750954">DNS-úrlausn til staðar</translation>
 <translation id="1715359911173058521">Villa kom upp við að ná sambandi við skannann. Athugaðu net- eða USB-tenginguna og reyndu aftur.</translation>
@@ -81,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Fleiri stillingar</translation>
 <translation id="2104796393919810494">Viðgerð lokið</translation>
+<translation id="2105810540595158374">Tækið er leikjafjarstýring.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB af <ph name="TOTAL_MEMORY" /> GB tiltæk</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -134,6 +138,7 @@
 <translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
+<translation id="3031560714565892478">Tækið er kvikmyndatökuvél.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endastaður</translation>
 <translation id="3069085583900247081">Próf mistókst</translation>
@@ -141,6 +146,7 @@
 <translation id="3091839911843451378">Mistókst – stöðvaðist</translation>
 <translation id="3102119246920354026">Skyndiminni</translation>
 <translation id="3122464029669770682">Örgjörvi</translation>
+<translation id="3124039320086536031">Tæki er tengt.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Fjarlægja síðu?}=1{Fjarlægja síðu {PAGE_NUMBER}?}one{Fjarlægja síðu {PAGE_NUMBER}?}other{Fjarlægja síðu {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Farsímagögn</translation>
 <translation id="3156846309055100599">Skannar síðu <ph name="PAGE_NUMBER" />...</translation>
@@ -156,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
 <translation id="3328783797891415197">Próf í gangi</translation>
+<translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369013195428705271">Viltu örugglega hreinsa allan prentferil? Prentverk sem eru í gangi verða ekki hreinsuð.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -164,6 +171,7 @@
 <translation id="345898999683440380">Skannar síðu <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% lokið.</translation>
 <translation id="3459509316159669723">Prentun</translation>
 <translation id="3462187165860821523">Uppfærir <ph name="DEVICE_NAME" /></translation>
+<translation id="3484914941826596830">Ekki taka þetta ytra tæki úr sambandi eða slökkva á tölvunni þinni á meðan fastbúnaðurinn uppfærist. Þú getur minnkað þennan glugga. Uppfærslan gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
@@ -193,6 +201,7 @@
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
 <translation id="3942420633017001071">Greining</translation>
+<translation id="3954678691475912818">Gerð tækis er óþekkt.</translation>
 <translation id="3966286471246132217">Lokaðu öllum forritum þar til prófuninni er lokið til að niðurstöðurnar verði nákvæmari.</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="397105322502079400">Reiknar...</translation>
@@ -274,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Veldu nýtt án tafar</translation>
 <translation id="4891842000192098784">Álag</translation>
+<translation id="4897058166682006107">Rafhleðsla vinstra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
 <translation id="4921665434385737356">Hlóð <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
@@ -321,6 +331,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5346687412805619883">Staðarnet</translation>
 <translation id="5358174242040570474">Eitthvað fór úrskeiðis. Reyndu að velja veggfóður aftur eða endurræstu forritið.</translation>
 <translation id="5372659122375744710">Wi-Fi net er ekki öruggt</translation>
+<translation id="5400907029458559844">Tækið er að tengjast.</translation>
 <translation id="5401938042319910061">Keyra allar rútínur</translation>
 <translation id="5423849171846380976">Virkjuð</translation>
 <translation id="5430931332414098647">Skynditjóðrun</translation>
@@ -382,6 +393,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
+<translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Mistókst</translation>
 <translation id="6340526405444716530">Sérstillingar</translation>
 <translation id="636850387210749493">Fyrirtækjaskráning</translation>
@@ -414,6 +426,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6704062477274546131">DNS-upplausn</translation>
 <translation id="6747215703636344499">Stöðvað – úttakið er fullt</translation>
 <translation id="6749473226660745022">Myndir</translation>
+<translation id="6753452347192452143">Tækið er tölva.</translation>
 <translation id="6756731097889387912">Ekki tókst að hætta við að skanna</translation>
 <translation id="6766275201586212568">DNS-úrlausn mistókst</translation>
 <translation id="6768237774506518020">DNS-úrlausn mistekst oft</translation>
@@ -431,12 +444,14 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6992266763844448459">Veldu þennan valkost ef eignarhald tækisins breytist ekki. Þegar tækið er t.d. flutt yfir til annars notanda innan sama fyrirtækis.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hefur umsjón með þessu tæki og hefur aðgang að allri notendavirkni, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
 <translation id="7040230719604914234">Símafyrirtæki</translation>
+<translation id="7041549558901442110">Tækið er ekki tengt.</translation>
 <translation id="7058278511608979688">Ljúka og vista</translation>
 <translation id="7059230779847288458">Í hleðslu, <ph name="TIME_VALUE" /> þar til full hleðsla næst</translation>
 <translation id="7068619307603204412">Undirbúðu tækið</translation>
 <translation id="708426984172631313">STÖÐVAÐ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mistókst – Heimild fékkst ekki</translation>
+<translation id="7103252855940681301">Tæki <ph name="INDEX" /> af <ph name="COUNT" /> sem nefnist <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nafnaþjónn}one{Nafnaþjónn}other{Nafnaþjónar}}</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
@@ -471,6 +486,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7502658306369382406">IPv6-veffang</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Greiningarrútínur</translation>
+<translation id="7551123448725492271">Tækið er hljómtæki.</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-snertiskjár</translation>
@@ -478,6 +494,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7620771111601174153">Fáðu frekari upplýsingar í hjálparmiðstöðinni</translation>
 <translation id="763165478673169849">Tími síðustu endurstillingar</translation>
 <translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
+<translation id="7656388927906093505">Tækið er mús.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7701040980221191251">Ekkert</translation>
@@ -574,6 +591,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8855781559874488009">Ekki er hægt að tengjast HTTP-vefsvæðum í gegnum eldvegg</translation>
 <translation id="8863888432376731307">Fáðu <ph name="INTENT" /> fyrir „<ph name="QUERY" />“ og fleira</translation>
 <translation id="8868741746785112895">GUID-kenni</translation>
+<translation id="8876270629542503161">Tækið er spjaldtölva.</translation>
 <translation id="8881098542468797602">Próf tókst</translation>
 <translation id="8898840733695078011">Sendistyrkur</translation>
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
@@ -584,11 +602,13 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8930622219860340959">Þráðlaust</translation>
 <translation id="8936793075252196307">IP-tala biðlara</translation>
 <translation id="8945750210906526975">Innbyggður snertiflötur</translation>
+<translation id="894617464444543719">Tækið er sími.</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>
 <translation id="8970109610781093811">Keyra aftur</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanna}=1{Skanna síðu {NUMBER_OF_PAGES}}one{Skanna síðu {NUMBER_OF_PAGES}}other{Skanna síðu {NUMBER_OF_PAGES}}}</translation>
 <translation id="8994273342647807496">Setur upp – <ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="8997710128084572139">Rafhleðsla tækisins er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Tíðni</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Mikill biðtími á DNS-lausn</translation>

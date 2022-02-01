@@ -404,7 +404,6 @@
 <translation id="3264259168916048410">התקבלה מהמחשב בקשה להשתמש במכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="3265534588625245297">ניהול האתרים שבמעקב</translation>
 <translation id="3269093882174072735">טעינת תמונה</translation>
-<translation id="3269956123044984603">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את האפשרות 'סנכרון אוטומטי של נתונים' בהגדרות של חשבון Android.</translation>
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3284510035090979597">עזרה פרואקטיבית</translation>
@@ -430,7 +429,7 @@
 <translation id="3421726884497337397">‏אפשר לקבוע מתי קובצי cookie של צד שלישי ייחסמו</translation>
 <translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
-<translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן</translation>
+<translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן.</translation>
 <translation id="3440975416244667276">לחיצה ארוכה תציג פרטים רלוונטים נוספים</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3444179773590444986">רוצה לשתף משוב לגבי עיצוב כהה של אתרים?</translation>
@@ -473,6 +472,7 @@
 <translation id="3716182511346448902">‏הדף הזה מנצל יותר מדי זיכרון, כך שהוא הושהה על-ידי Chrome.</translation>
 <translation id="3721119614952978349">‏ההגדרות שלך ב-Google</translation>
 <translation id="3737319253362202215">הגדרות תרגום</translation>
+<translation id="3737402728074743863">כדי להשתמש במכשיר הזה בתור מפתח אבטחה, עליך להגדיר נעילת מסך</translation>
 <translation id="3738139272394829648">חיפוש בנגיעה</translation>
 <translation id="3739899004075612870">נוסף לסימניות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">חיפוש קולי לא זמין במכשיר הזה</translation>
@@ -916,7 +916,6 @@
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
 <translation id="6316139424528454185">‏אין תמיכה בגרסת Android</translation>
-<translation id="6324034347079777476">‏סנכרון מערכת Android מושבת</translation>
 <translation id="6324916366299863871">עריכת קיצור דרך</translation>
 <translation id="6324977638108296054">אי אפשר ליצור קישור לטקסט המודגש</translation>
 <translation id="6324997754869598316">(שגיאה <ph name="ERROR_CODE" />)</translation>
@@ -1044,7 +1043,6 @@
 <translation id="6900532703269623216">הגנה משופרת</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6909589135458168665">טעינה מראש של דפים</translation>
-<translation id="6929699136511445623">‏הפעלת סנכרון של מערכת Android</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
 <translation id="694267552845942083">מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון. כדי להשלים את הפעלת הסנכרון יש להקיש על הלחצן 'אישור', קרוב לתחתית המסך. ניווט למעלה</translation>
 <translation id="6945221475159498467">בחירה</translation>
@@ -1160,7 +1158,6 @@
 <translation id="7581273696622423628">השתתף בסקר</translation>
 <translation id="7583262514280211622">רשימת הקריאה זמינה כאן</translation>
 <translation id="7588219262685291874">עיצוב כהה מופעל כשהמכשיר עובר לחיסכון בסוללה</translation>
-<translation id="7593557518625677601">‏פתיחת הגדרות Android והפעלה מחדש של הסנכרון של מערכת Android כדי להתחיל בסנכרון של Chrome</translation>
 <translation id="7594687499944811403">צריך לאפשר ל-<ph name="EMBEDDED_ORIGIN" /> לאמת את זהותך עבור <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">מערכת הפעלה</translation>
 <translation id="7605594153474022051">הסנכרון לא עובד</translation>
