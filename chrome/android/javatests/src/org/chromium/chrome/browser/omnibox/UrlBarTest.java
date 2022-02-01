@@ -150,6 +150,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1291159")
     public void testAutocompleteUpdatedOnSetText() {
         // Verify that setting a new string will clear the autocomplete.
         mOmnibox.setText("test");
