@@ -24,6 +24,8 @@
 
 namespace content {
 
+using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
+
 namespace {
 
 const char kResponseWithNoCache[] =
@@ -145,9 +147,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
   response2.Done();
   observer2.Wait();
 
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStore}, {}, {}, {}, {},
+                    FROM_HERE);
 }
 
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
@@ -210,9 +211,8 @@ IN_PROC_BROWSER_TEST_F(
   observer2.Wait();
 
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
+                    {}, {}, {}, FROM_HERE);
 }
 
 // Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
@@ -263,9 +263,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
 
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
+                    {}, {}, {}, FROM_HERE);
   RenderFrameHostImplWrapper rfh_a_2(current_frame_host());
 
   // 6) Navigate away to b.com. |rfh_a_2| should enter bfcache again.
@@ -275,9 +274,8 @@ IN_PROC_BROWSER_TEST_F(
   // 7) Navigate back to a.com. This time the cookie change has to be reset and
   // gets evicted with a different reason.
   ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStore}, {}, {}, {}, {},
+                    FROM_HERE);
 }
 
 // Flaky on Cast Audio Linux https://crbug.com/1229182
@@ -340,9 +338,8 @@ IN_PROC_BROWSER_TEST_F(
   observer2.Wait();
   EXPECT_EQ("foo=bar", EvalJs(tab_to_be_bfcached, "document.cookie"));
 
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStore}, {}, {}, {}, {},
+                    FROM_HERE);
 }
 
 // Test that a page with cache-control:no-store records other not restored
@@ -370,10 +367,9 @@ IN_PROC_BROWSER_TEST_F(
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution,
-       BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kJavaScriptExecution,
+                     NotRestoredReason::kCacheControlNoStore},
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 // Test that a page with cache-control:no-store records other not restored
@@ -403,8 +399,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
-       BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore},
+      {NotRestoredReason::kBlocklistedFeatures,
+       NotRestoredReason::kCacheControlNoStore},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
       {}, FROM_HERE);
 }
@@ -493,9 +489,8 @@ IN_PROC_BROWSER_TEST_F(
   response2.Done();
   observer2.Wait();
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
+                    {}, {}, {}, FROM_HERE);
 }
 
 // Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
@@ -560,9 +555,9 @@ IN_PROC_BROWSER_TEST_F(
   response3.Send(kResponseWithNoCacheWithHTTPOnlyCookie);
   response3.Done();
   observer3.Wait();
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreHTTPOnlyCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified}, {}, {},
+      {}, {}, FROM_HERE);
 }
 
 // Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
@@ -628,9 +623,9 @@ IN_PROC_BROWSER_TEST_F(
   response3.Done();
   observer3.Wait();
 
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreHTTPOnlyCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified}, {}, {},
+      {}, {}, FROM_HERE);
   RenderFrameHostImplWrapper rfh_a_2(current_frame_host());
 
   // 5) Navigate away to b.com. |rfh_a_2| should enter bfcache again.
@@ -645,9 +640,8 @@ IN_PROC_BROWSER_TEST_F(
   response4.Send(kResponseWithNoCache);
   response4.Done();
   observer4.Wait();
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStore}, {}, {}, {}, {},
+                    FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
@@ -761,9 +755,8 @@ IN_PROC_BROWSER_TEST_F(
   observer2.Wait();
 
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
+                    {}, {}, {}, FROM_HERE);
 }
 
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
@@ -828,9 +821,9 @@ IN_PROC_BROWSER_TEST_F(
   response3.Send(kResponseWithNoCacheWithHTTPOnlyCookie);
   response3.Done();
   observer3.Wait();
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreHTTPOnlyCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified}, {}, {},
+      {}, {}, FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange
@@ -993,9 +986,9 @@ IN_PROC_BROWSER_TEST_F(
   response3.Send(kResponseWithNoCacheWithHTTPOnlyCookie);
   response3.Done();
   observer3.Wait();
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreHTTPOnlyCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified}, {}, {},
+      {}, {}, FROM_HERE);
 }
 
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
@@ -1058,9 +1051,9 @@ IN_PROC_BROWSER_TEST_F(
   response3.Send(kResponseWithNoCacheWithHTTPOnlyCookie);
   response3.Done();
   observer3.Wait();
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kCacheControlNoStoreHTTPOnlyCookieModified},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified}, {}, {},
+      {}, {}, FROM_HERE);
 }
 
 }  // namespace content

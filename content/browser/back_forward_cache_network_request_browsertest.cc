@@ -20,6 +20,8 @@
 
 namespace content {
 
+using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
+
 // When loading task is unfreezable with the feature flag
 // kLoadingTaskUnfreezable, a page will keep processing the in-flight network
 // requests while the page is frozen in BackForwardCache.
@@ -104,9 +106,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkRequestRedirected}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 // Eviction is triggered when a keepalive fetch request gets redirected while
@@ -160,9 +161,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkRequestRedirected}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 // Tests the case when the header was received before the page is frozen,
@@ -199,9 +199,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kNetworkRequestDatapipeDrainedAsBytesConsumer},
-                    {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kNetworkRequestDatapipeDrainedAsBytesConsumer}, {},
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -284,9 +284,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -433,9 +432,8 @@ IN_PROC_BROWSER_TEST_F(
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -516,9 +514,8 @@ IN_PROC_BROWSER_TEST_F(
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -646,9 +643,8 @@ IN_PROC_BROWSER_TEST_F(
   // 4) Go back to the first page. We should not restore the page from the
   // back-forward cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 
   // The second page was still loading images when we navigated away, but it's
   // still eligible for back-forward cache.
@@ -704,9 +700,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout}, {},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkRequestTimeout}, {}, {}, {}, {},
+                    FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -779,9 +774,8 @@ IN_PROC_BROWSER_TEST_F(
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

@@ -32,6 +32,8 @@ using testing::UnorderedElementsAreArray;
 
 namespace content {
 
+using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
+
 // Navigate from A to B and go back.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Basic) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -202,11 +204,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   ASSERT_TRUE(ExecJs(rfh_b.get(), "history.back();"));
   ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
 
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kRelatedActiveContentsExist,
-       BackForwardCacheMetrics::NotRestoredReason::kBrowsingInstanceNotSwapped},
-      {}, {ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents}, {}, {},
-      FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kRelatedActiveContentsExist,
+                     NotRestoredReason::kBrowsingInstanceNotSwapped},
+                    {},
+                    {ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents},
+                    {}, {}, FROM_HERE);
 
   // 4) Make the popup drop the window.opener connection. It happens when the
   //    user does an omnibox-initiated navigation, which happens in a new
@@ -596,8 +598,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Go back.
   web_contents()->GetController().GoBack();
   EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kLoading}, {},
-                    {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kLoading}, {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -634,8 +635,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {
-          BackForwardCacheMetrics::NotRestoredReason::kLoading,
-          BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating,
+          NotRestoredReason::kLoading,
+          NotRestoredReason::kSubframeIsNavigating,
       },
       {}, {}, {}, {}, FROM_HERE);
 }
@@ -675,8 +676,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {
-          BackForwardCacheMetrics::NotRestoredReason::kLoading,
-          BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating,
+          NotRestoredReason::kLoading,
+          NotRestoredReason::kSubframeIsNavigating,
       },
       {}, {}, {}, {}, FROM_HERE);
 }
@@ -700,9 +701,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfHttpError) {
 
   // Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK}, {}, {},
-      {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kHTTPStatusNotOK}, {}, {}, {}, {},
+                    FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -742,8 +742,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK,
-       BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead},
+      {NotRestoredReason::kHTTPStatusNotOK, NotRestoredReason::kNoResponseHead},
       {}, {}, {}, {}, FROM_HERE);
 }
 
@@ -1130,9 +1129,8 @@ IN_PROC_BROWSER_TEST_P(
       (use_sticky_feature == StickinessType::kSticky)
           ? blink::scheduler::WebSchedulerTrackedFeature::kDummy
           : blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel;
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {expected_feature}, {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {expected_feature}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
