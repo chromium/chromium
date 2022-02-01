@@ -1602,6 +1602,7 @@ virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentat
 virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-037.html [ Pass ]
 virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-038.html [ Pass ]
 virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-041.html [ Pass ]
+virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-042.html [ Pass ]
 
 ### With LayoutNGPrinting enabled:
 
@@ -4247,6 +4248,7 @@ crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-037.htm
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-038.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-039.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-041.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-042.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-007.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-break/transform-009.html [ Failure ]
 crbug.com/1156312 external/wpt/css/css-break/widows-orphans-017.html [ Failure ]
