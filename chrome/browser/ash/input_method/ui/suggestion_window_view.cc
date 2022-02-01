@@ -66,10 +66,10 @@ void SetHighlighted(views::View& view, bool highlighted) {
 }  // namespace
 
 // static
-SuggestionWindowView* SuggestionWindowView::Create(
-    gfx::NativeView parent,
-    AssistiveDelegate* delegate) {
-  auto* const view = new SuggestionWindowView(parent, delegate);
+SuggestionWindowView* SuggestionWindowView::Create(gfx::NativeView parent,
+                                                   AssistiveDelegate* delegate,
+                                                   Orientation orientation) {
+  auto* const view = new SuggestionWindowView(parent, delegate, orientation);
   views::Widget* const widget =
       views::BubbleDialogDelegateView::CreateBubble(view);
   wm::SetWindowVisibilityAnimationTransition(widget->GetNativeView(),
@@ -152,7 +152,8 @@ void SuggestionWindowView::OnThemeChanged() {
 }
 
 SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
-                                           AssistiveDelegate* delegate)
+                                           AssistiveDelegate* delegate,
+                                           Orientation orientation)
     : delegate_(delegate) {
   DCHECK(parent);
 
@@ -161,12 +162,28 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   set_parent_window(parent);
   set_margins(gfx::Insets());
 
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  views::BoxLayout::Orientation layout_orientation;
+  switch (orientation) {
+    case Orientation::kVertical: {
+      layout_orientation = views::BoxLayout::Orientation::kVertical;
+      break;
+    }
+    case Orientation::kHorizontal: {
+      layout_orientation = views::BoxLayout::Orientation::kHorizontal;
+      break;
+    }
+    default: {
+      // Unimplemented orientation.
+      NOTREACHED();
+      break;
+    }
+  }
+
+  SetLayoutManager(std::make_unique<views::BoxLayout>(layout_orientation));
 
   candidate_area_ = AddChildView(std::make_unique<views::View>());
-  candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  candidate_area_->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(layout_orientation));
 
   setting_link_ = AddChildView(std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_SUGGESTION_LEARN_MORE)));

@@ -64,8 +64,11 @@ void AssistiveWindowController::InitSuggestionWindow() {
   if (suggestion_window_view_)
     return;
   // suggestion_window_view_ is deleted by DialogDelegateView::DeleteDelegate.
-  suggestion_window_view_ =
-      ui::ime::SuggestionWindowView::Create(GetParentView(), this);
+  // TODO(b/215292569): Allow horizontal and vertical orientation to be toggled
+  // via some parameter.
+  suggestion_window_view_ = ui::ime::SuggestionWindowView::Create(
+      GetParentView(), this,
+      ui::ime::SuggestionWindowView::Orientation::kHorizontal);
   views::Widget* widget = suggestion_window_view_->GetWidget();
   widget->AddObserver(this);
   widget->Show();

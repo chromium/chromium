@@ -40,12 +40,20 @@ class SuggestionView;
 class UI_CHROMEOS_EXPORT SuggestionWindowView
     : public views::BubbleDialogDelegateView {
  public:
+  enum Orientation {
+    kHorizontal =
+        0,  // TODO(b/215292569): Orientation needs to follow UI specs.
+            // Currently only rotates the candidates horizontally.
+    kVertical,
+  };
+
   METADATA_HEADER(SuggestionWindowView);
 
   // Creates a bubble widget containing a SuggestionWindowView.  Returns a
   // pointer to the contained view.
   static SuggestionWindowView* Create(gfx::NativeView parent,
-                                      AssistiveDelegate* delegate);
+                                      AssistiveDelegate* delegate,
+                                      Orientation orientation);
 
   // views::BubbleDialogDelegateView:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
@@ -72,7 +80,9 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   void OnThemeChanged() override;
 
  private:
-  SuggestionWindowView(gfx::NativeView parent, AssistiveDelegate* delegate);
+  SuggestionWindowView(gfx::NativeView parent,
+                       AssistiveDelegate* delegate,
+                       Orientation orientation);
   SuggestionWindowView(const SuggestionWindowView&) = delete;
   SuggestionWindowView& operator=(const SuggestionWindowView&) = delete;
   ~SuggestionWindowView() override;
