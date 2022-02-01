@@ -881,6 +881,16 @@ BrowserView::~BrowserView() {
 }
 
 // static
+const BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
+    content::WebContents* web_contents) {
+  auto* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      web_contents->GetNativeView());
+  return widget ? BrowserView::GetBrowserViewForNativeWindow(
+                      widget->GetNativeWindow())
+                : nullptr;
+}
+
+// static
 BrowserView* BrowserView::GetBrowserViewForNativeWindow(
     gfx::NativeWindow window) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);

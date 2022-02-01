@@ -211,6 +211,31 @@ TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
   EXPECT_EQ(contents_bounds.ToString(), find_bar_bounds.ToString());
 }
 
+// Tests that a browser window is correctly associated to a WebContents that
+// belongs to that window's UI hierarchy.
+TEST_F(BrowserViewTest, FindBrowserWindowForWebContents) {
+  auto web_view = std::make_unique<views::WebView>(browser()->profile());
+  ASSERT_NE(nullptr, web_view->GetWebContents());
+
+  // If the web contents does not belong browser's UI hierarchy there should not
+  // be a browser window associated with the contents.
+  EXPECT_EQ(nullptr, BrowserWindow::FindBrowserWindowWithWebContents(
+                         web_view->GetWebContents()));
+
+  // After adding the web contents to the browser's UI hierarchy the browser
+  // window should be correctly associated with the contents.
+  auto* web_view_ptr = browser_view()->AddChildView(std::move(web_view));
+  EXPECT_EQ(browser()->window(),
+            BrowserWindow::FindBrowserWindowWithWebContents(
+                web_view_ptr->GetWebContents()));
+
+  // Removing the web contents from the browser's UI hierarchy should
+  // disassociate it with the browser window.
+  web_view = browser_view()->RemoveChildViewT(web_view_ptr);
+  EXPECT_EQ(nullptr, BrowserWindow::FindBrowserWindowWithWebContents(
+                         web_view->GetWebContents()));
+}
+
 // On macOS, most accelerators are handled by CommandDispatcher.
 #if !BUILDFLAG(IS_MAC)
 // Test that repeated accelerators are processed or ignored depending on the
