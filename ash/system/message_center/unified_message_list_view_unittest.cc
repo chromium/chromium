@@ -950,7 +950,9 @@ TEST_F(RefreshedUnifiedMessageListView,
 
 // Tests that collapsing a notification while it is being moved automatically
 // completes both animations.
-TEST_F(RefreshedUnifiedMessageListView, CollapseDuringMoveNoAnimation) {
+// TODO(crbug.com/1292816): Test is flaky.
+TEST_F(RefreshedUnifiedMessageListView,
+       DISABLED_CollapseDuringMoveNoAnimation) {
   auto to_be_removed_notification =
       AddNotification(/*pinned=*/false, /*expandable=*/true);
   auto to_be_collapsed_notification =
