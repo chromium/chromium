@@ -193,6 +193,8 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
+  bool initialized() const { return initialized_; }
+
  private:
   // Returns the path to the file that is served by the embedded test server
   // under the given name.

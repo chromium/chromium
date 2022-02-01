@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
+#include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -61,8 +62,6 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
     challenge_response_auth_keys_loader_->SetMaxWaitTimeForTesting(
         base::TimeDelta::Max());
 
-    certificate_provider_extension_ =
-        std::make_unique<TestCertificateProviderExtension>(GetProfile());
     extension_force_install_mixin_.InitWithDeviceStateMixin(
         GetProfile(), &device_state_mixin_);
 
@@ -71,7 +70,6 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
   }
 
   void TearDownOnMainThread() override {
-    certificate_provider_extension_.reset();
     if (!should_delete_loader_after_shutdown_)
       challenge_response_auth_keys_loader_.reset();
     OobeBaseTest::TearDownOnMainThread();
@@ -109,12 +107,9 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
   }
 
   void InstallExtension(bool wait_on_extension_loaded) {
-    EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
-        TestCertificateProviderExtension::GetExtensionSourcePath(),
-        TestCertificateProviderExtension::GetExtensionPemPath(),
-        wait_on_extension_loaded
-            ? ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad
-            : ExtensionForceInstallMixin::WaitMode::kPrefSet));
+    test_certificate_provider_extension_mixin_.ForceInstall(
+        GetProfile(), /*wait_on_extension_loaded=*/wait_on_extension_loaded,
+        /*immediately_provide_certificates=*/wait_on_extension_loaded);
   }
 
   std::vector<ChallengeResponseKey> LoadChallengeResponseKeys() {
@@ -158,9 +153,11 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
 
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  std::unique_ptr<TestCertificateProviderExtension>
-      certificate_provider_extension_;
+
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
+  TestCertificateProviderExtensionMixin
+      test_certificate_provider_extension_mixin_{
+          &mixin_host_, &extension_force_install_mixin_};
 
   std::unique_ptr<ChallengeResponseAuthKeysLoader>
       challenge_response_auth_keys_loader_;

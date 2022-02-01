@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
+#include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/ash/login/saml/test_client_cert_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -67,8 +68,6 @@ class SecurityTokenSamlTest : public OobeBaseTest {
   void SetUpOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
 
-  void TearDownOnMainThread() override;
-
   void StartSignIn();
 
   // Waits until the security token PIN dialog appears on the login screen.
@@ -114,8 +113,9 @@ class SecurityTokenSamlTest : public OobeBaseTest {
   TestClientCertSamlIdpMixin saml_idp_mixin_;
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  std::unique_ptr<TestCertificateProviderExtension>
-      certificate_provider_extension_;
+  TestCertificateProviderExtensionMixin
+      test_certificate_provider_extension_mixin_{
+          &mixin_host_, &extension_force_install_mixin_};
   int pin_dialog_shown_count_ = 0;
   base::RunLoop* pin_dialog_shown_run_loop_ = nullptr;
   base::WeakPtrFactory<SecurityTokenSamlTest> weak_factory_{this};

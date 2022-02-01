@@ -121,11 +121,6 @@ void SecurityTokenSamlTest::SetUpInProcessBrowserTestFixture() {
       &policy_provider_);
 }
 
-void SecurityTokenSamlTest::TearDownOnMainThread() {
-  certificate_provider_extension_.reset();
-  OobeBaseTest::TearDownOnMainThread();
-}
-
 void SecurityTokenSamlTest::StartSignIn() {
   LoginDisplayHost::default_host()
       ->GetOobeUI()
@@ -163,17 +158,13 @@ std::string SecurityTokenSamlTest::GetCorrectPin() const {
 
 // Configures and installs the test certificate provider extension.
 void SecurityTokenSamlTest::PrepareCertProviderExtension() {
-  certificate_provider_extension_ =
-      std::make_unique<TestCertificateProviderExtension>(
-          GetOriginalSigninProfile());
-  certificate_provider_extension_->set_require_pin(kCorrectPin);
   extension_force_install_mixin_.InitWithMockPolicyProvider(
       GetOriginalSigninProfile(), &policy_provider_);
-  EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
-      TestCertificateProviderExtension::GetExtensionSourcePath(),
-      TestCertificateProviderExtension::GetExtensionPemPath(),
-      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
-  certificate_provider_extension_->TriggerSetCertificates();
+  ASSERT_NO_FATAL_FAILURE(
+      test_certificate_provider_extension_mixin_.ForceInstall(
+          GetOriginalSigninProfile()));
+  test_certificate_provider_extension_mixin_.extension()->set_require_pin(
+      kCorrectPin);
 }
 
 // Sets up the client certificate to be automatically selected for the SAML
