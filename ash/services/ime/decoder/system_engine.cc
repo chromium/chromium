@@ -16,7 +16,7 @@ namespace ime {
 SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
   auto* decoder = ImeDecoder::GetInstance();
 
-  if (decoder->GetStatus() != ImeDecoder::Status::kSuccess) {
+  if (!decoder->IsReady()) {
     LOG(WARNING) << "SystemEngine INIT INCOMPLETE.";
     return;
   }

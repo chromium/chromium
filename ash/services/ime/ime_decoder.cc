@@ -53,10 +53,10 @@ void ImeLoggerBridge(int severity, const char* message) {
 
 }  // namespace
 
-ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
+ImeDecoder::ImeDecoder() : is_ready_(false) {
   if (g_fake_decoder_entry_points_for_testing) {
     entry_points_ = *g_fake_decoder_entry_points_for_testing;
-    status_ = Status::kSuccess;
+    is_ready_ = true;
     return;
   }
 
@@ -67,7 +67,6 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
   if (!library.is_valid()) {
     LOG(ERROR) << "Failed to load decoder shared library from: " << path
                << ", error: " << library.GetError()->ToString();
-    status_ = Status::kLoadLibraryFailed;
     return;
   }
 
@@ -93,7 +92,6 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
   if (!entry_points_.init_once || !entry_points_.supports ||
       !entry_points_.activate_ime || !entry_points_.process ||
       !entry_points_.close) {
-    status_ = Status::kFunctionMissing;
     return;
   }
 
@@ -107,7 +105,7 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
   }
 
   library_ = std::move(library);
-  status_ = Status::kSuccess;
+  is_ready_ = true;
 }
 
 ImeDecoder::~ImeDecoder() = default;
@@ -117,12 +115,12 @@ ImeDecoder* ImeDecoder::GetInstance() {
   return instance.get();
 }
 
-ImeDecoder::Status ImeDecoder::GetStatus() const {
-  return status_;
+bool ImeDecoder::IsReady() const {
+  return is_ready_;
 }
 
 ImeDecoder::EntryPoints ImeDecoder::GetEntryPoints() {
-  DCHECK(status_ == Status::kSuccess);
+  DCHECK(is_ready_);
   return entry_points_;
 }
 
