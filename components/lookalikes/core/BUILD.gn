@@ -24,6 +24,7 @@ static_library("core") {
     "//components/url_formatter/spoof_checks/top_domains:common",
     "//components/url_formatter/spoof_checks/top_domains:top500_domains",
     "//components/url_formatter/spoof_checks/top_domains:top500_domains_header",
+    "//components/version_info:channel",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -39,6 +40,7 @@ source_set("unit_tests") {
     ":core",
     ":features",
     "//components/reputation/core",
+    "//components/version_info:channel",
     "//net:test_support",
     "//testing/gtest",
   ]

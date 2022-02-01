@@ -9,7 +9,10 @@
 #include "components/lookalikes/core/features.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/reputation/core/safety_tips_config.h"
+#include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using version_info::Channel;
 
 std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
   switch (type) {
@@ -506,53 +509,66 @@ TEST(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
   config->set_heuristic(
       reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP);
 
-  // Minimum rollout percentages to enable a heuristic on each site:
+  // Minimum rollout percentages to enable a heuristic on each site on Stable
+  // channel:
   // example1.com: 79%
   // example2.com: 16%
   // example3.com: 36%
 
-  // Slowly ramp up the launch and cover more sites.
+  // Slowly ramp up the launch and cover more sites on Stable channel.
   config->set_launch_percentage(0);
   EXPECT_FALSE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example1.com"));
+      "example1.com", Channel::STABLE));
   EXPECT_FALSE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example2.com"));
+      "example2.com", Channel::STABLE));
   EXPECT_FALSE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example3.com"));
+      "example3.com", Channel::STABLE));
 
   config->set_launch_percentage(25);
   EXPECT_FALSE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example1.com"));
+      "example1.com", Channel::STABLE));
   EXPECT_TRUE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example2.com"));
+      "example2.com", Channel::STABLE));
   EXPECT_FALSE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example3.com"));
+      "example3.com", Channel::STABLE));
 
   config->set_launch_percentage(50);
   EXPECT_FALSE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example1.com"));
+      "example1.com", Channel::STABLE));
   EXPECT_TRUE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example2.com"));
+      "example2.com", Channel::STABLE));
   EXPECT_TRUE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example3.com"));
+      "example3.com", Channel::STABLE));
 
   config->set_launch_percentage(100);
   EXPECT_TRUE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example1.com"));
+      "example1.com", Channel::STABLE));
   EXPECT_TRUE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example2.com"));
+      "example2.com", Channel::STABLE));
   EXPECT_TRUE(IsHeuristicEnabledForHostname(
       &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
-      "example3.com"));
+      "example3.com", Channel::STABLE));
+
+  // On Beta, launch is always at 50%.
+  config->set_launch_percentage(0);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example1.com", Channel::BETA));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example2.com", Channel::BETA));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example3.com", Channel::BETA));
 }

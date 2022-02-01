@@ -50,11 +50,15 @@ message HeuristicLaunchConfig {
   }
   optional Heuristic heuristic = 1;
 
-  // Percentage of all sites this heuristic should be enabled on.
-  // A value of 0 means the heuristic isn't enabled on any site.
-  // A value of 100 means the heuristic is enabled on all sites.
-  // The determination of which sites are enabled is based on hash prefixes of
-  // the sites.
+  // Percentage of all sites this heuristic should be enabled on the Stable
+  // Channel. The determination of which sites are enabled is based on hash
+  // prefixes of the sites.
+  // A value of 0 means the heuristic isn't enabled on any site on Stable.
+  // A value of 100 means the heuristic is enabled on all sites on Stable.
+  //
+  // If a launch config is found for a heuristic, the heuristic is enabled for
+  // 90% of sites on Canary/Dev and 50% on Beta, regardless of the value of this
+  // field.
   optional uint32 launch_percentage = 2;
 }
 

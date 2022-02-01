@@ -98,6 +98,11 @@ Top500DomainsParams* GetTopDomainParams() {
 // still displayed in punycode, but don't show an interstitial.
 const size_t kMinimumE2LDLengthToShowPunycodeInterstitial = 2;
 
+// Default launch percentage of a new heuristic on Canary/Dev and Beta. These
+// are used if there is a launch config for the heuristic in the proto.
+const int kDefaultLaunchPercentageOnCanaryDev = 90;
+const int kDefaultLaunchPercentageOnBeta = 50;
+
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
                     const url_formatter::Skeletons& skeletons2) {
   DCHECK(!skeletons1.empty());
@@ -1134,7 +1139,8 @@ void ResetTop500DomainsParamsForTesting() {
 bool IsHeuristicEnabledForHostname(
     const reputation::SafetyTipsConfig* config_proto,
     const reputation::HeuristicLaunchConfig::Heuristic heuristic,
-    const std::string& lookalike_etld_plus_one) {
+    const std::string& lookalike_etld_plus_one,
+    version_info::Channel channel) {
   DCHECK(!lookalike_etld_plus_one.empty());
   const unsigned char* bytes =
       reinterpret_cast<const unsigned char*>(lookalike_etld_plus_one.c_str());
@@ -1145,7 +1151,23 @@ bool IsHeuristicEnabledForHostname(
   for (const reputation::HeuristicLaunchConfig& config :
        config_proto->launch_config()) {
     if (heuristic == config.heuristic()) {
-      return config.launch_percentage() > cohort;
+      switch (channel) {
+        // Enable by default on local builds.
+        case version_info::Channel::UNKNOWN:
+          return true;
+
+        // Use pre-defined launch percentages for Canary/Dev and Beta. Use the
+        // launch percentage from config for Stable.
+        case version_info::Channel::CANARY:
+        case version_info::Channel::DEV:
+          return kDefaultLaunchPercentageOnCanaryDev > cohort;
+
+        case version_info::Channel::BETA:
+          return kDefaultLaunchPercentageOnBeta > cohort;
+
+        case version_info::Channel::STABLE:
+          return config.launch_percentage() > cohort;
+      }
     }
   }
   return false;

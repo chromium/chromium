@@ -13,6 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reputation/core/safety_tips.pb.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/version_info/channel.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -240,6 +241,7 @@ void ResetTop500DomainsParamsForTesting();
 bool IsHeuristicEnabledForHostname(
     const reputation::SafetyTipsConfig* config_proto,
     reputation::HeuristicLaunchConfig::Heuristic heuristic,
-    const std::string& lookalike_etld_plus_one);
+    const std::string& lookalike_etld_plus_one,
+    version_info::Channel channel);
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_
