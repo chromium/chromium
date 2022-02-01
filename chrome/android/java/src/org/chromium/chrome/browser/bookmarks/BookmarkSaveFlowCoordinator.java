@@ -61,7 +61,7 @@ public class BookmarkSaveFlowCoordinator {
      */
     public BookmarkSaveFlowCoordinator(@NonNull Context context,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull SubscriptionsManager subscriptionsManager,
+            @Nullable SubscriptionsManager subscriptionsManager,
             @NonNull UserEducationHelper userEducationHelper) {
         mContext = context;
         mBottomSheetController = bottomSheetController;

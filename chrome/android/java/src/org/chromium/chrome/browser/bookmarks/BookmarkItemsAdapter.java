@@ -24,12 +24,14 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
@@ -74,6 +76,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
+
+    private SubscriptionsManager mSubscriptionsManager;
 
     private BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
@@ -132,6 +136,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                         GlobalDiscardableReferencePool.getReferencePool());
         mCommerceSubscriptionsServiceFactory = new CommerceSubscriptionsServiceFactory();
         mSnackbarManager = snackbarManager;
+
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            mSubscriptionsManager = mCommerceSubscriptionsServiceFactory.getForLastUsedProfile()
+                                            .getSubscriptionsManager();
+        }
     }
 
     /**
@@ -247,9 +256,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 if (BookmarkFeatures.isBookmarksVisualRefreshEnabled()) {
                     vh = createViewHolderHelper(parent, R.layout.power_bookmark_shopping_item_row);
                     ((PowerBookmarkShoppingItemRow) vh.itemView)
-                            .init(mImageFetcher, mDelegate.getModel(),
-                                    mCommerceSubscriptionsServiceFactory.getForLastUsedProfile()
-                                            .getSubscriptionsManager(),
+                            .init(mImageFetcher, mDelegate.getModel(), mSubscriptionsManager,
                                     mSnackbarManager);
                 } else {
                     vh = createViewHolderHelper(parent, R.layout.bookmark_item_row);

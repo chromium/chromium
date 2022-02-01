@@ -90,6 +90,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -1758,7 +1759,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             display.addObserver(mDisplayAndroidObserver);
 
             CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
-            mSubscriptionsManager = factory.getForLastUsedProfile().getSubscriptionsManager();
+
+            if (ShoppingFeatures.isShoppingListEnabled()) {
+                mSubscriptionsManager = factory.getForLastUsedProfile().getSubscriptionsManager();
+            }
         }
 
         // Make sure the user is reporting into one of the feed spinner groups, so that we can
