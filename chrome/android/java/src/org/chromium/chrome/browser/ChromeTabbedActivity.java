@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -948,6 +949,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!isWarmOnResume()) {
             SuggestionsMetrics.recordArticlesListVisible();
         }
+
+        FeatureNotificationUtils.handleIntentIfApplicable(getIntent());
     }
 
     @Override

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
+import org.chromium.chrome.browser.app.feature_guide.notifications.FeatureNotificationGuideDelegate;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantHistoryDeletionObserver;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
@@ -48,6 +49,8 @@ import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideService;
+import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideServiceFactory;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -69,6 +72,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
@@ -285,6 +289,7 @@ public class ProcessInitializationHandler {
                 () -> PlatformContentCaptureController.getInstance()));
         HistoryDeletionBridge.getInstance().addObserver(
                 new AutofillAssistantHistoryDeletionObserver());
+        FeatureNotificationGuideService.setDelegate(new FeatureNotificationGuideDelegate());
     }
 
     /**
@@ -463,6 +468,12 @@ public class ProcessInitializationHandler {
             if (PriceTrackingUtilities.isPriceTrackingEligible()
                     && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
                 ShoppingPersistedTabData.onDeferredStartup();
+            }
+        });
+        deferredStartupHandler.addDeferredTask(() -> {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEATURE_NOTIFICATION_GUIDE)) {
+                FeatureNotificationGuideServiceFactory.getForProfile(
+                        Profile.getLastUsedRegularProfile());
             }
         });
     }

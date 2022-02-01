@@ -54,6 +54,7 @@ FeatureNotificationGuideServiceImpl::FeatureNotificationGuideServiceImpl(
       clock_(clock),
       config_(config) {
   DCHECK(notification_scheduler_);
+  DCHECK(delegate_);
   delegate_->SetService(this);
 }
 
