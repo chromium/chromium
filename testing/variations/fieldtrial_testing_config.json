@@ -1750,6 +1750,21 @@
             ]
         }
     ],
+    "CleanUndecryptablePasswordsLinuxDuringInitialSync": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncUndecryptablePasswordsLinux"
+                    ]
+                }
+            ]
+        }
+    ],
     "CombinedNavigationOptimizations": [
         {
             "platforms": [
