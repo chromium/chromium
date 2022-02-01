@@ -26,8 +26,8 @@ template("cros_toolchain") {
       extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
     }
 
-    # Relativize path if compiler is specified such that not to lookup from $PATH
-    # and cc/cxx does not contain additional flags.
+    # Relativize path if compiler is specified such that not to lookup from
+    # $PATH and cc/cxx does not contain additional flags.
     if (cc != get_path_info(cc, "file") && string_replace(cc, " ", "") == cc) {
       cc = rebase_path(cc, root_build_dir)
     }
@@ -68,10 +68,6 @@ cros_toolchain("target") {
     clang_use_chrome_plugins = false
     current_cpu = target_cpu
     current_os = "chromeos"
-    is_clang = is_clang
-    use_debug_fission = use_debug_fission
-    use_gold = use_gold
-    use_sysroot = use_sysroot
     sysroot = target_sysroot
   }
 }
@@ -103,7 +99,6 @@ cros_toolchain("nacl_bootstrap") {
     clang_use_chrome_plugins = false
     current_cpu = target_cpu
     current_os = "chromeos"
-    is_clang = is_clang
     use_debug_fission = false
     use_gold = false
     use_sysroot = false
@@ -135,7 +130,6 @@ cros_toolchain("host") {
     is_clang = cros_host_is_clang
     current_cpu = host_cpu
     current_os = "linux"
-    use_sysroot = use_sysroot
     sysroot = cros_host_sysroot
   }
 }
@@ -170,7 +164,6 @@ cros_toolchain("v8_snapshot") {
     }
     v8_current_cpu = v8_target_cpu
     current_os = "linux"
-    use_sysroot = use_sysroot
     sysroot = cros_v8_snapshot_sysroot
   }
 }
@@ -225,9 +218,6 @@ if (also_build_lacros_chrome_for_architecture != "") {
       cc_wrapper = ""
       needs_gomacc_path_arg = true
       clang_use_chrome_plugins = false
-      is_clang = is_clang
-      use_debug_fission = use_debug_fission
-      use_gold = use_gold
     }
   }
 }
