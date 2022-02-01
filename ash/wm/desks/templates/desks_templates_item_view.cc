@@ -570,7 +570,8 @@ void DesksTemplatesItemView::MaybeLaunchTemplate(bool should_delay) {
 #endif
 
   DesksTemplatesPresenter::Get()->LaunchDeskTemplate(
-      desk_template_->uuid().AsLowercaseString(), delay);
+      desk_template_->uuid().AsLowercaseString(), delay,
+      GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 
 void DesksTemplatesItemView::OnTemplateNameChanged(

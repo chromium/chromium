@@ -18,6 +18,7 @@
 #include "ash/style/close_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -822,6 +823,41 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
   EXPECT_EQ(3ul, desks_controller->desks().size());
   EXPECT_EQ(2, desks_controller->GetActiveDeskIndex());
   EXPECT_TRUE(InOverviewSession());
+}
+
+// Tests that launching templates from the templates grid nudges the new desk
+// name view.
+TEST_F(DesksTemplatesTest, LaunchTemplateNudgesNewDeskName) {
+  // Save an entry in the templates grid.
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  DesksController* desks_controller = DesksController::Get();
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+
+  // Click on the "Use template" button to launch the template.
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
+      /*grid_item_index=*/0);
+  ClickOnView(DesksTemplatesItemViewTestApi(item_view).launch_button());
+  WaitForDesksTemplatesUI();
+
+  // Verify that we have created and activated a new desk.
+  EXPECT_EQ(2ul, desks_controller->desks().size());
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+
+  // Launching a template creates and activates a new desk without exiting
+  // overview mode, so we check that we're still in overview.
+  EXPECT_TRUE(InOverviewSession());
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  DeskNameView* desk_name_view =
+      overview_grid->desks_bar_view()->mini_views().back()->desk_name_view();
+
+  // Expect that the new desk name view has focus.
+  EXPECT_TRUE(overview_grid->IsDeskNameBeingModified());
+  EXPECT_TRUE(desk_name_view->HasFocus());
+  EXPECT_TRUE(desk_name_view->HasSelection());
+  EXPECT_EQ(u"template", desk_name_view->GetText());
 }
 
 // Tests that the order of DesksTemplatesItemView is in order.

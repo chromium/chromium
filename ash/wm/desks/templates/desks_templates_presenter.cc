@@ -19,6 +19,7 @@
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/bind.h"
@@ -47,12 +48,22 @@ desks_storage::DeskModel* GetDeskModel() {
 // template. Launches apps into the active desk.
 void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
                                  base::TimeDelta delay,
+                                 aura::Window* root_window,
                                  bool on_create_activate_success) {
   if (!on_create_activate_success)
     return;
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
       std::move(desk_template), delay);
+
+  OverviewSession* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  DesksBarView* desks_bar_view = const_cast<DesksBarView*>(
+      overview_session->GetGridWithRootWindow(root_window)->desks_bar_view());
+  desks_bar_view->set_should_name_nudge(true);
+  desks_bar_view->UpdateNewMiniViews(
+      /*initializing_bar_view=*/false,
+      /*is_expanding_bar_view*/ true);
 }
 
 }  // namespace
@@ -134,7 +145,8 @@ void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
 
 void DesksTemplatesPresenter::LaunchDeskTemplate(
     const std::string& template_uuid,
-    base::TimeDelta delay) {
+    base::TimeDelta delay,
+    aura::Window* root_window) {
   // If we are at the max desk limit (currently is 8), a new desk
   // cannot be created, and a toast will be displayed to the user.
   if (!DesksController::Get()->CanCreateDesks()) {
@@ -154,7 +166,7 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
   GetDeskModel()->GetEntryByUUID(
       template_uuid,
       base::BindOnce(&DesksTemplatesPresenter::OnGetTemplateForDeskLaunch,
-                     weak_ptr_factory_.GetWeakPtr(), delay));
+                     weak_ptr_factory_.GetWeakPtr(), delay, root_window));
 }
 
 void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate(
@@ -254,6 +266,7 @@ void DesksTemplatesPresenter::OnDeleteEntry(
 
 void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
     base::TimeDelta delay,
+    aura::Window* root_window,
     desks_storage::DeskModel::GetEntryByUuidStatus status,
     std::unique_ptr<DeskTemplate> entry) {
   if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk)
@@ -271,8 +284,8 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   // function in the anonymous namespace.
   const auto template_name = entry->template_name();
   DesksController::Get()->CreateAndActivateNewDeskForTemplate(
-      template_name,
-      base::BindOnce(&OnNewDeskCreatedForTemplate, std::move(entry), delay));
+      template_name, base::BindOnce(&OnNewDeskCreatedForTemplate,
+                                    std::move(entry), delay, root_window));
 
   if (on_update_ui_closure_for_testing)
     std::move(on_update_ui_closure_for_testing).Run();
