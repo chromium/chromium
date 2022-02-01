@@ -2260,7 +2260,9 @@ TEST_P(HotseatWidgetTest, AnimationAfterDrag) {
 
 // Tests that hotseat bounds don't jump when the hotseat widget is translated
 // when a transitionj animation starts.
-TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
+// Flaky https://crbug.com/1292675
+TEST_P(HotseatWidgetTest,
+       DISABLED_InitialAnimationPositionWithNonIdentityTransform) {
   TabletModeControllerTestApi().EnterTabletMode();
   // Add an app to shelf - the app will be used to track the shelf view position
   // throughout the test.
