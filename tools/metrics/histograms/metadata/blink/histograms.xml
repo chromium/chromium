@@ -2565,7 +2565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Allow2"
-    enum="FeaturePolicyFeature" expires_after="2022-05-30">
+    enum="FeaturePolicyFeature" expires_after="2022-07-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -2577,7 +2577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Header2"
-    enum="FeaturePolicyFeature" expires_after="2022-05-30">
+    enum="FeaturePolicyFeature" expires_after="2022-07-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

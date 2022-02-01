@@ -1743,7 +1743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpResponseCode.CustomHttpClient" enum="HttpResponseCode"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>wenyufu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
@@ -1826,7 +1826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NeedsHWCAP2Workaround" enum="BooleanBroken"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>davidben@chromium.org</owner>
   <summary>
     Records, on startup, for ARM devices running Android, whether the kernel is
@@ -4776,7 +4776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLVersionGoogle" enum="SSLOrQUICVersion"
-    expires_after="2022-05-11">
+    expires_after="2022-07-31">
   <owner>davidben@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -5058,7 +5058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLRequest.ReferrerHasInformativePath"
-    enum="BooleanPathIsInformative" expires_after="2022-05-31">
+    enum="BooleanPathIsInformative" expires_after="2022-07-31">
 <!-- Name completed by histogram_suffixes name="ReferrerPolicySameOrigin" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -5072,7 +5072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLRequest.ReferrerPolicyForRequest"
-    enum="URLRequestReferrerPolicy" expires_after="2022-05-31">
+    enum="URLRequestReferrerPolicy" expires_after="2022-07-31">
 <!-- Name completed by histogram_suffixes name="ReferrerPolicySameOrigin" -->
 
   <owner>davidvc@chromium.org</owner>

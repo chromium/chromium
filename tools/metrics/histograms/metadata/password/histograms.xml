@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.ClearedOnStartup"
-    enum="PasswordAccountStoreClearedOnStartup" expires_after="2022-05-31">
+    enum="PasswordAccountStoreClearedOnStartup" expires_after="2022-07-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.ClearedOptInForAllAccounts"
-    units="accounts" expires_after="2022-05-31">
+    units="accounts" expires_after="2022-07-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted"
-    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-05-31">
+    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-07-31">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
   <owner>mamir@chromium.org</owner>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered"
-    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-05-31">
+    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-07-31">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
   <owner>mamir@chromium.org</owner>
@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn"
-    units="accounts" expires_after="2022-05-31">
+    units="accounts" expires_after="2022-07-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut"
-    units="accounts" expires_after="2022-05-31">
+    units="accounts" expires_after="2022-07-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut"
-    enum="Boolean" expires_after="2022-05-31">
+    enum="Boolean" expires_after="2022-07-31">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
   <owner>mamir@chromium.org</owner>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="PasswordManager.AccountStorageUserStateDuration"
-    units="ms" expires_after="2022-05-31">
+    units="ms" expires_after="2022-07-31">
 <!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
 
   <owner>mamir@chromium.org</owner>
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn"
-    units="credentials" expires_after="2022-05-31">
+    units="credentials" expires_after="2022-07-31">
   <owner>treib@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -487,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreCredentialsAfterOptIn"
-    units="credentials" expires_after="2022-05-31">
+    units="credentials" expires_after="2022-07-31">
   <owner>treib@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -1099,7 +1099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsCountFromAccountStoreAfterUnlock"
-    units="credentials" expires_after="2022-05-31">
+    units="credentials" expires_after="2022-07-31">
   <owner>fhorschig@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -1390,7 +1390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.iOS.InfoBar.PasswordSave" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>djean@chromium.org</owner>
   <owner>sczs@google.com</owner>
   <summary>
@@ -1399,7 +1399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.iOS.InfoBar.PasswordUpdate" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>djean@chromium.org</owner>
   <owner>sczs@google.com</owner>
   <summary>
@@ -1734,7 +1734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordReuse.PasswordFieldDetected"
-    enum="PasswordReusePasswordFieldDetected" expires_after="2022-05-30">
+    enum="PasswordReusePasswordFieldDetected" expires_after="2022-07-31">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2175,7 +2175,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-31">
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-07-31">
   <owner>kazinova@google.com</owner>
   <owner>khamutov@google.com</owner>
   <summary>
@@ -2422,7 +2422,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-31">
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-07-31">
   <owner>kazinova@google.com</owner>
   <owner>khamutov@google.com</owner>
   <summary>

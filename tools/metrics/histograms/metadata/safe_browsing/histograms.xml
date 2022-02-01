@@ -1100,7 +1100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionTelemetry.UploadSize" units="bytes"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1111,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionTelemetry.UploadSuccess"
-    enum="BooleanSuccess" expires_after="2022-06-01">
+    enum="BooleanSuccess" expires_after="2022-07-31">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1480,7 +1480,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse"
-    enum="BooleanCompleted" expires_after="2022-05-26">
+    enum="BooleanCompleted" expires_after="2022-07-31">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1493,7 +1493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RendererThrottle.TotalDelay" units="ms"
-    expires_after="2022-05-26">
+    expires_after="2022-07-31">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

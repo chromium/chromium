@@ -642,7 +642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly"
-    units="boolean" expires_after="2022-05-29">
+    units="boolean" expires_after="2022-07-31">
   <owner>penghuang@chromium.org</owner>
   <owner>herb@google.com</owner>
   <summary>
@@ -982,7 +982,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2022-06-01">
+<histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2022-07-31">
   <owner>sadrul@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>

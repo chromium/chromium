@@ -1133,7 +1133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormCacheSize" units="forms"
-    expires_after="2022-05-31">
+    expires_after="2022-07-31">
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2998,7 +2998,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-07-31">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -3246,7 +3246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.VirtualCardManualFallbackBubble.Shown"
-    enum="BooleanPreviouslyShown" expires_after="2022-04-01">
+    enum="BooleanPreviouslyShown" expires_after="2022-07-31">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>

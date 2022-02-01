@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.AbortTime" units="ms"
-    expires_after="2022-03-31">
+    expires_after="2022-07-31">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.NumOwnersWithInterestGroups"
-    units="owners" expires_after="2022-03-31">
+    units="owners" expires_after="2022-07-31">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -1160,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AutocompleteActionPredictor.NoStatePrefetchStatus"
     enum="AutocompleteActionPredictorPredictionStatus"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -3306,7 +3306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-07-31">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5458,7 +5458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExploreSites.RequestStatus" enum="ExploreSitesRequestStatus"
-    expires_after="2022-04-24">
+    expires_after="2022-07-31">
   <owner>dimich@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <summary>
@@ -7292,7 +7292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
-    units="ms" expires_after="2022-05-22">
+    units="ms" expires_after="2022-07-31">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <summary>
@@ -14591,7 +14591,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpgradeDetector.DaysBeforeUpgrade" units="days"
-    expires_after="2022-05-31">
+    expires_after="2022-07-31">
   <owner>emshack@chromium.org</owner>
   <owner>pbos@chromium.org</owner>
   <summary>
@@ -14604,7 +14604,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpgradeDetector.HoursBeforeUpgrade" units="hours"
-    expires_after="2022-05-31">
+    expires_after="2022-07-31">
   <owner>emshack@chromium.org</owner>
   <owner>pbos@chromium.org</owner>
   <summary>

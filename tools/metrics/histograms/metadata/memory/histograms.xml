@@ -2258,7 +2258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.MemoryReclaim" units="microseconds"
-    expires_after="M102">
+    expires_after="2022-07-31">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>

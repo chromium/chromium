@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>seblalancette@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Banner.Event"
-    enum="MobileMessagesBannerEvent" expires_after="2022-05-27">
+    enum="MobileMessagesBannerEvent" expires_after="2022-07-31">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Event"
-    enum="MobileMessagesPasswordsModalEvent" expires_after="2022-05-22">
+    enum="MobileMessagesPasswordsModalEvent" expires_after="2022-07-31">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>seblalancette@chromium.org</owner>
   <owner>chrome-sharing-core@google.com</owner>
   <summary>

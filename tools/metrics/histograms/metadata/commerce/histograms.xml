@@ -89,7 +89,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Carts.FormSubmitIsTransaction"
-    units="BooleanIsTransaction" expires_after="2022-06-01">
+    units="BooleanIsTransaction" expires_after="2022-07-31">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -100,7 +100,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Carts.XHRIsAddToCart" units="BooleanIsAddToCart"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -170,7 +170,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelCreated" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -194,7 +194,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.SystemNotificationEnabled" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

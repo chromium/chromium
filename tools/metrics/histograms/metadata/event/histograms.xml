@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.TimeToHandled2"
-    units="microseconds" expires_after="2022-06-01">
+    units="microseconds" expires_after="2022-07-31">
   <owner>flackr@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -632,7 +632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.GpuSwap2" units="microseconds"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollInertial.Touch.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2022-06-01">
+    units="microseconds" expires_after="2022-07-31">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1087,7 +1087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.TimeToHandled2"
-    units="microseconds" expires_after="2022-06-01">
+    units="microseconds" expires_after="2022-07-31">
   <owner>flackr@chromium.org</owner>
   <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2022-06-01">
+    units="microseconds" expires_after="2022-07-31">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

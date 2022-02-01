@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2022-06-01">
+<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2022-07-31">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -970,7 +970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1051,7 +1051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Metal.ReadWriteTextureSupport"
-    enum="MetalReadWriteTextureSupportTier" expires_after="2022-05-31">
+    enum="MetalReadWriteTextureSupportTier" expires_after="2022-07-31">
   <owner>cwallez@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

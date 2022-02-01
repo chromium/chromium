@@ -729,7 +729,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderRemoved"
-    enum="WebRequest.RequestHeader" expires_after="2022-06-01">
+    enum="WebRequest.RequestHeader" expires_after="2022-07-31">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -777,7 +777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RulesetReindexSuccessful"
-    enum="BooleanSuccess" expires_after="2022-06-01">
+    enum="BooleanSuccess" expires_after="2022-07-31">
   <owner>lazyboy@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>

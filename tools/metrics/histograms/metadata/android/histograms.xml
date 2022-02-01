@@ -1641,7 +1641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued" enum="MessageIdentifier"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -1654,7 +1654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Hidden" enum="MessageIdentifier"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -1682,7 +1682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Visible" enum="MessageIdentifier"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2243,7 +2243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PhotoPicker.DialogAction"
-    enum="PhotoPickerDialogAction" expires_after="2022-06-01">
+    enum="PhotoPickerDialogAction" expires_after="2022-07-31">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -2501,7 +2501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.EventsV2"
-    enum="AndroidSearchEngineChoiceEventsV2" expires_after="2022-06-01">
+    enum="AndroidSearchEngineChoiceEventsV2" expires_after="2022-07-31">
   <owner>wylieb@chromium.org</owner>
   <owner>pavely@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
@@ -2512,7 +2512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.SearchEngineBeforeChoicePrompt"
-    enum="OmniboxSearchEngineType" expires_after="2022-06-01">
+    enum="OmniboxSearchEngineType" expires_after="2022-07-31">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
@@ -2759,7 +2759,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2771,7 +2771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadResponseCode2"
-    enum="SurveyDownloadResponseCodes2" expires_after="2022-06-01">
+    enum="SurveyDownloadResponseCodes2" expires_after="2022-07-31">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2784,7 +2784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.InfoBarClosingState"
-    enum="InfoBarClosingStates" expires_after="2022-06-01">
+    enum="InfoBarClosingStates" expires_after="2022-07-31">
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2832,7 +2832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyFilteringResults"
-    enum="SurveyFilteringResult" expires_after="2022-06-01">
+    enum="SurveyFilteringResult" expires_after="2022-07-31">
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2862,7 +2862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TaskScheduling.BootstrapTaskRunnerType"
-    enum="BootstrapTaskRunnerType" expires_after="2022-06-01">
+    enum="BootstrapTaskRunnerType" expires_after="2022-07-31">
   <owner>blundell@chromium.org</owner>
   <owner>scheduler-dev@chromium.org</owner>
   <summary>
@@ -2873,7 +2873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TaskScheduling.PreNativeTaskPostType"
-    enum="PreNativeTaskPostType" expires_after="2022-06-01">
+    enum="PreNativeTaskPostType" expires_after="2022-07-31">
   <owner>blundell@chromium.org</owner>
   <owner>scheduler-dev@chromium.org</owner>
   <summary>

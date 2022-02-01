@@ -1542,7 +1542,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.MachineLevelUserCloudPolicyEnrollment.Result"
     enum="MachineLevelUserCloudPolicyEnrollmentResult"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>The result of machine level user cloud policy enrollment.</summary>
