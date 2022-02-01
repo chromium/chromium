@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/message_center/message_center.h"
@@ -477,7 +478,13 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, RemovingNotificationAnimation) {
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 }
 
-TEST_P(ParameterizedUnifiedMessageListViewTest, ResetAnimation) {
+// Flaky on ASAN: https://crbug.com/1293003.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ResetAnimation DISABLED_ResetAnimation
+#else
+#define MAYBE_ResetAnimation ResetAnimation
+#endif
+TEST_P(ParameterizedUnifiedMessageListViewTest, MAYBE_ResetAnimation) {
   auto id0 = AddNotification();
   auto id1 = AddNotification();
   CreateMessageListView();
@@ -665,7 +672,14 @@ TEST_P(ParameterizedUnifiedMessageListViewTest,
   EXPECT_EQ(1u, message_list_view()->children().size());
 }
 
-TEST_P(ParameterizedUnifiedMessageListViewTest, UserSwipesAwayNotification) {
+// Flaky on ASAN: https://crbug.com/1293003.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_UserSwipesAwayNotification DISABLED_UserSwipesAwayNotification
+#else
+#define MAYBE_UserSwipesAwayNotification UserSwipesAwayNotification
+#endif
+TEST_P(ParameterizedUnifiedMessageListViewTest,
+       MAYBE_UserSwipesAwayNotification) {
   // Show message list with two notifications.
   AddNotification();
   auto id1 = AddNotification();
