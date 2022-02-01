@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.task.test.ShadowAsyncTask;
 import org.chromium.chromecast.base.Controller;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executor;
  */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncTaskRunnerTest {
     private static class TestExecutor implements Executor {
         private final List<Runnable> mTasks = new ArrayList<>();
