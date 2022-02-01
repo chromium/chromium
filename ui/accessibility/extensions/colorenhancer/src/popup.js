@@ -9,7 +9,7 @@ class Popup {
     /**
      * Save previous state of setup parameters for use in the event of a
      * canceled setup.
-     * @type {{type: string, severity: number} | undefined}
+     * @type {{type: !CvdType, severity: number} | undefined}
      */
     this.restoreSettings = undefined;
 
@@ -56,24 +56,22 @@ class Popup {
 
   /**
    * Gets the CVD type selected through the radio buttons.
-   * @return {?CvdType}
+   * @return {CvdType}
    */
   getCvdTypeSelection() {
     let active = undefined;
     Object.values(CvdType).forEach((str) => {
       if ($('select-' + str).checked) {
         active = str;
-        return;
       }
     });
-    return /** @type {?CvdType} */ (active);
+    return /** @type {CvdType} */ (active);
   }
 
   /**
    * Sets the radio buttons selection to the given CVD type.
    * @param {!CvdType} cvdType Type of CVD, either PROTANOMALY or
    *     DEUTERANOMALY or TRITANOMALY.
-   * @return {?string}
    */
   setCvdTypeSelection(cvdType) {
     const highlight = $('row-highlight');

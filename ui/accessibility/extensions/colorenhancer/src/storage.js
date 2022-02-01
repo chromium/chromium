@@ -21,7 +21,7 @@ class Storage {
     /** @private {number} */
     this.defaultSeverity_ = Storage.DEFAULT_SEVERITY;
 
-    /** @private {!CvdType} */
+    /** @private {!CvdType|Storage.INVALID_TYPE_PLACEHOLDER} */
     this.defaultType_ = Storage.INVALID_TYPE_PLACEHOLDER;
 
     /** @private {boolean} */
@@ -224,7 +224,7 @@ class Storage {
     return Object.values(CvdType).includes(type);
   }
 
-  /** @return {Promise<CvdType>} */
+  /** @return {Promise<!CvdType|Storage.INVALID_TYPE_PLACEHOLDER>} */
   getDefaultType() {
     return new Promise(resolve => {
       resolve(this.defaultType_);

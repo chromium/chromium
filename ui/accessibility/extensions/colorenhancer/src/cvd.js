@@ -69,25 +69,25 @@ html[cvd="1"] {
    * Original Research Paper:
    *     http://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/Machado_Oliveira_Fernandes_CVD_Vis2009_final.pdf
    *
-   * @enum {string}
+   * @const {!Object<!CvdType, !Array<!Array<number>>}}
    * @private
    */
   static simulationParams_ = {
-    PROTANOMALY: [
+    [CvdType.PROTANOMALY]: [
       [0.4720, -1.2946, 0.9857], [-0.6128, 1.6326, 0.0187],
       [0.1407, -0.3380, -0.0044], [-0.1420, 0.2488, 0.0044],
       [0.1872, -0.3908, 0.9942], [-0.0451, 0.1420, 0.0013],
       [0.0222, -0.0253, -0.0004], [-0.0290, -0.0201, 0.0006],
       [0.0068, 0.0454, 0.9990]
     ],
-    DEUTERANOMALY: [
+    [CvdType.DEUTERANOMALY]: [
       [0.5442, -1.1454, 0.9818], [-0.7091, 1.5287, 0.0238],
       [0.1650, -0.3833, -0.0055], [-0.1664, 0.4368, 0.0056],
       [0.2178, -0.5327, 0.9927], [-0.0514, 0.0958, 0.0017],
       [0.0180, -0.0288, -0.0006], [-0.0232, -0.0649, 0.0007],
       [0.0052, 0.0360, 0.9998]
     ],
-    TRITANOMALY: [
+    [CvdType.TRITANOMALY]: [
       [0.4275, -0.0181, 0.9307], [-0.2454, 0.0013, 0.0827],
       [-0.1821, 0.0168, -0.0134], [-0.1280, 0.0047, 0.0202],
       [0.0233, -0.0398, 0.9728], [0.1048, 0.0352, 0.0070],
@@ -98,23 +98,23 @@ html[cvd="1"] {
 
   /**
    * TODO(mustaq): This should be nuked, see this.getCvdCorrectionMatrix_().
-   * @const {Object<string, {addendum: Matrix3x3, delta_factor: Matrix3x3}>}
+   * @const {Object<!CvdType, {addendum: !Matrix3x3, delta_factor: !Matrix3x3}>}
    * @private
    */
   static correctionParams_ = {
-    PROTANOMALY: {
+    [CvdType.PROTANOMALY]: {
       addendum: Matrix3x3.fromData(
           [[0.0, 0.0, 0.0], [0.7, 1.0, 0.0], [0.7, 0.0, 1.0]]),
       delta_factor: Matrix3x3.fromData(
           [[0.0, 0.0, 0.0], [0.3, 0.0, 0.0], [-0.3, 0.0, 0.0]])
     },
-    DEUTERANOMALY: {
+    [CvdType.DEUTERANOMALY]: {
       addendum: Matrix3x3.fromData(
           [[0.0, 0.0, 0.0], [0.7, 1.0, 0.0], [0.7, 0.0, 1.0]]),
       delta_factor: Matrix3x3.fromData(
           [[0.0, 0.0, 0.0], [0.3, 0.0, 0.0], [-0.3, 0.0, 0.0]])
     },
-    TRITANOMALY: {
+    [CvdType.TRITANOMALY]: {
       addendum: Matrix3x3.fromData(
           [[1.0, 0.0, 0.7], [0.0, 1.0, 0.7], [0.0, 0.0, 0.0]]),
       delta_factor: Matrix3x3.fromData(
@@ -139,7 +139,7 @@ html[cvd="1"] {
   /**
    * Returns a 3x3 matrix for simulating the given type of CVD with the given
    * severity.
-   * @param {CvdType} cvdType Type of CVD, either PROTANOMALY or
+   * @param {!CvdType} cvdType Type of CVD, either PROTANOMALY or
    *     DEUTERANOMALY or TRITANOMALY.
    * @param {number} severity A real number in [0,1] denoting severity.
    * @return {!Matrix3x3}
@@ -160,7 +160,7 @@ html[cvd="1"] {
   /**
    * Returns a 3x3 matrix for correcting the given type of CVD using the given
    * color adjustment.
-   * @param {CvdType} cvdType Type of CVD, either PROTANOMALY or
+   * @param {!CvdType} cvdType Type of CVD, either PROTANOMALY or
    *     DEUTERANOMALY or TRITANOMALY.
    * @param {number} delta A real number in [0,1] denoting color adjustment.
    * @return {!Matrix3x3}
@@ -175,7 +175,7 @@ html[cvd="1"] {
 
   /**
    * Returns the 3x3 matrix to be used for the given settings.
-   * @param {CvdType} cvdType Type of CVD, either PROTANOMALY or
+   * @param {!CvdType} cvdType Type of CVD, either PROTANOMALY or
    *     DEUTERANOMALY or TRITANOMALY.
    * @param {number} severity A real number in [0,1] denoting severity.
    * @param {number} delta A real number in [0,1] denoting color adjustment.
@@ -354,7 +354,7 @@ html[cvd="1"] {
   /**
    * Generate SVG filter for color enhancement based on type and severity using
    * default color adjustment.
-   * @param {CvdType} type Type type of color vision defficiency (CVD).
+   * @param {!CvdType} type Type type of color vision defficiency (CVD).
    * @param {number} severity The degree of CVD ranging from 0 for normal
    *     vision to 1 for dichromats.
    */
