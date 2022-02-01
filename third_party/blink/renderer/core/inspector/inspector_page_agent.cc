@@ -139,6 +139,8 @@ String NavigationPolicyToProtocol(NavigationPolicy policy) {
       return DispositionEnum::NewWindow;
     case kNavigationPolicyNewPopup:
       return DispositionEnum::NewWindow;
+    case kNavigationPolicyPictureInPicture:
+      return DispositionEnum::NewWindow;
   }
   return DispositionEnum::CurrentTab;
 }

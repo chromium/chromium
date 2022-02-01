@@ -5508,7 +5508,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       (policy == blink::kWebNavigationPolicyNewBackgroundTab ||
        policy == blink::kWebNavigationPolicyNewForegroundTab ||
        policy == blink::kWebNavigationPolicyNewWindow ||
-       policy == blink::kWebNavigationPolicyNewPopup)) {
+       policy == blink::kWebNavigationPolicyNewPopup ||
+       policy == blink::kWebNavigationPolicyPictureInPicture)) {
     frame_->ConsumeTransientUserActivation();
   }
 

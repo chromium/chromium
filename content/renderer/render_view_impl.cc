@@ -74,6 +74,7 @@ WindowOpenDisposition RenderViewImpl::NavigationPolicyToDisposition(
     case blink::kWebNavigationPolicyNewWindow:
       return WindowOpenDisposition::NEW_WINDOW;
     case blink::kWebNavigationPolicyNewPopup:
+    case blink::kWebNavigationPolicyPictureInPicture:
       return WindowOpenDisposition::NEW_POPUP;
     default:
       NOTREACHED() << "Unexpected WebNavigationPolicy";

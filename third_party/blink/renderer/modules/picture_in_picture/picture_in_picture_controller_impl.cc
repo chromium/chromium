@@ -15,10 +15,13 @@
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
@@ -399,6 +402,29 @@ bool PictureInPictureControllerImpl::IsExitAutoPictureInPictureAllowed() const {
   // Allow if the element already in Picture-in-Picture is the same as the one
   // eligible to exit Auto Picture-in-Picture.
   return (picture_in_picture_element_ == AutoPictureInPictureElement());
+}
+
+void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
+    ScriptState* script_state,
+    LocalDOMWindow& opener,
+    PictureInPictureWindowOptions* options,
+    ScriptPromiseResolver* resolver,
+    ExceptionState& exception_state) {
+  WebPictureInPictureWindowOptions web_options;
+  web_options.size = gfx::Size(options->width(), options->height());
+  web_options.constrain_aspect_ratio = options->constrainAspectRatio();
+
+  opener.openPictureInPictureWindow(script_state->GetIsolate(), web_options,
+                                    exception_state);
+
+  if (exception_state.HadException()) {
+    resolver->Reject();
+    return;
+  }
+
+  // TODO(https://crbug.com/1253970): Resolve with a PictureInPictureWindow
+  // object.
+  resolver->Resolve();
 }
 
 void PictureInPictureControllerImpl::PageVisibilityChanged() {

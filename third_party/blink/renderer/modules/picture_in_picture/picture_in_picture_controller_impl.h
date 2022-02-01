@@ -17,9 +17,12 @@
 
 namespace blink {
 
+class ExceptionState;
 class HTMLVideoElement;
 class PictureInPictureOptions;
 class PictureInPictureWindow;
+class PictureInPictureWindowOptions;
+class ScriptState;
 class TreeScope;
 
 // The PictureInPictureControllerImpl is keeping the state and implementing the
@@ -75,6 +78,13 @@ class MODULES_EXPORT PictureInPictureControllerImpl
 
   // Returns whether exiting Auto Picture-in-Picture is allowed.
   bool IsExitAutoPictureInPictureAllowed() const;
+
+  // Creates a picture-in-picture window that can contain arbitrary HTML.
+  void CreateDocumentPictureInPictureWindow(ScriptState*,
+                                            LocalDOMWindow&,
+                                            PictureInPictureWindowOptions*,
+                                            ScriptPromiseResolver*,
+                                            ExceptionState&);
 
   // Implementation of PictureInPictureController.
   void EnterPictureInPicture(HTMLElement*,

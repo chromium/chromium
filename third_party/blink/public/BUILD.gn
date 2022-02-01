@@ -363,6 +363,7 @@ source_set("blink_headers") {
     "web/web_pepper_socket.h",
     "web/web_pepper_socket_client.h",
     "web/web_performance.h",
+    "web/web_picture_in_picture_window_options.h",
     "web/web_plugin.h",
     "web/web_plugin_container.h",
     "web/web_plugin_document.h",

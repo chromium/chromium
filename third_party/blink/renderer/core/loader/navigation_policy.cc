@@ -192,5 +192,7 @@ STATIC_ASSERT_ENUM(kWebNavigationPolicyNewForegroundTab,
                    kNavigationPolicyNewForegroundTab);
 STATIC_ASSERT_ENUM(kWebNavigationPolicyNewWindow, kNavigationPolicyNewWindow);
 STATIC_ASSERT_ENUM(kWebNavigationPolicyNewPopup, kNavigationPolicyNewPopup);
+STATIC_ASSERT_ENUM(kWebNavigationPolicyPictureInPicture,
+                   kNavigationPolicyPictureInPicture);
 
 }  // namespace blink

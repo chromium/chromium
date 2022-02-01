@@ -3471,6 +3471,7 @@ enum WebFeature {
   kPrivateNetworkAccessWithinWorker = 4150,
   kClientHintsUAWoW64 = 4151,
   kFetchSetCookieInRequestGuardedHeaders = 4152,
+  kV8Window_RequestPictureInPictureWindow_Method = 4153,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

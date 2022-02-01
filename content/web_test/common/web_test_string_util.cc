@@ -29,6 +29,7 @@ const char* kPolicyNewBackgroundTab = "new background tab";
 const char* kPolicyNewForegroundTab = "new foreground tab";
 const char* kPolicyNewWindow = "new window";
 const char* kPolicyNewPopup = "new popup";
+const char* kPolicyPictureInPicture = "picture in picture";
 
 }  // namespace
 
@@ -70,6 +71,8 @@ const char* WebNavigationPolicyToString(
       return kPolicyNewWindow;
     case blink::kWebNavigationPolicyNewPopup:
       return kPolicyNewPopup;
+    case blink::kWebNavigationPolicyPictureInPicture:
+      return kPolicyPictureInPicture;
     default:
       return kIllegalString;
   }

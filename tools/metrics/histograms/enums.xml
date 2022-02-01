@@ -36987,6 +36987,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4150" label="PrivateNetworkAccessWithinWorker"/>
   <int value="4151" label="ClientHintsUAWoW64"/>
   <int value="4152" label="FetchSetCookieInRequestGuardedHeaders"/>
+  <int value="4153" label="V8Window_RequestPictureInPictureWindow_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

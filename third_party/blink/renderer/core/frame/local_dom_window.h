@@ -90,6 +90,7 @@ class TrustedTypePolicyFactory;
 class V8FrameRequestCallback;
 class V8IdleRequestCallback;
 class V8VoidFunction;
+struct WebPictureInPictureWindowOptions;
 class WindowAgent;
 
 enum PageTransitionEventPersistence {
@@ -363,6 +364,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                   const AtomicString& target,
                   const String& features,
                   ExceptionState&);
+
+  DOMWindow* openPictureInPictureWindow(v8::Isolate*,
+                                        const WebPictureInPictureWindowOptions&,
+                                        ExceptionState&);
 
   FrameConsole* GetFrameConsole() const;
 
