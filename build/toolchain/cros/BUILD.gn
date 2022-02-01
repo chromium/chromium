@@ -127,7 +127,6 @@ cros_toolchain("host") {
     cc_wrapper = ""
     needs_gomacc_path_arg = false
     clang_use_chrome_plugins = false
-    is_clang = cros_host_is_clang
     current_cpu = host_cpu
     current_os = "linux"
     sysroot = cros_host_sysroot
@@ -156,7 +155,6 @@ cros_toolchain("v8_snapshot") {
     cc_wrapper = ""
     needs_gomacc_path_arg = false
     clang_use_chrome_plugins = false
-    is_clang = cros_v8_snapshot_is_clang
     if (target_cpu == "x86" || target_cpu == "arm" || target_cpu == "mipsel") {
       current_cpu = "x86"
     } else {
