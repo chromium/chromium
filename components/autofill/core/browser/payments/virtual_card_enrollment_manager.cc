@@ -119,17 +119,13 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     return;
   }
 
-  // The controller will only expect one |legal_message_lines| vector, so we
-  // need to combine all of the legal message lines we receive from the server.
-  std::vector<LegalMessageLine> legal_message_lines;
-  legal_message_lines.reserve(response.google_legal_message.size() +
-                              response.issuer_legal_message.size());
-  base::ranges::copy(response.google_legal_message,
-                     std::back_inserter(legal_message_lines));
-  base::ranges::copy(response.issuer_legal_message,
-                     std::back_inserter(legal_message_lines));
-  state_.virtual_card_enrollment_fields.legal_message_lines =
-      std::move(legal_message_lines);
+  state_.virtual_card_enrollment_fields.google_legal_message =
+      std::move(response.google_legal_message);
+  // Issuer legal message is empty for some issuers.
+  if (!response.issuer_legal_message.empty()) {
+    state_.virtual_card_enrollment_fields.issuer_legal_message =
+        std::move(response.issuer_legal_message);
+  }
 
   // The |vcn_context_token| will be used by the server to link the previous
   // GetDetailsForEnrollRequest to the future UpdateVirtualCardEnrollmentRequest

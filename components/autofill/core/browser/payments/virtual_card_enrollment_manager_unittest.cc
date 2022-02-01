@@ -160,10 +160,10 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
 
   payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails response;
   response.vcn_context_token = kTestVcnContextToken;
-  response.issuer_legal_message = {
-      TestLegalMessageLine("issuer_test_legal_message_line")};
   response.google_legal_message = {
-      TestLegalMessageLine("google_test_legal_message_line")};
+      TestLegalMessageLine("google_test_legal_message")};
+  response.issuer_legal_message = {
+      TestLegalMessageLine("issuer_test_legal_message")};
   virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
       AutofillClient::PaymentsRpcResult::kSuccess, response);
 
@@ -171,9 +171,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
   EXPECT_EQ(state->vcn_context_token, response.vcn_context_token);
   VirtualCardEnrollmentFields virtual_card_enrollment_fields =
       state->virtual_card_enrollment_fields;
-  EXPECT_EQ(virtual_card_enrollment_fields.legal_message_lines[0].text(),
+  EXPECT_EQ(virtual_card_enrollment_fields.google_legal_message[0].text(),
             response.google_legal_message[0].text());
-  EXPECT_EQ(virtual_card_enrollment_fields.legal_message_lines[1].text(),
+  EXPECT_EQ(virtual_card_enrollment_fields.issuer_legal_message[0].text(),
             response.issuer_legal_message[0].text());
   EXPECT_TRUE(virtual_card_enrollment_fields.card_art_image != nullptr);
 }

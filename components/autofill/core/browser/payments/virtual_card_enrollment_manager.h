@@ -37,9 +37,12 @@ struct VirtualCardEnrollmentFields {
   // Raw pointer to the image for the card art. The |card_art_image| object is
   // owned by PersonalDataManager.
   raw_ptr<gfx::Image> card_art_image = nullptr;
-  // The legal message lines for the footer of the
-  // VirtualCardEnrollmentBubble.
-  LegalMessageLines legal_message_lines;
+  // The Google-specific legal messages that the user must accept before
+  // opting-in to virtual card enrollment.
+  LegalMessageLines google_legal_message;
+  // The Issuer-specific legal messages that the user must accept before
+  // opting-in to virtual card enrollment. Empty for some issuers.
+  LegalMessageLines issuer_legal_message;
   // The source for which the VirtualCardEnrollmentBubble will be shown.
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kNone;
