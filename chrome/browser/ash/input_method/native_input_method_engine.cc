@@ -750,13 +750,14 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
       OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
                                 settings);
 
-      input_method_->OnFocus(mojom::InputFieldInfo::New(
-                                 TextInputTypeToMojoType(context.type),
-                                 AutocorrectFlagsToMojoType(context.flags),
-                                 context.should_do_learning
-                                     ? mojom::PersonalizationMode::kEnabled
-                                     : mojom::PersonalizationMode::kDisabled),
-                             prefs_ ? std::move(settings) : nullptr);
+      input_method_->OnFocusDeprecated(
+          mojom::InputFieldInfo::New(
+              TextInputTypeToMojoType(context.type),
+              AutocorrectFlagsToMojoType(context.flags),
+              context.should_do_learning
+                  ? mojom::PersonalizationMode::kEnabled
+                  : mojom::PersonalizationMode::kDisabled),
+          prefs_ ? std::move(settings) : nullptr);
 
       // TODO(b/202224495): Send the surrounding text as part of InputFieldInfo.
       SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);

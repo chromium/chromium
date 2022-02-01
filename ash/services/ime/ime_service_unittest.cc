@@ -74,9 +74,12 @@ class TestDecoderState : public mojom::InputMethod {
 
  private:
   // mojom::InputMethod:
+  void OnFocusDeprecated(
+      chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
+      chromeos::ime::mojom::InputMethodSettingsPtr settings) override {}
   void OnFocus(chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
-               chromeos::ime::mojom::InputMethodSettingsPtr settings) override {
-  }
+               chromeos::ime::mojom::InputMethodSettingsPtr settings,
+               OnFocusCallback callback) override {}
   void OnBlur() override {}
   void OnSurroundingTextChanged(
       const std::string& text,

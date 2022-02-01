@@ -103,6 +103,12 @@ std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
 
 RuleBasedEngine::~RuleBasedEngine() = default;
 
+void RuleBasedEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info,
+                              mojom::InputMethodSettingsPtr settings,
+                              OnFocusCallback callback) {
+  std::move(callback).Run(false);
+}
+
 bool RuleBasedEngine::IsConnected() {
   // `receiver_` will reset upon disconnection, so bound state is equivalent to
   // connected state.

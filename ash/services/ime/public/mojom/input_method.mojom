@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module chromeos.ime.mojom;
 
@@ -379,12 +379,17 @@ struct ZhuyinSettings {
 // a Chrome utility process, and this interface uses the InputMethodHost
 // interface to communicate back to the browser process.
 //
-// Next ordinal: 6
+// Next ordinal: 7
 [Stable]
 interface InputMethod {
+  // DEPRECATED: Called when there's a new focused input field.
+  OnFocusDeprecated@0(InputFieldInfo input_field_info,
+                      [MinVersion=4] InputMethodSettings? settings);
+
   // Called when there's a new focused input field.
-  OnFocus@0(InputFieldInfo input_field_info,
-            [MinVersion=4] InputMethodSettings? settings);
+  [MinVersion=9]
+  OnFocus@6(InputFieldInfo input_field_info,
+            InputMethodSettings settings) => (bool success);
 
   // Called when the input field loses focus.
   OnBlur@1();

@@ -92,9 +92,15 @@ class MockInputMethod : public ime::mojom::InputMethod {
 
   // ime::mojom::InputMethod:
   MOCK_METHOD(void,
-              OnFocus,
+              OnFocusDeprecated,
               (ime::mojom::InputFieldInfoPtr input_field_info,
                ime::mojom::InputMethodSettingsPtr settings),
+              (override));
+  MOCK_METHOD(void,
+              OnFocus,
+              (ime::mojom::InputFieldInfoPtr input_field_info,
+               ime::mojom::InputMethodSettingsPtr settings,
+               OnFocusCallback callback),
               (override));
   MOCK_METHOD(void, OnBlur, (), (override));
   MOCK_METHOD(void,
@@ -425,12 +431,13 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method,
-                OnFocus(MojoEq(ime::mojom::InputFieldInfo(
-                            ime::mojom::InputFieldType::kText,
-                            ime::mojom::AutocorrectMode::kEnabled,
-                            ime::mojom::PersonalizationMode::kEnabled)),
-                        _))
+    EXPECT_CALL(
+        mock_input_method,
+        OnFocusDeprecated(MojoEq(ime::mojom::InputFieldInfo(
+                              ime::mojom::InputFieldType::kText,
+                              ime::mojom::AutocorrectMode::kEnabled,
+                              ime::mojom::PersonalizationMode::kEnabled)),
+                          _))
         .WillOnce(
             ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
                                  ime::mojom::InputMethodSettingsPtr settings) {
@@ -497,12 +504,13 @@ TEST_F(NativeInputMethodEngineTest,
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method,
-                OnFocus(MojoEq(ime::mojom::InputFieldInfo(
-                            ime::mojom::InputFieldType::kText,
-                            ime::mojom::AutocorrectMode::kEnabled,
-                            ime::mojom::PersonalizationMode::kEnabled)),
-                        _))
+    EXPECT_CALL(
+        mock_input_method,
+        OnFocusDeprecated(MojoEq(ime::mojom::InputFieldInfo(
+                              ime::mojom::InputFieldType::kText,
+                              ime::mojom::AutocorrectMode::kEnabled,
+                              ime::mojom::PersonalizationMode::kEnabled)),
+                          _))
         .WillOnce(
             ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
                                  ime::mojom::InputMethodSettingsPtr settings) {
@@ -573,7 +581,7 @@ TEST_F(NativeInputMethodEngineTest,
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged("", _, _));
 
     // Each character in "你好" is three UTF-8 code units.
@@ -615,7 +623,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
@@ -671,7 +679,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
@@ -728,7 +736,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
     EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _)).Times(0);
   }
