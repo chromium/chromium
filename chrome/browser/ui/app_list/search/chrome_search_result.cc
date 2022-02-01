@@ -33,31 +33,61 @@ void ChromeSearchResult::SetIsInstalling(bool is_installing) {
 
 void ChromeSearchResult::SetTitle(const std::u16string& title) {
   metadata_->title = title;
+  MaybeUpdateTitleVector();
   SetSearchResultMetadata();
 }
 
 void ChromeSearchResult::SetTitleTags(const Tags& tags) {
   metadata_->title_tags = tags;
+  MaybeUpdateTitleVector();
   SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::MaybeUpdateTitleVector() {
+  // Create and setup title tags if not set explicitly.
+  if (!explicit_title_vector) {
+    std::vector<TextItem> text_vector;
+    TextItem text_item(ash::SearchResultTextItemType::kString);
+    text_item.SetText(metadata_->title);
+    text_item.SetTextTags(metadata_->title_tags);
+    text_vector.push_back(text_item);
+    metadata_->title_vector = text_vector;
+  }
 }
 
 void ChromeSearchResult::SetDetails(const std::u16string& details) {
   metadata_->details = details;
+  MaybeUpdateDetailsVector();
   SetSearchResultMetadata();
 }
 
 void ChromeSearchResult::SetDetailsTags(const Tags& tags) {
   metadata_->details_tags = tags;
+  MaybeUpdateDetailsVector();
   SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::MaybeUpdateDetailsVector() {
+  // Create and setup details tags if not set explicitly.
+  if (!explicit_details_vector) {
+    std::vector<TextItem> text_vector;
+    TextItem text_item(ash::SearchResultTextItemType::kString);
+    text_item.SetText(metadata_->details);
+    text_item.SetTextTags(metadata_->details_tags);
+    text_vector.push_back(text_item);
+    metadata_->details_vector = text_vector;
+  }
 }
 
 void ChromeSearchResult::SetTitleTextVector(const TextVector& text_vector) {
   metadata_->title_vector = text_vector;
+  explicit_title_vector = true;
   SetSearchResultMetadata();
 }
 
 void ChromeSearchResult::SetDetailsTextVector(const TextVector& text_vector) {
   metadata_->details_vector = text_vector;
+  explicit_details_vector = true;
   SetSearchResultMetadata();
 }
 

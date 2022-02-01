@@ -5,6 +5,9 @@
 #ifndef ASH_APP_LIST_VIEWS_SEARCH_RESULT_VIEW_H_
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_VIEW_H_
 
+#include <memory>
+#include <vector>
+
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -34,6 +37,7 @@ class SearchResultPageDialogController;
 class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                                     public SearchResultActionsViewDelegate {
  public:
+  class LabelAndTag;
   enum class SearchResultViewType {
     // The default vew type used for the majority of search results.
     kDefault,
@@ -80,6 +84,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   int PrimaryTextHeight() const;
   int SecondaryTextHeight() const;
 
+  std::vector<LabelAndTag> SetupContainerViewForTextVector(
+      views::FlexLayoutView* parent,
+      const std::vector<SearchResult::TextItem>& text_vector,
+      bool details_label);
   void UpdateTitleText();
   void UpdateDetailsText();
   void UpdateRating();
@@ -131,16 +139,13 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   MaskedImageView* icon_ = nullptr;         // Owned by views hierarchy.
   views::ImageView* badge_icon_ = nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* text_container_ =
-      nullptr;                               // Owned by views hierarchy.
-  // TODO(crbug/1216097): Update `title_container_` and `details_container_` to
-  // build `views::Label` and `views::ImageView` based on TextVector metadata.
+      nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* title_container_ =
       nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* details_container_ =
       nullptr;  // Owned by views hierarchy.
-  // TODO(crbug/1216097): Deprecate title and details labels.
-  views::Label* title_label_ = nullptr;      // Owned by views hierarchy.
-  views::Label* details_label_ = nullptr;    // Owned by views hierarchy.
+  std::vector<LabelAndTag> title_label_tags_;    // Owned by views hierarchy.
+  std::vector<LabelAndTag> details_label_tags_;  // Owned by views hierarchy.
   views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.
   views::Label* rating_ = nullptr;           // Owned by views hierarchy.
   views::ImageView* rating_star_ = nullptr;  // Owned by views hierarchy.
@@ -152,6 +157,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   // Whether the removal confirmation dialog is invoked by long press touch.
   bool confirm_remove_by_long_press_ = false;
+
+  // Separator label is shown for `kDefault` when details text is not empty,
+  bool should_show_separator_label_ = false;
 
   SearchResultViewType view_type_;
 

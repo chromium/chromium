@@ -453,6 +453,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   SearchResultTextItem& SetText(std::u16string text);
 
   const SearchResultTags& GetTextTags() const;
+  SearchResultTags& GetTextTags();
   SearchResultTextItem& SetTextTags(SearchResultTags tags);
 
   gfx::ImageSkia GetIconFromCode() const;

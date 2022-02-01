@@ -106,8 +106,10 @@ class ChromeSearchResult {
   // interface to update Ash.
   void SetTitle(const std::u16string& title);
   void SetTitleTags(const Tags& tags);
+  void MaybeUpdateTitleVector();
   void SetDetails(const std::u16string& details);
   void SetDetailsTags(const Tags& tags);
+  void MaybeUpdateDetailsVector();
   void SetTitleTextVector(const TextVector& text_vector);
   void SetDetailsTextVector(const TextVector& text_vector);
   void SetBigTitleTextVector(const TextVector& text_vector);
@@ -223,6 +225,10 @@ class ChromeSearchResult {
   // Open() for added polish. Some ChromeSearchResults may not appreciate this
   // behavior so it can be disabled as needed.
   bool dismiss_view_on_open_ = true;
+
+  // Whether the text vector is explicitly set by chrome.
+  bool explicit_title_vector = false;
+  bool explicit_details_vector = false;
 
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 

@@ -255,6 +255,11 @@ const SearchResultTags& SearchResultTextItem::GetTextTags() const {
   return text_tags.value();
 }
 
+SearchResultTags& SearchResultTextItem::GetTextTags() {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  return text_tags.value();
+}
+
 SearchResultTextItem& SearchResultTextItem::SetTextTags(SearchResultTags tags) {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
   text_tags = tags;
