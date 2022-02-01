@@ -2249,6 +2249,7 @@
                         "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
                         "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
                         "NtpChromeCartModuleHeuristicsImprovementParam": "true",
+                        "NtpDriveModuleExperimentGroupParam": "foo:bar",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000",
                         "NtpModulesOrderParam": "",
                         "discount-fetch-delay": "1h"
