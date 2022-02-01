@@ -1097,6 +1097,8 @@ if (enable_java_templates) {
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
         # Nocompile tests need lint to fail through ninja.
         args += [ "--skip-build-server" ]
+      } else if (android_static_analysis == "build_server") {
+        args += [ "--use-build-server" ]
       }
 
       if (defined(invoker.lint_suppressions_file)) {
@@ -1948,6 +1950,9 @@ if (enable_java_templates) {
         "--full-classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:deps_info:javac_full_classpath_targets)",
       ]
+      if (android_static_analysis == "build_server") {
+        args += [ "--use-build-server" ]
+      }
       if (invoker.requires_android) {
         args += [ "--sdk-classpath-jars=@FileArg($_rebased_build_config:android:sdk_jars)" ]
       }
@@ -3120,6 +3125,8 @@ if (enable_java_templates) {
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
         # Nocompile tests need lint to fail through ninja.
         args += [ "--skip-build-server" ]
+      } else if (android_static_analysis == "build_server") {
+        args += [ "--use-build-server" ]
       }
 
       foreach(e, _processor_args) {
@@ -3891,8 +3898,9 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
-      _enable_bytecode_checks = !defined(invoker.enable_bytecode_checks) ||
-                                invoker.enable_bytecode_checks
+      _enable_bytecode_checks =
+          (!defined(invoker.enable_bytecode_checks) ||
+           invoker.enable_bytecode_checks) && android_static_analysis != "off"
       if (_enable_bytecode_checks) {
         _bytecode_checks_target = "${target_name}__validate_classpath"
         bytecode_processor(_bytecode_checks_target) {

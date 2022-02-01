@@ -21,6 +21,9 @@ def main(argv):
   argv = build_utils.ExpandFileArgs(argv[1:])
   parser = argparse.ArgumentParser()
   parser.add_argument('--target-name', help='Fully qualified GN target name.')
+  parser.add_argument('--use-build-server',
+                      action='store_true',
+                      help='Always use the build server.')
   parser.add_argument('--script', required=True,
                       help='Path to the java binary wrapper script.')
   parser.add_argument('--gn-target', required=True)
@@ -40,7 +43,8 @@ def main(argv):
 
   if server_utils.MaybeRunCommand(name=args.target_name,
                                   argv=sys.argv,
-                                  stamp_file=args.stamp):
+                                  stamp_file=args.stamp,
+                                  force=args.use_build_server):
     return
 
   args.sdk_classpath_jars = build_utils.ParseGnList(args.sdk_classpath_jars)

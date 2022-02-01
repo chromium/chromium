@@ -586,6 +586,9 @@ def _ParseOptions(argv):
   parser.add_option('--skip-build-server',
                     action='store_true',
                     help='Avoid using the build server.')
+  parser.add_option('--use-build-server',
+                    action='store_true',
+                    help='Always use the build server.')
   parser.add_option(
       '--java-srcjars',
       action='append',
@@ -694,7 +697,8 @@ def main(argv):
   if (options.enable_errorprone and not options.skip_build_server
       and server_utils.MaybeRunCommand(name=options.target_name,
                                        argv=sys.argv,
-                                       stamp_file=options.jar_path)):
+                                       stamp_file=options.jar_path,
+                                       force=options.use_build_server)):
     return
 
   javac_cmd = []

@@ -51,11 +51,22 @@ if (is_android || is_chromeos) {
     # not explicitly set it.
     default_min_sdk_version = 23
 
-    # [WIP] Allows devs to achieve much faster edit-build-install cycles.
-    # Currently only works for ChromeModern apks due to incremental install.
-    # This needs to be in a separate declare_args as it determines some of the
-    # args in the main declare_args block below.
-    android_fast_local_dev = false
+    # Static analysis can be either "on" or "off" or "build_server". This
+    # controls how android lint, error-prone, bytecode checks are run. This
+    # needs to be in a separate declare_args as it determines some of the args
+    # in the main declare_args block below.
+    # "on" is the default.
+    # "off" avoids running any static analysis. This is the default for
+    #     official builds to reduce build times. Failures in static analysis
+    #     would have been caught by other bots.
+    # "build_server" ensures that fast_local_dev_server.py is running and
+    #     offloads analysis tasks to it to be run after the build completes.
+    #     This is the recommended setting for local development.
+    if (is_official_build) {
+      android_static_analysis = "off"
+    } else {
+      android_static_analysis = "on"
+    }
   }
 
   declare_args() {
@@ -211,24 +222,18 @@ if (is_android || is_chromeos) {
     debuggable_apks = !is_official_build
 
     # Set to false to disable the Errorprone compiler.
-    # Defaults to false for official builds to reduce build times.
-    # Static analysis failures should have been already caught by normal bots.
-    # Disabled when fast_local_dev is turned on.
-    use_errorprone_java_compiler = !is_official_build && !android_fast_local_dev
+    use_errorprone_java_compiler = android_static_analysis != "off"
 
     # Build incremental targets whenever possible.
     # See //build/android/incremental_install/README.md for more details.
-    incremental_install = android_fast_local_dev
+    incremental_install = false
 
     # When true, updates all android_aar_prebuilt() .info files during gn gen.
     # Refer to android_aar_prebuilt() for more details.
     update_android_aar_prebuilts = false
 
-    # Turns off android lint. Useful for prototyping or for faster local builds.
-    # Defaults to true for official builds to reduce build times.
-    # Static analysis failures should have been already caught by normal bots.
-    # Disabled when fast_local_dev is turned on.
-    disable_android_lint = is_official_build || android_fast_local_dev
+    # Turns off android lint.
+    disable_android_lint = android_static_analysis == "off"
 
     # Location of aapt2 used for app bundles. For now, a more recent version
     # than the one distributed with the Android SDK is required.
