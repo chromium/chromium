@@ -18,7 +18,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -53,23 +53,23 @@ const char kTestRefreshToken[] =
     "test_refresh_token_for_enterprise@example.com";
 
 // Dummy delegate forwarding all the calls the test fixture.
-// Owned by the DiceTurnOnSyncHelper.
-class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
+// Owned by the TurnSyncOnHelper.
+class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
  public:
-  explicit TestDiceTurnSyncOnHelperDelegate(
+  explicit TestTurnSyncOnHelperDelegate(
       UserPolicySigninServiceTest* test_fixture);
-  ~TestDiceTurnSyncOnHelperDelegate() override;
+  ~TestTurnSyncOnHelperDelegate() override;
 
  private:
-  // DiceTurnSyncOnHelper::Delegate:
+  // TurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
@@ -106,7 +106,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
 
   ~UserPolicySigninServiceTest() override {
     // Ensure that no helper leaked.
-    DCHECK_EQ(dice_helper_created_count_, dice_helper_deleted_count_);
+    DCHECK_EQ(helper_created_count_, helper_created_count_);
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -117,16 +117,16 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     return profile()->GetProfilePolicyConnector()->policy_service();
   }
 
-  DiceTurnSyncOnHelper* CreateDiceTurnOnSyncHelper() {
-    // DiceTurnSyncOnHelper deletes itself. At the end of the test, there is a
-    // check that these objects did not leak.
-    ++dice_helper_created_count_;
-    return new DiceTurnSyncOnHelper(
+  TurnSyncOnHelper* CreateTurnSyncOnHelper() {
+    // TurnSyncOnHelper deletes itself. At the end of the test, there is a check
+    // that these objects did not leak.
+    ++helper_created_count_;
+    return new TurnSyncOnHelper(
         profile(), signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
         signin_metrics::Reason::kReauthentication, account_info_.account_id,
-        DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
-        std::make_unique<TestDiceTurnSyncOnHelperDelegate>(this),
+        TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
+        std::make_unique<TestTurnSyncOnHelperDelegate>(this),
         base::DoNothing());
   }
 
@@ -151,11 +151,11 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     std::move(sync_confirmation_callback_).Run(confirmation_result);
   }
 
-  // DiceTurnSyncOnHelperDelegate calls:
+  // TurnSyncOnHelperDelegate calls:
   void OnShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
-    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      TurnSyncOnHelper::SigninChoiceCallback callback) {
+    std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   }
 
   void OnShowSyncConfirmation(
@@ -174,7 +174,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
       std::move(sync_confirmation_shown_closure_).Run();
   }
 
-  void OnDiceTurnSyncOnHelperDeleted() { ++dice_helper_deleted_count_; }
+  void OnTurnSyncOnHelperDeleted() { ++helper_deleted_count_; }
 
   void set_policy_hanging(bool hanging) { policy_hanging_ = hanging; }
 
@@ -298,55 +298,54 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
   bool policy_hanging_ = false;
-  int dice_helper_created_count_ = 0;
-  int dice_helper_deleted_count_ = 0;
+  int helper_created_count_ = 0;
+  int helper_deleted_count_ = 0;
 };
 
-TestDiceTurnSyncOnHelperDelegate::TestDiceTurnSyncOnHelperDelegate(
+TestTurnSyncOnHelperDelegate::TestTurnSyncOnHelperDelegate(
     UserPolicySigninServiceTest* test_fixture)
     : test_fixture_(test_fixture) {}
 
-TestDiceTurnSyncOnHelperDelegate::~TestDiceTurnSyncOnHelperDelegate() {
-  test_fixture_->OnDiceTurnSyncOnHelperDeleted();
+TestTurnSyncOnHelperDelegate::~TestTurnSyncOnHelperDelegate() {
+  test_fixture_->OnTurnSyncOnHelperDeleted();
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowLoginError(
-    const SigninUIError& error) {
+void TestTurnSyncOnHelperDelegate::ShowLoginError(const SigninUIError& error) {
   NOTREACHED();
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   NOTREACHED();
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   test_fixture_->OnShowEnterpriseAccountConfirmation(account_info,
                                                      std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowSyncConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   test_fixture_->OnShowSyncConfirmation(std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   test_fixture_->OnShowSyncDisabledConfirmation(std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowSyncSettings() {
+void TestTurnSyncOnHelperDelegate::ShowSyncSettings() {
   NOTREACHED();
 }
 
-void TestDiceTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
+void TestTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
   NOTREACHED();
 }
 
@@ -354,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, BasicSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
-  CreateDiceTurnOnSyncHelper();
+  CreateTurnSyncOnHelper();
   WaitForSyncConfirmation();
 
   // Policies are applied even before the user confirms.
@@ -374,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, UndoSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
-  CreateDiceTurnOnSyncHelper();
+  CreateTurnSyncOnHelper();
   WaitForSyncConfirmation();
 
   // Policies are applied even before the user confirms.
@@ -398,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   set_policy_hanging(true);
-  CreateDiceTurnOnSyncHelper();
+  CreateTurnSyncOnHelper();
   WaitForPolicyHanging();
 
   // User is not signed in, policy is not applied.
@@ -408,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Restart a new signin flow and allow it to complete.
-  CreateDiceTurnOnSyncHelper();
+  CreateTurnSyncOnHelper();
   set_policy_hanging(false);
   WaitForSyncConfirmation();
 
@@ -434,11 +433,11 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
 #endif
 IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
                        MAYBE_AcceptManagementDeclineSync) {
-  DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
+  TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
-  CreateDiceTurnOnSyncHelper();
+  CreateTurnSyncOnHelper();
   WaitForSyncConfirmation();
 
   // Policies are applied even before the user confirms.
@@ -475,5 +474,5 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
   EXPECT_FALSE(
       chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
   EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-  DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
+  TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
 }

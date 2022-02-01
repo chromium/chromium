@@ -58,8 +58,8 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
       return "DiceResponseHandler::Signin";
     case SourceForRefreshTokenOperation::kDiceResponseHandler_Signout:
       return "DiceResponseHandler::Signout";
-    case SourceForRefreshTokenOperation::kDiceTurnOnSyncHelper_Abort:
-      return "DiceTurnOnSyncHelper::Abort";
+    case SourceForRefreshTokenOperation::kTurnOnSyncHelper_Abort:
+      return "TurnOnSyncHelper::Abort";
     case SourceForRefreshTokenOperation::kMachineLogon_CredentialProvider:
       return "MachineLogon::CredentialProvider";
     case SourceForRefreshTokenOperation::kTokenService_ExtractCredentials:

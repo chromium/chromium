@@ -14,10 +14,10 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,25 +26,25 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
-// Delegate class for DiceTurnSyncOnHelper. Determines what will be the next
+// Delegate class for TurnSyncOnHelper. Determines what will be the next
 // step for the first run based on Sync availabitily.
 class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
-    : public DiceTurnSyncOnHelper::Delegate,
+    : public TurnSyncOnHelper::Delegate,
       public LoginUIService::Observer {
  public:
   explicit InterceptTurnSyncOnHelperDelegate(
       base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog);
   ~InterceptTurnSyncOnHelperDelegate() override;
 
-  // DiceTurnSyncOnHelper::Delegate:
+  // TurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
@@ -90,7 +90,7 @@ void SigninInterceptFirstRunExperienceDialog::
     InterceptTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
         const std::string& previous_email,
         const std::string& new_email,
-        DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+        TurnSyncOnHelper::SigninChoiceCallback callback) {
   NOTREACHED() << "Sign-in intercept shouldn't create a profile for an "
                   "account known to Chrome";
 }
@@ -98,12 +98,12 @@ void SigninInterceptFirstRunExperienceDialog::
 void SigninInterceptFirstRunExperienceDialog::
     InterceptTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
         const AccountInfo& account_info,
-        DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+        TurnSyncOnHelper::SigninChoiceCallback callback) {
   // This is a brand new profile. Skip the enterprise confirmation.
   // TODO(crbug.com/1282157): Do not show the sync promo if either
   // - PromotionalTabsEnabled policy is set to False, or
   // - the user went through the Profile Separation dialog.
-  std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+  std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -260,14 +260,14 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
 }
 
 void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
-  // DiceTurnSyncOnHelper deletes itself once done.
-  new DiceTurnSyncOnHelper(
+  // TurnSyncOnHelper deletes itself once done.
+  new TurnSyncOnHelper(
       browser_->profile(),
       signin_metrics::AccessPoint::
           ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       signin_metrics::Reason::kSigninPrimaryAccount, account_id_,
-      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<InterceptTurnSyncOnHelperDelegate>(
           weak_ptr_factory_.GetWeakPtr()),
       base::OnceClosure());

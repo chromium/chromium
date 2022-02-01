@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -51,30 +51,30 @@ Browser* EnsureBrowser(Browser* browser, Profile* profile) {
 }
 
 // Converts SigninEmailConfirmationDialog::Action to
-// DiceTurnSyncOnHelper::SigninChoice and invokes |callback| on it.
-void OnEmailConfirmation(DiceTurnSyncOnHelper::SigninChoiceCallback callback,
+// TurnSyncOnHelper::SigninChoice and invokes |callback| on it.
+void OnEmailConfirmation(TurnSyncOnHelper::SigninChoiceCallback callback,
                          SigninEmailConfirmationDialog::Action action) {
   DCHECK(callback) << "This function should be called only once.";
   switch (action) {
     case SigninEmailConfirmationDialog::START_SYNC:
-      std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
       return;
     case SigninEmailConfirmationDialog::CREATE_NEW_USER:
-      std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE);
+      std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE);
       return;
     case SigninEmailConfirmationDialog::CLOSE:
-      std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+      std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
       return;
   }
   NOTREACHED();
 }
 
 void OnProfileCheckComplete(const AccountInfo& account_info,
-                            DiceTurnSyncOnHelper::SigninChoiceCallback callback,
+                            TurnSyncOnHelper::SigninChoiceCallback callback,
                             base::WeakPtr<Browser> browser,
                             bool prompt_for_new_profile) {
   if (!browser) {
-    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+    std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
     return;
   }
   ProfileAttributesEntry* entry =
@@ -84,50 +84,47 @@ void OnProfileCheckComplete(const AccountInfo& account_info,
   browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
       account_info, GenerateNewProfileColor(entry).color,
       base::BindOnce(
-          [](DiceTurnSyncOnHelper::SigninChoiceCallback callback,
-             Browser* browser, bool prompt_for_new_profile,
-             bool create_profile) {
+          [](TurnSyncOnHelper::SigninChoiceCallback callback, Browser* browser,
+             bool prompt_for_new_profile, bool create_profile) {
             browser->signin_view_controller()->CloseModalSignin();
             std::move(callback).Run(
                 create_profile
                     ? prompt_for_new_profile
-                          ? DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE
-                          : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE
-                    : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+                          ? TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE
+                          : TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE
+                    : TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
           },
           std::move(callback), browser.get(), prompt_for_new_profile));
 }
 
 }  // namespace
 
-DiceTurnSyncOnHelperDelegateImpl::DiceTurnSyncOnHelperDelegateImpl(
-    Browser* browser)
+TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(Browser* browser)
     : browser_(browser), profile_(browser_->profile()) {
   DCHECK(browser);
   DCHECK(profile_);
   BrowserList::AddObserver(this);
 }
 
-DiceTurnSyncOnHelperDelegateImpl::~DiceTurnSyncOnHelperDelegateImpl() {
+TurnSyncOnHelperDelegateImpl::~TurnSyncOnHelperDelegateImpl() {
   BrowserList::RemoveObserver(this);
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::ShowLoginError(
-    const SigninUIError& error) {
+void TurnSyncOnHelperDelegateImpl::ShowLoginError(const SigninUIError& error) {
   DCHECK(!error.IsOk());
-  DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(error, browser_);
+  TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(error, browser_);
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::
+void TurnSyncOnHelperDelegateImpl::
     ShouldEnterpriseConfirmationPromptForNewProfile(
         Profile* profile,
         base::OnceCallback<void(bool)> callback) {
   ui::CheckShouldPromptForNewProfile(profile, std::move(callback));
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
+void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
   // Checking whether to show the prompt for a new profile is sometimes
   // asynchronous.
@@ -136,7 +133,7 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
                                std::move(callback), browser_->AsWeakPtr()));
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
+void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
@@ -147,7 +144,7 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
   browser_->signin_view_controller()->ShowModalSyncConfirmationDialog();
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
+void TurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
@@ -155,10 +152,10 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
   ShowSyncConfirmation(std::move(callback));
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::ShowMergeSyncDataConfirmation(
+void TurnSyncOnHelperDelegateImpl::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   DCHECK(callback);
   browser_ = EnsureBrowser(browser_, profile_);
   browser_->signin_view_controller()->ShowModalSigninEmailConfirmationDialog(
@@ -166,17 +163,17 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowMergeSyncDataConfirmation(
       base::BindOnce(&OnEmailConfirmation, std::move(callback)));
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::ShowSyncSettings() {
+void TurnSyncOnHelperDelegateImpl::ShowSyncSettings() {
   browser_ = EnsureBrowser(browser_, profile_);
   chrome::ShowSettingsSubPage(browser_, chrome::kSyncSetupSubPage);
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::SwitchToProfile(Profile* new_profile) {
+void TurnSyncOnHelperDelegateImpl::SwitchToProfile(Profile* new_profile) {
   profile_ = new_profile;
   browser_ = nullptr;
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
+void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   DCHECK(sync_confirmation_callback_);
   // Treat closing the ui as an implicit ABORT_SYNC action.
@@ -186,7 +183,7 @@ void DiceTurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
   std::move(sync_confirmation_callback_).Run(result);
 }
 
-void DiceTurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
+void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
   if (browser == browser_)
     browser_ = nullptr;
 }

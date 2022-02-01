@@ -17,9 +17,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
 }
 
 // Closes the fre dialog before the sync confirmation is shown. Tests that
-// `DiceTurnSyncOnHelper` is eventually destroyed.
+// `TurnSyncOnHelper` is eventually destroyed.
 IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        CloseDialogBeforeSyncConfirmationIsShown) {
   // It's important to use an enterprise email here in order to block the sync
@@ -389,12 +389,12 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   controller()->CloseModalSignin();
   EXPECT_FALSE(controller()->ShowsModalDialog());
 
-  // `DiceTurnSyncOnHelper` should be destroyed after the sync engine is up and
+  // `TurnSyncOnHelper` should be destroyed after the sync engine is up and
   // running.
   sync_service()->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
-  EXPECT_FALSE(DiceTurnSyncOnHelper::HasCurrentDiceTurnSyncOnHelperForTesting(
+  EXPECT_FALSE(TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(
       browser()->profile()));
   // Sync is aborted.
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);

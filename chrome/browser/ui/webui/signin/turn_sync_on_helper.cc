@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
 #include <utility>
 
@@ -56,49 +56,46 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 #endif
 
 namespace {
 
-const void* const kCurrentDiceTurnSyncOnHelperKey =
-    &kCurrentDiceTurnSyncOnHelperKey;
+const void* const kCurrentTurnSyncOnHelperKey = &kCurrentTurnSyncOnHelperKey;
 bool g_show_sync_enabled_ui_for_testing_ = false;
 
 // A helper class to watch profile lifetime.
-class DiceTurnSyncOnHelperShutdownNotifierFactory
+class TurnSyncOnHelperShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
-  DiceTurnSyncOnHelperShutdownNotifierFactory(
-      const DiceTurnSyncOnHelperShutdownNotifierFactory&) = delete;
-  DiceTurnSyncOnHelperShutdownNotifierFactory& operator=(
-      const DiceTurnSyncOnHelperShutdownNotifierFactory&) = delete;
+  TurnSyncOnHelperShutdownNotifierFactory(
+      const TurnSyncOnHelperShutdownNotifierFactory&) = delete;
+  TurnSyncOnHelperShutdownNotifierFactory& operator=(
+      const TurnSyncOnHelperShutdownNotifierFactory&) = delete;
 
-  static DiceTurnSyncOnHelperShutdownNotifierFactory* GetInstance() {
-    static base::NoDestructor<DiceTurnSyncOnHelperShutdownNotifierFactory>
-        factory;
+  static TurnSyncOnHelperShutdownNotifierFactory* GetInstance() {
+    static base::NoDestructor<TurnSyncOnHelperShutdownNotifierFactory> factory;
     return factory.get();
   }
 
  private:
-  friend class base::NoDestructor<DiceTurnSyncOnHelperShutdownNotifierFactory>;
+  friend class base::NoDestructor<TurnSyncOnHelperShutdownNotifierFactory>;
 
-  DiceTurnSyncOnHelperShutdownNotifierFactory()
+  TurnSyncOnHelperShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
-            "DiceTurnSyncOnHelperShutdownNotifier") {
+            "TurnSyncOnHelperShutdownNotifier") {
     DependsOn(IdentityManagerFactory::GetInstance());
     DependsOn(SyncServiceFactory::GetInstance());
     DependsOn(UnifiedConsentServiceFactory::GetInstance());
     DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   }
-  ~DiceTurnSyncOnHelperShutdownNotifierFactory() override {}
+  ~TurnSyncOnHelperShutdownNotifierFactory() override {}
 };
 
 // User input handler for the signin confirmation dialog.
 class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
  public:
-  explicit SigninDialogDelegate(
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback)
+  explicit SigninDialogDelegate(TurnSyncOnHelper::SigninChoiceCallback callback)
       : callback_(std::move(callback)) {
     DCHECK(callback_);
   }
@@ -108,66 +105,64 @@ class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
 
   void OnCancelSignin() override {
     DCHECK(callback_);
-    std::move(callback_).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+    std::move(callback_).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
   }
 
   void OnContinueSignin() override {
     DCHECK(callback_);
-    std::move(callback_).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+    std::move(callback_).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   }
 
   void OnSigninWithNewProfile() override {
     DCHECK(callback_);
-    std::move(callback_).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE);
+    std::move(callback_).Run(TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE);
   }
 
  private:
-  DiceTurnSyncOnHelper::SigninChoiceCallback callback_;
+  TurnSyncOnHelper::SigninChoiceCallback callback_;
 };
 
-struct CurrentDiceTurnSyncOnHelperUserData
-    : public base::SupportsUserData::Data {
-  DiceTurnSyncOnHelper* current_helper = nullptr;
+struct CurrentTurnSyncOnHelperUserData : public base::SupportsUserData::Data {
+  TurnSyncOnHelper* current_helper = nullptr;
 };
 
-DiceTurnSyncOnHelper* GetCurrentDiceTurnSyncOnHelper(Profile* profile) {
+TurnSyncOnHelper* GetCurrentTurnSyncOnHelper(Profile* profile) {
   base::SupportsUserData::Data* data =
-      profile->GetUserData(kCurrentDiceTurnSyncOnHelperKey);
+      profile->GetUserData(kCurrentTurnSyncOnHelperKey);
   if (!data)
     return nullptr;
-  CurrentDiceTurnSyncOnHelperUserData* wrapper =
-      static_cast<CurrentDiceTurnSyncOnHelperUserData*>(data);
-  DiceTurnSyncOnHelper* helper = wrapper->current_helper;
+  CurrentTurnSyncOnHelperUserData* wrapper =
+      static_cast<CurrentTurnSyncOnHelperUserData*>(data);
+  TurnSyncOnHelper* helper = wrapper->current_helper;
   DCHECK(helper);
   return helper;
 }
 
-void SetCurrentDiceTurnSyncOnHelper(Profile* profile,
-                                    DiceTurnSyncOnHelper* helper) {
+void SetCurrentTurnSyncOnHelper(Profile* profile, TurnSyncOnHelper* helper) {
   if (!helper) {
-    DCHECK(profile->GetUserData(kCurrentDiceTurnSyncOnHelperKey));
-    profile->RemoveUserData(kCurrentDiceTurnSyncOnHelperKey);
+    DCHECK(profile->GetUserData(kCurrentTurnSyncOnHelperKey));
+    profile->RemoveUserData(kCurrentTurnSyncOnHelperKey);
     return;
   }
 
-  DCHECK(!profile->GetUserData(kCurrentDiceTurnSyncOnHelperKey));
-  std::unique_ptr<CurrentDiceTurnSyncOnHelperUserData> wrapper =
-      std::make_unique<CurrentDiceTurnSyncOnHelperUserData>();
+  DCHECK(!profile->GetUserData(kCurrentTurnSyncOnHelperKey));
+  std::unique_ptr<CurrentTurnSyncOnHelperUserData> wrapper =
+      std::make_unique<CurrentTurnSyncOnHelperUserData>();
   wrapper->current_helper = helper;
-  profile->SetUserData(kCurrentDiceTurnSyncOnHelperKey, std::move(wrapper));
+  profile->SetUserData(kCurrentTurnSyncOnHelperKey, std::move(wrapper));
 }
 
 }  // namespace
 
 // static
-void DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
+void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
     Browser* browser) {
   LoginUIServiceFactory::GetForProfile(browser->profile())
       ->DisplayLoginResult(browser, error);
 }
 
-DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
+TurnSyncOnHelper::TurnSyncOnHelper(
     Profile* profile,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
@@ -187,9 +182,9 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
           identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
       scoped_callback_runner_(std::move(callback)),
       shutdown_subscription_(
-          DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()
+          TurnSyncOnHelperShutdownNotifierFactory::GetInstance()
               ->Get(profile)
-              ->Subscribe(base::BindOnce(&DiceTurnSyncOnHelper::AbortAndDelete,
+              ->Subscribe(base::BindOnce(&TurnSyncOnHelper::AbortAndDelete,
                                          base::Unretained(this)))) {
   DCHECK(delegate_);
   DCHECK(profile_);
@@ -211,7 +206,7 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
   if (HasCanOfferSigninError()) {
     // Do not self-destruct synchronously in the constructor.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&DiceTurnSyncOnHelper::AbortAndDelete,
+        FROM_HERE, base::BindOnce(&TurnSyncOnHelper::AbortAndDelete,
                                   weak_pointer_factory_.GetWeakPtr()));
     return;
   }
@@ -229,12 +224,12 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
       profile_->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
   delegate_->ShowMergeSyncDataConfirmation(
       last_email, account_info_.email,
-      base::BindOnce(&DiceTurnSyncOnHelper::OnMergeAccountConfirmation,
+      base::BindOnce(&TurnSyncOnHelper::OnMergeAccountConfirmation,
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
+TurnSyncOnHelper::TurnSyncOnHelper(
     Profile* profile,
     Browser* browser,
     signin_metrics::AccessPoint signin_access_point,
@@ -242,23 +237,22 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
     signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode)
-    : DiceTurnSyncOnHelper(
-          profile,
-          signin_access_point,
-          signin_promo_action,
-          signin_reason,
-          account_id,
-          signin_aborted_mode,
-          std::make_unique<DiceTurnSyncOnHelperDelegateImpl>(browser),
-          base::OnceClosure()) {}
+    : TurnSyncOnHelper(profile,
+                       signin_access_point,
+                       signin_promo_action,
+                       signin_reason,
+                       account_id,
+                       signin_aborted_mode,
+                       std::make_unique<TurnSyncOnHelperDelegateImpl>(browser),
+                       base::OnceClosure()) {}
 #endif
 
-DiceTurnSyncOnHelper::~DiceTurnSyncOnHelper() {
-  DCHECK_EQ(this, GetCurrentDiceTurnSyncOnHelper(profile_));
-  SetCurrentDiceTurnSyncOnHelper(profile_, nullptr);
+TurnSyncOnHelper::~TurnSyncOnHelper() {
+  DCHECK_EQ(this, GetCurrentTurnSyncOnHelper(profile_));
+  SetCurrentTurnSyncOnHelper(profile_, nullptr);
 }
 
-bool DiceTurnSyncOnHelper::HasCanOfferSigninError() {
+bool TurnSyncOnHelper::HasCanOfferSigninError() {
   SigninUIError can_offer_error =
       CanOfferSignin(profile_, account_info_.gaia, account_info_.email);
   if (can_offer_error.IsOk())
@@ -269,7 +263,7 @@ bool DiceTurnSyncOnHelper::HasCanOfferSigninError() {
   return true;
 }
 
-void DiceTurnSyncOnHelper::OnMergeAccountConfirmation(SigninChoice choice) {
+void TurnSyncOnHelper::OnMergeAccountConfirmation(SigninChoice choice) {
   switch (choice) {
     case SIGNIN_CHOICE_NEW_PROFILE:
       base::RecordAction(
@@ -293,8 +287,7 @@ void DiceTurnSyncOnHelper::OnMergeAccountConfirmation(SigninChoice choice) {
   }
 }
 
-void DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation(
-    SigninChoice choice) {
+void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(SigninChoice choice) {
   enterprise_account_confirmed_ =
       choice == SIGNIN_CHOICE_CONTINUE || choice == SIGNIN_CHOICE_NEW_PROFILE;
   signin_util::RecordEnterpriseProfileCreationUserChoice(
@@ -323,7 +316,7 @@ void DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation(
   }
 }
 
-void DiceTurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
+void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
   switch (profile_mode) {
     case ProfileMode::CURRENT_PROFILE: {
       // If this is a new signin (no account authenticated yet) try loading
@@ -333,7 +326,7 @@ void DiceTurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
           policy::UserPolicySigninServiceFactory::GetForProfile(profile_);
       policy_service->RegisterForPolicyWithAccountId(
           account_info_.email, account_info_.account_id,
-          base::BindOnce(&DiceTurnSyncOnHelper::OnRegisteredForPolicy,
+          base::BindOnce(&TurnSyncOnHelper::OnRegisteredForPolicy,
                          weak_pointer_factory_.GetWeakPtr()));
       break;
     }
@@ -348,8 +341,8 @@ void DiceTurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
   }
 }
 
-void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
-                                                 const std::string& client_id) {
+void TurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
+                                             const std::string& client_id) {
   // If there's no token for the user (policy registration did not succeed) just
   // finish signing in.
   if (dm_token.empty()) {
@@ -369,7 +362,7 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
     // Allow user to create a new profile before continuing with sign-in.
     delegate_->ShowEnterpriseAccountConfirmation(
         account_info_,
-        base::BindOnce(&DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation,
+        base::BindOnce(&TurnSyncOnHelper::OnEnterpriseAccountConfirmation,
                        weak_pointer_factory_.GetWeakPtr()));
     return;
   }
@@ -378,7 +371,7 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
   LoadPolicyWithCachedCredentials();
 }
 
-void DiceTurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
+void TurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
   DCHECK(!dm_token_.empty());
   DCHECK(!client_id_.empty());
   policy::UserPolicySigninService* policy_service =
@@ -387,11 +380,11 @@ void DiceTurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
       AccountIdFromAccountInfo(account_info_), dm_token_, client_id_,
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      base::BindOnce(&DiceTurnSyncOnHelper::OnPolicyFetchComplete,
+      base::BindOnce(&TurnSyncOnHelper::OnPolicyFetchComplete,
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
-void DiceTurnSyncOnHelper::OnPolicyFetchComplete(bool success) {
+void TurnSyncOnHelper::OnPolicyFetchComplete(bool success) {
   // For now, we allow signin to complete even if the policy fetch fails. If
   // we ever want to change this behavior, we could call
   // PrimaryAccountMutator::ClearPrimaryAccount() here instead.
@@ -407,7 +400,7 @@ void DiceTurnSyncOnHelper::OnPolicyFetchComplete(bool success) {
   SigninAndShowSyncConfirmationUI();
 }
 
-void DiceTurnSyncOnHelper::OnProviderUpdatePropagated(
+void TurnSyncOnHelper::OnProviderUpdatePropagated(
     policy::ConfigurationPolicyProvider* provider) {
   if (provider != profile_->GetUserCloudPolicyManager())
     return;
@@ -421,7 +414,7 @@ void DiceTurnSyncOnHelper::OnProviderUpdatePropagated(
       ->RemoveProviderUpdateObserver(this);
 }
 
-void DiceTurnSyncOnHelper::CreateNewSignedInProfile() {
+void TurnSyncOnHelper::CreateNewSignedInProfile() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(!dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
@@ -430,20 +423,20 @@ void DiceTurnSyncOnHelper::CreateNewSignedInProfile() {
           profile_, account_info_.account_id,
           /*local_profile_name=*/std::u16string(), /*icon_index=*/absl::nullopt,
           /*use_guest=*/false,
-          base::BindOnce(&DiceTurnSyncOnHelper::OnNewSignedInProfileCreated,
+          base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
                          base::Unretained(this)));
 #else
   NOTIMPLEMENTED() << "Creating profiles is not yet supported on lacros.";
 #endif
 }
 
-syncer::SyncService* DiceTurnSyncOnHelper::GetSyncService() {
+syncer::SyncService* TurnSyncOnHelper::GetSyncService() {
   return SyncServiceFactory::IsSyncAllowed(profile_)
              ? SyncServiceFactory::GetForProfile(profile_)
              : nullptr;
 }
 
-void DiceTurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
+void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
@@ -474,7 +467,7 @@ void DiceTurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
 #endif
 }
 
-void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
+void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   // Signin.
   auto* primary_account_mutator = identity_manager_->GetPrimaryAccountMutator();
   primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
@@ -538,34 +531,33 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   ShowSyncConfirmationUI();
 }
 
-void DiceTurnSyncOnHelper::SyncStartupCompleted() {
+void TurnSyncOnHelper::SyncStartupCompleted() {
   DCHECK(sync_startup_tracker_);
   sync_startup_tracker_.reset();
   ShowSyncConfirmationUI();
 }
 
-void DiceTurnSyncOnHelper::SyncStartupFailed() {
+void TurnSyncOnHelper::SyncStartupFailed() {
   DCHECK(sync_startup_tracker_);
   sync_startup_tracker_.reset();
   ShowSyncConfirmationUI();
 }
 
 // static
-void DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(
+void TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(
     bool show_sync_enabled_ui_for_testing) {
   g_show_sync_enabled_ui_for_testing_ = show_sync_enabled_ui_for_testing;
 }
 
 // static
-bool DiceTurnSyncOnHelper::HasCurrentDiceTurnSyncOnHelperForTesting(
-    Profile* profile) {
-  return !!GetCurrentDiceTurnSyncOnHelper(profile);
+bool TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(Profile* profile) {
+  return !!GetCurrentTurnSyncOnHelper(profile);
 }
 
-void DiceTurnSyncOnHelper::ShowSyncConfirmationUI() {
+void TurnSyncOnHelper::ShowSyncConfirmationUI() {
   if (g_show_sync_enabled_ui_for_testing_ || GetSyncService()) {
     delegate_->ShowSyncConfirmation(
-        base::BindOnce(&DiceTurnSyncOnHelper::FinishSyncSetupAndDelete,
+        base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,
                        weak_pointer_factory_.GetWeakPtr()));
   } else {
     // The sync disabled dialog has an explicit "sign-out" label for the
@@ -579,12 +571,12 @@ void DiceTurnSyncOnHelper::ShowSyncConfirmationUI() {
                   account_info_.email);
     delegate_->ShowSyncDisabledConfirmation(
         is_managed_account,
-        base::BindOnce(&DiceTurnSyncOnHelper::FinishSyncSetupAndDelete,
+        base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,
                        weak_pointer_factory_.GetWeakPtr()));
   }
 }
 
-void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
+void TurnSyncOnHelper::FinishSyncSetupAndDelete(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   unified_consent::UnifiedConsentService* consent_service =
       UnifiedConsentServiceFactory::GetForProfile(profile_);
@@ -640,29 +632,28 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
   delete this;
 }
 
-void DiceTurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
+void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
   DCHECK(!sync_blocker_);
   DCHECK(!sync_startup_tracker_);
 
   policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
       ->ShutdownUserCloudPolicyManager();
-  SetCurrentDiceTurnSyncOnHelper(profile_, nullptr);  // Detach from old profile
+  SetCurrentTurnSyncOnHelper(profile_, nullptr);  // Detach from old profile
   profile_ = new_profile;
   AttachToProfile();
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
   shutdown_subscription_ =
-      DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()
+      TurnSyncOnHelperShutdownNotifierFactory::GetInstance()
           ->Get(profile_)
-          ->Subscribe(base::BindOnce(&DiceTurnSyncOnHelper::AbortAndDelete,
+          ->Subscribe(base::BindOnce(&TurnSyncOnHelper::AbortAndDelete,
                                      base::Unretained(this)));
   delegate_->SwitchToProfile(new_profile);
 }
 
-void DiceTurnSyncOnHelper::AttachToProfile() {
+void TurnSyncOnHelper::AttachToProfile() {
   // Delete any current helper.
-  DiceTurnSyncOnHelper* current_helper =
-      GetCurrentDiceTurnSyncOnHelper(profile_);
+  TurnSyncOnHelper* current_helper = GetCurrentTurnSyncOnHelper(profile_);
   if (current_helper) {
     // If the existing flow was using the same account, keep the account.
     if (current_helper->account_info_.account_id == account_info_.account_id)
@@ -671,13 +662,13 @@ void DiceTurnSyncOnHelper::AttachToProfile() {
         ->ShutdownUserCloudPolicyManager();
     current_helper->AbortAndDelete();
   }
-  DCHECK(!GetCurrentDiceTurnSyncOnHelper(profile_));
+  DCHECK(!GetCurrentTurnSyncOnHelper(profile_));
 
   // Set this as the current helper.
-  SetCurrentDiceTurnSyncOnHelper(profile_, this);
+  SetCurrentTurnSyncOnHelper(profile_, this);
 }
 
-void DiceTurnSyncOnHelper::AbortAndDelete() {
+void TurnSyncOnHelper::AbortAndDelete() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
@@ -688,7 +679,7 @@ void DiceTurnSyncOnHelper::AbortAndDelete() {
     accounts_mutator->RemoveAccount(
         account_info_.account_id,
         signin_metrics::SourceForRefreshTokenOperation::
-            kDiceTurnOnSyncHelper_Abort);
+            kTurnOnSyncHelper_Abort);
   }
 #else
   // TODO(https://crbug.com/1260291): Implement on Lacros.

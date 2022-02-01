@@ -11,16 +11,16 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
 class Profile;
 class SigninUIError;
 
 // Handles turning on sync for signed-in profile creation flow, embedded in the
 // profile picker.
-class ProfilePickerTurnSyncOnDelegate : public DiceTurnSyncOnHelper::Delegate,
+class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
                                         public LoginUIService::Observer {
  public:
   ProfilePickerTurnSyncOnDelegate(
@@ -33,15 +33,15 @@ class ProfilePickerTurnSyncOnDelegate : public DiceTurnSyncOnHelper::Delegate,
       const ProfilePickerTurnSyncOnDelegate&) = delete;
 
  private:
-  // DiceTurnSyncOnHelper::Delegate:
+  // TurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;

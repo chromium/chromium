@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
 #include <utility>
 
@@ -58,7 +58,7 @@
 using ::testing::AtLeast;
 using ::testing::Return;
 
-class DiceTurnSyncOnHelperTest;
+class TurnSyncOnHelperTest;
 
 namespace {
 
@@ -80,23 +80,22 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
     Profile::Delegate* delegate);
 
 // Dummy delegate forwarding all the calls the test fixture.
-// Owned by the DiceTurnOnSyncHelper.
-class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
+// Owned by the TurnOnSyncHelper.
+class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
  public:
-  explicit TestDiceTurnSyncOnHelperDelegate(
-      DiceTurnSyncOnHelperTest* test_fixture);
-  ~TestDiceTurnSyncOnHelperDelegate() override;
+  explicit TestTurnSyncOnHelperDelegate(TurnSyncOnHelperTest* test_fixture);
+  ~TestTurnSyncOnHelperDelegate() override;
 
  private:
-  // DiceTurnSyncOnHelper::Delegate:
+  // TurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
@@ -107,7 +106,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
   void ShowSyncSettings() override;
   void SwitchToProfile(Profile* new_profile) override;
 
-  raw_ptr<DiceTurnSyncOnHelperTest> test_fixture_;
+  raw_ptr<TurnSyncOnHelperTest> test_fixture_;
 };
 
 // Simple ProfileManager creating testing profiles and allowing to register a
@@ -223,11 +222,9 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
 
 }  // namespace
 
-class DiceTurnSyncOnHelperTest : public testing::Test {
+class TurnSyncOnHelperTest : public testing::Test {
  public:
-  DiceTurnSyncOnHelperTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
-  }
+  TurnSyncOnHelperTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -252,7 +249,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
     EXPECT_FALSE(initial_device_id_.empty());
   }
 
-  ~DiceTurnSyncOnHelperTest() override {
+  ~TurnSyncOnHelperTest() override {
     DCHECK_GT(delegate_destroyed_, 0);
     ClearProfile();
     base::RunLoop().RunUntilIdle();
@@ -297,11 +294,11 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
         SyncServiceFactory::GetForProfile(profile));
   }
 
-  DiceTurnSyncOnHelper* CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode mode) {
-    return new DiceTurnSyncOnHelper(
+  TurnSyncOnHelper* CreateTurnOnSyncHelper(
+      TurnSyncOnHelper::SigninAbortedMode mode) {
+    return new TurnSyncOnHelper(
         profile(), kAccessPoint, kSigninPromoAction, kSigninReason, account_id_,
-        mode, std::make_unique<TestDiceTurnSyncOnHelperDelegate>(this),
+        mode, std::make_unique<TestTurnSyncOnHelperDelegate>(this),
         base::DoNothing());
   }
 
@@ -332,7 +329,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 
   void SetExpectationsForSyncStartupCompletedForNextProfileCreated() {
     profile_manager()->NextProfileCreatedCallback(base::BindOnce(
-        &DiceTurnSyncOnHelperTest::SetExpectationsForSyncStartupCompleted,
+        &TurnSyncOnHelperTest::SetExpectationsForSyncStartupCompleted,
         base::Unretained(this)));
   }
 
@@ -401,7 +398,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
     EXPECT_EQ(expected_sync_settings_shown_, sync_settings_shown_);
   }
 
-  // Functions called by the DiceTurnSyncOnHelper::Delegate:
+  // Functions called by the TurnSyncOnHelper::Delegate:
   void OnShowLoginError(const SigninUIError& error) {
     EXPECT_FALSE(sync_confirmation_shown_);
     EXPECT_FALSE(error.IsOk());
@@ -413,7 +410,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   void OnShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+      TurnSyncOnHelper::SigninChoiceCallback callback) {
     EXPECT_FALSE(sync_confirmation_shown_);
     EXPECT_FALSE(previous_email.empty());
     EXPECT_FALSE(new_email.empty());
@@ -429,7 +426,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 
   void OnShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+      TurnSyncOnHelper::SigninChoiceCallback callback) {
     EXPECT_FALSE(sync_confirmation_shown_);
     EXPECT_FALSE(account_info.email.empty());
     EXPECT_TRUE(enterprise_confirmation_email_.empty())
@@ -496,10 +493,10 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   enum SyncDisabledConfirmation { kNotShown, kShownManaged, kShownNonManaged };
 
   // Delegate behavior.
-  DiceTurnSyncOnHelper::SigninChoice merge_data_choice_ =
-      DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
-  DiceTurnSyncOnHelper::SigninChoice enterprise_choice_ =
-      DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
+  TurnSyncOnHelper::SigninChoice merge_data_choice_ =
+      TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
+  TurnSyncOnHelper::SigninChoice enterprise_choice_ =
+      TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
   LoginUIService::SyncConfirmationUIClosedResult sync_confirmation_result_ =
       LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
   bool run_delegate_callbacks_ = true;
@@ -544,41 +541,40 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   bool sync_settings_shown_ = false;
 };
 
-TestDiceTurnSyncOnHelperDelegate::TestDiceTurnSyncOnHelperDelegate(
-    DiceTurnSyncOnHelperTest* test_fixture)
+TestTurnSyncOnHelperDelegate::TestTurnSyncOnHelperDelegate(
+    TurnSyncOnHelperTest* test_fixture)
     : test_fixture_(test_fixture) {}
 
-TestDiceTurnSyncOnHelperDelegate::~TestDiceTurnSyncOnHelperDelegate() {
+TestTurnSyncOnHelperDelegate::~TestTurnSyncOnHelperDelegate() {
   test_fixture_->OnDelegateDestroyed();
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowLoginError(
-    const SigninUIError& error) {
+void TestTurnSyncOnHelperDelegate::ShowLoginError(const SigninUIError& error) {
   test_fixture_->OnShowLoginError(error);
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   test_fixture_->OnShowMergeSyncDataConfirmation(previous_email, new_email,
                                                  std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   test_fixture_->OnShowEnterpriseAccountConfirmation(account_info,
                                                      std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowSyncConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   test_fixture_->OnShowSyncConfirmation(std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
+void TestTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
@@ -586,32 +582,30 @@ void TestDiceTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
                                                 std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowSyncSettings() {
+void TestTurnSyncOnHelperDelegate::ShowSyncSettings() {
   test_fixture_->OnShowSyncSettings();
 }
 
-void TestDiceTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
+void TestTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
   test_fixture_->SwitchToProfile(new_profile);
 }
 
 // Check that the invalid account is supported.
-TEST_F(DiceTurnSyncOnHelperTest, InvalidAccount) {
+TEST_F(TurnSyncOnHelperTest, InvalidAccount) {
   UseInvalidAccount();
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   CheckDelegateCalls();
 }
 
 // Tests that the login error is displayed and that the account is kept.
-TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
+TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
   // Set expectations.
   expected_login_error_ = SigninUIError::Other(kEmail);
   // Configure the test.
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
   EXPECT_FALSE(
@@ -623,14 +617,13 @@ TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
 // TODO(https://crbug.com/1260291): Enable this test on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that the login error is displayed and that the account is removed.
-TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
+TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
   // Set expectations.
   expected_login_error_ = SigninUIError::Other(kEmail);
   // Configure the test.
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
   EXPECT_FALSE(
@@ -642,7 +635,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
 
 // Tests that the sync disabled message is displayed and that the account is
 // removed upon the ABORT_SYNC action.
-TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
+TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
   // Set expectations.
   expected_sync_disabled_confirmation_ = kShownNonManaged;
   SetExpectationsForSyncDisabled(profile());
@@ -653,8 +646,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
   CheckSyncAborted(/*has_primary_account=*/false);
@@ -663,7 +655,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
 
 // Tests that the sync disabled message is displayed and that the account is
 // removed upon the ABORT_SYNC action (despite SigninAbortedMode::KEEP_ACCOUNT).
-TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
+TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
   // Set expectations.
   expected_sync_disabled_confirmation_ = kShownNonManaged;
   SetExpectationsForSyncDisabled(profile());
@@ -674,8 +666,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
   CheckSyncAborted(/*has_primary_account=*/false);
@@ -684,7 +675,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
 
 // Tests that the sync disabled message is displayed and that the account is
 // kept upon the SYNC_WITH_DEFAULT_SETTINGS action.
-TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledContinueKeepAccount) {
+TEST_F(TurnSyncOnHelperTest, SyncDisabledContinueKeepAccount) {
   // Set expectations.
   expected_sync_disabled_confirmation_ = kShownNonManaged;
   SetExpectationsForSyncDisabled(profile());
@@ -695,8 +686,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledContinueKeepAccount) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
   EXPECT_TRUE(
@@ -707,7 +697,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledContinueKeepAccount) {
 
 // Tests that the sync disabled message is displayed and that the account is
 // kept upon the SYNC_WITH_DEFAULT_SETTINGS action.
-TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
+TEST_F(TurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
   // Reset the account info to be an enterprise account.
   UseEnterpriseAccount();
   // Set expectations.
@@ -720,8 +710,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
   EXPECT_TRUE(
@@ -733,7 +722,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
 // TODO(https://crbug.com/1260291): Enable this test on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Aborts the flow after the cross account dialog.
-TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbort) {
+TEST_F(TurnSyncOnHelperTest, CrossAccountAbort) {
   // Set expectations.
   expected_merge_data_previous_email_ = kPreviousEmail;
   expected_merge_data_new_email_ = kEmail;
@@ -741,8 +730,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbort) {
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -751,7 +739,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbort) {
 }
 
 // Aborts the flow after the cross account dialog.
-TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
+TEST_F(TurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
   // Set expectations.
   expected_merge_data_previous_email_ = kPreviousEmail;
   expected_merge_data_new_email_ = kEmail;
@@ -762,8 +750,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
   user_policy_signin_service()->set_client_id("bar");
   chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -773,41 +760,39 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
 #endif
 
 // Merge data after the cross account dialog.
-TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinue) {
+TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   // Set expectations.
   expected_merge_data_previous_email_ = kPreviousEmail;
   expected_merge_data_new_email_ = kEmail;
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
   // Configure the test.
-  merge_data_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
+  merge_data_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   CheckSyncAborted(/*has_primary_account=*/false);
   CheckDelegateCalls();
 }
 
 // Merge data after the cross account dialog.
-TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
+TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
   // Set expectations.
   expected_merge_data_previous_email_ = kPreviousEmail;
   expected_merge_data_new_email_ = kEmail;
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
   // Configure the test.
-  merge_data_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
+  merge_data_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
   chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   // This was already a signed-in and managed enterprise account so we keep the
   // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
@@ -818,7 +803,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
 // TODO(https://crbug.com/1260291): Enable these tests on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Create a new profile after the cross account dialog and show the signin page.
-TEST_F(DiceTurnSyncOnHelperTest, CrossAccountNewProfile) {
+TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   // Set expectations.
   expected_merge_data_previous_email_ = kPreviousEmail;
   expected_merge_data_new_email_ = kEmail;
@@ -826,12 +811,11 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountNewProfile) {
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompletedForNextProfileCreated();
   // Configure the test.
-  merge_data_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
+  merge_data_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   // Check expectations.
   base::RunLoop().RunUntilIdle();  // Profile creation is asynchronous.
   EXPECT_FALSE(
@@ -843,15 +827,14 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountNewProfile) {
 }
 
 // Abort after the enterprise confirmation prompt.
-TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationAbort) {
+TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationAbort) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEmail;
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -861,17 +844,16 @@ TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationAbort) {
 #endif
 
 // Continue after the enterprise confirmation prompt.
-TEST_F(DiceTurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
+TEST_F(TurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEmail;
   expected_sync_confirmation_shown_ = true;
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -882,7 +864,7 @@ TEST_F(DiceTurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
 // TODO(https://crbug.com/1260291): Enable this test on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Continue with a new profile after the enterprise confirmation prompt.
-TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
+TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEmail;
   expected_switched_to_new_profile_ = true;
@@ -891,10 +873,9 @@ TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   base::RunLoop().RunUntilIdle();  // Profile creation is asynchronous.
   EXPECT_FALSE(
@@ -905,7 +886,7 @@ TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
 
 // Test that the unconsented primary account is kept if the user creates a new
 // account and cancels sync activation.
-TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
+TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEnterpriseEmail;
   expected_switched_to_new_profile_ = true;
@@ -916,14 +897,13 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin);
 
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   // Check expectations.
   base::RunLoop().RunUntilIdle();  // Profile creation is asynchronous.
   EXPECT_FALSE(
@@ -941,7 +921,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
 
 // Test that the unconsented primary account is kept if the user creates a new
 // account and cancels sync activation.
-TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
+TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEnterpriseEmail;
   expected_sync_confirmation_shown_ = true;
@@ -951,14 +931,13 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin);
 
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // This was already a signed-in and managed enterprise account so we keep the
   // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
   CheckSyncAborted(/*has_primary_account=*/true);
@@ -967,7 +946,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
 #endif
 
 // Tests that the sync confirmation is shown and the user can abort.
-TEST_F(DiceTurnSyncOnHelperTest, UndoSync) {
+TEST_F(TurnSyncOnHelperTest, UndoSync) {
   // Set expectations.
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
@@ -976,15 +955,14 @@ TEST_F(DiceTurnSyncOnHelperTest, UndoSync) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   CheckSyncAborted(/*has_primary_account=*/false);
   CheckDelegateCalls();
 }
 
 // Tests that the sync settings page is shown.
-TEST_F(DiceTurnSyncOnHelperTest, ConfigureSync) {
+TEST_F(TurnSyncOnHelperTest, ConfigureSync) {
   // Set expectations.
   expected_sync_confirmation_shown_ = true;
   expected_sync_settings_shown_ = true;
@@ -1000,8 +978,7 @@ TEST_F(DiceTurnSyncOnHelperTest, ConfigureSync) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -1010,7 +987,7 @@ TEST_F(DiceTurnSyncOnHelperTest, ConfigureSync) {
 }
 
 // Tests that the user is signed in and Sync configuration is complete.
-TEST_F(DiceTurnSyncOnHelperTest, StartSync) {
+TEST_F(TurnSyncOnHelperTest, StartSync) {
   // Set expectations.
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
@@ -1023,8 +1000,7 @@ TEST_F(DiceTurnSyncOnHelperTest, StartSync) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
@@ -1035,7 +1011,7 @@ TEST_F(DiceTurnSyncOnHelperTest, StartSync) {
 // Tests that the user is signed in and Sync configuration is complete.
 // Also tests that turning sync on enables URL-keyed anonymized data collection.
 // Regression test for http://crbug.com/812546
-TEST_F(DiceTurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
+TEST_F(TurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
   // Set expectations.
   expected_sync_confirmation_shown_ = true;
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
@@ -1054,8 +1030,7 @@ TEST_F(DiceTurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 
   // Check expectations.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
@@ -1068,7 +1043,7 @@ TEST_F(DiceTurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
 // For users on a cloud managed device, tests that the user is signed in only
 // after Sync engine starts.
 // Regression test for http://crbug.com/812546
-TEST_F(DiceTurnSyncOnHelperTest,
+TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupCompletedForCloudManagedDevices) {
   // Simulate a managed browser.
   policy::ScopedManagementServiceOverrideForTesting browser_management(
@@ -1082,8 +1057,8 @@ TEST_F(DiceTurnSyncOnHelperTest,
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  DiceTurnSyncOnHelper* dice_sync_starter = CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  TurnSyncOnHelper* sync_starter = CreateTurnOnSyncHelper(
+      TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 
   // Check that the primary account was set with IdentityManager, but the sync
   // confirmation dialog was not yet shown.
@@ -1099,14 +1074,14 @@ TEST_F(DiceTurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  dice_sync_starter->SyncStartupCompleted();
+  sync_starter->SyncStartupCompleted();
   CheckDelegateCalls();
 }
 
 // For enterprise user, tests that the user is signed in only after Sync engine
 // starts.
 // Regression test for http://crbug.com/812546
-TEST_F(DiceTurnSyncOnHelperTest,
+TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupCompletedForEnterpriseAccount) {
   // Reset the account info to be an enterprise account.
   UseEnterpriseAccount();
@@ -1118,8 +1093,8 @@ TEST_F(DiceTurnSyncOnHelperTest,
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  DiceTurnSyncOnHelper* dice_sync_starter = CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  TurnSyncOnHelper* sync_starter = CreateTurnOnSyncHelper(
+      TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 
   // Check that the primary account was set with IdentityManager, but the sync
   // confirmation dialog was not yet shown.
@@ -1135,14 +1110,14 @@ TEST_F(DiceTurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  dice_sync_starter->SyncStartupCompleted();
+  sync_starter->SyncStartupCompleted();
   CheckDelegateCalls();
 }
 
 // For enterprise user, tests that the user is signed in only after Sync engine
 // fails to start.
 // Regression test for http://crbug.com/812546
-TEST_F(DiceTurnSyncOnHelperTest,
+TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupFailedForEnterpriseAccount) {
   // Reset the account info to be an enterprise account.
   UseEnterpriseAccount();
@@ -1154,8 +1129,8 @@ TEST_F(DiceTurnSyncOnHelperTest,
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  DiceTurnSyncOnHelper* dice_sync_starter = CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  TurnSyncOnHelper* sync_starter = CreateTurnOnSyncHelper(
+      TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 
   // Check that the primary account was added to the token service and in the
   // sign-in manager.
@@ -1171,14 +1146,14 @@ TEST_F(DiceTurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  dice_sync_starter->SyncStartupFailed();
+  sync_starter->SyncStartupFailed();
   CheckDelegateCalls();
 }
 
 // For users on a cloud managed device, tests that the user is signed in only
 // after Sync engine fails to start.
 // Regression test for http://crbug.com/812546
-TEST_F(DiceTurnSyncOnHelperTest,
+TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupFailedForCloudManagedDevices) {
   // Simulate a managed platform.
   policy::ScopedManagementServiceOverrideForTesting platform_management(
@@ -1192,8 +1167,8 @@ TEST_F(DiceTurnSyncOnHelperTest,
   // Signin flow.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  DiceTurnSyncOnHelper* dice_sync_starter = CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  TurnSyncOnHelper* sync_starter = CreateTurnOnSyncHelper(
+      TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 
   // Check that the primary account was set with IdentityManager, but the sync
   // confirmation dialog was not yet shown.
@@ -1209,12 +1184,12 @@ TEST_F(DiceTurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  dice_sync_starter->SyncStartupFailed();
+  sync_starter->SyncStartupFailed();
   CheckDelegateCalls();
 }
 
 // Checks that the profile can be deleted in the middle of the flow.
-TEST_F(DiceTurnSyncOnHelperTest, ProfileDeletion) {
+TEST_F(TurnSyncOnHelperTest, ProfileDeletion) {
   run_delegate_callbacks_ = false;  // Delegate is hanging.
 
   // Show the enterprise confirmation dialog.
@@ -1222,10 +1197,9 @@ TEST_F(DiceTurnSyncOnHelperTest, ProfileDeletion) {
   expected_sync_confirmation_shown_ = true;
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   // Signin flow.
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 
   // Delegate is now hanging at the enterprise confirmation dialog.
   // Dialog has been shown.
@@ -1237,16 +1211,15 @@ TEST_F(DiceTurnSyncOnHelperTest, ProfileDeletion) {
   // Delete the profile.
   ClearProfile();
 
-  // DiceTurnSyncOnHelper was destroyed.
+  // TurnSyncOnHelper was destroyed.
   EXPECT_EQ(1, delegate_destroyed());
 }
 
 // Checks that an existing instance is deleted when a new one is created.
-TEST_F(DiceTurnSyncOnHelperTest, AbortExisting) {
+TEST_F(TurnSyncOnHelperTest, AbortExisting) {
   // Create a first instance, stuck on policy requests.
   user_policy_signin_service()->set_is_hanging(true);
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check that it did not complete.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -1259,8 +1232,7 @@ TEST_F(DiceTurnSyncOnHelperTest, AbortExisting) {
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   SetExpectationsForSyncStartupCompleted(profile());
-  CreateDiceTurnOnSyncHelper(
-      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   // Check that it completed.
   CheckDelegateCalls();
   EXPECT_TRUE(

@@ -17,7 +17,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
 struct AccountInfo;
@@ -133,7 +133,7 @@ std::string GetAllowedDomain(std::string signin_pattern);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace internal {
 // Same as |EnableSyncFromPromo| but with a callback that creates a
-// DiceTurnSyncOnHelper so that it can be unit tested.
+// TurnSyncOnHelper so that it can be unit tested.
 void EnableSyncFromPromo(
     Browser* browser,
     const AccountInfo& account,
@@ -146,8 +146,8 @@ void EnableSyncFromPromo(
              signin_metrics::PromoAction signin_promo_action,
              signin_metrics::Reason signin_reason,
              const CoreAccountId& account_id,
-             DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
-        create_dice_turn_sync_on_helper_callback);
+             TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
+        create_turn_sync_on_helper_callback);
 }  // namespace internal
 #endif
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_H_
 
 #include <memory>
 #include <string>
@@ -39,15 +39,12 @@ class IdentityManager;
 namespace syncer {
 class SyncService;
 class SyncSetupInProgressHandle;
-}
+}  // namespace syncer
 
 // Handles details of setting the primary account with IdentityManager and
 // turning on sync for an account for which there is already a refresh token.
-// TODO(crbug.com/1248047): Rename this to TurnSyncOnHelper to reflect this can
-// also be used with mirror.
-class DiceTurnSyncOnHelper
-    : public SyncStartupTracker::Observer,
-      public policy::PolicyService::ProviderUpdateObserver {
+class TurnSyncOnHelper : public SyncStartupTracker::Observer,
+                         public policy::PolicyService::ProviderUpdateObserver {
  public:
   // Behavior when the signin is aborted (by an error or cancelled by the user).
   // The mode has no effect on the sync-is-disabled flow where cancelling always
@@ -138,28 +135,28 @@ class DiceTurnSyncOnHelper
   // in the token service.
   // |callback| is called at the end of the flow (i.e. after the user closes the
   // sync confirmation dialog).
-  DiceTurnSyncOnHelper(Profile* profile,
-                       signin_metrics::AccessPoint signin_access_point,
-                       signin_metrics::PromoAction signin_promo_action,
-                       signin_metrics::Reason signin_reason,
-                       const CoreAccountId& account_id,
-                       SigninAbortedMode signin_aborted_mode,
-                       std::unique_ptr<Delegate> delegate,
-                       base::OnceClosure callback);
+  TurnSyncOnHelper(Profile* profile,
+                   signin_metrics::AccessPoint signin_access_point,
+                   signin_metrics::PromoAction signin_promo_action,
+                   signin_metrics::Reason signin_reason,
+                   const CoreAccountId& account_id,
+                   SigninAbortedMode signin_aborted_mode,
+                   std::unique_ptr<Delegate> delegate,
+                   base::OnceClosure callback);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Convenience constructor using the default delegate and empty callback.
-  DiceTurnSyncOnHelper(Profile* profile,
-                       Browser* browser,
-                       signin_metrics::AccessPoint signin_access_point,
-                       signin_metrics::PromoAction signin_promo_action,
-                       signin_metrics::Reason signin_reason,
-                       const CoreAccountId& account_id,
-                       SigninAbortedMode signin_aborted_mode);
+  TurnSyncOnHelper(Profile* profile,
+                   Browser* browser,
+                   signin_metrics::AccessPoint signin_access_point,
+                   signin_metrics::PromoAction signin_promo_action,
+                   signin_metrics::Reason signin_reason,
+                   const CoreAccountId& account_id,
+                   SigninAbortedMode signin_aborted_mode);
 #endif
 
-  DiceTurnSyncOnHelper(const DiceTurnSyncOnHelper&) = delete;
-  DiceTurnSyncOnHelper& operator=(const DiceTurnSyncOnHelper&) = delete;
+  TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
+  TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;
 
   // SyncStartupTracker::Observer:
   void SyncStartupCompleted() override;
@@ -169,11 +166,11 @@ class DiceTurnSyncOnHelper
   static void SetShowSyncEnabledUiForTesting(
       bool show_sync_enabled_ui_for_testing);
 
-  // Returns true if a `DiceTurnSyncOnHelper` is currently active for `profile`.
-  static bool HasCurrentDiceTurnSyncOnHelperForTesting(Profile* profile);
+  // Returns true if a `TurnSyncOnHelper` is currently active for `profile`.
+  static bool HasCurrentTurnSyncOnHelperForTesting(Profile* profile);
 
  private:
-  friend class base::DeleteHelper<DiceTurnSyncOnHelper>;
+  friend class base::DeleteHelper<TurnSyncOnHelper>;
 
   enum class ProfileMode {
     // Attempts to sign the user in |profile_|. Note that if the account to be
@@ -186,8 +183,8 @@ class DiceTurnSyncOnHelper
     NEW_PROFILE
   };
 
-  // DiceTurnSyncOnHelper deletes itself.
-  ~DiceTurnSyncOnHelper() override;
+  // TurnSyncOnHelper deletes itself.
+  ~TurnSyncOnHelper() override;
 
   // Handles can offer sign-in errors.  It returns true if there is an error,
   // and false otherwise.
@@ -246,7 +243,7 @@ class DiceTurnSyncOnHelper
   // Switch to a new profile after exporting the token.
   void SwitchToProfile(Profile* new_profile);
 
-  // Only one DiceTurnSyncOnHelper can be attached per profile. This deletes
+  // Only one TurnSyncOnHelper can be attached per profile. This deletes
   // any other helper attached to the profile.
   void AttachToProfile();
 
@@ -284,7 +281,7 @@ class DiceTurnSyncOnHelper
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
 
-  base::WeakPtrFactory<DiceTurnSyncOnHelper> weak_pointer_factory_{this};
+  base::WeakPtrFactory<TurnSyncOnHelper> weak_pointer_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_H_

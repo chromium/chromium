@@ -78,28 +78,28 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   // Open the browser and when it's done, show the login error.
   if (controller_) {
     controller_->FinishAndOpenBrowser(base::BindOnce(
-        &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error));
+        &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error));
   }
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   // A brand new profile cannot have a conflict in sync accounts.
   NOTREACHED();
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   enterprise_account_ = true;
   // In this flow, the enterprise confirmation is replaced by an enterprise
   // welcome screen. Knowing if sync is enabled is needed for the screen. Thus,
   // it is delayed until either ShowSyncConfirmation() or
   // ShowSyncDisabledConfirmation() gets called.
   // Assume an implicit "Continue" here.
-  std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+  std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   return;
 }
 
@@ -194,7 +194,7 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     EnterpriseProfileWelcomeUI::ScreenType type,
     bool proceed) {
   if (!proceed) {
-    // The callback provided by DiceTurnSyncOnHelper must be called, UI_CLOSED
+    // The callback provided by TurnSyncOnHelper must be called, UI_CLOSED
     // makes sure the final callback does not get called. It does not matter
     // what happens to sync as the signed-in profile creation gets cancelled
     // right after.

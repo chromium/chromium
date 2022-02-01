@@ -52,13 +52,13 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -113,13 +113,13 @@ HandlerSigninReason GetHandlerSigninReason(const GURL& url) {
   }
 }
 
-// Specific implementation of DiceTurnSyncOnHelper::Delegate for forced
+// Specific implementation of TurnSyncOnHelper::Delegate for forced
 // signin flows. Some confirmation prompts are skipped.
-class ForcedSigninDiceTurnSyncOnHelperDelegate
-    : public DiceTurnSyncOnHelperDelegateImpl {
+class ForcedSigninTurnSyncOnHelperDelegate
+    : public TurnSyncOnHelperDelegateImpl {
  public:
-  explicit ForcedSigninDiceTurnSyncOnHelperDelegate(Browser* browser)
-      : DiceTurnSyncOnHelperDelegateImpl(browser) {}
+  explicit ForcedSigninTurnSyncOnHelperDelegate(Browser* browser)
+      : TurnSyncOnHelperDelegateImpl(browser) {}
 
  protected:
   void ShouldEnterpriseConfirmationPromptForNewProfile(
@@ -132,7 +132,7 @@ class ForcedSigninDiceTurnSyncOnHelperDelegate
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
+      TurnSyncOnHelper::SigninChoiceCallback callback) override {
     NOTREACHED();
   }
 };
@@ -455,15 +455,14 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
           signin_metrics::SourceForRefreshTokenOperation::
               kInlineLoginHandler_Signin);
 
-  std::unique_ptr<DiceTurnSyncOnHelper::Delegate> delegate =
-      std::make_unique<ForcedSigninDiceTurnSyncOnHelperDelegate>(browser);
+  std::unique_ptr<TurnSyncOnHelper::Delegate> delegate =
+      std::make_unique<ForcedSigninTurnSyncOnHelperDelegate>(browser);
 
-  new DiceTurnSyncOnHelper(
+  new TurnSyncOnHelper(
       profile_, signin::GetAccessPointForEmbeddedPromoURL(current_url_),
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       signin::GetSigninReasonForEmbeddedPromoURL(current_url_), account_id,
-      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
-      std::move(delegate),
+      TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT, std::move(delegate),
       base::BindOnce(&OnSigninComplete, profile_, email_, password_,
                      is_force_sign_in_with_usermanager_));
 }

@@ -107,7 +107,7 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
   DiceSigninUiUtilTest() = default;
   ~DiceSigninUiUtilTest() override = default;
 
-  struct CreateDiceTurnSyncOnHelperParams {
+  struct CreateTurnSyncOnHelperParams {
    public:
     raw_ptr<Profile> profile = nullptr;
     raw_ptr<Browser> browser = nullptr;
@@ -118,28 +118,28 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
     signin_metrics::Reason signin_reason =
         signin_metrics::Reason::kUnknownReason;
     CoreAccountId account_id;
-    DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
-        DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
+    TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
+        TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
   };
 
-  void CreateDiceTurnSyncOnHelper(
+  void CreateTurnSyncOnHelper(
       Profile* profile,
       Browser* browser,
       signin_metrics::AccessPoint signin_access_point,
       signin_metrics::PromoAction signin_promo_action,
       signin_metrics::Reason signin_reason,
       const CoreAccountId& account_id,
-      DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-    create_dice_turn_sync_on_helper_called_ = true;
-    create_dice_turn_sync_on_helper_params_.profile = profile;
-    create_dice_turn_sync_on_helper_params_.browser = browser;
-    create_dice_turn_sync_on_helper_params_.signin_access_point =
+      TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
+    create_turn_sync_on_helper_called_ = true;
+    create_turn_sync_on_helper_params_.profile = profile;
+    create_turn_sync_on_helper_params_.browser = browser;
+    create_turn_sync_on_helper_params_.signin_access_point =
         signin_access_point;
-    create_dice_turn_sync_on_helper_params_.signin_promo_action =
+    create_turn_sync_on_helper_params_.signin_promo_action =
         signin_promo_action;
-    create_dice_turn_sync_on_helper_params_.signin_reason = signin_reason;
-    create_dice_turn_sync_on_helper_params_.account_id = account_id;
-    create_dice_turn_sync_on_helper_params_.signin_aborted_mode =
+    create_turn_sync_on_helper_params_.signin_reason = signin_reason;
+    create_turn_sync_on_helper_params_.account_id = account_id;
+    create_turn_sync_on_helper_params_.signin_aborted_mode =
         signin_aborted_mode;
   }
 
@@ -171,7 +171,7 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
                   bool is_default_promo_account) {
     signin_ui_util::internal::EnableSyncFromPromo(
         browser(), account_info, access_point_, is_default_promo_account,
-        base::BindOnce(&DiceSigninUiUtilTest::CreateDiceTurnSyncOnHelper,
+        base::BindOnce(&DiceSigninUiUtilTest::CreateTurnSyncOnHelper,
                        base::Unretained(this)));
   }
 
@@ -254,8 +254,8 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE;
 
-  bool create_dice_turn_sync_on_helper_called_ = false;
-  CreateDiceTurnSyncOnHelperParams create_dice_turn_sync_on_helper_params_;
+  bool create_turn_sync_on_helper_called_ = false;
+  CreateTurnSyncOnHelperParams create_turn_sync_on_helper_params_;
 };
 
 TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
@@ -279,7 +279,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
         is_default_promo_account
             ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
             : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
-    ASSERT_TRUE(create_dice_turn_sync_on_helper_called_);
+    ASSERT_TRUE(create_turn_sync_on_helper_called_);
     ExpectOneSigninStartedHistograms(histogram_tester, expected_promo_action);
 
     EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -294,17 +294,17 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
 
     // Verify that the helper to enable sync is created with the expected
     // params.
-    EXPECT_EQ(profile(), create_dice_turn_sync_on_helper_params_.profile);
-    EXPECT_EQ(browser(), create_dice_turn_sync_on_helper_params_.browser);
-    EXPECT_EQ(account_id, create_dice_turn_sync_on_helper_params_.account_id);
+    EXPECT_EQ(profile(), create_turn_sync_on_helper_params_.profile);
+    EXPECT_EQ(browser(), create_turn_sync_on_helper_params_.browser);
+    EXPECT_EQ(account_id, create_turn_sync_on_helper_params_.account_id);
     EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-              create_dice_turn_sync_on_helper_params_.signin_access_point);
+              create_turn_sync_on_helper_params_.signin_access_point);
     EXPECT_EQ(expected_promo_action,
-              create_dice_turn_sync_on_helper_params_.signin_promo_action);
+              create_turn_sync_on_helper_params_.signin_promo_action);
     EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
-              create_dice_turn_sync_on_helper_params_.signin_reason);
-    EXPECT_EQ(DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-              create_dice_turn_sync_on_helper_params_.signin_aborted_mode);
+              create_turn_sync_on_helper_params_.signin_reason);
+    EXPECT_EQ(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+              create_turn_sync_on_helper_params_.signin_aborted_mode);
   }
 }
 
@@ -332,7 +332,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);
-    ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+    ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
     ExpectOneSigninStartedHistograms(
         histogram_tester,
@@ -372,7 +372,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
   EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
-  ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+  ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester, signin_metrics::PromoAction::
@@ -405,7 +405,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
   EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
-  ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+  ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester,
@@ -427,7 +427,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
   EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
-  ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+  ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester, signin_metrics::PromoAction::

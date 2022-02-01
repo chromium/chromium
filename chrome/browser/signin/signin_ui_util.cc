@@ -59,7 +59,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
 namespace {
@@ -118,19 +118,19 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void CreateDiceTurnSyncOnHelper(
+void CreateTurnSyncOnHelper(
     Profile* profile,
     Browser* browser,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
     signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
-    DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-  // DiceTurnSyncOnHelper is suicidal (it will delete itself once it finishes
+    TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
+  // TurnSyncOnHelper is suicidal (it will delete itself once it finishes
   // enabling sync).
-  new DiceTurnSyncOnHelper(profile, browser, signin_access_point,
-                           signin_promo_action, signin_reason, account_id,
-                           signin_aborted_mode);
+  new TurnSyncOnHelper(profile, browser, signin_access_point,
+                       signin_promo_action, signin_reason, account_id,
+                       signin_aborted_mode);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -345,7 +345,7 @@ void EnableSyncFromMultiAccountPromo(Browser* browser,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   internal::EnableSyncFromPromo(browser, account, access_point,
                                 is_default_promo_account,
-                                base::BindOnce(&CreateDiceTurnSyncOnHelper));
+                                base::BindOnce(&CreateTurnSyncOnHelper));
 #else
   NOTREACHED();
 #endif
@@ -365,8 +365,8 @@ void EnableSyncFromPromo(
              signin_metrics::PromoAction signin_promo_action,
              signin_metrics::Reason signin_reason,
              const CoreAccountId& account_id,
-             DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
-        create_dice_turn_sync_on_helper_callback) {
+             TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
+        create_turn_sync_on_helper_callback) {
   DCHECK(browser);
   DCHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
   Profile* profile = browser->profile();
@@ -408,10 +408,10 @@ void EnableSyncFromPromo(
   signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point,
                                                        promo_action);
-  std::move(create_dice_turn_sync_on_helper_callback)
+  std::move(create_turn_sync_on_helper_callback)
       .Run(profile, browser, access_point, promo_action,
            signin_metrics::Reason::kSigninPrimaryAccount, account.account_id,
-           DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+           TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
 }
 }  // namespace internal
 
