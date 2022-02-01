@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -1730,6 +1731,11 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
   restored_cache.RestoreFromListValue(serialized_cache);
+
+  // Check `serialized_cache` can be encoded as JSON. This ensures it has no
+  // binary values.
+  std::string json;
+  EXPECT_TRUE(base::JSONWriter::Write(serialized_cache, &json));
 
   ASSERT_EQ(1u, restored_cache.size());
   HostCache::EntryStaleness stale;
