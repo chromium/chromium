@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
@@ -185,6 +186,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
   int selection_index_ = 0;
   bool can_resize_ = true;
   void* params_ = nullptr;
+  base::WeakPtrFactory<SelectFileDialogExtension> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_H_
