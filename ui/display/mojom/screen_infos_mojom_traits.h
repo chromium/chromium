@@ -31,6 +31,10 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     return r.current_display_id;
   }
 
+  static const gfx::Size& system_cursor_size(const display::ScreenInfos& r) {
+    return r.system_cursor_size;
+  }
+
   static bool Read(display::mojom::ScreenInfosDataView r,
                    display::ScreenInfos* out);
 };

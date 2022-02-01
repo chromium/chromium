@@ -5,6 +5,7 @@
 module display.mojom;
 
 import "ui/display/mojom/screen_info.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Information about a set of screens that are relevant to a particular widget.
 // This includes an id for the screen currently showing the widget.  This
@@ -17,4 +18,8 @@ struct ScreenInfos {
 
   // The display_id of the current ScreenInfo in `screen_infos`.
   int64 current_display_id;
+
+  // Cursor size in DIP, obtained from the OS. This value is general
+  // to all displays.
+  gfx.mojom.Size system_cursor_size;
 };

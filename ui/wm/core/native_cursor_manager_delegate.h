@@ -29,6 +29,7 @@ class WM_CORE_EXPORT NativeCursorManagerDelegate {
   virtual void CommitVisibility(bool visible) = 0;
   virtual void CommitCursorSize(ui::CursorSize cursor_size) = 0;
   virtual void CommitMouseEventsEnabled(bool enabled) = 0;
+  virtual void CommitSystemCursorSize(const gfx::Size& cursor_size) = 0;
 };
 
 }  // namespace wm

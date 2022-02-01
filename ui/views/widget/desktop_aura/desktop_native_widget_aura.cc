@@ -76,6 +76,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
+#include "ui/views/widget/desktop_aura/desktop_native_cursor_manager_win.h"
 #endif
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
@@ -568,8 +569,11 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     // The host's dispatcher must be added to |native_cursor_manager_| before
     // OnNativeWidgetCreated() is called.
     cursor_reference_count_++;
-    if (!native_cursor_manager_)
-      native_cursor_manager_ = new DesktopNativeCursorManager();
+    if (!native_cursor_manager_) {
+      native_cursor_manager_ =
+          desktop_window_tree_host_->GetSingletonDesktopNativeCursorManager();
+    }
+
     native_cursor_manager_->AddHost(host());
 
     if (!cursor_manager_) {
@@ -578,6 +582,9 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
       cursor_manager_->SetDisplay(
           display::Screen::GetScreen()->GetDisplayNearestWindow(
               host_->window()));
+      if (features::IsSystemCursorSizeSupported()) {
+        native_cursor_manager_->InitCursorSizeObserver(cursor_manager_);
+      }
     }
     aura::client::SetCursorClient(host_->window(), cursor_manager_);
   }

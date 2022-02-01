@@ -48,6 +48,7 @@
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
+#include "ui/views/widget/desktop_aura/desktop_native_cursor_manager_win.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -1166,6 +1167,11 @@ void DesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(
         window_scale_factor, message_handler_->GetClientAreaBounds().size(),
         window()->GetLocalSurfaceId());
   }
+}
+
+DesktopNativeCursorManager*
+DesktopWindowTreeHostWin::GetSingletonDesktopNativeCursorManager() {
+  return new DesktopNativeCursorManagerWin();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

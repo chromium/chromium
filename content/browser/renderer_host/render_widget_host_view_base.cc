@@ -507,6 +507,13 @@ void RenderWidgetHostViewBase::ProcessAckedTouchEvent(
   NOTREACHED();
 }
 
+// Send system cursor size to the renderer via UpdateScreenInfo().
+void RenderWidgetHostViewBase::UpdateSystemCursorSize(
+    const gfx::Size& cursor_size) {
+  system_cursor_size_ = cursor_size;
+  UpdateScreenInfo();
+}
+
 void RenderWidgetHostViewBase::UpdateScreenInfo() {
   bool force_sync_visual_properties = false;
   // Delegate, which is usually WebContentsImpl, do not send rect updates for
@@ -803,16 +810,24 @@ display::ScreenInfos RenderWidgetHostViewBase::GetNewScreenInfosForUpdate() {
   // RWHVChildFrame gets its ScreenInfos from the CrossProcessFrameConnector.
   DCHECK(!IsRenderWidgetHostViewChildFrame());
 
+  display::ScreenInfos screen_infos;
+
   if (auto* screen = display::Screen::GetScreen()) {
     gfx::NativeView native_view = GetNativeView();
     const auto& display = native_view
                               ? screen->GetDisplayNearestView(native_view)
                               : screen->GetPrimaryDisplay();
-    return screen->GetScreenInfosNearestDisplay(display.id());
+    screen_infos = screen->GetScreenInfosNearestDisplay(display.id());
+  } else {
+    // If there is no Screen, create fake ScreenInfos (for tests).
+    screen_infos = display::ScreenInfos(display::ScreenInfo());
   }
 
-  // If there is no Screen, create fake ScreenInfos (for tests).
-  return display::ScreenInfos(display::ScreenInfo());
+  // Set system cursor size separately as it's not a property of screen or
+  // display.
+  screen_infos.system_cursor_size = system_cursor_size_;
+
+  return screen_infos;
 }
 
 void RenderWidgetHostViewBase::DidNavigate() {

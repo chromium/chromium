@@ -99,6 +99,10 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsForcedColorsEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kEyeDropper;
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsEyeDropperEnabled();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kSystemCursorSizeSupported;
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSystemCursorSizeSupported();
+
 // Used to enable the common select popup.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kUseCommonSelectPopup;

@@ -89,4 +89,9 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
     host->dispatcher()->OnMouseEventsEnableStateChanged(enabled);
 }
 
+void DesktopNativeCursorManager::InitCursorSizeObserver(
+    wm::NativeCursorManagerDelegate* delegate) {
+  NOTREACHED();
+}
+
 }  // namespace views

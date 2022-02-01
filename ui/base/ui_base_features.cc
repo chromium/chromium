@@ -106,6 +106,16 @@ const base::Feature kPointerLockOptions = {"PointerLockOptions",
 const base::Feature kSystemCaptionStyle{"SystemCaptionStyle",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, the feature will query the OS for a default cursor size,
+// to be used in determining the concrete object size of a custom cursor in
+// blink.
+const base::Feature kSystemCursorSizeSupported{
+    "SystemCursorSizeSupported", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsSystemCursorSizeSupported() {
+  return base::FeatureList::IsEnabled(kSystemCursorSizeSupported);
+}
+
 // Allows system keyboard event capture via the keyboard lock API.
 const base::Feature kSystemKeyboardLock{"SystemKeyboardLock",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

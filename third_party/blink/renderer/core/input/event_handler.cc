@@ -586,13 +586,37 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
       float scale = style_image->ImageScaleFactor();
       bool hot_spot_specified = (*cursors)[i].HotSpotSpecified();
       gfx::Point hot_spot = (*cursors)[i].HotSpot();
-      gfx::Size size = cached_image->GetImage()->Size();
+
       if (cached_image->ErrorOccurred())
         continue;
-      // Limit the size of cursors (in UI pixels) so that they cannot be
-      // used to cover UI elements in chrome.
-      size = gfx::ScaleToFlooredSize(size, 1 / scale);
-      if (size.width() > kMaximumCursorSize ||
+
+      // Compute the concrete object size in DIP based on the
+      // default cursor size obtained from the OS.
+      gfx::SizeF size =
+          style_image->ImageSize(1,
+                                 gfx::SizeF(page->GetChromeClient()
+                                                .GetScreenInfos(*frame_)
+                                                .system_cursor_size),
+                                 kRespectImageOrientation);
+
+      Image* image = cached_image->GetImage();
+
+      // If the image is an SVG, then adjust the scale to reflect the device
+      // scale factor so that the SVG can be rasterized in the native
+      // resolution and scaled down to the correct size for the cursor.
+      float device_scale_factor = 1;
+      if (image->IsSVGImage()) {
+        // Limit the size of cursors (in DIP) so that they cannot be
+        // used to cover UI elements in chrome. StyleImage::ImageSize does not
+        // take StyleImage::ImageScaleFactor() into account when computing the
+        // size for SVG images.
+        size.Scale(1 / scale);
+        device_scale_factor =
+            page->GetChromeClient().GetScreenInfo(*frame_).device_scale_factor;
+        scale *= device_scale_factor;
+      }
+
+      if (size.IsEmpty() || size.width() > kMaximumCursorSize ||
           size.height() > kMaximumCursorSize)
         continue;
 
@@ -625,34 +649,22 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
         }
       }
 
-      Image* image = cached_image->GetImage();
-
-      // If the image is an SVG, then adjust the scale to reflect the device
-      // scale factor so that the SVG can be rasterized in the native
-      // resolution and scaled down to the correct size for the cursor.
-      float device_scale_factor = 1;
-      if (image->IsSVGImage()) {
-        device_scale_factor =
-            page->GetChromeClient().GetScreenInfo(*frame_).device_scale_factor;
-        scale *= device_scale_factor;
-      }
-
       // Ensure no overflow possible in calculations above.
       if (scale < kMinimumCursorScale)
         continue;
 
-      // Convert from logical pixels to physical pixels.
+      // Convert from DIP to physical pixels.
       hot_spot = gfx::ScaleToRoundedPoint(hot_spot, scale);
 
       // Special case for SVG so that it can be rasterized in the appropriate
       // resolution for high DPI displays.
       scoped_refptr<Image> svg_image_holder;
       if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-        gfx::Size scaled_size =
-            gfx::ScaleToFlooredSize(svg_image->Size(), device_scale_factor);
+        // Re-scale back from DIP to device pixels.
+        size.Scale(scale);
         // TODO(fs): Should pass proper URL. Use StyleImage::GetImage.
         svg_image_holder = SVGImageForContainer::Create(
-            svg_image, gfx::SizeF(scaled_size), device_scale_factor, NullURL());
+            svg_image, size, device_scale_factor, NullURL());
         image = svg_image_holder.get();
       }
 

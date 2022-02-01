@@ -51,7 +51,7 @@ Cursor Info: type=Custom hotSpot=10,4 image=30x30 scale=1.4
 
 
 TEST CASE: SVG image with no specified size
-Cursor Info: type=Hand
+Cursor Info: type=Custom hotSpot=0,0 image=32x32
 
 
 Checking cursors with device pixel ratio of 2
@@ -101,7 +101,7 @@ Cursor Info: type=Custom hotSpot=20,8 image=60x60 scale=2.8
 
 
 TEST CASE: SVG image with no specified size
-Cursor Info: type=Hand
+Cursor Info: type=Custom hotSpot=0,0 image=64x64 scale=2
 
 
 PASS successfullyParsed is true

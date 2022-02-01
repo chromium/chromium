@@ -580,6 +580,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // instead.
   void OnShowWithPageVisibility(PageVisibilityState page_visibility);
 
+  void UpdateSystemCursorSize(const gfx::Size& cursor_size);
+
   // Each platform should override this to call RenderWidgetHostImpl::WasShown
   // and DelegatedFrameHost::WasShown, and do any platform-specific bookkeeping
   // needed.  The given `visible_time_request`, if any, should be passed to
@@ -637,6 +639,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   bool is_currently_scrolling_viewport_ = false;
 
   raw_ptr<TooltipObserver> tooltip_observer_for_testing_ = nullptr;
+
+  // Cursor size in logical pixels, obtained from the OS. This value is general
+  // to all displays.
+  gfx::Size system_cursor_size_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(

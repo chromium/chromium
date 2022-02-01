@@ -317,6 +317,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Overridden from aura::client::CursorClientObserver:
   void OnCursorVisibilityChanged(bool is_visible) override;
 
+  // Overridden from aura::client::CursorClientObserver:
+  void OnSystemCursorSizeChanged(const gfx::Size& cursor_size) override;
+
   // Overridden from aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;

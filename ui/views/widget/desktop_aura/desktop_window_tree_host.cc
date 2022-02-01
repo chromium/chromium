@@ -8,6 +8,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
+#include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 #include "ui/views/widget/desktop_aura/desktop_screen_position_client.h"
 
 namespace views {
@@ -38,6 +39,11 @@ std::unique_ptr<aura::client::ScreenPositionClient>
 DesktopWindowTreeHost::CreateScreenPositionClient() {
   return std::make_unique<DesktopScreenPositionClient>(
       AsWindowTreeHost()->window());
+}
+
+DesktopNativeCursorManager*
+DesktopWindowTreeHost::GetSingletonDesktopNativeCursorManager() {
+  return new DesktopNativeCursorManager();
 }
 
 }  // namespace views

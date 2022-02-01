@@ -312,6 +312,13 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
     parent_view->AddChild(GetNativeView());
 
   device_scale_factor_ = GetDeviceScaleFactor();
+
+  aura::Window* root = window_->GetRootWindow();
+  if (root) {
+    auto* cursor_client = aura::client::GetCursorClient(root);
+    if (cursor_client)
+      UpdateSystemCursorSize(cursor_client->GetSystemCursorSize());
+  }
 }
 
 void RenderWidgetHostViewAura::InitAsPopup(
@@ -374,6 +381,10 @@ void RenderWidgetHostViewAura::InitAsPopup(
       std::make_unique<EventObserverForPopupExit>(this);
 
   device_scale_factor_ = GetDeviceScaleFactor();
+
+  auto* cursor_client = aura::client::GetCursorClient(root);
+  if (cursor_client)
+    UpdateSystemCursorSize(cursor_client->GetSystemCursorSize());
 }
 
 void RenderWidgetHostViewAura::Hide() {
@@ -1998,6 +2009,11 @@ bool RenderWidgetHostViewAura::ShouldActivate() const {
 
 void RenderWidgetHostViewAura::OnCursorVisibilityChanged(bool is_visible) {
   NotifyRendererOfCursorVisibilityState(is_visible);
+}
+
+void RenderWidgetHostViewAura::OnSystemCursorSizeChanged(
+    const gfx::Size& system_cursor_size) {
+  UpdateSystemCursorSize(system_cursor_size);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

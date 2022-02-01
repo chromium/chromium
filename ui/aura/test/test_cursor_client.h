@@ -55,6 +55,7 @@ class TestCursorClient : public aura::client::CursorClient {
   void AddObserver(aura::client::CursorClientObserver* observer) override;
   void RemoveObserver(aura::client::CursorClientObserver* observer) override;
   bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const override;
+  gfx::Size GetSystemCursorSize() const override;
 
  private:
   bool visible_;

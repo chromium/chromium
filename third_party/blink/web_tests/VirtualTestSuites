@@ -1086,5 +1086,13 @@
     "prefix": "no-forced-frame-updates",
     "bases": ["external/wpt/html/dom/render-blocking"],
     "args": ["--enable-features=NoForcedFrameUpdatesForWebTests"]
+  },
+  {
+    "prefix": "enable-system-cursor-size-for-svg",
+    "bases": ["fast/events/mouse-cursor-image-set-svg.html"],
+    "args": [
+      "--enable-features=SystemCursorSizeSupported",
+      "--disable-headless-mode"
+    ]
   }
 ]

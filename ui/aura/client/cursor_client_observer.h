@@ -12,6 +12,10 @@ namespace display {
 class Display;
 }
 
+namespace gfx {
+class Size;
+}
+
 namespace ui {
 enum class CursorSize;
 }
@@ -24,6 +28,9 @@ class AURA_EXPORT CursorClientObserver {
   virtual void OnCursorVisibilityChanged(bool is_visible) {}
   virtual void OnCursorSizeChanged(ui::CursorSize cursor_size) {}
   virtual void OnCursorDisplayChanged(const display::Display& display) {}
+  // System cursor size is the size, in DIP, of the cursor; according
+  // to OS settings.
+  virtual void OnSystemCursorSizeChanged(const gfx::Size& system_cursor_size) {}
 
  protected:
   virtual ~CursorClientObserver() {}
