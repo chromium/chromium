@@ -21,6 +21,9 @@ namespace chromeos {
 // D-Bus client for ambient presence sensing. Communicates with the Chrome OS
 // presence daemon to allow for features that depend on user presence.
 //
+// Use of this API is restricted by policy. Consult
+// go/cros-pdd#bookmark=id.7emuxnhxv638 and Chrome OS Privacy before using.
+//
 // TODO(crbug/1241706): clarify naming.
 class COMPONENT_EXPORT(HPS) HpsDBusClient {
  public:
