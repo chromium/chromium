@@ -143,7 +143,7 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // won't show another one for a certain time period after this.
   void OnNearbyDeviceTryingToShareDismissed(bool did_click_dismiss);
 
-  void CloseSuccessNotification();
+  void CloseSuccessNotification(const std::string& notification_id);
 
   void SetOnSuccessClickedForTesting(
       base::OnceCallback<void(SuccessNotificationAction)> callback);
