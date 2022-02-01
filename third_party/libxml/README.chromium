@@ -12,7 +12,6 @@ libxml2 from libxml.org.
 
 Modifications:
 
-- chromium-issue-599427.patch: workaround for VS 2015 Update 2 code-gen bug
 - chromium-issue-628581.patch: See https://crbug.com/628581#c18
 - chromium-issue-894933.patch: Use ptrdiff_t instead of unsigned long for
     pointer differences in parser.c
