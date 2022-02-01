@@ -7660,3 +7660,5 @@ crbug.com/1292881 [ Mac ] virtual/composite-relative-keyframes/external/wpt/css/
 crbug.com/1292884 [ Mac ] virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-focus-shadow.html [ Failure Pass ]
 crbug.com/1292887 [ Mac ] virtual/plz-dedicated-worker/external/wpt/resource-timing/iframe-sequence-of-events.html [ Failure Pass ]
 crbug.com/1292889 [ Mac ] virtual/threaded/external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
+
+crbug.com/1197296 [ Mac10.12 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Pass Failure ]
