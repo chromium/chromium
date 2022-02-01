@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/setup/setup_util.h"
 
+#include <regstr.h>
 #include <shlobj.h>
 #include <windows.h>
 
@@ -24,6 +25,7 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/installer/util/install_service_work_item.h"
+#include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -338,6 +340,24 @@ std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {
     }
   }
   return result;
+}
+
+void RegisterUserRunAtStartup(const std::wstring& run_value_name,
+                              const base::CommandLine& command,
+                              WorkItemList* list) {
+  DCHECK(list);
+  VLOG(1) << __func__;
+
+  list->AddSetRegValueWorkItem(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
+                               run_value_name, command.GetCommandLineString(),
+                               true);
+}
+
+bool UnregisterUserRunAtStartup(const std::wstring& run_value_name) {
+  VLOG(1) << __func__;
+
+  return InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
+                                          run_value_name);
 }
 
 }  // namespace updater

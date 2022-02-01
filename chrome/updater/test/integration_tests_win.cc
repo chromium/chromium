@@ -4,6 +4,8 @@
 
 #include <wrl/client.h>
 
+#include <regstr.h>
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -226,6 +228,16 @@ void CheckInstallation(UpdaterScope scope,
                                &uninstall_cmd_line_string));
       EXPECT_TRUE(base::CommandLine::FromString(uninstall_cmd_line_string)
                       .HasSwitch(kUninstallIfUnusedSwitch));
+
+      if (scope == UpdaterScope::kUser) {
+        std::wstring run_updater_wake_command;
+        EXPECT_EQ(ERROR_SUCCESS,
+                  base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
+                      .ReadValue(GetTaskNamePrefix(scope).c_str(),
+                                 &run_updater_wake_command));
+        EXPECT_TRUE(base::CommandLine::FromString(run_updater_wake_command)
+                        .HasSwitch(kWakeSwitch));
+      }
     } else {
       for (const wchar_t* key :
            {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
@@ -234,6 +246,11 @@ void CheckInstallation(UpdaterScope scope,
       }
 
       EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
+
+      if (scope == UpdaterScope::kUser) {
+        EXPECT_FALSE(base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
+                         .HasValue(GetTaskNamePrefix(scope).c_str()));
+      }
     }
   }
 

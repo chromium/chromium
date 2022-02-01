@@ -168,6 +168,9 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
     DeleteComService(uninstall_all);
   DeleteComServer(scope, key, uninstall_all);
 
+  if (scope == UpdaterScope::kUser)
+    UnregisterUserRunAtStartup(GetTaskNamePrefix(scope));
+
   DeleteGoogleUpdateEntries(scope, key);
 
   return RunUninstallScript(scope, uninstall_all);

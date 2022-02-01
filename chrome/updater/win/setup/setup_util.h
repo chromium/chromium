@@ -90,6 +90,16 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 // updater to run, and are filtered out from the return value of this function.
 std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps);
 
+// Adds a worklist item to set a value in the Run key in the user registry under
+// the value `run_value_name` to start the specified `command`.
+void RegisterUserRunAtStartup(const std::wstring& run_value_name,
+                              const base::CommandLine& command,
+                              WorkItemList* list);
+
+// Deletes the value in the Run key in the user registry under the value
+// `run_value_name`.
+bool UnregisterUserRunAtStartup(const std::wstring& run_value_name);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_SETUP_SETUP_UTIL_H_

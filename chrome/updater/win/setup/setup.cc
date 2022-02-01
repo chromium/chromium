@@ -192,6 +192,12 @@ int Setup(UpdaterScope scope) {
   run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
   run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                              kLoggingModuleSwitchValue);
+
+  if (scope == UpdaterScope::kUser) {
+    RegisterUserRunAtStartup(GetTaskNamePrefix(scope), run_updater_wake_command,
+                             install_list.get());
+  }
+
   if (!install_list->Do() ||
       !RegisterWakeTask(run_updater_wake_command, scope)) {
     LOG(ERROR) << "Install failed, rolling back...";
