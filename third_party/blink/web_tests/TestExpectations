@@ -7643,3 +7643,6 @@ crbug.com/1287563 [ Linux ] external/wpt/webrtc/RTCPeerConnection-perfect-negoti
 
 # Now flaky due to a timing issue, but so far only on Windows 7.
 crbug.com/1292296 [ Win7 ] http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js [ Failure Pass ]
+
+# Flaky test on Mac
+crbug.com/1292843 [ Mac ] external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
