@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/drag_window_controller.h"
@@ -75,8 +76,6 @@ constexpr float kClosingItemOpacity = 0.8f;
 // this fraction of size.
 constexpr float kPreCloseScale = 0.02f;
 
-constexpr int kShadowElevation = 16;
-
 // The amount of translation an item animates by when it is closed by using
 // swipe to close.
 constexpr int kSwipeToCloseCloseTranslationDp = 96;
@@ -86,6 +85,12 @@ constexpr int kSwipeToCloseCloseTranslationDp = 96;
 // outset in each dimension is on both sides, for a total of twice this much
 // change in the size of the item along that dimension.
 constexpr float kDragWindowScale = 0.05f;
+
+// The shadow types corresponding to the default and dragged states.
+constexpr SystemShadow::Type kDefaultShadowType =
+    SystemShadow::Type::kElevation12;
+constexpr SystemShadow::Type kDraggedShadowType =
+    SystemShadow::Type::kElevation24;
 
 // A self-deleting animation observer that runs the given callback when its
 // associated animation completes. Optionally takes a callback that is run when
@@ -776,6 +781,10 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   }
 }
 
+void OverviewItem::UpdateShadowTypeForDrag(bool is_dragging) {
+  shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
+}
+
 void OverviewItem::OnStartingAnimationComplete() {
   DCHECK(item_widget_);
   if (transform_window_.IsMinimized()) {
@@ -1259,8 +1268,7 @@ void OverviewItem::CreateItemWidget() {
   aura::Window* widget_window = item_widget_->GetNativeWindow();
   widget_window->parent()->StackChildBelow(widget_window, GetWindow());
 
-  shadow_ = std::make_unique<ui::Shadow>();
-  shadow_->Init(kShadowElevation);
+  shadow_ = std::make_unique<SystemShadow>(kDefaultShadowType);
   item_widget_->GetLayer()->Add(shadow_->layer());
 
   overview_item_view_ =

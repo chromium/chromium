@@ -309,6 +309,8 @@ void OverviewWindowDragController::StartNormalDragMode(
   auto* overview_grid = item_->overview_grid();
   overview_grid->AddDropTargetForDraggingFromThisGrid(item_);
 
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
+
   if (should_allow_split_view_) {
     overview_session_->SetSplitViewDragIndicatorsDraggedWindow(
         item_->GetWindow());
@@ -448,6 +450,8 @@ void OverviewWindowDragController::StartDragToCloseMode() {
   current_drag_behavior_ = DragBehavior::kDragToClose;
   overview_session_->GetGridWithRootWindow(item_->root_window())
       ->StartNudge(item_);
+
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
 }
 
 void OverviewWindowDragController::ContinueDragToClose(
@@ -503,6 +507,8 @@ OverviewWindowDragController::CompleteDragToClose(
     RecordDragToClose(kSwipeToCloseSuccessful);
     return DragResult::kSuccessfulDragToClose;
   }
+
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/false);
 
   item_->SetOpacity(original_opacity_);
   overview_session_->PositionWindows(/*animate=*/true);
@@ -623,6 +629,8 @@ OverviewWindowDragController::CompleteNormalDrag(
   Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
   item_->DestroyPhantomsForDragging();
   overview_session_->RemoveDropTargets();
+
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/false);
 
   const gfx::Point rounded_screen_point =
       gfx::ToRoundedPoint(location_in_screen);

@@ -22,10 +22,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/controls/button/button.h"
 
-namespace ui {
-class Shadow;
-}  // namespace ui
-
 namespace views {
 class Widget;
 }  // namespace views
@@ -35,6 +31,7 @@ class DragWindowController;
 class OverviewGrid;
 class OverviewItemView;
 class RoundedLabelWidget;
+class SystemShadow;
 
 // This class represents an item in overview mode.
 class ASH_EXPORT OverviewItem : public aura::WindowObserver,
@@ -180,6 +177,9 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // Updates the rounded corners and shadow on this overview window item.
   void UpdateRoundedCornersAndShadow();
+
+  // Updates the shadow type while being dragged and dropped.
+  void UpdateShadowTypeForDrag(bool is_dragging);
 
   // Called when the starting animation is completed, or called immediately
   // if there was no starting animation.
@@ -440,7 +440,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // The shadow around the overview window. Shadows the original window, not
   // |item_widget_|. Done here instead of on the original window because of the
   // rounded edges mask applied on entering overview window.
-  std::unique_ptr<ui::Shadow> shadow_;
+  std::unique_ptr<SystemShadow> shadow_;
 
   // Cached values of the item bounds so that they do not have to be calculated
   // on each scroll update. Will be nullopt unless a grid scroll is underway.
