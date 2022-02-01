@@ -19,12 +19,13 @@ prefers). Callers can create as many partitions as they need. The direct
 memory cost of partitions is minimal, but the implicit cost resulting from
 fragmentation is not to be underestimated.
 
-Each partition holds multiple buckets. A *bucket* is a series of regions in a
-partition that contains similar-sized objects, e.g. one bucket holds sizes
-(240,&nbsp;256], another (256,&nbsp;288], and so on. Bucket sizes are
-geometrically-spaced, and go all the way up to `kMaxBucketed=960KiB`
-(so called *normal buckets*). There are 8 buckets between each power of two.
-Note that buckets that aren't a multiple of `base::kAlignment` can't be used.
+Each partition holds multiple buckets. A *bucket* is a collection of regions in
+a partition that contains similar-sized objects, e.g. one bucket holds sizes
+(224,&nbsp;256], another (256,&nbsp;320], and so on. Bucket sizes are
+geometrically-spaced, and go all the way up to `kMaxBucketed`, which is a tad
+under 1MiB (so called *normal buckets*). There are tens of buckets, 4 between
+each power of two (except for lower sizes where buckets that aren't a multiple
+of `base::kAlignment` simply don't exist).
 
 Larger allocations (&gt;`kMaxBucketed`) are realized by direct memory mapping
 (*direct map*).
