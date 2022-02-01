@@ -31,7 +31,10 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
     kIncomplete = 1,
     // Compositor reported a failure after a tab switch.
     kPresentationFailure = 2,
-    kMaxValue = kPresentationFailure,
+    // TabWasShown called twice for a frame without TabWasHidden between. Treat
+    // the first TabWasShown as an incomplete tab switch.
+    kMissedTabHide = 3,
+    kMaxValue = kMissedTabHide,
   };
 
   ContentToVisibleTimeReporter();
@@ -61,9 +64,11 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
  private:
   bool IsTabSwitchMetric2FeatureEnabled();
 
-  // Records histograms and trace events for the current tab switch.
+  // Records histograms and trace events for the current tab switch. If
+  // `tab_switch_result` is kSuccess but `feedback` contains a failure flag, the
+  // result will be overridden with kPresentationFailure.
   void RecordHistogramsAndTraceEvents(
-      bool is_incomplete,
+      TabSwitchResult tab_switch_result,
       bool show_reason_tab_switching,
       bool show_reason_unoccluded,
       bool show_reason_bfcache_restore,

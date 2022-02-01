@@ -69,14 +69,33 @@ ContentToVisibleTimeReporter::TabWasShown(
     bool has_saved_frames,
     mojom::RecordContentToVisibleTimeRequestPtr start_state) {
   DCHECK(!start_state->event_start_time.is_null());
+  if (IsTabSwitchMetric2FeatureEnabled() && tab_switch_start_state_ &&
+      tab_switch_start_state_->show_reason_tab_switching &&
+      start_state->show_reason_tab_switching) {
+    // Missed a tab hide, so record an incomplete tab switch. As a side effect
+    // this will reset the state.
+    //
+    // This can happen when the tab is backgrounded, but still visible in a
+    // visible capturer or VR, so the widget is never notified to hide.
+    // TabWasHidden is only called correctly for *hidden* capturers (such as
+    // picture-in-picture). See WebContentsImpl::CalculatePageVisibilityState
+    // for more details.
+    //
+    // TODO(crbug.com/1289266): Refactor visibility states to call TabWasHidden
+    // every time a tab is backgrounded, even if the content is still visible.
+    RecordHistogramsAndTraceEvents(TabSwitchResult::kMissedTabHide,
+                                   true /* show_reason_tab_switching */,
+                                   false /* show_reason_unoccluded */,
+                                   false /* show_reason_bfcache_restore */,
+                                   gfx::PresentationFeedback::Failure());
+  }
   DCHECK(!tab_switch_start_state_);
 
   // Invalidate previously issued callbacks, to avoid accessing a null
   // |tab_switch_start_state_|.
   //
-  // TODO(https://crbug.com/1121339): Make sure that TabWasShown() is never
-  // called twice without a call to TabWasHidden() in-between, and remove this
-  // mitigation.
+  // TODO(crbug.com/1289266): Make sure that TabWasShown() is never called twice
+  // without a call to TabWasHidden() in-between, and remove this mitigation.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   has_saved_frames_ = has_saved_frames;
@@ -86,7 +105,7 @@ ContentToVisibleTimeReporter::TabWasShown(
   // once the metrics have been emitted.
   return base::BindOnce(
       &ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents,
-      weak_ptr_factory_.GetWeakPtr(), false /* is_incomplete */,
+      weak_ptr_factory_.GetWeakPtr(), TabSwitchResult::kSuccess,
       tab_switch_start_state_->show_reason_tab_switching,
       tab_switch_start_state_->show_reason_unoccluded,
       tab_switch_start_state_->show_reason_bfcache_restore);
@@ -108,7 +127,7 @@ ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
 
 void ContentToVisibleTimeReporter::TabWasHidden() {
   if (tab_switch_start_state_) {
-    RecordHistogramsAndTraceEvents(true /* is_incomplete */,
+    RecordHistogramsAndTraceEvents(TabSwitchResult::kIncomplete,
                                    true /* show_reason_tab_switching */,
                                    false /* show_reason_unoccluded */,
                                    false /* show_reason_bfcache_restore */,
@@ -126,7 +145,7 @@ bool ContentToVisibleTimeReporter::IsTabSwitchMetric2FeatureEnabled() {
 }
 
 void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
-    bool is_incomplete,
+    TabSwitchResult tab_switch_result,
     bool show_reason_tab_switching,
     bool show_reason_unoccluded,
     bool show_reason_bfcache_restore,
@@ -136,6 +155,9 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   // for recording the event.
   DCHECK(show_reason_bfcache_restore || show_reason_unoccluded ||
          show_reason_tab_switching);
+  // The kPresentationFailure result should only be used if `feedback` has a
+  // failure.
+  DCHECK_NE(tab_switch_result, TabSwitchResult::kPresentationFailure);
 
   if (show_reason_bfcache_restore) {
     RecordBackForwardCacheRestoreMetric(
@@ -150,11 +172,10 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     return;
 
   // Tab switching has occurred.
-  auto tab_switch_result = TabSwitchResult::kSuccess;
-  if (is_incomplete)
-    tab_switch_result = TabSwitchResult::kIncomplete;
-  else if (feedback.flags & gfx::PresentationFeedback::kFailure)
+  if (tab_switch_result == TabSwitchResult::kSuccess &&
+      feedback.flags & gfx::PresentationFeedback::kFailure) {
     tab_switch_result = TabSwitchResult::kPresentationFailure;
+  }
 
   const auto tab_switch_duration =
       feedback.timestamp - tab_switch_start_state_->event_start_time;
@@ -182,22 +203,20 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
 
     // Record latency histogram.
     switch (tab_switch_result) {
-      case TabSwitchResult::kSuccess: {
+      case TabSwitchResult::kSuccess:
         base::UmaHistogramMediumTimes(
             base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
             tab_switch_duration);
         break;
-      }
-      case TabSwitchResult::kIncomplete: {
+      case TabSwitchResult::kMissedTabHide:
+      case TabSwitchResult::kIncomplete:
         base::UmaHistogramMediumTimes(
             base::StrCat(
                 {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
             tab_switch_duration);
         break;
-      }
-      case TabSwitchResult::kPresentationFailure: {
+      case TabSwitchResult::kPresentationFailure:
         break;
-      }
     }
   }
 
@@ -217,21 +236,22 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
 
   // Record latency histogram.
   switch (tab_switch_result) {
-    case TabSwitchResult::kSuccess: {
+    case TabSwitchResult::kSuccess:
       base::UmaHistogramTimes(
           base::StrCat({"Browser.Tabs.TotalSwitchDuration.", suffix}),
           tab_switch_duration);
       break;
-    }
-    case TabSwitchResult::kIncomplete: {
+    case TabSwitchResult::kMissedTabHide:
+      // This was not included in the v1 histograms.
+      DCHECK(IsTabSwitchMetric2FeatureEnabled());
+      [[fallthrough]];
+    case TabSwitchResult::kIncomplete:
       base::UmaHistogramTimes(
           base::StrCat({"Browser.Tabs.TotalIncompleteSwitchDuration.", suffix}),
           tab_switch_duration);
       break;
-    }
-    case TabSwitchResult::kPresentationFailure: {
+    case TabSwitchResult::kPresentationFailure:
       break;
-    }
   }
 
   // Reset tab switch information.

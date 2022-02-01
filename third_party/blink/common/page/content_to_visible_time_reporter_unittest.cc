@@ -318,6 +318,64 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
       ContentToVisibleTimeReporter::TabSwitchResult::kSuccess, 1);
 }
 
+// When the TabSwitchMetrics2 feature is enabled, if TabWasHidden is not called
+// an incomplete tab switch is reported.
+// TODO(crbug.com/1289266): Find and remove all cases where TabWasHidden is not
+// called.
+TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
+  if (!tab_state_.tab_switch_metrics2_enabled)
+    GTEST_SKIP();
+
+  const auto start1 = base::TimeTicks::Now();
+  auto callback1 = tab_switch_time_recorder_.TabWasShown(
+      tab_state_.has_saved_frames,
+      blink::mojom::RecordContentToVisibleTimeRequest::New(
+          start1, tab_state_.destination_is_loaded,
+          /* show_reason_tab_switching */ true,
+          /* show_reason_unoccluded */ false,
+          /* show_reason_bfcache_restore */ false));
+
+  task_environment_.FastForwardBy(kDuration);
+
+  ExpectHistogramsEmptyExcept({});
+
+  const auto start2 = base::TimeTicks::Now();
+  auto callback2 = tab_switch_time_recorder_.TabWasShown(
+      tab_state_.has_saved_frames,
+      blink::mojom::RecordContentToVisibleTimeRequest::New(
+          start2, tab_state_.destination_is_loaded,
+          /* show_reason_tab_switching */ true,
+          /* show_reason_unoccluded */ false,
+          /* show_reason_bfcache_restore */ false));
+  const auto end2 = start2 + kOtherDuration;
+  auto presentation_feedback = gfx::PresentationFeedback(
+      end2, end2 - start2, gfx::PresentationFeedback::Flags::kHWCompletion);
+  std::move(callback2).Run(presentation_feedback);
+
+  // IncompleteDuration should be logged for the first TabWasShown, and Duration
+  // for the second.
+  std::vector<std::string> expected_histograms;
+  base::Extend(expected_histograms, duration_histograms_);
+  base::Extend(expected_histograms, result_histograms_);
+  base::Extend(expected_histograms, incomplete_duration_histograms_);
+  ExpectHistogramsEmptyExcept(expected_histograms);
+
+  // Duration.
+  ExpectTotalSamples({incomplete_duration_histograms_}, 1);
+  ExpectTimeBucketCounts({incomplete_duration_histograms_}, kDuration, 1);
+  ExpectTotalSamples({duration_histograms_}, 1);
+  ExpectTimeBucketCounts({duration_histograms_}, kOtherDuration, 1);
+
+  // Result.
+  ExpectTotalSamples({result_histograms_}, 2);
+  ExpectResultBucketCounts(
+      {result_histograms_},
+      ContentToVisibleTimeReporter::TabSwitchResult::kMissedTabHide, 1);
+  ExpectResultBucketCounts(
+      {result_histograms_},
+      ContentToVisibleTimeReporter::TabSwitchResult::kSuccess, 1);
+}
+
 // Time is properly recorded to histogram when we have unoccluded event.
 TEST_P(ContentToVisibleTimeReporterTest, UnoccludedTimeIsRecorded) {
   const auto start = base::TimeTicks::Now();
