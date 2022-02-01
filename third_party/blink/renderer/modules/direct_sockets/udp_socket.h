@@ -16,9 +16,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -59,11 +61,14 @@ class MODULES_EXPORT UDPSocket final
             const absl::optional<net::IPEndPoint>& peer_addr);
 
   // Web-exposed functions
-  ScriptPromise close(ScriptState*, ExceptionState&);
+  ScriptPromise close(ScriptState* script_state,
+                      ExceptionState& exception_state);
 
+  ReadableStream* readable() const;
   WritableStream* writable() const;
   String remoteAddress() const;
   uint16_t remotePort() const;
+  uint16_t localPort() const;
 
   // network::mojom::blink::UDPSocketListener:
   void OnReceived(int32_t result,
@@ -77,6 +82,7 @@ class MODULES_EXPORT UDPSocket final
  private:
   void OnSocketListenerConnectionError();
   void DoClose();
+  void CloseInternal();
 
   Member<ScriptPromiseResolver> init_resolver_;
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
@@ -86,9 +92,12 @@ class MODULES_EXPORT UDPSocket final
   HeapMojoReceiver<network::mojom::blink::UDPSocketListener, UDPSocket>
       socket_listener_receiver_;
 
+  Member<UDPReadableStreamWrapper> udp_readable_stream_wrapper_;
   Member<UDPWritableStreamWrapper> udp_writable_stream_wrapper_;
   absl::optional<net::IPEndPoint> local_addr_;
   absl::optional<net::IPEndPoint> peer_addr_;
+
+  bool closed_ = false;
 };
 
 }  // namespace blink
