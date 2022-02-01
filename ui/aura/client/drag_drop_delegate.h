@@ -39,6 +39,9 @@ struct AURA_EXPORT DragUpdateInfo {
 // Delegate interface for drag and drop actions on aura::Window.
 class AURA_EXPORT DragDropDelegate {
  public:
+  // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not
+  // add new callers. It is in a different coordinate system than implementers
+  // expect.
   using DropCallback =
       base::OnceCallback<void(const ui::DropTargetEvent& event,
                               std::unique_ptr<ui::OSExchangeData> data,

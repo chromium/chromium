@@ -751,8 +751,12 @@ void DragDropController::PerformDrop(
   ui::Event::DispatcherApi(&event).set_target(drag_window_);
 
   ui::OSExchangeData copied_data(drag_data->provider().Clone());
-  if (drop_cb)
+  if (drop_cb) {
+    // TODO(crbug.com/1289902): This event is in window coordinates and will be
+    // removed. The constructor of the callback expects the event to contain
+    // View local coordinates.
     std::move(drop_cb).Run(event, std::move(drag_data), operation_);
+  }
 
   if (operation_ == DragOperation::kNone && tab_drag_drop_delegate) {
     DCHECK(drag_image_widget_);

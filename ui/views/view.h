@@ -273,6 +273,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
  public:
   using Views = std::vector<View*>;
 
+  // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not add
+  // new callers.
   using DropCallback =
       base::OnceCallback<void(const ui::DropTargetEvent& event,
                               ui::mojom::DragOperation& output_drag_op)>;
@@ -1359,7 +1361,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Invoked during a drag and drop session when OnDragUpdated returns a valid
   // operation and the user release the mouse but the drop is held because of
-  // DataTransferPolicyController.
+  // DataTransferPolicyController. When calling, ensure that the |event|
+  // uses View local coordinates.
   virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event);
 
   // Returns true if the mouse was dragged enough to start a drag operation.

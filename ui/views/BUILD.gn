@@ -1164,6 +1164,7 @@ test("views_unittests") {
     "view_tracker_unittest.cc",
     "view_unittest.cc",
     "widget/any_widget_observer_unittest.cc",
+    "widget/drop_helper_unittest.cc",
     "widget/native_widget_unittest.cc",
     "widget/root_view_unittest.cc",
     "widget/unique_widget_ptr_unittest.cc",
