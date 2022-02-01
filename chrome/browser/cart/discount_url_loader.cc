@@ -38,7 +38,8 @@ void DiscountURLLoader::TabChangedAt(content::WebContents* contents,
       cart_service_->GetDiscountURL(
           contents->GetVisibleURL(),
           base::BindOnce(&DiscountURLLoader::NavigateToDiscountURL,
-                         weak_ptr_factory_.GetWeakPtr(), contents));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         contents->GetWeakPtr()));
     }
     last_interacted_url_.reset();
   }
@@ -52,8 +53,12 @@ void DiscountURLLoader::OnBrowserRemoved(Browser* browser) {
   browser->tab_strip_model()->RemoveObserver(this);
 }
 
-void DiscountURLLoader::NavigateToDiscountURL(content::WebContents* contents,
-                                              const GURL& discount_url) {
+void DiscountURLLoader::NavigateToDiscountURL(
+    base::WeakPtr<content::WebContents> contents,
+    const GURL& discount_url) {
+  if (!contents) {
+    return;
+  }
   contents->GetController().LoadURL(discount_url, content::Referrer(),
                                     ui::PAGE_TRANSITION_FIRST, std::string());
 }

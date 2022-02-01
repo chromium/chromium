@@ -39,7 +39,7 @@ class DiscountURLLoader : public BrowserListObserver,
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  void NavigateToDiscountURL(content::WebContents* contents,
+  void NavigateToDiscountURL(base::WeakPtr<content::WebContents> contents,
                              const GURL& discount_url);
   absl::optional<GURL> last_interacted_url_;
   raw_ptr<CartService> cart_service_;
