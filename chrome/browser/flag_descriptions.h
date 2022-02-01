@@ -2592,6 +2592,12 @@ extern const char kEnableLauncherSearchNormalizationDescription[];
 extern const char kEnableLibinputToHandleTouchpadName[];
 extern const char kEnableLibinputToHandleTouchpadDescription[];
 
+extern const char kEnableNeuralPalmAdaptiveHoldName[];
+extern const char kEnableNeuralPalmAdaptiveHoldDescription[];
+
+extern const char kEnableNeuralPalmRejectionModelV2Name[];
+extern const char kEnableNeuralPalmRejectionModelV2Description[];
+
 extern const char kEnableNeuralStylusPalmRejectionName[];
 extern const char kEnableNeuralStylusPalmRejectionDescription[];
 

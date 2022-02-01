@@ -51076,6 +51076,7 @@ from previous Chrome versions.
       label="PasswordsAccountStorageRevisedOptInFlow:enabled"/>
   <int value="-2054612904" label="BuiltInModuleInfra:enabled"/>
   <int value="-2053860791" label="XGEOVisibleNetworks:enabled"/>
+  <int value="-2053062676" label="EnableNeuralPalmAdaptiveHold:enabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
   <int value="-2048732429" label="enable-alternative-services"/>
   <int value="-2048679945" label="NTPOfflinePageDownloadSuggestions:disabled"/>
@@ -52009,6 +52010,7 @@ from previous Chrome versions.
   <int value="-1416184931" label="TranslateRankerEnforcement:enabled"/>
   <int value="-1415244717" label="CrostiniVirtualKeyboardSupport:disabled"/>
   <int value="-1414531531" label="NtpModulesRedesignedLayout:disabled"/>
+  <int value="-1414517775" label="EnableNeuralPalmRejectionModelV2:disabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
   <int value="-1411980923" label="LinkCapturingUiUpdate:enabled"/>
   <int value="-1411733990" label="OmniboxDedupeGoogleDriveURLs:disabled"/>
@@ -55967,6 +55969,7 @@ from previous Chrome versions.
   <int value="1444066555" label="MessagesForAndroidSyncError:disabled"/>
   <int value="1444719196"
       label="CellularBypassESimInstallationConnectivityCheck:enabled"/>
+  <int value="1445037029" label="EnableNeuralPalmRejectionModelV2:enabled"/>
   <int value="1446066818" label="WebRtcAnalogAgcClippingControl:enabled"/>
   <int value="1446349255" label="ArcEnableUsap:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
@@ -56489,6 +56492,7 @@ from previous Chrome versions.
   <int value="1824931483"
       label="EnableHistoryFaviconsGoogleServerQuery:disabled"/>
   <int value="1825369164" label="EnableNewBadgeOnMenuItems:disabled"/>
+  <int value="1825812252" label="EnableNeuralPalmAdaptiveHold:disabled"/>
   <int value="1825940786" label="ChromeHomePromo:disabled"/>
   <int value="1827369558" label="AndroidPayIntegrationV1:disabled"/>
   <int value="1828660283" label="enable-webfonts-intervention-trigger"/>

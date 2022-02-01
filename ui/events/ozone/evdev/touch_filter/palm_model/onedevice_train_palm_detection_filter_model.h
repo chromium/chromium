@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
 
  private:
   NeuralStylusPalmDetectionFilterModelConfig config_;
+  size_t expected_feature_size_;
 };
 
 }  // namespace ui

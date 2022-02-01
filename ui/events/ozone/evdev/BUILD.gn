@@ -109,6 +109,8 @@ component("evdev") {
     "touch_filter/palm_detection_filter_factory.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.h",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_v2.cc",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_v2.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.h",
     "touch_filter/shared_palm_detection_filter_state.h",

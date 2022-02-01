@@ -9,7 +9,10 @@
 #include <cstring>
 #include <limits>
 #include <tuple>
+
+#ifndef USE_EIGEN
 #define USE_EIGEN 0
+#endif
 
 namespace ui {
 namespace {

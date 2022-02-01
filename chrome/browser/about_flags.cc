@@ -5750,6 +5750,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowTouchpadHapticClickSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAllowTouchpadHapticClickSettings)},
 
+    {"enable-neural-palm-adaptive-hold",
+     flag_descriptions::kEnableNeuralPalmAdaptiveHoldName,
+     flag_descriptions::kEnableNeuralPalmAdaptiveHoldDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableNeuralPalmAdaptiveHold)},
+
+    {"enable-neural-palm-rejection-model-v2",
+     flag_descriptions::kEnableNeuralPalmRejectionModelV2Name,
+     flag_descriptions::kEnableNeuralPalmRejectionModelV2Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableNeuralPalmRejectionModelV2)},
+
     {"enable-neural-stylus-palm-rejection",
      flag_descriptions::kEnableNeuralStylusPalmRejectionName,
      flag_descriptions::kEnableNeuralStylusPalmRejectionDescription, kOsCrOS,
