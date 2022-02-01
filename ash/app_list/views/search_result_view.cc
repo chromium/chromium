@@ -638,7 +638,7 @@ void SearchResultView::OnMetadataChanged() {
 
     // Calculate the image dimensions. Images could be rectangular, and we
     // should preserve the aspect ratio.
-    const size_t dimension = result()->IconDimension();
+    const size_t dimension = result()->icon().dimension;
     const int max = std::max(image.width(), image.height());
     const bool is_square = image.width() == image.height();
     const int width = is_square ? dimension : dimension * image.width() / max;

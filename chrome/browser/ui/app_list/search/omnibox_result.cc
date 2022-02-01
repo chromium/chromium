@@ -354,9 +354,8 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
   if (!bitmap)
     return;
 
-  IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
-  icon_info.dimension = GetImageIconDimension();
-  icon_info.shape = IconShape::kRoundedRectangle;
+  IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
+                     GetImageIconDimension(), IconShape::kRoundedRectangle);
   SetIcon(icon_info);
 }
 

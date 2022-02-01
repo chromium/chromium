@@ -54,8 +54,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const IconInfo& icon() const { return metadata_->icon; }
   void SetIcon(const IconInfo& icon);
 
-  size_t IconDimension() const;
-
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   void SetChipIcon(const gfx::ImageSkia& chip_icon);
 

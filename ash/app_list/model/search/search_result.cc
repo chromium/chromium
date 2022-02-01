@@ -34,11 +34,6 @@ void SearchResult::SetIcon(const IconInfo& icon) {
     observer.OnMetadataChanged();
 }
 
-size_t SearchResult::IconDimension() const {
-  return metadata_->icon.dimension.value_or(
-      SharedAppListConfig::instance().search_list_icon_dimension());
-}
-
 void SearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
   metadata_->chip_icon = chip_icon;
   for (auto& observer : observers_)

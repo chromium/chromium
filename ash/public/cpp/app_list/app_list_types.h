@@ -375,10 +375,8 @@ enum class SearchResultIconShape {
 
 struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconInfo();
-  // TODO(crbug.com/1232897): Make the search backend explicitly set dimension
-  // and shape for all icons by removing the one- and two-argument versions of
-  // the constructor.
-  explicit SearchResultIconInfo(gfx::ImageSkia icon);
+  // TODO(crbug.com/1232897): Make the search backend explicitly set the shape
+  // for all icons by removing the two-argument version of the constructor.
   SearchResultIconInfo(gfx::ImageSkia icon, int dimension);
   SearchResultIconInfo(gfx::ImageSkia icon,
                        int dimension,
@@ -393,7 +391,7 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
 
   // The size to display the icon at, while preserving aspect ratio. Only
   // used for the results list view.
-  absl::optional<int> dimension;
+  int dimension;
 
   // The shape to mask the icon with. Only used by the results list view.
   SearchResultIconShape shape = SearchResultIconShape::kDefault;

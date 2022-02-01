@@ -152,13 +152,16 @@ FileResult::FileResult(const std::string& schema,
   } else {
     switch (type) {
       case Type::kFile:
-        SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
+        SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background),
+                         kSystemIconDimension));
         break;
       case Type::kDirectory:
-        SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background)));
+        SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background),
+                         kSystemIconDimension));
         break;
       case Type::kSharedDirectory:
-        SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background)));
+        SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background),
+                         kSystemIconDimension));
         break;
     }
   }
