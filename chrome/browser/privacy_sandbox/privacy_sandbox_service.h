@@ -49,19 +49,25 @@ class PrivacySandboxService : public KeyedService,
   // An exhaustive list of actions related to showing & interacting with the
   // dialog. Includes actions which do not impact consent / notice state.
   enum class DialogAction {
-    // Shared between notice & consent:
-    kShown,
-    kOpenSettings,
-    kOpenMoreInfo,
-    kCloseMoreInfo,
+    // Notice Interactions:
+    kNoticeShown = 0,
+    kNoticeOpenSettings = 1,
+    kNoticeAcknowledge = 2,
+    kNoticeDismiss = 3,
 
-    // Consent Only
-    kAcceptConsent,
-    kDeclineConsent,
+    // Implies that the browser, or browser window, was shut before the user
+    // interacted with the notice.
+    kNoticeClosedNoInteraction = 4,
 
-    // Notice Only
-    kAcknowledge,
-    kClose,
+    // Consent Interactions:
+    kConsentShown = 5,
+    kConsentAccepted = 6,
+    kConsentDeclined = 7,
+    kConsentMoreInfoOpened = 8,
+    kConsentMoreInfoClosed = 9,
+
+    // As above, but for the consent.
+    kConsentClosedNoInteraction = 10,
   };
 
   PrivacySandboxService(PrivacySandboxSettings* privacy_sandbox_settings,
@@ -87,7 +93,7 @@ class PrivacySandboxService : public KeyedService,
   // calls to GetRequiredDialogType() are correct. This is expected to be
   // called appropriately by all locations showing the dialog. Metrics shared
   // between platforms will also be recorded.
-  void DialogActionOccur(DialogAction action);
+  void DialogActionOccurred(DialogAction action);
 
   // Returns a description of FLoC ready for display to the user. Correctly
   // takes into account the FLoC feature parameters when determining the number

@@ -172,7 +172,7 @@ PrivacySandboxService::GetRequiredDialogType() {
   return DialogType::kNone;
 }
 
-void PrivacySandboxService::DialogActionOccur(
+void PrivacySandboxService::DialogActionOccurred(
     PrivacySandboxService::DialogAction action) {
   // TODO(crbug.com/1286276): Not yet implemented.
 }
