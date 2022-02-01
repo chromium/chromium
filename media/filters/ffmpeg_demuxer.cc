@@ -497,6 +497,12 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
         discard_front_samples = 0;
       }
 
+      if (discard_front_samples < 0) {
+        // See https://crbug.com/1189939 and https://trac.ffmpeg.org/ticket/9622
+        DLOG(ERROR) << "Negative skip samples are not allowed.";
+        discard_front_samples = 0;
+      }
+
       const int discard_end_samples =
           base::ByteSwapToLE32(*(skip_samples_ptr + kSkipEndSamplesOffset));
 
