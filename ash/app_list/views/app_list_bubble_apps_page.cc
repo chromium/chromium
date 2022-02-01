@@ -70,9 +70,6 @@ constexpr int kHorizontalInteriorMargin = 20;
 // Insets for the separator between the continue section and apps.
 constexpr gfx::Insets kSeparatorInsets(0, 12);
 
-// A slide animation's duration.
-constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(250);
-
 // A slide animation's tween type.
 constexpr gfx::Tween::Type kSlideAnimationTweenType =
     gfx::Tween::LINEAR_OUT_SLOW_IN;
@@ -190,7 +187,7 @@ void AppListBubbleAppsPage::UpdateSuggestions() {
   UpdateSeparatorVisibility();
 }
 
-void AppListBubbleAppsPage::AnimateShowLauncher() {
+void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   DCHECK(GetVisible());
 
   // The animation relies on the correct positions of views, so force layout.
@@ -208,33 +205,38 @@ void AppListBubbleAppsPage::AnimateShowLauncher() {
             "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", value);
       })));
 
+  // Side-shelf uses faster animations.
+  const base::TimeDelta slide_duration =
+      is_side_shelf ? base::Milliseconds(150) : base::Milliseconds(250);
+
   // Animate the views. Each section is initially offset down, then slides up
-  // into its final position. If a section isn't visible, skip it. The further
+  // into its final position. For side shelf, each section is initially offset
+  // up, then it slides down. If a section isn't visible, skip it. The further
   // down the section, the greater its initial offset. This code uses multiple
   // animations because views::AnimationBuilder doesn't have a good way to
   // build a single animation with conditional parts. https://crbug.com/1266020
-  constexpr int kSectionOffset = 20;
+  const int section_offset = is_side_shelf ? -20 : 20;
   int vertical_offset = 0;
   if (continue_section_->GetTasksSuggestionsCount() > 0) {
-    vertical_offset += kSectionOffset;
-    SlideViewIntoPosition(continue_section_, vertical_offset);
+    vertical_offset += section_offset;
+    SlideViewIntoPosition(continue_section_, vertical_offset, slide_duration);
   }
   if (recent_apps_->GetItemViewCount() > 0) {
-    vertical_offset += kSectionOffset;
-    SlideViewIntoPosition(recent_apps_, vertical_offset);
+    vertical_offset += section_offset;
+    SlideViewIntoPosition(recent_apps_, vertical_offset, slide_duration);
   }
   if (separator_->GetVisible()) {
     // The separator is not offset; it animates next to the view above it.
-    SlideViewIntoPosition(separator_, vertical_offset);
+    SlideViewIntoPosition(separator_, vertical_offset, slide_duration);
   }
 
   // The apps grid is always visible.
-  vertical_offset += kSectionOffset;
+  vertical_offset += section_offset;
   // Use a special cleanup callback to show the gradient mask at the end of the
   // animation. No need to use SlideViewIntoPosition() because this view always
   // has a layer.
   StartSlideInAnimation(
-      scrollable_apps_grid_view_, vertical_offset, kSlideAnimationDuration,
+      scrollable_apps_grid_view_, vertical_offset, slide_duration,
       kSlideAnimationTweenType,
       base::BindRepeating(&AppListBubbleAppsPage::OnAppsGridViewAnimationEnded,
                           weak_factory_.GetWeakPtr()));
@@ -508,11 +510,11 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
 }
 
 void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
-                                                  int vertical_offset) {
+                                                  int vertical_offset,
+                                                  base::TimeDelta duration) {
   // Animation spec:
   //
   // Y Position: Down (offset) → End position
-  // Duration: 250ms
   // Ease: (0.00, 0.00, 0.20, 1.00)
 
   const bool create_layer = PrepareForLayerAnimation(view);
@@ -524,7 +526,7 @@ void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
                                     &AppListBubbleAppsPage::DestroyLayerForView,
                                     weak_factory_.GetWeakPtr(), view)
                               : base::DoNothing();
-  StartSlideInAnimation(view, vertical_offset, kSlideAnimationDuration,
+  StartSlideInAnimation(view, vertical_offset, duration,
                         kSlideAnimationTweenType, cleanup);
 }
 

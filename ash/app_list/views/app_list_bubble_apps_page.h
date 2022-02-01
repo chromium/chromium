@@ -17,6 +17,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace ui {
 class Layer;
 }  // namespace ui
@@ -64,7 +68,7 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   void UpdateSuggestions();
 
   // Starts the launcher show animation.
-  void AnimateShowLauncher();
+  void AnimateShowLauncher(bool is_side_shelf);
 
   // Starts the launcher hide animation. None of the child views animate, but
   // this disables the scroll view gradient mask to improve performance.
@@ -153,8 +157,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   // Animates `view` using a layer animation. Creates the layer if needed. The
   // layer is pushed down by `vertical_offset` at the start of the animation and
-  // animates back to its original position.
-  void SlideViewIntoPosition(views::View* view, int vertical_offset);
+  // animates back to its original position with `duration`.
+  void SlideViewIntoPosition(views::View* view,
+                             int vertical_offset,
+                             base::TimeDelta duration);
 
   views::ScrollView* scroll_view_ = nullptr;
   ContinueSectionView* continue_section_ = nullptr;

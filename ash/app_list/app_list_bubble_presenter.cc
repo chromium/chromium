@@ -257,7 +257,8 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // The page must be set before triggering the show animation so the correct
   // animations are triggered.
   bubble_view_->ShowPage(target_page_);
-  bubble_view_->StartShowAnimation();
+  const bool is_side_shelf = !shelf->IsHorizontalAlignment();
+  bubble_view_->StartShowAnimation(is_side_shelf);
   controller_->OnVisibilityChanged(/*visible=*/true, display_id);
 }
 
@@ -295,7 +296,12 @@ void AppListBubblePresenter::Dismiss() {
   controller_->ViewClosing();
   controller_->OnVisibilityWillChange(/*visible=*/false, display_id);
   if (bubble_view_) {
+    aura::Window* bubble_window = bubble_view_->GetWidget()->GetNativeWindow();
+    DCHECK(bubble_window);
+    Shelf* shelf = Shelf::ForWindow(bubble_window);
+    const bool is_side_shelf = !shelf->IsHorizontalAlignment();
     bubble_view_->StartHideAnimation(
+        is_side_shelf,
         base::BindOnce(&AppListBubblePresenter::OnHideAnimationEnded,
                        weak_factory_.GetWeakPtr()));
   }

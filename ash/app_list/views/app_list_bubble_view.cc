@@ -96,12 +96,21 @@ class SeparatorWithLayer : public views::View {
 
 // Returns the layer bounds to use for the start of the show animation and the
 // end of the hide animation.
-gfx::Rect GetShowHideAnimationBounds(gfx::Rect target_bounds) {
+gfx::Rect GetShowHideAnimationBounds(bool is_side_shelf,
+                                     gfx::Rect target_bounds) {
+  // For either shelf: Height 75% → 100%
   const int delta_height = target_bounds.height() / 4;  // 25% of height
+  const int initial_height = target_bounds.height() - delta_height;
   const int y_offset = 8;
-  return gfx::Rect(
-      target_bounds.x(), target_bounds.y() + delta_height + y_offset,
-      target_bounds.width(), target_bounds.height() - delta_height);
+  if (is_side_shelf) {
+    // For side shelf: Y Position: Up 8px → End position, expanding down.
+    return gfx::Rect(target_bounds.x(), target_bounds.y() - y_offset,
+                     target_bounds.width(), initial_height);
+  }
+  // For bottom shelf: Y Position: Down 8px → End position, expanding up.
+  return gfx::Rect(target_bounds.x(),
+                   target_bounds.y() + delta_height + y_offset,
+                   target_bounds.width(), initial_height);
 }
 
 }  // namespace
@@ -224,7 +233,7 @@ void AppListBubbleView::InitFolderView(
   folder_view_->SetVisible(false);
 }
 
-void AppListBubbleView::StartShowAnimation() {
+void AppListBubbleView::StartShowAnimation(bool is_side_shelf) {
   // For performance, don't animate the shadow.
   view_shadow_.reset();
 
@@ -233,9 +242,9 @@ void AppListBubbleView::StartShowAnimation() {
     Layout();
   DCHECK(!needs_layout());
 
-  // Bubble animation specification:
+  // Animation specification for bottom shelf:
   //
-  // Y Position: Down 8px → End position
+  // Y Position: Down 8px → End position (visually moves up)
   // Duration: 150ms
   // Ease: (0.00, 0.00, 0.20, 1.00)
   //
@@ -246,11 +255,16 @@ void AppListBubbleView::StartShowAnimation() {
   // Opacity: 0% → 100%
   // Duration: 150ms
   // Ease: Linear
+  //
+  // Side shelf uses shorter duration (100ms) and visually moves down.
 
   // Start by making the layer shorter, pushed down, and transparent.
   const gfx::Rect target_bounds = layer()->GetTargetBounds();
-  layer()->SetBounds(GetShowHideAnimationBounds(target_bounds));
+  layer()->SetBounds(GetShowHideAnimationBounds(is_side_shelf, target_bounds));
   layer()->SetOpacity(0.f);
+
+  const base::TimeDelta duration =
+      is_side_shelf ? base::Milliseconds(100) : base::Milliseconds(150);
 
   // Animate the layer to fully opaque at its target bounds.
   views::AnimationBuilder()
@@ -259,7 +273,7 @@ void AppListBubbleView::StartShowAnimation() {
       .OnAborted(base::BindOnce(&AppListBubbleView::OnShowAnimationEnded,
                                 weak_factory_.GetWeakPtr(), target_bounds))
       .Once()
-      .SetDuration(base::Milliseconds(150))
+      .SetDuration(duration)
       .SetBounds(layer(), target_bounds, gfx::Tween::LINEAR_OUT_SLOW_IN)
       .SetOpacity(layer(), 1.f, gfx::Tween::LINEAR);
 
@@ -267,12 +281,13 @@ void AppListBubbleView::StartShowAnimation() {
   // smoothness reporting, because the view movement animation has a longer
   // duration.
   if (current_page_ == AppListBubblePage::kApps)
-    apps_page_->AnimateShowLauncher();
+    apps_page_->AnimateShowLauncher(is_side_shelf);
 
   // Note: The assistant page handles its own show animation internally.
 }
 
 void AppListBubbleView::StartHideAnimation(
+    bool is_side_shelf,
     base::OnceClosure on_animation_ended) {
   on_hide_animation_ended_ = std::move(on_animation_ended);
 
@@ -291,7 +306,7 @@ void AppListBubbleView::StartHideAnimation(
 
   // Animation spec:
   //
-  // Y Position: Current → Down 8px
+  // Y Position: Current → Down 8px, or for side shelf: Current → Up 8px
   // Duration: 100ms
   // Ease: (0.4, 0, 1, 1).
   //
@@ -303,7 +318,8 @@ void AppListBubbleView::StartHideAnimation(
   // Duration: 100ms
   // Ease: Linear
   const gfx::Rect target_bounds = layer()->GetTargetBounds();
-  const gfx::Rect final_bounds = GetShowHideAnimationBounds(target_bounds);
+  const gfx::Rect final_bounds =
+      GetShowHideAnimationBounds(is_side_shelf, target_bounds);
 
   if (current_page_ == AppListBubblePage::kApps)
     apps_page_->AnimateHideLauncher();

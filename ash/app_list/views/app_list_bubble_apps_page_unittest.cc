@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -41,12 +42,15 @@ TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   constexpr int kVerticalOffset = 20;
-  helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset);
+  constexpr base::TimeDelta kSlideDuration = base::Milliseconds(100);
+  helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset,
+                                              kSlideDuration);
   ASSERT_TRUE(recent_apps->layer());
   EXPECT_TRUE(recent_apps->layer()->GetAnimator()->is_animating());
 
   // While that animation is running, run another animation.
-  helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset);
+  helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset,
+                                              kSlideDuration);
   auto* compositor = recent_apps->layer()->GetCompositor();
   while (recent_apps->layer() &&
          recent_apps->layer()->GetAnimator()->is_animating()) {

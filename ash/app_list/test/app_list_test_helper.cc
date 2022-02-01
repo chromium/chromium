@@ -107,8 +107,9 @@ void AppListTestHelper::WaitForLayerAnimation(ui::Layer* layer) {
 
 void AppListTestHelper::StartSlideAnimationOnBubbleAppsPage(
     views::View* view,
-    int vertical_offset) {
-  GetBubbleAppsPage()->SlideViewIntoPosition(view, vertical_offset);
+    int vertical_offset,
+    base::TimeDelta duration) {
+  GetBubbleAppsPage()->SlideViewIntoPosition(view, vertical_offset, duration);
 }
 
 void AppListTestHelper::CheckVisibility(bool visible) {

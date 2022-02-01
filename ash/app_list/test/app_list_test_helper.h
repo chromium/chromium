@@ -13,6 +13,10 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test_app_list_client.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace ui {
 class Layer;
 }
@@ -84,7 +88,8 @@ class AppListTestHelper {
 
   // Slides a bubble apps page's component using a layer animation.
   void StartSlideAnimationOnBubbleAppsPage(views::View* view,
-                                           int vertical_offset);
+                                           int vertical_offset,
+                                           base::TimeDelta duration);
 
   // Check the visibility value of the app list and its target.
   // Fails in tests if either one doesn't match |visible|.

@@ -87,6 +87,13 @@ AssistantVisibility GetAssistantVisibility() {
   return AssistantUiController::Get()->GetModel()->visibility();
 }
 
+bool IsAnimatingProperty(
+    ui::Layer* layer,
+    ui::LayerAnimationElement::AnimatableProperty property) {
+  auto* animator = layer->GetAnimator();
+  return animator && animator->IsAnimatingProperty(property);
+}
+
 class AppListBubbleViewTest : public AshTestBase {
  public:
   AppListBubbleViewTest() {
@@ -251,29 +258,73 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
   ShowAppList();
 
   // The bubble view starts animating.
-  auto* app_list_bubble_view = GetAppListTestHelper()->GetBubbleView();
-  auto* bubble_animator = app_list_bubble_view->layer()->GetAnimator();
-  ASSERT_TRUE(bubble_animator);
-  EXPECT_TRUE(bubble_animator->IsAnimatingProperty(
-      ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
-  EXPECT_TRUE(bubble_animator->IsAnimatingProperty(
-      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  auto* bubble_view = GetAppListTestHelper()->GetBubbleView();
+  ui::Layer* bubble_layer = bubble_view->layer();
+  EXPECT_TRUE(IsAnimatingProperty(
+      bubble_layer, ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
+  EXPECT_TRUE(IsAnimatingProperty(
+      bubble_layer, ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  // Layer top edge animates up.
+  EXPECT_GT(bubble_layer->bounds().y(), bubble_view->y());
 
-  // Each section view starts animating.
-  auto* animator = GetContinueSectionView()->layer()->GetAnimator();
-  ASSERT_TRUE(animator);
-  EXPECT_TRUE(animator->IsAnimatingProperty(
-      ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  // Each section view animates, starting with a translation down, therefore
+  // visually moving up.
+  views::View* view = GetContinueSectionView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), 20.f);
 
-  animator = GetRecentAppsView()->layer()->GetAnimator();
-  ASSERT_TRUE(animator);
-  EXPECT_TRUE(animator->IsAnimatingProperty(
-      ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  view = GetRecentAppsView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), 40.f);
 
-  animator = GetAppsGridView()->layer()->GetAnimator();
-  ASSERT_TRUE(animator);
-  EXPECT_TRUE(animator->IsAnimatingProperty(
-      ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  view = GetAppsGridView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), 60.f);
+}
+
+TEST_F(AppListBubbleViewTest, OpeningBubbleWithSideShelfTriggersAnimations) {
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Enable side shelf.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
+
+  // Show an app list with all sections.
+  AddContinueSuggestionResult(4);
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  // The bubble view starts animating.
+  auto* bubble_view = GetAppListTestHelper()->GetBubbleView();
+  ui::Layer* bubble_layer = bubble_view->layer();
+  EXPECT_TRUE(IsAnimatingProperty(
+      bubble_layer, ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
+  EXPECT_TRUE(IsAnimatingProperty(
+      bubble_layer, ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  // Layer top edge animates down.
+  EXPECT_LT(bubble_layer->bounds().y(), bubble_view->y());
+
+  // Each section view animates, starting with a translation down, therefore
+  // visually moving down.
+  views::View* view = GetContinueSectionView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), -20.f);
+
+  view = GetRecentAppsView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), -40.f);
+
+  view = GetAppsGridView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), -60.f);
 }
 
 TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
@@ -389,7 +440,7 @@ TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
   // WaitForLayerAnimation() because the view and its layer are deleted at the
   // end of the animation.
   base::RunLoop run_loop;
-  view->StartHideAnimation(run_loop.QuitClosure());
+  view->StartHideAnimation(/*is_side_shelf=*/false, run_loop.QuitClosure());
   run_loop.Run();
 
   // Ensure there is one more frame presented after animation finishes to allow
