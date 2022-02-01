@@ -192,20 +192,12 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
  private:
   // aura::client::DragDropDelegate:
   void OnDragEntered(const ui::DropTargetEvent& event) override {
-    // The event must always have valid data.  This will crash if it doesn't.
-    // See crbug.com/1151836.
-    auto dummy_copy = event.data().provider().Clone();
-
     ++num_enters_;
     last_event_flags_ = event.flags();
   }
 
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override {
-    // The event must always have valid data.  This will crash if it doesn't.
-    // See crbug.com/1151836.
-    auto dummy_copy = event.data().provider().Clone();
-
     ++num_updates_;
     last_event_flags_ = event.flags();
 
@@ -224,10 +216,6 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
   void PerformDrop(const ui::DropTargetEvent& event,
                    std::unique_ptr<ui::OSExchangeData> data,
                    ui::mojom::DragOperation& output_drag_op) {
-    // The event must always have valid data.  This will crash if it doesn't.
-    // See crbug.com/1151836.
-    auto dummy_copy = event.data().provider().Clone();
-
     ++num_drops_;
     received_data_ = std::move(data);
     last_event_flags_ = event.flags();
