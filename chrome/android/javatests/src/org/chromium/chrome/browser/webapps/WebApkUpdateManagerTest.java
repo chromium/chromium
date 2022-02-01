@@ -124,7 +124,7 @@ public class WebApkUpdateManagerTest {
         }
 
         @Override
-        protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
+        protected void encodeIconsInBackground(String updateRequestPath, WebappInfo info,
                 String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
                 Callback<Boolean> callback) {

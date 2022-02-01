@@ -120,9 +120,9 @@ class WebApkInstaller {
   // or install request. Runs |callback| on the calling thread when complete.
   static void BuildProto(
       const webapps::ShortcutInfo& shortcut_info,
-      const SkBitmap& primary_icon,
+      const std::string& primary_icon_data,
       bool is_primary_icon_maskable,
-      const SkBitmap& splash_icon,
+      const std::string& splash_icon_data,
       const std::string& package_name,
       const std::string& version,
       std::map<std::string, webapps::WebApkIconHasher::Icon>
@@ -137,9 +137,9 @@ class WebApkInstaller {
   static void StoreUpdateRequestToFile(
       const base::FilePath& update_request_path,
       const webapps::ShortcutInfo& shortcut_info,
-      const SkBitmap& primary_icon,
+      const std::string& primary_icon_data,
       bool is_primary_icon_maskable,
-      const SkBitmap& splash_icon,
+      const std::string& splash_icon_data,
       const std::string& package_name,
       const std::string& version,
       std::map<std::string, webapps::WebApkIconHasher::Icon>

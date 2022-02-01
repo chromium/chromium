@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.webapps;
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -19,6 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -313,7 +314,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             scheduleUpdate();
         };
         String updateRequestPath = mStorage.createAndSetUpdateRequestFilePath(info);
-        storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl, splashIconUrl,
+        encodeIconsInBackground(updateRequestPath, info, primaryIconUrl, splashIconUrl,
                 isManifestStale, appIdentityUpdateSupported, updateReasons, callback);
     }
 
@@ -544,10 +545,32 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         return null;
     }
 
-    protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
+    // Encode the icons in a background process since encoding is expensive.
+    protected void encodeIconsInBackground(String updateRequestPath, WebappInfo info,
             String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
             boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
             Callback<Boolean> callback) {
+        new AsyncTask<Pair<String, String>>() {
+            @Override
+            protected Pair<String, String> doInBackground() {
+                String primaryIconData = info.icon().encoded();
+                String splashIconData = info.splashIcon().encoded();
+                return Pair.create(primaryIconData, splashIconData);
+            }
+
+            @Override
+            protected void onPostExecute(Pair<String, String> result) {
+                storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl,
+                        result.first, splashIconUrl, result.second, isManifestStale,
+                        isAppIdentityUpdateSupported, updateReasons, callback);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
+            String primaryIconUrl, String primaryIconData, String splashIconUrl,
+            String splashIconData, boolean isManifestStale, boolean isAppIdentityUpdateSupported,
+            List<Integer> updateReasons, Callback<Boolean> callback) {
         int versionCode = info.webApkVersionCode();
         int size = info.iconUrlToMurmur2HashMap().size();
         String[] iconUrls = new String[size];
@@ -594,8 +617,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
         WebApkUpdateManagerJni.get().storeWebApkUpdateRequestToFile(updateRequestPath,
                 info.manifestStartUrl(), info.scopeUrl(), info.name(), info.shortName(),
-                primaryIconUrl, info.icon().bitmap(), info.isIconAdaptive(), splashIconUrl,
-                info.splashIcon().bitmap(), info.isSplashIconMaskable(), iconUrls, iconHashes,
+                primaryIconUrl, primaryIconData, info.isIconAdaptive(), splashIconUrl,
+                splashIconData, info.isSplashIconMaskable(), iconUrls, iconHashes,
                 info.displayMode(), info.orientation(), info.toolbarColor(), info.backgroundColor(),
                 shareTargetAction, shareTargetParamTitle, shareTargetParamText,
                 shareTargetIsMethodPost, shareTargetIsEncTypeMultipart, shareTargetParamFileNames,
@@ -608,8 +631,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     interface Natives {
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
                 String scope, String name, String shortName, String primaryIconUrl,
-                Bitmap primaryIcon, boolean isPrimaryIconMaskable, String splashIconUrl,
-                Bitmap splashIcon, boolean isSplashIconMaskable, String[] iconUrls,
+                String primaryIconData, boolean isPrimaryIconMaskable, String splashIconUrl,
+                String splashIconData, boolean isSplashIconMaskable, String[] iconUrls,
                 String[] iconHashes, @DisplayMode.EnumType int displayMode, int orientation,
                 long themeColor, long backgroundColor, String shareTargetAction,
                 String shareTargetParamTitle, String shareTargetParamText,

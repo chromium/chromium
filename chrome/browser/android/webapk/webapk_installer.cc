@@ -183,9 +183,9 @@ void WebApkInstaller::OnInstallFinished(
 // static
 void WebApkInstaller::BuildProto(
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, webapps::WebApkIconHasher::Icon>
@@ -196,9 +196,10 @@ void WebApkInstaller::BuildProto(
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
       base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info,
-                     primary_icon, is_primary_icon_maskable, splash_icon,
-                     package_name, version, std::move(icon_url_to_murmur2_hash),
-                     is_manifest_stale, is_app_identity_update_supported,
+                     primary_icon_data, is_primary_icon_maskable,
+                     splash_icon_data, package_name, version,
+                     std::move(icon_url_to_murmur2_hash), is_manifest_stale,
+                     is_app_identity_update_supported,
                      std::vector<webapps::WebApkUpdateReason>()),
       std::move(callback));
 }
@@ -207,9 +208,9 @@ void WebApkInstaller::BuildProto(
 void WebApkInstaller::StoreUpdateRequestToFile(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, webapps::WebApkIconHasher::Icon>
@@ -221,8 +222,8 @@ void WebApkInstaller::StoreUpdateRequestToFile(
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
       base::BindOnce(&webapps::StoreUpdateRequestToFileInBackground,
-                     update_request_path, shortcut_info, primary_icon,
-                     is_primary_icon_maskable, splash_icon, package_name,
+                     update_request_path, shortcut_info, primary_icon_data,
+                     is_primary_icon_maskable, splash_icon_data, package_name,
                      version, std::move(icon_url_to_murmur2_hash),
                      is_manifest_stale, is_app_identity_update_supported,
                      std::move(update_reasons)),
@@ -546,12 +547,13 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
         }
         )");
 
-  // Using empty |splash_icon| here because in this code path (WebApk
-  // install), we are using the splash icon data from |hashes|.
+  // Using empty string for |primary_icon_data| and |splash_icon_data| here
+  // because in WebApk installs, we are using the icon data from |hashes|.
   BuildProto(
-      *install_shortcut_info_, install_primary_icon_, is_primary_icon_maskable_,
-      SkBitmap() /* splash_icon */, "" /* package_name */, "" /* version */,
-      std::move(*hashes), false /* is_manifest_stale */,
+      *install_shortcut_info_, std::string() /* primary_icon_data */,
+      is_primary_icon_maskable_, std::string() /* splash_icon_data */,
+      "" /* package_name */, "" /* version */, std::move(*hashes),
+      false /* is_manifest_stale */,
       false /* is_app_identity_update_supported */,
       base::BindOnce(&WebApkInstaller::SendRequest,
                      weak_ptr_factory_.GetWeakPtr(), traffic_annotation));

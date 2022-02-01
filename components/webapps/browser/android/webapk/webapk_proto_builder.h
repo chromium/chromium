@@ -14,7 +14,6 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {
 
@@ -25,9 +24,9 @@ namespace webapps {
 // splash icon URL is unknown.
 std::unique_ptr<std::string> BuildProtoInBackground(
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
@@ -41,9 +40,9 @@ std::unique_ptr<std::string> BuildProtoInBackground(
 bool StoreUpdateRequestToFileInBackground(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
