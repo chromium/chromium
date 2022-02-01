@@ -9,7 +9,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -18,12 +17,13 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 
 ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
@@ -33,7 +33,8 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
                                model,
                                context_index,
                                kMinExistingTabGroupCommandId) {
-  const auto& tp = ThemeService::GetThemeProviderForProfile(model->profile());
+  const ui::ColorProvider& color_provider =
+      model->GetWebContentsAt(context_index)->GetColorProvider();
   constexpr int kIconSize = 14;
   std::vector<MenuItemInfo> menu_item_infos;
 
@@ -47,10 +48,8 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
         group_title.empty() ? tab_group->GetContentString() : group_title;
     const int color_id =
         GetTabGroupContextMenuColorId(tab_group->visual_data()->color());
-    // TODO (kylixrd): Investigate passing in color_id in order to color the
-    // icon using the ColorProvider.
     ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-        kTabGroupIcon, tp.GetColor(color_id), kIconSize);
+        kTabGroupIcon, color_provider.GetColor(color_id), kIconSize);
     menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
     menu_item_infos.back().may_have_mnemonics = false;
 

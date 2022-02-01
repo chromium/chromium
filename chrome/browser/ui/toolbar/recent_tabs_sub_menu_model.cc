@@ -25,7 +25,6 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
-#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
@@ -50,6 +49,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -490,14 +490,15 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(
   // when closed. We shouldn't set the minor icon for the item most recently
   // closed, as this creates visual clutter alongside the shortcut text.
   if (visual_data.has_value() && curr_model_index > header_index + 1) {
-    const auto& theme =
-        ThemeService::GetThemeProviderForProfile(browser_->profile());
-    const int color_id =
+    const ui::ColorProvider* color_provider =
+        browser_->window()->GetColorProvider();
+    const ui::ColorId color_id =
         GetTabGroupContextMenuColorId(visual_data.value().color());
     constexpr int kIconSize = 12;
-    SetMinorIcon(curr_model_index,
-                 ui::ImageModel::FromVectorIcon(
-                     kTabGroupIcon, theme.GetColor(color_id), kIconSize));
+    SetMinorIcon(
+        curr_model_index,
+        ui::ImageModel::FromVectorIcon(
+            kTabGroupIcon, color_provider->GetColor(color_id), kIconSize));
   }
 }
 
@@ -530,11 +531,12 @@ void RecentTabsSubMenuModel::BuildLocalGroupItem(
       command_id, SubMenuItem(command_id, std::move(group_model)));
 
   // Set the item icon to the group color.
-  const auto& theme =
-      ThemeService::GetThemeProviderForProfile(browser_->profile());
-  const int color_id = GetTabGroupContextMenuColorId(visual_data.color());
+  const ui::ColorProvider* color_provider =
+      browser_->window()->GetColorProvider();
+  const ui::ColorId color_id =
+      GetTabGroupContextMenuColorId(visual_data.color());
   ui::ImageModel group_icon = ui::ImageModel::FromVectorIcon(
-      kTabGroupIcon, theme.GetColor(color_id), gfx::kFaviconSize);
+      kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
   SetIcon(curr_model_index, group_icon);
 }
 
@@ -651,11 +653,12 @@ void RecentTabsSubMenuModel::AddGroupItemToModel(
   const std::u16string sub_menu_label =
       GetGroupItemLabel(group_visual_data.title(), group_model->GetItemCount());
   // Set the item icon to the group color.
-  const auto& theme =
-      ThemeService::GetThemeProviderForProfile(browser_->profile());
-  const int color_id = GetTabGroupContextMenuColorId(group_visual_data.color());
+  const ui::ColorProvider* color_provider =
+      browser_->window()->GetColorProvider();
+  const ui::ColorId color_id =
+      GetTabGroupContextMenuColorId(group_visual_data.color());
   ui::ImageModel group_icon = ui::ImageModel::FromVectorIcon(
-      kTabGroupIcon, theme.GetColor(color_id), gfx::kFaviconSize);
+      kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
   parent_model->AddSubMenuWithIcon(sub_menu_command_id, sub_menu_label,
                                    group_model.get(), group_icon);
   local_sub_menu_items_.emplace(

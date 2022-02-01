@@ -1065,6 +1065,19 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_TAB_THROBBER_WAITING, ui::kColorThrobberPreconnect},
       {TP::COLOR_TOOLBAR, kColorToolbar},
       {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
+      /* Tab Group Colors */
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY, kColorTabGroupContextMenuGrey},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE, kColorTabGroupContextMenuBlue},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_RED, kColorTabGroupContextMenuRed},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW,
+       kColorTabGroupContextMenuYellow},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREEN, kColorTabGroupContextMenuGreen},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_PINK, kColorTabGroupContextMenuPink},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE,
+       kColorTabGroupContextMenuPurple},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN, kColorTabGroupContextMenuCyan},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE,
+       kColorTabGroupContextMenuOrange},
   };
 
   ui::ColorSet::ColorMap theme_colors;

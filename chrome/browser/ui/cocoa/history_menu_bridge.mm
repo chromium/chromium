@@ -343,7 +343,7 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(
   // Set the icon of the group to the group color circle.
   const auto& theme = ThemeService::GetThemeProviderForProfile(profile_);
   const int color_id =
-      GetTabGroupContextMenuColorId(group->visual_data.color());
+      GetTabGroupContextMenuColorIdDeprecated(group->visual_data.color());
   gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
       kTabGroupIcon, gfx::kFaviconSize, theme.GetColor(color_id));
 

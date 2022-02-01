@@ -50,4 +50,26 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabForegroundActiveFrameInactive] = {
       kColorTabForegroundActiveFrameActive};
   mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSeparator};
+
+  if (dark_mode) {
+    mixer[kColorTabGroupContextMenuGrey] = {gfx::kGoogleGrey300};
+    mixer[kColorTabGroupContextMenuBlue] = {gfx::kGoogleBlue300};
+    mixer[kColorTabGroupContextMenuRed] = {gfx::kGoogleRed300};
+    mixer[kColorTabGroupContextMenuYellow] = {gfx::kGoogleYellow300};
+    mixer[kColorTabGroupContextMenuGreen] = {gfx::kGoogleGreen300};
+    mixer[kColorTabGroupContextMenuPink] = {gfx::kGooglePink300};
+    mixer[kColorTabGroupContextMenuPurple] = {gfx::kGooglePurple300};
+    mixer[kColorTabGroupContextMenuCyan] = {gfx::kGoogleCyan300};
+    mixer[kColorTabGroupContextMenuOrange] = {gfx::kGoogleOrange300};
+  } else {
+    mixer[kColorTabGroupContextMenuGrey] = {gfx::kGoogleGrey700};
+    mixer[kColorTabGroupContextMenuBlue] = {gfx::kGoogleBlue600};
+    mixer[kColorTabGroupContextMenuRed] = {gfx::kGoogleRed600};
+    mixer[kColorTabGroupContextMenuYellow] = {gfx::kGoogleYellow600};
+    mixer[kColorTabGroupContextMenuGreen] = {gfx::kGoogleGreen700};
+    mixer[kColorTabGroupContextMenuPink] = {gfx::kGooglePink700};
+    mixer[kColorTabGroupContextMenuPurple] = {gfx::kGooglePurple500};
+    mixer[kColorTabGroupContextMenuCyan] = {gfx::kGoogleCyan900};
+    mixer[kColorTabGroupContextMenuOrange] = {gfx::kGoogleOrange400};
+  }
 }

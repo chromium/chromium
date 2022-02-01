@@ -68,7 +68,25 @@
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
   E(kColorToolbarContentAreaSeparator, \
     ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR) \
-  E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT)
+  E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT) \
+  E(kColorTabGroupContextMenuGrey, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_GREY) \
+  E(kColorTabGroupContextMenuBlue, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE) \
+  E(kColorTabGroupContextMenuRed, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_RED) \
+  E(kColorTabGroupContextMenuYellow, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW) \
+  E(kColorTabGroupContextMenuGreen, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_GREEN) \
+  E(kColorTabGroupContextMenuPink, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_PINK) \
+  E(kColorTabGroupContextMenuPurple, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE) \
+  E(kColorTabGroupContextMenuCyan, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN) \
+  E(kColorTabGroupContextMenuOrange, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE)
 
 #include "ui/color/color_id_macros.inc"
 
