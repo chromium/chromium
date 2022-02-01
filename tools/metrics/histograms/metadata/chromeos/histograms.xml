@@ -777,6 +777,29 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.FirmwareUpdateUi.{Source}.{Severity}UpdateCount"
+    units="updates" expires_after="2023-01-01">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the total number of {Severity} firmware updates found for all of the
+    peripherals currently connected. The histogram is emitted once we've
+    received the list of updates (if any) for all peripherals. OnStartup is
+    recorded when a user first logs in and OnRefresh is recorded for any
+    subsequent request. The cases in which a subsequent request will be made are
+    when the Firmware Update SWA is launched, when an install is completed, and
+    when we detect that a device has been added or removed.
+  </summary>
+  <token key="Source">
+    <variant name="OnRefresh"/>
+    <variant name="OnStartup"/>
+  </token>
+  <token key="Severity">
+    <variant name="Critical"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
     enum="BooleanReceived" expires_after="2022-06-01">
   <owner>rsorokin@chromium.org</owner>

@@ -14,6 +14,10 @@ namespace metrics {
 
 void EmitDeviceCount(int num_devices, bool is_startup);
 
+void EmitUpdateCount(int num_updates,
+                     int num_critical_updates,
+                     bool is_startup);
+
 std::string GetSourceStr(bool is_startup);
 
 }  // namespace metrics

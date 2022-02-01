@@ -173,6 +173,12 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // is refreshed.
   void RecordDeviceMetrics(int num_devices);
 
+  // Records the # of updates found at startup and whenever the update list
+  // is refreshed.
+  void RecordUpdateMetrics();
+
+  int GetNumCriticalUpdates();
+
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
   base::flat_map<std::string, chromeos::FwupdDevice> devices_pending_update_;

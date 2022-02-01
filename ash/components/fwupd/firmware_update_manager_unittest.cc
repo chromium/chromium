@@ -789,4 +789,27 @@ TEST_F(FirmwareUpdateManagerTest, DeviceCountMetric) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.FirmwareUpdateUi.OnRefresh.DeviceCount", 1, 1);
 }
+
+TEST_F(FirmwareUpdateManagerTest, UpdateCountMetric) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FirmwareUpdateUi.OnStartup.CriticalUpdateCount", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FirmwareUpdateUi.OnStartup.UpdateCount", 1, 1);
+
+  RequestDevices();
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.CriticalUpdateCount", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.UpdateCount", 1, 1);
+}
+
 }  // namespace ash

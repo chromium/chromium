@@ -21,6 +21,16 @@ void EmitDeviceCount(int num_devices, bool is_startup) {
       GetSourceStr(is_startup) + std::string(".DeviceCount"), num_devices);
 }
 
+void EmitUpdateCount(int num_updates,
+                     int num_critical_updates,
+                     bool is_startup) {
+  const auto source_str = GetSourceStr(is_startup);
+  base::UmaHistogramCounts100(source_str + std::string(".CriticalUpdateCount"),
+                              num_critical_updates);
+  base::UmaHistogramCounts100(source_str + std::string(".UpdateCount"),
+                              num_updates);
+}
+
 std::string GetSourceStr(bool is_startup) {
   return std::string(kHistogramName) +
          std::string(is_startup ? "OnStartup" : "OnRefresh");
