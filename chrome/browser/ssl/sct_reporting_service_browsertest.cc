@@ -96,7 +96,8 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     // Set sampling rate to 1.0 to ensure deterministic behavior.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kSCTAuditing,
-          {{features::kSCTAuditingSamplingRate.name, "1.0"}}}},
+          {{features::kSCTAuditingSamplingRate.name, "1.0"}}},
+         {network::features::kSCTAuditingRetryReports, {}}},
         {});
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         true);
@@ -117,6 +118,17 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
   void SetUpOnMainThread() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // ConnectionListener must be set before the report server is started. Lets
+    // tests wait for one connection to be made to the report server (e.g. a
+    // failed connection due to the cert error that won't trigger the
+    // WaitForRequests() helper from the parent class).
+    report_connection_listener_ =
+        std::make_unique<net::test_server::SimpleConnectionListener>(
+            1, net::test_server::SimpleConnectionListener::
+                   ALLOW_ADDITIONAL_CONNECTIONS);
+    report_server()->SetConnectionListener(report_connection_listener());
+
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
     report_server()->RegisterRequestHandler(base::BindRepeating(
@@ -168,6 +180,30 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
         "flush-and-check-zero-reports.test", verify_result, net::OK);
 
     CertVerifierBrowserTest::SetUpOnMainThread();
+
+    // Set up NetworkServiceTest once.
+    content::GetNetworkService()->BindTestInterface(
+        network_service_test_.BindNewPipeAndPassReceiver());
+
+    // Override the retry delay to 0 so that retries happen immediately.
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test_->SetSCTAuditingRetryDelay(base::TimeDelta());
+  }
+
+  void TearDownOnMainThread() override {
+    // Reset the retry delay override.
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test_->SetSCTAuditingRetryDelay(absl::nullopt);
+
+    CertVerifierBrowserTest::TearDownOnMainThread();
+  }
+
+  net::test_server::SimpleConnectionListener* report_connection_listener() {
+    return report_connection_listener_.get();
+  }
+
+  mojo::Remote<network::mojom::NetworkServiceTest>& network_service_test() {
+    return network_service_test_;
   }
 
  protected:
@@ -258,6 +294,10 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer report_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<net::test_server::SimpleConnectionListener>
+      report_connection_listener_;
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
 
   // `requests_lock_` is used to force sequential access to these variables to
   // avoid races that can cause test flakes.
@@ -405,6 +445,18 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // The mock cert verify result will be lost when the network service restarts,
   // so set back up the necessary rules.
   mock_cert_verifier()->set_default_result(net::OK);
+
+  // The retry delay override will be reset when the network service restarts,
+  // so set back up a retry delay of zero to avoid test timeouts.
+  {
+    network_service_test().reset();
+    content::GetNetworkService()->BindTestInterface(
+        network_service_test().BindNewPipeAndPassReceiver());
+
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test()->SetSCTAuditingRetryDelay(base::TimeDelta());
+    // Default test fixture teardown will reset the delay back to the default.
+  }
 
   net::CertVerifyResult verify_result;
   verify_result.verified_cert = https_server()->GetCertificate().get();
@@ -601,74 +653,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceZeroSamplingRateBrowserTest,
   EXPECT_EQ(0u, requests_seen());
 }
 
-// Test fixture with SCT auditing and retry/persist enabled.
-class SCTReportingServiceWithRetryAndPersistBrowserTest
-    : public SCTReportingServiceBrowserTest {
- public:
-  SCTReportingServiceWithRetryAndPersistBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSCTAuditing,
-          {{features::kSCTAuditingSamplingRate.name, "1.0"}}},
-         {network::features::kSCTAuditingRetryAndPersistReports, {}}},
-        {});
-  }
-  ~SCTReportingServiceWithRetryAndPersistBrowserTest() override = default;
-
-  SCTReportingServiceWithRetryAndPersistBrowserTest(
-      const SCTReportingServiceWithRetryAndPersistBrowserTest&) = delete;
-  const SCTReportingServiceWithRetryAndPersistBrowserTest& operator=(
-      const SCTReportingServiceWithRetryAndPersistBrowserTest&) = delete;
-
-  void SetUpOnMainThread() override {
-    // ConnectionListener must be set before the report server is started. Lets
-    // tests wait for one connection to be made to the report server (e.g. a
-    // failed connection due to the cert error that won't trigger the
-    // WaitForRequests() helper from the parent class).
-    report_connection_listener_ =
-        std::make_unique<net::test_server::SimpleConnectionListener>(
-            1, net::test_server::SimpleConnectionListener::
-                   ALLOW_ADDITIONAL_CONNECTIONS);
-    report_server()->SetConnectionListener(report_connection_listener());
-
-    // Parent test fixture setup will start the report server.
-    SCTReportingServiceBrowserTest::SetUpOnMainThread();
-
-    // Set up NetworkServiceTest once.
-    content::GetNetworkService()->BindTestInterface(
-        network_service_test_.BindNewPipeAndPassReceiver());
-
-    // Override the retry delay to 0 so that retries happen immediately.
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test()->SetSCTAuditingRetryDelay(base::TimeDelta());
-  }
-
-  void TearDownOnMainThread() override {
-    // Reset the retry delay override.
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test()->SetSCTAuditingRetryDelay(absl::nullopt);
-
-    SCTReportingServiceBrowserTest::TearDownOnMainThread();
-  }
-
-  net::test_server::SimpleConnectionListener* report_connection_listener() {
-    return report_connection_listener_.get();
-  }
-
-  network::mojom::NetworkServiceTest* network_service_test() {
-    return network_service_test_.get();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<net::test_server::SimpleConnectionListener>
-      report_connection_listener_;
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
-};
-
 // Tests the simple case where a report succeeds on the first try.
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
-                       SucceedOnFirstTry) {
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, SucceedOnFirstTry) {
   // Succeed on the first try.
   set_error_count(0);
 
@@ -686,8 +672,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
       GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }
 
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
-                       RetryOnceAndSucceed) {
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, RetryOnceAndSucceed) {
   // Succeed on the second try.
   set_error_count(1);
 
@@ -705,8 +690,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
       GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }
 
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
-                       FailAfterMaxRetries) {
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, FailAfterMaxRetries) {
   // Don't succeed for max_retries+1.
   set_error_count(16);
 
@@ -728,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
 
 // Test that a cert error on the first attempt to send a report will trigger
 // retries that succeed if the server starts using a good cert.
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                        CertificateErrorTriggersRetry) {
   {
     // Override the retry delay to 1s so that the retries don't all happen

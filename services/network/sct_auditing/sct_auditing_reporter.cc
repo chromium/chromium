@@ -125,8 +125,7 @@ SCTAuditingReporter::SCTAuditingReporter(
 SCTAuditingReporter::~SCTAuditingReporter() = default;
 
 void SCTAuditingReporter::Start() {
-  if (base::FeatureList::IsEnabled(
-          features::kSCTAuditingRetryAndPersistReports) &&
+  if (base::FeatureList::IsEnabled(features::kSCTAuditingRetryReports) &&
       backoff_entry_->ShouldRejectRequest()) {
     // TODO(crbug.com/1199827): Investigate if explicit task traits should be
     // used for these tasks (e.g., BEST_EFFORT and SKIP_ON_SHUTDOWN).
@@ -191,8 +190,7 @@ void SCTAuditingReporter::OnSendReportComplete(
 
   RecordSCTAuditingReportSucceededMetrics(success);
 
-  if (base::FeatureList::IsEnabled(
-          features::kSCTAuditingRetryAndPersistReports)) {
+  if (base::FeatureList::IsEnabled(features::kSCTAuditingRetryReports)) {
     if (success) {
       // Report succeeded.
       if (backoff_entry_->failure_count() == 0) {

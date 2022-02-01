@@ -58,8 +58,8 @@ SCTAuditingHandler::SCTAuditingHandler(NetworkContext* context,
       pending_reporters_(cache_size),
       persistence_path_(persistence_path),
       foreground_runner_(base::SequencedTaskRunnerHandle::Get()) {
-  if (base::FeatureList::IsEnabled(
-          features::kSCTAuditingRetryAndPersistReports)) {
+  if (base::FeatureList::IsEnabled(features::kSCTAuditingRetryReports) &&
+      base::FeatureList::IsEnabled(features::kSCTAuditingPersistReports)) {
     // If no persistence path is set, only store pending reporters in memory.
     if (persistence_path_.empty()) {
       return;

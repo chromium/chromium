@@ -127,12 +127,12 @@ class SCTAuditingHandlerTest : public testing::Test {
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
 };
 
-// Test that when the retry+persistence feature is disabled no reports will be
+// Test that when the persistence feature is disabled no reports will be
 // persisted on disk.
 TEST_F(SCTAuditingHandlerTest, PersistenceFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports},
+                                       {features::kSCTAuditingPersistReports});
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
@@ -150,8 +150,9 @@ TEST_F(SCTAuditingHandlerTest, PersistenceFeatureDisabled) {
 // (e.g., as happens for ephemeral profiles), no file writer is created.
 TEST_F(SCTAuditingHandlerTest, HandlerWithoutPersistencePath) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
+                                        features::kSCTAuditingPersistReports},
+                                       {});
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
@@ -170,8 +171,9 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithoutPersistencePath) {
 // path, then pending reports get stored to disk.
 TEST_F(SCTAuditingHandlerTest, HandlerWithPersistencePath) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
+                                        features::kSCTAuditingPersistReports},
+                                       {});
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
@@ -230,8 +232,9 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithPersistencePath) {
 // same data.
 TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
+                                        features::kSCTAuditingPersistReports},
+                                       {});
 
   // Create a Handler, add a reporter, and wait for it to get persisted.
   {
@@ -300,8 +303,9 @@ TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
 // created.
 TEST_F(SCTAuditingHandlerTest, DeserializeBadData) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
+                                        features::kSCTAuditingPersistReports},
+                                       {});
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
@@ -335,8 +339,9 @@ TEST_F(SCTAuditingHandlerTest, DeserializeBadData) {
 // reporters for each entry.
 TEST_F(SCTAuditingHandlerTest, HandlerWithExistingPersistedData) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
+                                        features::kSCTAuditingPersistReports},
+                                       {});
 
   // Set up previously persisted data on disk:
   // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
@@ -391,8 +396,9 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithExistingPersistedData) {
 // persisted storage.
 TEST_F(SCTAuditingHandlerTest, RetryUpdatesPersistedBackoffEntry) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
+                                        features::kSCTAuditingPersistReports},
+                                       {});
 
   // Set up previously persisted data on disk:
   // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
@@ -450,8 +456,9 @@ TEST_F(SCTAuditingHandlerTest, RetryUpdatesPersistedBackoffEntry) {
 // persisted storage tries and fails once more, should get deleted.
 TEST_F(SCTAuditingHandlerTest, RestoringMaxRetries) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
+                                        features::kSCTAuditingPersistReports},
+                                       {});
 
   // Set up previously persisted data on disk:
   // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)

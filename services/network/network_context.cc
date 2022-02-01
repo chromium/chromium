@@ -524,8 +524,7 @@ NetworkContext::NetworkContext(
     SetCTPolicy(std::move(params_->ct_policy));
 
   base::FilePath sct_auditing_path;
-  if (base::FeatureList::IsEnabled(
-          features::kSCTAuditingRetryAndPersistReports)) {
+  if (base::FeatureList::IsEnabled(features::kSCTAuditingPersistReports)) {
     GetFullDataFilePath(params_->file_paths,
                         &network::mojom::NetworkContextFilePaths::
                             sct_auditing_pending_reports_file_name,

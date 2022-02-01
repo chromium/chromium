@@ -398,18 +398,19 @@ TEST_F(SCTAuditingCacheTest, ReportsSentWithServerOK) {
                            sct_list);
 
   // Check that there is one pending report.
-  EXPECT_EQ(1, url_loader_factory()->NumPending());
   EXPECT_EQ(1u, network_context_->sct_auditing_handler()
                     ->GetPendingReportersForTesting()
                     ->size());
 
-  // Simulate the server returning 200 OK to the report request.
-  url_loader_factory()->AddResponse("https://example.test",
-                                    /*content=*/"",
-                                    /*status=*/net::HTTP_OK);
+  // Wait for initial request.
+  WaitForRequests(1u);
 
-  // No wait currently needed here, as without retry enabled the report is sent
-  // synchronously.
+  // Simulate the server returning 200 OK to the report request.
+  // The request must already be pending before calling this.
+  url_loader_factory()->SimulateResponseForPendingRequest(
+      "https://example.test",
+      /*content=*/"",
+      /*status=*/net::HTTP_OK);
 
   EXPECT_EQ(0, url_loader_factory()->NumPending());
 
@@ -434,19 +435,24 @@ TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
                            sct_list);
 
   // Check that there is one pending report.
-  EXPECT_EQ(1, url_loader_factory()->NumPending());
+  EXPECT_EQ(1u, network_context_->sct_auditing_handler()
+                    ->GetPendingReportersForTesting()
+                    ->size());
+
+  // Wait for initial request.
+  WaitForRequests(1u);
 
   // Simulate the server returning 429 TOO MANY REQUEST to the report request.
-  url_loader_factory()->AddResponse("https://example.test",
-                                    /*content=*/"",
-                                    /*status=*/net::HTTP_TOO_MANY_REQUESTS);
-
-  // No wait currently needed here, as without retry enabled the report is sent
-  // synchronously.
+  // The request must already be pending before calling this.
+  url_loader_factory()->SimulateResponseForPendingRequest(
+      "https://example.test",
+      /*content=*/"",
+      /*status=*/net::HTTP_TOO_MANY_REQUESTS);
 
   EXPECT_EQ(0, url_loader_factory()->NumPending());
-  // Without retry enabled, the pending reporter should get cleared on error.
-  EXPECT_EQ(0u, network_context_->sct_auditing_handler()
+
+  // The pending reporter will remain, awaiting retry.
+  EXPECT_EQ(1u, network_context_->sct_auditing_handler()
                     ->GetPendingReportersForTesting()
                     ->size());
 }
@@ -618,8 +624,7 @@ TEST_F(SCTAuditingCacheTest, ReportsOnlyIncludesValidSCTs) {
 // OK the second try.
 TEST_F(SCTAuditingCacheTest, ReportSucceedsOnSecondTry) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitAndEnableFeature(features::kSCTAuditingRetryReports);
 
   base::HistogramTester histograms;
 
@@ -683,8 +688,7 @@ TEST_F(SCTAuditingCacheTest, ReportSucceedsOnSecondTry) {
 // Tests that after max_tries, the reporter stops and is deleted.
 TEST_F(SCTAuditingCacheTest, ExhaustAllRetriesShouldDeleteReporter) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitAndEnableFeature(features::kSCTAuditingRetryReports);
 
   base::HistogramTester histograms;
 
@@ -731,8 +735,7 @@ TEST_F(SCTAuditingCacheTest, ExhaustAllRetriesShouldDeleteReporter) {
 // succeeds on the first try.
 TEST_F(SCTAuditingCacheTest, RetriesEnabledSucceedFirstTryMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
+  scoped_feature_list.InitAndEnableFeature(features::kSCTAuditingRetryReports);
 
   base::HistogramTester histograms;
 
