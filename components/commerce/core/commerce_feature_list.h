@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMMERCE_COMMERCE_FEATURE_LIST_H_
-#define CHROME_BROWSER_COMMERCE_COMMERCE_FEATURE_LIST_H_
+#ifndef COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
+#define COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -30,4 +30,4 @@ bool IsCouponDiscountPartnerMerchant(const GURL& url);
 bool IsCouponWithCodeEnabled();
 }  // namespace commerce
 
-#endif  // CHROME_BROWSER_COMMERCE_COMMERCE_FEATURE_LIST_H_
+#endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_

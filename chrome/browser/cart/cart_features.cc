@@ -5,7 +5,7 @@
 #include "chrome/browser/cart/cart_features.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace cart_features {
