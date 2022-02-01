@@ -26,9 +26,9 @@ std::unique_ptr<Dependencies> Dependencies::CreateFromJavaDependencies(
 
 std::unique_ptr<Dependencies> Dependencies::CreateFromJavaStaticDependencies(
     ScopedJavaGlobalRef<jobject> jstatic_dependencies) {
-  const jlong object_ptr = Java_AssistantStaticDependencies_getNativePointer(
-      AttachCurrentThread(), jstatic_dependencies);
-  return base::WrapUnique(reinterpret_cast<Dependencies*>(object_ptr));
+  return base::WrapUnique(reinterpret_cast<Dependencies*>(
+      Java_AssistantStaticDependencies_createNative(AttachCurrentThread(),
+                                                    jstatic_dependencies)));
 }
 
 Dependencies::Dependencies(JNIEnv* env,

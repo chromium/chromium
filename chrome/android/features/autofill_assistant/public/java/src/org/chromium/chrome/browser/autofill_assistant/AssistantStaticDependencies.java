@@ -22,7 +22,7 @@ import org.chromium.ui.util.AccessibilityUtil;
 @JNINamespace("autofill_assistant")
 public interface AssistantStaticDependencies {
     @CalledByNative
-    long getNativePointer();
+    long createNative();
 
     /**
      * Create the Activity specific dependencies.

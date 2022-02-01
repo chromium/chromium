@@ -31,11 +31,9 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     private long mNativePointer;
 
     @Override
-    public long getNativePointer() {
-        if (mNativePointer == 0) {
-            mNativePointer = AssistantStaticDependenciesChromeJni.get().init(this);
-        }
-        return mNativePointer;
+    public long createNative() {
+        return AssistantStaticDependenciesChromeJni.get().init(
+                new AssistantStaticDependenciesChrome());
     }
 
     @Override
