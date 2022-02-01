@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       SystemUILaunchMultipleDeskTemplates) {
+                       DISABLED_SystemUILaunchMultipleDeskTemplates) {
   const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
@@ -1901,8 +1901,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 }
 
 // Tests that the launch from template histogram is recorded properly.
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       SystemUIDeskTemplateLaunchFromTemplateHistogram) {
+IN_PROC_BROWSER_TEST_F(
+    DesksTemplatesClientTest,
+    DISABLED_SystemUIDeskTemplateLaunchFromTemplateHistogram) {
   base::HistogramTester histogram_tester;
 
   // Create a new browser.

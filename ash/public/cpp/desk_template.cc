@@ -54,7 +54,7 @@ DeskTemplate::DeskTemplate()
       source_(DeskTemplateSource::kUnknownSource),
       created_time_(base::Time::Now()) {}
 
-std::unique_ptr<DeskTemplate> DeskTemplate::Clone() {
+std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
       uuid_.AsLowercaseString(), source_, base::UTF16ToUTF8(template_name_),
       created_time_);
