@@ -129,7 +129,9 @@ TEST_F(LacrosAvailabilityPolicyObserverTest, OnPolicyUpdate) {
   {
     auto feature_flags = GetFeatureFlagsForPrimaryUser();
     ASSERT_EQ(1u, feature_flags.size());
-    EXPECT_EQ("lacros-availability-policy@2", feature_flags[0]);
+    // Please find about_flags.cc for actual mapping of the enum value
+    // to the index.
+    EXPECT_EQ("lacros-availability-policy@3", feature_flags[0]);
   }
 
   local_state()->SetManagedPref(prefs::kLacrosLaunchSwitch, base::Value(3));
@@ -137,7 +139,9 @@ TEST_F(LacrosAvailabilityPolicyObserverTest, OnPolicyUpdate) {
   {
     auto feature_flags = GetFeatureFlagsForPrimaryUser();
     ASSERT_EQ(1u, feature_flags.size());
-    EXPECT_EQ("lacros-availability-policy@3", feature_flags[0]);
+    // Please find about_flags.cc for actual mapping of the enum value
+    // to the index.
+    EXPECT_EQ("lacros-availability-policy@4", feature_flags[0]);
   }
 }
 
@@ -162,7 +166,9 @@ TEST_F(LacrosAvailabilityPolicyObserverTest, AroundPrimaryProfileCreation) {
   {
     auto feature_flags = GetFeatureFlagsForPrimaryUser();
     ASSERT_EQ(1u, feature_flags.size());
-    EXPECT_EQ("lacros-availability-policy@2", feature_flags[0]);
+    // Please find about_flags.cc for actual mapping of the enum value
+    // to the index.
+    EXPECT_EQ("lacros-availability-policy@3", feature_flags[0]);
   }
 }
 
