@@ -68,8 +68,11 @@ void TtsService::MaybeExit() {
   if ((!google_tts_stream_ || !google_tts_stream_->IsBound()) &&
       (!playback_tts_stream_ || !playback_tts_stream_->IsBound())) {
     service_receiver_.reset();
-    if (!keep_process_alive_for_testing_)
+    if (!keep_process_alive_for_testing_) {
+      if (google_tts_stream_)
+        google_tts_stream_->set_is_in_process_teardown(true);
       exit(0);
+    }
   }
 }
 
