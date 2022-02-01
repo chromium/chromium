@@ -204,6 +204,15 @@ p, h2, h3, h4 {
   padding-left: 10px;
 }
 
+.download-button {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-bottom: -2px;
+  margin-right: 0px;
+  content: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE4LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIxMi45NzMgMjEyLjk3MyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjEyLjk3MyAyMTIuOTczOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8Zz4NCgk8cGF0aCBkPSJNMjA1LjQ3Myw3Ni4xNDZjLTQuMTQzLDAtNy41LDMuMzU4LTcuNSw3LjV2MTAzLjMySDE1VjgzLjY0NmMwLTQuMTQyLTMuMzU3LTcuNS03LjUtNy41UzAsNzkuNTAzLDAsODMuNjQ2djExMC44Mg0KCQljMCw0LjE0MiwzLjM1Nyw3LjUsNy41LDcuNWgxOTcuOTczYzQuMTQzLDAsNy41LTMuMzU4LDcuNS03LjVWODMuNjQ2QzIxMi45NzMsNzkuNTAzLDIwOS42MTUsNzYuMTQ2LDIwNS40NzMsNzYuMTQ2eiIvPg0KCTxwYXRoIGQ9Ik0xMDEuMTcxLDE1NC43NDZjMS40MDcsMS40MDcsMy4zMTQsMi4xOTcsNS4zMDQsMi4xOTdjMS45ODksMCwzLjg5Ni0wLjc5LDUuMzA0LTIuMTk3bDMyLjM3My0zMi4zNzQNCgkJYzIuOTI5LTIuOTI5LDIuOTI5LTcuNjc4LDAtMTAuNjA2Yy0yLjkzLTIuOTMtNy42NzgtMi45MjktMTAuNjA3LDBsLTE5LjU2OSwxOS41NjlsMC4wMDQtMTEyLjgyOGMwLTQuMTQyLTMuMzU3LTcuNS03LjUtNy41DQoJCWMtNC4xNDIsMC03LjUsMy4zNTgtNy41LDcuNWwtMC4wMDQsMTEyLjgyOWwtMTkuNTQ2LTE5LjU0N2MtMi45MjktMi45MjktNy42NzctMi45My0xMC42MDcsMGMtMi45MjksMi45MjktMi45MjksNy42NzcsMCwxMC42MDYNCgkJTDEwMS4xNzEsMTU0Ljc0NnoiLz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjwvc3ZnPg0K);
+}
+
 .stat-bar-count, .stat-bar-time {
   width: 12px;
   height: 8px;
@@ -533,6 +542,10 @@ class PathParser {
 
   resultLink(resultName) {
     return this.dir + this.resultPrefix + resultName;
+  }
+
+  resultFilename(resultName) {
+    return this.resultPrefix + resultName;
   }
 
   repaintOverlayLink() {
@@ -1846,6 +1859,9 @@ class ImageResultsToolbar extends TXToolbar {
 
     let html = "image: ";
     html += `<a class="toggle" href="${pathParser.resultLink("-actual.png")}" title="Actual result">actual</a>`;
+    html += `<a download="${pathParser.resultFilename("-expected.png")}" href="${pathParser.resultLink("-actual.png")}" title="Download new expectation file">`;
+    html += '<img class="download-button" alt="Download new expectation file" />';
+    html += '</a>';
     html += `<a class="toggle" href="${pathParser.resultLink("-expected.png")}" title="Expected result">expected</a>`;
     if (test.reference) {
       html += `<span style="margin-left: -2px; margin-right: 2px">(` +
