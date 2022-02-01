@@ -459,21 +459,6 @@
             ]
         }
     ],
-    "ArcUseDalvikMemoryProfile": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcUseDalvikMemoryProfile"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcVmBlockSize": [
         {
             "platforms": [
@@ -484,6 +469,21 @@
                     "name": "EnabledGroupA_20211105",
                     "enable_features": [
                         "ArcVmUseDefaultBlockSize"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ArcVmDalvikMemoryProfile": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcUseDalvikMemoryProfile"
                     ]
                 }
             ]
