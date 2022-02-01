@@ -329,9 +329,8 @@ crbug.com/951628 [ passthrough ] conformance/rendering/blending.html [ Failure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
-# Temporary suppression while we wait for a spec update.
-# TODO(jmadill): Remove when possible.
-crbug.com/angleproject/6358 conformance/programs/program-test.html [ Failure ]
+# New validation was not implemented on the validating command decoder.
+crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # Win / AMD / Passthrough command decoder / D3D11
 crbug.com/1282819 [ win amd-0x6613 angle-d3d11 passthrough ] conformance/canvas/canvas-test.html [ Failure ]
