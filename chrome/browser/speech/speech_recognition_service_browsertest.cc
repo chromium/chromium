@@ -143,6 +143,7 @@ class SpeechRecognitionServiceTest
   void OnSpeechRecognitionRecognitionEvent(
       const media::SpeechRecognitionResult& result,
       OnSpeechRecognitionRecognitionEventCallback reply) override;
+  void OnSpeechRecognitionStopped() override;
   void OnSpeechRecognitionError() override;
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
@@ -204,6 +205,10 @@ void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
       transcription.end());
   recognition_results_.push_back(std::move(transcription));
   std::move(reply).Run(is_client_requesting_speech_recognition_);
+}
+
+void SpeechRecognitionServiceTest::OnSpeechRecognitionStopped() {
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
