@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -149,13 +150,36 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
   unsupported_apps_callback_ = std::move(callback);
   unsupported_apps_template_ = std::move(desk_template);
 
+  size_t incognito_window_count = 0;
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  // TODO(shidi): The caller of  ShowUnsupportedAppsDialog should provide us
+  // with the incognito window count to avoid double looping.
+  for (auto* window : unsupported_apps) {
+    if (delegate->IsIncognitoWindow(window))
+      ++incognito_window_count;
+  }
+
+  // Note that this assumed unsupported apps which are not incognito browsers
+  // are linux apps.
+  std::u16string app_description;
+  int app_description_id;
+  if (incognito_window_count == 0) {
+    app_description_id =
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_DIALOG_DESCRIPTION;
+  } else if (incognito_window_count != unsupported_apps.size()) {
+    app_description_id =
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_DIALOG_DESCRIPTION;
+  } else {
+    app_description_id =
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_DIALOG_DESCRIPTION;
+  }
+
   auto dialog =
       views::Builder<DesksTemplatesDialog>()
           .SetTitleText(IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE)
           .SetConfirmButtonText(
               IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON)
-          .SetDescriptionText(l10n_util::GetStringUTF16(
-              IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_DESCRIPTION))
+          .SetDescriptionText(l10n_util::GetStringUTF16(app_description_id))
           .SetCancelCallback(
               base::BindOnce(&DesksTemplatesDialogController::
                                  OnUserCanceledUnsupportedAppsDialog,

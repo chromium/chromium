@@ -1813,8 +1813,14 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE" desc="The text of the title of the desks templates delete dialog, which shows up when trying to delete a template.">
         Delete template?
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Linux apps aren’t currently supported. Other apps will be saved.
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Linux apps and Incognito windows aren’t currently supported. Other apps will be saved.
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Incognito windows aren’t currently supported. Other apps will be saved.
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
         Template named <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> already exists
