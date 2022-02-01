@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -595,6 +596,78 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
                                GURL{kNoManifestTestPageStartUrl});
   EXPECT_FALSE(registrar().IsInstalled(app_id));
+}
+
+const char kFeatureNameOrInstalledConfig[] = R"({
+  "app_url": "$1",
+  "launch_container": "window",
+  "user_type": ["unmanaged"],
+  "feature_name_or_installed": "test_feature"
+})";
+
+// When the "feature_name_or_installed" feature is enabled, the app should be
+// installed.
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       GateOnFeatureNameOrInstalled_InstallWhenEnabled) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::AutoReset<bool> enable_feature =
+      SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
+
+  std::string app_config = base::ReplaceStringPlaceholders(
+      kFeatureNameOrInstalledConfig, {GetAppUrl().spec()}, nullptr);
+
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
+            InstallResultCode::kSuccessNewInstall);
+
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+}
+
+// When the "feature_name_or_installed" feature is disabled, the app should not
+// be installed.
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       GateOnFeatureNameOrInstalled_IgnoreWhenDisabled) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string app_config = base::ReplaceStringPlaceholders(
+      kFeatureNameOrInstalledConfig, {GetAppUrl().spec()}, nullptr);
+
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config), absl::nullopt);
+
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+}
+
+// When the "feature_name_or_installed" feature is disabled, any existing
+// preinstalled app should not be uninstalled.
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledWebAppManagerBrowserTest,
+    GateOnFeatureNameOrInstalled_DoNotUninstallWhenDisabled) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string app_config = base::ReplaceStringPlaceholders(
+      kFeatureNameOrInstalledConfig, {GetAppUrl().spec()}, nullptr);
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+
+  {
+    base::AutoReset<bool> enable_feature =
+        SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
+    EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
+              InstallResultCode::kSuccessNewInstall);
+
+    EXPECT_TRUE(registrar().IsInstalled(app_id));
+  }
+
+  {
+    EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
+              InstallResultCode::kSuccessAlreadyInstalled);
+
+    EXPECT_TRUE(registrar().IsInstalled(app_id));
+  }
 }
 
 // The offline manifest JSON config functionality is only available on Chrome

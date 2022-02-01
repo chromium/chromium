@@ -106,10 +106,17 @@ struct ExternalInstallOptions {
   // See apps::DetermineUserType() for relevant string constants.
   std::vector<std::string> user_type_allowlist;
 
-  // Which feature flag should be enabled to install this app. See
-  // chrome/browser/web_applications/preinstalled_app_install_features.h
+  // Which feature flag should be enabled to install this app. If the feature
+  // is disabled, existing external installs will be removed.
+  // See chrome/browser/web_applications/preinstalled_app_install_features.h
   // for available features to gate on.
   absl::optional<std::string> gate_on_feature;
+
+  // Which feature flag should be enabled to install this app. If the feature is
+  // disabled, existing external installs will not be removed.
+  // See chrome/browser/web_applications/preinstalled_app_install_features.h
+  // for available features to gate on.
+  absl::optional<std::string> gate_on_feature_or_installed;
 
   // Whether this should not be installed for devices that support ARC.
   bool disable_if_arc_supported = false;

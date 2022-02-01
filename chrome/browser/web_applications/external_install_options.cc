@@ -58,6 +58,7 @@ bool ExternalInstallOptions::operator==(
         options.only_if_previously_preinstalled,
         options.user_type_allowlist,
         options.gate_on_feature,
+        options.gate_on_feature_or_installed,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         options.disable_if_arc_supported,
         options.disable_if_tablet_form_factor,
@@ -125,6 +126,8 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.SetKey("force_reinstall_for_milestone",
               ConvertOptional(force_reinstall_for_milestone));
   root.SetKey("gate_on_feature", ConvertOptional(gate_on_feature));
+  root.SetKey("gate_on_feature_or_installed",
+              ConvertOptional(gate_on_feature_or_installed));
   root.SetBoolKey("install_placeholder", install_placeholder);
   root.SetIntKey("install_source", static_cast<int>(install_source));
   root.SetBoolKey("is_disabled", is_disabled);

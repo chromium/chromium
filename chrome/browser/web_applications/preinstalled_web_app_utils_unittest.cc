@@ -557,4 +557,35 @@ TEST_F(PreinstalledWebAppUtilsTest,
       touchscreen_set->disable_if_touchscreen_with_stylus_not_supported);
 }
 
+TEST_F(PreinstalledWebAppUtilsTest, GateOnFeatureNameOrInstalled) {
+  absl::optional<ExternalInstallOptions> feature_name_set = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "feature_name_or_installed": "foobar",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_EQ("foobar", feature_name_set->gate_on_feature_or_installed);
+
+  absl::optional<ExternalInstallOptions> no_feature_name = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(no_feature_name->gate_on_feature_or_installed.has_value());
+
+  absl::optional<ExternalInstallOptions> non_string_feature = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "feature_name_or_installed": true,
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(non_string_feature->gate_on_feature_or_installed.has_value());
+}
+
 }  // namespace web_app

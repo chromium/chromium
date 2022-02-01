@@ -64,6 +64,14 @@ constexpr char kCreateShortcuts[] = "create_shortcuts";
 //  - if the feature is not enabled, the app will be removed.
 constexpr char kFeatureName[] = "feature_name";
 
+// kFeatureNameOrInstalled is an optional string parameter specifying a feature
+// associated with this app. The feature must be present in
+// |kPreinstalledAppInstallFeatures| to be applicable.
+//
+// When specified, the app will only be installed when the feature is enabled.
+// If the feature is disabled, existing installations will not be removed.
+constexpr char kFeatureNameOrInstalled[] = "feature_name_or_installed";
+
 // kDisableIfArcSupported is an optional bool which specifies whether to skip
 // install of the app if the device supports Arc (Chrome OS only).
 // Defaults to false.
@@ -214,6 +222,12 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   const std::string* feature_name = app_config.FindStringKey(kFeatureName);
   if (feature_name)
     options.gate_on_feature = *feature_name;
+
+  // feature_name_or_installed
+  const std::string* feature_name_or_installed =
+      app_config.FindStringKey(kFeatureNameOrInstalled);
+  if (feature_name_or_installed)
+    options.gate_on_feature_or_installed = *feature_name_or_installed;
 
   // app_url
   value = app_config.FindKeyOfType(kAppUrl, base::Value::Type::STRING);

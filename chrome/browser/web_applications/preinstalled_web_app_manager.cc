@@ -187,6 +187,21 @@ absl::optional<std::string> GetDisableReason(
            " disabled because feature is disabled: " + *options.gate_on_feature;
   }
 
+  // Remove if gated on a disabled feature, and the app hasn't been preinstalled
+  // before.
+  if (options.gate_on_feature_or_installed &&
+      !IsPreinstalledAppInstallFeatureEnabled(
+          *options.gate_on_feature_or_installed, *profile)) {
+    absl::optional<AppId> app_id =
+        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
+            .LookupAppId(options.install_url);
+    if (!app_id.has_value()) {
+      return options.install_url.spec() + " disabled because the feature " +
+             *options.gate_on_feature_or_installed +
+             " is disabled and the app is not already installed";
+    }
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Remove if ARC is supported and app should be disabled.
   if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
