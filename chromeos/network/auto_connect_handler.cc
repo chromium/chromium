@@ -491,19 +491,19 @@ void AutoConnectHandler::DisableAutoconnectForNetwork(
     const std::string& network_type) {
   NET_LOG(EVENT) << "Disable auto-connect forced by policy: "
                  << NetworkPathId(service_path);
-  base::DictionaryValue properties;
+  base::Value properties(base::Value::Type::DICTIONARY);
 
-  std::string autoconenct_path;
+  std::string autoconnect_path;
   if (network_type == ::onc::network_config::kWiFi) {
-    autoconenct_path = base::StrCat(
+    autoconnect_path = base::StrCat(
         {::onc::network_config::kWiFi, ".", ::onc::wifi::kAutoConnect});
   } else if (network_type == ::onc::network_config::kCellular) {
-    autoconenct_path = base::StrCat(
+    autoconnect_path = base::StrCat(
         {::onc::network_config::kCellular, ".", ::onc::cellular::kAutoConnect});
   } else {
     NOTREACHED();
   }
-  properties.SetBoolPath(autoconenct_path, false);
+  properties.SetBoolPath(autoconnect_path, false);
   managed_configuration_handler_->SetProperties(
       service_path, properties, base::DoNothing(),
       base::BindOnce(&SetPropertiesErrorCallback));
