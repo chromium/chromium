@@ -146,6 +146,7 @@ public class WebViewLayoutTest {
         }
     }
 
+    @DisabledTest(message = "https://crbug.com/1293089")
     @Test
     @MediumTest
     public void testWebViewExcludedInterfaces() throws Exception {
