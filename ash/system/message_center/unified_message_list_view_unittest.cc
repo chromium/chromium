@@ -903,8 +903,9 @@ TEST_F(RefreshedUnifiedMessageListView, RemoveNotificationDuringCollapse) {
 
 // Tests that expanding a notification at various stages while it is being
 // closed does not result in an animation.
+// TODO(crbug.com/1292775): Test is flaky.
 TEST_F(RefreshedUnifiedMessageListView,
-       CollapseDuringCloseResultsInNoCollapseAnimation) {
+       DISABLED_CollapseDuringCloseResultsInNoCollapseAnimation) {
   auto id1 = AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
