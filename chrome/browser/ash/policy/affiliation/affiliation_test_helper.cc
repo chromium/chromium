@@ -173,8 +173,8 @@ void AffiliationTestHelper::PreLoginUser(const AccountId& account_id) {
   if (!base::Contains(users_pref->GetList(), email_value))
     users_pref->Append(std::move(email_value));
 
-  if (user_manager::UserManager::IsInitialized())
-    user_manager::known_user::SaveKnownUser(account_id);
+  user_manager::KnownUser(g_browser_process->local_state())
+      .SaveKnownUser(account_id);
 
   ash::StartupUtils::MarkOobeCompleted();
 }

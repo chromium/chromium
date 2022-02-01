@@ -904,14 +904,6 @@ std::vector<AccountId> GetKnownAccountIds() {
   return KnownUser(local_state).GetKnownAccountIds();
 }
 
-void SaveKnownUser(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SaveKnownUser(account_id);
-}
-
 void UpdateId(const AccountId& account_id) {
   PrefService* local_state = GetLocalStateLegacy();
   // Local State may not be initialized in tests.
@@ -1028,23 +1020,6 @@ bool FindReauthReason(const AccountId& account_id, int* out_value) {
   if (!local_state)
     return false;
   return KnownUser(local_state).FindReauthReason(account_id, out_value);
-}
-
-void SetChallengeResponseKeys(const AccountId& account_id, base::Value value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state)
-      .SetChallengeResponseKeys(account_id, std::move(value));
-}
-
-base::Value GetChallengeResponseKeys(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return base::Value();
-  return KnownUser(local_state).GetChallengeResponseKeys(account_id);
 }
 
 void SetLastOnlineSignin(const AccountId& account_id, base::Time time) {

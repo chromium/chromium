@@ -342,14 +342,6 @@ AccountId USER_MANAGER_EXPORT GetAccountId(const std::string& user_email,
                                            const std::string& id,
                                            const AccountType& account_type);
 
-// Saves |account_id| into known users. Tries to commit the change on disk. Use
-// only if account_id is not yet in the known user list. Important if Chrome
-// crashes shortly after starting a session. Cryptohome should be able to find
-// known account_id on Chrome restart.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::SaveKnownUser
-// instead.
-void USER_MANAGER_EXPORT SaveKnownUser(const AccountId& account_id);
-
 // Updates |account_id.account_type_| and |account_id.GetGaiaId()| or
 // |account_id.GetObjGuid()| for user with |account_id|.
 // TODO(https://crbug.com/1150434): Deprecated, use KnownUser::UpdateId instead.
@@ -436,21 +428,6 @@ void USER_MANAGER_EXPORT UpdateReauthReason(const AccountId& account_id,
 // instead.
 bool USER_MANAGER_EXPORT FindReauthReason(const AccountId& account_id,
                                           int* out_value);
-
-// Setter and getter for the information about challenge-response keys that can
-// be used by this user to authenticate.
-// The getter returns a null value when the property isn't present.
-// For the format of the value, refer to
-// ash/components/login/auth/challenge_response/known_user_pref_utils.h.
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetChallengeResponseKeys instead.
-void USER_MANAGER_EXPORT SetChallengeResponseKeys(const AccountId& account_id,
-                                                  base::Value value);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetChallengeResponseKeys instead.
-base::Value USER_MANAGER_EXPORT
-GetChallengeResponseKeys(const AccountId& account_id);
 
 // TODO(https://crbug.com/1150434): Deprecated, use
 // KnownUser::SetLastOnlineSignin instead.

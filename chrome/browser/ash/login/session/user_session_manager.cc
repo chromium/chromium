@@ -395,10 +395,10 @@ bool IsOnlineSignin(const UserContext& user_context) {
 // authentication, persistently in the known_user database for future
 // authentication attempts.
 void PersistChallengeResponseKeys(const UserContext& user_context) {
-  user_manager::known_user::SetChallengeResponseKeys(
-      user_context.GetAccountId(),
-      SerializeChallengeResponseKeysForKnownUser(
-          user_context.GetChallengeResponseKeys()));
+  user_manager::KnownUser(g_browser_process->local_state())
+      .SetChallengeResponseKeys(user_context.GetAccountId(),
+                                SerializeChallengeResponseKeysForKnownUser(
+                                    user_context.GetChallengeResponseKeys()));
 }
 
 // Returns true if the user is new, or if the user was already present on the

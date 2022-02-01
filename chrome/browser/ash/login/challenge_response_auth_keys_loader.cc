@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -84,7 +85,8 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
     std::vector<std::string>* spki_items,
     base::flat_set<std::string>* extension_ids) {
   const base::Value known_user_value =
-      user_manager::known_user::GetChallengeResponseKeys(account_id);
+      user_manager::KnownUser(g_browser_process->local_state())
+          .GetChallengeResponseKeys(account_id);
   std::vector<DeserializedChallengeResponseKey>
       deserialized_challenge_response_keys;
   DeserializeChallengeResponseKeyFromKnownUser(

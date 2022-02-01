@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
@@ -66,7 +67,8 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
         GetProfile(), &device_state_mixin_);
 
     // Register the ChallengeResponseKey for the user.
-    user_manager::known_user::SaveKnownUser(account_id_);
+    user_manager::KnownUser(g_browser_process->local_state())
+        .SaveKnownUser(account_id_);
   }
 
   void TearDownOnMainThread() override {
@@ -85,8 +87,9 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
     challenge_response_keys.push_back(challenge_response_key);
     base::Value challenge_response_keys_value =
         SerializeChallengeResponseKeysForKnownUser(challenge_response_keys);
-    user_manager::known_user::SetChallengeResponseKeys(
-        account_id_, std::move(challenge_response_keys_value));
+    user_manager::KnownUser(g_browser_process->local_state())
+        .SetChallengeResponseKeys(account_id_,
+                                  std::move(challenge_response_keys_value));
   }
 
   void OnAvailableKeysLoaded(

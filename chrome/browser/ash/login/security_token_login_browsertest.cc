@@ -52,9 +52,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/session_manager/session_manager_types.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/features/simple_feature.h"
@@ -331,13 +329,6 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
 
  private:
   void RegisterChallengeResponseKey() {
-    // The global user manager is not created until after the Local State is
-    // initialized, but in order for the user_manager::known_user:: methods to
-    // work we create a temporary instance of the user manager here.
-    auto user_manager = std::make_unique<user_manager::FakeUserManager>();
-    user_manager->set_local_state(g_browser_process->local_state());
-    user_manager::ScopedUserManager scoper(std::move(user_manager));
-
     ChallengeResponseKey challenge_response_key;
     challenge_response_key.set_public_key_spki_der(
         TestCertificateProviderExtension::GetCertificateSpki());
@@ -346,9 +337,9 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
 
     base::Value challenge_response_keys_value =
         SerializeChallengeResponseKeysForKnownUser({challenge_response_key});
-    user_manager::known_user::SetChallengeResponseKeys(
-        GetChallengeResponseAccountId(),
-        std::move(challenge_response_keys_value));
+    user_manager::KnownUser(g_browser_process->local_state())
+        .SetChallengeResponseKeys(GetChallengeResponseAccountId(),
+                                  std::move(challenge_response_keys_value));
   }
 
   // Bypass "signin_screen" feature only enabled for allowlisted extensions.
