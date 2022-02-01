@@ -17,6 +17,7 @@ component("device_activity") {
     "//base:i18n",
     "//chromeos/dbus/session_manager",
     "//chromeos/network",
+    "//chromeos/system",
     "//components/prefs:prefs",
     "//components/version_info",
     "//crypto:crypto",

@@ -225,7 +225,8 @@ DeviceActivityClient::DeviceActivityClient(
     std::unique_ptr<base::RepeatingTimer> report_timer,
     const std::string& fresnel_base_url,
     const std::string& api_key,
-    const std::string& psm_device_active_secret)
+    const std::string& psm_device_active_secret,
+    const std::string& full_hardware_class)
     : network_state_handler_(handler),
       local_state_(local_state),
       url_loader_factory_(url_loader_factory),
@@ -233,7 +234,8 @@ DeviceActivityClient::DeviceActivityClient(
       report_timer_(std::move(report_timer)),
       fresnel_base_url_(fresnel_base_url),
       api_key_(api_key),
-      psm_device_active_secret_(psm_device_active_secret) {
+      psm_device_active_secret_(psm_device_active_secret),
+      full_hardware_class_(full_hardware_class) {
   DCHECK(network_state_handler_);
   DCHECK(local_state_);
   DCHECK(url_loader_factory_);
@@ -305,6 +307,7 @@ GURL DeviceActivityClient::GetFresnelURL() const {
 void DeviceActivityClient::InitializeDeviceMetadata(
     DeviceMetadata* device_metadata) {
   device_metadata->set_chromeos_version(version_info::GetMajorVersionNumber());
+  device_metadata->set_hardware_id(full_hardware_class_);
 }
 
 // TODO(https://crbug.com/1262189): Add callback to report actives only after

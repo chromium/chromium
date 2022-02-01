@@ -88,7 +88,8 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
       std::unique_ptr<base::RepeatingTimer> report_timer,
       const std::string& fresnel_server_url,
       const std::string& api_key,
-      const std::string& psm_device_active_secret);
+      const std::string& psm_device_active_secret,
+      const std::string& full_hardware_class);
   DeviceActivityClient(const DeviceActivityClient&) = delete;
   DeviceActivityClient& operator=(const DeviceActivityClient&) = delete;
   ~DeviceActivityClient() override;
@@ -224,6 +225,10 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   //
   // This secret is used to generate a PSM identifier for the reporting window.
   const std::string psm_device_active_secret_;
+
+  // The ChromeOS statistics provider class provides the full hardware class
+  // information of a ChromeOS device.
+  const std::string full_hardware_class_;
 
   // Automatically cancels callbacks when the referent of weakptr gets
   // destroyed.

@@ -56,6 +56,7 @@ const char kPsmImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 // Create fake secrets used by the |DeviceActivityClient|.
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
 constexpr char kFakeFresnelApiKey[] = "FAKE_FRESNEL_API_KEY";
+constexpr char kFakeFullHardwareClass[] = "FAKE_FULL_HARDWARE_CLASS";
 
 // Number of test cases exist in cros_test_data.binarypb file, which is part of
 // private_membership third_party library.
@@ -201,7 +202,7 @@ class DeviceActivityClientTest : public testing::Test {
             psm_test_data_->test_case.seed(),
             std::move(psm_test_data_->plaintext_ids)),
         std::make_unique<base::MockRepeatingTimer>(), kTestFresnelBaseUrl,
-        kFakeFresnelApiKey, kFakePsmDeviceActiveSecret);
+        kFakeFresnelApiKey, kFakePsmDeviceActiveSecret, kFakeFullHardwareClass);
   }
 
   void TearDown() override {}

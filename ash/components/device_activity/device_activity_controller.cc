@@ -28,6 +28,9 @@ DeviceActivityController* g_ash_device_activity_controller = nullptr;
 // TODO(https://crbug.com/1267432): Enable passing base url as a runtime flag.
 const char kFresnelBaseUrl[] = "https://crosfresnel-pa.googleapis.com";
 
+// Default value for devices that are missing the hardware class.
+const char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
+
 class PsmDelegateImpl : public PsmDelegate {
  public:
   PsmDelegateImpl() = default;
@@ -62,7 +65,9 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
                              unix_epoch);
 }
 
-DeviceActivityController::DeviceActivityController() {
+DeviceActivityController::DeviceActivityController()
+    : statistics_provider_(
+          chromeos::system::StatisticsProvider::GetInstance()) {
   DCHECK(!g_ash_device_activity_controller);
   g_ash_device_activity_controller = this;
 }
@@ -91,12 +96,33 @@ void DeviceActivityController::OnPsmDeviceActiveSecretFetched(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& psm_device_active_secret) {
+  // Continue when machine statistics are loaded, to avoid blocking.
+  statistics_provider_->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
+      &device_activity::DeviceActivityController::OnMachineStatisticsLoaded,
+      weak_factory_.GetWeakPtr(), trigger, local_state, url_loader_factory,
+      psm_device_active_secret));
+}
+
+void DeviceActivityController::OnMachineStatisticsLoaded(
+    Trigger trigger,
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& psm_device_active_secret) {
+
+  // Retrieve full hardware class from machine statistics object.
+  // Default |full_hardware_class| to kHardwareClassKeyNotFound if retrieval
+  // from machine statistics fails.
+  std::string full_hardware_class = kHardwareClassKeyNotFound;
+  statistics_provider_->GetMachineStatistic(chromeos::system::kHardwareClassKey,
+                                            &full_hardware_class);
+
   if (trigger == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(
         chromeos::NetworkHandler::Get()->network_state_handler(), local_state,
         url_loader_factory, std::make_unique<PsmDelegateImpl>(),
         std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
-        google_apis::GetFresnelAPIKey(), psm_device_active_secret);
+        google_apis::GetFresnelAPIKey(), psm_device_active_secret,
+        full_hardware_class);
   }
 }
 
