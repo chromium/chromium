@@ -4671,15 +4671,17 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AssistantConsentOutcome">
-  <int value="0" label="ACCEPTED-VIA-BUTTON"/>
+  <int value="0" label="ACCEPTED-VIA-UI"/>
   <int value="1" label="ACCEPTED-VIA-SETTINGS"/>
-  <int value="2" label="REJECTED-VIA-BUTTON"/>
+  <int value="2" label="REJECTED-VIA-UI"/>
   <int value="3" label="REJECTED-VIA-SETTINGS"/>
-  <int value="4" label="REJECTED-VIA-DISMISS-DEPRECATED"/>
-  <int value="5" label="REJECTED-VIA-BACK-BUTTON-PRESS"/>
-  <int value="6" label="REJECTED-VIA-SCRIM-TAP"/>
-  <int value="7" label="CANCELED-VIA-BACK-BUTTON-PRESS"/>
-  <int value="8" label="CANCELED-VIA-SCRIM-TAP"/>
+  <int value="4" label="REJECTED-VIA-DISMISS"/>
+  <int value="5" label="REJECTED-VIA-BACK-BUTTON-PRESS-DEPRECATED"/>
+  <int value="6" label="REJECTED-VIA-SCRIM-TAP-DEPRECATED"/>
+  <int value="7" label="CANCELED-VIA-BACK-BUTTON-PRESS-DEPRECATED"/>
+  <int value="8" label="CANCELED-VIA-SCRIM-TAP-DEPRECATED"/>
+  <int value="9" label="CANCELED-VIA-UI"/>
+  <int value="10" label="NON-USER-CANCEL"/>
 </enum>
 
 <enum name="AssistantEntryPoint">
@@ -52867,6 +52869,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:disabled"/>
   <int value="-666712735" label="FeedShare:disabled"/>
   <int value="-666508951" label="CrOSContainer:enabled"/>
+  <int value="-666000804" label="AssistantConsentModal:enabled"/>
   <int value="-665514294" label="FontAccess:disabled"/>
   <int value="-665006585" label="Bento:enabled"/>
   <int value="-663476391" label="enable-pixel-canvas-recording:enabled"/>
@@ -54052,6 +54055,7 @@ from previous Chrome versions.
       label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>
+  <int value="233202090" label="AssistantConsentModal:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
   <int value="237066116" label="PageInfoV2:disabled"/>
   <int value="237570976" label="CommandLineOnNonRooted:disabled"/>

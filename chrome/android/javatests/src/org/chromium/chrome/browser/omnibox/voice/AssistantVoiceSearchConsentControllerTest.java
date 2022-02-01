@@ -10,9 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
-
-import static org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchConsentUi.CONSENT_OUTCOME_HISTOGRAM;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
+import static org.mockito.ArgumentMatchers.any;
 
 import android.support.test.runner.lifecycle.Stage;
 
@@ -41,16 +39,14 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchConsentUi.ConsentOutcome;
+import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchConsentController.ConsentOutcome;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -59,7 +55,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
 // TODO(wylieb): Batch these tests.
-public class AssistantVoiceSearchConsentUiTest {
+public class AssistantVoiceSearchConsentControllerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -75,9 +71,9 @@ public class AssistantVoiceSearchConsentUiTest {
     @Mock
     Callback<Boolean> mCallback;
 
-    AssistantVoiceSearchConsentUi mAssistantVoiceSearchConsentUi;
-    BottomSheetController mBottomSheetController;
-    BottomSheetTestSupport mBottomSheetTestSupport;
+    AssistantVoiceSearchConsentController mController;
+    AssistantVoiceSearchConsentUi mConsentUi;
+    AssistantVoiceSearchConsentUi.Observer mObserver;
 
     @Before
     public void setUp() {
@@ -85,43 +81,63 @@ public class AssistantVoiceSearchConsentUiTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-            mBottomSheetController =
-                    cta.getRootUiCoordinatorForTesting().getBottomSheetController();
-            mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-            mAssistantVoiceSearchConsentUi = createConsentUi();
+            mController = createController();
         });
     }
 
     @After
     public void tearDown() {
-        mSharedPreferencesManager.removeKey(ASSISTANT_VOICE_SEARCH_ENABLED);
+        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED);
     }
 
     private void showConsentUi() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAssistantVoiceSearchConsentUi.show(mCallback);
-            mBottomSheetTestSupport.endAllAnimations();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mController.show(); });
     }
 
-    private AssistantVoiceSearchConsentUi createConsentUi() {
+    private AssistantVoiceSearchConsentController createController() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-            return new AssistantVoiceSearchConsentUi(cta.getWindowAndroid(), cta,
-                    mSharedPreferencesManager,
-                    ()
-                            -> AutofillAssistantPreferenceFragment.launchSettings(cta),
-                    mBottomSheetController);
+            mConsentUi = new AssistantVoiceSearchConsentUi() {
+                @Override
+                public void show(AssistantVoiceSearchConsentUi.Observer observer) {
+                    mObserver = observer;
+                }
+                @Override
+                public void dismiss() {
+                    mObserver = null;
+                }
+            };
+            return new AssistantVoiceSearchConsentController(cta.getWindowAndroid(),
+                    mSharedPreferencesManager, mCallback,
+                    () -> AutofillAssistantPreferenceFragment.launchSettings(cta), mConsentUi);
         });
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_MODAL)
     public void testNoBottomSheetControllerAvailable() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AssistantVoiceSearchConsentUi.show(
-                    cta.getWindowAndroid(), mSharedPreferencesManager, () -> {}, null, mCallback);
+            AssistantVoiceSearchConsentController.show(cta.getWindowAndroid(),
+                    mSharedPreferencesManager,
+                    () -> {}, null, cta.getWindowAndroid().getModalDialogManager(), mCallback);
+        });
+        Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_MODAL)
+    public void testNoModalDialogManagerAvailable() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AssistantVoiceSearchConsentController.show(cta.getWindowAndroid(),
+                    mSharedPreferencesManager,
+                    ()
+                            -> {},
+                    cta.getRootUiCoordinatorForTesting().getBottomSheetController(), null,
+                    mCallback);
         });
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
     }
@@ -130,22 +146,20 @@ public class AssistantVoiceSearchConsentUiTest {
     private void verifyAcceptingConsent() {
         showConsentUi();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClickUtils.clickButton(mAssistantVoiceSearchConsentUi.getContentView().findViewById(
-                    R.id.button_primary));
-            mBottomSheetTestSupport.endAllAnimations();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mObserver.onConsentAccepted(); });
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mSharedPreferencesManager.readBoolean(
-                                       ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false),
+                                       ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED,
+                                       /* default= */ false),
                     is(true));
         });
 
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(true);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.ACCEPTED_VIA_BUTTON));
+                        AssistantVoiceSearchConsentController.CONSENT_OUTCOME_HISTOGRAM,
+                        ConsentOutcome.ACCEPTED_VIA_UI));
     }
 
     @Test
@@ -159,22 +173,40 @@ public class AssistantVoiceSearchConsentUiTest {
     public void testDialogInteractivity_RejectButton() {
         showConsentUi();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClickUtils.clickButton(mAssistantVoiceSearchConsentUi.getContentView().findViewById(
-                    R.id.button_secondary));
-            mBottomSheetTestSupport.endAllAnimations();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mObserver.onConsentRejected(); });
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mSharedPreferencesManager.readBoolean(
-                                       ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ true),
+                                       ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED,
+                                       /* default= */ true),
                     is(false));
         });
 
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.REJECTED_VIA_BUTTON));
+                        AssistantVoiceSearchConsentController.CONSENT_OUTCOME_HISTOGRAM,
+                        ConsentOutcome.REJECTED_VIA_UI));
+    }
+
+    @Test
+    @MediumTest
+    public void testDialogInteractivity_NonUserCancel() {
+        showConsentUi();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mObserver.onNonUserCancel(); });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mSharedPreferencesManager.contains(
+                                       ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED),
+                    is(false));
+        });
+
+        Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchConsentController.CONSENT_OUTCOME_HISTOGRAM,
+                        ConsentOutcome.NON_USER_CANCEL));
     }
 
     @Test
@@ -183,18 +215,36 @@ public class AssistantVoiceSearchConsentUiTest {
         showConsentUi();
 
         SettingsActivity activity = ApplicationTestUtils.waitForActivityWithClass(
-                SettingsActivity.class, Stage.RESUMED, () -> {
-                    ClickUtils.clickButton(
-                            mAssistantVoiceSearchConsentUi.getContentView().findViewById(
-                                    R.id.avs_consent_ui_learn_more));
-                    mBottomSheetTestSupport.endAllAnimations();
-                });
+                SettingsActivity.class, Stage.RESUMED, () -> { mObserver.onLearnMoreClicked(); });
+
+        onView(withText(mActivityTestRule.getActivity().getResources().getString(
+                       R.string.avs_setting_category_title)))
+                .check(matches(isDisplayed()));
+        activity.finish();
+
+        Mockito.verify(mCallback, Mockito.times(0)).onResult(any());
+    }
+
+    @Test
+    @MediumTest
+    public void testDialogInteractivity_AcceptViaSettings() {
+        showConsentUi();
+
+        SettingsActivity activity = ApplicationTestUtils.waitForActivityWithClass(
+                SettingsActivity.class, Stage.RESUMED, () -> { mObserver.onLearnMoreClicked(); });
 
         onView(withText(mActivityTestRule.getActivity().getResources().getString(
                        R.string.avs_setting_category_title)))
                 .check(matches(isDisplayed()));
         Mockito.verify(mCallback, Mockito.times(0)).onResult(/* meaningless value */ true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSharedPreferencesManager.writeBoolean(
+                    ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED, true);
+        });
         activity.finish();
+        Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(true);
+        // The observer is reset when dismiss() is called.
+        Assert.assertNull(mObserver);
     }
 
     // Helper method for test cases covering dimissing the dialog.
@@ -205,11 +255,13 @@ public class AssistantVoiceSearchConsentUiTest {
         TestThreadUtils.runOnUiThreadBlocking(backOffMethod);
 
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mSharedPreferencesManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED),
+            Criteria.checkThat(mSharedPreferencesManager.contains(
+                                       ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED),
                     is(expectConsentValueSet));
             if (expectConsentValueSet) {
                 Criteria.checkThat(mSharedPreferencesManager.readBoolean(
-                                           ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ true),
+                                           ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED,
+                                           /* default= */ true),
                         is(false));
             }
         });
@@ -217,7 +269,8 @@ public class AssistantVoiceSearchConsentUiTest {
         Mockito.verify(mCallback).onResult(false);
         Assert.assertEquals(expectedHistogramCount,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        CONSENT_OUTCOME_HISTOGRAM, expectedConsentOutcome));
+                        AssistantVoiceSearchConsentController.CONSENT_OUTCOME_HISTOGRAM,
+                        expectedConsentOutcome));
 
         Mockito.reset(mCallback);
     }
@@ -225,50 +278,35 @@ public class AssistantVoiceSearchConsentUiTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
-    public void testDialogInteractivity_BackButton() {
-        verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
+    public void testDialogInteractivity_RejectViaCancel() {
+        verifyBackingOffConsent(()
+                                        -> { mObserver.onConsentCanceled(); },
                 /*expectConsentValueSet=*/true,
-                /*expectedHistogramCount*/ 1, ConsentOutcome.REJECTED_VIA_BACK_BUTTON_PRESS);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
-    public void testDialogInteractivity_ScrimTap() {
-        verifyBackingOffConsent(mBottomSheetTestSupport::forceClickOutsideTheSheet,
-                /*expectConsentValueSet=*/true,
-                /*expectedHistogramCount*/ 1, ConsentOutcome.REJECTED_VIA_SCRIM_TAP);
+                /*expectedHistogramCount*/ 1, ConsentOutcome.REJECTED_VIA_DISMISS);
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
-    public void testDialogInteractivity_ScrimTapIgnored() {
-        verifyBackingOffConsent(mBottomSheetTestSupport::forceClickOutsideTheSheet,
+    public void testDialogInteractivity_CancelIgnored() {
+        verifyBackingOffConsent(()
+                                        -> { mObserver.onConsentCanceled(); },
                 /*expectConsentValueSet=*/false,
-                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_SCRIM_TAP);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
-    public void testDialogInteractivity_BackButtonIgnored() {
-        verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
-                /*expectConsentValueSet=*/false,
-                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
+                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_UI);
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
     public void testDialogInteractivity_AcceptingConsentAfterDismissal() {
-        verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
+        verifyBackingOffConsent(()
+                                        -> { mObserver.onConsentCanceled(); },
                 /*expectConsentValueSet=*/false,
-                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
+                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_UI);
 
         // Successful showing of the consent calls destroy(). Need to recreate the new
         // instance to set up the state again.
-        mAssistantVoiceSearchConsentUi = createConsentUi();
+        mController = createController();
         verifyAcceptingConsent();
     }
 
@@ -281,18 +319,19 @@ public class AssistantVoiceSearchConsentUiTest {
     testDialogInteractivity_TapsCounter() {
         int max_taps_ignored = 3;
         for (int i = 0; i < max_taps_ignored; i++) {
-            verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
+            verifyBackingOffConsent(()
+                                            -> { mObserver.onConsentCanceled(); },
                     /*expectConsentValueSet=*/false,
-                    /*expectedHistogramCount=*/i + 1,
-                    ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
+                    /*expectedHistogramCount=*/i + 1, ConsentOutcome.CANCELED_VIA_UI);
             // Successful showing of the consent calls destroy(). Need to recreate the new
             // instance to set up the state again.
-            mAssistantVoiceSearchConsentUi = createConsentUi();
+            mController = createController();
         }
 
         // But the max_taps_ignored+1-th will be treated as a rejection.
-        verifyBackingOffConsent(mBottomSheetTestSupport::forceClickOutsideTheSheet,
+        verifyBackingOffConsent(()
+                                        -> { mObserver.onConsentCanceled(); },
                 /*expectConsentValueSet=*/true,
-                /*expectedHistogramCount=*/1, ConsentOutcome.REJECTED_VIA_SCRIM_TAP);
+                /*expectedHistogramCount=*/1, ConsentOutcome.REJECTED_VIA_DISMISS);
     }
 }

@@ -314,6 +314,14 @@
     "expiry_milestone": 96
   },
   {
+    "name": "assistant-consent-modal",
+    "owners": [
+      "jds@google.com",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 103
+  },
+  {
     "name": "assistant-consent-simplified-text",
     "owners": [
       "jds@google.com",
