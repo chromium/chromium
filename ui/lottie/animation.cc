@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -41,8 +42,8 @@ void Animation::TimerControl::Step(const base::TimeTicks& timestamp) {
   base::TimeDelta completed_cycles_duration =
       completed_cycles_ * cycle_duration_;
   if (progress_ >= completed_cycles_duration + cycle_duration_) {
-    completed_cycles_++;
-    completed_cycles_duration += cycle_duration_;
+    completed_cycles_ = base::ClampFloor(progress_ / cycle_duration_);
+    completed_cycles_duration = cycle_duration_ * completed_cycles_;
   }
 
   current_cycle_progress_ =

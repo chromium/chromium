@@ -1053,4 +1053,22 @@ TEST_F(AnimationWithImageAssetsTest, LoadsCorrectImageScale) {
               FloatEq(kCanvasImageScale));
 }
 
+TEST_F(AnimationTest, HandlesTimeStepGreaterThanAnimationDuration) {
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLoop);
+
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+
+  ASSERT_FLOAT_EQ(animation_->GetCurrentProgress(), 0);
+
+  AdvanceClock(kAnimationDuration / 2);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 0.5f);
+
+  AdvanceClock(kAnimationDuration * 5);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 0.5f);
+}
+
 }  // namespace lottie
