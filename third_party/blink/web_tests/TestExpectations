@@ -7658,3 +7658,4 @@ crbug.com/1292876 [ Mac ] http/tests/devtools/console/console-time.js [ Failure 
 crbug.com/1292880 [ Mac ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
 crbug.com/1292881 [ Mac ] virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
 crbug.com/1292884 [ Mac ] virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-focus-shadow.html [ Failure Pass ]
+crbug.com/1292887 [ Mac ] virtual/plz-dedicated-worker/external/wpt/resource-timing/iframe-sequence-of-events.html [ Failure Pass ]
