@@ -2611,6 +2611,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FIRMWARE_UPDATE_BUTTON_TEXT" desc="Label for button to start the firmware update.">
         Update
       </message>
+      <message name="IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL" desc="A11y Label for button to start the firmware update.">
+        Update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
       <message name="IDS_FIRMWARE_UPDATING_TEXT" desc="Label for showing that a device is being updated.">
         Updating <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
       </message>

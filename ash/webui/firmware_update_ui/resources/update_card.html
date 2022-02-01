@@ -33,10 +33,10 @@
 </style>
 <div id="container">
   <div class="update-info">
-    <div id="name" class="firmware-name-font">
+    <div id="name" class="firmware-name-font" aria-hidden="true">
       [[computeDeviceName_(update.deviceName)]]
     </div>
-    <div id="version" class="firmware-version-font">
+    <div id="version" class="firmware-version-font" aria-hidden="true">
       <span>[[computeVersionText_(update.deviceVersion)]]</span>
       <span id ="priorityText"
           hidden$="[[!isCriticalUpdate_(update.priority)]]">
@@ -45,7 +45,7 @@
     </div>
   </div>
   <cr-button id="updateButton" on-click="onUpdateButtonClicked_"
-      disabled="[[disabled]]">
+      disabled="[[disabled]]" aria-label="[[getUpdateButtonA11yLabel_()]]">
     [[i18n('updateButton')]]
   </cr-button>
 </div>

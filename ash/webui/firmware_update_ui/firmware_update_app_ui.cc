@@ -47,6 +47,7 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"cancelButton", IDS_FIRMWARE_CANCEL_BUTTON_TEXT},
       {"doneButton", IDS_FIRMWARE_DONE_BUTTON_TEXT},
       {"updateButton", IDS_FIRMWARE_UPDATE_BUTTON_TEXT},
+      {"updateButtonA11yLabel", IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL},
       {"updateFailedBodyText", IDS_FIRMWARE_UPDATE_FAILED_BODY_TEXT},
       {"updateFailedTitleText", IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT},
       {"updating", IDS_FIRMWARE_UPDATING_TEXT},

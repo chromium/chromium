@@ -86,6 +86,14 @@ export class UpdateCardElement extends UpdateCardElementBase {
   computeDeviceName_() {
     return mojoString16ToString(this.update.deviceName);
   }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  getUpdateButtonA11yLabel_() {
+    return this.i18n('updateButtonA11yLabel', this.computeDeviceName_());
+  }
 }
 
 customElements.define(UpdateCardElement.is, UpdateCardElement);
