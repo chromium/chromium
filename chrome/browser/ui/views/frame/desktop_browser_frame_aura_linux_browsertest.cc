@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,6 +16,21 @@
 using DesktopBrowserFrameAuraLinuxTest = InProcessBrowserTest;
 using SupportsSsdForTest =
     ui::OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest;
+
+namespace {
+
+gfx::Size GetWindowSize(Browser* browser) {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  const NativeBrowserFrame* const frame =
+      browser_view->frame()->native_browser_frame();
+  gfx::Rect bounds;
+  ui::WindowShowState show_state;
+  frame->GetWindowPlacement(&bounds, &show_state);
+  return bounds.size();
+}
+
+}  // namespace
 
 // Tests that DesktopBrowserFrameAuraLinux::UseCustomFrame() returns the correct
 // value that respects 1) the current value of the user preference and
@@ -65,4 +81,21 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
     // Reset the override.
     ui::OzonePlatform::PlatformRuntimeProperties::
         override_supports_ssd_for_test = SupportsSsdForTest::kNotSet;
+}
+
+// Tests that the new browser window restores the bounds properly: its size must
+// be the same as the already existing window has.
+// The regression was found in https://crbug.com/1287212.
+IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, NewWindowSize) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  Browser::CreateParams params(profile, true /* user_gesture */);
+  Browser* browser2 = Browser::Create(params);
+  browser2->window()->Show();
+
+  // The first window saves its placement on losing the active state, then the
+  // second window needs to go through the initialisation, update its size and
+  // frame extents.  We wait until everything calms down.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetWindowSize(browser()), GetWindowSize(browser2));
 }
