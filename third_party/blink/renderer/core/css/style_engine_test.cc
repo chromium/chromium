@@ -5368,6 +5368,26 @@ TEST_F(StyleEngineTest, CSSComparisonFunctionsUseCount) {
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
   ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(clamp(10px, 20px, 30px)); }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(clamp(10px, 20%, 20px + 30%)); }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
 }
 
 TEST_F(StyleEngineTest, MathDepthOverflow) {

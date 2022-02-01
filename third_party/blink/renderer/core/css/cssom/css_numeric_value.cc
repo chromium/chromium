@@ -136,13 +136,21 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
   // When the node is a variadic operation, we return either a CSSMathMin or a
   // CSSMathMax.
   if (const auto& node = To<CSSMathExpressionOperation>(root);
-      (node.IsMinOrMax())) {
+      (node.IsMinOrMax() || node.IsClamp())) {
     for (const auto& operand : node.GetOperands())
       values.push_back(CalcToNumericValue(*operand));
     if (node.OperatorType() == CSSMathOperator::kMin)
       return CSSMathMin::Create(std::move(values));
     if (node.OperatorType() == CSSMathOperator::kMax)
       return CSSMathMax::Create(std::move(values));
+    DCHECK_EQ(CSSMathOperator::kClamp, node.OperatorType());
+    // TODO(pjh0718): Add CSSMathClamp according to
+    // https://drafts.css-houdini.org/css-typed-om-1/#cssmathclamp.
+    auto& min = values[0];
+    auto& val = values[1];
+    auto& max = values[2];
+    return CSSMathMax::Create(
+        {std::move(min), CSSMathMin::Create({std::move(val), std::move(max)})});
   }
 
   DCHECK_EQ(To<CSSMathExpressionOperation>(root).GetOperands().size(), 2u);

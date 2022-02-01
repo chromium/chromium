@@ -40,6 +40,8 @@ String ToString(CSSMathOperator op) {
       return "min";
     case CSSMathOperator::kMax:
       return "max";
+    case CSSMathOperator::kClamp:
+      return "clamp";
     default:
       NOTREACHED();
       return String();
@@ -47,7 +49,8 @@ String ToString(CSSMathOperator op) {
 }
 
 bool IsComparison(CSSMathOperator op) {
-  return op == CSSMathOperator::kMin || op == CSSMathOperator::kMax;
+  return op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
+         op == CSSMathOperator::kClamp;
 }
 
 }  // namespace blink

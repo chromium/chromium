@@ -17,6 +17,7 @@ const PixelsAndPercent twenty_px(20, 0);
 const PixelsAndPercent thirty_px(30, 0);
 const PixelsAndPercent ten_percent(0, 10);
 const PixelsAndPercent twenty_percent(0, 20);
+const PixelsAndPercent thirty_percent(0, 30);
 const PixelsAndPercent twenty_px_ten_percent(20, 10);
 
 }  // namespace
@@ -60,6 +61,11 @@ class LengthTest : public ::testing::Test {
   Pointer Max(Vector<Pointer>&& operands) {
     return base::MakeRefCounted<CalculationExpressionOperationNode>(
         std::move(operands), CalculationOperator::kMax);
+  }
+
+  Pointer Clamp(Vector<Pointer>&& operands) {
+    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+        std::move(operands), CalculationOperator::kClamp);
   }
 
   Length CreateLength(Pointer expression) {
@@ -244,6 +250,76 @@ TEST_F(LengthTest, EvaluateMultiplicative) {
   }
 }
 
+TEST_F(LengthTest, EvaluateClamp) {
+  // clamp(10px, 20px, 30px)
+  {
+    Length length = CreateLength(
+        Clamp({PixelsAndPercent(ten_px), PixelsAndPercent(twenty_px),
+               PixelsAndPercent(thirty_px)}));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(50));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(100));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(150));
+  }
+  // clamp(20px, 10px, 30px)
+  {
+    Length length = CreateLength(
+        Clamp({PixelsAndPercent(twenty_px), PixelsAndPercent(ten_px),
+               PixelsAndPercent(thirty_px)}));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(50));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(100));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(150));
+  }
+  // clamp(30px, 10px, 20px)
+  {
+    Length length = CreateLength(
+        Clamp({PixelsAndPercent(thirty_px), PixelsAndPercent(ten_px),
+               PixelsAndPercent(twenty_px)}));
+    EXPECT_EQ(30.0f, length.GetCalculationValue().Evaluate(50));
+    EXPECT_EQ(30.0f, length.GetCalculationValue().Evaluate(100));
+    EXPECT_EQ(30.0f, length.GetCalculationValue().Evaluate(150));
+  }
+
+  // clamp(10%, 20%, 30%)
+  {
+    Length length = CreateLength(
+        Clamp({PixelsAndPercent(ten_percent), PixelsAndPercent(twenty_percent),
+               PixelsAndPercent(thirty_percent)}));
+    EXPECT_EQ(10.0f, length.GetCalculationValue().Evaluate(50));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(100));
+    EXPECT_EQ(30.0f, length.GetCalculationValue().Evaluate(150));
+  }
+
+  // clamp(20%, 10%, 30%)
+  {
+    Length length = CreateLength(
+        Clamp({PixelsAndPercent(twenty_percent), PixelsAndPercent(ten_percent),
+               PixelsAndPercent(thirty_percent)}));
+    EXPECT_EQ(10.0f, length.GetCalculationValue().Evaluate(50));
+    EXPECT_EQ(20.0f, length.GetCalculationValue().Evaluate(100));
+    EXPECT_EQ(30.0f, length.GetCalculationValue().Evaluate(150));
+  }
+
+  // clamp(30%, 10%, 20%)
+  {
+    Length length = CreateLength(
+        Clamp({PixelsAndPercent(thirty_percent), PixelsAndPercent(ten_percent),
+               PixelsAndPercent(twenty_percent)}));
+    EXPECT_EQ(45.0f, length.GetCalculationValue().Evaluate(150));
+    EXPECT_EQ(90.0f, length.GetCalculationValue().Evaluate(300));
+    EXPECT_EQ(135.0f, length.GetCalculationValue().Evaluate(450));
+  }
+
+  // clamp(20px + 10%, 20%, 30%)
+  {
+    Length length = CreateLength(Clamp({PixelsAndPercent(twenty_px_ten_percent),
+                                        PixelsAndPercent(twenty_percent),
+                                        PixelsAndPercent(thirty_percent)}));
+    EXPECT_EQ(35.0f, length.GetCalculationValue().Evaluate(150));
+    EXPECT_EQ(60.0f, length.GetCalculationValue().Evaluate(300));
+    EXPECT_EQ(90.0f, length.GetCalculationValue().Evaluate(450));
+  }
+}
+
 TEST_F(LengthTest, BlendExpressions) {
   // From: min(10px, 20%)
   // To: max(20px, 10%)
@@ -356,7 +432,7 @@ TEST_F(LengthTest, MultiplyPixelsAndPercent) {
   EXPECT_EQ(60.0f, result_for_simplified);
 }
 
-TEST_F(LengthTest, ZoomToOperator) {
+TEST_F(LengthTest, ZoomToOperation) {
   // Add 10px + 20px
   {
     Length original = CreateLength(
@@ -403,6 +479,16 @@ TEST_F(LengthTest, ZoomToOperator) {
     Length zoomed = original.Zoom(2);
     auto result = zoomed.GetCalculationValue().GetPixelsAndPercent();
     EXPECT_EQ(60.0f, result.pixels);
+  }
+
+  // clamp(10px, 20px, 30px) with zoom by 2
+  {
+    Length original = CreateLength(
+        Clamp({PixelsAndPercent(ten_px), PixelsAndPercent(twenty_px),
+               PixelsAndPercent(thirty_px)}));
+    Length zoomed = original.Zoom(2);
+    auto result = zoomed.GetCalculationValue().GetPixelsAndPercent();
+    EXPECT_EQ(40.0f, result.pixels);
   }
 }
 

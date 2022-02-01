@@ -18,6 +18,7 @@ enum class CalculationOperator {
   kMultiply,  // Division is converted to multiplication and use this value too.
   kMin,
   kMax,
+  kClamp,
   kInvalid
 };
 

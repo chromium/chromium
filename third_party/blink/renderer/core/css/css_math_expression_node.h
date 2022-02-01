@@ -78,10 +78,6 @@ class CORE_EXPORT CSSMathExpressionNode
 
   virtual bool IsMathFunction() const { return false; }
 
-  // TODO(pjh0718): Change clamp representation from max(min()) to single
-  // clamp() node and remove this clamp specific method.
-  virtual void SetIsClamp() = 0;
-
   virtual bool IsZero() const = 0;
 
   // Resolves the expression into one value *without doing any type conversion*.
@@ -173,10 +169,6 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
   bool IsNumericLiteral() const final { return true; }
 
-  // TODO(pjh0718): Change clamp representation from max(min()) to single
-  // clamp() node and remove this clamp specific method.
-  void SetIsClamp() final {}
-
   bool IsZero() const final;
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
@@ -246,13 +238,11 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return operator_ == CSSMathOperator::kMin ||
            operator_ == CSSMathOperator::kMax;
   }
+  bool IsClamp() const { return operator_ == CSSMathOperator::kClamp; }
 
   // TODO(crbug.com/1284199): Check other math functions too(clamp, etc).
-  bool IsMathFunction() const final { return IsMinOrMax(); }
+  bool IsMathFunction() const final { return IsMinOrMax() || IsClamp(); }
 
-  // TODO(pjh0718): Change clamp representation from max(min()) to single
-  // clamp() node and remove these clamp specific methods.
-  void SetIsClamp() final { is_clamp_ = true; }
   String CSSTextAsClamp() const;
 
   bool IsZero() const final;
@@ -298,9 +288,6 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   Operands operands_;
   const CSSMathOperator operator_;
-  // TODO(pjh0718): Change clamp representation from max(min()) to single
-  // clamp() node and remove this clamp specific member;
-  bool is_clamp_ = false;
 };
 
 template <>

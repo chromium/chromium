@@ -417,7 +417,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateArithmeticOperation(
 CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
     Operands&& operands,
     CSSMathOperator op) {
-  DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax);
+  DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
+         op == CSSMathOperator::kClamp);
   DCHECK(operands.size());
   bool is_first = true;
   CalculationCategory category;
@@ -603,6 +604,7 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     }
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax:
+    case CSSMathOperator::kClamp:
       return absl::nullopt;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -666,6 +668,14 @@ CSSMathExpressionOperation::ToCalculationExpression(
                                      : CalculationOperator::kMax;
       return CalculationExpressionOperationNode::CreateSimplified(
           std::move(operands), expression_operator);
+    }
+    case CSSMathOperator::kClamp: {
+      Vector<scoped_refptr<const CalculationExpressionNode>> operands;
+      operands.ReserveCapacity(operands_.size());
+      for (const auto& operand : operands_)
+        operands.push_back(operand->ToCalculationExpression(conversion_data));
+      return CalculationExpressionOperationNode::CreateSimplified(
+          std::move(operands), CalculationOperator::kClamp);
     }
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -756,6 +766,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
           length_array, multiplier / operands_[1]->DoubleValue());
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax:
+    case CSSMathOperator::kClamp:
       // When comparison functions are involved, we can't resolve the expression
       // into a length array.
       return false;
@@ -815,12 +826,8 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       return result.ReleaseString();
     }
     case CSSMathOperator::kMin:
-    case CSSMathOperator::kMax: {
-      // TODO(pjh0718): Change clamp representation from max(min()) to single
-      // clamp() node and remove CSSTextAsClamp().
-      if (is_clamp_)
-        return CSSTextAsClamp();
-
+    case CSSMathOperator::kMax:
+    case CSSMathOperator::kClamp: {
       StringBuilder result;
       result.Append(ToString(operator_));
       result.Append('(');
@@ -837,31 +844,6 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       NOTREACHED();
       return String();
   }
-}
-
-String CSSMathExpressionOperation::CSSTextAsClamp() const {
-  DCHECK(is_clamp_);
-  DCHECK_EQ(CSSMathOperator::kMax, operator_);
-  DCHECK_EQ(2u, operands_.size());
-  // TODO(pjh0718): Actually we should IsMinOrMax() check here,
-  // but currently it is not a virtual function and CSSTextAsClamp() will be
-  // removed anyway during changing clamp representation from max(min()) to
-  // single clamp() node.
-  DCHECK(operands_[1]->IsMathFunction());
-  const auto& nested = To<CSSMathExpressionOperation>(*operands_[1]);
-  DCHECK(!nested.is_clamp_);
-  DCHECK_EQ(CSSMathOperator::kMin, nested.operator_);
-  DCHECK_EQ(2u, nested.operands_.size());
-
-  StringBuilder result;
-  result.Append("clamp(");
-  result.Append(operands_[0]->CustomCSSText());
-  result.Append(", ");
-  result.Append(nested.operands_[0]->CustomCSSText());
-  result.Append(", ");
-  result.Append(nested.operands_[1]->CustomCSSText());
-  result.Append(")");
-  return result.ReleaseString();
 }
 
 bool CSSMathExpressionOperation::operator==(
@@ -884,7 +866,7 @@ bool CSSMathExpressionOperation::operator==(
 CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
     const {
   // TODO(pjh0718): Merge this if statement into switch-case below.
-  if (IsMinOrMax()) {
+  if (IsMinOrMax() || IsClamp()) {
     if (category_ == kCalcNumber)
       return CSSPrimitiveValue::UnitType::kNumber;
 
@@ -992,6 +974,16 @@ double CSSMathExpressionOperation::EvaluateOperator(
         maximum = std::max(maximum, operand);
       return maximum;
     }
+    case CSSMathOperator::kClamp: {
+      DCHECK_EQ(operands.size(), 3u);
+      double min = operands[0];
+      double val = operands[1];
+      double max = operands[2];
+      // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
+      // according to the spec,
+      // https://drafts.csswg.org/css-values-4/#funcdef-clamp.
+      return std::max(min, std::min(val, max));
+    }
     case CSSMathOperator::kInvalid:
       NOTREACHED();
       break;
@@ -1027,18 +1019,18 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kWebkitCalc:
         return ParseCalc(tokens);
       case CSSValueID::kMin:
-        return ParseMinOrMax(tokens, CSSMathOperator::kMin, depth);
+        return ParseComparisonFunction(tokens, CSSMathOperator::kMin, depth);
       case CSSValueID::kMax:
-        return ParseMinOrMax(tokens, CSSMathOperator::kMax, depth);
+        return ParseComparisonFunction(tokens, CSSMathOperator::kMax, depth);
       case CSSValueID::kClamp:
-        return ParseClamp(tokens, depth);
+        return ParseComparisonFunction(tokens, CSSMathOperator::kClamp, depth);
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return nullptr;
     }
   }
 
-  // TODO(pjh0718) : Integrate ParseCalc and ParseMinOrMaxOrClamp to
+  // TODO(pjh0718) : Integrate ParseCalc and ParseComparisonFunction to
   // ParseMathFunction.
   CSSMathExpressionNode* ParseCalc(CSSParserTokenRange tokens) {
     tokens.ConsumeWhitespace();
@@ -1048,10 +1040,11 @@ class CSSMathExpressionNodeParser {
     return result;
   }
 
-  CSSMathExpressionNode* ParseMinOrMax(CSSParserTokenRange tokens,
-                                       CSSMathOperator op,
-                                       int depth) {
-    DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax);
+  CSSMathExpressionNode* ParseComparisonFunction(CSSParserTokenRange tokens,
+                                                 CSSMathOperator op,
+                                                 int depth) {
+    DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
+           op == CSSMathOperator::kClamp);
     if (tokens.AtEnd())
       return nullptr;
 
@@ -1074,49 +1067,11 @@ class CSSMathExpressionNodeParser {
     if (operands.IsEmpty() || !tokens.AtEnd() || last_token_is_comma)
       return nullptr;
 
+    if (op == CSSMathOperator::kClamp && operands.size() != 3)
+      return nullptr;
+
     return CSSMathExpressionOperation::CreateComparisonFunction(
         std::move(operands), op);
-  }
-
-  CSSMathExpressionNode* ParseClamp(CSSParserTokenRange tokens, int depth) {
-    if (tokens.AtEnd())
-      return nullptr;
-
-    CSSMathExpressionNode* min_operand = ParseValueExpression(tokens, depth);
-    if (!min_operand)
-      return nullptr;
-
-    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens))
-      return nullptr;
-
-    CSSMathExpressionNode* val_operand = ParseValueExpression(tokens, depth);
-    if (!val_operand)
-      return nullptr;
-
-    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens))
-      return nullptr;
-
-    CSSMathExpressionNode* max_operand = ParseValueExpression(tokens, depth);
-    if (!max_operand)
-      return nullptr;
-
-    if (!tokens.AtEnd())
-      return nullptr;
-
-    // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
-
-    auto* nested = CSSMathExpressionOperation::CreateComparisonFunction(
-        {val_operand, max_operand}, CSSMathOperator::kMin);
-    if (!nested)
-      return nullptr;
-
-    auto* result = CSSMathExpressionOperation::CreateComparisonFunction(
-        {min_operand, nested}, CSSMathOperator::kMax);
-    if (!result)
-      return nullptr;
-
-    result->SetIsClamp();
-    return result;
   }
 
  private:
@@ -1176,11 +1131,14 @@ class CSSMathExpressionNodeParser {
       inner_range.ConsumeWhitespace();
       switch (function_id) {
         case CSSValueID::kMin:
-          return ParseMinOrMax(inner_range, CSSMathOperator::kMin, depth);
+          return ParseComparisonFunction(inner_range, CSSMathOperator::kMin,
+                                         depth);
         case CSSValueID::kMax:
-          return ParseMinOrMax(inner_range, CSSMathOperator::kMax, depth);
+          return ParseComparisonFunction(inner_range, CSSMathOperator::kMax,
+                                         depth);
         case CSSValueID::kClamp:
-          return ParseClamp(inner_range, depth);
+          return ParseComparisonFunction(inner_range, CSSMathOperator::kClamp,
+                                         depth);
         default:
           break;
       }
@@ -1376,7 +1334,15 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       return CSSMathExpressionOperation::CreateComparisonFunction(
           std::move(operands), op);
     }
-    default:
+    case CalculationOperator::kClamp: {
+      DCHECK_EQ(children.size(), 3u);
+      CSSMathExpressionOperation::Operands operands;
+      for (const auto& child : children)
+        operands.push_back(Create(*child));
+      return CSSMathExpressionOperation::CreateComparisonFunction(
+          std::move(operands), CSSMathOperator::kClamp);
+    }
+    case CalculationOperator::kInvalid:
       NOTREACHED();
       return nullptr;
   }

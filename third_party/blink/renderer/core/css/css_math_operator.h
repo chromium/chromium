@@ -18,6 +18,7 @@ enum class CSSMathOperator {
   kDivide,
   kMin,
   kMax,
+  kClamp,
   kInvalid
 };
 
