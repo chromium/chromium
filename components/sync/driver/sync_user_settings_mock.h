@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_MOCK_H_
 #define COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_MOCK_H_
 
+#include <memory>
 #include <string>
 
 #include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -77,6 +79,14 @@ class SyncUserSettingsMock : public SyncUserSettings {
   MOCK_METHOD(PassphraseType, GetPassphraseType, (), (const override));
   MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(bool, SetDecryptionPassphrase, (const std::string&), (override));
+  MOCK_METHOD(void,
+              SetDecryptionNigoriKey,
+              (std::unique_ptr<Nigori>),
+              (override));
+  MOCK_METHOD(std::unique_ptr<Nigori>,
+              GetDecryptionNigoriKey,
+              (),
+              (const override));
 };
 
 }  // namespace syncer

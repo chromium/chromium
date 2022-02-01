@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_H_
 #define COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/time/time.h"
@@ -14,6 +15,8 @@
 #include "components/sync/base/user_selectable_type.h"
 
 namespace syncer {
+
+class Nigori;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser
 // These values are persisted to logs. Entries should not be renumbered and
@@ -117,9 +120,19 @@ class SyncUserSettings {
   virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
   // Asynchronously decrypts pending keys using |passphrase|. Returns false
   // immediately if the passphrase could not be used to decrypt a locally cached
-  // copy of encrypted keys; returns true otherwise.
+  // copy of encrypted keys; returns true otherwise. This method shouldn't be
+  // called when passphrase isn't required.
   [[nodiscard]] virtual bool SetDecryptionPassphrase(
       const std::string& passphrase) = 0;
+
+  // Asynchronously decrypts pending keys using |nigori|. |nigori| must not be
+  // null. It's safe to call this method with wrong |nigori| and, unlike
+  // SetDecryptionPassphrase(), when passphrase isn't required.
+  virtual void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) = 0;
+  // Returns stored decryption key, corresponding to the last successfully
+  // decrypted explicit passphrase Nigori. Returns nullptr if there is no such
+  // stored decryption key.
+  virtual std::unique_ptr<Nigori> GetDecryptionNigoriKey() const = 0;
 };
 
 }  // namespace syncer

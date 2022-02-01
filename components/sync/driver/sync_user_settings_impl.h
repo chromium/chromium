@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_IMPL_H_
 #define COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_IMPL_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -68,6 +69,8 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
+  std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
   void SetSyncRequestedIfNotSetExplicitly();
 

@@ -4,6 +4,8 @@
 
 #include "components/sync/driver/sync_user_settings_impl.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/version.h"
@@ -11,6 +13,7 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_crypto.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -218,6 +221,15 @@ bool SyncUserSettingsImpl::SetDecryptionPassphrase(
   DVLOG(1) << "Setting passphrase for decryption.";
 
   return crypto_->SetDecryptionPassphrase(passphrase);
+}
+
+void SyncUserSettingsImpl::SetDecryptionNigoriKey(
+    std::unique_ptr<Nigori> nigori) {
+  return crypto_->SetDecryptionNigoriKey(std::move(nigori));
+}
+
+std::unique_ptr<Nigori> SyncUserSettingsImpl::GetDecryptionNigoriKey() const {
+  return crypto_->GetDecryptionNigoriKey();
 }
 
 void SyncUserSettingsImpl::SetSyncRequestedIfNotSetExplicitly() {

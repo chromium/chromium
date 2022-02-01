@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_DRIVER_TEST_SYNC_USER_SETTINGS_H_
 #define COMPONENTS_SYNC_DRIVER_TEST_SYNC_USER_SETTINGS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -59,6 +60,8 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
+  std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();

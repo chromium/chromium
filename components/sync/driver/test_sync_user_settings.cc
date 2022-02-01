@@ -11,6 +11,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings_impl.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/sync/engine/nigori/nigori.h"
 
 namespace syncer {
 
@@ -186,6 +187,13 @@ void TestSyncUserSettings::SetEncryptionPassphrase(
 bool TestSyncUserSettings::SetDecryptionPassphrase(
     const std::string& passphrase) {
   return false;
+}
+
+void TestSyncUserSettings::SetDecryptionNigoriKey(
+    std::unique_ptr<Nigori> nigori) {}
+
+std::unique_ptr<Nigori> TestSyncUserSettings::GetDecryptionNigoriKey() const {
+  return nullptr;
 }
 
 void TestSyncUserSettings::SetFirstSetupComplete() {
