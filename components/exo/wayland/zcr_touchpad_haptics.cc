@@ -23,17 +23,10 @@ void touchpad_haptics_play(wl_client* client,
   // TODO(b/205702807): Call InputController::PlayHapticTouchpadEffect.
 }
 
-void touchpad_haptics_request_activation_state(wl_client* client,
-                                               wl_resource* resource) {
-  // TODO(b/205702807): Call InputController::HasHapticTouchpad and send it via
-  // activated/deactivated event.
-}
-
 const struct zcr_touchpad_haptics_v1_interface touchpad_haptics_implementation =
     {
         touchpad_haptics_destroy,
         touchpad_haptics_play,
-        touchpad_haptics_request_activation_state,
 };
 
 }  // namespace

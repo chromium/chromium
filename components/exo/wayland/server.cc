@@ -413,7 +413,7 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &xdg_wm_base_interface, 1,
                    xdg_shell_data_.get(), bind_xdg_shell);
 
-  wl_global_create(wl_display_.get(), &zcr_touchpad_haptics_v1_interface, 2,
+  wl_global_create(wl_display_.get(), &zcr_touchpad_haptics_v1_interface, 1,
                    display_, bind_touchpad_haptics);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
