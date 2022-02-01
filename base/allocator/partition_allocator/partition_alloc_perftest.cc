@@ -82,10 +82,7 @@ class SystemAllocator : public Allocator {
 
 class PartitionAllocator : public Allocator {
  public:
-  explicit PartitionAllocator(bool use_alternate_bucket_dist) {
-    if (!use_alternate_bucket_dist)
-      alloc_.SwitchToDenserBucketDistribution();
-  }
+  PartitionAllocator() = default;
   ~PartitionAllocator() override = default;
 
   void* Alloc(size_t size) override {
@@ -108,7 +105,7 @@ class PartitionAllocator : public Allocator {
 ThreadSafePartitionRoot* g_partition_root = nullptr;
 class PartitionAllocatorWithThreadCache : public Allocator {
  public:
-  explicit PartitionAllocatorWithThreadCache(bool use_alternate_bucket_dist) {
+  PartitionAllocatorWithThreadCache() {
     if (!g_partition_root) {
       g_partition_root = new ThreadSafePartitionRoot({
           PartitionOptions::AlignedAlloc::kDisallowed,
@@ -120,8 +117,6 @@ class PartitionAllocatorWithThreadCache : public Allocator {
       });
     }
     internal::ThreadCacheRegistry::Instance().PurgeAll();
-    if (!use_alternate_bucket_dist)
-      g_partition_root->SwitchToDenserBucketDistribution();
   }
   ~PartitionAllocatorWithThreadCache() override = default;
 
@@ -307,16 +302,14 @@ float DirectMapped(Allocator* allocator) {
   return timer.LapsPerSecond();
 }
 
-std::unique_ptr<Allocator> CreateAllocator(AllocatorType type,
-                                           bool use_alternate_bucket_dist) {
+std::unique_ptr<Allocator> CreateAllocator(AllocatorType type) {
   switch (type) {
     case AllocatorType::kSystem:
       return std::make_unique<SystemAllocator>();
     case AllocatorType::kPartitionAlloc:
-      return std::make_unique<PartitionAllocator>(use_alternate_bucket_dist);
+      return std::make_unique<PartitionAllocator>();
     case AllocatorType::kPartitionAllocWithThreadCache:
-      return std::make_unique<PartitionAllocatorWithThreadCache>(
-          use_alternate_bucket_dist);
+      return std::make_unique<PartitionAllocatorWithThreadCache>();
   }
 }
 
@@ -330,12 +323,11 @@ void LogResults(int thread_count,
 }
 
 void RunTest(int thread_count,
-             bool use_alternate_bucket_dist,
              AllocatorType alloc_type,
              float (*test_fn)(Allocator*),
              float (*noisy_neighbor_fn)(Allocator*),
              const char* story_base_name) {
-  auto alloc = CreateAllocator(alloc_type, use_alternate_bucket_dist);
+  auto alloc = CreateAllocator(alloc_type);
 
   std::unique_ptr<TestLoopThread> noisy_neighbor_thread = nullptr;
   if (noisy_neighbor_fn) {
@@ -384,7 +376,7 @@ void RunTest(int thread_count,
 }
 
 class PartitionAllocMemoryAllocationPerfTest
-    : public testing::TestWithParam<std::tuple<int, bool, AllocatorType>> {};
+    : public testing::TestWithParam<std::tuple<int, AllocatorType>> {};
 
 // Only one partition with a thread cache: cannot use the thread cache when
 // PartitionAlloc is malloc().
@@ -393,7 +385,6 @@ INSTANTIATE_TEST_SUITE_P(
     PartitionAllocMemoryAllocationPerfTest,
     ::testing::Combine(
         ::testing::Values(1, 2, 3, 4),
-        ::testing::Values(false, true),
         ::testing::Values(AllocatorType::kSystem,
                           AllocatorType::kPartitionAlloc,
                           AllocatorType::kPartitionAllocWithThreadCache)));
@@ -403,38 +394,34 @@ INSTANTIATE_TEST_SUITE_P(
 #if !defined(MEMORY_CONSTRAINED)
 TEST_P(PartitionAllocMemoryAllocationPerfTest, SingleBucket) {
   auto params = GetParam();
-  RunTest(std::get<int>(params), std::get<bool>(params),
-          std::get<AllocatorType>(params), SingleBucket, nullptr,
+  RunTest(std::get<0>(params), std::get<1>(params), SingleBucket, nullptr,
           "SingleBucket");
 }
 #endif  // defined(MEMORY_CONSTRAINED)
 
 TEST_P(PartitionAllocMemoryAllocationPerfTest, SingleBucketWithFree) {
   auto params = GetParam();
-  RunTest(std::get<int>(params), std::get<bool>(params),
-          std::get<AllocatorType>(params), SingleBucketWithFree, nullptr,
-          "SingleBucketWithFree");
+  RunTest(std::get<0>(params), std::get<1>(params), SingleBucketWithFree,
+          nullptr, "SingleBucketWithFree");
 }
 
 #if !defined(MEMORY_CONSTRAINED)
 TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucket) {
   auto params = GetParam();
-  RunTest(std::get<int>(params), std::get<bool>(params),
-          std::get<AllocatorType>(params), MultiBucket, nullptr, "MultiBucket");
+  RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, nullptr,
+          "MultiBucket");
 }
 #endif  // defined(MEMORY_CONSTRAINED)
 
 TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucketWithFree) {
   auto params = GetParam();
-  RunTest(std::get<int>(params), std::get<bool>(params),
-          std::get<AllocatorType>(params), MultiBucketWithFree, nullptr,
-          "MultiBucketWithFree");
+  RunTest(std::get<0>(params), std::get<1>(params), MultiBucketWithFree,
+          nullptr, "MultiBucketWithFree");
 }
 
 TEST_P(PartitionAllocMemoryAllocationPerfTest, DirectMapped) {
   auto params = GetParam();
-  RunTest(std::get<int>(params), std::get<bool>(params),
-          std::get<AllocatorType>(params), DirectMapped, nullptr,
+  RunTest(std::get<0>(params), std::get<1>(params), DirectMapped, nullptr,
           "DirectMapped");
 }
 
@@ -442,8 +429,7 @@ TEST_P(PartitionAllocMemoryAllocationPerfTest, DirectMapped) {
 TEST_P(PartitionAllocMemoryAllocationPerfTest,
        DISABLED_MultiBucketWithNoisyNeighbor) {
   auto params = GetParam();
-  RunTest(std::get<int>(params), std::get<bool>(params),
-          std::get<AllocatorType>(params), MultiBucket, DirectMapped,
+  RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, DirectMapped,
           "MultiBucketWithNoisyNeighbor");
 }
 #endif  // !defined(MEMORY_CONSTRAINED)

@@ -490,8 +490,7 @@ alignas(base::ThreadSafePartitionRoot) uint8_t
 void ConfigurePartitions(
     EnableBrp enable_brp,
     SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    AlternateBucketDistribution use_alternate_bucket_distribution) {
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
   // out the aligned partition.
@@ -567,11 +566,6 @@ void ConfigurePartitions(
   // Purge memory, now that the traffic to the original partition is cut off.
   current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                             PartitionPurgeDiscardUnusedSystemPages);
-
-  if (!use_alternate_bucket_distribution) {
-    g_root.Get()->SwitchToDenserBucketDistribution();
-    g_aligned_root.Get()->SwitchToDenserBucketDistribution();
-  }
 }
 
 #if defined(PA_ALLOW_PCSCAN)

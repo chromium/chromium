@@ -69,7 +69,6 @@ extern const BASE_EXPORT Feature kPartitionAllocPCScanStackScanning;
 extern const BASE_EXPORT Feature kPartitionAllocDCScan;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanImmediateFreeing;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanEagerClearing;
-extern const BASE_EXPORT Feature kPartitionAllocUseAlternateDistribution;
 
 }  // namespace features
 }  // namespace base

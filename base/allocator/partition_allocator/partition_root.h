@@ -208,7 +208,6 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
       ScanMode scan_mode;
 
       bool with_thread_cache = false;
-      bool with_denser_bucket_distribution = false;
 
       bool allow_aligned_alloc;
       bool allow_cookie;
@@ -451,8 +450,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   static void DeleteForTesting(PartitionRoot* partition_root);
   void ResetBookkeepingForTesting();
 
-  static uint16_t SizeToBucketIndex(size_t size,
-                                    bool with_denser_bucket_distribution);
+  static uint16_t SizeToBucketIndex(size_t size);
 
   ALWAYS_INLINE void FreeInSlotSpan(uintptr_t slot_start, SlotSpan* slot_span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -469,21 +467,6 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 
   ALWAYS_INLINE void RawFreeWithThreadCache(uintptr_t slot_start,
                                             SlotSpan* slot_span);
-
-  // This is safe to do because we are switching to a bucket distribution with
-  // more buckets, meaning any allocations we have done before the switch are
-  // guaranteed to have a bucket under the new distribution when they are
-  // eventually deallocated. We do not need synchronization here or below.
-  void SwitchToDenserBucketDistribution() {
-    with_denser_bucket_distribution = true;
-  }
-  // Switching back to the less dense bucket distribution is ok during tests.
-  // At worst, we end up with deallocations that are sent to a bucket that we
-  // cannot allocate from, which will not cause problems besides wasting
-  // memory.
-  void ResetBucketDistributionForTesting() {
-    with_denser_bucket_distribution = false;
-  }
 
   internal::ThreadCache* thread_cache_for_testing() const {
     return with_thread_cache ? internal::ThreadCache::Get() : nullptr;
@@ -1442,13 +1425,9 @@ PartitionRoot<thread_safe>::AllocationCapacityFromPtr(void* object) const {
 
 // static
 template <bool thread_safe>
-ALWAYS_INLINE uint16_t PartitionRoot<thread_safe>::SizeToBucketIndex(
-    size_t size,
-    bool with_denser_bucket_distribution) {
-  if (with_denser_bucket_distribution)
-    return internal::BucketIndexLookup::GetIndexForDenserBuckets(size);
-  else
-    return internal::BucketIndexLookup::GetIndex(size);
+ALWAYS_INLINE uint16_t
+PartitionRoot<thread_safe>::SizeToBucketIndex(size_t size) {
+  return internal::BucketIndexLookup::GetIndex(size);
 }
 
 template <bool thread_safe>
@@ -1525,12 +1504,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
-  // We should only call |SizeToBucketIndex| at most once when allocating.
-  // Otherwise, we risk having |with_denser_bucket_distribution| changed
-  // underneath us (between calls to |SizeToBucketIndex| during the same call),
-  // which would result in an inconsistent state.
-  uint16_t bucket_index =
-      SizeToBucketIndex(raw_size, with_denser_bucket_distribution);
+  uint16_t bucket_index = SizeToBucketIndex(raw_size);
   size_t usable_size;
   bool is_already_zeroed = false;
   uintptr_t slot_start = 0;
@@ -1817,8 +1791,7 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
 #else
   PA_DCHECK(PartitionRoot<thread_safe>::initialized);
   size = AdjustSizeForExtrasAdd(size);
-  auto& bucket =
-      bucket_at(SizeToBucketIndex(size, with_denser_bucket_distribution));
+  auto& bucket = bucket_at(SizeToBucketIndex(size));
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
   PA_DCHECK(!(bucket.slot_size % kSmallestBucket));
 

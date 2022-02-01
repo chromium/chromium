@@ -158,14 +158,6 @@ bool Partitions::InitializeOnce() {
   }
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseAlternateDistribution)) {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    fast_malloc_root_->SwitchToDenserBucketDistribution();
-#endif
-    buffer_root_->SwitchToDenserBucketDistribution();
-  }
-
   initialized_ = true;
   return initialized_;
 }
@@ -203,10 +195,6 @@ void Partitions::InitializeArrayBufferPartition() {
     base::internal::PCScan::RegisterNonScannableRoot(array_buffer_root_);
   }
 #endif  // defined(PA_ALLOW_PCSCAN)
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseAlternateDistribution)) {
-    array_buffer_root_->SwitchToDenserBucketDistribution();
-  }
 }
 
 // static
