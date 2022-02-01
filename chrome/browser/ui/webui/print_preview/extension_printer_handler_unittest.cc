@@ -564,7 +564,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetPrinters) {
   EXPECT_EQ(1u, call_count);
   EXPECT_TRUE(is_done);
   ASSERT_TRUE(printers.get());
-  EXPECT_TRUE(printers->Equals(original_printers.get()))
+  EXPECT_EQ(*printers, *original_printers)
       << *printers << ", expected: " << *original_printers;
 }
 
@@ -680,7 +680,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
 
   EXPECT_EQ(1u, call_count);
   ASSERT_TRUE(capability.get());
-  EXPECT_TRUE(capability->Equals(original_capability.get()))
+  EXPECT_EQ(*capability, *original_capability)
       << *capability << ", expected: " << *original_capability;
 }
 
@@ -1011,7 +1011,7 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess) {
 
   EXPECT_EQ(1u, call_count);
   ASSERT_TRUE(printer_info.get());
-  EXPECT_TRUE(printer_info->Equals(original_printer_info.get()))
+  EXPECT_EQ(*printer_info, *original_printer_info)
       << *printer_info << ", expected: " << *original_printer_info;
 }
 
