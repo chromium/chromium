@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -16,11 +12,10 @@
 #include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/test/fake_intent_helper_host.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
+#include "components/arc/common/test/fake_arc_icon_cache.h"
+#include "components/arc/common/test/fake_arc_intent_helper_mojo.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,7 +27,7 @@ namespace arc {
 
 namespace {
 
-// Helper class to run tests that need a dummy WebContents and arc bridge.
+// Helper class to run tests that need a dummy WebContents and arc delegate.
 class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
  public:
   ArcExternalProtocolDialogTestUtils() = default;
@@ -42,35 +37,13 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
       const ArcExternalProtocolDialogTestUtils&) = delete;
 
   void SetUp() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
     BrowserWithTestWindowTest::SetUp();
-
-    profile()->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
-    arc_test_.set_wait_default_apps(true);
-    arc_test_.SetUp(profile());
-    // Set up FakeIntentHelperHost to emulate full-duplex IntentHelper
-    // connection.
-    intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
-        ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
-    ArcServiceManager::Get()
-        ->arc_bridge_service()
-        ->intent_helper()
-        ->SetInstance(&intent_helper_instance_);
-    WaitForInstanceReady(
-        ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
+    arc_icon_cache_ = std::make_unique<FakeArcIconCache>();
+    delegate_provider_ =
+        std::make_unique<ArcIconCacheDelegateProvider>(arc_icon_cache_.get());
   }
 
-  void TearDown() override {
-    ArcServiceManager::Get()
-        ->arc_bridge_service()
-        ->intent_helper()
-        ->CloseInstance(&intent_helper_instance_);
-    intent_helper_host_.reset();
-    arc_test_.TearDown();
-    BrowserWithTestWindowTest::TearDown();
-    chromeos::SessionManagerClient::Shutdown();
-  }
+  void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
 
  protected:
   void CreateTab(bool started_from_arc) {
@@ -104,35 +77,33 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
  private:
   // Keep only one |WebContents| at a time.
   content::WebContents* web_contents_;
-  FakeIntentHelperInstance intent_helper_instance_;
-  ArcAppTest arc_test_;
-  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
+  std::unique_ptr<ArcIconCacheDelegate> arc_icon_cache_;
+  std::unique_ptr<ArcIconCacheDelegateProvider> delegate_provider_;
 };
 
-const char* kChromePackageName =
-    ArcIntentHelperBridge::kArcIntentHelperPackageName;
+const char* kChromePackageName = "org.chromium.arc.intent_helper";
 
 // Creates a dummy GurlAndActivityInfo object.
 GurlAndActivityInfo CreateEmptyGurlAndActivityInfo() {
-  return std::make_pair(GURL(), ArcIntentHelperBridge::ActivityName(
+  return std::make_pair(GURL(), ArcIntentHelperMojoDelegate::ActivityName(
                                     /*package_name=*/std::string(),
                                     /*activity_name=*/std::string()));
 }
 
 // Creates and returns a new IntentHandlerInfo object.
-mojom::IntentHandlerInfoPtr Create(const std::string& name,
-                                   const std::string& package_name,
-                                   const std::string& activity_name,
-                                   bool is_preferred,
-                                   const GURL& fallback_url) {
-  mojom::IntentHandlerInfoPtr ptr = mojom::IntentHandlerInfo::New();
-  ptr->name = name;
-  ptr->package_name = package_name;
-  ptr->activity_name = activity_name;
-  ptr->is_preferred = is_preferred;
+ArcIntentHelperMojoDelegate::IntentHandlerInfo Create(
+    const std::string& name,
+    const std::string& package_name,
+    const std::string& activity_name,
+    bool is_preferred,
+    const GURL& fallback_url) {
+  absl::optional<std::string> url;
   if (!fallback_url.is_empty())
-    ptr->fallback_url = fallback_url.spec();
-  return ptr;
+    url = fallback_url.spec();
+
+  return ArcIntentHelperMojoDelegate::IntentHandlerInfo(
+      std::move(name), std::move(package_name), std::move(activity_name),
+      is_preferred, std::move(url));
 }
 
 }  // namespace
@@ -142,7 +113,7 @@ mojom::IntentHandlerInfoPtr Create(const std::string& name,
 // HANDLE_URL_IN_ARC.
 TEST(ArcExternalProtocolDialogTest,
      TestGetActionWithOneAppBypassesIntentPicker) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("package", "com.google.package.name",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, /*fallback_url=*/GURL()));
@@ -162,7 +133,7 @@ TEST(ArcExternalProtocolDialogTest,
 // ASK_USER.
 TEST(ArcExternalProtocolDialogTest,
      TestGetActionWithOneAppDoesntBypassIntentPicker) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("package", "com.google.package.name",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, /*fallback_url=*/GURL()));
@@ -182,7 +153,7 @@ TEST(ArcExternalProtocolDialogTest,
 // as safe to bypass the ui.
 TEST(ArcExternalProtocolDialogTest,
      TestGetActionWithTwoAppWontBypassIntentPicker) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("package", "com.google.package.name",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, /*fallback_url=*/GURL()));
@@ -215,7 +186,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOnePreferredApp) {
   const std::string package_name("com.google.package.name");
   const std::string activity_name("com.google.activity");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("package", package_name, activity_name,
                             /*is_preferred=*/true,
                             /*fallback_url=*/GURL()));
@@ -253,7 +224,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOneAppSelected) {
   const std::string package_name("com.google.package.name");
   const std::string activity_name("fake_activity_name");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("package", package_name, activity_name,
                             /*is_preferred=*/false,
                             /*fallback_url=*/GURL()));
@@ -288,7 +259,7 @@ TEST(ArcExternalProtocolDialogTest,
   const std::string package_name("com.google.package2.name");
   const std::string activity_name("fake_activity_name2");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("package", "com.google.package.name",
                             "fake_activity_name",
                             /*is_preferred=*/false, /*fallback_url=*/GURL()));
@@ -334,7 +305,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithGeoUrl) {
 
   const std::string activity_name("chrome_activity_name");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Chrome", kChromePackageName, activity_name,
                             /*is_preferred=*/true,
                             /*fallback_url=*/GURL()));
@@ -363,7 +334,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOneFallbackUrl) {
   const GURL fallback_url("http://zxing.org");
   const std::string activity_name("fake_activity_name");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Chrome", kChromePackageName, activity_name,
                             /*is_preferred=*/false, fallback_url));
 
@@ -400,7 +371,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOnePreferredFallbackUrl) {
   const GURL fallback_url("https://zxing.org");
   const std::string activity_name("fake_activity_name");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Chrome", kChromePackageName, activity_name,
                             /*is_preferred=*/true, fallback_url));
 
@@ -440,7 +411,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithTwoFallbackUrls) {
       "S.browser_fallback_url=http://zxing.org;end");
   const GURL fallback_url("http://zxing.org");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other browser", "com.other.browser",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
@@ -468,7 +439,7 @@ TEST(ArcExternalProtocolDialogTest,
   const GURL fallback_url("http://zxing.org");
   const std::string chrome_activity("chrome_activity");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other browser", "com.other.browser",
                             "fake_activity",
                             /*is_preferred=*/false, fallback_url));
@@ -501,7 +472,7 @@ TEST(ArcExternalProtocolDialogTest,
   const std::string chrome_activity_name("chrome_activity_name");
   const std::string other_activity_name("other_activity_name");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other browser", package_name, other_activity_name,
                             /*is_preferred=*/true, fallback_url));
   handlers.push_back(Create("Chrome", kChromePackageName, chrome_activity_name,
@@ -529,7 +500,7 @@ TEST(ArcExternalProtocolDialogTest,
   const GURL fallback_url("http://zxing.org");
   const std::string chrome_activity_name("chrome_activity");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other browser", "com.other.browser",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
@@ -559,7 +530,7 @@ TEST(ArcExternalProtocolDialogTest,
   const std::string package_name = "com.other.browser";
   const std::string other_activity_name("other_activity_name");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other browser", package_name, other_activity_name,
                             /*is_preferred=*/false, fallback_url));
   handlers.push_back(Create("Chrome", kChromePackageName, "chrome_activity",
@@ -587,7 +558,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOneMarketFallbackUrl) {
       "intent://scan/#Intent;scheme=abc;package=com.google.abc;end");
   const GURL fallback_url("market://details?id=com.google.abc");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Play Store", "com.google.play.store",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
@@ -618,7 +589,7 @@ TEST(ArcExternalProtocolDialogTest,
   const std::string play_store_package_name = "com.google.play.store";
   const std::string play_store_activity("play_store_activity");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Play Store", play_store_package_name,
                             play_store_activity,
                             /*is_preferred=*/true, fallback_url));
@@ -655,7 +626,7 @@ TEST(ArcExternalProtocolDialogTest,
   const std::string play_store_package_name = "com.google.play.store";
   const std::string play_store_activity("play_store_activity");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Play Store", play_store_package_name,
                             play_store_activity,
                             /*is_preferred=*/false, fallback_url));
@@ -683,7 +654,7 @@ TEST(ArcExternalProtocolDialogTest,
       "intent://scan/#Intent;scheme=abc;package=com.google.abc;end");
   const GURL fallback_url("market://details?id=com.google.abc");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Play Store", "com.google.play.store",
                             "play_store_activity", /*is_preferred=*/false,
                             fallback_url));
@@ -706,7 +677,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithTwoMarketFallbackUrls) {
       "intent://scan/#Intent;scheme=abc;package=com.google.abc;end");
   const GURL fallback_url("market://details?id=com.google.abc");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Play Store", "com.google.play.store",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
@@ -733,7 +704,7 @@ TEST(ArcExternalProtocolDialogTest,
   const std::string play_store_package_name = "com.google.play.store";
   const std::string play_store_activity("play.store.act1");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other Store app", "com.other.play.store",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
@@ -763,7 +734,7 @@ TEST(ArcExternalProtocolDialogTest,
   const std::string play_store_package_name = "com.google.play.store";
   const std::string play_store_activity("play.store.act1");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other Store app", "com.other.play.store",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
@@ -795,7 +766,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithGeoUrlAsFallback) {
   const GURL geo_url("geo:37.7749,-122.4194");
   const std::string chrome_activity("chrome.activity");
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Chrome", kChromePackageName, chrome_activity,
                             /*is_preferred=*/true, geo_url));
 
@@ -817,14 +788,14 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithGeoUrlAsFallback) {
 // Test that GetUrlToNavigateOnDeactivate returns an empty GURL when |handlers|
 // is empty.
 TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateEmpty) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   EXPECT_EQ(GURL(), GetUrlToNavigateOnDeactivateForTesting(handlers));
 }
 
 // Test that GetUrlToNavigateOnDeactivate returns an empty GURL when |handlers|
 // only contains a (non-Chrome) app.
 TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateAppOnly) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   // On production, when |handlers| only contains app(s), the fallback field is
   // empty, but to make the test more reliable, use non-empty fallback URL.
   handlers.push_back(Create("App", "app.package",
@@ -836,7 +807,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateAppOnly) {
 // Test that GetUrlToNavigateOnDeactivate returns an empty GURL when |handlers|
 // only contains (non-Chrome) apps.
 TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateAppsOnly) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   // On production, when |handlers| only contains app(s), the fallback field is
   // empty, but to make the test more reliable, use non-empty fallback URL.
   handlers.push_back(Create("App1", "app1.package",
@@ -851,7 +822,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateAppsOnly) {
 // Test that GetUrlToNavigateOnDeactivate returns an empty GURL when |handlers|
 // contains Chrome, but it's not for http(s).
 TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateGeoUrl) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(
       Create("Chrome", kChromePackageName, /*activity_name=*/std::string(),
              /*is_preferred=*/false, GURL("geo:37.4220,-122.0840")));
@@ -862,7 +833,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateGeoUrl) {
 // contains Chrome and an app.
 TEST(ArcExternalProtocolDialogTest,
      TestGetUrlToNavigateOnDeactivateChromeAndApp) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   // On production, all handlers have the same fallback URL, but to make sure
   // that "Chrome" is actually selected by the function, use different URLs.
   handlers.push_back(Create("A browser app", "browser.app.package",
@@ -883,7 +854,7 @@ TEST(ArcExternalProtocolDialogTest,
 // Does the same with https, just in case.
 TEST(ArcExternalProtocolDialogTest,
      TestGetUrlToNavigateOnDeactivateChromeAndAppHttps) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("A browser app", "browser.app.package",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, GURL("https://www1/")));
@@ -917,7 +888,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestTabIsNotStartedFromArc) {
 // Tests that IsChromeAnAppCandidate works as intended.
 TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
   // First 3 cases are valid, just switching the position of Chrome.
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(
       Create("fake app 1", "fake.app.package", /*activity_name=*/std::string(),
              /*is_preferred=*/false, GURL("https://www.fo.com")));
@@ -929,7 +900,7 @@ TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
                             /*is_preferred=*/false, GURL("https://www/")));
   EXPECT_TRUE(IsChromeAnAppCandidateForTesting(handlers));
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers2;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers2;
   handlers2.push_back(
       Create("fake app 1", "fake.app.package", /*activity_name=*/std::string(),
              /*is_preferred=*/false, GURL("https://www.fo.com")));
@@ -941,7 +912,7 @@ TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
              /*is_preferred=*/false, GURL("https://www.bar.com")));
   EXPECT_TRUE(IsChromeAnAppCandidateForTesting(handlers2));
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers3;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers3;
   handlers3.push_back(Create("Chrome", kChromePackageName,
                              /*activity_name=*/std::string(),
                              /*is_preferred=*/false, GURL("https://www/")));
@@ -954,7 +925,7 @@ TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
   EXPECT_TRUE(IsChromeAnAppCandidateForTesting(handlers3));
 
   // Only non-Chrome apps.
-  std::vector<mojom::IntentHandlerInfoPtr> handlers4;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers4;
   handlers4.push_back(
       Create("fake app 1", "fake.app.package", /*activity_name=*/std::string(),
              /*is_preferred=*/false, GURL("https://www.fo.com")));
@@ -968,7 +939,7 @@ TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
 
   // Empty vector case.
   EXPECT_FALSE(IsChromeAnAppCandidateForTesting(
-      std::vector<mojom::IntentHandlerInfoPtr>()));
+      std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>()));
 }
 
 // Tests that when one app is passed to GetAction and it's for ARC IME, the
@@ -980,7 +951,7 @@ TEST(ArcExternalProtocolDialogTest,
   constexpr char kActivityForOpeningArcImeSettingsPage[] =
       "org.chromium.arc.applauncher.InputMethodSettingsActivity";
 
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("ARC IME settings",
                             kPackageForOpeningArcImeSettingsPage,
                             kActivityForOpeningArcImeSettingsPage,
@@ -1010,7 +981,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
   std::string device_guid = "device_guid";
   MockSharingService* sharing_service = CreateSharingService();
   content::RenderViewHost* rvh = web_contents()->GetRenderViewHost();
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
   devices.push_back(CreateFakeDeviceInfo(device_guid));
 
@@ -1026,7 +997,8 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
 
   OnIntentPickerClosedForTesting(
       rvh->GetProcess()->GetID(), rvh->GetRoutingID(), phone_number,
-      /*safe_to_bypass_ui=*/true, std::move(handlers), std::move(devices),
+      /*safe_to_bypass_ui=*/true, std::move(handlers),
+      std::make_unique<FakeArcIntentHelperMojo>(), std::move(devices),
       /*selected_app_package=*/device_guid, apps::PickerEntryType::kDevice,
       apps::IntentPickerCloseReason::OPEN_APP, /*should_persist=*/false);
 }
@@ -1050,7 +1022,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
   RunArcExternalProtocolDialog(
       GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
       rvh->GetProcess()->GetID(), rvh->GetRoutingID(), ui::PAGE_TRANSITION_LINK,
-      /*has_user_gesture=*/true,
+      /*has_user_gesture=*/true, std::make_unique<FakeArcIntentHelperMojo>(),
       base::BindOnce([](bool* handled, bool result) { *handled = result; },
                      &handled));
 

@@ -6,15 +6,12 @@
 
 #include <map>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
-#include "chrome/browser/ash/external_protocol_dialog.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -51,6 +48,9 @@ constexpr char kPackageForOpeningArcImeSettingsPage[] =
     "org.chromium.arc.applauncher";
 constexpr char kActivityForOpeningArcImeSettingsPage[] =
     "org.chromium.arc.applauncher.InputMethodSettingsActivity";
+
+// A package name for the intent_helper apk.
+constexpr char kArcIntentHelperPackageName[] = "org.chromium.arc.intent_helper";
 
 // Size of device icons in DIPs.
 constexpr int kDeviceIconSize = 16;
@@ -157,9 +157,10 @@ void CloseTabIfNeeded(int render_process_host_id,
 
 // Tells whether or not Chrome is an app candidate for the current navigation.
 bool IsChromeAnAppCandidate(
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers) {
-  for (const auto& handle : handlers) {
-    if (ArcIntentHelperBridge::IsIntentHelperPackage(handle->package_name))
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers) {
+  for (const auto& handler : handlers) {
+    if (handler.package_name == kArcIntentHelperPackageName)
       return true;
   }
   return false;
@@ -168,14 +169,16 @@ bool IsChromeAnAppCandidate(
 // Returns true if |handlers| only contains Chrome as an app candidate for the
 // current navigation.
 bool IsChromeOnlyAppCandidate(
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers) {
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers) {
   return handlers.size() == 1 && IsChromeAnAppCandidate(handlers);
 }
 
 // Returns true if the |handler| is for opening ARC IME settings page.
-bool ForOpeningArcImeSettingsPage(const mojom::IntentHandlerInfoPtr& handler) {
-  return (handler->package_name == kPackageForOpeningArcImeSettingsPage) &&
-         (handler->activity_name == kActivityForOpeningArcImeSettingsPage);
+bool ForOpeningArcImeSettingsPage(
+    const ArcIntentHelperMojoDelegate::IntentHandlerInfo& handler) {
+  return (handler.package_name == kPackageForOpeningArcImeSettingsPage) &&
+         (handler.activity_name == kActivityForOpeningArcImeSettingsPage);
 }
 
 // Shows |url| in the current tab.
@@ -199,55 +202,50 @@ void OpenUrlInChrome(int render_process_host_id,
   web_contents->OpenURL(params);
 }
 
-mojom::IntentInfoPtr CreateIntentInfo(const GURL& url, bool ui_bypassed) {
+ArcIntentHelperMojoDelegate::IntentInfo CreateIntentInfo(const GURL& url,
+                                                         bool ui_bypassed) {
   // Create an intent with action VIEW, the |url| we are redirecting the user to
   // and a flag that tells whether or not the user interacted with the picker UI
-  arc::mojom::IntentInfoPtr intent = arc::mojom::IntentInfo::New();
-  constexpr char kArcIntentActionView[] = "org.chromium.arc.intent.action.VIEW";
-  intent->action = kArcIntentActionView;
-  intent->data = url.spec();
-  intent->ui_bypassed = ui_bypassed;
 
-  return intent;
+  constexpr char kArcIntentActionView[] = "org.chromium.arc.intent.action.VIEW";
+  return ArcIntentHelperMojoDelegate::IntentInfo(
+      kArcIntentActionView, /*categories=*/absl::nullopt, url.spec(),
+      /*type=*/absl::nullopt, ui_bypassed, /*extras=*/absl::nullopt);
 }
 
 // Sends |url| to ARC.
 void HandleUrlInArc(int render_process_host_id,
                     int routing_id,
                     const GurlAndActivityInfo& url_and_activity,
-                    bool ui_bypassed) {
-  auto* arc_service_manager = ArcServiceManager::Get();
-  if (!arc_service_manager)
-    return;
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->intent_helper(), HandleIntent);
-  if (!instance)
-    return;
+                    bool ui_bypassed,
+                    ArcIntentHelperMojoDelegate* mojo_delegate) {
+  // ArcIntentHelperMojoDelegate is already varified non-null.
+  DCHECK(mojo_delegate);
 
   // We want to inform ARC about whether or not the user interacted with the
   // picker UI, also since we want to be more explicit about the package and
   // activity we are using, we are relying in HandleIntent() to comunicate back
   // to ARC.
-  arc::mojom::ActivityNamePtr activity = arc::mojom::ActivityName::New();
-  activity->package_name = url_and_activity.second.package_name;
-  activity->activity_name = url_and_activity.second.activity_name;
-
-  instance->HandleIntent(CreateIntentInfo(url_and_activity.first, ui_bypassed),
-                         std::move(activity));
-  CloseTabIfNeeded(render_process_host_id, routing_id, ui_bypassed);
+  if (mojo_delegate->HandleIntent(
+          CreateIntentInfo(url_and_activity.first, ui_bypassed),
+          ArcIntentHelperMojoDelegate::ActivityName(
+              std::move(url_and_activity.second.package_name),
+              std::move(url_and_activity.second.activity_name)))) {
+    CloseTabIfNeeded(render_process_host_id, routing_id, ui_bypassed);
+  }
 }
 
 // A helper function called by GetAction().
 GetActionResult GetActionInternal(
     const GURL& original_url,
-    const mojom::IntentHandlerInfoPtr& handler,
+    const ArcIntentHelperMojoDelegate::IntentHandlerInfo& handler,
     GurlAndActivityInfo* out_url_and_activity_name) {
-  if (handler->fallback_url.has_value()) {
+  if (handler.fallback_url.has_value()) {
     *out_url_and_activity_name =
-        GurlAndActivityInfo(GURL(*handler->fallback_url),
-                            ArcIntentHelperBridge::ActivityName(
-                                handler->package_name, handler->activity_name));
-    if (ArcIntentHelperBridge::IsIntentHelperPackage(handler->package_name)) {
+        GurlAndActivityInfo(GURL(*handler.fallback_url),
+                            ArcIntentHelperMojoDelegate::ActivityName(
+                                handler.package_name, handler.activity_name));
+    if (handler.package_name == kArcIntentHelperPackageName) {
       // Since |package_name| is "Chrome", and |fallback_url| is not null, the
       // URL must be either http or https. Check it just in case, and if not,
       // fallback to HANDLE_URL_IN_ARC;
@@ -264,8 +262,8 @@ GetActionResult GetActionInternal(
   // Unlike |handler->fallback_url|, the |original_url| should always be handled
   // in ARC since it's external to Chrome.
   *out_url_and_activity_name = GurlAndActivityInfo(
-      original_url, ArcIntentHelperBridge::ActivityName(
-                        handler->package_name, handler->activity_name));
+      original_url, ArcIntentHelperMojoDelegate::ActivityName(
+                        handler.package_name, handler.activity_name));
   return GetActionResult::HANDLE_URL_IN_ARC;
 }
 
@@ -283,7 +281,7 @@ GetActionResult GetActionInternal(
 // or not the user can safely bypass the UI.
 GetActionResult GetAction(
     const GURL& original_url,
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers,
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>& handlers,
     size_t selected_app_index,
     GurlAndActivityInfo* out_url_and_activity_name,
     bool* in_out_safe_to_bypass_ui) {
@@ -322,8 +320,9 @@ GetActionResult GetAction(
     // user explicitly marked it as such.
     *in_out_safe_to_bypass_ui = false;
     for (size_t i = 0; i < handlers.size(); ++i) {
-      const mojom::IntentHandlerInfoPtr& handler = handlers[i];
-      if (!handler->is_preferred)
+      const ArcIntentHelperMojoDelegate::IntentHandlerInfo& handler =
+          handlers[i];
+      if (!handler.is_preferred)
         continue;
       // This is another way to bypass the UI, since the user already expressed
       // some sort of preference.
@@ -384,16 +383,19 @@ void HandleDeviceSelection(
 }
 
 // Handles |url| if possible. Returns true if it is actually handled.
-bool HandleUrl(int render_process_host_id,
-               int routing_id,
-               const GURL& url,
-               const std::vector<mojom::IntentHandlerInfoPtr>& handlers,
-               size_t selected_app_index,
-               GetActionResult* out_result,
-               bool safe_to_bypass_ui) {
+bool HandleUrl(
+    int render_process_host_id,
+    int routing_id,
+    const GURL& url,
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>& handlers,
+    size_t selected_app_index,
+    GetActionResult* out_result,
+    bool safe_to_bypass_ui,
+    ArcIntentHelperMojoDelegate* mojo_delegate) {
   GurlAndActivityInfo url_and_activity_name(
-      GURL(), ArcIntentHelperBridge::ActivityName{/*package=*/std::string(),
-                                                  /*activity=*/std::string()});
+      GURL(),
+      ArcIntentHelperMojoDelegate::ActivityName{/*package=*/std::string(),
+                                                /*activity=*/std::string()});
 
   const GetActionResult result =
       GetAction(url, handlers, selected_app_index, &url_and_activity_name,
@@ -408,24 +410,26 @@ bool HandleUrl(int render_process_host_id,
       return true;
     case GetActionResult::HANDLE_URL_IN_ARC:
       HandleUrlInArc(render_process_host_id, routing_id, url_and_activity_name,
-                     safe_to_bypass_ui);
+                     safe_to_bypass_ui, mojo_delegate);
       return true;
     case GetActionResult::ASK_USER:
       break;
   }
+
   return false;
 }
 
 // Returns a fallback http(s) in |handlers| which Chrome can handle. Returns
 // an empty GURL if none found.
 GURL GetUrlToNavigateOnDeactivate(
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers) {
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers) {
   const GURL empty_url;
   for (size_t i = 0; i < handlers.size(); ++i) {
     GurlAndActivityInfo url_and_package(
         GURL(),
-        ArcIntentHelperBridge::ActivityName{/*package=*/std::string(),
-                                            /*activity=*/std::string()});
+        ArcIntentHelperMojoDelegate::ActivityName{/*package=*/std::string(),
+                                                  /*activity=*/std::string()});
     if (GetActionInternal(empty_url, handlers[i], &url_and_package) ==
         GetActionResult::OPEN_URL_IN_CHROME) {
       DCHECK(url_and_package.first.SchemeIsHTTPOrHTTPS());
@@ -441,7 +445,8 @@ void OnIntentPickerDialogDeactivated(
     int render_process_host_id,
     int routing_id,
     bool safe_to_bypass_ui,
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers) {
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers) {
   const GURL url_to_open_in_chrome = GetUrlToNavigateOnDeactivate(handlers);
   if (url_to_open_in_chrome.is_empty())
     CloseTabIfNeeded(render_process_host_id, routing_id, safe_to_bypass_ui);
@@ -450,10 +455,11 @@ void OnIntentPickerDialogDeactivated(
 }
 
 size_t GetAppIndex(
-    const std::vector<mojom::IntentHandlerInfoPtr>& app_candidates,
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        app_candidates,
     const std::string& selected_app_package) {
   for (size_t i = 0; i < app_candidates.size(); ++i) {
-    if (app_candidates[i]->package_name == selected_app_package)
+    if (app_candidates[i].package_name == selected_app_package)
       return i;
   }
   return app_candidates.size();
@@ -466,12 +472,15 @@ void OnIntentPickerClosed(
     int routing_id,
     const GURL& url,
     bool safe_to_bypass_ui,
-    std::vector<mojom::IntentHandlerInfoPtr> handlers,
+    std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,
     bool should_persist) {
+  // ArcIntentHelperMojoDelegate is already varified non-null.
+  DCHECK(mojo_delegate);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Even if ArcExternalProtocolDialog shares the same icon on the omnibox as an
@@ -503,12 +512,8 @@ void OnIntentPickerClosed(
   const size_t selected_app_index = GetAppIndex(handlers, selected_app_package);
 
   // Make sure ARC intent helper instance is connected.
-  auto* arc_service_manager = ArcServiceManager::Get();
-  if (!arc_service_manager || !arc_service_manager->arc_bridge_service()
-                                   ->intent_helper()
-                                   ->IsConnected()) {
+  if (!mojo_delegate->IsArcAvailable())
     reason = apps::IntentPickerCloseReason::ERROR_AFTER_PICKER;
-  }
 
   if (reason == apps::IntentPickerCloseReason::OPEN_APP ||
       reason == apps::IntentPickerCloseReason::STAY_IN_CHROME) {
@@ -523,22 +528,17 @@ void OnIntentPickerClosed(
       // Only ARC apps are offered in the external protocol intent picker, so if
       // the user decided to open in app the type must be ARC.
       DCHECK_EQ(apps::PickerEntryType::kArc, entry_type);
-      DCHECK(arc_service_manager);
 
       if (should_persist) {
-        mojom::IntentHelperInstance* instance = ARC_GET_INSTANCE_FOR_METHOD(
-            arc_service_manager->arc_bridge_service()->intent_helper(),
-            AddPreferredPackage);
-        if (instance) {
-          instance->AddPreferredPackage(
-              handlers[selected_app_index]->package_name);
-        }
+        mojo_delegate->AddPreferredPackage(
+            handlers[selected_app_index].package_name);
       }
 
       // Launch the selected app.
       // As the current web page is closed, |web_contents| will be invalidated.
       HandleUrl(render_process_host_id, routing_id, url, handlers,
-                selected_app_index, /*out_result=*/nullptr, safe_to_bypass_ui);
+                selected_app_index, /*out_result=*/nullptr, safe_to_bypass_ui,
+                mojo_delegate.get());
       break;
     case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
       // We shouldn't be here if a preferred app was found.
@@ -598,23 +598,24 @@ void OnAppIconsReceived(
     const GURL& url,
     const absl::optional<url::Origin>& initiating_origin,
     bool safe_to_bypass_ui,
-    std::vector<mojom::IntentHandlerInfoPtr> handlers,
+    std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb,
-    std::unique_ptr<ArcIntentHelperBridge::ActivityToIconsMap> icons) {
+    std::unique_ptr<ArcIconCacheDelegate::ActivityToIconsMap> icons) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   using AppInfo = apps::IntentPickerAppInfo;
   std::vector<AppInfo> app_info;
 
   for (const auto& handler : handlers) {
-    const ArcIntentHelperBridge::ActivityName activity(handler->package_name,
-                                                       handler->activity_name);
+    const ArcIconCacheDelegate::ActivityName activity(handler.package_name,
+                                                      handler.activity_name);
     const auto it = icons->find(activity);
     app_info.emplace_back(apps::PickerEntryType::kArc,
                           it != icons->end()
                               ? ui::ImageModel::FromImage(it->second.icon16)
                               : ui::ImageModel(),
-                          handler->package_name, handler->name);
+                          handler.package_name, handler.name);
   }
 
   WebContents* web_contents =
@@ -631,7 +632,8 @@ void OnAppIconsReceived(
       url, initiating_origin, web_contents, std::move(app_info), stay_in_chrome,
       /*show_remember_selection=*/true,
       base::BindOnce(OnIntentPickerClosed, render_process_host_id, routing_id,
-                     url, safe_to_bypass_ui, std::move(handlers)));
+                     url, safe_to_bypass_ui, std::move(handlers),
+                     std::move(mojo_delegate)));
   return std::move(handled_cb).Run(handled);
 }
 
@@ -640,6 +642,7 @@ void ShowExternalProtocolDialogWithoutApps(
     int routing_id,
     const GURL& url,
     const absl::optional<url::Origin>& initiating_origin,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb) {
   // Try to show the device picker and fallback to the default dialog otherwise.
   bool handled = MaybeAddDevicesAndShowPicker(
@@ -647,50 +650,50 @@ void ShowExternalProtocolDialogWithoutApps(
       tab_util::GetWebContentsByID(render_process_host_id, routing_id),
       /*app_info=*/{}, /*stay_in_chrome=*/false,
       /*show_remember_selection=*/false,
-      base::BindOnce(OnIntentPickerClosed, render_process_host_id, routing_id,
-                     url, /*safe_to_bypass_ui=*/false,
-                     std::vector<mojom::IntentHandlerInfoPtr>()));
+      base::BindOnce(
+          OnIntentPickerClosed, render_process_host_id, routing_id, url,
+          /*safe_to_bypass_ui=*/false,
+          std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>(),
+          std::move(mojo_delegate)));
 
   return std::move(handled_cb).Run(handled);
 }
 
 // Called when ARC returned a handler list for the |url|.
-void OnUrlHandlerList(int render_process_host_id,
-                      int routing_id,
-                      const GURL& url,
-                      const absl::optional<url::Origin>& initiating_origin,
-                      bool safe_to_bypass_ui,
-                      base::OnceCallback<void(bool)> handled_cb,
-                      std::vector<mojom::IntentHandlerInfoPtr> handlers) {
+void OnUrlHandlerList(
+    int render_process_host_id,
+    int routing_id,
+    const GURL& url,
+    const absl::optional<url::Origin>& initiating_origin,
+    bool safe_to_bypass_ui,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
+    base::OnceCallback<void(bool)> handled_cb,
+    std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers) {
+  // ArcIntentHelperMojoDelegate is already varified non-null.
+  DCHECK(mojo_delegate);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto* arc_service_manager = ArcServiceManager::Get();
-
-  WebContents* web_contents =
-      tab_util::GetWebContentsByID(render_process_host_id, routing_id);
-  auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
-  auto* intent_helper_bridge =
-      context ? ArcIntentHelperBridge::GetForBrowserContext(context) : nullptr;
 
   // We only reach here if Chrome doesn't think it can handle the URL. If ARC is
   // not running anymore, or Chrome is the only candidate returned, show the
   // usual Chrome OS dialog that says we cannot handle the URL.
-  if (!arc_service_manager ||
-      !arc_service_manager->arc_bridge_service()
-           ->intent_helper()
-           ->IsConnected() ||
-      !intent_helper_bridge || handlers.empty() ||
+  if (!mojo_delegate->IsArcAvailable() ||
+      !ArcIconCacheDelegate::GetInstance() || handlers.empty() ||
       IsChromeOnlyAppCandidate(handlers)) {
-    ShowExternalProtocolDialogWithoutApps(render_process_host_id, routing_id,
-                                          url, initiating_origin,
-                                          std::move(handled_cb));
+    ShowExternalProtocolDialogWithoutApps(
+        render_process_host_id, routing_id, url, initiating_origin,
+        std::move(mojo_delegate), std::move(handled_cb));
     return;
   }
 
   // Check if the |url| should be handled right away without showing the UI.
   GetActionResult result;
   if (HandleUrl(render_process_host_id, routing_id, url, handlers,
-                handlers.size(), &result, safe_to_bypass_ui)) {
+                handlers.size(), &result, safe_to_bypass_ui,
+                mojo_delegate.get())) {
+    WebContents* web_contents =
+        tab_util::GetWebContentsByID(render_process_host_id, routing_id);
+    auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
+
     if (context && result == GetActionResult::HANDLE_URL_IN_ARC) {
       apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
           context, apps::PickerEntryType::kArc,
@@ -703,15 +706,16 @@ void OnUrlHandlerList(int render_process_host_id,
   // Otherwise, retrieve icons of the activities. Since this function is for
   // handling external protocols, Chrome is rarely in the list, but if the |url|
   // is intent: with fallback or geo:, for example, it may be.
-  std::vector<ArcIntentHelperBridge::ActivityName> activities;
+  std::vector<ArcIntentHelperMojoDelegate::ActivityName> activities;
   for (const auto& handler : handlers) {
-    activities.emplace_back(handler->package_name, handler->activity_name);
+    activities.emplace_back(handler.package_name, handler.activity_name);
   }
-  intent_helper_bridge->GetActivityIcons(
+  ArcIconCacheDelegate::GetInstance()->GetActivityIcons(
       activities,
       base::BindOnce(OnAppIconsReceived, render_process_host_id, routing_id,
                      url, initiating_origin, safe_to_bypass_ui,
-                     std::move(handlers), std::move(handled_cb)));
+                     std::move(handlers), std::move(mojo_delegate),
+                     std::move(handled_cb)));
 }
 
 }  // namespace
@@ -723,6 +727,7 @@ void RunArcExternalProtocolDialog(
     int routing_id,
     ui::PageTransition page_transition,
     bool has_user_gesture,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb) {
   // This function is for external protocols that Chrome cannot handle.
   DCHECK(!url.SchemeIsHTTPOrHTTPS()) << url;
@@ -739,23 +744,21 @@ void RunArcExternalProtocolDialog(
     return std::move(handled_cb).Run(false);
   }
 
-  auto* arc_service_manager = ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    // ARC is either not supported or not yet ready.
-    ShowExternalProtocolDialogWithoutApps(render_process_host_id, routing_id,
-                                          url, initiating_origin,
-                                          std::move(handled_cb));
-    return;
+  // Check ArcIntentHelperMojoDelegate is set.
+  if (!mojo_delegate) {
+    LOG(ERROR) << "ArcIntentHelperMojoDelegate is null. "
+               << "This is required for mojo connection ."
+               << "For testing, set FakeArcIntentHelperMojo.";
+    return std::move(handled_cb).Run(false);
   }
 
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->intent_helper(),
-      RequestUrlHandlerList);
-  if (!instance) {
-    // ARC is either not supported or not yet ready.
-    ShowExternalProtocolDialogWithoutApps(render_process_host_id, routing_id,
-                                          url, initiating_origin,
-                                          std::move(handled_cb));
+  // Make sure that RequestUrlHandlerList API is supported before resetting
+  // user data.
+  if (!mojo_delegate->IsRequestUrlHandlerListAvailable()) {
+    // RequestUrlHandlerList is either not supported or not yet ready.
+    ShowExternalProtocolDialogWithoutApps(
+        render_process_host_id, routing_id, url, initiating_origin,
+        std::move(mojo_delegate), std::move(handled_cb));
     return;
   }
 
@@ -771,15 +774,16 @@ void RunArcExternalProtocolDialog(
 
   // Show ARC version of the dialog, which is IntentPickerBubbleView. To show
   // the bubble view, we need to ask ARC for a handler list first.
-  instance->RequestUrlHandlerList(
-      url.spec(), base::BindOnce(OnUrlHandlerList, render_process_host_id,
-                                 routing_id, url, initiating_origin,
-                                 safe_to_bypass_ui, std::move(handled_cb)));
+  mojo_delegate->RequestUrlHandlerList(
+      url.spec(),
+      base::BindOnce(OnUrlHandlerList, render_process_host_id, routing_id, url,
+                     initiating_origin, safe_to_bypass_ui,
+                     std::move(mojo_delegate), std::move(handled_cb)));
 }
 
 GetActionResult GetActionForTesting(
     const GURL& original_url,
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers,
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>& handlers,
     size_t selected_app_index,
     GurlAndActivityInfo* out_url_and_activity_name,
     bool* safe_to_bypass_ui) {
@@ -788,7 +792,8 @@ GetActionResult GetActionForTesting(
 }
 
 GURL GetUrlToNavigateOnDeactivateForTesting(
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers) {
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers) {
   return GetUrlToNavigateOnDeactivate(handlers);
 }
 
@@ -799,7 +804,8 @@ bool GetAndResetSafeToRedirectToArcWithoutUserConfirmationFlagForTesting(
 }
 
 bool IsChromeAnAppCandidateForTesting(
-    const std::vector<mojom::IntentHandlerInfoPtr>& handlers) {
+    const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
+        handlers) {
   return IsChromeAnAppCandidate(handlers);
 }
 
@@ -808,16 +814,17 @@ void OnIntentPickerClosedForTesting(
     int routing_id,
     const GURL& url,
     bool safe_to_bypass_ui,
-    std::vector<mojom::IntentHandlerInfoPtr> handlers,
+    std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
+    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,
     bool should_persist) {
-  OnIntentPickerClosed(render_process_host_id, routing_id, url,
-                       safe_to_bypass_ui, std::move(handlers),
-                       std::move(devices), selected_app_package, entry_type,
-                       reason, should_persist);
+  OnIntentPickerClosed(
+      render_process_host_id, routing_id, url, safe_to_bypass_ui,
+      std::move(handlers), std::move(mojo_delegate), std::move(devices),
+      selected_app_package, entry_type, reason, should_persist);
 }
 
 ProtocolAction GetProtocolAction(Scheme scheme,

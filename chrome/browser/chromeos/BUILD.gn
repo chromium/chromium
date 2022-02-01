@@ -4841,6 +4841,7 @@ source_set("unit_tests") {
     "//components/account_manager_core:test_support",
     "//components/arc",
     "//components/arc/common",
+    "//components/arc/common:arc_test_support",
     "//components/component_updater:test_support",
     "//components/content_settings/core/browser",
     "//components/crx_file",

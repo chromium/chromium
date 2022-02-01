@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/tab_contents/tab_util.h"
@@ -88,6 +89,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   arc::RunArcExternalProtocolDialog(
       url, initiating_origin, render_process_host_id, routing_id,
       page_transition, has_user_gesture,
+      std::make_unique<arc::ArcIntentHelperMojoAsh>(),
       base::BindOnce(&OnArcHandled, url, initiating_origin,
                      std::move(initiator_document), render_process_host_id,
                      routing_id));
