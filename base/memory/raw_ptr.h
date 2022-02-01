@@ -691,6 +691,21 @@ class TRIVIAL_ABI raw_ptr {
     return *this += -delta_elems;
   }
 
+  // Stop referencing the underlying pointer and free its memory. Compared to
+  // raw delete calls, this avoids the raw_ptr to be temporarily dangling
+  // during the free operation, which will lead to taking the slower path that
+  // involves quarantine.
+  RAW_PTR_FUNC_ATTRIBUTES void ClearAndDelete() noexcept {
+    T* ptr = wrapped_ptr_;
+    operator=(nullptr);
+    delete ptr;
+  }
+  RAW_PTR_FUNC_ATTRIBUTES void ClearAndDeleteArray() noexcept {
+    T* ptr = wrapped_ptr_;
+    operator=(nullptr);
+    delete[] ptr;
+  }
+
   // Comparison operators between raw_ptr and raw_ptr<U>/U*/std::nullptr_t.
   // Strictly speaking, it is not necessary to provide these: the compiler can
   // use the conversion operator implicitly to allow comparisons to fall back to

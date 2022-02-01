@@ -267,6 +267,28 @@ TEST_F(RawPtrTest, Delete) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
+TEST_F(RawPtrTest, ClearAndDelete) {
+  CountingRawPtr<int> ptr(new int);
+  ptr.ClearAndDelete();
+  EXPECT_EQ(g_wrap_raw_ptr_cnt, 1);
+  EXPECT_EQ(g_release_wrapped_ptr_cnt, 1);
+  EXPECT_EQ(g_get_for_dereference_cnt, 0);
+  EXPECT_EQ(g_get_for_extraction_cnt, 0);
+  EXPECT_EQ(g_wrapped_ptr_swap_cnt, 0);
+  EXPECT_EQ(ptr.get(), nullptr);
+}
+
+TEST_F(RawPtrTest, ClearAndDeleteArray) {
+  CountingRawPtr<int> ptr(new int[8]);
+  ptr.ClearAndDeleteArray();
+  EXPECT_EQ(g_wrap_raw_ptr_cnt, 1);
+  EXPECT_EQ(g_release_wrapped_ptr_cnt, 1);
+  EXPECT_EQ(g_get_for_dereference_cnt, 0);
+  EXPECT_EQ(g_get_for_extraction_cnt, 0);
+  EXPECT_EQ(g_wrapped_ptr_swap_cnt, 0);
+  EXPECT_EQ(ptr.get(), nullptr);
+}
+
 TEST_F(RawPtrTest, ConstVolatileVoidPtr) {
   int32_t foo[] = {1234567890};
   CountingRawPtr<const volatile void> ptr = foo;
