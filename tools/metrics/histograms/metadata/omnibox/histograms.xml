@@ -882,6 +882,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2"
+    units="ms" expires_after="2022-07-11">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the time from navigation start to largest contentful paint. Only
+    recorded for a search query suggestion selected from the omnibox.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SuggestionUsed.SelectedTabMatch"
     enum="BooleanSelected" expires_after="2022-06-05">
   <owner>gangwu@chromium.org</owner>
@@ -930,6 +942,18 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Measures the time from navigation start to first contentful paint. Only
+    recorded for a URL suggestion selected from the omnibox.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2"
+    units="ms" expires_after="2022-07-11">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the time from navigation start to largest contentful paint. Only
     recorded for a URL suggestion selected from the omnibox.
   </summary>
 </histogram>
