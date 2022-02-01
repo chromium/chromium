@@ -8,6 +8,8 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/strike_database_base.h"
 #include "ui/gfx/image/image.h"
 
 namespace autofill {
@@ -38,6 +40,10 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
   // Here only check autofill_client_ because in some tests payments_client_
   // does not exist.
   DCHECK(autofill_client_);
+
+  StrikeDatabaseBase* strike_database = autofill_client->GetStrikeDatabase();
+  virtual_card_enrollment_strike_database_ =
+      std::make_unique<VirtualCardEnrollmentStrikeDatabase>(strike_database);
 }
 
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
@@ -68,6 +74,30 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
 
 void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {}
 
+bool VirtualCardEnrollmentManager::IsVirtualCardEnrollmentBlocked(
+    const std::string& guid) const {
+  return GetVirtualCardEnrollmentStrikeDatabase() &&
+         GetVirtualCardEnrollmentStrikeDatabase()->IsMaxStrikesLimitReached(
+             guid);
+}
+
+void VirtualCardEnrollmentManager::
+    AddStrikeToBlockOfferingVirtualCardEnrollment(const std::string& guid) {
+  if (!GetVirtualCardEnrollmentStrikeDatabase())
+    return;
+
+  GetVirtualCardEnrollmentStrikeDatabase()->AddStrike(guid);
+}
+
+void VirtualCardEnrollmentManager::
+    RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
+        const std::string& guid) {
+  if (!GetVirtualCardEnrollmentStrikeDatabase())
+    return;
+
+  GetVirtualCardEnrollmentStrikeDatabase()->ClearStrikes(guid);
+}
+
 void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
     AutofillClient::PaymentsRpcResult result) {
   Reset();
@@ -77,6 +107,11 @@ void VirtualCardEnrollmentManager::Reset() {
   payments_client_->CancelRequest();
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = VirtualCardEnrollmentProcessState();
+}
+
+VirtualCardEnrollmentStrikeDatabase*
+VirtualCardEnrollmentManager::GetVirtualCardEnrollmentStrikeDatabase() const {
+  return virtual_card_enrollment_strike_database_.get();
 }
 
 void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(

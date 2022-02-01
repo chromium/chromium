@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_strike_database.h"
 
 namespace gfx {
 class Image;
@@ -98,6 +99,20 @@ class VirtualCardEnrollmentManager {
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
 
+  // Returns true if a credit card identified by its |guid| is blocked for
+  // virtual card enrollment. Does nothing if the strike database is not
+  // available.
+  bool IsVirtualCardEnrollmentBlocked(const std::string& guid) const;
+
+  // Adds a strike to block enrollment for credit card identified by its |guid|.
+  // Does nothing if the strike database is not available.
+  void AddStrikeToBlockOfferingVirtualCardEnrollment(const std::string& guid);
+
+  // Removes potential strikes to block a credit card identified by its |guid|
+  // for enrollment. Does nothing if the strike database is not available.
+  void RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
+      const std::string& guid);
+
  protected:
   // Handles the response from the UpdateVirtualCardEnrollmentRequest.
   // |result| represents the result from the server call to change the virtual
@@ -116,6 +131,10 @@ class VirtualCardEnrollmentManager {
   // display in the UI. VirtualCardEnrollmentManager::Reset() will reset
   // |state_|.
   VirtualCardEnrollmentProcessState state_;
+
+  // Used to get a pointer to the strike database for virtual card enrollment.
+  VirtualCardEnrollmentStrikeDatabase* GetVirtualCardEnrollmentStrikeDatabase()
+      const;
 
  private:
   // Called once the risk data is loaded. The |risk_data| will be used with
@@ -176,6 +195,11 @@ class VirtualCardEnrollmentManager {
   // to/from the web database. Weak reference. May be nullptr, which indicates
   // OTR.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  // The database that is used to count guid-keyed strikes to suppress prompting
+  // users to enroll in virtual cards.
+  std::unique_ptr<VirtualCardEnrollmentStrikeDatabase>
+      virtual_card_enrollment_strike_database_;
 
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };
