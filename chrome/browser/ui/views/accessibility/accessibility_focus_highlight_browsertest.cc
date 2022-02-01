@@ -237,7 +237,10 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
 
 const cc::ExactPixelComparator pixel_comparator(/*discard_alpha=*/false);
 
-#if BUILDFLAG(IS_MAC) && MAC_OS_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15
+// Flaky on Lacros: https://crbug.com/1289366
+#if (BUILDFLAG(IS_MAC) &&                                     \
+     MAC_OS_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else
 #define MAYBE_FocusAppearance FocusAppearance
