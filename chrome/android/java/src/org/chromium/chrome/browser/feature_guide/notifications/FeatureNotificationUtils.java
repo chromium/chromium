@@ -13,6 +13,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -25,6 +27,13 @@ public final class FeatureNotificationUtils {
      * The {@link FeatureType} of the feature being promoed through the notification.
      */
     public static final String EXTRA_FEATURE_TYPE = "feature_notification_guide_feature_type";
+
+    private static final String NOTIFICATION_PARAM_GUID_DEFAULT_BROWSER = "guid_default_browser";
+    private static final String NOTIFICATION_PARAM_GUID_SIGN_IN = "guid_sign_in";
+    private static final String NOTIFICATION_PARAM_GUID_INCOGNITO_TAB = "guid_incognito_tab";
+    private static final String NOTIFICATION_PARAM_GUID_NTP_SUGGESTION_CARD =
+            "guid_ntp_suggestion_card";
+    private static final String NOTIFICATION_PARAM_GUID_VOICE_SEARCH = "guid_voice_search";
 
     /**
      * Helper method used by activities to check if the incoming intent is from a feature
@@ -109,5 +118,46 @@ public final class FeatureNotificationUtils {
                 break;
         }
         return FeatureConstants.FEATURE_NOTIFICATION_GUIDE_INCOGNITO_TAB_HELP_BUBBLE_FEATURE;
+    }
+
+    /* package */ static String getNotificationParamGuidForFeature(@FeatureType int featureType) {
+        switch (featureType) {
+            case FeatureType.DEFAULT_BROWSER:
+                return NOTIFICATION_PARAM_GUID_DEFAULT_BROWSER;
+            case FeatureType.SIGN_IN:
+                return NOTIFICATION_PARAM_GUID_SIGN_IN;
+            case FeatureType.INCOGNITO_TAB:
+                return NOTIFICATION_PARAM_GUID_INCOGNITO_TAB;
+            case FeatureType.NTP_SUGGESTION_CARD:
+                return NOTIFICATION_PARAM_GUID_NTP_SUGGESTION_CARD;
+            case FeatureType.VOICE_SEARCH:
+                return NOTIFICATION_PARAM_GUID_VOICE_SEARCH;
+            default:
+                assert false : "Found unknown feature type " + featureType;
+                return "";
+        }
+    }
+
+    /* package */ static void closeNotification(String notificationGuid) {
+        int notificationId = notificationGuid.hashCode();
+        NotificationManagerProxy notificationManager =
+                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
+        notificationManager.cancel(notificationId);
+    }
+
+    /**
+     * Called to determine whether the feature should be skipped from notification as it is
+     * ineligible or not available on the device.
+     * @param featureType The given feature type.
+     * @return True if the feature should be skipped, false otherwise.
+     */
+    public static boolean shouldSkipFeature(@FeatureType int featureType) {
+        if (featureType == FeatureType.DEFAULT_BROWSER) return !shouldShowDefaultBrowserPromo();
+        return false;
+    }
+
+    private static boolean shouldShowDefaultBrowserPromo() {
+        // TODO(shaktisahu): Check if default browser is already enabled.
+        return false;
     }
 }

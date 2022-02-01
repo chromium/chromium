@@ -63,9 +63,7 @@ FeatureNotificationGuideServiceImpl::~FeatureNotificationGuideServiceImpl() =
 
 void FeatureNotificationGuideServiceImpl::OnSchedulerInitialized(
     const std::set<std::string>& guids) {
-  for (const std::string& guid : guids) {
-    scheduled_features_.emplace(NotificationIdToFeature(guid));
-  }
+  scheduled_feature_guids_ = guids;
 
   tracker_->AddOnInitializedCallback(
       base::BindOnce(&FeatureNotificationGuideServiceImpl::OnTrackerInitialized,
@@ -82,6 +80,15 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
       base::BindOnce(
           &FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FeatureNotificationGuideServiceImpl::CloseRedundantNotifications() {
+  for (auto feature : config_.enabled_features) {
+    // TODO(shaktisahu): Check if the feature was used.
+    std::string notification_guid =
+        delegate_->GetNotificationParamGuidForFeature(feature);
+    delegate_->CloseNotification(notification_guid);
+  }
 }
 
 void FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform(
@@ -105,7 +112,8 @@ void FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform(
 
 void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
   for (auto feature : config_.enabled_features) {
-    if (base::Contains(scheduled_features_, feature))
+    std::string guid = delegate_->GetNotificationParamGuidForFeature(feature);
+    if (base::Contains(scheduled_feature_guids_, guid))
       continue;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -117,6 +125,9 @@ void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
 
     ScheduleNotification(feature);
   }
+
+  // TODO(shaktisahu): Maybe post a task with few seconds delay.
+  CloseRedundantNotifications();
 }
 
 void FeatureNotificationGuideServiceImpl::ScheduleNotification(
@@ -141,6 +152,7 @@ void FeatureNotificationGuideServiceImpl::ScheduleNotification(
   auto params = std::make_unique<notifications::NotificationParams>(
       notifications::SchedulerClientType::kFeatureGuide, std::move(data),
       std::move(schedule_params));
+  params->guid = delegate_->GetNotificationParamGuidForFeature(feature);
   notification_scheduler_->Schedule(std::move(params));
 }
 

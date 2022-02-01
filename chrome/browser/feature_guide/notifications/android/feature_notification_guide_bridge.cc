@@ -62,4 +62,27 @@ void FeatureNotificationGuideBridge::OnNotificationClick(FeatureType feature) {
       env, java_obj_, static_cast<int>(feature));
 }
 
+void FeatureNotificationGuideBridge::CloseNotification(
+    const std::string& notification_guid) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FeatureNotificationGuideBridge_closeNotification(
+      env, java_obj_,
+      base::android::ConvertUTF8ToJavaString(env, notification_guid));
+}
+
+bool FeatureNotificationGuideBridge::ShouldSkipFeature(FeatureType feature) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_FeatureNotificationGuideBridge_shouldSkipFeature(
+      env, java_obj_, static_cast<int>(feature));
+}
+
+std::string FeatureNotificationGuideBridge::GetNotificationParamGuidForFeature(
+    FeatureType feature) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_guid =
+      Java_FeatureNotificationGuideBridge_getNotificationParamGuidForFeature(
+          env, java_obj_, static_cast<int>(feature));
+  return base::android::ConvertJavaStringToUTF8(env, j_guid);
+}
+
 }  // namespace feature_guide

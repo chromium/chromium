@@ -42,4 +42,19 @@ public final class FeatureNotificationGuideBridge extends FeatureNotificationGui
     private void onNotificationClick(@FeatureType int featureType) {
         FeatureNotificationGuideService.getDelegate().launchActivityToShowIph(featureType);
     }
+
+    @CalledByNative
+    private void closeNotification(String notificationGuid) {
+        FeatureNotificationUtils.closeNotification(notificationGuid);
+    }
+
+    @CalledByNative
+    private boolean shouldSkipFeature(@FeatureType int featureType) {
+        return FeatureNotificationUtils.shouldSkipFeature(featureType);
+    }
+
+    @CalledByNative
+    private String getNotificationParamGuidForFeature(@FeatureType int featureType) {
+        return FeatureNotificationUtils.getNotificationParamGuidForFeature(featureType);
+    }
 }

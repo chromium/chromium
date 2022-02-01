@@ -14,13 +14,6 @@ namespace {
 
 constexpr char kCustomDataKeyForFeatureType[] = "feature_type";
 
-constexpr char kNotificationIdDefaultBroser[] = "feature_guide_default_browser";
-constexpr char kNotificationIdSignIn[] = "feature_guide_sign_in";
-constexpr char kNotificationIdIncognitoTab[] = "feature_guide_incognito_tab";
-constexpr char kNotificationIdVoiceSearch[] = "feature_guide_voice_search";
-constexpr char kNotificationIdNTPSuggestionCard[] =
-    "feature_guide_ntp_suggestion_card";
-
 }  // namespace
 
 void FeatureToCustomData(FeatureType feature,
@@ -37,39 +30,6 @@ FeatureType FeatureFromCustomData(
     return FeatureType::kInvalid;
 
   return static_cast<FeatureType>(parsed_value);
-}
-
-std::string NotificationIdForFeature(FeatureType feature) {
-  switch (feature) {
-    case FeatureType::kDefaultBrowser:
-      return kNotificationIdDefaultBroser;
-    case FeatureType::kSignIn:
-      return kNotificationIdSignIn;
-    case FeatureType::kIncognitoTab:
-      return kNotificationIdIncognitoTab;
-    case FeatureType::kNTPSuggestionCard:
-      return kNotificationIdNTPSuggestionCard;
-    case FeatureType::kVoiceSearch:
-      return kNotificationIdVoiceSearch;
-    default:
-      NOTREACHED();
-      return std::string();
-  }
-}
-
-FeatureType NotificationIdToFeature(const std::string& notification_id) {
-  if (notification_id == kNotificationIdDefaultBroser) {
-    return FeatureType::kDefaultBrowser;
-  } else if (notification_id == kNotificationIdSignIn) {
-    return FeatureType::kSignIn;
-  } else if (notification_id == kNotificationIdIncognitoTab) {
-    return FeatureType::kIncognitoTab;
-  } else if (notification_id == kNotificationIdNTPSuggestionCard) {
-    return FeatureType::kNTPSuggestionCard;
-  } else if (notification_id == kNotificationIdVoiceSearch) {
-    return FeatureType::kVoiceSearch;
-  }
-  return FeatureType::kInvalid;
 }
 
 #if BUILDFLAG(IS_ANDROID)

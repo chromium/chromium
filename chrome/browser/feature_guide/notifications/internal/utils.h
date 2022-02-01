@@ -22,12 +22,6 @@ void FeatureToCustomData(FeatureType feature,
 FeatureType FeatureFromCustomData(
     const std::map<std::string, std::string>& custom_data);
 
-// Get a fixed notification ID for the given feature.
-std::string NotificationIdForFeature(FeatureType feature);
-
-// Returns the feature type from the notification ID.
-FeatureType NotificationIdToFeature(const std::string& notification_id);
-
 #if BUILDFLAG(IS_ANDROID)
 // Returns the notification IPH feature for the given feature.
 base::Feature GetNotificationIphFeatureForFeature(FeatureType& feature);

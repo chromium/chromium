@@ -50,6 +50,19 @@ class FeatureNotificationGuideService : public KeyedService,
     // clicked.
     virtual void OnNotificationClick(FeatureType feature) = 0;
 
+    // Called to cancel the notification from notification drawer if the feature
+    // has been already used.
+    virtual void CloseNotification(const std::string& notification_guid) = 0;
+
+    // Called to determine if we should skip the feature feature notification.
+    virtual bool ShouldSkipFeature(FeatureType feature) = 0;
+
+    // Called to get the guid that should be used for displaying the
+    // notification. The actual android notification id is derived as the hash
+    // code of this guid.
+    virtual std::string GetNotificationParamGuidForFeature(
+        FeatureType feature) = 0;
+
     // Getter/Setter method for the service.
     FeatureNotificationGuideService* GetService();
     void SetService(FeatureNotificationGuideService* service);

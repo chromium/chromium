@@ -30,6 +30,9 @@ class FeatureNotificationGuideBridge
   std::u16string GetNotificationTitle(FeatureType feature) override;
   std::u16string GetNotificationMessage(FeatureType feature) override;
   void OnNotificationClick(FeatureType feature) override;
+  void CloseNotification(const std::string& notification_guid) override;
+  bool ShouldSkipFeature(FeatureType feature) override;
+  std::string GetNotificationParamGuidForFeature(FeatureType feature) override;
 
  private:
   // A reference to the Java counterpart of this class.  See

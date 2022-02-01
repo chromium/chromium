@@ -40,6 +40,11 @@ class TestDelegate : public FeatureNotificationGuideService::Delegate {
   }
 
   void OnNotificationClick(FeatureType feature) override {}
+  void CloseNotification(const std::string& notification_guid) override {}
+  bool ShouldSkipFeature(FeatureType feature) override { return false; }
+  std::string GetNotificationParamGuidForFeature(FeatureType feature) override {
+    return std::string();
+  }
 
   ~TestDelegate() override = default;
 };
