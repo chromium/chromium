@@ -195,13 +195,13 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
 // anonymous namespace for the friend declaration to work.
 class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
  public:
-  SystemFilesAppDialogDelegate(SelectFileDialogExtension* parent,
+  SystemFilesAppDialogDelegate(base::WeakPtr<SelectFileDialogExtension> parent,
                                const std::string& id,
                                GURL url,
                                std::u16string title)
       : chromeos::SystemWebDialogDelegate(url, title),
         id_(id),
-        parent_(parent) {}
+        parent_(std::move(parent)) {}
   ~SystemFilesAppDialogDelegate() override = default;
 
   void SetModal(bool modal) {
@@ -233,11 +233,17 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
   }
 
   void OnDialogShown(content::WebUI* webui) override {
-    parent_->OnSystemDialogShown(webui->GetWebContents(), id_);
+    if (parent_) {
+      parent_->OnSystemDialogShown(webui->GetWebContents(), id_);
+    }
     chromeos::SystemWebDialogDelegate::OnDialogShown(webui);
   }
 
-  void OnDialogWillClose() override { parent_->OnSystemDialogWillClose(); }
+  void OnDialogWillClose() override {
+    if (parent_) {
+      parent_->OnSystemDialogWillClose();
+    }
+  }
 
  private:
   // The routing ID. We store it so that we can call back into the
@@ -246,7 +252,7 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
   const std::string id_;
 
   // The parent of this delegate.
-  SelectFileDialogExtension* parent_;
+  base::WeakPtr<SelectFileDialogExtension> parent_;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -505,11 +511,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
       base_window ? base_window->GetNativeWindow() : owner.window;
 
   if (ash::features::IsFileManagerSwaEnabled()) {
-    // SystemFilesAppDialogDelegate is a self-deleting class that calls the
-    // delete operator once the dialog for which it was created has been closed.
-    // Hence this memory-leak looking code pattern.
     auto* dialog_delegate = new SystemFilesAppDialogDelegate(
-        this, routing_id, file_manager_url, dialog_title);
+        weak_factory_.GetWeakPtr(), routing_id, file_manager_url, dialog_title);
     dialog_delegate->SetModal(owner.window != nullptr);
     dialog_delegate->set_can_resize(can_resize_);
     dialog_delegate->ShowSystemDialog(parent_window);
