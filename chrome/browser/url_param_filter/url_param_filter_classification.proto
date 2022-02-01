@@ -1,0 +1,28 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package url_param_filter;
+
+message FilterParameter {
+  optional string name = 1;  // required, eg. the "foo" in "?foo=bar"
+}
+
+message FilterClassification {
+  enum SiteRole {
+    SITE_ROLE_UNKNOWN = 0;
+    SOURCE = 1;
+    DESTINATION = 2;
+  }
+  optional string site = 1;         // eTLD+1, required
+  optional SiteRole site_role = 2;  // required
+  repeated FilterParameter parameters = 3;
+}
+
+message FilterClassifications {
+  repeated FilterClassification classifications = 1;
+}

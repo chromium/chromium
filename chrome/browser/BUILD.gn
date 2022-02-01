@@ -1803,6 +1803,8 @@ static_library("browser") {
     "universal_web_contents_observers.h",
     "update_client/chrome_update_query_params_delegate.cc",
     "update_client/chrome_update_query_params_delegate.h",
+    "url_param_filter/url_param_filterer.cc",
+    "url_param_filter/url_param_filterer.h",
     "usb/frame_usb_services.cc",
     "usb/frame_usb_services.h",
     "usb/usb_blocklist.cc",
@@ -1912,6 +1914,7 @@ static_library("browser") {
     ":permissions_proto",
     ":resource_prefetch_predictor_proto",
     ":unexpire_flags",
+    ":url_param_filter_classification_proto",
     "//base",
     "//base:i18n",
     "//base/allocator:buildflags",
@@ -7328,6 +7331,10 @@ proto_library("resource_prefetch_predictor_proto") {
 
 proto_library("permissions_proto") {
   sources = [ "permissions/crowd_deny.proto" ]
+}
+
+proto_library("url_param_filter_classification_proto") {
+  sources = [ "url_param_filter/url_param_filter_classification.proto" ]
 }
 
 grit("resources") {
