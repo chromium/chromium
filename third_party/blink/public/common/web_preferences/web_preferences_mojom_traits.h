@@ -762,6 +762,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.webxr_immersive_ar_allowed;
   }
 
+  static bool window_placement_always_allowed(
+      const blink::web_pref::WebPreferences& r) {
+    return r.window_placement_always_allowed;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

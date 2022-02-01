@@ -1592,6 +1592,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kForceMajorVersionToMinorPositionInUserAgent,
     prefs::kForceMajorVersionToMinorPositionInUserAgent,
     base::Value::Type::INTEGER},
+  { key::kWindowPlacementAlwaysAllowed,
+    policy_prefs::kWindowPlacementAlwaysAllowed,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

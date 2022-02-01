@@ -30,6 +30,7 @@ POLICY_EXPORT extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 POLICY_EXPORT extern const char kBackForwardCacheEnabled[];
 #endif  // BUILDFLAG(IS_ANDROID)
 POLICY_EXPORT extern const char kWebSQLInThirdPartyContextEnabled[];
+POLICY_EXPORT extern const char kWindowPlacementAlwaysAllowed[];
 
 }  // namespace policy_prefs
 }  // namespace policy

@@ -1336,6 +1336,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kForceMajorVersionToMinorPositionInUserAgent,
       embedder_support::ForceMajorVersionToMinorPosition::kDefault);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kWindowPlacementAlwaysAllowed, false);
 }
 
 // static
@@ -3635,6 +3637,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->webxr_immersive_ar_allowed =
       prefs->GetBoolean(prefs::kWebXRImmersiveArEnabled);
 #endif
+
+  web_prefs->window_placement_always_allowed =
+      prefs->GetBoolean(policy::policy_prefs::kWindowPlacementAlwaysAllowed);
 
   for (ChromeContentBrowserClientParts* parts : extra_parts_)
     parts->OverrideWebkitPrefs(web_contents, web_prefs);

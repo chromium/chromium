@@ -81,5 +81,13 @@ const char kWebSQLInThirdPartyContextEnabled[] =
 const char kUserAgentClientHintsGREASEUpdateEnabled[] =
     "policy.user_agent_client_hints_grease_update_enabled";
 
+// A boolean indicating whether the window-placement permission is automatically
+// granted for all sites by enterprise policy. If true, the permission is
+// automatically enabled for sites.  If false, sites behave as default with
+// users choosing to enable this permission if they want.  When this permission
+// is enabled, sites can use information about screens to open and place
+// windows.
+const char kWindowPlacementAlwaysAllowed[] = "window_placement_always_allowed";
+
 }  // namespace policy_prefs
 }  // namespace policy

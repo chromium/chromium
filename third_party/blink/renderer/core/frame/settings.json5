@@ -1095,5 +1095,11 @@
       name: "LitePageSubresourceRedirectOrigin",
       type: "String",
     },
+    // If true, this setting will automatically grant the window placement
+    // permission on all sites.  This is used for enterprise policy.
+    {
+      name: "WindowPlacementAlwaysAllowed",
+      initial: false,
+    },
   ],
 }

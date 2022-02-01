@@ -29608,6 +29608,36 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
        If the policy is disabled or not set, user storage encryption for <ph name="DM_CRYPT">dm-crypt</ph> user homes will default to using <ph name="AES_NI_NAME">AESNI</ph>.''',
     },
     {
+      'name': 'WindowPlacementAlwaysAllowed',
+      'owners': ['msw@google.com', 'enne@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'tags': [],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow all sites to use info about screens to open and place windows',
+        },
+        {
+          'value': False,
+          'caption': 'Allow users to choose which sites can use info about screens to open and place windows',
+        },
+      ],
+      'device_only': False,
+      'default': False,
+      'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'id': 951,
+      'caption': '''Enable window placement permission on all sites''',
+      'example_value': False,
+      'desc': '''When this policy is set to Enabled, the window placement permission is automatically granted for all sites.
+      This will allow sites to see and use information about connected screens to open and place windows.
+      If not set or Disabled, this policy will follow the browser's defaults and allow users to choose this permission per site.''',
+    },
+    {
       'name': 'DeviceRunAutomaticCleanupOnLogin',
       'owners': ['vsavu@google.com'],
       'type': 'main',
@@ -30705,6 +30735,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 950,
+  'highest_id_currently_used': 951,
   'highest_atomic_group_id_currently_used': 41
 }

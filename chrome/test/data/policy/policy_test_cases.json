@@ -17993,5 +17993,44 @@
         }
       }
     ]
+  },
+  "WindowPlacementAlwaysAllowed": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "window_placement_always_allowed": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WindowPlacementAlwaysAllowed": false
+        },
+        "prefs": {
+          "window_placement_always_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WindowPlacementAlwaysAllowed": true
+        },
+        "prefs": {
+          "window_placement_always_allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }
