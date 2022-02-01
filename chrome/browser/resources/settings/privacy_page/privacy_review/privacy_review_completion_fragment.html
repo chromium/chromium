@@ -40,9 +40,11 @@
     dark-img-src="./images/privacy_review/privacy_sandbox_graphic_dark.svg"
     on-click="onPrivacySandboxClick_">
 </privacy-review-completion-link-row>
-<a id="privacySandboxLink" href="privacySandbox"
-    target="_blank" tabindex="-1" aria-disabled="true"
-    role="none"></a>
+<div aria-disabled="true" role="none">
+  <a id="privacySandboxLink" href="privacySandbox"
+      target="_blank" tabindex="-1" aria-disabled="true"
+      role="none"></a>
+</div>
 <template is="dom-if" if="[[shouldShowWaa_]]">
   <privacy-review-completion-link-row id="waaRow"
       label="$i18n{privacyReviewCompletionCardWaaLabel}"
