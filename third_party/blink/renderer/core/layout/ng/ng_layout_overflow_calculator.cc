@@ -175,15 +175,7 @@ void NGLayoutOverflowCalculator::AddItemsInternal(
       if (line_rect.IsEmpty())
         continue;
 
-      // Currently line-boxes don't contribute overflow in the block-axis. This
-      // was added for web-compat reasons.
-      PhysicalRect child_overflow = line_rect;
-      if (writing_direction_.IsHorizontal())
-        child_overflow.size.height = LayoutUnit();
-      else
-        child_overflow.size.width = LayoutUnit();
-
-      layout_overflow_.UniteEvenIfEmpty(child_overflow);
+      layout_overflow_.UniteEvenIfEmpty(line_rect);
       continue;
     }
 

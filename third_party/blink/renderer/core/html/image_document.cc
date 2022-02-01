@@ -408,6 +408,7 @@ ImageDocument::MouseCursorMode ImageDocument::ComputeMouseCursorMode() const {
 
 void ImageDocument::UpdateImageStyle() {
   StringBuilder image_style;
+  image_style.Append("display: block;");
   image_style.Append("-webkit-user-select: none;");
 
   if (ShouldShrinkToFit()) {
