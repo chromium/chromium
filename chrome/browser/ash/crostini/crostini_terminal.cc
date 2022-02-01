@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -98,8 +99,8 @@ GURL GenerateVshInCroshUrl(Profile* profile,
                            const ContainerId& container_id,
                            const std::string& cwd,
                            const std::vector<std::string>& terminal_args) {
-  std::string vsh_crosh = base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
-                                        "html/terminal.html?command=vmshell"});
+  std::string vsh_crosh =
+      base::StrCat({GetTerminalDefaultUrl(), "?command=vmshell"});
   std::string vm_name_param = net::EscapeQueryParamValue(
       base::StringPrintf("--vm_name=%s", container_id.vm_name.c_str()),
       /*use_plus=*/true);
@@ -155,6 +156,12 @@ void LaunchTerminalImpl(Profile* profile,
 
 }  // namespace
 
+const std::string& GetTerminalDefaultUrl() {
+  static const base::NoDestructor<std::string> url(base::StrCat(
+      {chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html"}));
+  return *url;
+}
+
 void LaunchTerminal(Profile* profile,
                     int64_t display_id,
                     const ContainerId& container_id,
@@ -168,7 +175,8 @@ void LaunchTerminal(Profile* profile,
 void LaunchTerminalForSSH(Profile* profile, int64_t display_id) {
   LaunchTerminalWithUrl(
       profile, display_id,
-      GURL("chrome-untrusted://terminal/html/terminal_ssh.html"));
+      GURL(base::StrCat(
+          {chrome::kChromeUIUntrustedTerminalURL, "html/terminal_ssh.html"})));
 }
 
 void LaunchTerminalWithUrl(Profile* profile,

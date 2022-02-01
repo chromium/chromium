@@ -98,6 +98,8 @@ enum class TerminalSetting {
   kMaxValue = kThemeVariations,
 };
 
+const std::string& GetTerminalDefaultUrl();
+
 // Launches the terminal tabbed app.
 void LaunchTerminal(Profile* profile,
                     int64_t display_id = display::kInvalidDisplayId,

@@ -176,7 +176,7 @@
       {
         "name": "openWindow",
         "type": "function",
-        "description": "Open the Terminal tabbed window.",
+        "description": "Open a Terminal app window/tab",
         "parameters": [
           {
             "name": "data",
@@ -187,7 +187,12 @@
                 "description": "The url for the new Terminal window.",
                 "optional": true,
 		"type": "string"
-              }
+              },
+	      "asTab": {
+		"description": "Instead of openning a new window, open it as a new tab in the current app window.",
+                "optional": true,
+		"type": "boolean"
+	      }
 	    }
           }
         ]
