@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
-import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -661,8 +660,6 @@ public class RootUiCoordinator
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
         }
-        DownloadManagerService.getDownloadManagerService().onActivityLaunched(mActivity,
-                () -> mMessageDispatcher, mModalDialogManagerSupplier.get(), mActivityTabProvider);
 
         initMerchantTrustSignals();
         initScrollCapture();

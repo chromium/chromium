@@ -70,6 +70,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/appmenu/IncognitoMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/ManagedByMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/UpdateMenuItemViewBinder.java",
+  "java/src/org/chromium/chrome/browser/app/download/DownloadMessageUiDelegate.java",
   "java/src/org/chromium/chrome/browser/app/feature_guide/notifications/FeatureNotificationGuideDelegate.java",
   "java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/app/feed/NavigationRecorder.java",

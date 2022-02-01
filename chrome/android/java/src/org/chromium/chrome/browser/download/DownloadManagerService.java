@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.download;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -32,10 +31,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueRequest;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
 import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
@@ -56,7 +53,6 @@ import org.chromium.components.download.DownloadState;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -66,7 +62,6 @@ import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
@@ -140,7 +135,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     private HashMap<OTRProfileID, DownloadInfoBarController> mIncognitoInfoBarControllerMap =
             new HashMap<>();
     private DownloadMessageUiController mMessageUiController;
-    private DownloadMessageUiController mIncognitoMessageUiController;
+    private DownloadMessageUiController.Delegate mDelegate;
     private long mNativeDownloadManagerService;
     // Flag to track if we need to post a task to update download notifications.
     private boolean mIsUIUpdateScheduled;
@@ -288,7 +283,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
 
         // TODO(shaktisahu, sideyilmaz): If we have multiple OTR profiles, will this be ever null?
-        return showMessageUi ? mIncognitoMessageUiController
+        return showMessageUi ? mMessageUiController
                              : mIncognitoInfoBarControllerMap.get(otrProfileID);
     }
 
@@ -367,19 +362,14 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Called when browser activity is launched. For background resumption and cancellation, this
      * will not be called.
      */
-    public void onActivityLaunched(Activity activity, Supplier<MessageDispatcher> messageDispatcher,
-            ModalDialogManager modalDialogManager, ActivityTabProvider activityTabProvider) {
+    public void onActivityLaunched(DownloadMessageUiController.Delegate delegate) {
         if (!mActivityLaunched) {
             OTRProfileID primaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
 
             // The info bar controller for regular and primary OTR profile should be created when
             // activity is launched.
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
-                mMessageUiController = new DownloadMessageUiControllerImpl(
-                        activity, null, messageDispatcher, modalDialogManager, activityTabProvider);
-                mIncognitoMessageUiController =
-                        new DownloadMessageUiControllerImpl(activity, primaryOTRProfileID,
-                                messageDispatcher, modalDialogManager, activityTabProvider);
+                mMessageUiController = new DownloadMessageUiControllerImpl(delegate);
             } else {
                 mInfoBarController = new DownloadInfoBarController(/*otrProfileID=*/null);
                 mIncognitoInfoBarControllerMap.put(
@@ -391,13 +381,6 @@ public class DownloadManagerService implements DownloadController.Observer,
             DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
                     ProfileKey.getLastUsedRegularProfileKey());
             mActivityLaunched = true;
-        } else {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
-                mMessageUiController.onConfigurationChanged(
-                        activity, messageDispatcher, modalDialogManager, activityTabProvider);
-                mIncognitoMessageUiController.onConfigurationChanged(
-                        activity, messageDispatcher, modalDialogManager, activityTabProvider);
-            }
         }
     }
 

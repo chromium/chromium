@@ -20,10 +20,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.Source;
@@ -31,12 +28,10 @@ import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactor
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -297,23 +292,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     // Used to show the download later dialog to change download schedule.
     private DownloadLaterDialogHelper mDownloadLaterDialogHelper;
 
-    // The associated activity context.
-    private Context mContext;
-
-    // The associated OTR profile ID.
-    private final OTRProfileID mOtrProfileID;
-
-    // The message dispatcher for showing the message UI.
-    private Supplier<MessageDispatcher> mMessageDispatcher;
-
-    // Dialog manager used for creating download later dialogs.
-    private ModalDialogManager mModalDialogManager;
-
-    // Provides information about currently focused tab.
-    private ActivityTabProvider mActivityTabProvider;
-
-    // Used to get information about whenever current tab is switched.
-    private ActivityTabTabObserver mActivityTabObserver;
+    // The delegate to provide dependencies.
+    private final Delegate mDelegate;
 
     // The model used to update the UI properties.
     private PropertyModel mPropertyModel;
@@ -321,37 +301,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private Runnable mDismissRunnable;
 
     /** Constructor. */
-    public DownloadMessageUiControllerImpl(Context context, OTRProfileID otrProfileID,
-            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
-            ActivityTabProvider activityTabProvider) {
-        mOtrProfileID = otrProfileID;
-        mMessageDispatcher = messageDispatcher;
-        mContext = context;
-        mModalDialogManager = modalDialogManager;
-        mActivityTabProvider = activityTabProvider;
-
+    public DownloadMessageUiControllerImpl(Delegate delegate) {
+        mDelegate = delegate;
         mHandler.post(() -> getOfflineContentProvider().addObserver(this));
-        createActivityTabObserver();
-    }
-
-    @Override
-    public void onConfigurationChanged(Context context,
-            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
-            ActivityTabProvider activityTabProvider) {
-        mContext = context;
-        mMessageDispatcher = messageDispatcher;
-        mModalDialogManager = modalDialogManager;
-        mActivityTabProvider = activityTabProvider;
-        createActivityTabObserver();
-    }
-
-    private void createActivityTabObserver() {
-        mActivityTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
-            @Override
-            protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                closePreviousMessage();
-            }
-        };
     }
 
     /**
@@ -411,13 +363,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         return mPropertyModel != null;
     }
 
+    private MessageDispatcher getMessageDispatcher() {
+        return mDelegate.getMessageDispatcher();
+    }
+
+    private ModalDialogManager getModalDialogManager() {
+        return mDelegate.getModalDialogManager();
+    }
+
     private boolean isVisibleToUser(OfflineItem offlineItem) {
         if (offlineItem.isTransient
                 || offlineItem.isSuggested || offlineItem.isDangerous) {
             return false;
         }
-        String stringOTRProfileID = OTRProfileID.serialize(mOtrProfileID);
-        if (!OTRProfileID.areEqual(stringOTRProfileID, offlineItem.otrProfileId)) return false;
 
         if (LegacyHelpers.isLegacyDownload(offlineItem.id)
                 && TextUtils.isEmpty(offlineItem.filePath)) {
@@ -591,6 +549,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * @param resultState The state of the corresponding offline items to be shown.
      */
     private void createMessageForState(@UiState int uiState, @ResultState int resultState) {
+        if (getContext() == null) return;
         DownloadProgressMessageUiData info = new DownloadProgressMessageUiData();
 
         @PluralsRes
@@ -741,11 +700,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     @VisibleForTesting
     protected void showMessage(@UiState int state, DownloadProgressMessageUiData info) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE);
+        if (mDelegate.maybeSwitchToFocusedActivity()) {
+            closePreviousMessage();
+        }
 
-        Tab currentTab = mActivityTabProvider.get();
-        boolean shouldShowMessage = currentTab != null && currentTab.getWebContents() != null
-                && mMessageDispatcher.get() != null && (info.forceShow || mPropertyModel != null)
-                && currentTab.isIncognito() == OTRProfileID.isOffTheRecord(mOtrProfileID);
+        boolean shouldShowMessage =
+                getMessageDispatcher() != null && (info.forceShow || mPropertyModel != null);
         if (!shouldShowMessage) return;
 
         recordMessageState(state, info);
@@ -793,14 +753,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                     MessageBannerProperties.DISMISSAL_DURATION, getMessageDismissDurationMs());
         }
 
+        final MessageDispatcher dispatcher = getMessageDispatcher();
         mDismissRunnable = () -> {
-            if (mMessageDispatcher.get() == null) return;
-            mMessageDispatcher.get().dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
+            if (dispatcher == null) return;
+            dispatcher.dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
         };
 
         if (updateOnly) return;
-        mMessageDispatcher.get().enqueueMessage(mPropertyModel, currentTab.getWebContents(),
-                MessageScopeType.WEB_CONTENTS, /*highPriority=*/false);
+        getMessageDispatcher().enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/false);
         recordMessageCreated();
     }
 
@@ -811,7 +771,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     private Context getContext() {
-        return mContext;
+        return mDelegate.getContext();
     }
 
     private Drawable createDrawable(DownloadProgressMessageUiData info) {
@@ -958,8 +918,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         // Show the download later dialog to let the user change download schedule.
-        mDownloadLaterDialogHelper =
-                DownloadLaterDialogHelper.create(getContext(), mModalDialogManager, prefService);
+        mDownloadLaterDialogHelper = DownloadLaterDialogHelper.create(
+                getContext(), getModalDialogManager(), prefService);
         DownloadLaterMetrics.recordDownloadLaterUiEvent(
                 DownloadLaterUiEvent.DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_CLICKED);
         mDownloadLaterDialogHelper.showChangeScheduleDialog(
