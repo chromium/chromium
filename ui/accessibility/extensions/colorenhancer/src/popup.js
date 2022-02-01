@@ -59,13 +59,11 @@ class Popup {
    * @return {CvdType}
    */
   getCvdTypeSelection() {
-    let active = undefined;
-    Object.values(CvdType).forEach((str) => {
-      if ($('select-' + str).checked) {
-        active = str;
+    for (const cvdType of Object.values(CvdType)) {
+      if ($('select-' + cvdType).checked) {
+        return cvdType;
       }
-    });
-    return /** @type {CvdType} */ (active);
+    }
   }
 
   /**
