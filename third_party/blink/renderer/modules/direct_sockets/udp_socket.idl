@@ -18,5 +18,7 @@
 
   readonly attribute DOMString remoteAddress;
   readonly attribute unsigned short remotePort;
+  readonly attribute unsigned short localPort;
+  readonly attribute ReadableStream readable;
   readonly attribute WritableStream writable;
 };

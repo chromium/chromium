@@ -20,11 +20,27 @@
       return 'send succeeded';
     }
 
+    async function readLoop(reader, requiredBytes) {
+      let bytesRead = 0;
+      while (bytesRead < requiredBytes) {
+        const { value : { data }, done } = await reader.read();
+        if (done) {
+          return 'readLoop failed: stream closed prematurely.';
+        }
+        if (!data || data.byteLength === 0) {
+          return 'readLoop failed: no data returned.';
+        }
+
+        bytesRead += data.byteLength;
+      }
+      return 'readLoop succeeded.';
+    }
+
     async function sendUdp(options, requiredBytes) {
       try {
         let udpSocket = await navigator.openUDPSocket(options);
         return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
-      } catch(error) {
+      } catch (error) {
         return ('sendUdp failed: ' + error);
       }
     }
@@ -34,7 +50,7 @@
         let udpSocket = await navigator.openUDPSocket(options);
         await udpSocket.close();
         return 'closeUdp succeeded';
-      } catch(error) {
+      } catch (error) {
         return ('closeUdp failed: ' + error);
       }
     }
@@ -44,8 +60,38 @@
         let udpSocket = await navigator.openUDPSocket(options);
         await udpSocket.close();
         return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
-      } catch(error) {
+      } catch (error) {
         return ('send failed: ' + error);
+      }
+    }
+
+    async function readUdpAfterSocketClose(options) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+        await udpSocket.close();
+        let { value, done } = await udpSocket.readable.getReader().read();
+        if (!done) {
+          return 'Stream is not closed!';
+        }
+        return 'readUdpAferSocketClose succeeded.';
+      } catch (error) {
+        return ('readUdpAfterSocketClose failed: ' + error);
+      }
+    }
+
+    async function readUdpAfterStreamClose(options) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+
+        let reader = udpSocket.readable.getReader();
+        await reader.cancel();
+        let { value, done } = await reader.read();
+        if (!done) {
+          return 'Stream is not closed!';
+        }
+        return 'readUdpAferSocketClose succeeded.';
+      } catch (error) {
+        return ('readUdpAfterSocketClose failed: ' + error);
       }
     }
 

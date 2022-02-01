@@ -76,9 +76,9 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
                                     origin_list);
   }
 
-  uint16_t CreateUDPSocket(
-      mojo::PendingRemote<network::mojom::UDPSocketListener>
-          listener_receiver_remote) {
+  std::pair<net::IPEndPoint, network::test::UDPSocketTestHelper>
+  CreateUDPServerSocket(mojo::PendingRemote<network::mojom::UDPSocketListener>
+                            listener_receiver_remote) {
     GetNetworkContext()->CreateUDPSocket(
         server_socket_.BindNewPipeAndPassReceiver(),
         std::move(listener_receiver_remote));
@@ -87,16 +87,32 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
         base::BindLambdaForTesting([]() { NOTREACHED(); }));
 
     net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 0);
-    network::test::UDPSocketTestHelper helper(&server_socket_);
+    network::test::UDPSocketTestHelper server_helper(&server_socket_);
 
-    int result = helper.BindSync(server_addr, nullptr, &server_addr);
+    int result = server_helper.BindSync(server_addr, nullptr, &server_addr);
     DCHECK_EQ(net::OK, result);
 
-    return server_addr.port();
+    return {server_addr, server_helper};
   }
 
-  void ReceiveMore(uint32_t num_additional_datagrams) {
-    server_socket_->ReceiveMore(num_additional_datagrams);
+  const mojo::Remote<network::mojom::UDPSocket>& GetUDPServerSocket() const {
+    return server_socket_;
+  }
+
+  std::string WrapAsyncAndSendResultToDomQueue(const std::string& script) {
+    return base::StringPrintf(
+        R"((async() => {
+          let result = await %s;
+          window.domAutomationController.send(result);
+      })())",
+        script.c_str());
+  }
+
+  std::string WaitForAsyncJsResult(DOMMessageQueue* queue) {
+    std::string message;
+    bool ok = queue->WaitForMessage(&message);
+    DCHECK(ok);
+    return message;
   }
 
  private:
@@ -120,8 +136,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseUdp) {
   EXPECT_EQ("closeUdp succeeded", EvalJs(shell(), script));
 }
 
-// TODO(crbug/1290807): fails on the Win10 Tests x64 builder.
-#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
   // We send datagrams with one byte, two bytes, three bytes, ...
   const uint32_t kRequiredDatagrams = 35;
@@ -138,14 +152,15 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
       &listener};
 
-  const uint16_t port =
-      CreateUDPSocket(listener_receiver.BindNewPipeAndPassRemote());
+  auto [server_address, server_helper] =
+      CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
 
-  ReceiveMore(kRequiredDatagrams);
+  GetUDPServerSocket()->ReceiveMore(kRequiredDatagrams);
 
-  const std::string script = base::StringPrintf(
-      "sendUdp({remoteAddress: '127.0.0.1', remotePort: %d}, %u)", port,
-      kRequiredBytes);
+  const std::string script =
+      JsReplace("sendUdp({remoteAddress: $1, remotePort: $2}, $3)",
+                server_address.ToStringWithoutPort(), server_address.port(),
+                static_cast<int>(kRequiredBytes));
 
   EXPECT_EQ("send succeeded", EvalJs(shell(), script));
 
@@ -167,7 +182,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
   }
   EXPECT_EQ(bytes_received, kRequiredBytes);
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdpAfterClose) {
   const uint32_t kRequiredBytes = 1;
@@ -183,6 +197,106 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdpAfterClose) {
       "send failed: InvalidStateError: Failed to execute 'write' on "
       "'UnderlyingSinkBase': Socket is disconnected.",
       EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
+  const uint32_t kRequiredDatagrams = 35;
+  const uint32_t kRequiredBytes =
+      kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
+      base::BindRepeating(&UnconditionallyPermitConnection));
+
+  network::test::UDPSocketListenerImpl listener;
+  mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
+      &listener};
+
+  auto [server_address, server_helper] =
+      CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
+
+  // Why so complicated? Turns out that in order to send udp datagrams from
+  // server to client we need to be aware what the client's local port is.
+  // It cannot be predefined, so the first step is to create a socket in the
+  // global scope and retrieve the assigned local port.
+  const std::string open_socket = JsReplace(
+      R"((async () => {
+        socket = await navigator.openUDPSocket({
+          remoteAddress: $1,
+          remotePort: $2
+        });
+        return socket.localPort;
+      })())",
+      server_address.ToStringWithoutPort(), server_address.port());
+
+  const uint16_t local_port = EvalJs(shell(), open_socket).ExtractInt();
+
+  // Now we launch an async script which processes read requests in the
+  // background via ExecuteScriptAsync(...). It doesn't return a value, so to
+  // verify that everything went well we create a DOMMessageQueue and wrap the
+  // script in such a way that it will post the result of the original function
+  // invocation to the queue upon completion.
+  content::DOMMessageQueue queue(shell()->web_contents());
+
+  const std::string async_read =
+      JsReplace("readLoop(socket.readable.getReader(), $1)",
+                static_cast<int>(kRequiredBytes));
+
+  ExecuteScriptAsync(shell(), WrapAsyncAndSendResultToDomQueue(async_read));
+
+  // With a client socket listening in the javascript code, we can finally start
+  // sending out data.
+  net::IPEndPoint client_addr(net::IPAddress::IPv4Localhost(), local_port);
+  for (uint32_t i = 0; i < kRequiredDatagrams; i++) {
+    EXPECT_EQ(net::OK, server_helper.SendToSync(
+                           client_addr, std::vector<uint8_t>(
+                                            i + 1, static_cast<uint8_t>('a'))));
+  }
+
+  // Blocks until script execution is complete and returns the resulting
+  // message.
+  std::string async_read_result = WaitForAsyncJsResult(&queue);
+  ASSERT_EQ(async_read_result, "\"readLoop succeeded.\"");
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterSocketClose) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
+      base::BindRepeating(&UnconditionallyPermitConnection));
+
+  network::test::UDPSocketListenerImpl listener;
+  mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
+      &listener};
+
+  auto [server_address, server_helper] =
+      CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
+
+  const std::string script =
+      JsReplace("readUdpAfterSocketClose({remoteAddress: $1, remotePort: $2})",
+                server_address.ToStringWithoutPort(), server_address.port());
+
+  EXPECT_EQ("readUdpAferSocketClose succeeded.", EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterStreamClose) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
+      base::BindRepeating(&UnconditionallyPermitConnection));
+
+  network::test::UDPSocketListenerImpl listener;
+  mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
+      &listener};
+
+  auto [server_address, server_helper] =
+      CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
+
+  const std::string script =
+      JsReplace("readUdpAfterStreamClose({remoteAddress: $1, remotePort: $2})",
+                server_address.ToStringWithoutPort(), server_address.port());
+
+  EXPECT_EQ("readUdpAferSocketClose succeeded.", EvalJs(shell(), script));
 }
 
 }  // namespace content

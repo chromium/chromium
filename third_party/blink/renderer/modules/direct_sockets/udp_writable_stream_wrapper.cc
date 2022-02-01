@@ -144,6 +144,10 @@ ScriptPromise UDPWritableStreamWrapper::SinkWrite(
 
   UDPMessage* message = UDPMessage::Create(script_state->GetIsolate(),
                                            chunk.V8Value(), exception_state);
+  if (exception_state.HadException()) {
+    return ScriptPromise();
+  }
+
   if (!message->hasData()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       "UDPMessage: missing 'data' field.");
@@ -182,7 +186,7 @@ void UDPWritableStreamWrapper::OnSend(int32_t result) {
   }
 }
 
-void UDPWritableStreamWrapper::Dispose() {
+void UDPWritableStreamWrapper::Close() {
   if (send_resolver_) {
     send_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "Failed to send data."));
