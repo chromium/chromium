@@ -20,7 +20,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
@@ -30,7 +29,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -50,7 +48,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.graphics.Typeface;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.Gravity;
 import android.widget.CheckBox;
@@ -90,10 +87,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataResultProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ColorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ComputeValueProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.CreateCreditCardResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CreateNestedGenericUiProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CreditCardList;
-import org.chromium.chrome.browser.autofill_assistant.proto.CreditCardResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DateFormatProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DateList;
 import org.chromium.chrome.browser.autofill_assistant.proto.DateProto;
@@ -2999,326 +2994,6 @@ public class AutofillAssistantGenericUiTest {
         }
         assertThat(resultModelValues, iterableWithSize(expectedResultValues.size()));
         assertThat(resultModelValues, containsInAnyOrder(expectedResultValues.toArray()));
-    }
-
-    /**
-     * Shows a simple UI (one view per credit card).
-     */
-    @Test
-    @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O, sdk_is_less_than = VERSION_CODES.Q,
-        message = "https://crbug.com/1269453")
-    public void testCreditCardUi() throws Exception {
-        // When the toggle button becomes checked, we write the current card to
-        // |selected_credit_card|.
-        List<InteractionProto> singleCardInteractions = new ArrayList<>();
-        singleCardInteractions.add(
-                InteractionProto.newBuilder()
-                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
-                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
-                                        "credit_card_selected_${i}")))
-                        .addCallbacks(
-                                CallbackProto.newBuilder()
-                                        .setConditionModelIdentifier("credit_card_selected_${i}")
-                                        .setSetValue(
-                                                SetModelValueProto.newBuilder()
-                                                        .setModelIdentifier("selected_credit_card")
-                                                        .setValue(createValueReference(
-                                                                "credit_cards[${i}]"))))
-                        .build());
-
-        // For each credit card, a simple UI containing the name and the obfuscated number is
-        // created.
-        GenericUserInterfaceProto singleCardUi =
-                GenericUserInterfaceProto.newBuilder()
-                        .setRootView(createRadioButtonView(
-                                ViewProto.newBuilder()
-                                        .setViewContainer(
-                                                ViewContainerProto.newBuilder()
-                                                        .setLinearLayout(
-                                                                LinearLayoutProto.newBuilder()
-                                                                        .setOrientation(
-                                                                                LinearLayoutProto
-                                                                                        .Orientation
-                                                                                        .VERTICAL))
-                                                        .addViews(createTextModelView(
-                                                                "card_holder_name_view_${i}",
-                                                                "card_holder_name_${i}"))
-                                                        .addViews(createTextModelView(
-                                                                "obfuscated_number_view_${i}",
-                                                                "obfuscated_number_${i}")))
-                                        .build(),
-                                "credit_cards", "credit_card_view_${i}",
-                                "credit_card_selected_${i}"))
-                        .setInteractions(InteractionsProto.newBuilder().addAllInteractions(
-                                singleCardInteractions))
-
-                        .build();
-
-        // Every time |credit_cards| changes, we:
-        // - clear any previous card views
-        // - store previously selected card in 'previously_selected_card'
-        // - clear currently selected credit card
-        // - compute |card_holder_name_${i}| and |obfuscated_number_${i}|
-        // - re-create card UI
-        // - try to re-select the previously selected card
-        List<InteractionProto> interactions = new ArrayList<>();
-        interactions.add(
-                InteractionProto.newBuilder()
-                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
-                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
-                                        "credit_cards")))
-                        .addCallbacks(CallbackProto.newBuilder().setClearViewContainer(
-                                ClearViewContainerProto.newBuilder().setViewIdentifier(
-                                        "credit_card_container_view")))
-                        .addCallbacks(CallbackProto.newBuilder().setSetValue(
-                                SetModelValueProto.newBuilder()
-                                        .setModelIdentifier("previously_selected_card")
-                                        .setValue(createValueReference("selected_credit_card"))))
-                        .addCallbacks(CallbackProto.newBuilder().setSetValue(
-                                SetModelValueProto.newBuilder()
-                                        .setModelIdentifier("selected_credit_card")
-                                        .setValue(ValueReferenceProto.newBuilder().setValue(
-                                                ValueProto.getDefaultInstance()))))
-                        .addCallbacks(CallbackProto.newBuilder().setForEach(
-                                ForEachProto.newBuilder()
-                                        .setLoopCounter("i")
-                                        .setLoopValueModelIdentifier("credit_cards")
-                                        .addCallbacks(createAutofillToStringCallback(
-                                                "credit_cards[${i}]", "card_holder_name_${i}",
-                                                ValueExpression.newBuilder().addChunk(
-                                                        Chunk.newBuilder().setKey(51))))
-                                        .addCallbacks(createAutofillToStringCallback(
-                                                "credit_cards[${i}]", "obfuscated_number_${i}",
-                                                ValueExpression.newBuilder()
-                                                        .addChunk(
-                                                                Chunk.newBuilder().setText("•••• "))
-                                                        .addChunk(Chunk.newBuilder().setKey(-4))))
-                                        .addCallbacks(CallbackProto.newBuilder().setComputeValue(
-                                                ComputeValueProto.newBuilder()
-                                                        .setResultModelIdentifier(
-                                                                "credit_card_selected_${i}")
-                                                        .setComparison(createValueComparison(
-                                                                createValueReference(
-                                                                        "credit_cards[${i}]"),
-                                                                createValueReference(
-                                                                        "previously_selected_card"),
-                                                                ValueComparisonProto.Mode.EQUAL))))
-                                        // The nested view is created as the last step since
-                                        // creating views can trigger OnValueChanged events for
-                                        // model values. In this case OnValueChanged for
-                                        // credit_card_selected_${i} will trigger in the creation of
-                                        // the radio button, so we need to make sure it has already
-                                        // been updated to the correct value before creating the
-                                        // view.
-                                        .addCallbacks(CallbackProto.newBuilder().setCreateNestedUi(
-                                                CreateNestedGenericUiProto.newBuilder()
-                                                        .setGenericUiIdentifier("nested_ui_${i}")
-                                                        .setGenericUi(singleCardUi)
-                                                        .setParentViewIdentifier(
-                                                                "credit_card_container_view")))))
-                        .build());
-
-        // Every time |selected_credit_card| changes:
-        //  - write the network of the selected card to |selected_card_network|, which will be
-        // sent back to backend.
-        // - enable/disable confirm button
-        interactions.add(
-                InteractionProto.newBuilder()
-                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
-                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
-                                        "selected_credit_card")))
-                        .addCallbacks(CallbackProto.newBuilder().setComputeValue(
-                                ComputeValueProto.newBuilder()
-                                        .setResultModelIdentifier("selected_card_network")
-                                        .setCreateCreditCardResponse(
-                                                CreateCreditCardResponseProto.newBuilder().setValue(
-                                                        createValueReference(
-                                                                "selected_credit_card")))))
-                        .addCallbacks(CallbackProto.newBuilder().setComputeValue(
-                                ComputeValueProto.newBuilder()
-                                        .setResultModelIdentifier("confirm_button_disabled")
-                                        .setComparison(createValueComparison(
-                                                createValueReference("selected_credit_card"),
-                                                createEmptyValue(),
-                                                ValueComparisonProto.Mode.EQUAL))))
-                        .build());
-        interactions.add(
-                InteractionProto.newBuilder()
-                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
-                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
-                                        "confirm_button_disabled")))
-                        .addCallbacks(CallbackProto.newBuilder().setComputeValue(
-                                ComputeValueProto.newBuilder()
-                                        .setResultModelIdentifier("confirm_button_enabled")
-                                        .setBooleanNot(BooleanNotProto.newBuilder().setValue(
-                                                ValueReferenceProto.newBuilder(createValueReference(
-                                                        "confirm_button_disabled"))))))
-                        .build());
-        interactions.add(
-                InteractionProto.newBuilder()
-                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
-                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
-                                        "confirm_button_enabled")))
-                        .addCallbacks(CallbackProto.newBuilder().setToggleUserAction(
-                                ToggleUserActionProto.newBuilder()
-                                        .setUserActionsModelIdentifier("chips")
-                                        .setUserActionIdentifier("done_chip")
-                                        .setEnabled(ValueReferenceProto.newBuilder(
-                                                createValueReference("confirm_button_enabled")))))
-                        .build());
-
-        // A confirm chip interaction that ends the action.
-        interactions.add(
-                InteractionProto.newBuilder()
-                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
-                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
-                                        "chips")))
-                        .addCallbacks(CallbackProto.newBuilder().setSetUserActions(
-                                SetUserActionsProto.newBuilder().setUserActions(
-                                        ValueReferenceProto.newBuilder().setModelIdentifier(
-                                                "chips"))))
-                        .build());
-        interactions.add(InteractionProto.newBuilder()
-                                 .addTriggerEvent(EventProto.newBuilder().setOnUserActionCalled(
-                                         OnUserActionCalled.newBuilder().setUserActionIdentifier(
-                                                 "done_chip")))
-                                 .addCallbacks(CallbackProto.newBuilder().setEndAction(
-                                         EndActionProto.newBuilder().setStatus(
-                                                 ProcessedActionStatusProto.ACTION_APPLIED)))
-                                 .build());
-
-        List<ModelProto.ModelValue> modelValues = new ArrayList<>();
-        modelValues.add((ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
-                                .setIdentifier("selected_card_network")
-                                .build());
-        modelValues.add(
-                (ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
-                        .setIdentifier("chips")
-                        .setValue(ValueProto.newBuilder().setUserActions(
-                                UserActionList.newBuilder().addValues(
-                                        UserActionProto.newBuilder()
-                                                .setChip(ChipProto.newBuilder()
-                                                                 .setText("Confirm")
-                                                                 .setType(ChipType.NORMAL_ACTION))
-                                                .setIdentifier("done_chip"))))
-                        .build());
-
-        GenericUserInterfaceProto genericUserInterface =
-                GenericUserInterfaceProto.newBuilder()
-                        .setRootView(
-                                ViewProto.newBuilder()
-                                        .setIdentifier("credit_card_container_view")
-                                        .setViewContainer(
-                                                ViewContainerProto.newBuilder().setLinearLayout(
-                                                        LinearLayoutProto.newBuilder()
-                                                                .setOrientation(
-                                                                        LinearLayoutProto
-                                                                                .Orientation
-                                                                                .VERTICAL))))
-                        .setInteractions(
-                                InteractionsProto.newBuilder().addAllInteractions(interactions))
-                        .setModel(ModelProto.newBuilder().addAllValues(modelValues))
-                        .build();
-
-        ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(ActionProto.newBuilder()
-                         .setShowGenericUi(
-                                 ShowGenericUiProto.newBuilder()
-                                         .setGenericUserInterface(genericUserInterface)
-                                         .setRequestCreditCards(
-                                                 ShowGenericUiProto.RequestAutofillCreditCards
-                                                         .newBuilder()
-                                                         .setModelIdentifier("credit_cards"))
-                                         .addOutputModelIdentifiers("selected_card_network"))
-                         .build());
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                SupportedScriptProto.newBuilder()
-                        .setPath("autofill_assistant_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
-                        .build(),
-                list);
-
-        // John with Visa, Jane with MasterCard.
-        mHelper.addDummyCreditCard(
-                mHelper.addDummyProfile("John Doe", "johndoe@google.com"), "4111111111111111");
-        String janeCardId = mHelper.addDummyCreditCard(
-                mHelper.addDummyProfile("Jane Doe", "janedoe@google.com"), "5555555555554444");
-
-        AutofillAssistantTestService testService =
-                new AutofillAssistantTestService(Collections.singletonList(script));
-        startAutofillAssistant(mTestRule.getActivity(), testService);
-
-        waitUntilViewMatchesCondition(withText("John Doe"), isCompletelyDisplayed());
-        onView(withText("Jane Doe")).check(matches(isDisplayed()));
-        onView(allOf(withText(containsString("1111")), hasSibling(withText("John Doe"))))
-                .check(matches(isDisplayed()));
-        onView(allOf(withText(containsString("4444")), hasSibling(withText("Jane Doe"))))
-                .check(matches(isDisplayed()));
-
-        // No initial selection.
-        onView(withText("John Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        onView(withText("Jane Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        waitUntilViewAssertionTrue(withContentDescription("Confirm"), matches(not(isEnabled())),
-                DEFAULT_MAX_TIME_TO_POLL);
-
-        // Select John's card.
-        onView(withText("John Doe")).perform(click());
-        onView(withText("John Doe")).check(matches(isDescendantOfA(hasSibling(isChecked()))));
-        onView(withText("Jane Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        waitUntilViewAssertionTrue(
-                withContentDescription("Confirm"), matches(isEnabled()), DEFAULT_MAX_TIME_TO_POLL);
-
-        // Select Jane's card.
-        onView(withText("Jane Doe")).perform(click());
-        onView(withText("John Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        onView(withText("Jane Doe")).check(matches(isDescendantOfA(hasSibling(isChecked()))));
-        waitUntilViewAssertionTrue(
-                withContentDescription("Confirm"), matches(isEnabled()), DEFAULT_MAX_TIME_TO_POLL);
-
-        // External: add Mary's card (American Express). Jane's card should still be selected.
-        mHelper.addDummyCreditCard(
-                mHelper.addDummyProfile("Mary Doe", "marydoe@google.com"), "371449635398431");
-        waitUntilViewMatchesCondition(
-                allOf(withText(containsString("8431")), hasSibling(withText("Mary Doe"))),
-                isDisplayed());
-        onView(withText("John Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        onView(withText("Jane Doe")).check(matches(isDescendantOfA(hasSibling(isChecked()))));
-        onView(withText("Mary Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        waitUntilViewAssertionTrue(
-                withContentDescription("Confirm"), matches(isEnabled()), DEFAULT_MAX_TIME_TO_POLL);
-
-        // External: remove Jane's card. The card selection is cleared.
-        mHelper.deleteCreditCard(janeCardId);
-        waitUntilViewAssertionTrue(withText("Jane Doe"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
-        onView(withText("John Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        onView(withText("Mary Doe")).check(matches(isDescendantOfA(hasSibling(isNotChecked()))));
-        waitUntilViewAssertionTrue(withContentDescription("Confirm"), matches(not(isEnabled())),
-                DEFAULT_MAX_TIME_TO_POLL);
-
-        // Select Mary's card and complete the action.
-        onView(withText("Mary Doe")).perform(click());
-        waitUntilViewAssertionTrue(
-                withContentDescription("Confirm"), matches(isEnabled()), DEFAULT_MAX_TIME_TO_POLL);
-
-        int numNextActionsCalled = testService.getNextActionsCounter();
-        onView(withContentDescription("Confirm")).perform(click());
-        testService.waitUntilGetNextActions(numNextActionsCalled + 1);
-
-        List<ProcessedActionProto> processedActions = testService.getProcessedActions();
-        assertThat(processedActions, iterableWithSize(1));
-        assertThat(
-                processedActions.get(0).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
-        ShowGenericUiProto.Result result = processedActions.get(0).getShowGenericUiResult();
-        List<ModelProto.ModelValue> resultModelValues = result.getModel().getValuesList();
-        assertThat(resultModelValues, iterableWithSize(1));
-        assertThat(resultModelValues,
-                containsInAnyOrder(
-                        (ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
-                                .setIdentifier("selected_card_network")
-                                .setValue(ValueProto.newBuilder().setCreditCardResponse(
-                                        CreditCardResponseProto.newBuilder().setNetwork("amex")))
-                                .build()));
     }
 
     @Test

@@ -2043,23 +2043,6 @@ message WaitForDocumentProto {
 //   log should contain additional information about the issue, if verbose
 //   logging is enabled (suggested level: 2 or 3).
 message ShowGenericUiProto {
-  message RequestAutofillCreditCards { optional string model_identifier = 1; }
-  message RequestAutofillProfiles { optional string model_identifier = 1; }
-  message RequestLoginOptions {
-    message PasswordManagerLogins {
-      optional string sublabel = 1;
-      optional bytes payload = 2;
-    }
-    message LoginOption {
-      oneof type {
-        LoginOptionProto custom_login_option = 1;
-        PasswordManagerLogins password_manager_logins = 2;
-      }
-    }
-
-    repeated LoginOption login_options = 1;
-    optional string model_identifier = 2;
-  }
   message RequestUserData {
     message AdditionalValue {
       // The client memory identifier (from |UserData|).
@@ -2085,19 +2068,6 @@ message ShowGenericUiProto {
   // subset of the input model identifiers!
   repeated string output_model_identifiers = 2;
 
-  // If specified, available autofill credit cards will be provided and
-  // auto-updated in the specified |model_identifier|.
-  optional RequestAutofillCreditCards request_credit_cards = 3;
-
-  // If specified, available autofill profiles will be provided and auto-updated
-  // in the specified |model_identifier|.
-  optional RequestAutofillProfiles request_profiles = 4;
-
-  // If specified, available login options (including those provided by password
-  // manager) will be provided and auto-updated in the specified
-  // |model_identifier|.
-  optional RequestLoginOptions request_login_options = 5;
-
   message PeriodicElementChecks {
     message ElementCheck {
       // The element condition to be checked during the action.
@@ -2120,7 +2090,7 @@ message ShowGenericUiProto {
   // |is_client_side_only| set to true.
   optional RequestUserData request_user_data = 9;
 
-  reserved 10;
+  reserved 3 to 5, 10;
 }
 
 // Show backend-specified user interface elements to the user until dismissed.
