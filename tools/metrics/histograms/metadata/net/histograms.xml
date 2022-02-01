@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2022-02-14">
+    enum="BooleanValid" expires_after="2022-08-14">
   <owner>ericorth@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -842,7 +842,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.RecordWithError"
-    enum="Boolean" expires_after="2022-02-14">
+    enum="Boolean" expires_after="2022-08-14">
   <owner>ericorth@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -869,7 +869,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.Parsable"
-    enum="BooleanValid" expires_after="2022-02-14">
+    enum="BooleanValid" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
   name="DohProviderId" -->
 
@@ -884,7 +884,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.RecordWithError"
-    units="records" expires_after="2022-02-14">
+    units="records" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
   name="DohProviderId" -->
 
@@ -930,7 +930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.DNS.HTTPSSVC.RecordIntegrity.DnsRcode"
-    enum="HttpssvcDnsRcode" expires_after="2022-02-14">
+    enum="HttpssvcDnsRcode" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -946,7 +946,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.Integrity"
-    enum="HttpssvcIntegrityJudgment" expires_after="2022-02-14">
+    enum="HttpssvcIntegrityJudgment" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -961,7 +961,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.RecordWithError"
-    units="records" expires_after="2022-02-14">
+    units="records" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -976,7 +976,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.RecordReceived"
-    units="records" expires_after="2022-02-14">
+    units="records" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -992,7 +992,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeIntegrityRecord"
-    units="ms" expires_after="2022-02-14">
+    units="ms" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -1006,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeNonIntegrityRecord"
-    units="ms" expires_after="2022-02-14">
+    units="ms" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -1020,7 +1020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeRatio"
-    units="%" expires_after="2022-02-14">
+    units="%" expires_after="2022-08-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
