@@ -4,6 +4,8 @@
 
 #include "ash/webui/shimless_rma/mojom/shimless_rma_mojom_traits.h"
 
+#include <string>
+
 #include "base/notreached.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
@@ -728,9 +730,12 @@ bool StructTraits<ash::shimless_rma::mojom::ComponentDataView,
          rmad::ComponentsRepairState_ComponentRepairStatus* out) {
   rmad::RmadComponent component;
   rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus repair_status;
-  if (data.ReadComponent(&component) && data.ReadState(&repair_status)) {
+  std::string identifier;
+  if (data.ReadComponent(&component) && data.ReadState(&repair_status) &&
+      data.ReadIdentifier(&identifier)) {
     out->set_component(component);
     out->set_repair_status(repair_status);
+    out->set_identifier(identifier);
     return true;
   }
   return false;
