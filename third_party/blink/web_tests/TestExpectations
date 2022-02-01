@@ -7654,3 +7654,4 @@ crbug.com/1292869 [ Mac ] external/wpt/webaudio/the-audio-api/the-audioparam-int
 crbug.com/1292871 [ Mac ] external/wpt/webaudio/the-audio-api/the-audioparam-interface/k-rate-dynamics-compressor-connections.html [ Failure Pass ]
 crbug.com/1292873 [ Mac ] html/selectmenu/selectmenu-slot-warning-button.html [ Failure Pass ]
 crbug.com/1292874 [ Mac ] html/selectmenu/selectmenu-slot-warning-listbox.html [ Failure Pass ]
+crbug.com/1292876 [ Mac ] http/tests/devtools/console/console-time.js [ Failure Pass ]
