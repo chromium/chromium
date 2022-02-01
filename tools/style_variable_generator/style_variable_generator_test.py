@@ -10,7 +10,7 @@ sys.path += [os.path.dirname(os.path.dirname(__file__))]
 from style_variable_generator.base_generator import Modes
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
-from style_variable_generator.views_generator import ViewsStyleGenerator
+from style_variable_generator.views_generator import ViewsHStyleGenerator, ViewsCCStyleGenerator
 from style_variable_generator.ts_generator import TSStyleGenerator
 import unittest
 
@@ -28,12 +28,20 @@ class BaseStyleGeneratorTest:
                                self.expected_output_file)
 
 
-class ViewsStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
+class ViewsStyleHGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
-        self.generator = ViewsStyleGenerator()
+        self.generator = ViewsHStyleGenerator()
         self.generator.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.h.generated'
+
+
+class ViewsStyleCCGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
+    def setUp(self):
+        self.generator = ViewsCCStyleGenerator()
+        self.generator.AddJSONFilesToModel(
+            ['colors_test_palette.json5', 'colors_test.json5'])
+        self.expected_output_file = 'colors_test_expected.cc.generated'
 
 
 class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
@@ -105,7 +113,8 @@ class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
     def testTypographyAndUntypedCSS(self):
-        expected_file_name = 'colors_test_typography_and_untyped_css_expected.ts'
+        expected_file_name = (
+            'colors_test_typography_and_untyped_css_expected.ts')
         self.generator.AddJSONFilesToModel(
             ['typography_test.json5', 'untyped_css_test.json5'])
         self.generator.generator_options = {'include_style_sheet': 'true'}

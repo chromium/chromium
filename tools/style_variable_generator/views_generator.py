@@ -4,21 +4,16 @@
 
 import os
 import math
+import re
 from style_variable_generator.base_generator import Color, Modes, VariableType
 from style_variable_generator.css_generator import CSSStyleGenerator
 
 
 class ViewsStyleGenerator(CSSStyleGenerator):
     '''Generator for Views Variables'''
-
     @staticmethod
     def GetName():
         return 'Views'
-
-    def Render(self):
-        self.Validate()
-        return self.ApplyTemplate(self, 'views_generator_h.tmpl',
-                                  self.GetParameters())
 
     def GetParameters(self):
         return {
@@ -41,6 +36,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
             'Modes': Modes,
             'out_file_path': None,
             'namespace_name': None,
+            'header_file': None,
             'in_files': sorted(self.in_file_to_context.keys()),
             'css_color_var': self.CSSColorVar,
         }
@@ -48,6 +44,10 @@ class ViewsStyleGenerator(CSSStyleGenerator):
             globals['out_file_path'] = self.out_file_path
             globals['namespace_name'] = os.path.splitext(
                 os.path.basename(self.out_file_path))[0]
+            header_file = self.out_file_path.replace(".cc", ".h")
+            header_file = re.sub(r'.*gen/', '', header_file)
+            globals['header_file'] = header_file
+
         return globals
 
     def _CreateColorList(self):
@@ -91,3 +91,31 @@ class ViewsStyleGenerator(CSSStyleGenerator):
                 c.opacity), c.r, c.g, c.b)
         else:
             return 'SkColorSetRGB(0x%X, 0x%X, 0x%X)' % (c.r, c.g, c.b)
+
+
+class ViewsCCStyleGenerator(ViewsStyleGenerator):
+    @staticmethod
+    def GetName():
+        return 'ViewsCC'
+
+    def GetContextKey(self):
+        return ViewsStyleGenerator.GetName()
+
+    def Render(self):
+        self.Validate()
+        return self.ApplyTemplate(self, 'views_generator_cc.tmpl',
+                                  self.GetParameters())
+
+
+class ViewsHStyleGenerator(ViewsStyleGenerator):
+    @staticmethod
+    def GetName():
+        return 'ViewsH'
+
+    def GetContextKey(self):
+        return ViewsStyleGenerator.GetName()
+
+    def Render(self):
+        self.Validate()
+        return self.ApplyTemplate(self, 'views_generator_h.tmpl',
+                                  self.GetParameters())

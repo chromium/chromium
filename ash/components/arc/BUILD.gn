@@ -145,7 +145,7 @@ static_library("arc") {
     "//third_party/re2",
     "//ui/base/ime/ash",
     "//ui/chromeos/strings",
-    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/display/manager",
     "//ui/events/ozone",
     "//ui/wm/public",

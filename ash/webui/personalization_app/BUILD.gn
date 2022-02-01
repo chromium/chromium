@@ -29,7 +29,7 @@ static_library("personalization_app") {
     "//ash/webui/resources:personalization_app_resources",
     "//chromeos/strings",
     "//content/public/browser",
-    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/resources:webui_generated_resources_grd_grit",
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",

@@ -12,7 +12,7 @@ sys.path += [os.path.dirname(os.path.dirname(__file__))]
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.ts_generator import TSStyleGenerator
 from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
-from style_variable_generator.views_generator import ViewsStyleGenerator
+from style_variable_generator.views_generator import ViewsCCStyleGenerator, ViewsHStyleGenerator
 from style_variable_generator.base_generator import Modes
 
 
@@ -32,8 +32,8 @@ def main():
         description='Generate style variables from JSON5 color file.')
 
     generators = [
-        CSSStyleGenerator, ViewsStyleGenerator, ProtoStyleGenerator,
-        ProtoJSONStyleGenerator, TSStyleGenerator
+        CSSStyleGenerator, ViewsCCStyleGenerator, ViewsHStyleGenerator,
+        ProtoStyleGenerator, ProtoJSONStyleGenerator, TSStyleGenerator
     ]
 
     parser.add_argument('--generator',
