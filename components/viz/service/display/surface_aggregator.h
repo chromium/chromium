@@ -41,6 +41,16 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   using SurfaceIndexMap = base::flat_map<SurfaceId, uint64_t>;
   using FrameSinkIdMap = base::flat_map<FrameSinkId, LocalSurfaceId>;
 
+  // To control when to add an extra render pass to avoid readback from the
+  // root render pass. This is useful for root pass drawing to vulkan secondary
+  // command buffer, which does not support readback.
+  enum class ExtraPassForReadbackOption {
+    // No special handling needed.
+    kNone,
+    // Add an extra render pass only if readback is needed.
+    kAddPassForReadback,
+  };
+
   // Interface that can modify the aggregated CompositorFrame to annotate it.
   // For example it could add extra quads.
   class FrameAnnotator {
@@ -53,7 +63,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   SurfaceAggregator(SurfaceManager* manager,
                     DisplayResourceProvider* provider,
                     bool aggregate_only_damaged,
-                    bool needs_surface_damage_rect_list);
+                    bool needs_surface_damage_rect_list,
+                    ExtraPassForReadbackOption extra_pass_option =
+                        ExtraPassForReadbackOption::kNone);
 
   SurfaceAggregator(const SurfaceAggregator&) = delete;
   SurfaceAggregator& operator=(const SurfaceAggregator&) = delete;
@@ -240,6 +252,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   void CopyUndrawnSurfaces(PrewalkResult* prewalk);
   void CopyPasses(const ResolvedFrameData& resolved_frame);
   void AddColorConversionPass();
+  void AddRootReadbackPass();
   void AddDisplayTransformPass();
   void AddRenderPassHelper(const gfx::Rect& output_rect,
                            AggregatedRenderPassId render_pass_id,
@@ -372,6 +385,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   const bool clip_prewalk_damage_;
 
+  const ExtraPassForReadbackOption extra_pass_for_readback_option_;
+
   bool output_is_secure_ = false;
 
   // Whether |CopyOutputRequests| should be moved over to the aggregated frame.
@@ -387,6 +402,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   int max_render_target_size_ = 0;
   // The id for the final color conversion render pass.
   AggregatedRenderPassId color_conversion_render_pass_id_;
+  // The id for the extra pass added to avoid readback from root pass.
+  AggregatedRenderPassId readback_render_pass_id_;
   // The id for the optional render pass used to apply the display transform.
   AggregatedRenderPassId display_transform_render_pass_id_;
 
@@ -462,6 +479,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Whether the last drawn frame had a color conversion pass applied. Used in
   // production on Windows only (does not interact with jelly).
   bool last_frame_had_color_conversion_pass_ = false;
+  // Whether last frame had an extra render pass added to avoid readback from
+  // root frame buffer.
+  bool last_frame_had_readback_pass_ = false;
 
   // The metadata used for drawing a delegated ink trail on the end of a normal
   // ink stroke. It needs to be transformed to root coordinates and then put on
