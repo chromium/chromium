@@ -1795,6 +1795,21 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   // Consider removing it to understand what happens without.
   web_contents->Stop();
 
+  // Disable back/forward cache before the current test page navigates away so
+  // that the test page does not remain in the back/forward cache after the
+  // test.
+  BackForwardCache::DisableForRenderFrameHost(
+      web_contents->GetMainFrame(),
+      BackForwardCache::DisabledReason(
+          {BackForwardCache::DisabledSource::kTesting, 0,
+           "disabled for web_test not to cache the test page after the test "
+           "ends."}));
+
+  // Flush all the back/forward cache to avoid side effects in the next test.
+  for (auto* shell : Shell::windows()) {
+    shell->web_contents()->GetController().GetBackForwardCache().Flush();
+  }
+
   // Navigate to about:blank in between two consecutive web tests.
   //
   // Note: this navigation might happen in a new process, depending on the
