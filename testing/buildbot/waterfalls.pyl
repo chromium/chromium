@@ -4325,7 +4325,6 @@
               ],
               'test_suites': {
                       'gtest_tests': 'gpu_fyi_vulkan_gtests',
-                      'isolated_scripts': 'gpu_blink_web_tests',
                       'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
               },
       },
@@ -4337,7 +4336,6 @@
               ],
               'test_suites': {
                       'gtest_tests': 'gpu_fyi_vulkan_gtests',
-                      'isolated_scripts': 'gpu_blink_web_tests',
                       'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
               },
       },
