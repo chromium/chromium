@@ -549,4 +549,15 @@ void ShowBrowserSigninOrSettings(Browser* browser,
 }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void ShowWebAppSettings(Browser* browser, const std::string& app_id) {
+  const GURL link_destination(chrome::kChromeUIWebAppSettingsURL + app_id);
+  NavigateParams params(browser->profile(), link_destination,
+                        ui::PAGE_TRANSITION_TYPED);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.browser = browser;
+  Navigate(&params);
+}
+#endif
+
 }  // namespace chrome

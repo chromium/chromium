@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/permissions/permission_manager.h"
@@ -29,13 +30,14 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/feature_list.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(
@@ -133,14 +135,18 @@ bool ChromePageInfoUiDelegate::ShouldShowSiteSettings(int* link_text_id,
 
   *link_text_id = IDS_PAGE_INFO_SITE_SETTINGS_LINK;
   *tooltip_text_id = IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage))
+    return true;
+#endif
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   if (web_app::AppBrowserController::IsWebApp(browser)) {
-    *link_text_id = IDS_PAGE_INFO_APP_SETTINGS_LINK;
-    *tooltip_text_id = IDS_PAGE_INFO_APP_SETTINGS_TOOLTIP;
+    *link_text_id = IDS_WEB_APP_SETTINGS_LINK;
+    *tooltip_text_id = IDS_WEB_APP_SETTINGS_LINK_TOOLTIP;
   }
 #endif
-
   return true;
 }
 

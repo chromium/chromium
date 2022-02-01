@@ -493,12 +493,6 @@
     <message name="IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
       Go to site settings
     </message>
-    <message name="IDS_PAGE_INFO_APP_SETTINGS_LINK" desc="This is the text of the link pointing to the App Settings page. This appears at the bottom of the Permissions pane of the Page Information Window for app windows (in place of 'Site settings').">
-      App settings
-    </message>
-    <message name="IDS_PAGE_INFO_APP_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
-      Go to app settings
-    </message>
 
     <!-- Permission decision strings -->
     <message name="IDS_PAGE_INFO_PERMISSION_ALLOWED_BY_POLICY" desc="The label used underneath a permission listed in the Page Info bubble if the permission was explicitly allowed by the user's enterprise policy.">

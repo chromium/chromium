@@ -37,10 +37,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/feature_list.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -50,12 +52,14 @@
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/events/event.h"
 #else
 #include "chrome/grit/chromium_strings.h"
@@ -174,6 +178,13 @@ void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
     chrome::ShowAppManagementPage(
         GetProfile(), app_id,
         ash::settings::AppManagementEntryPoint::kPageInfoView);
+    return;
+  }
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
+      web_app::AppBrowserController::IsWebApp(browser)) {
+    web_app::AppId app_id = browser->app_controller()->app_id();
+    chrome::ShowWebAppSettings(browser, app_id);
     return;
   }
 #endif

@@ -290,6 +290,15 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
           ? kRunOnOsLoginModeNotRun
           : kRunOnOsLoginModeWindowed;
   value->SetString("runOnOsLoginMode", runOnOsLoginModeString);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Show settings instead of App info for locally installed web apps.
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
+      is_locally_installed) {
+    value->SetString("settingsMenuItemOverrideText",
+                     l10n_util::GetStringUTF16(IDS_WEB_APP_SETTINGS_LINK));
+  }
+#endif
 }
 
 void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
@@ -1004,6 +1013,15 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    if (base::FeatureList::IsEnabled(
+            features::kDesktopPWAsWebAppSettingsPage)) {
+      chrome::ShowWebAppSettings(
+          chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
+          extension_id);
+      return;
+    }
+#endif
     chrome::ShowSiteSettings(
         chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
         web_app_provider_->registrar().GetAppStartUrl(extension_id));

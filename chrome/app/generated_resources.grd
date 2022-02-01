@@ -5178,6 +5178,25 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Apps
       </message>
 
+      <if expr="chromeos_ash or chromeos_lacros">
+        <then>
+          <message name="IDS_WEB_APP_SETTINGS_LINK" desc="Text of the link pointing to the app settings page. This appears at the bottom of the Permissions pane of the Page Information Window for app windows (in place of 'Site settings').">
+            App settings
+          </message>
+          <message name="IDS_WEB_APP_SETTINGS_LINK_TOOLTIP" desc="The text of the tooltip on IDS_WEB_APP_SETTINGS_LINK.">
+            Go to app settings
+          </message>
+        </then>
+        <else>
+          <message name="IDS_WEB_APP_SETTINGS_LINK" desc="Text of the link pointing to the app settings page. The link appears in app window/tab -> page info bubble in place of Site Settings, and in chrome://apps right click menu">
+            Settings
+          </message>
+          <message name="IDS_WEB_APP_SETTINGS_LINK_TOOLTIP" desc="The text of the tooltip on IDS_WEB_APP_SETTINGS_LINK.">
+            Go to settings
+          </message>
+        </else>
+      </if>
+
       <!-- Components -->
       <message name="IDS_COMPONENTS_TITLE" desc="Title for the chrome://components page.">
         Components

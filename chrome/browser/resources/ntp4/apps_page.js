@@ -215,6 +215,12 @@ AppContextMenu.prototype = {
     this.runOnOsLogin_.disabled = !app.appData.mayToggleRunOnOsLoginMode;
     this.runOnOsLogin_.checked =
         app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NOT_RUN;
+
+    if (app.appData.settingsMenuItemOverrideText) {
+      this.appinfo_.textContent = app.appData.settingsMenuItemOverrideText;
+    } else {
+      this.appinfo_.textContent = loadTimeData.getString('appinfodialog');
+    }
   },
 
   /** @private */
