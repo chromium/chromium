@@ -71,6 +71,7 @@ js_library("firmware_update_test") {
     "//ash/webui/firmware_update_ui/resources:update_card",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -311,6 +311,20 @@ export class FirmwareUpdateDialogElement extends
 
     return false;
   }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeButtonText_() {
+    if (!this.isUpdateDone_()) {
+      return '';
+    }
+
+    return this.installationProgress.state === UpdateState.kSuccess ?
+        this.i18n('doneButton') :
+        this.i18n('okButton');
+  }
 }
 
 customElements.define(

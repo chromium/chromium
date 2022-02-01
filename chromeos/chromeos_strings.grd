@@ -2614,11 +2614,14 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL" desc="A11y Label for button to start the firmware update.">
         Update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
       </message>
+      <message name="IDS_FIRMWARE_OK_BUTTON_TEXT" desc="Label for button shown when an install fails.">
+        OK
+      </message>
       <message name="IDS_FIRMWARE_UPDATING_TEXT" desc="Label for showing that a device is being updated.">
-        Updating <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+        Updating firmware on <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
       </message>
       <message name="IDS_FIRMWARE_DEVICE_UP_TO_DATE_TEXT" desc="Label for when a device is up to date.">
-        Your <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> is up to date
+        Your <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> is now up to date
       </message>
       <message name="IDS_FIRMWARE_HAS_BEEN_UPDATED_TEXT" desc="Label for displaying which version the device has been updated to.">
         Firmware <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> has been updated to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>
@@ -2627,29 +2630,28 @@ Try tapping the mic to ask me anything.
         While the firmware is updating, do not unplug this external device or shut down your computer. You can minimize this window. This update may take a few minutes and your external device may not work during this time.
       </message>
       <message name="IDS_FIRMWARE_INSTALLING_TEXT" desc="Label that displays what percentage of the update has been installed.">
-        Installing - <ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>%
+        Updating (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
       </message>
       <message name="IDS_FIRMWARE_UP_TO_DATE_TEXT" desc="Label shown when no firmware updates are available.">
-        All peripherals are up to date
+        All firmware is up to date
       </message>
       <message name="IDS_FIRMWARE_VERSION_TEXT" desc="Label for the update's version.">
         Version <ph name="VERSION">$1<ex>3.0.2</ex></ph>
       </message>
-      <!-- TODO(michaelcheco): Update strings after UX review. -->
-      <message translateable="false" name="IDS_FIRMWARE_RESTARTING_TITLE_TEXT" desc="Label for showing that a device is being restarted.">
+      <message name="IDS_FIRMWARE_RESTARTING_TITLE_TEXT" desc="Label for showing that a device is being restarted.">
         Restarting <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
       </message>
-      <message translateable="false" name="IDS_FIRMWARE_RESTARTING_BODY_TEXT" desc="Label for communicating information about what actions a user can take during a device restart.">
-        Your device is restarting, you can minimize window but do not unplug your device. This may take a few minutes.
+      <message name="IDS_FIRMWARE_RESTARTING_BODY_TEXT" desc="Label for communicating information about what actions a user can take during a device restart.">
+        While restarting, do not unplug this external device or shut down your computer. You can minimize this window. This may take a few minutes and your external device may not work during this time.
       </message>
-      <message translateable="false" name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
-        Restarting ...
+      <message name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
+        Restarting...
       </message>
-      <message translateable="false" name="IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT" desc="Label shown when an update fails.">
-        Failed to update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      <message name="IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT" desc="Label shown when an update fails.">
+        Can't update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
       </message>
-      <message translateable="false" name="IDS_FIRMWARE_UPDATE_FAILED_BODY_TEXT" desc="Label for communicating information about why an update failed.">
-        Update failed
+      <message name="IDS_FIRMWARE_UPDATE_FAILED_BODY_TEXT" desc="Label for communicating information about why an update failed.">
+        Something went wrong. Try again.
       </message>
       <message name="IDS_CONFIRMATION_TITLE_TEXT" desc="Label for the confirmation dialog title.">
         Update firmware on <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>

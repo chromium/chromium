@@ -62,7 +62,7 @@
       <cr-button class="action-button"
           on-click="closeDialog_"
           id="updateDoneButton">
-        [[i18n('doneButton')]]
+        [[computeButtonText_(installationProgress.state)]]
       </cr-button>
     </div>
   </cr-dialog>

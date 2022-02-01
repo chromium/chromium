@@ -12,6 +12,7 @@ import {FirmwareUpdate, UpdateProviderInterface, UpdateState} from 'chrome://acc
 import {getUpdateProvider, setUpdateControllerForTesting, setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
 import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -161,7 +162,8 @@ export function firmwareUpdateAppTest() {
     assertEquals(UpdateState.kUpdating, getUpdateState());
     const fakeFirmwareUpdate = getFirmwareUpdateFromDialog();
     assertEquals(
-        `Updating ${mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
+        loadTimeData.getStringF(
+            'updating', mojoString16ToString(fakeFirmwareUpdate.deviceName)),
         getUpdateDialogTitle().innerText.trim());
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
@@ -169,8 +171,9 @@ export function firmwareUpdateAppTest() {
     assertEquals(UpdateState.kSuccess, getUpdateState());
     assertTrue(getUpdateDialog().open);
     assertEquals(
-        `Your ${
-            mojoString16ToString(fakeFirmwareUpdate.deviceName)} is up to date`,
+        loadTimeData.getStringF(
+            'deviceUpToDate',
+            mojoString16ToString(fakeFirmwareUpdate.deviceName)),
         getUpdateDialogTitle().innerText.trim());
   });
 
@@ -187,7 +190,8 @@ export function firmwareUpdateAppTest() {
     assertEquals(UpdateState.kUpdating, getUpdateState());
     const fakeFirmwareUpdate = getFirmwareUpdateFromDialog();
     assertEquals(
-        `Updating ${mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
+        loadTimeData.getStringF(
+            'updating', mojoString16ToString(fakeFirmwareUpdate.deviceName)),
         getUpdateDialogTitle().innerText.trim());
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
@@ -195,8 +199,9 @@ export function firmwareUpdateAppTest() {
     assertEquals(UpdateState.kFailed, getUpdateState());
     assertTrue(getUpdateDialog().open);
     assertEquals(
-        `Failed to update ${
-            mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
+        loadTimeData.getStringF(
+            'updateFailedTitleText',
+            mojoString16ToString(fakeFirmwareUpdate.deviceName)),
         getUpdateDialogTitle().innerText.trim());
   });
 
@@ -215,7 +220,8 @@ export function firmwareUpdateAppTest() {
     assertEquals(UpdateState.kUpdating, getUpdateState());
     const fakeUpdate = getFirmwareUpdateFromDialog();
     assertEquals(
-        `Updating ${mojoString16ToString(fakeUpdate.deviceName)}`,
+        loadTimeData.getStringF(
+            'updating', mojoString16ToString(fakeUpdate.deviceName)),
         getUpdateDialogTitle().innerText.trim());
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
