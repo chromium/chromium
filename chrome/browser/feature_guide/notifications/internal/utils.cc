@@ -56,6 +56,25 @@ base::Feature GetNotificationIphFeatureForFeature(FeatureType& feature) {
           kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature;
   }
 }
+
+absl::optional<base::Feature> GetUsedIphFeatureForFeature(
+    FeatureType& feature) {
+  switch (feature) {
+    case FeatureType::kIncognitoTab:
+      return feature_engagement::
+          kIPHFeatureNotificationGuideIncognitoTabUsedFeature;
+    case FeatureType::kVoiceSearch:
+      return feature_engagement::
+          kIPHFeatureNotificationGuideVoiceSearchUsedFeature;
+    case FeatureType::kNTPSuggestionCard:
+    case FeatureType::kDefaultBrowser:
+    case FeatureType::kSignIn:
+      return absl::nullopt;
+    default:
+      NOTREACHED();
+      return absl::nullopt;
+  }
+}
 #endif
 
 }  // namespace feature_guide

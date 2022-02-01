@@ -87,6 +87,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -193,9 +194,12 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
     protected class NewTabPageManagerImpl
             extends SuggestionsUiDelegateImpl implements NewTabPageManager {
+        private final Tracker mTracker;
+
         public NewTabPageManagerImpl(SuggestionsNavigationDelegate navigationDelegate,
                 Profile profile, NativePageHost nativePageHost, SnackbarManager snackbarManager) {
             super(navigationDelegate, profile, nativePageHost, snackbarManager);
+            mTracker = TrackerFactory.getTrackerForProfile(profile);
         }
 
         @Override
@@ -218,6 +222,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedReliabilityLoggingSignals.onVoiceSearch();
                 mVoiceRecognitionHandler.startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.NTP);
+                mTracker.notifyEvent(EventConstants.NTP_VOICE_SEARCH_BUTTON_CLICKED);
             } else if (mOmniboxStub != null) {
                 mFeedReliabilityLoggingSignals.onOmniboxFocused();
                 mOmniboxStub.setUrlBarFocus(true, pastedText,

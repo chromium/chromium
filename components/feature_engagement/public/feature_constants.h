@@ -105,6 +105,8 @@ extern const base::Feature
     kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature;
 extern const base::Feature
     kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature;
+extern const base::Feature kIPHFeatureNotificationGuideIncognitoTabUsedFeature;
+extern const base::Feature kIPHFeatureNotificationGuideVoiceSearchUsedFeature;
 extern const base::Feature kIPHFeedCardMenuFeature;
 extern const base::Feature kIPHGenericAlwaysTriggerHelpUiFeature;
 extern const base::Feature kIPHHomePageButtonFeature;

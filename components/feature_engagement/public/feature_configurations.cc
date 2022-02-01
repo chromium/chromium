@@ -253,6 +253,51 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return CreateAlwaysTriggerConfig(feature);
   }
 
+  if (kIPHFeatureNotificationGuideIncognitoTabUsedFeature.name ==
+      feature->name) {
+    // A config that allows to check whether use has used incognito tabs before.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    // unused.
+    config->trigger =
+        EventConfig("feature_notification_guide_dummy_feature_trigger",
+                    Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("feature_notification_guide_dummy_feature_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(
+        EventConfig("app_menu_new_incognito_tab_clicked",
+                    Comparator(GREATER_THAN_OR_EQUAL, 0), 90, 90));
+    return config;
+  }
+
+  if (kIPHFeatureNotificationGuideVoiceSearchUsedFeature.name ==
+      feature->name) {
+    // A config that allows to check whether use has used voice search from NTP
+    // before.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    // unused.
+    config->trigger =
+        EventConfig("feature_notification_guide_dummy_feature_trigger",
+                    Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("feature_notification_guide_dummy_feature_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(
+        EventConfig("ntp_voice_search_button_clicked",
+                    Comparator(GREATER_THAN_OR_EQUAL, 0), 90, 90));
+    return config;
+  }
+
   if (kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature.name ==
       feature->name) {
     // A config that allows the feature guide incognito tab notification to be
@@ -267,9 +312,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->trigger = EventConfig(
         "feature_notification_guide_incognito_tab_notification_trigger",
         Comparator(LESS_THAN, 1), 90, 90);
-    config->used = EventConfig(
-        "feature_notification_guide_incognito_tab_notification_used",
-        Comparator(EQUAL, 0), 90, 90);
+    config->used = EventConfig("app_menu_new_incognito_tab_clicked",
+                               Comparator(EQUAL, 0), 90, 90);
     return config;
   }
 
@@ -309,9 +353,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->trigger = EventConfig(
         "feature_notification_guide_voice_search_notification_trigger",
         Comparator(LESS_THAN, 1), 90, 90);
-    config->used =
-        EventConfig("feature_notification_guide_voice_search_notification_used",
-                    Comparator(EQUAL, 0), 90, 90);
+    config->used = EventConfig("ntp_voice_search_button_clicked",
+                               Comparator(EQUAL, 0), 90, 90);
     return config;
   }
 

@@ -58,6 +58,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature,
     &kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature,
     &kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature,
+    &kIPHFeatureNotificationGuideIncognitoTabUsedFeature,
+    &kIPHFeatureNotificationGuideVoiceSearchUsedFeature,
     &kIPHFeedCardMenuFeature,
     &kIPHGenericAlwaysTriggerHelpUiFeature,
     &kIPHHomepagePromoCardFeature,

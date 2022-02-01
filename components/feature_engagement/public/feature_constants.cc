@@ -167,6 +167,12 @@ const base::Feature
 const base::Feature kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature{
     "IPH_FeatureNotificationGuideVoiceSearchHelpBubble",
     base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHFeatureNotificationGuideIncognitoTabUsedFeature{
+    "IPH_FeatureNotificationGuideIncognitoTabUsed",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHFeatureNotificationGuideVoiceSearchUsedFeature{
+    "IPH_FeatureNotificationGuideVoiceSearchUsed",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHFeedCardMenuFeature{"IPH_FeedCardMenu",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHGenericAlwaysTriggerHelpUiFeature{

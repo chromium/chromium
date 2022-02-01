@@ -84,7 +84,15 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
 
 void FeatureNotificationGuideServiceImpl::CloseRedundantNotifications() {
   for (auto feature : config_.enabled_features) {
-    // TODO(shaktisahu): Check if the feature was used.
+#if BUILDFLAG(IS_ANDROID)
+    auto used_iph_feature = GetUsedIphFeatureForFeature(feature);
+    bool feature_was_used =
+        used_iph_feature.has_value() &&
+        tracker_->WouldTriggerHelpUI(used_iph_feature.value());
+    if (!feature_was_used)
+      continue;
+#endif
+
     std::string notification_guid =
         delegate_->GetNotificationParamGuidForFeature(feature);
     delegate_->CloseNotification(notification_guid);
@@ -114,6 +122,9 @@ void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
   for (auto feature : config_.enabled_features) {
     std::string guid = delegate_->GetNotificationParamGuidForFeature(feature);
     if (base::Contains(scheduled_feature_guids_, guid))
+      continue;
+
+    if (delegate_->ShouldSkipFeature(feature))
       continue;
 
 #if BUILDFLAG(IS_ANDROID)
