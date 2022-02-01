@@ -242,6 +242,10 @@ enum KeyboardCode {
   // represent them.
   VKEY_MEDIA_PLAY = 0xE9,
   VKEY_MEDIA_PAUSE = 0xEA,
+
+  // Application keys.
+  VKEY_NEW = 0xEB,
+  VKEY_CLOSE = 0xEC,
 };
 
 }  // namespace ui

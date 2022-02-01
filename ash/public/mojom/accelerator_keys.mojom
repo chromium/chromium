@@ -212,6 +212,8 @@ enum VKey {
   // represent them.
   kMediaPlay = 0xE9,
   kMediaPause = 0xEA,
+  kNew = 0xEB,
+  kClose = 0xEC,
 };
 
 // Contains all sources of shortcuts, new sources must added to this enum.

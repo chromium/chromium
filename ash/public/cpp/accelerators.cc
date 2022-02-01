@@ -114,6 +114,7 @@ const AcceleratorData kAcceleratorData[] = {
      NEW_INCOGNITO_WINDOW},
     {true, ui::VKEY_N, ui::EF_CONTROL_DOWN, NEW_WINDOW},
     {true, ui::VKEY_T, ui::EF_CONTROL_DOWN, NEW_TAB},
+    {true, ui::VKEY_NEW, ui::EF_NONE, NEW_TAB},
     {true, ui::VKEY_OEM_MINUS, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
      SCALE_UI_UP},
     {true, ui::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,

@@ -606,6 +606,8 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::LAUNCH_CONTROL_PANEL,
      VKEY_SETTINGS},                              // 0x0C019F Launch Assistant
     {DomCode::LAUNCH_ASSISTANT, VKEY_ASSISTANT},  // 0x0C01CB Launch Assistant
+    {DomCode::NEW, VKEY_NEW},                     // 0x0C0201 AC New
+    {DomCode::CLOSE, VKEY_CLOSE},                 // 0x0C0203 AC Close
 #endif
     {DomCode::BROWSER_SEARCH, VKEY_BROWSER_SEARCH},  // 0x0C0221 BrowserSearch
     {DomCode::BROWSER_HOME, VKEY_BROWSER_HOME},      // 0x0C0223 BrowserHome
