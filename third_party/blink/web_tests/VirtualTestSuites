@@ -1010,6 +1010,11 @@
     ]
   },
   {
+    "prefix": "automatic-lazy-frame-loading-ads",
+    "bases": [],
+    "args": ["--enable-features=AutomaticLazyFrameLoadingToAds"]
+  },
+  {
     "prefix": "initially-invisible-images-lcp",
     "bases": ["external/wpt/largest-contentful-paint/initially-invisible-images.html"],
     "args": [ "--enable-features=IncludeInitiallyInvisibleImagesInLCP"]

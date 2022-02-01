@@ -13,6 +13,11 @@
 namespace blink {
 namespace features {
 
+// Apply lazy-loading to ad frames which have embeds likely impacting Core Web
+// Vitals.
+const base::Feature kAutomaticLazyFrameLoadingToAds{
+    "AutomaticLazyFrameLoadingToAds", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Apply lazy-loading to frames which have embeds likely impacting Core Web
 // Vitals.
 const base::Feature kAutomaticLazyFrameLoadingToEmbeds{

@@ -591,7 +591,7 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
     lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
 
   if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set) ||
-      IsLazyLoadableUrl(url)) {
+      IsLazyLoadableUrl(url) || IsLazyLoadableAd()) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
     return true;
@@ -774,6 +774,15 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
     return false;
 
   return content_frame_->IsAdSubframe();
+}
+
+bool HTMLFrameOwnerElement::IsLazyLoadableAd() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutomaticLazyFrameLoadingToAds)) {
+    return false;
+  }
+
+  return IsAdRelated();
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
