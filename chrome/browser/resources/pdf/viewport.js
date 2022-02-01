@@ -1116,7 +1116,12 @@ export class Viewport {
       // Since we do the movement of the page.
       e.preventDefault();
     } else if (isCrossFrameKeyEvent(e)) {
-      const scrollOffset = (isDown ? 1 : -1) * this.size.height;
+      // Web scrolls by a fraction of the viewport height. Use the same
+      // fractional value as `cc::kMinFractionToStepWhenPaging` in
+      // cc/input/scroll_utils.h. The values must be kept in sync.
+      const MIN_FRACTION_TO_STEP_WHEN_PAGING = 0.875;
+      const scrollOffset = (isDown ? 1 : -1) * this.size.height *
+          MIN_FRACTION_TO_STEP_WHEN_PAGING;
       this.setPosition({
         x: this.position.x,
         y: this.position.y + scrollOffset,
