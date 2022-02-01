@@ -732,6 +732,8 @@ TEST(MyTest, MyTest) {
 
   // This runs the (Thread|Sequenced)TaskRunnerHandle queue until it is empty.
   // Delayed tasks are not added to the queue until they are ripe for execution.
+  // Prefer explicit exit conditions to RunUntilIdle when possible:
+  // bit.ly/run-until-idle-with-care2.
   base::RunLoop().RunUntilIdle();
   // A and B have been executed. C is not ripe for execution yet.
 
@@ -759,8 +761,9 @@ TEST(MyTest, MyTest) {
       FROM_HERE, {}, base::BindOnce(&H), base::BindOnce(&I));
 
   // This runs the (Thread|Sequenced)TaskRunnerHandle queue until both the
-  // (Thread|Sequenced)TaskRunnerHandle queue and the TaskSchedule queue are
-  // empty:
+  // (Thread|Sequenced)TaskRunnerHandle queue and the ThreadPool queue are
+  // empty. Prefer explicit exit conditions to RunUntilIdle when possible:
+  // bit.ly/run-until-idle-with-care2.
   task_environment_.RunUntilIdle();
   // E, H, I have been executed.
 }
