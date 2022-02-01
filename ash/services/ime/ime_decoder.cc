@@ -70,7 +70,6 @@ ImeDecoder::ImeDecoder() : is_ready_(false) {
     return;
   }
 
-  // TODO(b/172527471): Create a macro to fetch function pointers.
   entry_points_.init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
       library.GetFunctionPointer(kImeDecoderInitOnceFnName));
   entry_points_.supports = reinterpret_cast<ImeDecoderSupportsFn>(
