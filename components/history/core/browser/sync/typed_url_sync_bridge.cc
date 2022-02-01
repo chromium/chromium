@@ -79,6 +79,15 @@ void RecordDatabaseError(SyncTypedUrlDatabaseError error) {
 
 }  // namespace
 
+TypedURLSyncBridge::URLWithVisits::URLWithVisits(
+    const GURL& url,
+    const std::vector<VisitInfo>& visits)
+    : url(url), visits(visits) {}
+
+TypedURLSyncBridge::URLWithVisits::~URLWithVisits() = default;
+
+TypedURLSyncBridge::URLWithVisits::URLWithVisits(URLWithVisits&&) = default;
+
 TypedURLSyncBridge::TypedURLSyncBridge(
     HistoryBackend* history_backend,
     TypedURLSyncMetadataDatabase* sync_metadata_database,
@@ -119,7 +128,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
   // New sync data organized for different write operations to history backend.
   std::vector<URLRow> new_synced_urls;
   std::vector<URLRow> updated_synced_urls;
-  std::vector<std::pair<GURL, std::vector<VisitInfo>>> new_synced_visits;
+  std::vector<URLWithVisits> new_synced_visits;
 
   // Iterate through entity_data and check for all the urls that
   // sync already knows about. MergeURLWithSync() will remove urls that
@@ -195,7 +204,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   std::vector<GURL> pending_deleted_urls;
-  std::vector<std::pair<GURL, std::vector<VisitInfo>>> new_synced_visits;
+  std::vector<URLWithVisits> new_synced_visits;
   std::vector<VisitRow> deleted_visits;
   std::vector<URLRow> updated_synced_urls;
   std::vector<URLRow> new_synced_urls;
@@ -771,7 +780,7 @@ void TypedURLSyncBridge::MergeURLWithSync(
     std::map<GURL, URLRow>* local_typed_urls,
     std::map<GURL, std::vector<VisitRow>>* local_visit_vectors,
     std::vector<URLRow>* new_synced_urls,
-    std::vector<std::pair<GURL, std::vector<VisitInfo>>>* new_synced_visits,
+    std::vector<URLWithVisits>* new_synced_visits,
     std::vector<URLRow>* updated_synced_urls) {
   DCHECK_NE(0, server_typed_url.visits_size());
   DCHECK_EQ(server_typed_url.visits_size(),
@@ -904,7 +913,7 @@ void TypedURLSyncBridge::MergeURLWithSync(
 
 void TypedURLSyncBridge::UpdateFromSync(
     const sync_pb::TypedUrlSpecifics& typed_url,
-    std::vector<std::pair<GURL, std::vector<VisitInfo>>>* visits_to_add,
+    std::vector<URLWithVisits>* visits_to_add,
     std::vector<VisitRow>* visits_to_remove,
     std::vector<URLRow>* updated_urls,
     std::vector<URLRow>* new_urls) {
@@ -928,7 +937,7 @@ void TypedURLSyncBridge::UpdateFromSync(
   UpdateURLRowFromTypedUrlSpecifics(typed_url, &new_url);
 
   // Figure out which visits we need to add.
-  DiffVisits(existing_visits, typed_url, &visits_to_add->back().second,
+  DiffVisits(existing_visits, typed_url, &visits_to_add->back().visits,
              visits_to_remove);
 
   if (existing_url) {
@@ -987,7 +996,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::WriteToHistoryBackend(
     const std::vector<URLRow>* new_urls,
     const std::vector<URLRow>* updated_urls,
     const std::vector<GURL>* deleted_urls,
-    const std::vector<std::pair<GURL, std::vector<VisitInfo>>>* new_visits,
+    const std::vector<URLWithVisits>* new_visits,
     const std::vector<VisitRow>* deleted_visits) {
   DCHECK_EQ(processing_syncer_changes_, false);
   // Set flag to stop accepting history change notifications from backend.

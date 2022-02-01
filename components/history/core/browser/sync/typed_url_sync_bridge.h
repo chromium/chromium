@@ -86,6 +86,16 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
  private:
   friend class TypedURLSyncBridgeTest;
 
+  struct URLWithVisits {
+    URLWithVisits(const GURL& url, const std::vector<VisitInfo>& visits);
+    ~URLWithVisits();
+
+    URLWithVisits(URLWithVisits&&);
+
+    GURL url;
+    std::vector<VisitInfo> visits;
+  };
+
   // Bitfield returned from MergeUrls to specify the result of a merge.
   typedef uint32_t MergeResult;
   static const MergeResult DIFF_NONE = 0;
@@ -131,13 +141,12 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // Compares `server_typed_url` from the server against local history to decide
   // how to merge any existing data, and updates appropriate data containers to
   // write to server and backend.
-  void MergeURLWithSync(
-      const sync_pb::TypedUrlSpecifics& server_typed_url,
-      std::map<GURL, URLRow>* local_typed_urls,
-      std::map<GURL, std::vector<VisitRow>>* visit_vectors,
-      std::vector<URLRow>* new_synced_urls,
-      std::vector<std::pair<GURL, std::vector<VisitInfo>>>* new_synced_visits,
-      std::vector<URLRow>* updated_synced_urls);
+  void MergeURLWithSync(const sync_pb::TypedUrlSpecifics& server_typed_url,
+                        std::map<GURL, URLRow>* local_typed_urls,
+                        std::map<GURL, std::vector<VisitRow>>* visit_vectors,
+                        std::vector<URLRow>* new_synced_urls,
+                        std::vector<URLWithVisits>* new_synced_visits,
+                        std::vector<URLRow>* updated_synced_urls);
 
   // Given a typed URL in the sync DB, looks for an existing entry in the
   // local history DB and generates a list of visits to add to the
@@ -146,12 +155,11 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // visits to add to/remove from the history DB, and adds a new entry to either
   // `updated_urls` or `new_urls` depending on whether the URL already existed
   // in the history DB.
-  void UpdateFromSync(
-      const sync_pb::TypedUrlSpecifics& typed_url,
-      std::vector<std::pair<GURL, std::vector<VisitInfo>>>* visits_to_add,
-      std::vector<VisitRow>* visits_to_remove,
-      std::vector<URLRow>* updated_urls,
-      std::vector<URLRow>* new_urls);
+  void UpdateFromSync(const sync_pb::TypedUrlSpecifics& typed_url,
+                      std::vector<URLWithVisits>* visits_to_add,
+                      std::vector<VisitRow>* visits_to_remove,
+                      std::vector<URLRow>* updated_urls,
+                      std::vector<URLRow>* new_urls);
 
   // Utility routine that (a) updates an existing sync node or (b) creates a
   // new one for the passed `typed_url` if one does not already exist or (c)
@@ -171,7 +179,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
       const std::vector<URLRow>* new_urls,
       const std::vector<URLRow>* updated_urls,
       const std::vector<GURL>* deleted_urls,
-      const std::vector<std::pair<GURL, std::vector<VisitInfo>>>* new_visits,
+      const std::vector<URLWithVisits>* new_visits,
       const std::vector<VisitRow>* deleted_visits);
 
   // Given a TypedUrlSpecifics object, removes all visits that are older than
