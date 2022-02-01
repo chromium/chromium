@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
@@ -91,6 +92,7 @@ import java.util.List;
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AppMenuPropertiesDelegateUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -448,7 +450,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void testOverviewMenuItems_Phone() {
         setUpMocksForOverviewMenu();
         when(mIncognitoTabModel.getCount()).thenReturn(0);
-
         Assert.assertFalse(mAppMenuPropertiesDelegate.shouldShowPageMenu());
         Assert.assertEquals(
                 MenuGroup.OVERVIEW_MODE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());

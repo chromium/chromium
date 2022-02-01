@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.metrics.UmaRecorder;
@@ -48,6 +49,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowMultiDex.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunFlowSequencerTest {
     private static final String ADULT_ACCOUNT_NAME = "adult.account@gmail.com";
     private static final String CHILD_ACCOUNT_NAME =

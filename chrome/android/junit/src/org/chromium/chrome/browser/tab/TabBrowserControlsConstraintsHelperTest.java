@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,6 +31,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link TabBrowserControlsConstraintsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class TabBrowserControlsConstraintsHelperTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
 

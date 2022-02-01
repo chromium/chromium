@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,6 +42,7 @@ import java.lang.ref.WeakReference;
  * Unit tests for {@link ChildAccountService}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ChildAccountServiceTest {
     private static final Account CHILD_ACCOUNT1 =
             AccountUtils.createAccountFromName("child.account1@gmail.com");

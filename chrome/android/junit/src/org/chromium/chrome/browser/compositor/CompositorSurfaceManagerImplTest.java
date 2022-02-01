@@ -34,6 +34,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSurfaceView;
 
@@ -47,6 +48,7 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class CompositorSurfaceManagerImplTest {
     @Mock
     private CompositorSurfaceManager.SurfaceManagerCallbackTarget mCallback;

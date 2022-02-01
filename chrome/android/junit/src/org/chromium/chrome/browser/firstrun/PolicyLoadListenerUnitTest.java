@@ -31,6 +31,8 @@ import org.chromium.components.policy.PolicyService;
 /** Unit tests for PolicyLoadListener. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowProcess.class})
+// TODO(crbug.com/1210371): Change to use paused loop. See crbug for details.
+@LooperMode(LooperMode.Mode.LEGACY)
 public class PolicyLoadListenerUnitTest {
     private static final String LOADED_POLICY_READY = "Policy service should be ready to read.";
     private static final String LOADED_NO_POLICY = "Policy should not exist.";
@@ -170,8 +172,6 @@ public class PolicyLoadListenerUnitTest {
     }
 
     @Test
-    // TODO(crbug.com/1210371): Change to use paused loop. See crbug for details.
-    @LooperMode(LooperMode.Mode.LEGACY)
     public void testDestroyAfterStart_PolicyInitializedInterleaved() {
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
