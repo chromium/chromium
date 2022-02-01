@@ -30,7 +30,10 @@ source_set("internal") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "feature_notification_guide_service_impl_unittest.cc" ]
+  sources = [
+    "feature_notification_guide_service_impl_unittest.cc",
+    "utils_unittest.cc",
+  ]
 
   deps = [
     ":internal",
@@ -38,6 +41,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/feature_guide/notifications:public",
     "//chrome/browser/notifications/scheduler/test:test_support",
+    "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/segmentation_platform/public",

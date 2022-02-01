@@ -271,7 +271,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(ANY, 0), 90, 90);
     config->event_configs.insert(
         EventConfig("app_menu_new_incognito_tab_clicked",
-                    Comparator(GREATER_THAN_OR_EQUAL, 0), 90, 90));
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 90, 90));
     return config;
   }
 
@@ -294,7 +294,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(ANY, 0), 90, 90);
     config->event_configs.insert(
         EventConfig("ntp_voice_search_button_clicked",
-                    Comparator(GREATER_THAN_OR_EQUAL, 0), 90, 90));
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 90, 90));
     return config;
   }
 

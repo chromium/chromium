@@ -85,10 +85,9 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
 void FeatureNotificationGuideServiceImpl::CloseRedundantNotifications() {
   for (auto feature : config_.enabled_features) {
 #if BUILDFLAG(IS_ANDROID)
-    auto used_iph_feature = GetUsedIphFeatureForFeature(feature);
+    const auto* used_iph_feature = GetUsedIphFeatureForFeature(feature);
     bool feature_was_used =
-        used_iph_feature.has_value() &&
-        tracker_->WouldTriggerHelpUI(used_iph_feature.value());
+        used_iph_feature && tracker_->WouldTriggerHelpUI(*used_iph_feature);
     if (!feature_was_used)
       continue;
 #endif
@@ -119,6 +118,7 @@ void FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform(
 }
 
 void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
+  bool schedule_immediately = true;
   for (auto feature : config_.enabled_features) {
     std::string guid = delegate_->GetNotificationParamGuidForFeature(feature);
     if (base::Contains(scheduled_feature_guids_, guid))
@@ -134,7 +134,11 @@ void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
     }
 #endif
 
-    ScheduleNotification(feature);
+    ScheduleNotification(feature, schedule_immediately);
+
+    // For the second feature onwards, we need to schedule notification with a
+    // few days delay. Only the first feature is fired immediately.
+    schedule_immediately = false;
   }
 
   // TODO(shaktisahu): Maybe post a task with few seconds delay.
@@ -142,7 +146,8 @@ void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
 }
 
 void FeatureNotificationGuideServiceImpl::ScheduleNotification(
-    FeatureType feature) {
+    FeatureType feature,
+    bool schedule_immediately) {
   notifications::NotificationData data;
   data.title = delegate_->GetNotificationTitle(feature);
   data.message = delegate_->GetNotificationMessage(feature);
@@ -153,10 +158,11 @@ void FeatureNotificationGuideServiceImpl::ScheduleNotification(
   schedule_params.priority =
       notifications::ScheduleParams::Priority::kNoThrottle;
 
-  // Show after a week.
+  // Show notification immediately or a few days.
   schedule_params.deliver_time_start =
       last_notification_schedule_time_.value_or(clock_->Now()) +
-      config_.notification_deliver_time_delta;
+      (schedule_immediately ? base::Days(0)
+                            : config_.notification_deliver_time_delta);
   schedule_params.deliver_time_end =
       schedule_params.deliver_time_start.value() + kDeliverEndTimeDelta;
   last_notification_schedule_time_ = schedule_params.deliver_time_start.value();

@@ -56,7 +56,7 @@ class FeatureNotificationGuideServiceImpl
   void OnQuerySegmentationPlatform(
       const segmentation_platform::SegmentSelectionResult& result);
   void StartCheckingForEligibleFeatures();
-  void ScheduleNotification(FeatureType feature);
+  void ScheduleNotification(FeatureType feature, bool schedule_immediately);
   void CloseRedundantNotifications();
 
   std::unique_ptr<FeatureNotificationGuideService::Delegate> delegate_;

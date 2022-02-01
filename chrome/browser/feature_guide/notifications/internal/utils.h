@@ -24,11 +24,12 @@ FeatureType FeatureFromCustomData(
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns the notification IPH feature for the given feature.
-base::Feature GetNotificationIphFeatureForFeature(FeatureType& feature);
+const base::Feature& GetNotificationIphFeatureForFeature(FeatureType& feature);
 
 // Returns an IPH feature for the given |feature|, which can be used to
 // determine whether the |feature| has been already used by the user.
-absl::optional<base::Feature> GetUsedIphFeatureForFeature(FeatureType& feature);
+// Returns null if the used check is done in another way other than using IPH.
+const base::Feature* GetUsedIphFeatureForFeature(FeatureType& feature);
 
 #endif
 
