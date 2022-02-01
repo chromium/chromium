@@ -96,6 +96,10 @@ base::ScopedFD OpenFileAndGetFileDescriptor(base::FilePath download_path) {
                        base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!dest_file.IsValid() || !base::PathExists(download_path)) {
     LOG(ERROR) << "Invalid destination file at path: " << download_path;
+    firmware_update::metrics::EmitInstallResult(
+        firmware_update::metrics::FirmwareUpdateInstallResult::
+            kInvalidDestinationFile);
+
     return base::ScopedFD();
   }
 
@@ -344,6 +348,9 @@ void FirmwareUpdateManager::StartInstall(const std::string& device_id,
             if (!CreateDirIfNotExists(path)) {
               LOG(ERROR) << "Cannot create firmware update directory, "
                          << "may be created already.";
+              firmware_update::metrics::EmitInstallResult(
+                  firmware_update::metrics::FirmwareUpdateInstallResult::
+                      kFailedToCreateUpdateDirectory);
             }
           },
           cache_path),
@@ -418,6 +425,9 @@ void FirmwareUpdateManager::OnUrlDownloadedToFile(
     LOG(ERROR) << "Downloading to file failed with error code: "
                << GetResponseCode(simple_loader.get()) << " with network error "
                << simple_loader->NetError();
+    firmware_update::metrics::EmitInstallResult(
+        firmware_update::metrics::FirmwareUpdateInstallResult::
+            kFailedToDownloadToFile);
     std::move(callback).Run();
     return;
   }
@@ -445,6 +455,9 @@ void FirmwareUpdateManager::InstallUpdate(
     base::ScopedFD file_descriptor) {
   if (!file_descriptor.is_valid()) {
     LOG(ERROR) << "Invalid file descriptor.";
+    firmware_update::metrics::EmitInstallResult(
+        firmware_update::metrics::FirmwareUpdateInstallResult::
+            kInvalidFileDescriptor);
     std::move(callback).Run();
     return;
   }
@@ -531,6 +544,12 @@ void FirmwareUpdateManager::OnUpdateListResponse(
 void FirmwareUpdateManager::OnInstallResponse(bool success) {
   auto state = success ? firmware_update::mojom::UpdateState::kSuccess
                        : firmware_update::mojom::UpdateState::kFailed;
+  const auto result =
+      success ? firmware_update::metrics::FirmwareUpdateInstallResult::kSuccess
+              : firmware_update::metrics::FirmwareUpdateInstallResult::
+                    kInstallFailed;
+  firmware_update::metrics::EmitInstallResult(result);
+
   // Success or Fail states are both considered 100% done.
   auto update = ash::firmware_update::mojom::InstallationProgress::New(
       /**percentage=*/100, state);

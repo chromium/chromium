@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/components/fwupd/fake_fwupd_download_client.h"
+#include "ash/components/fwupd/histogram_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom-test-utils.h"
@@ -638,6 +639,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMutipleTimes) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
@@ -681,6 +683,10 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   // Expect RequestAllUpdates() to have been called after an install to refresh
   // the update list.
   ASSERT_EQ(2, update_observer.num_times_notified());
+
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.InstallResult",
+      firmware_update::metrics::FirmwareUpdateInstallResult::kSuccess, 1);
 }
 
 TEST_F(FirmwareUpdateManagerTest, OnPropertiesChangedResponse) {

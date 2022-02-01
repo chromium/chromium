@@ -31,6 +31,11 @@ void EmitUpdateCount(int num_updates,
                               num_updates);
 }
 
+void EmitInstallResult(FirmwareUpdateInstallResult result) {
+  base::UmaHistogramEnumeration("ChromeOS.FirmwareUpdateUi.InstallResult",
+                                result);
+}
+
 std::string GetSourceStr(bool is_startup) {
   return std::string(kHistogramName) +
          std::string(is_startup ? "OnStartup" : "OnRefresh");

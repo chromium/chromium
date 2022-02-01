@@ -38917,6 +38917,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Disabled, First Open already recorded"/>
 </enum>
 
+<enum name="FirmwareUpdateInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="InstallFailed"/>
+  <int value="2" label="FailedToCreateUpdateDirectory"/>
+  <int value="3" label="InvalidDestinationFile"/>
+  <int value="4" label="InvalidFileDescriptor"/>
+  <int value="5" label="FailedToDownloadToFile"/>
+</enum>
+
 <enum name="FirstMeaningfulPaintOrdering">
   <obsolete>
     Removed July 2019.

@@ -759,6 +759,19 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
 </histogram>
 
+<histogram name="ChromeOS.FirmwareUpdateUi.InstallResult"
+    enum="FirmwareUpdateInstallResult" expires_after="2023-01-01">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the result of installing a firmware update. Recorded once per
+    install and the histogram is emitted either when an install is completed or
+    when a failure state is reached. An example failure state is if we're unable
+    to create a firmware update directory.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
     units="devices" expires_after="2023-01-01">
   <owner>jimmyxgong@chromium.org</owner>
