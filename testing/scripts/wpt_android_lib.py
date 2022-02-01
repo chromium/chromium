@@ -118,6 +118,9 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       '--no-pause-after-test',
       '--no-capture-stdio',
       '--no-manifest-download',
+      # Exclude webdriver tests for now.
+      "--exclude=webdriver",
+      "--exclude=infrastructure/webdriver",
       '--binary-arg=--enable-blink-features=MojoJS,MojoJSTest',
       '--binary-arg=--enable-blink-test-features',
       '--binary-arg=--disable-field-trial-config',

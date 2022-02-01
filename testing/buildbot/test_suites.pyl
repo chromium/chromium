@@ -574,7 +574,7 @@
           '--log-wptreport',
         ],
         'swarming': {
-          'shards': 25,
+          'shards': 36,
           'expiration': 18000,
           'hard_timeout': 14400,
         },
@@ -5354,7 +5354,7 @@
     'weblayer_shell_wpt': {
       'weblayer_shell_wpt': {
         'swarming': {
-          'shards': 25,
+          'shards': 32,
           'expiration': 18000,
           'hard_timeout': 14400,
         },
