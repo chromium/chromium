@@ -826,6 +826,7 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
       {{DomCode::LAUNCH_CONTROL_PANEL, EF_NONE}, VKEY_SETTINGS},
       {{DomCode::PRIVACY_SCREEN_TOGGLE, EF_NONE}, VKEY_PRIVACY_SCREEN_TOGGLE},
       {{DomCode::MICROPHONE_MUTE_TOGGLE, EF_NONE}, VKEY_MICROPHONE_MUTE_TOGGLE},
+      {{DomCode::EMOJI_PICKER, EF_NONE}, VKEY_EMOJI_PICKER},
       // Verify the AC Application keys.
       {{DomCode::NEW, EF_NONE}, VKEY_NEW},
       {{DomCode::CLOSE, EF_NONE}, VKEY_CLOSE},

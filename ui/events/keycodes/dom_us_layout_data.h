@@ -597,6 +597,9 @@ const struct DomCodeToKeyboardCodeEntry {
     // DomCode::EJECT                              0x0C00B8 Eject
     {DomCode::MEDIA_PLAY_PAUSE,
      VKEY_MEDIA_PLAY_PAUSE},  // 0x0C00CD MediaPlayPause
+#if BUILDFLAG(IS_POSIX)
+    {DomCode::EMOJI_PICKER, VKEY_EMOJI_PICKER},  // 0x0C00D9 Emoji
+#endif
     {DomCode::MEDIA_SELECT,
      VKEY_MEDIA_LAUNCH_MEDIA_SELECT},                // 0x0C0183 MediaSelect
     {DomCode::LAUNCH_MAIL, VKEY_MEDIA_LAUNCH_MAIL},  // 0x0C018A LaunchMail

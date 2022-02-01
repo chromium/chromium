@@ -246,6 +246,9 @@ enum KeyboardCode {
   // Application keys.
   VKEY_NEW = 0xEB,
   VKEY_CLOSE = 0xEC,
+
+  // Emoji Picker.
+  VKEY_EMOJI_PICKER = 0xED,
 };
 
 }  // namespace ui

@@ -207,6 +207,7 @@ const AcceleratorData kAcceleratorData[] = {
     // Emoji picker shortcut.
     {true, ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
      SHOW_EMOJI_PICKER},
+    {true, ui::VKEY_EMOJI_PICKER, ui::EF_NONE, SHOW_EMOJI_PICKER},
 
     // Debugging shortcuts that need to be available to end-users in
     // release builds.
