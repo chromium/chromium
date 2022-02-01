@@ -11075,7 +11075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.ContextMenu" enum="ReadingListContextMenuActions"
-    expires_after="2022-03-15">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -11085,7 +11085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Download.Failures" units="count"
-    expires_after="2022-03-15">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -11094,14 +11094,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Download.Status" enum="ReadingListDownloadStatus"
-    expires_after="2022-06-05">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Final status of the download of a reading list entry.</summary>
 </histogram>
 
 <histogram name="ReadingList.FirstReadAgeOnDeletion" units="hours"
-    expires_after="2022-03-15">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -11111,14 +11111,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.OfflineVersionDisplayed" enum="Boolean"
-    expires_after="2022-07-17">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Whether the displayed version is the offline one.</summary>
 </histogram>
 
 <histogram name="ReadingList.Read.AgeOnDeletion" units="hours"
-    expires_after="2022-03-15">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -11137,7 +11137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Read.Number" units="count"
-    expires_after="2022-07-17">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of read entries in reading list.</summary>
@@ -11154,7 +11154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Unread.AgeOnDeletion" units="hours"
-    expires_after="2022-03-15">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -11163,7 +11163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Unread.Number" units="count"
-    expires_after="2022-07-17">
+    expires_after="2023-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of unread entries in reading list.</summary>
