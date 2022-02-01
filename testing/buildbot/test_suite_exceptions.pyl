@@ -3695,6 +3695,12 @@
           '--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers',
         ],
       },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          # crbug.com/1292197
+          '--gtest_filter=-org.chromium.android_webview.test.devui.HomeFragmentTest.testLongPressCopy*',
+        ],
+      },
       'android-marshmallow-x86-rel': {
         'swarming': {
           'shards': 9,
