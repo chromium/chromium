@@ -234,7 +234,7 @@ const base::Feature kUsernameFirstFlowFallbackCrowdsourcing = {
 // Current migration version to Google Mobile Services. If version saved in pref
 // is lower than 'kMigrationVersion' passwords will be re-uploaded.
 extern const base::FeatureParam<int> kMigrationVersion = {
-    &kUnifiedPasswordManagerMigration, "migration_version", 0};
+    &kUnifiedPasswordManagerMigration, "migration_version", 1};
 #endif
 
 // Field trial identifier for password generation requirements.
