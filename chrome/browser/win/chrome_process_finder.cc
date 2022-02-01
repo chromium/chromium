@@ -69,8 +69,13 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   }
 
   // If SendMessageTimeout failed to send message consider this as
-  // NOTIFY_FAILED.
-  if (::GetLastError() != ERROR_TIMEOUT)
+  // NOTIFY_FAILED. Timeout can be represented as either ERROR_TIMEOUT or 0...
+  // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessagetimeoutw
+  // Anecdotally which error code comes out seems to depend on whether this
+  // process had non-empty data to deliver via |to_send| or not.
+  const auto error = ::GetLastError();
+  const bool timed_out = (error == ERROR_TIMEOUT || error == 0);
+  if (!timed_out)
     return NOTIFY_FAILED;
 
   // It is possible that the process owning this window may have died by now.
