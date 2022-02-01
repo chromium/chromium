@@ -322,6 +322,8 @@
   }
   _active = active;
 
+  // TODO(crbug.com/1272516): Update the WebUsageEnablerBrowserAgent as part of
+  // setting active/inactive.
   self.viewController.active = active;
 }
 
@@ -401,6 +403,7 @@
 
 // Shuts down the BrowserViewController.
 - (void)destroyViewController {
+  // TODO(crbug.com/1272516): Set the WebUsageEnablerBrowserAgent to disabled.
   [self.viewController shutdown];
   _viewController = nil;
 }
