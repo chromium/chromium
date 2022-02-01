@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -31,15 +32,15 @@ namespace der {
 class NET_EXPORT_PRIVATE Input {
  public:
   // Creates an empty Input, one from which no data can be read.
-  Input();
+  constexpr Input() = default;
 
   // Creates an Input from a constant array |data|.
   template <size_t N>
-  explicit Input(const uint8_t(&data)[N])
-      : data_(data), len_(N) {}
+  constexpr explicit Input(const uint8_t (&data)[N]) : data_(data), len_(N) {}
 
   // Creates an Input from the given |data| and |len|.
-  explicit Input(const uint8_t* data, size_t len);
+  constexpr explicit Input(const uint8_t* data, size_t len)
+      : data_(data), len_(len) {}
 
   // Creates an Input from a base::StringPiece.
   explicit Input(const base::StringPiece& sp);
@@ -50,13 +51,13 @@ class NET_EXPORT_PRIVATE Input {
   Input(const std::string* s);
 
   // Returns the length in bytes of an Input's data.
-  size_t Length() const { return len_; }
+  constexpr size_t Length() const { return len_; }
 
   // Returns a pointer to the Input's data. This method is marked as "unsafe"
   // because access to the Input's data should be done through ByteReader
   // instead. This method should only be used where using a ByteReader truly
   // is not an option.
-  const uint8_t* UnsafeData() const { return data_; }
+  constexpr const uint8_t* UnsafeData() const { return data_; }
 
   // Returns a copy of the data represented by this object as a std::string.
   std::string AsString() const;
@@ -79,18 +80,30 @@ class NET_EXPORT_PRIVATE Input {
   // constructor because of StringPiece's implicit constructor.
   Input(std::string) = delete;
 
-  const uint8_t* data_;
-  size_t len_;
+  const uint8_t* data_ = nullptr;
+  size_t len_ = 0;
 };
 
 // Return true if |lhs|'s data and |rhs|'s data are byte-wise equal.
-NET_EXPORT_PRIVATE bool operator==(const Input& lhs, const Input& rhs);
+NET_EXPORT_PRIVATE constexpr bool operator==(const Input& lhs,
+                                             const Input& rhs) {
+  return base::ranges::equal(lhs.UnsafeData(), lhs.UnsafeData() + lhs.Length(),
+                             rhs.UnsafeData(), rhs.UnsafeData() + rhs.Length());
+}
 
 // Return true if |lhs|'s data and |rhs|'s data are not byte-wise equal.
-NET_EXPORT_PRIVATE bool operator!=(const Input& lhs, const Input& rhs);
+NET_EXPORT_PRIVATE constexpr bool operator!=(const Input& lhs,
+                                             const Input& rhs) {
+  return !(lhs == rhs);
+}
 
 // Returns true if |lhs|'s data is lexicographically less than |rhs|'s data.
-NET_EXPORT_PRIVATE bool operator<(const Input& lhs, const Input& rhs);
+NET_EXPORT_PRIVATE constexpr bool operator<(const Input& lhs,
+                                            const Input& rhs) {
+  return base::ranges::lexicographical_compare(
+      lhs.UnsafeData(), lhs.UnsafeData() + lhs.Length(), rhs.UnsafeData(),
+      rhs.UnsafeData() + rhs.Length());
+}
 
 // This class provides ways to read data from an Input in a bounds-checked way.
 // The ByteReader is designed to read through the input sequentially. Once a
