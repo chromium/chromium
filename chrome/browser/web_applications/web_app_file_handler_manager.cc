@@ -236,8 +236,9 @@ void WebAppFileHandlerManager::SetOsIntegrationState(
 
 bool WebAppFileHandlerManager::ShouldOsIntegrationBeEnabled(
     const AppId& app_id) const {
-  return GetRegistrar() &&
-         GetRegistrar()->ExpectThatFileHandlersAreRegisteredWithOs(app_id);
+  return !ShouldRegisterFileHandlersWithOs() ||
+         (GetRegistrar() &&
+          GetRegistrar()->ExpectThatFileHandlersAreRegisteredWithOs(app_id));
 }
 
 const WebAppRegistrar* WebAppFileHandlerManager::GetRegistrar() const {

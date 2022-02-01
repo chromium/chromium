@@ -195,6 +195,10 @@ apps::mojom::InstallSource GetInstallSource(PrefService* prefs,
   }
 }
 
+bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
+  return web_app.note_taking_new_note_url().is_valid();
+}
+
 }  // namespace
 
 void UninstallImpl(WebAppProvider* provider,
@@ -590,7 +594,11 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   // Add the intent filters for PWAs.
   base::Extend(app->intent_filters,
                apps_util::CreateWebAppIntentFilters(
-                   *web_app, registrar().GetAppScope(web_app->app_id())));
+                   web_app->app_id(), IsNoteTakingWebApp(*web_app),
+                   registrar().GetAppScope(web_app->app_id()),
+                   registrar().GetAppShareTarget(web_app->app_id()),
+                   provider_->os_integration_manager().GetEnabledFileHandlers(
+                       web_app->app_id())));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {
@@ -1141,6 +1149,14 @@ WebAppRegistrar& WebAppPublisherHelper::registrar() const {
 
 bool WebAppPublisherHelper::IsShuttingDown() const {
   return is_shutting_down_;
+}
+
+void WebAppPublisherHelper::OnWebAppFileHandlerApprovalStateChanged(
+    const AppId& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (web_app && Accepts(app_id)) {
+    delegate_->PublishWebApp(ConvertWebApp(web_app));
+  }
 }
 
 void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {

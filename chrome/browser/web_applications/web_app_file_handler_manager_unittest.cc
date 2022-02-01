@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -199,6 +200,11 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
 };
 
 TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
+  // TODO(crbug/1288442): re-enable this test
+  if (!ShouldRegisterFileHandlersWithOs()) {
+    GTEST_SKIP();
+  }
+
   file_handler_manager().InstallFileHandler(app_id(),
                                             GURL("https://app.site/handle-foo"),
                                             {{"application/foo", {".foo"}}},

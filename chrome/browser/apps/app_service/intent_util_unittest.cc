@@ -182,8 +182,9 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
   GURL scope = web_app->start_url().GetWithoutFilename();
   web_app->SetScope(scope);
 
-  std::vector<IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(*web_app.get(), scope);
+  std::vector<IntentFilterPtr> filters = apps_util::CreateWebAppIntentFilters(
+      web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
+      /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
 
   ASSERT_EQ(filters.size(), 1);
   IntentFilterPtr& filter = filters[0];
@@ -251,8 +252,9 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
   file_handlers.push_back(std::move(file_handler));
   web_app->SetFileHandlers(file_handlers);
 
-  std::vector<IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(*web_app.get(), scope);
+  std::vector<IntentFilterPtr> filters = apps_util::CreateWebAppIntentFilters(
+      web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
+      /*app_share_target*/ nullptr, &file_handlers);
 
   ASSERT_EQ(filters.size(), 2);
   // 1st filter is URL filter.
@@ -285,8 +287,9 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
   GURL new_note_url = scope.Resolve("/new_note.html");
   web_app->SetNoteTakingNewNoteUrl(new_note_url);
 
-  std::vector<IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(*web_app.get(), scope);
+  std::vector<IntentFilterPtr> filters = apps_util::CreateWebAppIntentFilters(
+      web_app->app_id(), /*is_note_taking_web_app*/ true, scope,
+      /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
 
   ASSERT_EQ(filters.size(), 2);
 

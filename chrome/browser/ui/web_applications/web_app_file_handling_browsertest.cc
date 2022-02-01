@@ -671,6 +671,8 @@ class WebAppFileHandlingBrowserTest_FeatureSwitchesState
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug/1288442): re-enable these tests
+#if !BUILDFLAG(IS_CHROMEOS)
 // This test fixture will run the PRE_ test with the feature disabled, then the
 // main test with the feature enabled. If a FH app was installed when the
 // feature was disabled, then the feature becomes enabled, it should be
@@ -742,5 +744,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest_FeatureSwitchesOff,
   EXPECT_EQ(0, added_count_);
   EXPECT_EQ(1, removed_count_);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

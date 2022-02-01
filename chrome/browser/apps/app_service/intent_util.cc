@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -113,13 +112,8 @@ apps::mojom::IntentFilterPtr CreateMimeTypeShareFilter(
 }
 
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppShareIntentFilters(
-    const web_app::WebApp& web_app) {
-  if (!web_app.share_target().has_value()) {
-    return {};
-  }
-
+    const apps::ShareTarget& share_target) {
   std::vector<apps::mojom::IntentFilterPtr> filters;
-  const apps::ShareTarget& share_target = web_app.share_target().value();
 
   if (!share_target.params.text.empty()) {
     // The share target accepts navigator.share() calls with text.
@@ -149,9 +143,9 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppShareIntentFilters(
 }
 
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppFileHandlerIntentFilters(
-    const web_app::WebApp& web_app) {
+    const apps::FileHandlers& file_handlers) {
   std::vector<apps::mojom::IntentFilterPtr> filters;
-  for (const apps::FileHandler& handler : web_app.file_handlers()) {
+  for (const apps::FileHandler& handler : file_handlers) {
     std::vector<std::string> mime_types;
     std::vector<std::string> file_extensions;
     std::string action_url = handler.action.spec();
@@ -170,14 +164,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppFileHandlerIntentFilters(
   return filters;
 }
 
-bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
-  return web_app.note_taking_new_note_url().is_valid();
-}
-
-apps::mojom::IntentFilterPtr CreateNoteTakingIntentFilter(
-    const web_app::WebApp& web_app) {
-  DCHECK(IsNoteTakingWebApp(web_app));
-
+apps::mojom::IntentFilterPtr CreateNoteTakingIntentFilter() {
   auto intent_filter = apps::mojom::IntentFilter::New();
   AddSingleValueCondition(apps::mojom::ConditionType::kAction,
                           kIntentActionCreateNote,
@@ -314,21 +301,33 @@ apps::mojom::IntentFilterPtr CreateFileFilter(
 }
 
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
-    const web_app::WebApp& web_app,
-    const GURL& scope) {
+    const web_app::AppId& app_id,
+    bool is_note_taking_web_app,
+    const GURL& app_scope,
+    const apps::ShareTarget* app_share_target,
+    const apps::FileHandlers* enabled_file_handlers) {
   std::vector<apps::mojom::IntentFilterPtr> filters;
-  if (!scope.is_empty())
-    filters.push_back(CreateIntentFilterForUrlScope(scope));
 
-  base::Extend(filters, CreateWebAppShareIntentFilters(web_app));
-  base::Extend(filters, CreateWebAppFileHandlerIntentFilters(web_app));
+  if (!app_scope.is_empty()) {
+    filters.push_back(CreateIntentFilterForUrlScope(app_scope));
+  }
 
-  if (IsNoteTakingWebApp(web_app))
-    filters.push_back(CreateNoteTakingIntentFilter(web_app));
+  if (app_share_target) {
+    base::Extend(filters, CreateWebAppShareIntentFilters(*app_share_target));
+  }
+
+  if (enabled_file_handlers) {
+    base::Extend(filters,
+                 CreateWebAppFileHandlerIntentFilters(*enabled_file_handlers));
+  }
+
+  if (is_note_taking_web_app) {
+    filters.push_back(CreateNoteTakingIntentFilter());
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsProjectorEnabled() &&
-      web_app.app_id() == ash::kChromeUITrustedProjectorSwaAppId) {
+      app_id == ash::kChromeUITrustedProjectorSwaAppId) {
     filters.push_back(CreateIntentFilterForUrlScope(
         GURL(ash::kChromeUIUntrustedProjectorPwaUrl)));
   }

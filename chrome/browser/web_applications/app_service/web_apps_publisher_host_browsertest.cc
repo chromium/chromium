@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -128,6 +129,49 @@ content::EvalJsResult ReadTextContent(content::WebContents* web_contents,
   const std::string script =
       base::StringPrintf("document.getElementById('%s').textContent", id);
   return content::EvalJs(web_contents, script);
+}
+
+// Returns whether there are file view filters among the given list of intent
+// filters.
+bool HasFileViewFilters(
+    const std::vector<apps::mojom::IntentFilterPtr>& intent_filters) {
+  for (const auto& intent_filter : intent_filters) {
+    bool has_action_view = false;
+    bool has_mime_type = false;
+    bool has_file_extension = false;
+
+    for (const auto& condition : intent_filter->conditions) {
+      switch (condition->condition_type) {
+        case apps::mojom::ConditionType::kAction:
+          if (condition->condition_values.size() == 1 &&
+              condition->condition_values.back()->value ==
+                  apps_util::kIntentActionView) {
+            has_action_view = true;
+          }
+          break;
+        case apps::mojom::ConditionType::kFile:
+          for (const auto& condition_value : condition->condition_values) {
+            if (condition_value->match_type ==
+                apps::mojom::PatternMatchType::kMimeType) {
+              has_mime_type = true;
+            } else if (condition_value->match_type ==
+                       apps::mojom::PatternMatchType::kFileExtension) {
+              has_file_extension = true;
+            }
+          }
+          break;
+        default:
+          // NOOP
+          break;
+      }
+    }
+
+    if (has_action_view && (has_mime_type || has_file_extension)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -926,6 +970,43 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ShareMultimedia) {
   EXPECT_EQ(kVideoContent, ReadTextContent(web_contents, "video"));
   EXPECT_EQ("sam.ple.mp3", ReadTextContent(web_contents, "audio_filename"));
   EXPECT_EQ("_sample.mp4", ReadTextContent(web_contents, "video_filename"));
+}
+
+// Regression test for crbug.com/1266642
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest,
+                       PublishOnlyEnabledFileHandlers) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto app_id = InstallWebAppFromManifest(
+      browser(),
+      embedded_test_server()->GetURL("/web_app_file_handling/basic_app.html"));
+
+  // Have to call it explicitly due to usage of
+  // OsIntegrationManager::ScopedSuppressForTesting
+  provider()
+      .os_integration_manager()
+      .file_handler_manager_for_testing()
+      .EnableAndRegisterOsFileHandlers(app_id);
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+
+  EXPECT_TRUE(HasFileViewFilters(
+      mock_app_publisher.get_deltas().back()->intent_filters));
+
+  EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
+            provider().registrar().GetAppFileHandlerApprovalState(app_id));
+  provider().sync_bridge().SetAppFileHandlerApprovalState(
+      app_id, ApiApprovalState::kDisallowed);
+
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 2U);
+
+  EXPECT_FALSE(HasFileViewFilters(
+      mock_app_publisher.get_deltas().back()->intent_filters));
 }
 
 }  // namespace web_app

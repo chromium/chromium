@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,6 +29,10 @@ namespace arc {
 class IntentFilter;
 }
 #endif
+
+namespace apps {
+struct ShareTarget;
+}
 
 class GURL;
 class Profile;
@@ -57,8 +63,11 @@ apps::mojom::IntentFilterPtr CreateFileFilter(
 // The |scope| is needed because currently the correct app scope is not
 // provided through WebApp API for shortcuts.
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
-    const web_app::WebApp& web_app,
-    const GURL& scope);
+    const web_app::AppId& app_id,
+    bool is_note_taking_web_app,
+    const GURL& app_scope,
+    const apps::ShareTarget* app_share_target,
+    const apps::FileHandlers* enabled_file_handlers);
 
 // Create intent filters for a Chrome app (extension-based) e.g. for
 // file_handlers.

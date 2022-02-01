@@ -273,6 +273,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                                base::StringPiece old_name) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
+  void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) override;
   void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                             bool is_locally_installed) override;
   void OnWebAppLastLaunchTimeChanged(
