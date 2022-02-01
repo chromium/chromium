@@ -122,13 +122,13 @@ BrowserAppLauncher::BrowserAppLauncher(Profile* profile)
 
 BrowserAppLauncher::~BrowserAppLauncher() = default;
 
-// TODO(crbug.com/1244506): Make this interface only work for non-ChromeOS
-// platform after the clean up.
+#if !BUILDFLAG(IS_CHROMEOS)
 content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
     AppLaunchParams params) {
   return LaunchAppWithParamsImpl(std::move(params), profile_,
                                  &web_app_launch_manager_);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 content::WebContents* BrowserAppLauncher::LaunchAppWithParamsForTesting(
     AppLaunchParams params) {
