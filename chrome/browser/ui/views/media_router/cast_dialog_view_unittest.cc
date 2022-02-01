@@ -339,4 +339,24 @@ TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonEnabled) {
   EXPECT_TRUE(access_code_cast_button());
 }
 
+// This test demonstrates that when the access code casting feature is
+// available to the user, that the sources button is available even if no
+// sinks are available.
+TEST_F(CastDialogViewTest, AccessCodeEmptySinksSourcesAvailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastUI);
+  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, false);
+
+  CastDialogModel model;
+  InitializeDialogWithModel(model);
+
+  // With policy disabled, button is still disabled even with feature enabled.
+  EXPECT_FALSE(sources_button()->GetEnabled());
+
+  // But with policy enabled, button is now enabled even with no sinks.
+  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
+  dialog_->OnModelUpdated(model);
+  EXPECT_TRUE(sources_button()->GetEnabled());
+}
+
 }  // namespace media_router

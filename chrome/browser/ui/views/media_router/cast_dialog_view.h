@@ -199,6 +199,10 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Returns true if there are active Cast and DIAL sinks.
   bool HasCastAndDialSinks() const;
 
+  // Returns true iff feature is turned on and the access code casting policy
+  // has been enabled for this user.
+  bool IsAccessCodeCastingEnabled() const;
+
   // The singleton dialog instance. This is a nullptr when a dialog is not
   // shown.
   static CastDialogView* instance_;
