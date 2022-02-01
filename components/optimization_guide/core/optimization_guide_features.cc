@@ -550,5 +550,11 @@ size_t BatchAnnotationsValidationBatchSize() {
   return std::max(1, batch_size);
 }
 
+size_t MaxVisitAnnotationCacheSize() {
+  int batch_size = GetFieldTrialParamByFeatureAsInt(
+      kPageContentAnnotations, "max_visit_annotation_cache_size", 50);
+  return std::max(1, batch_size);
+}
+
 }  // namespace features
 }  // namespace optimization_guide

@@ -97,7 +97,8 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     const base::FilePath& database_dir,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : last_annotated_history_visits_(
-          features::MaxContentAnnotationRequestsCached()) {
+          features::MaxContentAnnotationRequestsCached()),
+      annotated_text_cache_(features::MaxVisitAnnotationCacheSize()) {
   DCHECK(optimization_guide_model_provider);
   DCHECK(history_service);
   history_service_ = history_service;
@@ -139,7 +140,28 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!visit.text_to_annotate)
     return;
+  // Used for testing.
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "PageContentAnnotations.AnnotateVisit.AnnotationRequested", true);
+
+  if (annotated_text_cache_.Peek(*visit.text_to_annotate) !=
+      annotated_text_cache_.end()) {
+    // We have annotations the text for this visit, so return that immediately
+    // rather than re-executing the model.
+    //
+    // TODO(crbug.com/1291275): If the model was updated, the cached value could
+    // be stale so we should invalidate the cache on model updates.
+    OnPageContentAnnotated(
+        visit, annotated_text_cache_.Get(*visit.text_to_annotate)->second);
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+        true);
+    return;
+  }
   visits_to_annotate_.emplace_back(visit);
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+      false);
   if (visits_to_annotate_.size() >= features::AnnotateVisitBatchSize()) {
     if (current_visit_annotation_batch_.empty()) {
       LOCAL_HISTOGRAM_BOOLEAN(
@@ -250,6 +272,10 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   if (!content_annotations)
     return;
 
+  if (annotated_text_cache_.Peek(*visit.text_to_annotate) ==
+      annotated_text_cache_.end()) {
+    annotated_text_cache_.Put(*visit.text_to_annotate, *content_annotations);
+  }
   MaybeRecordVisibilityUKM(visit, content_annotations);
 
   if (!features::ShouldWriteContentAnnotationsToHistoryService())

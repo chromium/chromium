@@ -649,6 +649,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached"
+    enum="BooleanCacheHit" expires_after="M106">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the requested annotation for a visit was provided by the
+    in-memory cache or required them to be determined by executing the models.
+    Recorded once for every requested visit annotation.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotations.BatchRequestedSize.{AnnotationType}"
     units="counts" expires_after="M106">
   <owner>robertogden@chromium.org</owner>

@@ -225,6 +225,11 @@ class PageContentAnnotationsService : public KeyedService,
   base::LRUCache<HistoryVisit, bool, HistoryVisit::Comp>
       last_annotated_history_visits_;
 
+  // A LRU cache of the annotation results for visits. If the text of the visit
+  // is in the cache, the cached model annotations will be used.
+  base::HashingLRUCache<std::string, history::VisitContentModelAnnotations>
+      annotated_text_cache_;
+
   // The set of visits to be annotated, this is added to by Annotate requests
   // from the web content observer. These will be annotated when the set is full
   // and annotations can be scheduled with minimal impact to browsing.
