@@ -598,6 +598,7 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::MEDIA_PLAY_PAUSE,
      VKEY_MEDIA_PLAY_PAUSE},  // 0x0C00CD MediaPlayPause
 #if BUILDFLAG(IS_POSIX)
+    {DomCode::DICTATE, VKEY_DICTATE},            // 0x0C00D8 Dictate
     {DomCode::EMOJI_PICKER, VKEY_EMOJI_PICKER},  // 0x0C00D9 Emoji
 #endif
     {DomCode::MEDIA_SELECT,

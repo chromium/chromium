@@ -249,6 +249,8 @@ enum KeyboardCode {
 
   // Emoji Picker.
   VKEY_EMOJI_PICKER = 0xED,
+  // Start dictation.
+  VKEY_DICTATE = 0xEE,
 };
 
 }  // namespace ui

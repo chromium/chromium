@@ -85,6 +85,7 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_Z, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      TOGGLE_SPOKEN_FEEDBACK},
     {true, ui::VKEY_D, ui::EF_COMMAND_DOWN, TOGGLE_DICTATION},
+    {true, ui::VKEY_DICTATE, ui::EF_NONE, TOGGLE_DICTATION},
     {true, ui::VKEY_OEM_COMMA, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      SWITCH_TO_PREVIOUS_USER},
     {true, ui::VKEY_OEM_PERIOD, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
