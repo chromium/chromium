@@ -281,7 +281,8 @@ def _process_requests(sock: socket.socket):
   tasks: Dict[Tuple[str, str], Task] = {}
   task_manager = TaskManager()
   try:
-    log(f'READY for tasks...')
+    log('READY... Remember to set android_static_analysis="build_server" in '
+        'args.gn files')
     for data in _listen_for_request_data(sock):
       task = Task(name=data['name'],
                   cwd=data['cwd'],
