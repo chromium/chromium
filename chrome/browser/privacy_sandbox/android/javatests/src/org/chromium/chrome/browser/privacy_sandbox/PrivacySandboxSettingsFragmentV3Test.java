@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -96,6 +99,12 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         return view[0];
     }
 
+    private void clickImageButtonNextToText(String text) {
+        // Click on the image_button of the preference with |text|.
+        onView(allOf(withId(R.id.image_button), withParent(hasSibling(withChild(withText(text))))))
+                .perform(click());
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
@@ -119,7 +128,6 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testRenderRemovedInterestsView() throws IOException {
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
@@ -130,7 +138,6 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testMainSettingsView() throws IOException {
         openPrivacySandboxSettings();
         assertTrue(PrivacySandboxBridge.isPrivacySandboxEnabled());
@@ -143,28 +150,36 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testAdPersonalizationView() throws IOException {
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
-        // Click on the image_button of a the preference with "Foo" text.
-        onView(allOf(withId(R.id.image_button), withParent(hasSibling(withChild(withText("Foo"))))))
-                .perform(click());
+        onView(withText(R.string.privacy_sandbox_remove_interest_title))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(doesNotExist());
+        clickImageButtonNextToText("Foo");
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), not(hasItem("Foo")));
         assertThat(PrivacySandboxBridge.getBlockedTopics(), hasItem("Foo"));
     }
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    public void testAdPersonalizationEmptyView() throws IOException {
+        // Set no current or blocked topics.
+        mFakePrivacySandboxBridge.setCurrentTopTopics();
+        mFakePrivacySandboxBridge.setBlockedTopics();
+        openPrivacySandboxSettings();
+        onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
+        onView(withText(R.string.privacy_sandbox_remove_interest_title)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     public void testRemovedInterestsView() throws IOException {
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
-        // Click on the image_button of a the preference with "BlockedFoo" text.
-        onView(allOf(withId(R.id.image_button),
-                       withParent(hasSibling(withChild(withText("BlockedFoo"))))))
-                .perform(click());
+        clickImageButtonNextToText("BlockedFoo");
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), hasItem("BlockedFoo"));
         assertThat(PrivacySandboxBridge.getBlockedTopics(), not(hasItem("BlockedFoo")));
     }

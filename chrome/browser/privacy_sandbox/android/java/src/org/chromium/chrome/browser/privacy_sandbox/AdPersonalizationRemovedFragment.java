@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -45,6 +49,15 @@ public class AdPersonalizationRemovedFragment
             interestPreference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(interestPreference);
         }
+    }
+
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        getListView().setItemAnimator(null);
+        return view;
     }
 
     private List<String> getBlockedTopics() {

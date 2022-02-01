@@ -4,6 +4,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/android/jni_headers/PrivacySandboxBridge_jni.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -14,6 +15,20 @@
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaLocalRef;
+
+namespace {
+// TODO(crbug.com/1286276): Remove this fake implementation and call
+// PrivacySandboxService.
+std::set<std::string>* GetCurrentTopics() {
+  static base::NoDestructor<std::set<std::string>> current_topics(
+      {"Generated sample data", "More made up data"});
+  return current_topics.get();
+}
+std::set<std::string>* GetBlockedTopics() {
+  static base::NoDestructor<std::set<std::string>> blocked_topics({});
+  return blocked_topics.get();
+}
+}  // namespace
 
 static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxEnabled(JNIEnv* env) {
   return PrivacySandboxServiceFactory::GetForProfile(
@@ -100,23 +115,32 @@ JNI_PrivacySandboxBridge_GetFlocResetExplanationString(JNIEnv* env) {
                                       ->GetFlocResetExplanationForDisplay());
 }
 
+// TODO(crbug.com/1286276): Remove this fake implementation and call
+// PrivacySandboxService.
 static ScopedJavaLocalRef<jobjectArray>
 JNI_PrivacySandboxBridge_GetCurrentTopTopics(JNIEnv* env) {
-  // TODO(crbug.com/1286276): Call PrivacySandboxService.
-  std::vector<std::string> topics{"Generated sample data", "More made up data"};
-  return base::android::ToJavaArrayOfStrings(env, topics);
+  return base::android::ToJavaArrayOfStrings(
+      env, std::vector<std::string>(GetCurrentTopics()->begin(),
+                                    GetCurrentTopics()->end()));
 }
 
 static ScopedJavaLocalRef<jobjectArray>
 JNI_PrivacySandboxBridge_GetBlockedTopics(JNIEnv* env) {
-  // TODO(crbug.com/1286276): Call PrivacySandboxService.
-  std::vector<std::string> topics{"Blocked sample data", "More blocked data"};
-  return base::android::ToJavaArrayOfStrings(env, topics);
+  return base::android::ToJavaArrayOfStrings(
+      env, std::vector<std::string>(GetBlockedTopics()->begin(),
+                                    GetBlockedTopics()->end()));
 }
 
 static void JNI_PrivacySandboxBridge_SetTopicAllowed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& topic,
+    const base::android::JavaParamRef<jstring>& j_topic,
     jboolean allowed) {
-  // TODO(crbug.com/1286276): Call PrivacySandboxService.
+  std::string topic = base::android::ConvertJavaStringToUTF8(j_topic);
+  if (allowed) {
+    GetCurrentTopics()->insert(topic);
+    GetBlockedTopics()->erase(topic);
+  } else {
+    GetCurrentTopics()->erase(topic);
+    GetBlockedTopics()->insert(topic);
+  }
 }

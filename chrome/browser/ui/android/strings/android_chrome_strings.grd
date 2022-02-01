@@ -929,7 +929,10 @@ Privacy Sandbox trials are still in active development and are available in sele
        <message name="IDS_PRIVACY_SANDBOX_TOPIC_INTERESTS_CATEGORY" desc="Title of a section of the settings page to configure ad personalization." translateable="false">
         Your interests as estimated by Chrome
       </message>
-       <message name="IDS_PRIVACY_SANDBOX_FLEDGE_INTERESTS_CATEGORY" desc="Title of a section of the settings page to configure ad personalization." translateable="false">
+      <message name="IDS_PRIVACY_SANDBOX_TOPIC_EMPTY_STATE" desc="Summary shown when no interests for ad personlization are available." translateable="false">
+        A list of interests will appear here as you browse the web.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_INTERESTS_CATEGORY" desc="Title of a section of the settings page to configure ad personalization." translateable="false">
         Sites you visit that define your interests
       </message>
        <message name="IDS_PRIVACY_SANDBOX_FLEDGE_UNDER_DEVELOPMENT_NOTICE" desc="Text to explain that a feature for ad personalization is not implemented yet." translateable="false">

@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -22,8 +26,12 @@ import java.util.List;
 public class AdPersonalizationFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
+    private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
+    private static final String REMOVE_TOPICS_PREFERENCE = "removed_topics";
 
     private PreferenceCategory mTopicsCategory;
+    private Preference mEmptyTopicsPreference;
+    private Preference mRemoveTopicsPreference;
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -35,8 +43,32 @@ public class AdPersonalizationFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_preference);
         mTopicsCategory = findPreference(TOPICS_CATEGORY_PREFERENCE);
         assert mTopicsCategory != null;
+        mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
+        assert mEmptyTopicsPreference != null;
+        mRemoveTopicsPreference = findPreference(REMOVE_TOPICS_PREFERENCE);
+        assert mRemoveTopicsPreference != null;
+    }
 
-        for (String interest : getCurrentTopics()) {
+    @Override
+    public void onResume() {
+        updatePreferences();
+        super.onResume();
+    }
+
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        getListView().setItemAnimator(null);
+        return view;
+    }
+
+    private void updatePreferences() {
+        List<String> currentTopics = PrivacySandboxBridge.getCurrentTopTopics();
+        List<String> blockedTopics = PrivacySandboxBridge.getBlockedTopics();
+        mTopicsCategory.removeAll();
+        for (String interest : currentTopics) {
             ImageButtonPreference interestPreference = new ImageButtonPreference(getContext());
             interestPreference.setTitle(interest);
             interestPreference.setImage(R.drawable.btn_close,
@@ -45,10 +77,9 @@ public class AdPersonalizationFragment
             interestPreference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(interestPreference);
         }
-    }
-
-    private List<String> getCurrentTopics() {
-        return PrivacySandboxBridge.getCurrentTopTopics();
+        boolean hasAnyTopics = !currentTopics.isEmpty() || !blockedTopics.isEmpty();
+        mRemoveTopicsPreference.setVisible(hasAnyTopics);
+        mEmptyTopicsPreference.setVisible(!hasAnyTopics);
     }
 
     private void blockTopic(String topic) {

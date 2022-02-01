@@ -16,6 +16,11 @@
         android:title="@string/privacy_sandbox_topic_interests_category" />
 
     <Preference
+        android:key="empty_topics"
+        android:summary="@string/privacy_sandbox_topic_empty_state" />
+
+    <Preference
+        android:key="removed_topics"
         android:title="@string/privacy_sandbox_remove_interest_title"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"/>
 
