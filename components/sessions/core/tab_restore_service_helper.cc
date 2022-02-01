@@ -485,9 +485,10 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       auto& window = static_cast<Window&>(entry);
 
       // When restoring a window, either the entire window can be restored, or a
-      // single tab within it. If the entry's ID matches the one to restore,
-      // then the entire window will be restored.
-      if (entry_id_matches_restore_id) {
+      // single tab within it. If the entry's ID matches the one to restore, or
+      // the entry corresponds to an application, then the entire window will be
+      // restored.
+      if (entry_id_matches_restore_id || !window.app_name.empty()) {
         context = client_->CreateLiveTabContext(
             window.app_name, window.bounds, window.show_state, window.workspace,
             window.user_title, window.extra_data);
