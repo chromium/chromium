@@ -1159,7 +1159,7 @@ TEST_F(PaymentsClientTest, UploadSuccessEmptyResponse) {
   ReturnResponse(net::HTTP_OK, "{}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_TRUE(upload_card_response_details_.server_id.empty());
-  EXPECT_TRUE(upload_card_response_details_.instrument_id == 0);
+  EXPECT_FALSE(upload_card_response_details_.instrument_id.has_value());
   EXPECT_TRUE(upload_card_response_details_.virtual_card_enrollment_state ==
               CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
   EXPECT_TRUE(upload_card_response_details_.card_art_url.is_empty());

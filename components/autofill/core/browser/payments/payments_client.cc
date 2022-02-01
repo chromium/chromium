@@ -700,9 +700,10 @@ class UploadCardRequest : public PaymentsRequest {
 
     const absl::optional<int> instrument_id =
         response.FindIntKey("instrument_id");
-    upload_card_response_details_.instrument_id =
-        instrument_id.has_value() ? static_cast<int64_t>(instrument_id.value())
-                                  : 0;
+    if (instrument_id.has_value()) {
+      upload_card_response_details_.instrument_id =
+          static_cast<int64_t>(instrument_id.value());
+    }
 
     const auto* virtual_card_metadata = response.FindKeyOfType(
         "virtual_card_metadata", base::Value::Type::DICTIONARY);

@@ -287,8 +287,9 @@ class PaymentsClient {
     // |instrument_id| is used by the server as an identifier for the card that
     // was uploaded. Currently, we have it in the UploadCardResponseDetails so
     // that we can send it in the GetDetailsForEnrollRequest in the virtual card
-    // enrollment flow.
-    int64_t instrument_id = 0;
+    // enrollment flow. Should never be empty, if using this field use DCHECKs
+    // to ensure it is populated.
+    absl::optional<int64_t> instrument_id;
     // |virtual_card_enrollment_state| is used to determine whether we want to
     // pursue further action with the credit card that was uploaded regarding
     // virtual card enrollment. For example, if the state is
@@ -302,7 +303,8 @@ class PaymentsClient {
     // art. Since chrome sync does not instantly sync the card art with the url,
     // the actual card art image might not always be present. Flows that use
     // |card_art_url| need to make sure they handle the case where the image has
-    // not been synced yet.
+    // not been synced yet. For virtual card eligible cards this should not be
+    // empty. If using this field use DCHECKs to ensure it is populated.
     GURL card_art_url;
   };
 

@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/validation.h"
@@ -335,6 +336,29 @@ void CreditCardSaveManager::OnDidUploadCard(
     // |personal_data_manager_|. PDM uses this information to update the avatar
     // button UI.
     personal_data_manager_->OnCreditCardSaved(/*is_local_card=*/false);
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableUpdateVirtualCardEnrollment)) {
+      // After a card is successfully saved to the server, we can now offer
+      // the user to enroll it as a virtual card. |upload_card_response_details|
+      // has fields in the response that will be required for server requests in
+      // the virtual card enrollment flow, so we set them here and start the
+      // flow.
+      if (upload_card_response_details.virtual_card_enrollment_state ==
+          CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+        DCHECK(!upload_card_response_details.card_art_url.is_empty());
+        DCHECK(upload_card_response_details.instrument_id.has_value());
+        raw_ptr<CreditCard> uploaded_card = &upload_request_.card;
+        uploaded_card->set_card_art_url(
+            upload_card_response_details.card_art_url);
+        uploaded_card->set_virtual_card_enrollment_state(
+            upload_card_response_details.virtual_card_enrollment_state);
+        uploaded_card->set_instrument_id(
+            upload_card_response_details.instrument_id.value());
+        client_->GetVirtualCardEnrollmentManager()->OfferVirtualCardEnroll(
+            uploaded_card, VirtualCardEnrollmentSource::kUpstream);
+      }
+    }
   } else if (show_save_prompt_.has_value() && show_save_prompt_.value()) {
     // If the upload failed and the bubble was actually shown (NOT just the
     // icon), count that as a strike against offering upload in the future.

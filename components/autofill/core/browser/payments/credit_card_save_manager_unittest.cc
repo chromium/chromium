@@ -346,6 +346,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   scoped_refptr<AutofillWebDataService> database_;
   MockPersonalDataManager personal_data_;
   syncer::TestSyncService sync_service_;
+  // TODO(crbug.com/1291003): Refactor to use the real CreditCardSaveManager.
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
   raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
@@ -5189,6 +5190,59 @@ TEST_F(CreditCardSaveManagerTest, InvalidLegalMessageInOnDidGetUploadDetails) {
   ExpectCardUploadDecision(
       histogram_tester,
       AutofillMetrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE);
+}
+
+// Tests that the fields in the card are set correctly and virtual card
+// enrollment is offered when a card becomes eligible after upload.
+TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
+  for (CreditCard::VirtualCardEnrollmentState enrollment_state :
+       {CreditCard::VirtualCardEnrollmentState::UNENROLLED,
+        CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE,
+        CreditCard::VirtualCardEnrollmentState::ENROLLED}) {
+    for (bool is_update_virtual_card_enrollment_enabled : {true, false}) {
+      base::test::ScopedFeatureList feature_list;
+      if (is_update_virtual_card_enrollment_enabled) {
+        feature_list.InitAndEnableFeature(
+            features::kAutofillEnableUpdateVirtualCardEnrollment);
+      } else {
+        feature_list.InitAndDisableFeature(
+            features::kAutofillEnableUpdateVirtualCardEnrollment);
+      }
+      payments::PaymentsClient::UploadCardResponseDetails
+          upload_card_response_details;
+      upload_card_response_details.card_art_url =
+          GURL("https://www.example.com/");
+      upload_card_response_details.instrument_id = 3;
+      upload_card_response_details.virtual_card_enrollment_state =
+          enrollment_state;
+
+      credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
+      credit_card_save_manager_->OnDidUploadCard(
+          AutofillClient::PaymentsRpcResult::kSuccess,
+          upload_card_response_details);
+
+      CreditCard uploaded_card =
+          credit_card_save_manager_->upload_request()->card;
+
+      // The condition inside of this if-statement is true if virtual card
+      // enrollment should be offered.
+      if (is_update_virtual_card_enrollment_enabled &&
+          enrollment_state ==
+              CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+        EXPECT_EQ(uploaded_card.card_art_url(),
+                  upload_card_response_details.card_art_url);
+        EXPECT_EQ(uploaded_card.instrument_id(),
+                  upload_card_response_details.instrument_id);
+        EXPECT_EQ(uploaded_card.virtual_card_enrollment_state(),
+                  upload_card_response_details.virtual_card_enrollment_state);
+      } else {
+        EXPECT_TRUE(uploaded_card.card_art_url().is_empty());
+        EXPECT_EQ(uploaded_card.instrument_id(), 0);
+        EXPECT_EQ(uploaded_card.virtual_card_enrollment_state(),
+                  CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+      }
+    }
+  }
 }
 
 }  // namespace autofill

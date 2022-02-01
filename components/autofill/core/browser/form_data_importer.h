@@ -56,7 +56,7 @@ class FormDataImporter {
   FormDataImporter(const FormDataImporter&) = delete;
   FormDataImporter& operator=(const FormDataImporter&) = delete;
 
-  ~FormDataImporter();
+  virtual ~FormDataImporter();
 
   // Imports the form data, submitted by the user, into
   // |personal_data_manager_|. If a new credit card was detected and

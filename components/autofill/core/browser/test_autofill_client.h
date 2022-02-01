@@ -76,7 +76,8 @@ class TestAutofillClient : public AutofillClient {
                         UnmaskCardReason reason,
                         base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
-
+  raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager()
+      override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::vector<std::string> GetAllowedMerchantsForVirtualCards() override;
   std::vector<std::string> GetAllowedBinRangesForVirtualCards() override;
@@ -282,7 +283,7 @@ class TestAutofillClient : public AutofillClient {
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
   std::unique_ptr<payments::PaymentsClient> payments_client_;
-  std::unique_ptr<FormDataImporter> form_data_importer_;
+  std::unique_ptr<TestFormDataImporter> form_data_importer_;
   GURL form_origin_;
   ukm::SourceId source_id_ = -1;
 
