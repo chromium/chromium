@@ -1,6 +1,6 @@
 {
-  "version": "4.94",
-  "log_list_timestamp": "2022-01-19T01:34:43Z",
+  "version": "5.8",
+  "log_list_timestamp": "2022-02-01T01:37:38Z",
   "operators": [
     {
       "name": "Google",
@@ -244,8 +244,8 @@
           "url": "https://ct1.digicert-ct.com/log/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2015-05-20T16:40:09Z"
+            "retired": {
+              "timestamp": "2022-01-24T00:00:00Z"
             }
           }
         },
