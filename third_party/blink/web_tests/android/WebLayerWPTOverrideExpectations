@@ -705,7 +705,6 @@ crbug.com/1050754 external/wpt/css/css-text/parsing/word-boundary-detection-comp
 crbug.com/1050754 external/wpt/css/css-text/parsing/word-boundary-detection-valid.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-text/parsing/word-boundary-expansion-computed.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-text/parsing/word-boundary-expansion-valid.html [ Failure ]
-crbug.com/1050754 external/wpt/css/css-text/tab-size/tab-size-computed-value-001.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-text/tab-size/tab-size.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-text/text-justify/distribute-alias.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-text/white-space/seg-break-transformation-004.tentative.html [ Failure ]
