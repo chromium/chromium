@@ -422,7 +422,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
   }
 
   image_processor_ = ImageProcessorFactory::Create(
-      *input_config, *output_config, {ImageProcessor::OutputMode::IMPORT},
+      *input_config, *output_config, ImageProcessor::OutputMode::IMPORT,
       kImageProcBufferCount, VIDEO_ROTATION_0, encoder_task_runner_,
       base::BindRepeating(&V4L2VideoEncodeAccelerator::ImageProcessorError,
                           weak_this_));

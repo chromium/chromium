@@ -126,7 +126,7 @@ void ImageProcessorClient::CreateImageProcessorTask(
   // base::Unretained(this) for ErrorCB is safe here because the callback is
   // executed on |image_processor_client_thread_| which is owned by this class.
   image_processor_ = ImageProcessorFactory::Create(
-      input_config, output_config, {ImageProcessor::OutputMode::IMPORT},
+      input_config, output_config, ImageProcessor::OutputMode::IMPORT,
       num_buffers, relative_rotation,
       image_processor_client_thread_.task_runner(),
       base::BindRepeating(&ImageProcessorClient::NotifyError,
