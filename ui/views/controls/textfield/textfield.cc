@@ -2567,6 +2567,7 @@ void Textfield::RevealPasswordChar(int index, base::TimeDelta duration) {
   GetRenderText()->SetObscuredRevealIndex(index);
   SchedulePaint();
   password_char_reveal_index_ = index;
+  UpdateCursorViewPosition();
 
   if (index != -1) {
     password_reveal_timer_.Start(
