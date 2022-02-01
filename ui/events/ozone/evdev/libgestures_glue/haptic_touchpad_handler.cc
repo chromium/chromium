@@ -12,17 +12,52 @@
 #include "base/posix/eintr_wrapper.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 
+// TODO(b/205702807): Remove these definitions when the new version of input.h
+// is rolled in.
+#ifndef EVIOCFFTAKECONTROL
+#define EVIOCFFTAKECONTROL _IOW('E', 0x82, int)
+#define EVIOCFFRELEASECONTROL _IOW('E', 0x83, int)
+
+#define FF_HID 0x4f
+
+struct ff_hid_effect {
+  __u16 hid_usage;
+  __u16 vendor_id;
+  __u8 vendor_waveform_page;
+  __u16 intensity;
+  __u16 repeat_count;
+  __u16 retrigger_period;
+};
+
+typedef struct local_ff_effect {
+  __u16 type;
+  __s16 id;
+  __u16 direction;
+  struct ff_trigger trigger;
+  struct ff_replay replay;
+
+  union {
+    struct ff_constant_effect constant;
+    struct ff_ramp_effect ramp;
+    struct ff_periodic_effect periodic;
+    struct ff_condition_effect condition[2];
+    struct ff_rumble_effect rumble;
+    struct ff_hid_effect hid;
+  } u;
+} local_ff_effect;
+#else
+using local_ff_effect = ff_effect;
+#endif
+
 namespace ui {
 
 namespace {
 constexpr int kInvalidEffectId = -1;
-#if defined(EVIOCFFTAKECONTROL)
 constexpr int kReleaseEffectId = 0;
 constexpr int kPressEffectId = 1;
 
 constexpr uint16_t kGoogleVendorId = 0x18d1;
 constexpr uint8_t kHIDWaveformUsagePage = 0x01;
-#endif  // defined(EVIOCFFTAKECONTROL)
 
 constexpr struct {
   HapticTouchpadEffect effect;
@@ -203,11 +238,9 @@ void HapticTouchpadHandler::PlayFfEffect(int effect_id) {
   }
 }
 
-#if defined(EVIOCFFTAKECONTROL)
-
 int HapticTouchpadHandler::UploadFfEffect(uint16_t hid_usage,
                                           uint8_t intensity) {
-  struct ff_effect effect;
+  local_ff_effect effect;
   memset(&effect, 0, sizeof(effect));
 
   effect.id = kInvalidEffectId;
@@ -244,20 +277,5 @@ void HapticTouchpadHandler::ReleaseControlOfClickEffects() {
     PLOG(ERROR) << "Error releasing control of force feedback release effect.";
   }
 }
-
-#else  // defined(EVIOCFFTAKECONTROL)
-
-int HapticTouchpadHandler::UploadFfEffect(uint16_t hid_usage,
-                                          uint8_t intensity) {
-  return kInvalidEffectId;
-}
-
-bool HapticTouchpadHandler::TakeControlOfClickEffects() {
-  return false;
-}
-
-void HapticTouchpadHandler::ReleaseControlOfClickEffects() {}
-
-#endif  // defined(EVIOCFFTAKECONTROL)
 
 }  // namespace ui
