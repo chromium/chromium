@@ -72,11 +72,20 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
       content_type_(content_type),
       stream_volume_multiplier_(1.0f),
       limiter_volume_multiplier_(1.0f),
+      direct_pcm_buffer_address_(nullptr),
+      direct_rendering_delay_address_(nullptr),
+      j_audio_sink_audiotrack_impl_(Java_AudioSinkAudioTrackImpl_create(
+          base::android::AttachCurrentThread(),
+          reinterpret_cast<jlong>(this),
+          static_cast<int>(content_type_),
+          num_channels_,
+          input_samples_per_second_,
+          kDirectBufferSize,
+          audio_track_session_id,
+          use_hw_av_sync_)),
       feeder_thread_("AudioTrack feeder thread"),
       feeder_task_runner_(nullptr),
       caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      direct_pcm_buffer_address_(nullptr),
-      direct_rendering_delay_address_(nullptr),
       state_(kStateUninitialized),
       weak_factory_(this) {
   LOG(INFO) << __func__ << "(" << this << "):"
@@ -89,18 +98,7 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
             << " content_type_=" << content_type_;
   DCHECK(delegate_);
   DCHECK_GT(num_channels_, 0);
-
-  // Create Java part and initialize.
-  DCHECK(j_audio_sink_audiotrack_impl_.is_null());
-  j_audio_sink_audiotrack_impl_.Reset(
-      Java_AudioSinkAudioTrackImpl_createAudioSinkAudioTrackImpl(
-          base::android::AttachCurrentThread(),
-          reinterpret_cast<intptr_t>(this)));
-  Java_AudioSinkAudioTrackImpl_init(
-      base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_,
-      static_cast<int>(content_type_), num_channels_, input_samples_per_second_,
-      kDirectBufferSize, audio_track_session_id, use_hw_av_sync_);
-  // Should be set now.
+  DCHECK_GT(input_samples_per_second_, 0);
   DCHECK(direct_pcm_buffer_address_);
   DCHECK(direct_rendering_delay_address_);
 
@@ -137,16 +135,10 @@ AudioContentType AudioSinkAndroidAudioTrackImpl::content_type() const {
 
 void AudioSinkAndroidAudioTrackImpl::FinalizeOnFeederThread() {
   RUN_ON_FEEDER_THREAD(FinalizeOnFeederThread);
-  if (j_audio_sink_audiotrack_impl_.is_null()) {
-    LOG(WARNING) << "j_audio_sink_audiotrack_impl_ is NULL";
-    return;
-  }
-
   wait_for_eos_task_.Cancel();
 
   Java_AudioSinkAudioTrackImpl_close(base::android::AttachCurrentThread(),
                                      j_audio_sink_audiotrack_impl_);
-  j_audio_sink_audiotrack_impl_.Reset();
 }
 
 void AudioSinkAndroidAudioTrackImpl::PreventDelegateCalls() {
@@ -198,7 +190,10 @@ void AudioSinkAndroidAudioTrackImpl::FeedData() {
   int written = Java_AudioSinkAudioTrackImpl_writePcm(
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_,
       pending_data_bytes_after_reformat_,
-      pending_data_->timestamp() * base::Time::kNanosecondsPerMicrosecond);
+      (pending_data_->timestamp() == INT64_MIN)
+          ? pending_data_->timestamp()
+          : pending_data_->timestamp() *
+                base::Time::kNanosecondsPerMicrosecond);
 
   if (written < 0) {
     LOG(ERROR) << __func__ << "(" << this << "): Cannot write PCM via JNI!";
@@ -232,6 +227,7 @@ void AudioSinkAndroidAudioTrackImpl::FeedData() {
 void AudioSinkAndroidAudioTrackImpl::ScheduleWaitForEosTask() {
   DCHECK(wait_for_eos_task_.IsCancelled());
   DCHECK(state_ == kStateGotEos);
+  DCHECK(feeder_task_runner_->BelongsToCurrentThread());
 
   int64_t playout_time_left_us =
       Java_AudioSinkAudioTrackImpl_prepareForShutdown(

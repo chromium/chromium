@@ -92,7 +92,8 @@ void CmaAudioOutput::Initialize(
       // realtime. Set the sync mode to kModeSyncPts to allow cma backend to
       // buffer the early pushed data, instead of dropping them.
       audio_params_.effects() & ::media::AudioParameters::AUDIO_PREFETCH
-          ? MediaPipelineDeviceParams::kModeSyncPts
+          ? (use_hw_av_sync_ ? MediaPipelineDeviceParams::kModeHwAvSyncPts
+                             : MediaPipelineDeviceParams::kModeSyncPts)
           : MediaPipelineDeviceParams::kModeIgnorePts,
       MediaPipelineDeviceParams::kAudioStreamNormal,
       cma_backend_task_runner.get(), GetContentType(device_id), device_id);

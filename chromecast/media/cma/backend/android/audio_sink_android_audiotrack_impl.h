@@ -125,8 +125,19 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   float stream_volume_multiplier_;
   float limiter_volume_multiplier_;
 
+  // Buffers shared between native and Java space to move data across the JNI.
+  // We use direct buffers so that the native class can have access to the
+  // underlying memory address. This avoids the need to copy from a jbyteArray
+  // to native memory. More discussion of this here:
+  // http://developer.android.com/training/articles/perf-jni.html Owned by
+  // j_audio_sink_audiotrack_impl_.
+  uint8_t* direct_pcm_buffer_address_;  // PCM audio data native->java
+  // rendering delay+timestamp return value, java->native
+  uint64_t* direct_rendering_delay_address_;
+
   // Java AudioSinkAudioTrackImpl instance.
-  base::android::ScopedJavaGlobalRef<jobject> j_audio_sink_audiotrack_impl_;
+  const base::android::ScopedJavaGlobalRef<jobject>
+      j_audio_sink_audiotrack_impl_;
 
   // Thread that feeds audio data into the Java instance though JNI,
   // potentially blocking. When in Play mode the Java AudioTrack blocks as it
@@ -139,16 +150,6 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   base::CancelableOnceClosure wait_for_eos_task_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
-
-  // Buffers shared between native and Java space to move data across the JNI.
-  // We use direct buffers so that the native class can have access to the
-  // underlying memory address. This avoids the need to copy from a jbyteArray
-  // to native memory. More discussion of this here:
-  // http://developer.android.com/training/articles/perf-jni.html Owned by
-  // j_audio_sink_audiotrack_impl_.
-  uint8_t* direct_pcm_buffer_address_;  // PCM audio data native->java
-  // rendering delay+timestamp return value, java->native
-  uint64_t* direct_rendering_delay_address_;
 
   State state_;
 

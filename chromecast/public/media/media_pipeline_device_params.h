@@ -42,6 +42,11 @@ struct MediaPipelineDeviceParams {
     kModeIgnorePts = 1,
     // In addition to the constraints above, also do not wait for vsync.
     kModeIgnorePtsAndVSync = 2,
+    // Almost same as kModeSyncPts except two things:
+    // 1. When pushing silence to the backend decoder, set an invalid timestamp
+    // to the silence buffer.
+    // 2. When pushing non-silence buffers, do not adjust the timestamp.
+    kModeHwAvSyncPts = 3,
   };
 
   enum AudioStreamType {
