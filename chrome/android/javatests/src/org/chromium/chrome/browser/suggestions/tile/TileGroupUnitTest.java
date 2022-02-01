@@ -115,6 +115,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1292469")
     public void testInitialiseWithTileList() {
         mMostVisitedSites.setTileSuggestions(URLS);
 
