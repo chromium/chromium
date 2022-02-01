@@ -6320,7 +6320,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8455529558077979314">Configuración de la pantalla de privacidad</translation>
 <translation id="8455551509936646199">Día de la semana en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "WEEKLY" (semanal).</translation>
 <translation id="8461914792118322307">Proxy</translation>
-<translation id="8463569949213141467">Inhabilitar la cámara, la configuración del navegador, los ajustes del sistema operativo, los análisis y las funciones de Web Store, Canvas y Explorar</translation>
+<translation id="8463569949213141467">Funciones de configuración de la cámara, de ajustes del navegador, de ajustes del sistema operativo, de análisis y de Web Store, Canvas y Explorar que se deshabilitarán</translation>
 <translation id="8465065632133292531">Parámetros para URL instantánea que utiliza POST</translation>
 <translation id="8470317291588703478">No forzar el modo restringido de YouTube</translation>
 <translation id="847472800012384958">No permitir que ningún sitio muestre pop-ups</translation>
