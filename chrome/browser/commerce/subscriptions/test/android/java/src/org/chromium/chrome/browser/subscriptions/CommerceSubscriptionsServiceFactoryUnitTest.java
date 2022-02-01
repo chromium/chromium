@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,7 +29,9 @@ import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.BrowserContextHandle;
 /**
  * Unit tests for {@link CommerceSubscriptionsServiceFactory}.
@@ -54,6 +57,12 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
     @Mock
     EndpointFetcher.Natives mEndpointFetcherJniMock;
 
+    @Mock
+    IdentityServicesProvider mIdentityServicesProvider;
+
+    @Mock
+    IdentityManager mIdentityManager;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -61,6 +70,9 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
         doReturn(false).when(mProfileTwo).isOffTheRecord();
         mMocker.mock(CommerceSubscriptionsStorageJni.TEST_HOOKS, mCommerceSubscriptionsStorageJni);
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
+
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -73,6 +85,11 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
         })
                 .when(mCommerceSubscriptionsStorageJni)
                 .init(any(CommerceSubscriptionsStorage.class), any(BrowserContextHandle.class));
+    }
+
+    @After
+    public void tearDown() {
+        IdentityServicesProvider.setInstanceForTests(null);
     }
 
     @Test
