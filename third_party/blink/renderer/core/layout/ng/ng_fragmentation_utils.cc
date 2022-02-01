@@ -733,8 +733,10 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
         // If this is the initial column balancing pass, attempt to make the
         // column block-size at least as large as the tallest piece of
         // monolithic content and/or block with break-inside:avoid.
-        PropagateUnbreakableBlockSize(fragment.BlockSize(),
-                                      fragmentainer_block_offset, builder);
+        LayoutUnit block_size = BlockSizeForFragmentation(
+            layout_result, space.GetWritingDirection());
+        PropagateUnbreakableBlockSize(block_size, fragmentainer_block_offset,
+                                      builder);
       }
     }
     // We only care about soft breaks if we have a fragmentainer block-size.
