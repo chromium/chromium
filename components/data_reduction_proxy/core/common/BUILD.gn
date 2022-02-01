@@ -7,8 +7,6 @@
 template("common_tmpl") {
   static_library(target_name) {
     sources = [
-      "data_reduction_proxy_pref_names.cc",
-      "data_reduction_proxy_pref_names.h",
       "data_reduction_proxy_switches.cc",
       "data_reduction_proxy_switches.h",
     ]

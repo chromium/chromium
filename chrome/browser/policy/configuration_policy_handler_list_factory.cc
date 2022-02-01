@@ -65,7 +65,6 @@
 #include "components/content_settings/core/browser/insecure_private_network_policy_handler.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/pref_names.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/enterprise/browser/reporting/cloud_profile_reporting_policy_handler.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
@@ -715,9 +714,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
 
 #if BUILDFLAG(IS_ANDROID)
-  { key::kDataCompressionProxyEnabled,
-    data_reduction_proxy::prefs::kDataSaverEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kAuthAndroidNegotiateAccountType,
     prefs::kAuthAndroidNegotiateAccountType,
     base::Value::Type::STRING },

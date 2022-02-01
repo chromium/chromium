@@ -11,14 +11,12 @@
 #include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
 #include "chrome/browser/android/chrome_backup_agent.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 
 namespace {
 
 const char* backed_up_preferences_[] = {
-    data_reduction_proxy::prefs::kDataSaverEnabled,
     syncer::prefs::kSyncFirstSetupComplete,
     syncer::prefs::kSyncKeepEverythingSynced,
     syncer::prefs::kSyncAutofill,

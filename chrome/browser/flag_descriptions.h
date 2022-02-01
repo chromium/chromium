@@ -439,9 +439,6 @@ extern const char
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 
-extern const char kEnableSaveDataName[];
-extern const char kEnableSaveDataDescription[];
-
 extern const char kEnableNavigationPredictorName[];
 extern const char kEnableNavigationPredictorDescription[];
 

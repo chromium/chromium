@@ -23,8 +23,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -76,7 +74,6 @@ namespace {
 constexpr char kSyncDataKey[] = "about_sync_data";
 constexpr char kExtensionsListKey[] = "extensions";
 constexpr char kPowerApiListKey[] = "chrome.power extensions";
-constexpr char kDataReductionProxyKey[] = "data_reduction_proxy";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -337,7 +334,6 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   PopulateSyncLogs(response.get());
   PopulateExtensionInfoLogs(response.get());
   PopulatePowerApiLogs(response.get());
-  PopulateDataReductionProxyLogs(response.get());
 #if BUILDFLAG(IS_WIN)
   PopulateUsbKeyboardDetected(response.get());
   PopulateEnrolledToDomain(response.get());
@@ -451,19 +447,6 @@ void ChromeInternalLogSource::PopulatePowerApiLogs(
 
   if (!info.empty())
     response->emplace(kPowerApiListKey, info);
-}
-
-void ChromeInternalLogSource::PopulateDataReductionProxyLogs(
-    SystemLogsResponse* response) {
-  data_reduction_proxy::DataReductionProxySettings*
-      data_reduction_proxy_settings =
-          DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
-              ProfileManager::GetLastUsedProfile());
-  bool data_saver_enabled =
-      data_reduction_proxy_settings &&
-      data_reduction_proxy_settings->IsDataReductionProxyEnabled();
-  response->emplace(kDataReductionProxyKey,
-                    data_saver_enabled ? "enabled" : "disabled");
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

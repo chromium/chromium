@@ -15726,9 +15726,10 @@
     {
       'name': 'DataCompressionProxyEnabled',
       'owners': ['bolian@chromium.org', 'pmarko@chromium.org'],
+      'deprecated': True,
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['android:31-'],
+      'supported_on': ['android:31-99'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

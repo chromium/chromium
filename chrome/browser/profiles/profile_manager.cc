@@ -46,8 +46,6 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -1633,11 +1631,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
 #endif
-
-  // Activate data reduction proxy. This creates a request context and makes a
-  // URL request to check if the data reduction proxy server is reachable.
-  DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile)->
-      MaybeActivateDataReductionProxy(true);
 
   // Ensure NavigationPredictorKeyedService is started.
   NavigationPredictorKeyedServiceFactory::GetForProfile(profile);

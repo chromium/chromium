@@ -11,7 +11,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -88,8 +87,6 @@ class ChromeHintsManagerFetchingTest
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
-    pref_service_->registry()->RegisterBooleanPref(
-        data_reduction_proxy::prefs::kDataSaverEnabled, false);
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_->registry());
 

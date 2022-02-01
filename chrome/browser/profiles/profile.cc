@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
@@ -332,8 +331,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kApplicationLocaleAccepted,
                                std::string());
 #endif
-
-  data_reduction_proxy::RegisterSyncableProfilePrefs(registry);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Preferences related to the avatar bubble and user manager tutorials.

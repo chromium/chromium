@@ -32,7 +32,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/lens/lens_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -589,26 +588,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
   std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
 
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_CUSTOM_FIRST));
-}
-
-// Verify that request headers do not specify pass through when "Save Image
-// As..." is used with Data Saver disabled.
-TEST_F(RenderViewContextMenuPrefsTest, DataSaverDisabledSaveImageAs) {
-  data_reduction_proxy::DataReductionProxySettings::
-      SetDataSaverEnabledForTesting(profile()->GetPrefs(), false);
-
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.unfiltered_link_url = params.link_url;
-  auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
-
-  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEIMAGEAS, 0);
-
-  const std::string& headers =
-      content::WebContentsTester::For(web_contents())->GetSaveFrameHeaders();
-  EXPECT_TRUE(headers.find(
-      "Chrome-Proxy-Accept-Transform: identity") == std::string::npos);
-  EXPECT_TRUE(headers.find("Cache-Control: no-cache") == std::string::npos);
 }
 
 // Check that if image is broken "Load image" menu item is present.

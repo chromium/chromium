@@ -8,10 +8,6 @@ if (is_android) {
 
 browser_sources = [
   "data_reduction_proxy_metrics.h",
-  "data_reduction_proxy_prefs.cc",
-  "data_reduction_proxy_prefs.h",
-  "data_reduction_proxy_service.cc",
-  "data_reduction_proxy_service.h",
   "data_reduction_proxy_settings.cc",
   "data_reduction_proxy_settings.h",
 ]
@@ -53,45 +49,4 @@ static_library("browser") {
   if (!is_ios) {
     defines += [ "USE_GOOGLE_API_KEYS_FOR_AUTH_KEY" ]
   }
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "data_reduction_proxy_settings_test_utils.cc",
-    "data_reduction_proxy_settings_test_utils.h",
-    "data_reduction_proxy_test_utils.cc",
-    "data_reduction_proxy_test_utils.h",
-  ]
-
-  public_deps = [ ":browser" ]
-  deps = [
-    "//base",
-    "//components/data_reduction_proxy/core/common",
-    "//components/prefs:test_support",
-    "//net",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "data_reduction_proxy_settings_unittest.cc" ]
-
-  deps = [
-    ":browser",
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//components/prefs:test_support",
-    "//components/variations:test_support",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }

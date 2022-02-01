@@ -96,7 +96,6 @@
 #include "components/certificate_transparency/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/pref_names.h"
@@ -718,6 +717,11 @@ const char kThisWeekUserTrafficContentTypeDownstreamKB[] =
     "data_reduction.this_week_user_traffic_contenttype_downstream_kb";
 const char kLastWeekUserTrafficContentTypeDownstreamKB[] =
     "data_reduction.last_week_user_traffic_contenttype_downstream_kb";
+const char kDataSaverEnabled[] = "spdy_proxy.enabled";
+const char kDataReductionProxyWasEnabledBefore[] =
+    "spdy_proxy.was_enabled_before";
+const char kDataReductionProxyLastEnabledTime[] =
+    "data_reduction.last_enabled_time";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -942,6 +946,9 @@ void RegisterProfilePrefsForMigration(
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kLastWeekUserTrafficContentTypeDownstreamKB,
                                    PrefRegistry::LOSSY_PREF);
+  registry->RegisterBooleanPref(kDataSaverEnabled, false);
+  registry->RegisterBooleanPref(kDataReductionProxyWasEnabledBefore, false);
+  registry->RegisterInt64Pref(kDataReductionProxyLastEnabledTime, 0L);
 }
 
 }  // namespace
@@ -951,7 +958,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // prefs en masse. See RegisterProfilePrefs for per-profile prefs. Please
   // keep this list alphabetized.
   browser_shutdown::RegisterPrefs(registry);
-  data_reduction_proxy::RegisterPrefs(registry);
   BrowserProcessImpl::RegisterPrefs(registry);
   ChromeContentBrowserClient::RegisterLocalStatePrefs(registry);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1837,6 +1843,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kLastWeekServicesDownstreamForegroundKB);
   profile_prefs->ClearPref(kThisWeekUserTrafficContentTypeDownstreamKB);
   profile_prefs->ClearPref(kLastWeekUserTrafficContentTypeDownstreamKB);
+  profile_prefs->ClearPref(kDataSaverEnabled);
+  profile_prefs->ClearPref(kDataReductionProxyWasEnabledBefore);
+  profile_prefs->ClearPref(kDataReductionProxyLastEnabledTime);
 
   // Added 01/2022.
   invalidation::InvalidatorRegistrarWithMemory::

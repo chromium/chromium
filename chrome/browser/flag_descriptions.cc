@@ -745,11 +745,6 @@ const char kEnableExperimentalCookieFeaturesDescription[] =
     "Enable new features that affect setting, sending, and managing cookies. "
     "The enabled features are subject to change at any time.";
 
-const char kEnableSaveDataName[] = "Enables save data feature";
-const char kEnableSaveDataDescription[] =
-    "Enables save data feature. May cause user's traffic to be proxied via "
-    "Google's data reduction proxy.";
-
 const char kEnableNavigationPredictorName[] = "Enables navigation predictor";
 const char kEnableNavigationPredictorDescription[] =
     "Enables navigation predictor feature that predicts the next likely "

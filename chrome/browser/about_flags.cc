@@ -86,7 +86,6 @@
 #include "components/component_updater/component_updater_switches.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/public.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/download/public/common/download_features.h"
@@ -3713,10 +3712,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableLoginDetectionDescription, kOsAll,
      FEATURE_VALUE_TYPE(login_detection::kLoginDetection)},
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-    {"enable-save-data", flag_descriptions::kEnableSaveDataName,
-     flag_descriptions::kEnableSaveDataDescription, kOsCrOS | kOsLinux,
-     SINGLE_VALUE_TYPE(
-         data_reduction_proxy::switches::kEnableDataReductionProxy)},
     {"enable-navigation-predictor",
      flag_descriptions::kEnableNavigationPredictorName,
      flag_descriptions::kEnableNavigationPredictorDescription,
@@ -8014,17 +8009,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!(entry.supported_platforms & (kOsCrOS | kOsCrOSOwnerOnly)))
     return true;
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  // data-reduction-proxy-lo-fi and enable-data-reduction-proxy-lite-page
-  // are only available for Chromium builds and the Canary/Dev/Beta channels.
-  if ((!strcmp("data-reduction-proxy-lo-fi", entry.internal_name) ||
-       !strcmp("enable-data-reduction-proxy-lite-page", entry.internal_name)) &&
-      channel != version_info::Channel::BETA &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::UNKNOWN) {
-    return true;
-  }
 
   // enable-unsafe-webgpu is only available on Dev/Canary channels.
   if (!strcmp("enable-unsafe-webgpu", entry.internal_name) &&
