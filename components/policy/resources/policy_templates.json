@@ -1537,6 +1537,8 @@
       'tags': [],
       'desc': '''Setting the policy to True turns on search suggestions in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s address bar. Setting the policy to False turns off these search suggestions.
 
+      Suggestions based on bookmarks or history are unaffected by the policy.
+
       If you set the policy, users can't change it. If not set, search suggestions are on at first, but users can turn them off any time.''',
     },
     {
