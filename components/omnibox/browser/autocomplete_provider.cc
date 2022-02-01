@@ -67,6 +67,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "VerbatimMatch";
     case TYPE_VOICE_SUGGEST:
       return "VoiceSuggest";
+    case TYPE_HISTORY_FUZZY:
+      return "HistoryFuzzy";
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";

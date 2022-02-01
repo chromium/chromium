@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/builtin_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/document_provider.h"
+#include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -367,6 +368,9 @@ AutocompleteController::AutocompleteController(
     voice_suggest_provider_ =
         new VoiceSuggestProvider(provider_client_.get(), this);
     providers_.push_back(voice_suggest_provider_.get());
+  }
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
+    providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
