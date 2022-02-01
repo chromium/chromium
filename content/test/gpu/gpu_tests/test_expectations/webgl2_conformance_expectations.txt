@@ -213,7 +213,6 @@ crbug.com/945970 [ android ] WebglExtension_EXT_float_blend [ Failure ]
 # ========================
 
 # Failing new updated tests
-crbug.com/891861 conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
@@ -593,6 +592,10 @@ crbug.com/630800 [ intel mac ] deqp/functional/gles3/fbocompleteness.html [ Fail
 crbug.com/630800 [ nvidia mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/811614 [ amd mac ] deqp/functional/gles3/negativeshaderapi.html [ Failure ]
 crbug.com/811614 [ intel mac ] deqp/functional/gles3/negativeshaderapi.html [ Failure ]
+crbug.com/1289803 [ mac no-passthrough ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
+crbug.com/1289803 [ mac passthrough angle-opengl ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
+# The extension is not supported on ANGLE/Metal yet but we intend to make it work.
+crbug.com/891861 [ mac passthrough angle-metal ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Skip ]
 
 # Mac Retina NVIDIA
 crbug.com/728271 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/mat_01.html [ Failure ]
