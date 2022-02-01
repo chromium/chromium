@@ -294,7 +294,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          UnifiedMessageCenterViewTest,
                          testing::Bool() /* IsNotificationsRefreshEnabled() */);
 
-TEST_P(UnifiedMessageCenterViewTest, AddAndRemoveNotification) {
+// Flaky: https://crbug.com/1293165
+TEST_P(UnifiedMessageCenterViewTest, DISABLED_AddAndRemoveNotification) {
   CreateMessageCenterView();
   EXPECT_FALSE(message_center_view()->GetVisible());
 
