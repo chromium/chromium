@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -3760,6 +3761,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        DeleteCredentialsUpdateDropdown) {
+  // With this feature enabled, the separator line is an actual element.
+  bool separator_line_as_element = base::FeatureList::IsEnabled(
+      autofill::features::kAutofillVisualImprovementsForSuggestionUi);
+
   password_manager::PasswordStoreInterface* password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS)
@@ -3800,7 +3805,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       autofill_client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);
   // Two credentials and "Manage passwords" should be displayed.
-  EXPECT_EQ(3, controller->GetLineCount());
+  EXPECT_EQ(3 + (separator_line_as_element ? 1 : 0),
+            controller->GetLineCount());
 
   // Trigger user gesture so that autofill happens.
   ASSERT_TRUE(content::ExecuteScript(
@@ -3819,7 +3825,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                                   0, element_bounds);
   controller = autofill_client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);
-  EXPECT_EQ(2, controller->GetLineCount());
+  EXPECT_EQ(2 + (separator_line_as_element ? 1 : 0),
+            controller->GetLineCount());
   EXPECT_EQ(u"user", controller->GetSuggestionMainTextAt(0));
   EXPECT_NE(u"admin", controller->GetSuggestionMainTextAt(1));
 

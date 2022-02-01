@@ -863,11 +863,23 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_2021-12-09",
+                    "name": "Enabled_2022-01-27",
                     "enable_features": [
                         "AutofillCenterAlignedSuggestions",
                         "AutofillTypeSpecificPopupWidth",
-                        "AutofillUseConsistentPopupSettingsIcons"
+                        "AutofillUseConsistentPopupSettingsIcons",
+                        "AutofillVisualImprovementsForSuggestionUi"
+                    ],
+                    "disable_features": []
+                },
+                {
+                    "name": "Disabled_2022-01-27",
+                    "enable_features": [],
+                    "disable_features": [
+                        "AutofillCenterAlignedSuggestions",
+                        "AutofillTypeSpecificPopupWidth",
+                        "AutofillUseConsistentPopupSettingsIcons",
+                        "AutofillVisualImprovementsForSuggestionUi"
                     ]
                 }
             ]
