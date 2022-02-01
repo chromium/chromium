@@ -895,7 +895,8 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
 }
 
 void DesksController::CaptureActiveDeskAsTemplate(
-    GetDeskTemplateCallback callback) const {
+    GetDeskTemplateCallback callback,
+    aura::Window* root_window_to_show) const {
   DCHECK(current_account_id_.is_valid());
 
   // Construct |restore_data| for |desk_template|.
@@ -947,8 +948,9 @@ void DesksController::CaptureActiveDeskAsTemplate(
       shell->overview_controller()->InOverviewSession()) {
     // There were some unsupported apps in the active desk so open up a dialog
     // to let the user know.
+    DCHECK(root_window_to_show);
     DesksTemplatesDialogController::Get()->ShowUnsupportedAppsDialog(
-        shell->GetPrimaryRootWindow(), unsupported_apps, std::move(callback),
+        root_window_to_show, unsupported_apps, std::move(callback),
         std::move(desk_template));
     return;
   }

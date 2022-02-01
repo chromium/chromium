@@ -14,6 +14,7 @@
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -63,7 +64,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // callback to `OnAddOrUpdateEntry`. If there are unsupported apps on the
   // active desk, a dialog will open up and we may or may not save the desk
   // asynchronously based on the user's decision.
-  void MaybeSaveActiveDeskAsTemplate();
+  void MaybeSaveActiveDeskAsTemplate(aura::Window* root_window_to_show);
 
   // Saves or updates the `desk_template` to the model.
   void SaveOrUpdateDeskTemplate(bool is_update,

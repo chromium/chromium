@@ -259,8 +259,11 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Captures the active desk and returns it as a desk template containing
   // necessary information that can be used to create a same desk via provided
-  // `callback`.
-  void CaptureActiveDeskAsTemplate(GetDeskTemplateCallback callback) const;
+  // `callback`, `root_window_to_show` is used to determine which monitor to
+  // show template related dialog.
+  void CaptureActiveDeskAsTemplate(
+      GetDeskTemplateCallback callback,
+      aura::Window* root_window_to_show = nullptr) const;
 
   // Creates and activates a new desk for a template with name `template_name`
   // or `template_name ({counter})` to resolve naming conflicts. Runs `callback`

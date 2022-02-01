@@ -544,7 +544,8 @@ void DesksTemplatesItemView::OnDeleteButtonPressed() {
   // Show the dialog to confirm the deletion.
   auto* dialog_controller = DesksTemplatesDialogController::Get();
   dialog_controller->ShowDeleteDialog(
-      Shell::GetPrimaryRootWindow(), name_view_->GetAccessibleName(),
+      GetWidget()->GetNativeWindow()->GetRootWindow(),
+      name_view_->GetAccessibleName(),
       base::BindOnce(&DesksTemplatesItemView::OnDeleteTemplate,
                      weak_ptr_factory_.GetWeakPtr()));
 }

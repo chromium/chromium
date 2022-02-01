@@ -2352,7 +2352,8 @@ void OverviewGrid::UpdateCannotSnapWarningVisibility() {
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
-  DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate();
+  DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+      save_desk_as_template_widget_->GetNativeWindow()->GetRootWindow());
 }
 
 void OverviewGrid::OnDesksTemplatesGridFadedOut() {
