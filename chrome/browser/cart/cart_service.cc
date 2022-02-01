@@ -286,7 +286,7 @@ void CartService::ShouldShowDiscountConsent(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (cart_features::IsFakeDataEnabled()) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+    content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
         ->PostTask(FROM_HERE, base::BindOnce(
                                   [](base::OnceCallback<void(bool)> callback) {
                                     std::move(callback).Run(true);
