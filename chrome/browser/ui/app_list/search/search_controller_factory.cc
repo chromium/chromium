@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/app_list/search/files/zero_state_drive_provider.h"
 #include "chrome/browser/ui/app_list/search/files/zero_state_file_provider.h"
 #include "chrome/browser/ui/app_list/search/help_app_provider.h"
+#include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
@@ -151,6 +153,13 @@ std::unique_ptr<SearchController> CreateSearchController(
         controller->AddGroup(kGenericMaxResults);
     controller->AddProvider(os_settings_search_group_id,
                             std::make_unique<OsSettingsProvider>(profile));
+  }
+
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    size_t shortcut_search_group_id = controller->AddGroup(kGenericMaxResults);
+    controller->AddProvider(
+        shortcut_search_group_id,
+        std::make_unique<KeyboardShortcutProvider>(profile));
   }
 
   size_t help_app_group_id = controller->AddGroup(kGenericMaxResults);

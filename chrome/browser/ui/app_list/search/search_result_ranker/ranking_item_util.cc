@@ -36,6 +36,7 @@ RankingItemType RankingItemTypeFromSearchResult(
     case ash::AppListSearchResultType::kInternalPrivacyInfo:
     case ash::AppListSearchResultType::kAssistantText:
     case ash::AppListSearchResultType::kHelpApp:
+    case ash::AppListSearchResultType::kKeyboardShortcut:
       // NOTE: We don't rank results of type kAssistantChip, kAssistantText
       // as those results, if present, are shown in a dedicated slot.
       return RankingItemType::kIgnored;

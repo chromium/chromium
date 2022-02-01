@@ -47,6 +47,7 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kOsSettings:
       return Category::kSettings;
     case ResultType::kHelpApp:
+    case ResultType::kKeyboardShortcut:
       return Category::kHelp;
     case ResultType::kPlayStoreReinstallApp:
     case ResultType::kPlayStoreApp:

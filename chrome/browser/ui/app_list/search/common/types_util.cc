@@ -50,6 +50,8 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "File search";
     case ash::AppListSearchResultType::kDriveSearch:
       return "Drive search";
+    case ash::AppListSearchResultType::kKeyboardShortcut:
+      return "Keyboard shortcut";
   }
   NOTREACHED();
 }
