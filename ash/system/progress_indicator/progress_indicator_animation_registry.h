@@ -95,25 +95,6 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
   void EraseAllAnimationsForKeyIf(
       base::RepeatingCallback<bool(const void* key)> predicate);
 
-  // TODO(dmblack): Remove these methods after completing refactor of
-  // `ProgressIndicatorAnimationRegistry` and `HoldingSpaceAnimationRegistry`.
-  std::map<const void*, std::unique_ptr<HoldingSpaceProgressIconAnimation>>&
-  icon_animations_by_key() {
-    return icon_animations_by_key_;
-  }
-  std::map<const void*, ProgressIconAnimationChangedCallbackList>&
-  icon_animation_changed_callback_lists_by_key() {
-    return icon_animation_changed_callback_lists_by_key_;
-  }
-  std::map<const void*, std::unique_ptr<HoldingSpaceProgressRingAnimation>>&
-  ring_animations_by_key() {
-    return ring_animations_by_key_;
-  }
-  std::map<const void*, ProgressRingAnimationChangedCallbackList>&
-  ring_animation_changed_callback_lists_by_key() {
-    return ring_animation_changed_callback_lists_by_key_;
-  }
-
  private:
   // Mapping of keys to their associated progress icon animations.
   std::map<const void*, std::unique_ptr<HoldingSpaceProgressIconAnimation>>
