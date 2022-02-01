@@ -79,6 +79,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/modules/video_coding:webrtc_h264",
   "//third_party/webrtc/p2p:libstunprober",
   "//third_party/webrtc/p2p:rtc_p2p",
+  "//third_party/webrtc/pc:ice_server_parsing",
   "//third_party/webrtc/pc:libjingle_peerconnection",
   "//third_party/webrtc/pc:peerconnection",
   "//third_party/webrtc/pc:rtc_pc",
