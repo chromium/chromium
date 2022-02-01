@@ -40,6 +40,12 @@ bool SystemEngine::BindRequest(
       host_pipe_version);
 }
 
+bool SystemEngine::BindConnectionFactory(
+    mojo::PendingReceiver<mojom::ConnectionFactory> receiver) {
+  // TODO(b/209697256): Pass and bind receiver in shared library.
+  return false;
+}
+
 bool SystemEngine::IsConnected() {
   return decoder_entry_points_->is_input_method_connected();
 }

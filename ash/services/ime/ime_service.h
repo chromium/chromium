@@ -53,6 +53,9 @@ class ImeService : public mojom::ImeService,
       mojo::PendingReceiver<mojom::InputMethod> input_method,
       mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
       ConnectToInputMethodCallback callback) override;
+  void InitializeConnectionFactory(
+      mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
+      InitializeConnectionFactoryCallback callback) override;
 
   // ImeCrosPlatform overrides:
   const char* GetImeBundleDir() override;

@@ -8,6 +8,7 @@
 #include "ash/services/ime/ime_decoder.h"
 #include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
+#include "ash/services/ime/public/mojom/connection_factory.mojom.h"
 #include "ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 #include "ash/services/ime/public/mojom/input_method_host.mojom.h"
@@ -35,6 +36,10 @@ class SystemEngine : public InputEngine {
   bool BindRequest(const std::string& ime_spec,
                    mojo::PendingReceiver<mojom::InputMethod> receiver,
                    mojo::PendingRemote<mojom::InputMethodHost> host);
+
+  // Binds the mojom::ConnectionFactory interface in the shared library.
+  bool BindConnectionFactory(
+      mojo::PendingReceiver<mojom::ConnectionFactory> receiver);
 
   // InputEngine:
   bool IsConnected() override;

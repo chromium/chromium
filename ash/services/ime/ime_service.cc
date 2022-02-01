@@ -120,6 +120,19 @@ void ImeService::ConnectToInputMethod(
   std::move(callback).Run(bound);
 }
 
+void ImeService::InitializeConnectionFactory(
+    mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
+    InitializeConnectionFactoryCallback callback) {
+  decoder_engine_.reset();
+
+  auto system_engine = std::make_unique<SystemEngine>(this);
+  bool bound =
+      system_engine->BindConnectionFactory(std::move(connection_factory));
+
+  input_engine_ = std::move(system_engine);
+  std::move(callback).Run(bound);
+}
+
 const char* ImeService::GetImeBundleDir() {
   return kBundledInputMethodsDirPath;
 }

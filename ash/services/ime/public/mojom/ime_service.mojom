@@ -4,6 +4,7 @@
 
 module chromeos.ime.mojom;
 
+import "ash/services/ime/public/mojom/connection_factory.mojom";
 import "ash/services/ime/public/mojom/input_engine.mojom";
 import "ash/services/ime/public/mojom/input_method.mojom";
 import "ash/services/ime/public/mojom/input_method_host.mojom";
@@ -49,6 +50,13 @@ interface InputEngineManager {
                        pending_receiver<InputMethod> input_method,
                        pending_remote<InputMethodHost> input_method_host)
                        => (bool success);
+
+  // Initializes the mojo pipe used for messaging between the shared library
+  // and Chromium. Any messaging interfaces used will need to be associated
+  // to this pipe (see AssociatedInterfaces documentation for more details).
+  InitializeConnectionFactory(
+    pending_receiver<ConnectionFactory> connection_factory)
+    => (bool success);
 };
 
 // Implemented in the browser process, used to perform network requests or

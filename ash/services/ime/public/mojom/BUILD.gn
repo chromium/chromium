@@ -9,6 +9,7 @@ assert(is_chromeos_ash)
 
 mojom("mojom") {
   sources = [
+    "connection_factory.mojom",
     "ime_service.mojom",
     "input_engine.mojom",
     "input_method.mojom",

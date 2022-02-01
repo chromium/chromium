@@ -165,6 +165,12 @@ class TestInputEngineManager : public ime::mojom::InputEngineManager {
     std::move(callback).Run(/*bound=*/true);
   }
 
+  void InitializeConnectionFactory(
+      mojo::PendingReceiver<ime::mojom::ConnectionFactory> connection_factory,
+      InitializeConnectionFactoryCallback callback) override {
+    std::move(callback).Run(/*bound=*/false);
+  }
+
  private:
   MockInputMethod* mock_input_method_;
 };
