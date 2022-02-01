@@ -79,6 +79,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -301,8 +302,8 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
         // Add an item. The new item should be visible and the storage text should be updated.
         OfflineItem item5 = StubbedProvider.createOfflineItem("offline_guid_5",
-                "http://stuff_and_things.com", OfflineItemState.COMPLETE, 1024, "page 5",
-                "/data/fake_path/Downloads/file_5", System.currentTimeMillis(), 100000,
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), OfflineItemState.COMPLETE, 1024,
+                "page 5", "/data/fake_path/Downloads/file_5", System.currentTimeMillis(), 100000,
                 OfflineItemFilter.OTHER);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mStubbedOfflineContentProvider.addItem(item5));

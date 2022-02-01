@@ -56,7 +56,10 @@ static_library("core") {
       "android/offline_item_visuals_bridge.h",
     ]
 
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//url:gurl_android",
+    ]
   }
 }
 
@@ -112,6 +115,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:gurl_java",
     ]
   }
 

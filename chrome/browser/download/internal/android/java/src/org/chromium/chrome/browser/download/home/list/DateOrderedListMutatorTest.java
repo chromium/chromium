@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,6 +44,8 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,9 +81,9 @@ public class DateOrderedListMutatorTest {
     public void setUp() {
         mModel = new ListItemModel();
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> inv.getArgument(0));
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> ((GURL) (inv.getArgument(0))).getSpec());
     }
 
     @After
@@ -1086,7 +1088,7 @@ public class DateOrderedListMutatorTest {
 
         Assert.assertEquals(10, mModel.size());
         assertDivider(mModel.get(0), ListItem.CardDividerListItem.Position.TOP);
-        assertCardHeader(mModel.get(1), buildCalendar(2018, 1, 4, 0), "http://example.com/xyz");
+        assertCardHeader(mModel.get(1), buildCalendar(2018, 1, 4, 0), JUnitTestGURLs.EXAMPLE_URL);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 4, 4), item4);
         assertDivider(mModel.get(3), ListItem.CardDividerListItem.Position.MIDDLE);
         assertOfflineItem(mModel.get(4), buildCalendar(2018, 1, 4, 3), item3);
@@ -1192,7 +1194,7 @@ public class DateOrderedListMutatorTest {
         item.isSuggested = true;
         item.creationTimeMs = calendar.getTimeInMillis();
         item.filter = filter;
-        item.url = "http://example.com/xyz";
+        item.url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         return item;
     }
 

@@ -29,6 +29,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public class DownloadMessageUiControllerTest {
     private static final String MESSAGE_TWO_DOWNLOAD_SCHEDULED = "2 downloads scheduled";
 
     private static final String DESCRIPTION_DOWNLOADING = "See notification for download status";
-    private static final String DESCRIPTION_DOWNLOAD_COMPLETE = "(0.01 KB) example.com";
+    private static final String DESCRIPTION_DOWNLOAD_COMPLETE = "(0.01 KB) www.example.com";
     private static final String DESCRIPTION_DOWNLOAD_SCHEDULED =
             "Download will start when on Wi-Fi";
 
@@ -128,7 +129,7 @@ public class DownloadMessageUiControllerTest {
     private static void markItemComplete(OfflineItem item) {
         item.state = OfflineItemState.COMPLETE;
         item.title = TEST_FILE_NAME;
-        item.url = "https://example.com";
+        item.url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         item.receivedBytes = 10L;
         item.totalSizeBytes = 10L;
     }

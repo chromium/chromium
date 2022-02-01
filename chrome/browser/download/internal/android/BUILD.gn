@@ -125,6 +125,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -236,6 +237,8 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 
   resources_package = "org.chromium.chrome.browser.download.internal"
@@ -272,6 +275,8 @@ android_library("junit") {
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 
   resources_package = "org.chromium.chrome.browser.download.internal"

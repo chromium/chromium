@@ -299,10 +299,7 @@ public final class DownloadInfo {
                 .setLastAccessTime(item.lastAccessedTimeMs)
                 .setIsOpenable(item.isOpenable)
                 .setMimeType(item.mimeType)
-
-                // TODO(https://crbug.com/1278805): Continue migration for OfflineItem
-                .setUrl(new GURL(item.url))
-
+                .setUrl(item.url)
                 .setOriginalUrl(item.originalUrl)
                 .setOTRProfileId(OTRProfileID.deserialize(item.otrProfileId))
                 .setState(state)

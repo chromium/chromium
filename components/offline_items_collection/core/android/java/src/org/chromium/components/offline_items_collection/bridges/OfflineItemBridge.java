@@ -14,6 +14,7 @@ import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 
@@ -50,8 +51,8 @@ public final class OfflineItemBridge {
             @OfflineItemFilter int filter, boolean isTransient, boolean isSuggested,
             boolean isAccelerated, boolean promoteOrigin, long totalSizeBytes,
             boolean externallyRemoved, long creationTimeMs, long completionTimeMs,
-            long lastAccessedTimeMs, boolean isOpenable, String filePath, String mimeType,
-            String url, String originalUrl, boolean isOffTheRecord, String otrProfileId,
+            long lastAccessedTimeMs, boolean isOpenable, String filePath, String mimeType, GURL url,
+            String originalUrl, boolean isOffTheRecord, String otrProfileId,
             @OfflineItemState int state, @FailState int failState, @PendingState int pendingState,
             boolean isResumable, boolean allowMetered, long receivedBytes, long progressValue,
             long progressMax, @OfflineItemProgressUnit int progressUnit, long timeRemainingMs,
