@@ -6733,7 +6733,17 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
 absl::optional<network::mojom::BlockedByResponseReason>
 NavigationRequest::EnforceCOEP() {
   // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
-  auto* parent_frame = GetParentFrame();
+  // Spec should be updated:
+  // https://github.com/shivanigithub/fenced-frame/issues/11
+
+  // Fenced frames should be treated as an embedded frame, thus COEP must apply.
+  // Note: we only check the outer document for fenced frames, because it's
+  // unclear if other embedded cases like Portals should behave the same.
+  // TODO(https://crbug.com/1278207): add other embedded cases if needed.
+  RenderFrameHostImpl* const parent_frame =
+      GetNavigatingFrameType() == FrameType::kFencedFrameRoot
+          ? GetParentFrameOrOuterDocument()
+          : GetParentFrame();
   if (!parent_frame) {
     return absl::nullopt;
   }
