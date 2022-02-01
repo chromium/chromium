@@ -1707,6 +1707,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2684004000387153598">Untuk melanjutkan, klik Oke, lalu klik Tambahkan Pengguna guna membuat profil baru untuk alamat email Anda.</translation>
 <translation id="2687403674020088961">Blokir semua cookie (tidak direkomendasikan)</translation>
 <translation id="2687407218262674387">Persyaratan layanan Google</translation>
+<translation id="2687621393791886981">Nanti saja</translation>
 <translation id="2688196195245426394">Terjadi kesalahan saat mendaftarkan perangkat dengan server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Tampilkan opsi bahasa</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -7221,6 +7222,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Mengizinkan <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
 <translation id="8413385045638830869">Tanya dulu (disarankan)</translation>
+<translation id="8414249071344507766">Kenangan disembunyikan selama dua hari</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Casing)</translation>
 <translation id="8417548266957501132">Sandi orang tua</translation>
 <translation id="8418445294933751433">Tampilkan &amp;sebagai tab</translation>

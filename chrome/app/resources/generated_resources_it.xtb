@@ -1693,6 +1693,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2684004000387153598">Per continuare, fai clic su OK, quindi fai clic su Aggiungi persona per creare un nuovo profilo per il tuo indirizzo email.</translation>
 <translation id="2687403674020088961">Blocca tutti i cookie (non consigliato)</translation>
 <translation id="2687407218262674387">Termini di servizio di Google</translation>
+<translation id="2687621393791886981">Ricordamelo più tardi</translation>
 <translation id="2688196195245426394">Errore durante la registrazione del dispositivo con il server. <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Mostra le opzioni per la lingua</translation>
 <translation id="2691385045260836588">Modello</translation>
@@ -6113,7 +6114,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7329154610228416156">Accesso non riuscito perché è stato configurato l'utilizzo di un URL non protetto (<ph name="BLOCKED_URL" />). Contatta l'amministratore.</translation>
 <translation id="7332053360324989309">Worker dedicato: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334014994694414993">Scegli il tema a colori per Avvio app, la barra delle app, le Impostazioni rapide e altri elementi</translation>
-<translation id="7334274148831027933">Attiva lente d'ingrandimento ancorata</translation>
+<translation id="7334274148831027933">Attiva riquadro d'ingrandimento ancorato</translation>
 <translation id="7335974957018254119">Utilizza il controllo ortografico per</translation>
 <translation id="7336799713063880535">Notifiche bloccate.</translation>
 <translation id="7338630283264858612">Il numero di serie del dispositivo non è valido.</translation>
@@ -7206,6 +7207,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Autorizzazioni consentite: <ph name="PERMISSION" /> e altre <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Chiedi prima (opzione consigliata)</translation>
+<translation id="8414249071344507766">Ricordi nascosti per due giorni</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (custodia)</translation>
 <translation id="8417548266957501132">Password genitore</translation>
 <translation id="8418445294933751433">&amp;Mostra come scheda</translation>

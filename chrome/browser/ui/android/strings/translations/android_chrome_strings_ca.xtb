@@ -290,7 +290,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2645657967708199252">La connexió <ph name="CONNECTION_TYPE" /> pot alentir la baixada</translation>
 <translation id="2647434099613338025">Afegeix un idioma</translation>
 <translation id="2649068648233607930">El navegador està gestionat per <ph name="DOMAIN" /></translation>
-<translation id="2650348088770008516">Explicació de la guia de privadesa tancada</translation>
+<translation id="2650348088770008516">L'explicació de la guia de privadesa s'ha tancat</translation>
 <translation id="2650751991977523696">Vols tornar a baixar el fitxer?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fitxer d'àudio}other{# fitxers d'àudio}}</translation>
 <translation id="265156376773362237">Càrrega prèvia estàndard</translation>
@@ -322,7 +322,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2818669890320396765">Per accedir a les adreces d'interès des de tots els dispositius, inicia la sessió i activa la sincronització</translation>
 <translation id="2827278682606527653">El menú de la targeta del tauler ocupa la meitat inferior de la pantalla</translation>
 <translation id="2830783625999891985">S'amaguen els continguts del porta-retalls</translation>
-<translation id="2838367486340230368">Explicació de la guia de privadesa oberta a mitja alçada</translation>
+<translation id="2838367486340230368">L'explicació de la guia de privadesa s'ha obert a mitja alçada</translation>
 <translation id="2839327205551510876">Has deixat de seguir <ph name="SITE_NAME" /></translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Es tancarà <ph name="TAB_COUNT_ONE" /> pestanya d'incògnit}other{Es tancaran <ph name="TAB_COUNT_MANY" /> pestanyes d'incògnit}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{S'ha comprovat fa 1 dia}other{S'ha comprovat fa # dies}}</translation>

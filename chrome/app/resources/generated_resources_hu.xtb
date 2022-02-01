@@ -1706,6 +1706,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2684004000387153598">A folytatáshoz kattintson az OK gombra, majd a Személy hozzáadása lehetőségre. Ekkor létrehozhatja az e-mail-címéhez tartozó új profilt.</translation>
 <translation id="2687403674020088961">Az összes cookie letiltása (nem ajánlott)</translation>
 <translation id="2687407218262674387">Google Szerződési Feltételek</translation>
+<translation id="2687621393791886981">Kérdezzen rá később</translation>
 <translation id="2688196195245426394">Hiba az eszköz szerveren való regisztrálásakor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Nyelvi lehetőségek megjelenítése</translation>
 <translation id="2691385045260836588">Modell</translation>
@@ -1910,6 +1911,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="287205682142673348">Portátirányítás</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> hozzáadása...</translation>
 <translation id="2872961005593481000">Leállítás</translation>
+<translation id="2873995907777332853">Részletek megjelenítése az összes cookie letiltásáról</translation>
 <translation id="2874939134665556319">Előző szám</translation>
 <translation id="2875698561019555027">(Chrome-hibaoldalak)</translation>
 <translation id="2876336351874743617">2. ujj</translation>
@@ -2216,6 +2218,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3189187154924005138">Nagy kurzor</translation>
 <translation id="3190558889382726167">A jelszó mentése megtörtént</translation>
 <translation id="3192947282887913208">Audiofájlok</translation>
+<translation id="3194786596445804250">Részletek megjelenítése a harmadik felek cookie-jainak letiltásáról</translation>
 <translation id="3197453258332670132">Jobb kattintással vagy nyomva tartással megjelenítheti a szövegkijelöléshez tartozó adatokat</translation>
 <translation id="3199127022143353223">Szerverek</translation>
 <translation id="3200061262156232574">A bevásárlókosarában</translation>
@@ -5313,6 +5316,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6455264371803474013">Megadott webhelyeken</translation>
 <translation id="6455894534188563617">Új &amp;mappa</translation>
 <translation id="645705751491738698">A JavaScript letiltásának fenntartása</translation>
+<translation id="6458347417133445570">Részletek megjelenítése az összes cookie engedélyezéséről</translation>
 <translation id="6458701200018867744">A feltöltés sikertelen (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Keresés a kijelölésben</translation>
 <translation id="6459799433792303855">Aktív ablak áthelyezve másik kijelzőre.</translation>
@@ -6745,6 +6749,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7919210519031517829"><ph name="DURATION" /> mp</translation>
 <translation id="7920363873148656176">A(z) <ph name="ORIGIN" /> megtekintheti a következő fájlt: <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Vegye fel azokat a szavakat, melyeknél szeretné kihagyni a helyesírás-ellenőrzést</translation>
+<translation id="7922935920104868876">Részletek megjelenítése a harmadik felektől származó cookie-k inkognitó módban való letiltásáról</translation>
 <translation id="7924358170328001543">Hibás portátirányítás</translation>
 <translation id="7925108652071887026">Automatikus kitöltés adatai</translation>
 <translation id="792514962475806987">Dokkolt állapotú nagyítási szint:</translation>
@@ -7219,6 +7224,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Engedélyezve: <ph name="PERMISSION" /> és további <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Kérdezzen rá (ajánlott)</translation>
+<translation id="8414249071344507766">Emlékek elrejtve két napig</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (tok)</translation>
 <translation id="8417548266957501132">Szülői jelszó</translation>
 <translation id="8418445294933751433">&amp;Megjelenítés lapként</translation>

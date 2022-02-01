@@ -1694,6 +1694,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2684004000387153598">Lai turpinātu, noklikšķiniet uz “Labi”, pēc tam noklikšķiniet uz “Pievienot personu” vai izveidojiet jaunu profilu savai e-pasta adresei.</translation>
 <translation id="2687403674020088961">Bloķēt visus sīkfailus (nav ieteicams)</translation>
 <translation id="2687407218262674387">Google pakalpojumu sniegšanas noteikumi</translation>
+<translation id="2687621393791886981">Pajautāt vēlāk</translation>
 <translation id="2688196195245426394">Reģistrējot ierīci serverī, radās kļūda: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Rādīt valodu iespējas</translation>
 <translation id="2691385045260836588">Modelis</translation>
@@ -7206,6 +7207,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Atļauts: <ph name="PERMISSION" /> un vēl <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Vispirms jautāt (ieteicams)</translation>
+<translation id="8414249071344507766">Atmiņas būs paslēptas divas dienas</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (futrālis)</translation>
 <translation id="8417548266957501132">Vecāku parole</translation>
 <translation id="8418445294933751433">Rādīt kā cilni</translation>

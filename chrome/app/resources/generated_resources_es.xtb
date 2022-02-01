@@ -1693,6 +1693,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2684004000387153598">Para continuar, haz clic en Aceptar y, a continuación, en Añadir perfil para crear un perfil con tu dirección de correo electrónico.</translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="2687407218262674387">Términos del Servicio de Google</translation>
+<translation id="2687621393791886981">Preguntarme más tarde</translation>
 <translation id="2688196195245426394">Error al registrar el dispositivo en el servidor (<ph name="CLIENT_ERROR" />)</translation>
 <translation id="2690024944919328218">Mostrar opciones de idioma</translation>
 <translation id="2691385045260836588">Modelo</translation>
@@ -7204,6 +7205,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Con permiso: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
 <translation id="8413385045638830869">Preguntar antes (recomendado)</translation>
+<translation id="8414249071344507766">Recuerdos ocultados durante 2 días</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (funda)</translation>
 <translation id="8417548266957501132">Contraseña parental</translation>
 <translation id="8418445294933751433">Mo&amp;strar como pestaña</translation>

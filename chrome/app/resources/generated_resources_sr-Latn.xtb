@@ -1691,6 +1691,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2684004000387153598">Da biste nastavili, kliknite na Potvrdi, pa na Dodaj osobu da biste otvorili novi profil za imejl adresu.</translation>
 <translation id="2687403674020088961">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="2687407218262674387">Google uslovi korišćenja usluge</translation>
+<translation id="2687621393791886981">Pitaj me kasnije</translation>
 <translation id="2688196195245426394">Greška pri registrovanju uređaja na server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Prikazuj opcije jezika</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -1896,6 +1897,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="287205682142673348">Prosleđivanje porta</translation>
 <translation id="287286579981869940">Dodaj <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Isključi</translation>
+<translation id="2873995907777332853">Prikazuj detalje o blokiranju svih kolačića</translation>
 <translation id="2874939134665556319">Prethodna pesma</translation>
 <translation id="2875698561019555027">(Chrome stranice sa greškama)</translation>
 <translation id="2876336351874743617">Prst 2</translation>
@@ -2202,6 +2204,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
+<translation id="3194786596445804250">Prikazuj detalje o blokiranju kolačića trećih strana</translation>
 <translation id="3197453258332670132">Kada kliknete desnim tasterom na neku stavku ili je dugo pritisnete, prikazuju se relevantne informacije za izabrani tekst</translation>
 <translation id="3199127022143353223">Serveri</translation>
 <translation id="3200061262156232574">U vašoj korpi za kupovinu</translation>
@@ -5297,6 +5300,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6455264371803474013">Na određenim sajtovima</translation>
 <translation id="6455894534188563617">&amp;Novi direktorijum</translation>
 <translation id="645705751491738698">Nastavi blokiranje JavaScript-a</translation>
+<translation id="6458347417133445570">Prikazuj detalje o dozvoljavanju svih kolačića</translation>
 <translation id="6458701200018867744">Otpremanje nije uspelo (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Koristi izbor za pronalaženje</translation>
 <translation id="6459799433792303855">Aktivni prozor je pomeren na drugi ekran.</translation>
@@ -6729,6 +6733,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7919210519031517829"><ph name="DURATION" /> sek</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> može da pregleda <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Dodajte reči koje provera pravopisa treba da preskače</translation>
+<translation id="7922935920104868876">Prikazuj detalje o blokiranju kolačića trećih strana u režimu bez arhiviranja</translation>
 <translation id="7924358170328001543">Greška pri prosleđivanju porta</translation>
 <translation id="7925108652071887026">Podaci Automatskog popunjavanja</translation>
 <translation id="792514962475806987">Nivo zumiranja montirane lupe ekrana:</translation>
@@ -7203,6 +7208,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Dozvoljeno je: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Prvo pitaj (preporučeno)</translation>
+<translation id="8414249071344507766">Uspomene su sakrivene na dva dana</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (futrola)</translation>
 <translation id="8417548266957501132">Lozinka roditelja</translation>
 <translation id="8418445294933751433">&amp;Prikaži kao karticu</translation>

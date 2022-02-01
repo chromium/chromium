@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">詳細を表示</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1032854598605920125">時計回りに回転</translation>
+<translation id="1033329911862281889">シークレット モードを使用しても、オンライン上にまったく記録が残らないわけではありません。
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />利用したサイトやサービスにはアクセスしたことが知られる場合があります<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />雇用主や教育機関が閲覧アクティビティを追跡している場合があります<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />インターネット サービス プロバイダがウェブ トラフィックを監視している場合があります<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036982837258183574">全画面表示を終了するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="1038106730571050514">候補を表示する</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">ポリシー キャッシュは正常です</translation>
 <translation id="1130564665089811311">ページを翻訳するボタンです。Enter キーを押すと Google 翻訳を使用してこのページを翻訳します</translation>
 <translation id="1131264053432022307">コピーした画像</translation>
+<translation id="1142846828089312304">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="1150979032973867961">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のパソコンのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1151972924205500581">パスワードを入力してください</translation>
 <translation id="1156303062776767266">ローカル ファイルまたは共有ファイルを表示しています</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">送信</translation>
 <translation id="1484290072879560759">配送先住所を選択</translation>
 <translation id="1492194039220927094">ポリシーのプッシュ:</translation>
+<translation id="149293076951187737">Chrome のシークレット タブをすべて閉じると、シークレット タブでの以下のアクティビティがこのデバイスから削除されます。
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />閲覧アクティビティ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />検索履歴<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />フォームに入力された情報<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">タブに戻る</translation>
 <translation id="1501859676467574491">Google アカウントに保存したカードを表示</translation>
 <translation id="1507202001669085618">&lt;p&gt;インターネットに接続するために Wi-Fi ポータルへのログインが必要な場合は、このエラーが表示されます。&lt;/p&gt;
@@ -280,6 +293,7 @@
 <translation id="1763864636252898013">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のデバイスのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="1772163372082567643">アクセスしているサーバー <ph name="ORIGIN" /> では、サーバーへのすべてのリクエストにオリジン ポリシーを適用することを求めるヘッダーが設定されていますが、ヘッダーの形式が正しくないため、ブラウザは <ph name="SITE" /> のリクエストを満たすことができません。オリジン ポリシーは、サイトのセキュリティやその他のプロパティを設定する目的でパブリッシャーが使用するものです。</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium のシークレット モードについて<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">最近開いたタブがここに表示されます</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -521,6 +535,12 @@
 <translation id="2597378329261239068">このドキュメントはパスワードで保護されています。パスワードを入力してください。</translation>
 <translation id="2609632851001447353">バリエーション</translation>
 <translation id="2610561535971892504">クリックしてコピー</translation>
+<translation id="2617988307566202237">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません<ph name="END_EMPHASIS" />。
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />閲覧履歴
+            <ph name="LIST_ITEM" />Cookie とサイトデータ
+            <ph name="LIST_ITEM" />フォームに入力した情報
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10（封筒）</translation>
 <translation id="2623663032199728144">画面に関する情報の使用を要求できる</translation>
 <translation id="2625385379895617796">時計が進んでいます</translation>
@@ -1144,6 +1164,7 @@
 <translation id="4628948037717959914">写真</translation>
 <translation id="4631649115723685955">キャッシュバックをリンクしました</translation>
 <translation id="4636930964841734540">情報</translation>
+<translation id="4638670630777875591">Chromium のシークレット モード</translation>
 <translation id="464342062220857295">検索機能</translation>
 <translation id="4644670975240021822">逆の順序（下向き）</translation>
 <translation id="4646534391647090355">今すぐ表示</translation>
@@ -1239,6 +1260,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" /> / <ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと検索します</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4940163644868678279">Chrome のシークレット モード</translation>
 <translation id="4943872375798546930">結果はありません</translation>
 <translation id="4950898438188848926">タブの切り替えボタンです。Enter キーを押すと開いているタブ「<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />」に切り替わります</translation>
 <translation id="495170559598752135">操作</translation>
@@ -1599,6 +1621,7 @@
 <translation id="6120179357481664955">UPI ID を保存しますか？</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connector</translation>
 <translation id="6127379762771434464">アイテムを削除しました</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome のシークレット モードについて<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">ケーブルを確認し、使用しているネットワーク デバイス（ルーター、モデムなど）を
     再起動してください。</translation>
 <translation id="614940544461990577">次をお試しください</translation>
@@ -1874,6 +1897,12 @@
 <translation id="7111012039238467737">（有効）</translation>
 <translation id="7118618213916969306">クリップボードにある URL（<ph name="SHORT_URL" />）を検索します</translation>
 <translation id="7119414471315195487">他のタブやプログラムを閉じる</translation>
+<translation id="7129355289156517987">Chromium のシークレット タブをすべて閉じると、シークレット タブでの以下のアクティビティがこのデバイスから削除されます。
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />閲覧アクティビティ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />検索履歴<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />フォームに入力された情報<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">この住所には配送できません。別の住所を選択してください。</translation>
 <translation id="7132939140423847331">このデータのコピーは管理者によって禁止されています。</translation>
 <translation id="7135130955892390533">ステータスを表示</translation>
@@ -1992,6 +2021,12 @@
 <translation id="7485870689360869515">データが見つかりません。</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
 <translation id="7497998058912824456">[ドキュメントを作成] ボタンです。Enter キーを押すと、新しい Google ドキュメントをすばやく作成します</translation>
+<translation id="7506488012654002225">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません<ph name="END_EMPHASIS" />。
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />閲覧履歴
+            <ph name="LIST_ITEM" />Cookie とサイトデータ
+            <ph name="LIST_ITEM" />フォームに入力した情報
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">返されたポリシーのデバイス ID が空であるか、現在のデバイス ID と一致しません</translation>
 <translation id="7508870219247277067">アボカド グリーン</translation>
 <translation id="7511955381719512146">ご利用の Wi-Fi では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
@@ -2211,6 +2246,7 @@
 <translation id="8202370299023114387">競合</translation>
 <translation id="8206978196348664717">Prc4（封筒）</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
+<translation id="8217240300496046857">サイトは Cookie を使用してあなたをウェブ上でトラッキングできません。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>
 <translation id="8220146938470311105">C7 / C6（封筒）</translation>
 <translation id="8225771182978767009">このサイトは、このパソコンを設定したユーザーによってブロックされています。</translation>

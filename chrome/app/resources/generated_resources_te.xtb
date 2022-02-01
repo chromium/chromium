@@ -1706,6 +1706,7 @@
 <translation id="2684004000387153598">కొనసాగించడానికి, సరే క్లిక్ చేసి, ఆపై మీ ఈమెయిల్‌ అడ్రస్‌ కోసం కొత్త ప్రొఫైల్‌ను రూపొందించడానికి వ్యక్తిని జోడించు క్లిక్ చేయండి.</translation>
 <translation id="2687403674020088961">అన్ని కుక్కీలను బ్లాక్ చేయండి (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="2687407218262674387">Google సేవా నిబంధనలు</translation>
+<translation id="2687621393791886981">నన్ను తర్వాత అడగు</translation>
 <translation id="2688196195245426394">పరికరం సర్వర్‌తో నమోదు అవుతున్నప్పుడు లోపం: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">భాష ఎంపికలను చూపు</translation>
 <translation id="2691385045260836588">మోడల్</translation>
@@ -1857,7 +1858,7 @@
 <translation id="2812989263793994277">ఏ చిత్రాలనూ చూపించవద్దు</translation>
 <translation id="2813094189969465044">తల్లిదండ్రుల నియంత్రణలు</translation>
 <translation id="281390819046738856">రిక్వెస్ట్‌కు సంతకం అందించడం సాధ్యపడలేదు.</translation>
-<translation id="2814489978934728345">ఈ పేజిని లోడ్ చెయ్యడం ఆపు</translation>
+<translation id="2814489978934728345">ఈ పేజిని లోడ్ చేయడం ఆపు</translation>
 <translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="2815693974042551705">బుక్‌మార్క్ ఫోల్డర్</translation>
 <translation id="2816319641769218778">పాస్‌వర్డ్‌లను మీ Google ఖాతాలో సేవ్ చేయడానికి, సింక్‌ను ఆన్ చేయండి.</translation>
@@ -1911,6 +1912,7 @@
 <translation id="287205682142673348">పోర్ట్ ఫార్వర్డింగ్</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />ని జోడించు...</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
+<translation id="2873995907777332853">అన్ని కుక్కీలను బ్లాక్ చేయడం గురించి వివరాలను చూపు</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
 <translation id="2875698561019555027">(Chrome ఎర్రర్ పేజీలు)</translation>
 <translation id="2876336351874743617">రెండో వేలు</translation>
@@ -2217,6 +2219,7 @@
 <translation id="3189187154924005138">పెద్ద కర్సర్</translation>
 <translation id="3190558889382726167">పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>
 <translation id="3192947282887913208">ఆడియో  ఫైళ్ళు</translation>
+<translation id="3194786596445804250">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం గురించి వివరాలను చూపు</translation>
 <translation id="3197453258332670132">కుడి క్లిక్ ద్వారా లేదా ఎక్కువసేపు నొక్కి, ఉంచడం ద్వారా, మీ టెక్స్ట్ ఎంపికకు సంబంధించిన సమాచారాన్ని చూపండి</translation>
 <translation id="3199127022143353223">సర్వర్‌లు</translation>
 <translation id="3200061262156232574">మీ షాపింగ్ కార్ట్‌లో</translation>
@@ -5313,6 +5316,7 @@
 <translation id="6455264371803474013">కొన్ని నిర్దిష్ట సైట్‌లలో మాత్రమే</translation>
 <translation id="6455894534188563617">&amp;కొత్త ఫోల్డర్</translation>
 <translation id="645705751491738698">JavaScriptను నిరోధించడాన్ని కొనసాగించు</translation>
+<translation id="6458347417133445570">అన్ని కుక్కీలను అనుమతించడం గురించి వివరాలను చూపు</translation>
 <translation id="6458701200018867744">అప్‌లోడ్ విఫలమైంది (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">కనుగొనడానికి ఎంపికను ఉపయోగించండి</translation>
 <translation id="6459799433792303855">యాక్టివ్ విండో మరో డిస్‌ప్లే‌కు తరలించబడింది.</translation>
@@ -6745,6 +6749,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />సె</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" />ను చూడగలదు</translation>
 <translation id="7920482456679570420">మీరు వేటికి స్పెల్ చెక్‌ను స్కిప్ చేయాలనుకుంటారో ఆ పదాలను జోడించండి</translation>
+<translation id="7922935920104868876">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం గురించి వివరాలను చూపు</translation>
 <translation id="7924358170328001543">పోర్ట్‌ను ఫార్వర్డ్ చేయడంలో ఎర్రర్ ఏర్పడింది</translation>
 <translation id="7925108652071887026">స్వీయపూర్తి డేటా</translation>
 <translation id="792514962475806987">డాక్ చేయబడిన జూమ్ స్థాయి:</translation>
@@ -7216,6 +7221,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />, మరో <ph name="COUNT" /> అనుమతించబడ్డాయి</translation>
 <translation id="8413385045638830869">ముందుగా అడుగు (సిఫార్సు చేయబడింది)</translation>
+<translation id="8414249071344507766">జ్ఞాపకాలు రెండు రోజులు దాచబడ్డాయి</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (కేస్)</translation>
 <translation id="8417548266957501132">తల్లి/తండ్రి పాస్‌వర్డ్‌</translation>
 <translation id="8418445294933751433">&amp;ట్యాబ్ లాగా చూపండి</translation>

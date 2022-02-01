@@ -1691,6 +1691,7 @@
 <translation id="2684004000387153598">หากต้องการดำเนินการต่อ ให้คลิก "ตกลง" จากนั้นคลิก "เพิ่มบุคคล" เพื่อสร้างโปรไฟล์ใหม่สำหรับที่อยู่อีเมล</translation>
 <translation id="2687403674020088961">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="2687407218262674387">ข้อกำหนดในการให้บริการ Google</translation>
+<translation id="2687621393791886981">ถามฉันทีหลัง</translation>
 <translation id="2688196195245426394">เกิดข้อผิดพลาดขณะลงทะเบียนอุปกรณ์กับเซิร์ฟเวอร์: <ph name="CLIENT_ERROR" /></translation>
 <translation id="2690024944919328218">แสดงตัวเลือกภาษา</translation>
 <translation id="2691385045260836588">รุ่น</translation>
@@ -1896,6 +1897,7 @@
 <translation id="287205682142673348">การส่งต่อพอร์ต</translation>
 <translation id="287286579981869940">เพิ่ม <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">ปิด</translation>
+<translation id="2873995907777332853">แสดงรายละเอียดเกี่ยวกับการบล็อกคุกกี้ทั้งหมด</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2875698561019555027">(หน้าข้อผิดพลาดของ Chrome)</translation>
 <translation id="2876336351874743617">นิ้วที่ 2</translation>
@@ -2202,6 +2204,7 @@
 <translation id="3189187154924005138">เคอร์เซอร์ขนาดใหญ่</translation>
 <translation id="3190558889382726167">บันทึกรหัสผ่านแล้ว</translation>
 <translation id="3192947282887913208">ไฟล์เสียง</translation>
+<translation id="3194786596445804250">แสดงรายละเอียดเกี่ยวกับการบล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3197453258332670132">เมื่อคลิกขวาหรือกดค้าง ระบบจะแสดงข้อมูลเกี่ยวกับข้อความที่คุณเลือก</translation>
 <translation id="3199127022143353223">เซิร์ฟเวอร์</translation>
 <translation id="3200061262156232574">ในรถเข็นช็อปปิ้ง</translation>
@@ -5297,6 +5300,7 @@
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
 <translation id="6455894534188563617">และโฟลเดอร์ใหม่</translation>
 <translation id="645705751491738698">บล็อกการเรียกใช้ JavaScript</translation>
+<translation id="6458347417133445570">แสดงรายละเอียดเกี่ยวกับการอนุญาตคุกกี้ทั้งหมด</translation>
 <translation id="6458701200018867744">อัปโหลดไม่สำเร็จ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)</translation>
 <translation id="6459488832681039634">ใช้สิ่งที่เลือกเพื่อค้นหา</translation>
 <translation id="6459799433792303855">หน้าต่างที่ใช้งานย้ายไปอยู่หน้าจออื่น</translation>
@@ -6728,6 +6732,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> วิ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ดู "<ph name="FILENAME" />" ได้</translation>
 <translation id="7920482456679570420">เพิ่มคำที่คุณต้องการให้ข้ามการตรวจตัวสะกด</translation>
+<translation id="7922935920104868876">แสดงรายละเอียดเกี่ยวกับการบล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="7924358170328001543">เกิดข้อผิดพลาดในการส่งต่อพอร์ต</translation>
 <translation id="7925108652071887026">ป้อนข้อมูลอัตโนมัติ</translation>
 <translation id="792514962475806987">ระดับการซูมหน้าจอบางส่วน:</translation>
@@ -7202,6 +7207,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">อนุญาตให้เข้าถึง<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="8413385045638830869">ถามก่อน (แนะนำ)</translation>
+<translation id="8414249071344507766">ซ่อนความทรงจำเป็นเวลา 2 วัน</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
 <translation id="8417548266957501132">รหัสผ่านสำหรับผู้ปกครอง</translation>
 <translation id="8418445294933751433">แ&amp;สดงเป็นแถบ</translation>

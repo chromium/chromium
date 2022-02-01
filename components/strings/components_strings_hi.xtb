@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">ब्यौरा देखें</translation>
 <translation id="1030706264415084469"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए बड़ी मात्रा में डेटा संग्रहीत करना चाहता है</translation>
 <translation id="1032854598605920125">घड़ी की दिशा में घुमाएं</translation>
+<translation id="1033329911862281889">गुप्त मोड में भी, आपको ऑनलाइन देखा जा सकता है:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />उन साइटों और सेवाओं को आपके आने/जाने का पता चलता है जिनका इस्तेमाल किया जाता है<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />नौकरी देने वाली कंपनियां या स्कूल, ब्राउज़िंग गतिविधि को ट्रैक कर सकते हैं<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />इंटरनेट सेवा देने वाली कंपनियां, वेब ट्रैफ़िक की निगरानी कर सकती हैं<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">बंद करें</translation>
 <translation id="1036982837258183574">फ़ुल स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="1038106730571050514">सुझाव दिखाएं</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">नीति कैश मेमोरी ठीक है</translation>
 <translation id="1130564665089811311">'पेज का अनुवाद करें' बटन, Google Translate की मदद से इस पेज का अनुवाद करने के लिए Enter दबाएं</translation>
 <translation id="1131264053432022307">आपकी कॉपी की हुई इमेज</translation>
+<translation id="1142846828089312304">गुप्त मोड में, तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="1150979032973867961">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र आपके कंप्यूटर के ऑपरेटिंग सिस्टम द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="1151972924205500581">पासवर्ड आवश्यक</translation>
 <translation id="1156303062776767266">आप स्थानीय या शेयर की गई फ़ाइल देख रहे हैं</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">भेजें</translation>
 <translation id="1484290072879560759">शिपिंग पता चुनें</translation>
 <translation id="1492194039220927094">नीतियां भेजें:</translation>
+<translation id="149293076951187737">Chrome में खोले गए सभी गुप्त टैब बंद करने पर, इन टैब में हुई आपकी गतिविधि का डेटा इस डिवाइस से हटा दिया जाता है:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ब्राउज़िंग गतिविधि<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />खोज इतिहास<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
 <translation id="1501859676467574491">अपने Google खाते में मौजूद कार्ड दिखाएं</translation>
 <translation id="1507202001669085618">&lt;p&gt;अगर आप ऐसे वाई-फ़ाई पोर्टल का इस्तेमाल कर रहे हैं, जिसमें ऑनलाइन होने से पहले साइन इन ज़रूरी है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
@@ -285,6 +298,7 @@
     यह हेडर गलत है. इसलिए, यह ब्राउज़र को <ph name="SITE" /> के लिए आपके अनुरोध पर कार्रवाई
     करने से रोकता है. साइट ऑपरेटर, साइट की सुरक्षा और दूसरी
     प्रॉपर्टी को कॉन्फ़िगर करने के लिए, मूल नीतियों का इस्तेमाल कर सकते हैं.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium में गुप्त मोड की सुविधा के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">  खोले गए टैब, यहां दिखाई देंगे</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -526,6 +540,12 @@
 <translation id="2597378329261239068">यह दस्तावेज़ पासवर्ड सुरक्षित है.  कृपया पासवर्ड डालें.</translation>
 <translation id="2609632851001447353">विविधताएं</translation>
 <translation id="2610561535971892504">क्लिक टू कॉपी</translation>
+<translation id="2617988307566202237">Chrome यहां बताई गई जानकारी को <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />आपका ब्राउज़िंग इतिहास
+          <ph name="LIST_ITEM" />कुकी और साइट डेटा
+          <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">सी10 (एन्वेलप)</translation>
 <translation id="2623663032199728144">साइट, आपकी स्क्रीन की जानकारी इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="2625385379895617796">आपकी घड़ी आगे है</translation>
@@ -1153,6 +1173,7 @@
 <translation id="4628948037717959914">फ़ोटो</translation>
 <translation id="4631649115723685955">पैसे चुकाने पर कैशबैक मिलेगा</translation>
 <translation id="4636930964841734540">जानकारी</translation>
+<translation id="4638670630777875591">Chromium में गुप्त मोड</translation>
 <translation id="464342062220857295">खोज सुविधाएं</translation>
 <translation id="4644670975240021822">दूसरी तरफ़ उलटा करके रखें</translation>
 <translation id="4646534391647090355">मुझे अभी वहां ले जाएं</translation>
@@ -1248,6 +1269,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, खोजने के लिए Tab के बाद Enter दबाएं</translation>
 <translation id="4930153903256238152">ज़्यादा क्षमता</translation>
+<translation id="4940163644868678279">Chrome में गुप्त मोड</translation>
 <translation id="4943872375798546930">कोई परिणाम नहीं</translation>
 <translation id="4950898438188848926">'टैब' बदलने का बटन, नए टैब पर जाने के लिए Enter दबाएं, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">क्रियाएं</translation>
@@ -1608,6 +1630,7 @@
 <translation id="6120179357481664955">क्या आप चाहते हैं कि हम आपका UPI आईडी रखें?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">आइटम निकाला गया</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome में गुप्त मोड की सुविधा के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">सभी केबल जांचें और आपके उपयोग किए जा रहे सभी राउटर, मॉडेम या अन्य नेटवर्क
     डिवाइस को 'फिर चालू करें'.</translation>
 <translation id="614940544461990577">यह आज़माकर देखें:</translation>
@@ -1883,6 +1906,12 @@
 <translation id="7111012039238467737">(मान्य)</translation>
 <translation id="7118618213916969306">क्लिपबोर्ड यूआरएल, <ph name="SHORT_URL" /> खोजें</translation>
 <translation id="7119414471315195487">दूसरे टैब या प्रोग्राम बंद करें</translation>
+<translation id="7129355289156517987">Chromium में खोले गए सभी गुप्त टैब बंद करने पर, इन टैब में हुई आपकी गतिविधि का डेटा इस डिवाइस से हटा दिया जाता है:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ब्राउज़िंग गतिविधि<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />खोज इतिहास<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">इस पते पर शिप नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="7132939140423847331">आपके एडमिन ने इस डेटा को कॉपी किए जाने पर रोक लगाई है.</translation>
 <translation id="7135130955892390533">स्थिति दिखाएं</translation>
@@ -2001,6 +2030,12 @@
 <translation id="7485870689360869515">कोई डेटा नहीं मिला</translation>
 <translation id="7495528107193238112">इस कॉन्टेंट को ब्लॉक कर दिया गया है. समस्या को ठीक करने के लिए, साइट के मालिक से संपर्क करें.</translation>
 <translation id="7497998058912824456">दस्तावेज़ बनाने के लिए बटन, जल्दी से नया Google दस्तावेज़ बनाने के लिए Enter दबाएं</translation>
+<translation id="7506488012654002225">Chromium यहां बताई गई जानकारी को <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />आपका ब्राउज़िंग इतिहास
+          <ph name="LIST_ITEM" />कुकी और साइट डेटा
+          <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">वापस लौटाया हुआ नीति डिवाइस आईडी खाली है या उसका मिलान वर्तमान डिवाइस आईडी से नहीं होता है</translation>
 <translation id="7508870219247277067">एवोकैडो हरा</translation>
 <translation id="7511955381719512146">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं, उसके लिए आपको <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> पर जाने की ज़रूरत पड़ सकती है.</translation>
@@ -2220,6 +2255,7 @@
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8206978196348664717">पीआरसी4 (एन्वेलप)</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
+<translation id="8217240300496046857">साइटें उन कुकी का इस्तेमाल नहीं कर सकतीं जिनसे वेब पर आपको ट्रैक किया जा सकता है. हो सकता है कि कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>
 <translation id="8220146938470311105">सी7/सी6 (एन्वेलप)</translation>
 <translation id="8225771182978767009">जिस व्यक्ति ने इस कंप्यूटर को सेट किया है, उसने इस साइट को ब्लॉक करना चुना है.</translation>

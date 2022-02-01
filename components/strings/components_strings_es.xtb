@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
 <translation id="1032854598605920125">Girar hacia la derecha</translation>
+<translation id="1033329911862281889">El modo de incógnito no te hace invisible online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Los sitios y los servicios que usen pueden ver las visitas<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Las empresas o los centros educativos pueden monitorizar la actividad de navegación<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Los proveedores de Internet pueden monitorizar el tráfico web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036982837258183574">Pulsa |<ph name="ACCELERATOR" />| para salir del modo de pantalla completa</translation>
 <translation id="1038106730571050514">Mostrar sugerencias</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1130564665089811311">Botón Traducir página, pulsa Intro para traducir esta página con el Traductor de Google</translation>
 <translation id="1131264053432022307">Imagen copiada</translation>
+<translation id="1142846828089312304">Bloquear cookies de terceros en incógnito</translation>
 <translation id="1150979032973867961">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, el sistema operativo de tu ordenador no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="1151972924205500581">Contraseña obligatoria</translation>
 <translation id="1156303062776767266">Estás viendo un archivo local o compartido</translation>
@@ -180,6 +187,12 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484290072879560759">Seleccionar dirección de envío</translation>
 <translation id="1492194039220927094">Envío de políticas:</translation>
+<translation id="149293076951187737">Cuando cierras todas las pestañas de incógnito de Chrome, se borra de este dispositivo la siguiente información sobre tu actividad en esas pestañas:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Actividad de navegación<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historial de búsqueda<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Información introducida en formularios<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
 <translation id="1501859676467574491">Mostrar las tarjetas de tu cuenta de Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Este error se muestra si utilizas un portal Wi‑Fi en el que debes iniciar sesión antes de conectarte a Internet.&lt;/p&gt;
@@ -284,6 +297,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     el encabezado tiene errores, lo que impide al navegador procesar
     tu solicitud de ir a <ph name="SITE" />. Los operadores de sitios
     pueden usar las políticas de origen para configurar la seguridad y otras propiedades de un sitio web.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Más información sobre el modo de incógnito de Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Las pestañas abiertas aparecen aquí</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2597378329261239068">Este documento está protegido por contraseña. Introduce una contraseña.</translation>
 <translation id="2609632851001447353">Variaciones</translation>
 <translation id="2610561535971892504">Haz clic para copiar</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />no almacenará<ph name="END_EMPHASIS" /> la siguiente información:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Tu historial de navegación
+            <ph name="LIST_ITEM" />Cookies y datos de sitios
+            <ph name="LIST_ITEM" />Información introducida en formularios
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (sobre)</translation>
 <translation id="2623663032199728144">Puede solicitar permiso para usar información sobre tus pantallas</translation>
 <translation id="2625385379895617796">Tu reloj está adelantado</translation>
@@ -1153,6 +1173,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Devolución de dinero asociada</translation>
 <translation id="4636930964841734540">Información</translation>
+<translation id="4638670630777875591">Incógnito en Chromium</translation>
 <translation id="464342062220857295">Buscar funciones</translation>
 <translation id="4644670975240021822">Orden inverso boca abajo</translation>
 <translation id="4646534391647090355">Ir allí ahora</translation>
@@ -1248,6 +1269,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para buscar</translation>
 <translation id="4930153903256238152">Gran capacidad</translation>
+<translation id="4940163644868678279">Incógnito en Chrome</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
 <translation id="4950898438188848926">Botón de cambio de pestaña; pulsa Intro para cambiar a la pestaña abierta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Acciones</translation>
@@ -1608,6 +1630,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6120179357481664955">¿Recuerdas tu ID de UPI?</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6127379762771434464">Elemento quitado</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Más información sobre el modo de incógnito de Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Comprueba los cables y reinicia los routers, los módems o cualquier otro dispositivo
     de red que estés utilizando.</translation>
 <translation id="614940544461990577">Prueba a:</translation>
@@ -1883,6 +1906,12 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7111012039238467737">(válido)</translation>
 <translation id="7118618213916969306">Buscar la URL <ph name="SHORT_URL" /> del portapapeles</translation>
 <translation id="7119414471315195487">Cierra otros programas o pestañas</translation>
+<translation id="7129355289156517987">Cuando cierras todas las pestañas de incógnito de Chromium, se borra de este dispositivo la siguiente información sobre tu actividad en esas pestañas:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Actividad de navegación<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historial de búsqueda<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Información introducida en formularios<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Los pedidos no se pueden enviar a esta dirección. Selecciona otra.</translation>
 <translation id="7132939140423847331">Tu administrador ha prohibido que se copien estos datos.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
@@ -2001,6 +2030,12 @@ Más información:
 <translation id="7485870689360869515">No se han encontrado datos.</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Para solucionar el problema, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="7497998058912824456">Botón de crear documento, pulsa Intro para crear un nuevo Documento de Google rápidamente</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />no almacenará<ph name="END_EMPHASIS" /> la siguiente información:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Tu historial de navegación
+            <ph name="LIST_ITEM" />Cookies y datos de sitios
+            <ph name="LIST_ITEM" />Información introducida en formularios
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">El ID de dispositivo de política devuelto está vacío o no coincide con el ID de dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>
 <translation id="7511955381719512146">La red Wi-Fi que estás utilizando puede requerir que accedas a la página <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2220,6 +2255,7 @@ Más información:
 <translation id="8202370299023114387">Conflicto</translation>
 <translation id="8206978196348664717">Prc4 (sobre)</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
+<translation id="8217240300496046857">Los sitios no pueden usar cookies para hacer un seguimiento de tu actividad en la Web. Es posible que las funciones de algunos sitios no funcionen correctamente.</translation>
 <translation id="8218327578424803826">Ubicación asignada:</translation>
 <translation id="8220146938470311105">C7/C6 (sobre)</translation>
 <translation id="8225771182978767009">La persona que ha configurado este ordenador ha elegido bloquear este sitio web.</translation>

@@ -1692,6 +1692,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2684004000387153598">Als je verder wilt gaan, klik je op 'OK' en vervolgens op 'Persoon toevoegen' om een nieuw profiel te maken voor je e-mailadres.</translation>
 <translation id="2687403674020088961">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="2687407218262674387">Servicevoorwaarden van Google</translation>
+<translation id="2687621393791886981">Later vragen</translation>
 <translation id="2688196195245426394">Fout bij het registreren van het apparaat bij de server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Taalopties bekijken</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -7200,6 +7201,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Recht voor <ph name="PERMISSION" /> en <ph name="COUNT" /> andere toegestaan</translation>
 <translation id="8413385045638830869">Eerst vragen (aanbevolen)</translation>
+<translation id="8414249071344507766">Herinneringen 2 dagen verborgen</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
 <translation id="8417548266957501132">Wachtwoord van ouder</translation>
 <translation id="8418445294933751433">Tonen al&amp;s tabblad</translation>

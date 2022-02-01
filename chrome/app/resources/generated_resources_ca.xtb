@@ -1691,6 +1691,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2684004000387153598">Per continuar, fes clic a D'acord i, a continuació, a Afegeix una persona per crear un perfil per a la teva adreça electrònica.</translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="2687407218262674387">Condicions del servei de Google</translation>
+<translation id="2687621393791886981">Pregunta-m'ho més tard</translation>
 <translation id="2688196195245426394">S'ha produït un error en registrar el dispositiu amb el servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Mostra les opcions d'idioma</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -7206,6 +7207,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permisos concedits: <ph name="PERMISSION" /> i <ph name="COUNT" /> més</translation>
 <translation id="8413385045638830869">Pregunta-m'ho abans (opció recomanada)</translation>
+<translation id="8414249071344507766">Els records s'han amagat durant dos dies</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estoig)</translation>
 <translation id="8417548266957501132">Contrasenya del pare o de la mare</translation>
 <translation id="8418445294933751433">&amp;Mostra com a pestanya</translation>

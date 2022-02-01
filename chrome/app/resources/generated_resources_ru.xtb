@@ -1694,6 +1694,7 @@
 <translation id="2684004000387153598">Чтобы продолжить, нажмите "OK". Затем создайте другой профиль для своего адреса электронной почты, выбрав "Добавить пользователя".</translation>
 <translation id="2687403674020088961">Заблокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="2687407218262674387">Условия использования Google</translation>
+<translation id="2687621393791886981">Напомнить позже</translation>
 <translation id="2688196195245426394">Ошибка при регистрации устройства на сервере: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показать языковые настройки</translation>
 <translation id="2691385045260836588">Модель</translation>
@@ -7205,6 +7206,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Предоставлено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Всегда спрашивать (рекомендуется)</translation>
+<translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>
 <translation id="8418445294933751433">&amp;Показать как вкладку</translation>

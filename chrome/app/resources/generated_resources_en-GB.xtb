@@ -1707,6 +1707,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2684004000387153598">To continue, click OK, then click Add Person to create a new profile for your email address.</translation>
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
 <translation id="2687407218262674387">Google Terms of Service</translation>
+<translation id="2687621393791886981">Ask me later</translation>
 <translation id="2688196195245426394">Error when registering the device with the server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Show language options</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -1912,6 +1913,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="287205682142673348">Port forwarding</translation>
 <translation id="287286579981869940">Add <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Shut down</translation>
+<translation id="2873995907777332853">Show details about blocking all cookies</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2875698561019555027">(Chrome error pages)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
@@ -2218,6 +2220,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3190558889382726167">Password saved</translation>
 <translation id="3192947282887913208">Audio Files</translation>
+<translation id="3194786596445804250">Show details about blocking third-party cookies</translation>
 <translation id="3197453258332670132">With a right-click or long press, show related info for your text selection</translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3200061262156232574">In your shopping basket</translation>
@@ -5314,6 +5317,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6455264371803474013">On specific sites</translation>
 <translation id="6455894534188563617">&amp;New Folder</translation>
 <translation id="645705751491738698">Continue blocking JavaScript</translation>
+<translation id="6458347417133445570">Show details about allowing all cookies</translation>
 <translation id="6458701200018867744">Upload failed (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Active window moved to another display.</translation>
@@ -6747,6 +6751,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Add words that you want spell check to skip</translation>
+<translation id="7922935920104868876">Show details about blocking third-party cookies in Incognito</translation>
 <translation id="7924358170328001543">Error forwarding port</translation>
 <translation id="7925108652071887026">Auto-fill data</translation>
 <translation id="792514962475806987">Docked zoom level:</translation>
@@ -7221,6 +7226,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Allowed <ph name="PERMISSION" /> and <ph name="COUNT" /> more</translation>
 <translation id="8413385045638830869">Ask first (recommended)</translation>
+<translation id="8414249071344507766">Memories hidden for two days</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
 <translation id="8417548266957501132">Parent password</translation>
 <translation id="8418445294933751433">&amp;Show as tab</translation>

@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">तपशील पहा</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ला तुमच्या डिव्हाइसवर मोठ्या प्रमाणावर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="1032854598605920125">घड्याळाच्या दिशेने फिरवा</translation>
+<translation id="1033329911862281889">गुप्त मोडमुळे तुमचे ऑनलाइन अस्तित्व नाहीसे होत नाही:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ते वापरत असलेल्या साइट आणि सेवा भेटी पाहू शकतात<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />नियोक्ते किंवा शाळा ब्राउझिंग अ‍ॅक्टिव्हिटीचा माग ठेवू शकतात<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />इंटरनेट सेवा पुरवठादार हे वेब ट्रॅफिकवर लक्ष ठेऊ शकतात<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">बंद करा</translation>
 <translation id="1036982837258183574">संपूर्ण स्क्रीनमधून बाहेर पडण्यासाठी |<ph name="ACCELERATOR" />| दाबा</translation>
 <translation id="1038106730571050514">सूचना दाखवा</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">धोरण कॅशे  ठीक</translation>
 <translation id="1130564665089811311">पेजचे भाषांतर करा बटण, Google Translate वापरून या पेजचे भाषांतर करण्यासाठी Enter दाबा</translation>
 <translation id="1131264053432022307">तुम्ही कॉपी केलेली इमेज</translation>
+<translation id="1142846828089312304">गुप्त मोडमधील तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="1150979032973867961">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता प्रमाणपत्र तुमच्या कॉंप्युटरच्या ऑपरेटिंग प्रणालीद्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉन्फिगरेशनमुळे किंवा आक्रमणकर्त्याने तुमचे कनेक्शन आंतरखंडित केल्यामुळे झाले असू शकते.</translation>
 <translation id="1151972924205500581">पासवर्ड आवश्यक</translation>
 <translation id="1156303062776767266">तुम्ही स्थानिक किंवा शेअर केलेली फाइल पाहत आहात</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">पाठवा</translation>
 <translation id="1484290072879560759">पाठवण्याचा पत्ता निवडा</translation>
 <translation id="1492194039220927094">धोरणे पुढे ढकला:</translation>
+<translation id="149293076951187737">तुम्ही Chrome मधील सर्व गुप्त टॅब बंद करता, तेव्हा त्या टॅबमधील तुमची अ‍ॅक्टिव्हिटी ही या डिव्हाइसवरून साफ केली जाते:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ब्राउझिंग अ‍ॅक्टिव्हिटी<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />शोध इतिहास<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">टॅबवर परत</translation>
 <translation id="1501859676467574491">तुमच्या Google खात्यावरील कार्डे दाखवा</translation>
 <translation id="1507202001669085618">&lt;p&gt;ऑनलाइन येण्यापूर्वी तुम्हाला साइन इन करावे लागेल अशी व्यवस्था असलेले वाय-फाय पोर्टल वापरत असल्यास तुम्हाला ही एरर दिसून येईल.&lt;/p&gt;
@@ -284,6 +297,7 @@
     हेडर विकृत झालेले आहे, ज्यामुळे ब्राउझरला
     तुमच्या <ph name="SITE" /> साठीच्या विनंतीची पूर्तता करण्यापासून रोखले जात आहे. साइटची सुरक्षितता
     आणि इतर मालमत्ता काँफिगर करण्यासाठी साइट ऑपरेटरकडून मूळ धोरणे वापरली जाऊ शकतात.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium मधील गुप्त मोड याबद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">तुमचे खुले टॅब येथे दिसतात</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@
 <translation id="2597378329261239068">हा दस्तऐवज पासवर्ड संरक्षित आहे. कृपया पासवर्ड एंटर करा.</translation>
 <translation id="2609632851001447353">तफावत</translation>
 <translation id="2610561535971892504">कॉपी करण्यासाठी क्लिक करा</translation>
+<translation id="2617988307566202237">Chrome पुढील माहिती <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />तुमचा ब्राउझिंग इतिहास
+            <ph name="LIST_ITEM" />कुकी आणि साइट डेटा
+            <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">तुमच्या स्क्रीनशी संबंधित माहिती वापरण्यासाठी विचारू शकते</translation>
 <translation id="2625385379895617796">तुमचे घड्याळ पुढे आहे</translation>
@@ -1152,6 +1172,7 @@
 <translation id="4628948037717959914">फोटो</translation>
 <translation id="4631649115723685955">कॅशबॅक लिंक केला</translation>
 <translation id="4636930964841734540">माहिती</translation>
+<translation id="4638670630777875591">Chromium मधील गुप्त मोड</translation>
 <translation id="464342062220857295">शोध वैशिष्ट्ये</translation>
 <translation id="4644670975240021822">उलट्या क्रमाने फेस डाउन</translation>
 <translation id="4646534391647090355">आता मला तेथे घेऊन जा</translation>
@@ -1247,6 +1268,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, शोधण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="4930153903256238152">जास्त क्षमता</translation>
+<translation id="4940163644868678279">Chrome मधील गुप्त मोड</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
 <translation id="4950898438188848926">टॅब स्विच बटण, उघड्या टॅबवर स्विच करण्यासाठी एंटर दाबा, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">क्रिया</translation>
@@ -1607,6 +1629,7 @@
 <translation id="6120179357481664955">तुमचा UPI आयडी लक्षात ठेवायचा आहे का?</translation>
 <translation id="6124432979022149706">Chrome एंटरप्राइझ कनेक्टर</translation>
 <translation id="6127379762771434464">आयटम काढला</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome मधील गुप्त मोडबद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">कोणत्याही केबल तपासा आणि कोणतेही राउटर, मोडेम किंवा तुम्ही
 वापरत असलेले
         अन्य नेटवर्क डिव्हाइसेस रीबूट करा.</translation>
@@ -1883,6 +1906,12 @@
 <translation id="7111012039238467737">(वैध)</translation>
 <translation id="7118618213916969306">क्लिपबोर्ड URL, <ph name="SHORT_URL" /> शोधा</translation>
 <translation id="7119414471315195487">अन्य टॅब आणि प्रोग्राम बंद करा</translation>
+<translation id="7129355289156517987">तुम्ही Chromium मधील सर्व गुप्त टॅब बंद करता, तेव्हा त्या टॅबमधील तुमची अ‍ॅक्टिव्हिटी ही या डिव्हाइसवरून साफ केली जाते:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ब्राउझिंग अ‍ॅक्टिव्हिटी<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />शोध इतिहास<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">या पत्त्यावर पाठवू शकत नाही. वेगळा पत्ता निवडा.</translation>
 <translation id="7132939140423847331">तुमच्या ॲडमिनने हा डेटा कॉपी करण्यापासून प्रतिबंधित केले आहे.</translation>
 <translation id="7135130955892390533">स्थिती दाखवा</translation>
@@ -2001,6 +2030,12 @@
 <translation id="7485870689360869515">डेटा आढळला नाही.</translation>
 <translation id="7495528107193238112">हा आशय ब्लॉक केला गेला आहे. समस्येचे निराकरण करण्यासाठी साइटच्या मालकाशी संपर्क साधा.</translation>
 <translation id="7497998058912824456">दस्तऐवज तयार करा बटण, नवीन Google दस्तऐवज झटपट तयार करण्यासाठी एंटर दाबा</translation>
+<translation id="7506488012654002225">Chromium हे पुढील माहिती <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />तुमचा ब्राउझिंग इतिहास
+            <ph name="LIST_ITEM" />कुकी आणि साइट डेटा
+            <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">परत केलेला धोरण डिव्हाइस आयडी रिक्त आहे किंवा वर्तमान डिव्हाइस आयडी शी जुळत नाही</translation>
 <translation id="7508870219247277067">हिरवे पिवळे</translation>
 <translation id="7511955381719512146">तुम्ही वापरत असलेल्या वाय-फाय ला तुम्ही <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ला भेट देण्याची आवश्यकता असू शकते.</translation>
@@ -2220,6 +2255,7 @@
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित आहे</translation>
+<translation id="8217240300496046857">साइट या तुमचा संपूर्ण वेबवर माग ठेवणाऱ्या कुकी वापरू शकत नाहीत. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
 <translation id="8218327578424803826">नियुक्त केलेले स्थान:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">ज्या व्यक्तीने हा कॉंप्युटर सेट केला त्या व्यक्तीने ही साइट ब्लॉक करण्याचे निवडले आहे.</translation>

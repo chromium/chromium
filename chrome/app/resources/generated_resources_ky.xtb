@@ -1707,6 +1707,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2684004000387153598">Улантуу үчүн "Макул" дегенге тийиңиз да, "Адам кошуу" баскычын чыкылдатып, электрондук почта дарегиңиз үчүн жаңы профиль түзүп алыңыз.</translation>
 <translation id="2687403674020088961">Бардык cookie файлдарды бөгөттөө (сунушталбайт)</translation>
 <translation id="2687407218262674387">Google'дун тейлөө шарттары</translation>
+<translation id="2687621393791886981">Кийинчерээк суралсын</translation>
 <translation id="2688196195245426394">Түзмөктү серверге каттоо учурундагы ката: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Тил параметрлери көрүнсүн</translation>
 <translation id="2691385045260836588">Үлгү</translation>
@@ -1912,6 +1913,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="287205682142673348">Оюкчаны багыттоо</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> кошуу…</translation>
 <translation id="2872961005593481000">Жабуу</translation>
+<translation id="2873995907777332853">Бардык cookie файлдарын бөгөттөө жөнүндө маалыматты көрсөтүү</translation>
 <translation id="2874939134665556319">Мурунку трек</translation>
 <translation id="2875698561019555027">(Chrome ката барактары)</translation>
 <translation id="2876336351874743617">2-манжа</translation>
@@ -2218,6 +2220,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3189187154924005138">Чоң курсор</translation>
 <translation id="3190558889382726167">Сырсөз сакталды</translation>
 <translation id="3192947282887913208">Аудио файлдар</translation>
+<translation id="3194786596445804250">Үчүнчү тараптын cookie файлдарын бөгөттөө жөнүндө маалыматты көрсөтүү</translation>
 <translation id="3197453258332670132">Чычкандын оң баскычын чыкылдатып же коё бербей басып турсаңыз, текстти тандоо үчүн тийиштүү маалымат көрүнөт</translation>
 <translation id="3199127022143353223">Серверлер</translation>
 <translation id="3200061262156232574">Арабаңызда</translation>
@@ -5314,6 +5317,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6455264371803474013">Белгилүү бир сайттарда</translation>
 <translation id="6455894534188563617">&amp;Жаңы папка</translation>
 <translation id="645705751491738698">JavaScript бөгөттөлө берсин</translation>
+<translation id="6458347417133445570">Бардык cookie файлдарына уруксат берүү жөнүндө маалыматты көрсөтүү</translation>
 <translation id="6458701200018867744">Жүктөлүп берилбей калды (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Издөө аракетине Тандоону колдонуу</translation>
 <translation id="6459799433792303855">Активдүү терезе башка экранга жылып кетти.</translation>
@@ -6747,6 +6751,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7919210519031517829"><ph name="DURATION" />сек.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> файлын көрө алат</translation>
 <translation id="7920482456679570420">Орфографиялык текшерүүдөн өткөрбөй турган сөздөрдү кошуңуз</translation>
+<translation id="7922935920104868876">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө жөнүндө маалыматты көрсөтүү</translation>
 <translation id="7924358170328001543">Оюкчаны багыттоо катасы</translation>
 <translation id="7925108652071887026">Дайындарды автотолтуруу</translation>
 <translation id="792514962475806987">Жалгаштырылган лупанын масштабы:</translation>
@@ -7220,6 +7225,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Төмөнкүлөргө уруксат берилди: <ph name="PERMISSION" /> жана дагы <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Адегенде суралсын (сунушталат)</translation>
+<translation id="8414249071344507766">Эскерүүлөр эки күнгө жашырылды</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (куту)</translation>
 <translation id="8417548266957501132">Ата-эненин сырсөзү</translation>
 <translation id="8418445294933751433">&amp;Өтмөк катарында көрсөтүү</translation>

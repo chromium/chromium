@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Больш падрабязна</translation>
 <translation id="1030706264415084469">Сайт <ph name="URL" /> запытвае дазволу захоўваць вялікі аб'ём даных на вашай прыладзе</translation>
 <translation id="1032854598605920125">Павярнуць па гадзіннікавай стрэлцы</translation>
+<translation id="1033329911862281889">Рэжым інкогніта не робіць нябачнай вашу прысутнасць у інтэрнэце:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сайты і сэрвісы, якія яны выкарыстоўваюць, рэгіструюць наведванні;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />работадаўцы і навучальныя ўстановы могуць адсочваць дзеянні ў браўзеры;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />інтэрнэт-правайдары могуць адсочваць інтэрнэт-трафік.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1036982837258183574">Націсніце "<ph name="ACCELERATOR" />", каб выйсці з поўнаэкраннага рэжыму</translation>
 <translation id="1038106730571050514">Паказаць прапановы</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">У кэшы правіла няма памылак</translation>
 <translation id="1130564665089811311">Кнопка "Перакласці старонку". Каб перакласці гэту старонку ў Перакладчыку Google, націсніце Enter</translation>
 <translation id="1131264053432022307">Скапіраваны вамі відарыс</translation>
+<translation id="1142846828089312304">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="1150979032973867961">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: аперацыйная сістэма камп'ютара не давярае сертыфікату бяспекі гэтага дамена. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="1151972924205500581">Увядзіце пароль</translation>
 <translation id="1156303062776767266">Вы праглядаеце лакальны ці абагулены файл</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">Адправіць</translation>
 <translation id="1484290072879560759">Выбраць адрас дастаўкі</translation>
 <translation id="1492194039220927094">Паказ палітык:</translation>
+<translation id="149293076951187737">Пры закрыцці ўсіх укладак, адкрытых у рэжыме інкогніта ў браўзеры Chrome, з гэтай прылады выдаляюцца даныя пра ўсе вашы дзеянні ў гэтых укладках:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />дзеянні ў браўзеры;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />гісторыя пошуку;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />звесткі, якія былі ўведзены ў формах.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
 <translation id="1501859676467574491">Паказаць карткі з вашага Уліковага запісу Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Гэта памылка ўзнікае, калі вы карыстаецеся парталам Wi-Fi, на якім перад выхадам у інтэрнэт трэба выканаць уваход.&lt;/p&gt;
@@ -284,6 +297,7 @@
     фармат загалоўка няправільны, што не дазваляе браўзеру
     выканаць запыт сайта "<ph name="SITE" />". Палітыкі крыніцы могуць выкарыстоўвацца
     аператарамі сайтаў для наладжвання бяспекі і іншых уласцівасцей сайта.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Даведацца больш пра рэжым інкогніта ў браўзеры Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Адкрытыя ўкладкі з'явяцца тут</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@
 <translation id="2597378329261239068">Гэты дакумент абаронены паролем.  Увядзіце пароль.</translation>
 <translation id="2609632851001447353">Варыянты</translation>
 <translation id="2610561535971892504">Капіруецца адным дотыкам</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" /> наступную інфармацыю:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
+          <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў;
+          <ph name="LIST_ITEM" />звесткі, якія ўводзіліся ў формах.
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (канверт)</translation>
 <translation id="2623663032199728144">Можа запытваць дазвол на выкарыстанне звестак пра вашы экраны</translation>
 <translation id="2625385379895617796">Ваш гадзіннік спяшаецца</translation>
@@ -1152,6 +1172,7 @@
 <translation id="4628948037717959914">Фота</translation>
 <translation id="4631649115723685955">З вяртаннем грошай</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
+<translation id="4638670630777875591">Рэжым інкогніта ў браўзеры Chromium</translation>
 <translation id="464342062220857295">Функцыі пошуку</translation>
 <translation id="4644670975240021822">У адваротным парадку, рабочым бокам уніз</translation>
 <translation id="4646534391647090355">Перайсці туды</translation>
@@ -1247,6 +1268,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, для пошуку націсніце Tab, затым Enter</translation>
 <translation id="4930153903256238152">Вялікая ёмістасць</translation>
+<translation id="4940163644868678279">Рэжым інкогніта ў браўзеры Chrome</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
 <translation id="4950898438188848926">Кнопка пераключэння ўкладак. Націсніце Enter, каб пераключыцца на адкрытую ўкладку, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Дзеянні</translation>
@@ -1607,6 +1629,7 @@
 <translation id="6120179357481664955">Запомніць ідэнтыфікатар UPI?</translation>
 <translation id="6124432979022149706">Злучальнікі Chrome Enterprise</translation>
 <translation id="6127379762771434464">Элемент выдалены</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Даведацца больш пра рэжым інкогніта ў браўзеры Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Праверце кабелі і перазагрузіце маршрутызатары, мадэмы або іншыя сеткавыя
     прылады, якія выкарыстоўваеце.</translation>
 <translation id="614940544461990577">Паспрабуйце наступнае:</translation>
@@ -1882,6 +1905,12 @@
 <translation id="7111012039238467737">(Сапраўдны)</translation>
 <translation id="7118618213916969306">Пошук URL-адраса з буфера абмену: <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Закрыйце іншыя ўкладкі або праграмы</translation>
+<translation id="7129355289156517987">Пры закрыцці ўсіх укладак, адкрытых у рэжыме інкогніта ў браўзеры Chromium, з гэтай прылады выдаляюцца даныя пра ўсе вашы дзеянні ў гэтых укладках:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />дзеянні ў браўзеры;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />гісторыя пошуку;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />звесткі, якія былі ўведзены ў формах.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Адпраўка на гэты адрас немагчымая. Выберыце іншы адрас.</translation>
 <translation id="7132939140423847331">Ваш адміністратар забараніў капіраванне гэтых даных.</translation>
 <translation id="7135130955892390533">Паказаць стан</translation>
@@ -2001,6 +2030,12 @@
 <translation id="7485870689360869515">Даныя не знойдзены.</translation>
 <translation id="7495528107193238112">Гэта змесціва заблакіравана. Каб вырашыць праблему, звярніцеся да ўладальніка сайта.</translation>
 <translation id="7497998058912824456">Кнопка "Стварыць дакумент". Каб хутка стварыць новы дакумент Google, націсніце Enter</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" /> наступную інфармацыю:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
+          <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў;
+          <ph name="LIST_ITEM" />звесткі, якія ўводзіліся ў формах.
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Атрыманы з палітыкі ідэнтыфікатар прылады пусты або не супадае з бягучым ідэнтыфікатарам прылады</translation>
 <translation id="7508870219247277067">Цёмна-зялёны</translation>
 <translation id="7511955381719512146">Wi-Fi-сетка, якую вы выкарыстоўваеце, можа запатрабаваць ад вас наведаць <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2220,6 +2255,7 @@
 <translation id="8202370299023114387">Канфлікт</translation>
 <translation id="8206978196348664717">Prc4 (канверт)</translation>
 <translation id="8211406090763984747">Падключэнне бяспечнае</translation>
+<translation id="8217240300496046857">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вас у інтэрнэце. На некаторых сайтах можа перастаць працаваць частка функцый.</translation>
 <translation id="8218327578424803826">Прызначанае месцазнаходжанне:</translation>
 <translation id="8220146938470311105">C7/C6 (канверт)</translation>
 <translation id="8225771182978767009">Карыстальнік, які наладжваў гэты камп'ютар, вырашыў заблакіраваць гэты сайт.</translation>

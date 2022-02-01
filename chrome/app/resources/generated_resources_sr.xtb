@@ -1691,6 +1691,7 @@
 <translation id="2684004000387153598">Да бисте наставили, кликните на Потврди, па на Додај особу да бисте отворили нови профил за имејл адресу.</translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
 <translation id="2687407218262674387">Google услови коришћења услуге</translation>
+<translation id="2687621393791886981">Питај ме касније</translation>
 <translation id="2688196195245426394">Грешка при регистровању уређаја на сервер: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Приказуј опције језика</translation>
 <translation id="2691385045260836588">Модел</translation>
@@ -1896,6 +1897,7 @@
 <translation id="287205682142673348">Прослеђивање порта</translation>
 <translation id="287286579981869940">Додај <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Искључи</translation>
+<translation id="2873995907777332853">Приказуј детаље о блокирању свих колачића</translation>
 <translation id="2874939134665556319">Претходна песма</translation>
 <translation id="2875698561019555027">(Chrome странице са грешкама)</translation>
 <translation id="2876336351874743617">Прст 2</translation>
@@ -2202,6 +2204,7 @@
 <translation id="3189187154924005138">Велики курсор</translation>
 <translation id="3190558889382726167">Лозинка је сачувана</translation>
 <translation id="3192947282887913208">Аудио датотеке</translation>
+<translation id="3194786596445804250">Приказуј детаље о блокирању колачића трећих страна</translation>
 <translation id="3197453258332670132">Када кликнете десним тастером на неку ставку или је дуго притиснете, приказују се релевантне информације за изабрани текст</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3200061262156232574">У вашој корпи за куповину</translation>
@@ -5297,6 +5300,7 @@
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
 <translation id="6455894534188563617">&amp;Нови директоријум</translation>
 <translation id="645705751491738698">Настави блокирање JavaScript-а</translation>
+<translation id="6458347417133445570">Приказуј детаље о дозвољавању свих колачића</translation>
 <translation id="6458701200018867744">Отпремање није успело (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Користи избор за проналажење</translation>
 <translation id="6459799433792303855">Активни прозор је померен на други екран.</translation>
@@ -6729,6 +6733,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да прегледа <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Додајте речи које провера правописа треба да прескаче</translation>
+<translation id="7922935920104868876">Приказуј детаље о блокирању колачића трећих страна у режиму без архивирања</translation>
 <translation id="7924358170328001543">Грешка при прослеђивању порта</translation>
 <translation id="7925108652071887026">Подаци Аутоматског попуњавања</translation>
 <translation id="792514962475806987">Ниво зумирања монтиране лупе екрана:</translation>
@@ -7203,6 +7208,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозвољено је: <ph name="PERMISSION" /> и још <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Прво питај (препоручено)</translation>
+<translation id="8414249071344507766">Успомене су сакривене на два дана</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (футрола)</translation>
 <translation id="8417548266957501132">Лозинка родитеља</translation>
 <translation id="8418445294933751433">&amp;Прикажи као картицу</translation>

@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Деректерді көру</translation>
 <translation id="1030706264415084469"><ph name="URL" /> үлкен көлемді деректерді құрылғыңызда біржола сақтағысы келеді</translation>
 <translation id="1032854598605920125">Сағат тілінің бағытымен бұру</translation>
+<translation id="1033329911862281889">Инкогнито режимі интернеттегі іс-әрекетіңізді жасырмайды:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сайттар мен қызметтер кірген әрекеттерді тіркейді.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />жұмыс берушілер мен білім беру мекемелерінің әкімшілері браузерді қолдану мәліметін қадағалай алады.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />интернет провайдерлері трафикті бақылай алады.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1036982837258183574">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Саясат кэші жарамды</translation>
 <translation id="1130564665089811311">"Бетті аудару" түймесі. Осы бетті Google Translate арқылы аудару үшін Enter пернесін басыңыз.</translation>
 <translation id="1131264053432022307">Көшірілген сурет</translation>
+<translation id="1142846828089312304">Инкогнито режимінде үшінші тараптың cookie файлдарын бөгеу</translation>
 <translation id="1150979032973867961">Бұл сервер оның <ph name="DOMAIN" /> екендігін дәлелдей алмайды; оның қауіпсіздік сертификатын компьютеріңіздің операциялық жүйесі растамаған. Бұған конфигурация ақаулығы немесе қаскүнемнің қосылымыңызды тоқтатуы себеп болуы мүмкін.</translation>
 <translation id="1151972924205500581">Құпия сөз қажет</translation>
 <translation id="1156303062776767266">Жергілікті немесе ортақ файлды көрудесіз</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">Жіберу</translation>
 <translation id="1484290072879560759">Жөнелту мекенжайын таңдау</translation>
 <translation id="1492194039220927094">Жаңа саясаттар туралы хабарландыру:</translation>
+<translation id="149293076951187737">Chrome Iраузерінің барлық инкогнито қойындыларын жапқан кезде, сол қойындылардағы әрекеттеріңіз құрылғыдан өшіріледі:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />браузерді қолдану мәліметі;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />іздеу тарихы;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Қойындыға оралу</translation>
 <translation id="1501859676467574491">Google аккаунтына сақталған карталар көрсетілсін</translation>
 <translation id="1507202001669085618">&lt;p&gt;Интернетке кірерде аккаунтқа кіру сұралатын Wi-Fi порталын пайдаланған кезде, осы қате шығады.&lt;/p&gt;
@@ -284,6 +297,7 @@
     атауының пішіні өзгерген, бұл — браузердің <ph name="SITE" /> сайтына берілген сұрауларды толтыруына
     жол бермейді. Сайттың қауіпсіздік параметрлері мен
     басқа сипаттарын конфигурациялау үшін сайт операторлары түпнұсқа саясаттарын қолдануы мүмкін.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium браузеріндегі инкогнито режимі туралы толығырақ<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Ашық қойынды осы жерден шығады</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@
 <translation id="2597378329261239068">Бұл құжат құпия сөзбен қорғалған. Құпия сөзді енгізіңіз.</translation>
 <translation id="2609632851001447353">Нұсқалар</translation>
 <translation id="2610561535971892504">Басып көшіру</translation>
+<translation id="2617988307566202237">Chrome келесі ақпаратты <ph name="BEGIN_EMPHASIS" />сақтамайды<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />браузерді қолдану тарихы;
+          <ph name="LIST_ITEM" />cookie файлдары және сайт деректері;
+          <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">Экрандар туралы ақпаратты пайдалануға рұқсат сұрай алады.</translation>
 <translation id="2625385379895617796">Сағатыңыз алда</translation>
@@ -1152,6 +1172,7 @@
 <translation id="4628948037717959914">Фотосурет</translation>
 <translation id="4631649115723685955">Байланыстырылған кешбэк</translation>
 <translation id="4636930964841734540">Ақпарат</translation>
+<translation id="4638670630777875591">Chromium браузеріндегі инкогнито режимі</translation>
 <translation id="464342062220857295">Іздеу функциялары</translation>
 <translation id="4644670975240021822">Кері ретпен артқы жағында</translation>
 <translation id="4646534391647090355">Қазір өту</translation>
@@ -1246,6 +1267,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Іздеу үшін алдымен Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="4930153903256238152">Үлкен сыйымдылық</translation>
+<translation id="4940163644868678279">Chrome браузеріндегі инкогнито режимі</translation>
 <translation id="4943872375798546930">Нәтижесіз</translation>
 <translation id="4950898438188848926">Қойынды ауыстыру түймесі: ашық қойындыға ауысу үшін Enter пернесін басыңыз, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Әрекеттер</translation>
@@ -1606,6 +1628,7 @@
 <translation id="6120179357481664955">UPI идентификаторы сақталсын ба?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Элемент жойылған</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome браузеріндегі инкогнито режимі туралы толығырақ<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Барлық кабельдерді тексеріп, пайдаланып отырған кез
     келген роутерлерді, модемдерді немесе басқа желі құрылғыларын қайта жүктеңіз.</translation>
 <translation id="614940544461990577">Орындап көріңіз:</translation>
@@ -1881,6 +1904,12 @@
 <translation id="7111012039238467737">(жарамды)</translation>
 <translation id="7118618213916969306">Буфердегі URL сілтемесін (<ph name="SHORT_URL" />) іздеу</translation>
 <translation id="7119414471315195487">Басқа қойындыларды не бағдарламаларды жабу</translation>
+<translation id="7129355289156517987">Chromium браузерінің барлық инкогнито қойындыларын жапқан кезде, сол қойындылардағы әрекеттеріңіз құрылғыдан өшіріледі:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />браузерді қолдану мәліметі;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />іздеу тарихы;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Бұл мекенжайға жөнелтілмейді. Басқа мекенжайды таңдаңыз.</translation>
 <translation id="7132939140423847331">Әкімші бұл деректің көшірілуіне тыйым салды.</translation>
 <translation id="7135130955892390533">Күйін көрсету</translation>
@@ -1999,6 +2028,12 @@
 <translation id="7485870689360869515">Деректер табылмады.</translation>
 <translation id="7495528107193238112">Бұл мазмұн бөгелген. Мәселені шешу үшін сайт иесімен байланыс орнатыңыз.</translation>
 <translation id="7497998058912824456">"Құжат жасау" түймесі, жаңа Google құжатын жылдам жасау үшін Enter пернесін басыңыз.</translation>
+<translation id="7506488012654002225">Chromium келесі ақпаратты <ph name="BEGIN_EMPHASIS" />сақтамайды<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />браузерді қолдану тарихы;
+          <ph name="LIST_ITEM" />cookie файлдары және сайт деректері;
+          <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Қайтарылған құрылғының сервердегі идентификаторы бос немесе оның ағымдағы идентификаторына сәйкес келмейді</translation>
 <translation id="7508870219247277067">Қою жасыл</translation>
 <translation id="7511955381719512146">Пайдаланып жатқан Wi-Fi сізден <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
@@ -2218,6 +2253,7 @@
 <translation id="8202370299023114387">Қайшылық</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Қауіпсіз байланыс</translation>
+<translation id="8217240300496046857">Сайттар сізді интернетте қадағалайтын cookie файлдарын пайдалана алмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="8218327578424803826">Тағайындалған орын:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Бұл компьютерді орнатқан адам осы сайтты бөгеуді ұйғарды.</translation>

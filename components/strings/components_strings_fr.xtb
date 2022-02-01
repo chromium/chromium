@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Voir les détails</translation>
 <translation id="1030706264415084469"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre appareil</translation>
 <translation id="1032854598605920125">Faire pivoter vers la droite</translation>
+<translation id="1033329911862281889">La navigation privée ne vous rend pas invisible sur Internet :
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Les sites et les services qu'ils utilisent peuvent voir que vous les consultez<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Votre employeur ou votre établissement scolaire peuvent connaître votre activité de navigation<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Les fournisseurs d'accès à Internet peuvent surveiller le trafic Web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036982837258183574">Appuyez sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran.</translation>
 <translation id="1038106730571050514">Afficher les suggestions</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Cache de la règle valide.</translation>
 <translation id="1130564665089811311">Bouton "Traduire la page" : appuyer sur Entrée pour traduire cette page avec Google Traduction</translation>
 <translation id="1131264053432022307">Image copiée</translation>
+<translation id="1142846828089312304">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="1150979032973867961">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par le système d'exploitation de votre ordinateur. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="1151972924205500581">Veuillez saisir un mot de passe</translation>
 <translation id="1156303062776767266">Vous consultez un fichier local ou partagé</translation>
@@ -180,6 +187,12 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1483493594462132177">Envoyer</translation>
 <translation id="1484290072879560759">Sélectionner l'adresse de livraison</translation>
 <translation id="1492194039220927094">Diffusion push des règles : </translation>
+<translation id="149293076951187737">Lorsque vous fermez tous les onglets de navigation privée de Chrome, les activités effectuées dans ces onglets sont effacées de cet appareil :
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Activité de navigation<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historique des recherches<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informations saisies dans les formulaires<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1501859676467574491">Afficher les cartes de votre compte Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ce message s'affiche si vous utilisez un portail Wi-Fi auquel vous devez vous connecter pour accéder à Internet.&lt;/p&gt;
@@ -284,6 +297,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     le format de l'en-tête étant incorrect, le navigateur ne peut pas traiter
     votre requête concernant <ph name="SITE" />. Les exploitants de sites peuvent utiliser
     des règles d'origine pour en configurer la sécurité et d'autres propriétés.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />En savoir plus sur la navigation privée dans Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Les onglets ouverts s'affichent ici</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2597378329261239068">Ce document est protégé par mot de passe. Veuillez saisir ce dernier.</translation>
 <translation id="2609632851001447353">Variantes</translation>
 <translation id="2610561535971892504">Cliquer pour copier</translation>
+<translation id="2617988307566202237">Les informations suivantes <ph name="BEGIN_EMPHASIS" />ne seront pas enregistrées<ph name="END_EMPHASIS" /> dans Chrome :
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Votre historique de navigation
+          <ph name="LIST_ITEM" />Les cookies et les données des sites
+          <ph name="LIST_ITEM" />Les informations saisies dans les formulaires
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (enveloppe)</translation>
 <translation id="2623663032199728144">Peut demander d'utiliser les infos au sujet de vos écrans</translation>
 <translation id="2625385379895617796">Votre horloge est en avance.</translation>
@@ -1153,6 +1173,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Avec cashback</translation>
 <translation id="4636930964841734540">Infos</translation>
+<translation id="4638670630777875591">Navigation privée dans Chromium</translation>
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
 <translation id="4644670975240021822">Ordre inverse, face vers le bas</translation>
 <translation id="4646534391647090355">Accéder</translation>
@@ -1248,6 +1269,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis Entrée pour lancer une recherche</translation>
 <translation id="4930153903256238152">Grande capacité</translation>
+<translation id="4940163644868678279">Navigation privée dans Chrome</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4950898438188848926">Bouton pour changer d'onglet (appuyez sur Entrée pour passer à l'onglet ouvert, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />)</translation>
 <translation id="495170559598752135">Actions</translation>
@@ -1608,6 +1630,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6120179357481664955">Souhaitez-vous mémoriser votre ID UPI ?</translation>
 <translation id="6124432979022149706">Connecteurs Chrome Enterprise</translation>
 <translation id="6127379762771434464">Élément supprimé</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />En savoir plus sur la navigation privée dans Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Vérifiez les câbles et redémarrez votre routeur, votre modem
     ou tout autre périphérique réseau utilisé.</translation>
 <translation id="614940544461990577">Voici quelques conseils :</translation>
@@ -1883,6 +1906,12 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7111012039238467737">(Valide)</translation>
 <translation id="7118618213916969306">Rechercher l'URL du presse-papier, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Fermez les autres onglets ou programmes</translation>
+<translation id="7129355289156517987">Lorsque vous fermez tous les onglets de navigation privée de Chromium, les activités effectuées dans ces onglets sont effacées de cet appareil :
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Activité de navigation<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historique des recherches<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informations saisies dans les formulaires<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Impossible d'expédier à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="7132939140423847331">Votre administrateur a interdit la copie de ces données.</translation>
 <translation id="7135130955892390533">Afficher l'état</translation>
@@ -2002,6 +2031,12 @@ Informations supplémentaires :
 <translation id="7485870689360869515">Aucune donnée n'a été trouvée.</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Pour résoudre le problème, contactez le propriétaire du site.</translation>
 <translation id="7497998058912824456">Bouton "Créer un document", appuyez sur Entrée pour créer rapidement un document Google Docs</translation>
+<translation id="7506488012654002225">Les informations suivantes <ph name="BEGIN_EMPHASIS" />ne seront pas enregistrées<ph name="END_EMPHASIS" /> dans Chromium :
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Votre historique de navigation
+          <ph name="LIST_ITEM" />Les cookies et les données des sites
+          <ph name="LIST_ITEM" />Les informations saisies dans les formulaires
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">L'ID d'appareil de la règle renvoyé est vide ou ne correspond pas à l'ID d'appareil actuel.</translation>
 <translation id="7508870219247277067">Vert avocat</translation>
 <translation id="7511955381719512146">Pour utiliser ce réseau Wi-Fi, il est possible que vous deviez vous rendre sur la page <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2221,6 +2256,7 @@ Informations supplémentaires :
 <translation id="8202370299023114387">Conflit</translation>
 <translation id="8206978196348664717">Prc4 (enveloppe)</translation>
 <translation id="8211406090763984747">La connexion est sécurisée</translation>
+<translation id="8217240300496046857">Les sites ne peuvent pas utiliser de cookies pour suivre votre activité sur le Web. Les fonctionnalités de certains sites peuvent être bloquées.</translation>
 <translation id="8218327578424803826">Position attribuée : </translation>
 <translation id="8220146938470311105">C7/C6 (enveloppe)</translation>
 <translation id="8225771182978767009">La personne qui a configuré cet ordinateur a choisi de bloquer ce site.</translation>

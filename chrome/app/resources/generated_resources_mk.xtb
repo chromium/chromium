@@ -436,7 +436,7 @@
 <translation id="1431432486300429272">Google може да ја користи историјата на прелистување за да го персонализира „Пребарување“ и другите услуги на Google. Ти или родителот може да го промените ова во секое време на myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Управувајте со пребарувачи</translation>
 <translation id="1433811987160647649">Прашај пред да пристапиш</translation>
-<translation id="1434696352799406980">Ова ќе ви ги ресетира страницата на стартување, страницата во нова картичка, пребарувачот и прикачените картички. Исто така, ќе ги оневозможи сите екстензии и ќе ги исчисти привремените податоци како колачињата. Обележувачите, историјата и зачуваните лозинки нема да се избришат.</translation>
+<translation id="1434696352799406980">Ова ќе ви ги ресетира страницата на стартување, страницата во нова картичка, пребарувачот и прикачените картички. Исто така, ќе ги оневозможи сите екстензии и ќе ги избрише привремените податоци како колачињата. Обележувачите, историјата и зачуваните лозинки нема да се избришат.</translation>
 <translation id="1434886155212424586">Почетна страница е страницата за Нова картичка</translation>
 <translation id="1436390408194692385">Важи уште <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Отстрането</translation>
@@ -1708,6 +1708,7 @@
 <translation id="2684004000387153598">За да продолжите, кликнете „Во ред“, а потоа кликнете „Додај лице“ за да создадете нов профил за адресата на е-пошта.</translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2687407218262674387">Услови за користење на Google</translation>
+<translation id="2687621393791886981">Прашај ме подоцна</translation>
 <translation id="2688196195245426394">Грешка при регистрирање на уредот на серверот: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Покажи ги опциите за јазик</translation>
 <translation id="2691385045260836588">Модел</translation>
@@ -1913,6 +1914,7 @@
 <translation id="287205682142673348">Проследување порта</translation>
 <translation id="287286579981869940">Додај <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Исклучи</translation>
+<translation id="2873995907777332853">Прикажи детали за блокирање на сите колачиња</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
 <translation id="2875698561019555027">(Страници со грешка на Chrome)</translation>
 <translation id="2876336351874743617">Прст 2</translation>
@@ -2219,6 +2221,7 @@
 <translation id="3189187154924005138">Голем курсор</translation>
 <translation id="3190558889382726167">Лозинката е зачувана</translation>
 <translation id="3192947282887913208">Аудиодатотеки</translation>
+<translation id="3194786596445804250">Прикажи детали за блокирање колачиња од трети страни</translation>
 <translation id="3197453258332670132">Прикажува поврзани информации за избраниот текст при кликнување со десно копче или долго притискање</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3200061262156232574">Во вашата кошничка за купување</translation>
@@ -5315,6 +5318,7 @@
 <translation id="6455264371803474013">На одредени сајтови</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
 <translation id="645705751491738698">Продолжи да блокираш JavaScript</translation>
+<translation id="6458347417133445570">Прикажи детали за дозволување на сите колачиња</translation>
 <translation id="6458701200018867744">Прикачувањето не успеа (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Користи избор за пребарување</translation>
 <translation id="6459799433792303855">Активниот прозорец е преместен на друг екран.</translation>
@@ -6748,6 +6752,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> сек.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да ја прегледува <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Додајте ги зборовите што сакате проверката на правописот да ги прескокне</translation>
+<translation id="7922935920104868876">Прикажи детали за блокирање колачиња од трети страни во „Инкогнито“</translation>
 <translation id="7924358170328001543">Грешка при проследувањето порта</translation>
 <translation id="7925108652071887026">Автоматски пополни податоци</translation>
 <translation id="792514962475806987">Ниво на зумирање на закотвената лупа:</translation>
@@ -7224,6 +7229,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволени: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Прашај прво (препорачано)</translation>
+<translation id="8414249071344507766">Спомените ќе бидат сокриени два дена</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (футрола за полнење)</translation>
 <translation id="8417548266957501132">Лозинка на родител</translation>
 <translation id="8418445294933751433">&amp;Прикажи како картичка</translation>

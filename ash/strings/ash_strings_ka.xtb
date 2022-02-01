@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">მარჯვნივ</translation>
 <translation id="1351937230027495976">მენიუს ჩაკეცვა</translation>
 <translation id="1364382257761975320">თქვენი Chromebook-ის განსაბლოკად გამოიყენეთ თქვენი თითის ანაბეჭდი</translation>
+<translation id="1364618750746929654">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="1383597849754832576">მეტყველების ფაილების ჩამოტვირთვა ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="1391102559483454063">ჩართვა</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">მართული</translation>
 <translation id="5465662442746197494">დახმარება გჭირდებათ?</translation>
 <translation id="547979256943495781">თარო მდებარეობს მარჯვენა ნაწილში</translation>
+<translation id="5491186829646618080">ხელმისაწვდომია ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">თქვენმა ადმინისტრატორმა წაშალა ყველა eSIM პროფილი. დამატებითი ინფორმაციისთვის დაუკავშირდით თქვენს ადმინისტრატორს.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> უკავშირდება.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="8876661425082386199">შეამოწმეთ კავშირი</translation>
 <translation id="8877788021141246043">შეხსენების დაყენება</translation>
 <translation id="8878886163241303700">ეკრანის გაშლა</translation>
+<translation id="888982883502837004">თქვენი მოწყობილობისთვის ხელმისაწვდომია ჩაშენებული პროგრამული უზრუნველყოფის განახლებები. დააწკაპუნეთ გადასახედად და გასაახლებლად.</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ სამუდამოდ წაიშლება</translation>
 <translation id="890616557918890486">წყაროს შეცვლა</translation>
 <translation id="8909138438987180327">ბატარეის დონე <ph name="PERCENTAGE" /> პროცენტზეა.</translation>

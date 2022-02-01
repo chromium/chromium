@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Lihat detail</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ingin menyimpan data berukuran besar di perangkat Anda secara permanen</translation>
 <translation id="1032854598605920125">Putar searah jarum jam</translation>
+<translation id="1033329911862281889">Mode Samaran tidak membuat Anda tidak terlihat secara online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Situs dan layanan yang digunakan situs tersebut dapat melihat kunjungan<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Perusahaan atau sekolah dapat melacak aktivitas penjelajahan<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internet service provider dapat memantau traffic web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1036982837258183574">Tekan |<ph name="ACCELERATOR" />| untuk keluar dari mode layar penuh</translation>
 <translation id="1038106730571050514">Tampilkan saran</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Cache kebijakan Oke</translation>
 <translation id="1130564665089811311">Tombol Terjemahkan halaman, tekan Enter untuk menerjemahkan halaman ini dengan Google Terjemahan</translation>
 <translation id="1131264053432022307">Gambar yang Anda Salin</translation>
+<translation id="1142846828089312304">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="1150979032973867961">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh sistem operasi komputer Anda. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="1151972924205500581">Sandi wajib ada</translation>
 <translation id="1156303062776767266">Anda melihat file lokal atau bersama</translation>
@@ -180,6 +187,12 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1483493594462132177">Kirim</translation>
 <translation id="1484290072879560759">Pilih Alamat Pengiriman</translation>
 <translation id="1492194039220927094">Push kebijakan:</translation>
+<translation id="149293076951187737">Jika Anda menutup semua tab Samaran Chrome, aktivitas Anda di tab tersebut akan dihapus dari perangkat ini:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktivitas penjelajahan<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Histori penelusuran<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informasi yang dimasukkan dalam formulir<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1501859676467574491">Tampilkan kartu dari Akun Google Anda</translation>
 <translation id="1507202001669085618">&lt;p&gt;Anda akan melihat error ini jika menggunakan portal Wi-Fi yang mengharuskan Anda login sebelum terhubung online.&lt;/p&gt;
@@ -280,6 +293,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1763864636252898013">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh sistem operasi perangkat Anda. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Coba jalankan Diagnostik Jaringan Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Server yang akan Anda akses, <ph name="ORIGIN" />, telah menetapkan header yang mengharuskan kebijakan asal diterapkan ke semua permintaan yang ditujukan kepadanya. Namun, format header tersebut salah, yang membuat browser tidak dapat memenuhi permintaan Anda untuk <ph name="SITE" />. Kebijakan asal dapat digunakan oleh operator situs guna mengonfigurasi keamanan dan properti lainnya untuk sebuah situs.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Pelajari mode Samaran di Chromium lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Tab yang terbuka muncul di sini</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -521,6 +535,12 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2597378329261239068">Dokumen ini dilindungi sandi. Masukkan sandi.</translation>
 <translation id="2609632851001447353">Variasi</translation>
 <translation id="2610561535971892504">Klik untuk menyalin</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" /> informasi berikut:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Histori penjelajahan Anda
+            <ph name="LIST_ITEM" />Cookie dan data situs
+            <ph name="LIST_ITEM" />Informasi yang dimasukkan dalam formulir
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Amplop)</translation>
 <translation id="2623663032199728144">Dapat meminta untuk menggunakan info tentang layar Anda</translation>
 <translation id="2625385379895617796">Setelan jam terlalu cepat</translation>
@@ -1143,6 +1163,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Disertai cashback</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4638670630777875591">Mode Samaran di Chromium</translation>
 <translation id="464342062220857295">Fitur penelusuran</translation>
 <translation id="4644670975240021822">Urutan yang berkebalikan menghadap ke bawah</translation>
 <translation id="4646534391647090355">Buka Download sekarang</translation>
@@ -1238,6 +1259,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menelusuri</translation>
 <translation id="4930153903256238152">Kapasitas besar</translation>
+<translation id="4940163644868678279">Mode Samaran di Chrome</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
 <translation id="4950898438188848926">Tombol beralih tab, tekan Enter untuk beralih ke tab yang terbuka, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Tindakan</translation>
@@ -1598,6 +1620,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6120179357481664955">Ingat ID UPI Anda?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Item dihapus</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Pelajari mode Samaran di Chrome lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Periksa semua kabel dan boot ulang router, modem, atau perangkat
     jaringan lain yang mungkin Anda gunakan.</translation>
 <translation id="614940544461990577">Coba:</translation>
@@ -1873,6 +1896,12 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7118618213916969306">Telusuri URL papan klip, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Tutup tab atau program lain</translation>
+<translation id="7129355289156517987">Jika Anda menutup semua tab Samaran Chromium, aktivitas Anda di tab tersebut akan dihapus dari perangkat ini:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktivitas penjelajahan<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Histori penelusuran<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informasi yang dimasukkan dalam formulir<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
 <translation id="7132939140423847331">Admin Anda telah melarang data ini disalin.</translation>
 <translation id="7135130955892390533">Tampilkan status</translation>
@@ -1989,6 +2018,12 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7485870689360869515">Tidak ada data yang ditemukan.</translation>
 <translation id="7495528107193238112">Konten ini diblokir. Hubungi pemilik situs untuk memperbaiki masalah.</translation>
 <translation id="7497998058912824456">Tombol Buat dokumen, tekan Enter untuk membuat Dokumen Google baru dengan cepat</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" /> informasi berikut:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Histori penjelajahan Anda
+            <ph name="LIST_ITEM" />Cookie dan data situs
+            <ph name="LIST_ITEM" />Informasi yang dimasukkan dalam formulir
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ID perangkat kebijakan yang dikembalikan kosong atau tidak cocok dengan ID perangkat saat ini</translation>
 <translation id="7508870219247277067">Hijau Avokad</translation>
 <translation id="7511955381719512146">Wi-Fi yang digunakan mungkin mewajibkan Anda mengunjungi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2208,6 +2243,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8202370299023114387">Konflik</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Koneksi aman</translation>
+<translation id="8217240300496046857">Situs tidak dapat menggunakan cookie yang melacak Anda di seluruh web. Fitur di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="8218327578424803826">Lokasi yang Ditetapkan:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Orang yang menyiapkan komputer ini telah memilih untuk memblokir situs ini.</translation>

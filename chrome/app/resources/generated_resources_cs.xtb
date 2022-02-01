@@ -1694,6 +1694,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2684004000387153598">Chcete-li pokračovat, klikněte na OK a poté kliknutím na Přidat uživatele vytvořte nový profil pro svou novou e-mailovou adresu.</translation>
 <translation id="2687403674020088961">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="2687407218262674387">Smluvní podmínky Google</translation>
+<translation id="2687621393791886981">Zeptat se později</translation>
 <translation id="2688196195245426394">Při registraci zařízení na serveru došlo k chybě: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Zobrazit jazykové možnosti</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -7204,6 +7205,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Povoleno oprávnění <ph name="PERMISSION" /> a další (<ph name="COUNT" />)</translation>
 <translation id="8413385045638830869">Nejprve se dotázat (doporučeno)</translation>
+<translation id="8414249071344507766">Vzpomínky jsou na dva dny skryté</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (pouzdro)</translation>
 <translation id="8417548266957501132">Heslo rodiče</translation>
 <translation id="8418445294933751433">Zobrazit jako kartu</translation>

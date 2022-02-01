@@ -1701,6 +1701,7 @@
 <translation id="2684004000387153598">ለመቀጠል እሺን ጠቅ ያድርጉ፣ ከዚያ ለኢሜይል አድራሻዎ አዲስ መገለጫ ለመፍጠር ሰው አክልን ጠቅ ያድርጉ።</translation>
 <translation id="2687403674020088961">ሁሉንም ኩኪዎች አግድ (አይመከርም)</translation>
 <translation id="2687407218262674387">የGoogle አገልግሎት ውል</translation>
+<translation id="2687621393791886981">በኋላ ጠይቀኝ</translation>
 <translation id="2688196195245426394">መሣሪያውን በዚህ አገልጋይ ላይ በመመዝገብ ላይ ሳለ ስህተት፦ <ph name="CLIENT_ERROR" />።</translation>
 <translation id="2690024944919328218">የቋንቋ አማራጮችን ይጠቀሙ</translation>
 <translation id="2691385045260836588">ሞዴል</translation>
@@ -7217,6 +7218,7 @@ nil</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">የተፈቀዱ <ph name="PERMISSION" /> እና <ph name="COUNT" /> ተጨማሪ</translation>
 <translation id="8413385045638830869">በመጀመሪያ ጠይቅ (የሚመከር)</translation>
+<translation id="8414249071344507766">ትውስታዎች ለሁለት ቀናት ተደብቀዋል</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (መያዣ)</translation>
 <translation id="8417548266957501132">የወላጅ ይለፍ ቃል</translation>
 <translation id="8418445294933751433">&amp;በትር አሳይ</translation>

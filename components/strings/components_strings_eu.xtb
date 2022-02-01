@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Ikusi xehetasunak</translation>
 <translation id="1030706264415084469"><ph name="URL" /> webguneak datu asko gorde nahi ditu gailuan modu iraunkorrean</translation>
 <translation id="1032854598605920125">Biratu eskuinera</translation>
+<translation id="1033329911862281889">Ezkutuko modua erabili arren, ez zara ikusezina izango sarean:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Webguneek eta erabiltzen dituzten zerbitzuek bisitak ikus ditzakete.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Enpresek edo ikastetxeek arakatze-jardueren jarraipena egin dezakete.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Interneteko zerbitzu-hornitzaileek sareko trafikoa gainbegira dezakete.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1036982837258183574">Pantaila osoko ikuspegitik irteteko, sakatu |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Erakutsi iradokizunak</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Gidalerroaren cachea egoera onean dago</translation>
 <translation id="1130564665089811311">"Itzuli orria" botoia: sakatu "Sartu" orria Google Translate-rekin itzultzeko</translation>
 <translation id="1131264053432022307">Kopiatu duzun irudia</translation>
+<translation id="1142846828089312304">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="1150979032973867961">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Zure ordenagailuaren sistema eragilea ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="1151972924205500581">Pasahitza behar da</translation>
 <translation id="1156303062776767266">Fitxategi lokal edo partekatu bat ari zara ikusten</translation>
@@ -180,6 +187,12 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1483493594462132177">Bidali</translation>
 <translation id="1484290072879560759">Aukeratu bidalketa-helbidea</translation>
 <translation id="1492194039220927094">Gidalerroen push gaitasuna:</translation>
+<translation id="149293076951187737">Chrome-ko ezkutuko moduko fitxa guztiak ixten dituzunean, fitxa horietan egindako jarduerak gailutik ezabatuko dira:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />arakatze-jarduerak<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />bilaketa-historia<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Itzuli fitxara</translation>
 <translation id="1501859676467574491">Erakutsi Google-ko kontuko txartelak</translation>
 <translation id="1507202001669085618">&lt;p&gt;Internetera konektatzeko saioa hastea eskatzen dizun Wi-Fi atari bat erabiltzen ari bazara ikusiko duzu errore hori.&lt;/p&gt;
@@ -280,6 +293,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1763864636252898013">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Zure gailuaren sistema eragilea ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Exekutatu Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Aukeratu duzun zerbitzariak (<ph name="ORIGIN" />) goiburu bat ezarri du; haren arabera, jatorri-gidalerro bat aplikatuko zaie zerbitzari hartako eskaera guztiei. Alabaina, goiburua oker dago eratuta; ondorioz, arakatzaileak ezin du gauzatu <ph name="SITE" /> webgunean sartzeko egin duzun eskaera. Webgunearen segurtasuna eta beste propietate batzuk konfiguratzeko erabili ohi dituzte webguneen eragileek jatorri-gidalerroak.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Lortu Chromium-eko ezkutuko moduari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Ireki dituzun fitxak agertuko dira hemen</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -521,6 +535,12 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2597378329261239068">Dokumentua pasahitzez babestuta dago. Idatzi pasahitza.</translation>
 <translation id="2609632851001447353">Aldaerak</translation>
 <translation id="2610561535971892504">Sakatu kopiatzeko</translation>
+<translation id="2617988307566202237">Chrome-k <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />arakatze-historia
+          <ph name="LIST_ITEM" />cookieak eta webguneetako datuak
+          <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (gutun-azala)</translation>
 <translation id="2623663032199728144">Pantailei buruzko informazioa erabiltzea eska dezake</translation>
 <translation id="2625385379895617796">Erlojua aurreratuta duzu</translation>
@@ -1140,6 +1160,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4628948037717959914">Argazkia</translation>
 <translation id="4631649115723685955">Dirua berreskuratzeko aukerarekin</translation>
 <translation id="4636930964841734540">Informazioa</translation>
+<translation id="4638670630777875591">Chromium-eko ezkutuko modua</translation>
 <translation id="464342062220857295">Bilaketa-eginbideak</translation>
 <translation id="4644670975240021822">Alderantzizko ordenan, ahuspez</translation>
 <translation id="4646534391647090355">Eraman nazazu hara</translation>
@@ -1235,6 +1256,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu bilaketa egiteko</translation>
 <translation id="4930153903256238152">Edukiera handia</translation>
+<translation id="4940163644868678279">Chrome-ko ezkutuko modua</translation>
 <translation id="4943872375798546930">Ez dago emaitzarik</translation>
 <translation id="4950898438188848926">Fitxa aldatzeko botoia. Ireki duzun fitxara (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />) joateko, sakatu Sartu.</translation>
 <translation id="495170559598752135">Ekintzak</translation>
@@ -1595,6 +1617,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6120179357481664955">Gogoan al duzu UPIko IDa?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Kendu egin da elementua</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Lortu Chrome-ko ezkutuko moduari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Egiaztatu kableak konektatuta daudela eta berrabiarazi erabiltzen ari zaren bideratzaile, modem eta sare-gailu oro.</translation>
 <translation id="614940544461990577">Konpontzeko, hauek egin ditzakezu:</translation>
 <translation id="6150036310511284407">Hiru zulo ezkerrean</translation>
@@ -1869,6 +1892,12 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7111012039238467737">(balio du)</translation>
 <translation id="7118618213916969306">Bilatu arbeleko URLa (<ph name="SHORT_URL" />)</translation>
 <translation id="7119414471315195487">Itxi beste fitxa edo programa batzuk</translation>
+<translation id="7129355289156517987">Chromium-eko ezkutuko moduko fitxa guztiak ixten dituzunean, fitxa horietan egindako jarduerak gailutik ezabatuko dira:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />arakatze-jarduerak<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />bilaketa-historia<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Ezin da entregatu helbide horretan. Hautatu beste helbide bat.</translation>
 <translation id="7132939140423847331">Administratzaileak debekatu egin du datu hauek kopiatzea.</translation>
 <translation id="7135130955892390533">Erakutsi egoera</translation>
@@ -1987,6 +2016,12 @@ Xehetasun gehiago:
 <translation id="7485870689360869515">Ez da daturik aurkitu</translation>
 <translation id="7495528107193238112">Eduki hori blokeatuta dago. Jarri harremanetan webgunearen arduradunarekin arazoa konpontzeko.</translation>
 <translation id="7497998058912824456">Dokumentu bat sortzeko botoia: sakatu "Sartu" Google-ko dokumentu bat bizkor sortzeko</translation>
+<translation id="7506488012654002225">Chromium-ek <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />arakatze-historia
+          <ph name="LIST_ITEM" />cookieak eta webguneetako datuak
+          <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Itzuli den gidalerroaren gailu IDa hutsik dago edo ez dator bat gailuaren IDarekin</translation>
 <translation id="7508870219247277067">Ahuakatea</translation>
 <translation id="7511955381719512146">Baliteke darabilzun Wi-Fi konexioaren <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> orrira joan behar izatea.</translation>
@@ -2206,6 +2241,7 @@ Xehetasun gehiago:
 <translation id="8202370299023114387">Gatazka</translation>
 <translation id="8206978196348664717">Prc4 (gutun-azala)</translation>
 <translation id="8211406090763984747">Konexioa segurua da</translation>
+<translation id="8217240300496046857">Webguneek ezin dituzte erabili sarean jarraipena egiten dizuten cookieak. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="8218327578424803826">Esleitutako kokapena</translation>
 <translation id="8220146938470311105">C7/C6 (gutun-azala)</translation>
 <translation id="8225771182978767009">Ordenagailua konfiguratu duen pertsonak webgune hau blokeatzea aukeratu du.</translation>

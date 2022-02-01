@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Ogled podrobnosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno shranjevati velike količine podatkov v vaši napravi</translation>
 <translation id="1032854598605920125">Sukanje v smeri urnega kazalca</translation>
+<translation id="1033329911862281889">V anonimnem načinu niste nevidni v spletu:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />spletna mesta in storitve, ki jih uporabljajo, si lahko ogledajo obiske;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />delodajalci ali šole lahko spremljajo vaše brskanje;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ponudniki internetnih storitev lahko spremljajo spletni promet.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1036982837258183574">Pritisnite |<ph name="ACCELERATOR" />| za zapiranje celozaslonskega načina</translation>
 <translation id="1038106730571050514">Prikaz predlogov</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Predpomnilnik pravilnika ustrezen</translation>
 <translation id="1130564665089811311">Gumb za prevajanje strani, pritisnite Enter, če želite prevesti to stran z Google Prevajalnikom</translation>
 <translation id="1131264053432022307">Slika, ki ste jo kopirali</translation>
+<translation id="1142846828089312304">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
 <translation id="1150979032973867961">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; operacijski sistem vašega računalnika ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="1151972924205500581">Potrebno je geslo</translation>
 <translation id="1156303062776767266">Ogledujete si lokalno datoteko ali datoteko v skupni rabi</translation>
@@ -180,6 +187,12 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1483493594462132177">Pošlji</translation>
 <translation id="1484290072879560759">Izbira naslova za pošiljanje</translation>
 <translation id="1492194039220927094">Potiskanje pravilnikov:</translation>
+<translation id="149293076951187737">Ko v Chromu zaprete vse anonimne zavihke, se dejavnost na teh zavihkih izbriše iz te naprave:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />dejavnost brskanja;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />zgodovina iskanja;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />podatki, vneseni v obrazce.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Nazaj na zavihek</translation>
 <translation id="1501859676467574491">Prikaz kartic iz Google Računa</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ta napaka se prikaže, če uporabljate portal Wi-Fi, ki pred uporabo spleta zahteva prijavo.&lt;/p&gt;
@@ -284,6 +297,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     je glava popačena, zaradi česar brskalnik ne more
     izpolniti vaše zahteve za <ph name="SITE" />. Pravilnike izvora lahko uporabljajo
     ponudniki spletnih mest zaradi konfiguriranja varnosti in drugih lastnosti spletnega mesta.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Preberite več o anonimnem načinu v Chromiumu<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Tu so prikazani odprti zavihki</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2597378329261239068">Dokument je zaščiten z geslom. Vnesite geslo.</translation>
 <translation id="2609632851001447353">Različice</translation>
 <translation id="2610561535971892504">Kliknite za kopiranje</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />ne shrani<ph name="END_EMPHASIS" /> teh podatkov:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />zgodovine brskanja,
+            <ph name="LIST_ITEM" />piškotkov in podatkov spletnih mest,
+            <ph name="LIST_ITEM" />podatkov, vnesenih v obrazce.
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">lahko zahteva uporabo podatkov o zaslonih</translation>
 <translation id="2625385379895617796">Ura prehiteva</translation>
@@ -1153,6 +1173,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4631649115723685955">Vključuje vračilo gotovine</translation>
 <translation id="4636930964841734540">Informacije</translation>
+<translation id="4638670630777875591">Anonimni način v Chromiumu</translation>
 <translation id="464342062220857295">Funkcije iskanja</translation>
 <translation id="4644670975240021822">V obratnem vrstnem redu s tiskom na spodnji strani</translation>
 <translation id="4646534391647090355">Odpri zdaj</translation>
@@ -1248,6 +1269,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite iskati</translation>
 <translation id="4930153903256238152">Velika zmogljivost</translation>
+<translation id="4940163644868678279">Anonimni način v Chromu</translation>
 <translation id="4943872375798546930">Ni rezultatov</translation>
 <translation id="4950898438188848926">Gumb za preklop zavihkov, pritisnite Enter, če želite preklopiti na odprti zavihek, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Dejanja</translation>
@@ -1608,6 +1630,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6120179357481664955">Si želite zapomniti ID za UPI?</translation>
 <translation id="6124432979022149706">Priključki za Chrome za podjetja</translation>
 <translation id="6127379762771434464">Element odstranjen</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Preberite več o anonimnem načinu v Chromu<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Preverite kable in znova zaženite usmerjevalnike, modeme ali druge omrežne 
     naprave, ki jih uporabljate.</translation>
 <translation id="614940544461990577">Poskusite:</translation>
@@ -1883,6 +1906,12 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7111012039238467737">(veljavno)</translation>
 <translation id="7118618213916969306">Iskanje URL-ja v odložišču, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Zaprite druge zavihke ali programe</translation>
+<translation id="7129355289156517987">Ko v Chromiumu zaprete vse anonimne zavihke, se dejavnost na teh zavihkih izbriše iz te naprave:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />dejavnost brskanja;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />zgodovina iskanja;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />podatki, vneseni v obrazce.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Pošiljanje na ta naslov ni mogoče. Izberite drugega.</translation>
 <translation id="7132939140423847331">Skrbnik je prepovedal kopiranje teh podatkov.</translation>
 <translation id="7135130955892390533">Prikaz stanja</translation>
@@ -2001,6 +2030,12 @@ Dodatne podrobnosti:
 <translation id="7485870689360869515">Ni podatkov.</translation>
 <translation id="7495528107193238112">Ta vsebina je blokirana. Obrnite se na lastnika spletnega mesta, da odpravi težavo.</translation>
 <translation id="7497998058912824456">Gumb za ustvarjanje dokumenta, pritisnite Enter, če želite hitro ustvariti nov Google Dokument</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />ne shrani<ph name="END_EMPHASIS" /> teh podatkov:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />zgodovine brskanja,
+            <ph name="LIST_ITEM" />piškotkov in podatkov spletnih mest,
+            <ph name="LIST_ITEM" />podatkov, vnesenih v obrazce.
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Vrnjen ID naprave pravilnika je prazen ali se ne ujema s trenutnim ID-jem naprave</translation>
 <translation id="7508870219247277067">Avokadovo zelena</translation>
 <translation id="7511955381719512146">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2220,6 +2255,7 @@ Dodatne podrobnosti:
 <translation id="8202370299023114387">Spor</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Povezava je varna</translation>
+<translation id="8217240300496046857">Spletna mesta vam ne morejo slediti po spletu na podlagi piškotkov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="8218327578424803826">Dodeljena lokacija:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Oseba, ki je nastavila ta računalnik, je blokirala to spletno mesto.</translation>

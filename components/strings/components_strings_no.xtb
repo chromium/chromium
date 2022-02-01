@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Se detaljer</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ber om å lagre store datamengder permanent på enheten din</translation>
 <translation id="1032854598605920125">Rotér med klokken</translation>
+<translation id="1033329911862281889">Inkognito gjør deg ikke usynlig på nettet:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Nettsteder og tjenestene de bruker, kan se når du besøker dem<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Arbeidsgivere og skoler kan spore nettleseraktivitet<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internettleverandører kan overvåke nettrafikk<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1036982837258183574">Trykk på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm</translation>
 <translation id="1038106730571050514">Vis forslag</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Bufferen for enhetsinnstillinger er OK</translation>
 <translation id="1130564665089811311">Knappen «Oversett siden» – trykk på Enter for å oversette denne siden med Google Oversetter</translation>
 <translation id="1131264053432022307">Bildet du kopierte</translation>
+<translation id="1142846828089312304">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="1150979032973867961">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av datamaskinens operativsystem. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="1151972924205500581">Passord er påkrevd</translation>
 <translation id="1156303062776767266">Du ser en lokal eller delt fil</translation>
@@ -180,6 +187,12 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1483493594462132177">Send</translation>
 <translation id="1484290072879560759">Velg leveringsadresse</translation>
 <translation id="1492194039220927094">Push-levering av regler:</translation>
+<translation id="149293076951187737">Når du lukker alle inkognitofaner i Chrome, blir aktiviteten din på de aktuelle fanene fjernet fra enheten:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Nettleseraktivitet<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Søkelogg<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informasjon du har lagt inn i skjemaer<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Tilbake til fanen</translation>
 <translation id="1501859676467574491">Vis kredittkort fra Google-kontoen din</translation>
 <translation id="1507202001669085618">&lt;p&gt;Du ser denne feilmeldingen hvis du bruker en Wi-Fi-portal hvor du må logge på før du kommer deg på nettet.&lt;/p&gt;
@@ -284,6 +297,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     headeren har feil format, og dette forhindrer nettleseren fra å effektuere
     forespørselen din til <ph name="SITE" />. Nettstedsoperatører kan bruke
     opphavsregler til å konfigurere sikkerhet og andre egenskaper for nettsteder.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Finn ut mer om Inkognito i Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">De åpne fanene dine vises her</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2597378329261239068">Dette dokumentet er passordbeskyttet. Skriv inn et passord.</translation>
 <translation id="2609632851001447353">Varianter</translation>
 <translation id="2610561535971892504">Klikk for å kopiere</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />lagrer ikke<ph name="END_EMPHASIS" /> følgende informasjon:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Nettleserloggen din
+          <ph name="LIST_ITEM" />Informasjonskapsler og nettstedsdata
+          <ph name="LIST_ITEM" />Informasjon du legger inn i skjemaer
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (konvolutt)</translation>
 <translation id="2623663032199728144">kan be om å få bruke informasjon om skjermene dine</translation>
 <translation id="2625385379895617796">Klokken går for fort</translation>
@@ -1153,6 +1173,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4631649115723685955">Penger tilbake er tilknyttet</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4638670630777875591">Inkognito i Chromium</translation>
 <translation id="464342062220857295">Søkefunksjoner</translation>
 <translation id="4644670975240021822">Motsatt rekkefølge – forsiden ned</translation>
 <translation id="4646534391647090355">Gå dit nå</translation>
@@ -1248,6 +1269,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å søke</translation>
 <translation id="4930153903256238152">Stor kapasitet</translation>
+<translation id="4940163644868678279">Inkognito i Chrome</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="4950898438188848926">Knappen for å bytte fane – trykk på Enter for å bytte til den åpne fanen, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Handlinger</translation>
@@ -1608,6 +1630,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6120179357481664955">Husker du UPI-ID-en din?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Elementet er fjernet</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Finn ut mer om Incognito i Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Sjekk alle kabler, og start rutere, modemer eller andre nettverksenheter
      du bruker, på nytt.</translation>
 <translation id="614940544461990577">Prøv dette:</translation>
@@ -1883,6 +1906,12 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7111012039238467737">(Gyldig)</translation>
 <translation id="7118618213916969306">Søk etter nettadressen <ph name="SHORT_URL" /> på utklippstavlen</translation>
 <translation id="7119414471315195487">Lukk andre faner eller programmer</translation>
+<translation id="7129355289156517987">Når du lukker alle inkognitofaner i Chromium, blir aktiviteten din på de aktuelle fanene fjernet fra enheten:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Nettleseraktivitet<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Søkelogg<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informasjon du har lagt inn i skjemaer<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Kan ikke sende til denne adressen. Velg en annen adresse.</translation>
 <translation id="7132939140423847331">Administratoren din har forbudt kopiering av disse dataene.</translation>
 <translation id="7135130955892390533">Vis statusen</translation>
@@ -2000,6 +2029,12 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7485870689360869515">Ingen data ble funnet.</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
 <translation id="7497998058912824456">Knappen «Opprett dokument» – trykk på Enter for å opprette et nytt Google-dokument raskt</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />lagrer ikke<ph name="END_EMPHASIS" /> følgende informasjon:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Nettleserloggen din
+          <ph name="LIST_ITEM" />Informasjonskapsler og nettstedsdata
+          <ph name="LIST_ITEM" />Informasjon du legger inn i skjemaer
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Den returnerte enhets-ID-en for regelen er tom eller samsvarer ikke med den faktiske enhets-ID-en</translation>
 <translation id="7508870219247277067">Avokadogrønn</translation>
 <translation id="7511955381719512146">Det kan hende at Wi-Fi-nettverket du bruker, krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2219,6 +2254,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (konvolutt)</translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
+<translation id="8217240300496046857">Nettsteder kan ikke bruke informasjonskapsler som sporer deg på nettet. Det kan hende at funksjoner på enkelte nettsteder slutter å fungere.</translation>
 <translation id="8218327578424803826">Tilordnet posisjon:</translation>
 <translation id="8220146938470311105">C7/C6 (konvolutt)</translation>
 <translation id="8225771182978767009">Personen som konfigurerte denne datamaskinen, har valgt å blokkere dette nettstedet.</translation>

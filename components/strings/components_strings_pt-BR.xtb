@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Ver detalhes</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quer armazenar permanentemente um grande volume de dados no seu dispositivo</translation>
 <translation id="1032854598605920125">Girar no sentido horário</translation>
+<translation id="1033329911862281889">Com a navegação anônima, você não fica invisível on-line:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Os sites e os serviços que eles usam podem ver acessos<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Empregadores ou escolas podem rastrear a navegação<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Provedores de acesso à Internet podem monitorar o tráfego da Web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036982837258183574">Pressione |<ph name="ACCELERATOR" />| para sair do modo tela cheia</translation>
 <translation id="1038106730571050514">Exibir sugestões</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1130564665089811311">Botão "Traduzir página". Pressione "Enter" para traduzir a página com o Google Tradutor</translation>
 <translation id="1131264053432022307">Imagem que você copiou</translation>
+<translation id="1142846828089312304">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="1150979032973867961">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o sistema operacional do seu computador. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="1151972924205500581">Senha obrigatória</translation>
 <translation id="1156303062776767266">Você está vendo um arquivo local ou compartilhado</translation>
@@ -180,6 +187,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484290072879560759">Escolher endereço de entrega</translation>
 <translation id="1492194039220927094">Push de políticas:</translation>
+<translation id="149293076951187737">Ao fechar todas as guias anônimas do Chrome, suas atividades nelas vão ser apagadas deste dispositivo:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Histórico de pesquisa<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informações inseridas em formulários<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
 <translation id="1501859676467574491">Mostre os cartões salvos na Conta do Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Você verá esse erro se estiver usando um portal Wi-Fi em que precise fazer login para poder se conectar.&lt;/p&gt;
@@ -280,6 +293,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o sistema operacional do seu dispositivo. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Rede do Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">O servidor que você acessará, <ph name="ORIGIN" />, definiu um cabeçalho solicitando que uma política de origem seja aplicada a todas as solicitações feitas a ele. No entanto, o cabeçalho está incorreto, o que impede que o navegador faça a solicitação para <ph name="SITE" />. Políticas de origem podem ser usadas por operadores para configurar a segurança e outras propriedades de um site.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Saiba mais sobre a navegação anônima no Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Suas guias abertas são exibidas aqui</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -521,6 +535,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2597378329261239068">Este documento está protegido por senha.  Digite a senha.</translation>
 <translation id="2609632851001447353">Variações</translation>
 <translation id="2610561535971892504">Clique para copiar</translation>
+<translation id="2617988307566202237">O Chrome <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" /> estas informações:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Seu histórico de navegação
+            <ph name="LIST_ITEM" />Cookies e dados de sites
+            <ph name="LIST_ITEM" />Informações inseridas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">Pode pedir para usar informações sobre suas telas</translation>
 <translation id="2625385379895617796">Seu relógio está adiantado</translation>
@@ -1144,6 +1164,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Reembolso vinculado</translation>
 <translation id="4636930964841734540">Informações</translation>
+<translation id="4638670630777875591">Navegação anônima no Chromium</translation>
 <translation id="464342062220857295">Recursos de pesquisa</translation>
 <translation id="4644670975240021822">Ordem reversa virada para baixo</translation>
 <translation id="4646534391647090355">Acessar agora</translation>
@@ -1239,6 +1260,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para pesquisar</translation>
 <translation id="4930153903256238152">Grande capacidade</translation>
+<translation id="4940163644868678279">Navegação anônima no Chrome</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4950898438188848926">Botão de alternância de guia. Pressione Enter para alternar para a guia aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ações</translation>
@@ -1599,6 +1621,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6120179357481664955">Lembrar código da UPI?</translation>
 <translation id="6124432979022149706">Conectores do Chrome Enterprise</translation>
 <translation id="6127379762771434464">Item removido</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Saiba mais sobre a navegação anônima no Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Verifique todos os cabos e reinicie todos os roteadores, modens ou outros
     dispositivos de rede que você estiver usando.</translation>
 <translation id="614940544461990577">Tente:</translation>
@@ -1874,6 +1897,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7111012039238467737">(válido)</translation>
 <translation id="7118618213916969306">Pesquisa o URL da área de transferência, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Fechar outras guias ou programas</translation>
+<translation id="7129355289156517987">Ao fechar todas as guias anônimas do Chromium, suas atividades nelas vão ser apagadas deste dispositivo:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Histórico de pesquisa<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" /><ph name="END_LIST_ITEM" />Informações inseridas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Não é possível enviar para esse endereço. Selecione um endereço diferente.</translation>
 <translation id="7132939140423847331">O administrador bloqueou a cópia destes dados.</translation>
 <translation id="7135130955892390533">Mostrar status</translation>
@@ -1992,6 +2021,12 @@ Mais detalhes:
 <translation id="7485870689360869515">Nenhum dado encontrado</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
 <translation id="7497998058912824456">Botão para criar um documento. Pressione Enter para criar rapidamente um novo arquivo do Documentos Google</translation>
+<translation id="7506488012654002225">O Chromium <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" /> estas informações:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Seu histórico de navegação
+            <ph name="LIST_ITEM" />Cookies e dados de sites
+            <ph name="LIST_ITEM" />Informações inseridas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">O código do dispositivo da política retornado está em branco ou não corresponde ao código do dispositivo atual</translation>
 <translation id="7508870219247277067">Verde-abacate</translation>
 <translation id="7511955381719512146">O Wi-Fi que você está usando pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2211,6 +2246,7 @@ Mais detalhes:
 <translation id="8202370299023114387">Conflito</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">A conexão é segura</translation>
+<translation id="8217240300496046857">Os sites não podem usar cookies que rastreiem você pela Web. Os recursos de alguns sites podem falhar.</translation>
 <translation id="8218327578424803826">Local designado:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear esse site.</translation>

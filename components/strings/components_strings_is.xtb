@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Sjá upplýsingar</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tækinu þínu</translation>
 <translation id="1032854598605920125">Snúa réttsælis</translation>
+<translation id="1033329911862281889">Huliðsstilling gerir þig ekki ósýnilega(n) á netinu:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Vefsvæði og þjónusturnar sem þau nota fá upplýsingar um heimsóknir<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Vinnuveitendur eða skólar geta rakið vafranotkun<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Netþjónustur geta fylgst með netumferð<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1036982837258183574">Ýttu á |<ph name="ACCELERATOR" />| til að hætta birtingu á öllum skjánum</translation>
 <translation id="1038106730571050514">Sýna tillögur</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Skyndiminni reglu í lagi</translation>
 <translation id="1130564665089811311">Hnappurinn Þýða síðu, ýttu á Enter til að þýða þessa síðu með Google Translate</translation>
 <translation id="1131264053432022307">Myndir sem þú afritaðir</translation>
+<translation id="1142846828089312304">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="1150979032973867961">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; stýrikerfi tölvunnar treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="1151972924205500581">Aðgangsorðs krafist</translation>
 <translation id="1156303062776767266">Þú ert að skoða staðbundna eða samnýtta skrá</translation>
@@ -180,6 +187,12 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1483493594462132177">Senda</translation>
 <translation id="1484290072879560759">Velja heimilisfang til sendingar</translation>
 <translation id="1492194039220927094">Sending reglna:</translation>
+<translation id="149293076951187737">Þegar þú lokar öllum huliðsflipum í Chrome er virkni þín á þessum flipum hreinsuð úr tækinu:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Vafranotkun<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Leitarferill<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Upplýsingar sem eru færðar inn í eyðublöð<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Aftur á flipa</translation>
 <translation id="1501859676467574491">Sýna kort af Google reikningnum þínum</translation>
 <translation id="1507202001669085618">&lt;p&gt;Þú sérð þessa villu ef þú notar Wi-Fi gátt sem þú þarft að skrá þig inn á áður en þú tengist internetinu.&lt;/p&gt;
@@ -284,6 +297,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     hausinn er gallaður, sem kemur í veg fyrir að vafrinn geti uppfyllt
     beiðni þína fyrir <ph name="SITE" />. Notendur síðu geta notað upprunareglur
     til að stilla öryggi og aðra eiginleika síðu.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Nánar um huliðsstillingu í Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Opnir flipar birtast hér</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2597378329261239068">Þetta skjal er varið með aðgangsorði. Sláðu inn aðgangsorð.</translation>
 <translation id="2609632851001447353">Tilbrigði</translation>
 <translation id="2610561535971892504">Smelltu til að afrita</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />vistar ekki<ph name="END_EMPHASIS" /> eftirfarandi upplýsingar:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Vafraferilinn þinn
+          <ph name="LIST_ITEM" />Fótspor og gögn vefsvæða
+          <ph name="LIST_ITEM" />Upplýsingar sem eru færðar inn í eyðublöð
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (umslag)</translation>
 <translation id="2623663032199728144">Má biðja um að nota upplýsingar um skjáina þína</translation>
 <translation id="2625385379895617796">Klukkan þín er á undan</translation>
@@ -1153,6 +1173,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4628948037717959914">Mynd</translation>
 <translation id="4631649115723685955">Fjárvildarkerfi tengt</translation>
 <translation id="4636930964841734540">Upplýsingar</translation>
+<translation id="4638670630777875591">Huliðsstilling í Chromium</translation>
 <translation id="464342062220857295">Leitareiginleikar</translation>
 <translation id="4644670975240021822">Öfug röð, snýr niður</translation>
 <translation id="4646534391647090355">Fara þangað núna</translation>
@@ -1248,6 +1269,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að leita</translation>
 <translation id="4930153903256238152">Stór bakki</translation>
+<translation id="4940163644868678279">Huliðsstilling í Chrome</translation>
 <translation id="4943872375798546930">Engar niðurstöður</translation>
 <translation id="4950898438188848926">Hnappur til að skipta um flipa; ýttu á færslulykilinn til að skipta yfir í opinn flipa, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Aðgerðir</translation>
@@ -1608,6 +1630,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6120179357481664955">Muna eftir UPI-auðkenni?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Atriði fjarlægt</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Nánar um huliðsstillingu í Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Kannaðu allar snúrur og endurræstu beina, mótöld og önnur
     nettæki sem þú kannt að vera að nota.</translation>
 <translation id="614940544461990577">Prófaðu að:</translation>
@@ -1883,6 +1906,12 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7111012039238467737">(gilt)</translation>
 <translation id="7118618213916969306">Leita að vefslóð á klippiborði, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Lokaðu öðrum flipum eða forritum</translation>
+<translation id="7129355289156517987">Þegar þú lokar öllum huliðsflipum í Chromium er virkni þín á þessum flipum hreinsuð úr tækinu:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Vafranotkun<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Leitarferill<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Upplýsingar sem eru færðar inn í eyðublöð<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Ekki er hægt að senda á þetta heimilisfang. Veldu annað heimilisfang.</translation>
 <translation id="7132939140423847331">Stjórnandi hefur bannað afritun þessara gagna.</translation>
 <translation id="7135130955892390533">Sýna stöðu</translation>
@@ -2001,6 +2030,12 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7485870689360869515">Engin gögn fundust.</translation>
 <translation id="7495528107193238112">Þetta efni er á bannlista. Hafðu samband við eiganda vefsvæðisins til að lagfæra vandamálið.</translation>
 <translation id="7497998058912824456">Hnappurinn „Búa til skjal“, ýttu á Enter til að búa til nýtt Google skjal á skjótan hátt</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />vistar ekki<ph name="END_EMPHASIS" /> eftirfarandi upplýsingar:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Vafraferilinn þinn
+          <ph name="LIST_ITEM" />Fótspor og gögn vefsvæða
+          <ph name="LIST_ITEM" />Upplýsingar sem eru færðar inn í eyðublöð
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Tækisauðkenni stefnu sem skilað var er autt eða stemmir ekki við núverandi tækisauðkenni</translation>
 <translation id="7508870219247277067">Lárperugrænn</translation>
 <translation id="7511955381719512146">Wi-Fi netið sem þú notar kann að fara fram á að þú farir á <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2220,6 +2255,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8202370299023114387">Skörun</translation>
 <translation id="8206978196348664717">Prc4 (umslag)</translation>
 <translation id="8211406090763984747">Tengingin er örugg</translation>
+<translation id="8217240300496046857">Vefsvæði geta ekki notað fótspor sem rekja virkni þína á vefnum. Ekki er víst að allir eiginleikar á öllum vefsvæðum virki.</translation>
 <translation id="8218327578424803826">Úthlutuð staðsetning:</translation>
 <translation id="8220146938470311105">C7/C6 (umslag)</translation>
 <translation id="8225771182978767009">Sá sem setti upp þessa tölvu valdi að loka fyrir þetta vefsvæði.</translation>

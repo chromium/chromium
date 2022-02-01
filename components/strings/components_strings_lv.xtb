@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Skatīt informāciju</translation>
 <translation id="1030706264415084469">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt jūsu ierīcē lielu datu apjomu.</translation>
 <translation id="1032854598605920125">Pagriezt pulksteņrādītāju kustības virzienā</translation>
+<translation id="1033329911862281889">Inkognito režīms nenozīmē, ka jūs tiešsaistē būsiet neredzams:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />vietnes un to izmantotie pakalpojumi var redzēt jūsu apmeklējumus;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />darba devēji vai mācību iestādes var izsekot pārlūkošanas darbības;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />interneta pakalpojumu sniedzēji var uzraudzīt tīmekļa datplūsmu.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1036982837258183574">Lai izietu no pilnekrāna režīma, nospiediet |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1038106730571050514">Rādīt ieteikumus</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Politikas kešatmiņa ir labā stāvoklī.</translation>
 <translation id="1130564665089811311">Poga “Tulkot lapu”. Lai pārtulkotu šo lapu, izmantojot Google tulkotāju, nospiediet ievadīšanas taustiņu.</translation>
 <translation id="1131264053432022307">Kopētais attēls</translation>
+<translation id="1142846828089312304">Inkognito režīmā bloķēt trešo pušu sīkfailus</translation>
 <translation id="1150979032973867961">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu jūsu datora operētājsistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="1151972924205500581">Nepieciešama parole</translation>
 <translation id="1156303062776767266">Jūs skatāt vietēju vai kopīgotu failu</translation>
@@ -180,6 +187,12 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1483493594462132177">Sūtīt</translation>
 <translation id="1484290072879560759">Izvēlēties nosūtīšanas adresi</translation>
 <translation id="1492194039220927094">Politiku informatīvie ziņojumi:</translation>
+<translation id="149293076951187737">Kad aizvērsiet visas Chrome inkognito cilnes, no šīs ierīces tiks notīrītas šajās cilnēs veiktās darbības:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />pārlūkošanas darbības;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />meklēšanas vēsture;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />veidlapās ievadītā informācija.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Atgriezties cilnē</translation>
 <translation id="1501859676467574491">Rādī kartes no mana Google konta</translation>
 <translation id="1507202001669085618">&lt;p&gt;Šis kļūdas ziņojums tiek rādīts, ja izmantojat Wi-Fi portālu, kurā ir jāpierakstās, lai varētu pāriet tiešsaistē.&lt;/p&gt;
@@ -284,6 +297,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     galvene ir nepareizi izveidota, kas neļauj pārlūkam izpildīt
     jūsu pieprasījumu vietnei <ph name="SITE" />. Vietņu operatori var izmantot
     izcelsmes politikas, lai konfigurētu drošību un citus vietnes rekvizītus.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Uzzināt vairāk par inkognito režīmu pārlūkā Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Šeit tiks parādītas jūsu atvērtās cilnes</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2597378329261239068">Šis dokuments ir aizsargāts ar paroli. Lūdzu, ievadiet paroli.</translation>
 <translation id="2609632851001447353">Varianti</translation>
 <translation id="2610561535971892504">Noklikšķināt, lai kopētu</translation>
+<translation id="2617988307566202237">Pārlūkā Chrome <ph name="BEGIN_EMPHASIS" />netiks saglabāta<ph name="END_EMPHASIS" /> šāda informācija:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />jūsu pārlūkošanas vēsture;
+            <ph name="LIST_ITEM" />sīkfaili un vietņu dati;
+            <ph name="LIST_ITEM" />veidlapās ievadītā informācija.
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (aploksne)</translation>
 <translation id="2623663032199728144">Var pieprasīt atļauju izmantot informāciju par jūsu ekrāniem</translation>
 <translation id="2625385379895617796">Norādītais laiks ir pārāk tālu nākotnē</translation>
@@ -1152,6 +1172,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4628948037717959914">Fotoattēls</translation>
 <translation id="4631649115723685955">Saistīta skaidras naudas atmaksa</translation>
 <translation id="4636930964841734540">Informācija</translation>
+<translation id="4638670630777875591">Inkognito režīms pārlūkā Chromium</translation>
 <translation id="464342062220857295">Meklēšanas funkcijas</translation>
 <translation id="4644670975240021822">Pretēja secība, virspuse uz leju</translation>
 <translation id="4646534391647090355">Doties uz turieni tagad</translation>
@@ -1247,6 +1268,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai meklētu, nospiediet tabulēšanas taustiņu un pēc tam taustiņu Enter</translation>
 <translation id="4930153903256238152">Liela ietilpība</translation>
+<translation id="4940163644868678279">Inkognito režīms pārlūkā Chrome</translation>
 <translation id="4943872375798546930">Nav rezultātu</translation>
 <translation id="4950898438188848926">Ciļņu pārslēgšanas poga. Nospiediet ievadīšanas taustiņu, lai pārslēgtos uz atvērto cilni, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="495170559598752135">Darbības</translation>
@@ -1607,6 +1629,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6120179357481664955">Vai iegaumēt jūsu UPI ID?</translation>
 <translation id="6124432979022149706">Chrome Enterprise savienotāji</translation>
 <translation id="6127379762771434464">Vienums ir noņemts</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Uzzināt vairāk par inkognito režīmu pārlūkā Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Pārbaudiet vadus un atkārtoti palaidiet maršrutētājus, modemus vai citas
     izmantotās tīkla ierīces.</translation>
 <translation id="614940544461990577">Veiciet tālāk norādītās darbības.</translation>
@@ -1882,6 +1905,12 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7111012039238467737">(derīgs)</translation>
 <translation id="7118618213916969306">Meklēt starpliktuves URL, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Aizveriet citas cilnes vai programmas</translation>
+<translation id="7129355289156517987">Kad aizvērsiet visas Chromium inkognito cilnes, no šīs ierīces tiks notīrītas šajās cilnēs veiktās darbības:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />pārlūkošanas darbības;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />meklēšanas vēsture;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />veidlapās ievadītā informācija.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Nevar nosūtīt uz šo adresi. Atlasiet citu adresi.</translation>
 <translation id="7132939140423847331">Jūsu administrators ir aizliedzis šo datu kopēšanu.</translation>
 <translation id="7135130955892390533">Rādīt statusu</translation>
@@ -2000,6 +2029,12 @@ Papildu informācija:
 <translation id="7485870689360869515">Dati netika atrasti.</translation>
 <translation id="7495528107193238112">Šis saturs ir bloķēts. Lai novērstu problēmu, sazinieties ar vietnes īpašnieku.</translation>
 <translation id="7497998058912824456">Dokumenta izveides poga. Lai ātri izveidotu jaunu Google dokumentu, nospiediet taustiņu Enter.</translation>
+<translation id="7506488012654002225">Pārlūkā Chromium <ph name="BEGIN_EMPHASIS" />netiks saglabāta<ph name="END_EMPHASIS" /> šāda informācija:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />jūsu pārlūkošanas vēsture;
+            <ph name="LIST_ITEM" />sīkfaili un vietņu dati;
+            <ph name="LIST_ITEM" />veidlapās ievadītā informācija.
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Atgrieztais politikas ierīces ID ir tukšs vai neatbilst pašreizējam ierīces ID.</translation>
 <translation id="7508870219247277067">Avokado zaļa</translation>
 <translation id="7511955381719512146">Iespējams, izmantotajā Wi-Fi tīklā tiks pieprasīts apmeklēt vietni <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2219,6 +2254,7 @@ Papildu informācija:
 <translation id="8202370299023114387">Konflikts</translation>
 <translation id="8206978196348664717">Prc4 (aploksne)</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
+<translation id="8217240300496046857">Vietnes nevar izmantot sīkfailus, kas izseko jūsu darbības tīmeklī. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="8218327578424803826">Piešķirtā atrašanās vieta:</translation>
 <translation id="8220146938470311105">C7/C6 (aploksne)</translation>
 <translation id="8225771182978767009">Persona, kura iestatīja šo datoru, izvēlējās bloķēt šo vietni.</translation>

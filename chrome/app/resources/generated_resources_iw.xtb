@@ -1706,6 +1706,7 @@
 <translation id="2684004000387153598">כדי להמשיך יש ללחוץ על 'אישור' ולאחר מכן ללחוץ על 'הוספת משתמש' כדי ליצור פרופיל חדש בשביל כתובת האימייל שלך.</translation>
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2687407218262674387">‏תנאים והגבלות של Google</translation>
+<translation id="2687621393791886981">אחליט מאוחר יותר</translation>
 <translation id="2688196195245426394">אירעה שגיאה בעת רישום המכשיר בשרת: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">הצגת אפשרויות שפה</translation>
 <translation id="2691385045260836588">דגם</translation>
@@ -7222,6 +7223,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">יש אישור להרשאות <ph name="PERMISSION" /> ועוד <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">יש לשאול קודם (מומלץ)</translation>
+<translation id="8414249071344507766">הפריטים של אוסף הזיכרון מוסתרים למשך יומיים</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (נרתיק)</translation>
 <translation id="8417548266957501132">סיסמת הורה</translation>
 <translation id="8418445294933751433">&amp;הצגה ככרטיסייה</translation>

@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">មើលព័ត៌មានលម្អិត</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ចង់ផ្ទុក​ទិន្នន័យ​ទំហំធំ​នៅលើ​ឧបករណ៍​របស់អ្នក​ជា​អចិន្ត្រៃយ៍</translation>
 <translation id="1032854598605920125">បង្វិលតាមទ្រនិចនាឡិកា</translation>
+<translation id="1033329911862281889">មុខងារឯកជន​មិនមែនធ្វើឱ្យគេ​មើលមិនឃើញអ្នក​នៅលើអ៊ីនធឺណិតទេ៖ 
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />គេហទំព័រ និងសេវាកម្មដែលពួកគេប្រើអាចមើលឃើញការចូលមើល<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />និយោជក ឬសាលារៀន​អាចតាមដាន​សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​អាចពិនិត្យតាមដាន​ចរាចរណ៍បណ្ដាញ<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">បិទ</translation>
 <translation id="1036982837258183574">ចុច |<ph name="ACCELERATOR" />| ដើម្បីចេញពីមុខងារអេក្រង់ពេញ</translation>
 <translation id="1038106730571050514">បង្ហាញ​ការណែនាំ</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">ស្ថានភាពឃ្លាំងសម្ងាត់គោលការណ៍មានភាពប្រក្រតី</translation>
 <translation id="1130564665089811311">ប៊ូតុង "បកប្រែទំព័រ" ចុច "Enter" ដើម្បីបកប្រែទំព័រនេះដោយប្រើ Google បកប្រែ</translation>
 <translation id="1131264053432022307">រូបភាព​ដែលអ្នកបានចម្លង</translation>
+<translation id="1142846828089312304">ទប់ស្កាត់​ខូគីភាគីទីបីក្នុងមុខងារឯកជន</translation>
 <translation id="1150979032973867961">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> ទេ វិញ្ញាបនប័ត្រសុវត្ថិភាពរបស់វា
 មិនត្រូវបានជឿ៌ជាក់ដោយប្រព័ន្ធប្រតិបត្តិការកុំព្យូទ័ររបស់អ្នកទេ។ នេះអាចបណ្តាលមកពីការកំណត់មិនត្រឹមត្រូវ ឬមានការស្ទាក់ការភ្ជាប់របស់អ្នកពីអ្នកវាយប្រហារ។</translation>
 <translation id="1151972924205500581">តម្រូវឲ្យមានពាក្យសម្ងាត់</translation>
@@ -181,6 +188,12 @@
 <translation id="1483493594462132177">ផ្ញើ</translation>
 <translation id="1484290072879560759">ជ្រើសរើសអាសយដ្ឋាន​ដឹក​ជញ្ជូន</translation>
 <translation id="1492194039220927094">ការជំរុញ​គោលការណ៍៖</translation>
+<translation id="149293076951187737">នៅពេលអ្នកបិទផ្ទាំងឯកជន Chrome ទាំងអស់ សកម្មភាពរបស់អ្នកនៅក្នុងផ្ទាំងទាំងនោះត្រូវបានសម្អាតចេញពីឧបករណ៍នេះ៖
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ប្រវត្តិ​ស្វែងរក<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ព័ត៌មានដែលបានបញ្ចូលក្នុងទម្រង់បែបបទ<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">ត្រឡប់ទៅ​ផ្ទាំងវិញ</translation>
 <translation id="1501859676467574491">បង្ហាញកាតពីគណនី Google របស់អ្នក</translation>
 <translation id="1507202001669085618">&lt;p&gt;អ្នកនឹង​មើលឃើញ​បញ្ហានេះ ប្រសិនបើ​អ្នកកំពុង​ប្រើច្រក​ចូល​ Wi-Fi ដែលអ្នក​ត្រូវតែចុះឈ្មោះចូល មុនពេល​ដែលអ្នកអាច​ភ្ជាប់អ៊ីន​ធឺណិត។&lt;/p&gt;
@@ -286,6 +299,7 @@
     ផ្នែកក្បាលនោះមានទម្រង់មិនត្រឹមត្រូវ ដែលជាហេតុធ្វើឱ្យកម្មវិធីរុករកតាមអ៊ីនធឺណិតមិនអាចបំពេញ
     តាមសំណើរបស់អ្នកសម្រាប់ <ph name="SITE" />។ ប្រតិបត្តិករ​គេហទំព័រ​អាចប្រើ
     គោលការណ៍​ដើម ដើម្បីកំណត់​រចនាសម្ព័ន្ធ​សុវត្ថិភាព និង​លក្ខណសម្បត្តិ​ផ្សេងទៀត​សម្រាប់​គេហទំព័រ​។</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែមអំពីមុខងារឯកជននៅក្នុង Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">ផ្ទាំង​ដែល​អ្នកបានបើកបង្ហាញ​នៅ​ទីនេះ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -528,6 +542,12 @@
 <translation id="2597378329261239068">ឯកសារនេះត្រូវបានការពារដោយពាក្យសម្ងាត់។ សូមបញ្ចូលពាក្យសម្ងាត់។</translation>
 <translation id="2609632851001447353">បំរែបម្រួល</translation>
 <translation id="2610561535971892504">ចុច​ដើម្បី​ចម្លង</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />នឹង​មិន​រក្សាទុក<ph name="END_EMPHASIS" />ព័ត៌មាន​ខាងក្រោម​ទេ៖
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​របស់អ្នក
+          <ph name="LIST_ITEM" />ខូគី និង​ទិន្នន័យ​គេហទំព័រ
+          <ph name="LIST_ITEM" />ព័ត៌មាន​ដែលបាន​បញ្ចូល​ក្នុង​ទម្រង់​បែបបទ
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (ស្រោម​សំបុត្រ)</translation>
 <translation id="2623663032199728144">អាចស្នើសុំប្រើ​ព័ត៌មានអំពី​អេក្រង់​របស់អ្នក</translation>
 <translation id="2625385379895617796">ម៉ោងរបស់អ្នកដើរលឿន</translation>
@@ -1157,6 +1177,7 @@
 <translation id="4628948037717959914">រូបថត</translation>
 <translation id="4631649115723685955">បានភ្ជាប់​ការទទួល​បានប្រាក់​មកវិញ</translation>
 <translation id="4636930964841734540">ព័ត៌មាន</translation>
+<translation id="4638670630777875591">មុខងារឯកជននៅក្នុង Chromium</translation>
 <translation id="464342062220857295">ស្វែងរក​មុខងារ</translation>
 <translation id="4644670975240021822">ផ្កាប់ចុះ​តាមលំដាប់លំដោយ​បញ្ច្រាស</translation>
 <translation id="4646534391647090355">នាំខ្ញុំទៅទីនោះឥឡូវនេះ</translation>
@@ -1252,6 +1273,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, សូមចុច Tab បន្ទាប់មក Enter ដើម្បីស្វែងរក</translation>
 <translation id="4930153903256238152">ទំហំផ្ទុកធំ</translation>
+<translation id="4940163644868678279">មុខងារឯកជននៅក្នុង Chrome</translation>
 <translation id="4943872375798546930">គ្មានលទ្ធផលទេ</translation>
 <translation id="4950898438188848926">ចុច​ប៊ូតុងប្ដូរ រួចចុច "Enter" ដើម្បី​ប្ដូរទៅ​ផ្ទាំងបើក <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">សកម្មភាព</translation>
@@ -1612,6 +1634,7 @@
 <translation id="6120179357481664955">ចងចាំ​លេខសម្គាល់ UPI របស់អ្នក​ដែរទេ​?</translation>
 <translation id="6124432979022149706">កម្មវិធីភ្ជាប់ Chrome Enterprise</translation>
 <translation id="6127379762771434464">ធាតុត្រូវបានយកចេញ</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែមអំពីមុខងារឯកជននៅក្នុង Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">ពិនិត្យខ្សែបណ្តាញ បិទបើករ៉ោតទ័រ ម៉ូឌែម ឬឧបករណ៍បណ្តាញផ្សេងទៀត
     ដែលអ្នកកំពុងប្រើប្រាស់។</translation>
 <translation id="614940544461990577">សាកល្បង៖</translation>
@@ -1887,6 +1910,12 @@
 <translation id="7111012039238467737">(មាន​សុពល​ភាព)</translation>
 <translation id="7118618213916969306">ស្វែងរក URL ឃ្លីបបត, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">បិទផ្ទាំង ឬកម្មវិធីផ្សេងទៀត</translation>
+<translation id="7129355289156517987">នៅពេលអ្នកបិទផ្ទាំងឯកជន Chromium ទាំងអស់ សកម្មភាពរបស់អ្នកនៅក្នុងផ្ទាំងទាំងនោះត្រូវបានសម្អាតចេញពីឧបករណ៍នេះ៖
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ប្រវត្តិ​ស្វែងរក<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ព័ត៌មានដែលបានបញ្ចូលក្នុងទម្រង់បែបបទ<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">មិនអាចដឹកជញ្ជូនតាមប្រៃសណីយ៍ទៅអាសយដ្ឋាននេះបានទេ។ សូមជ្រើសរើសអាសយដ្ឋានផ្សេង។</translation>
 <translation id="7132939140423847331">អ្នកគ្រប់គ្រង​របស់អ្នក​បានហាមឃាត់​មិនឱ្យ​ចម្លងទិន្នន័យនេះ។</translation>
 <translation id="7135130955892390533">បង្ហាញ​ស្ថានភាព</translation>
@@ -2005,6 +2034,12 @@
 <translation id="7485870689360869515">គ្មានទិន្នន័យត្រូវបានរកឃើញទេ។</translation>
 <translation id="7495528107193238112">ខ្លឹមសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​។ សូមទាក់ទង​ម្ចាស់​គេហទំព័រ ដើម្បី​ដោះស្រាយ​បញ្ហានេះ​។</translation>
 <translation id="7497998058912824456">ប៊ូតុង​បង្កើតឯកសារ ចុច Enter ដើម្បីបង្កើត​ឯកសារ Google ថ្មីបានរហ័ស</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />នឹងមិនរក្សាទុក<ph name="END_EMPHASIS" />ព័ត៌មានខាងក្រោមទេ៖
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ប្រវត្តិរុករករបស់អ្នក
+          <ph name="LIST_ITEM" />ខូគី និងទិន្នន័យទំព័រ
+          <ph name="LIST_ITEM" />ព័ត៌មានដែលបានបញ្ចូលក្នុងទម្រង់បែបបទ
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">លេខសម្គាល់ឧបករណ៍គោលការណ៍ប្រគល់ត្រឡប់វិញគឺទទេ ឬមិនត្រូវគ្នាជាមួយលេខសម្គាល់ឧបករណ៍បច្ចុប្បន្ន</translation>
 <translation id="7508870219247277067">បៃតងខ្ចី</translation>
 <translation id="7511955381719512146">Wi-Fi ដែលអ្នកកំពុងប្រើអាចតម្រូវឲ្យអ្នកទៅកាន់ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />។</translation>
@@ -2226,6 +2261,7 @@
 <translation id="8202370299023114387">​ជាន់​គ្នា</translation>
 <translation id="8206978196348664717">Prc4 (ស្រោម​សំបុត្រ)</translation>
 <translation id="8211406090763984747">ការតភ្ជាប់មានសុវត្ថិភាព</translation>
+<translation id="8217240300496046857">គេហទំព័រ​មិន​អាចប្រើ​ខូគី ដែលតាមដាន​អ្នក​នៅលើអ៊ីនធឺណិតបានទេ។ មុខងារ​នៅលើ​គេហទំព័រ​មួយចំនួន​អាចដំណើរការ​មិន​ត្រឹមត្រូវ។</translation>
 <translation id="8218327578424803826">ទីតាំងដែលបានកំណត់៖</translation>
 <translation id="8220146938470311105">C7/C6 (ស្រោម​សំបុត្រ)</translation>
 <translation id="8225771182978767009">អ្នកដែលដំឡើងកុំព្យូទ័រនេះបានជ្រើសយកការរារាំងគេហទំព័រនេះ</translation>

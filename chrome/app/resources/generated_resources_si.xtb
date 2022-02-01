@@ -1696,6 +1696,7 @@
 <translation id="2684004000387153598">ඉදිරියට යාමට, හරි ක්ලික් කරන්න, අනතුරුව ඔබේ ඊ-තැපැල් ලිපිනය සඳහා නව පැතිකඩක් සෑදීමට පුද්ගලයා එක් කරන්න ක්ලික් කරන්න.</translation>
 <translation id="2687403674020088961">සියලුම කුකී අවහිර කරන්න (නිර්දේශ නොකෙරේ)</translation>
 <translation id="2687407218262674387">Google සේවා නියමයන්</translation>
+<translation id="2687621393791886981">පසුව මගෙන් අසන්න</translation>
 <translation id="2688196195245426394">සේවාදායකය සමඟ උපාංගය ලියාපදිංචි කිරීමේ දෝශයක්: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">භාෂා විකල්ප පෙන්වන්න</translation>
 <translation id="2691385045260836588">මාදිලිය</translation>
@@ -1900,6 +1901,7 @@
 <translation id="287205682142673348">තොට යොමු කිරීම</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> එක් කරන්න...</translation>
 <translation id="2872961005593481000">වසන්න</translation>
+<translation id="2873995907777332853">සියලු කුකි අවහිර කිරීම පිළිබඳ විස්තර පෙන්වන්න</translation>
 <translation id="2874939134665556319">පෙර ඛණ්ඩය</translation>
 <translation id="2875698561019555027">(Chrome දෝෂ සහිත පිටු)</translation>
 <translation id="2876336351874743617">ඇඟිල්ල 2</translation>
@@ -2206,6 +2208,7 @@
 <translation id="3189187154924005138">විශාල කර්සරය</translation>
 <translation id="3190558889382726167">මුරපදය සුරැකිණි</translation>
 <translation id="3192947282887913208">ශ්‍රව්‍ය ගොනුව</translation>
+<translation id="3194786596445804250">තෙවන පාර්ශ්ව කුකි අවහිර කිරීම පිළිබඳ විස්තර පෙන්වන්න</translation>
 <translation id="3197453258332670132">දකුණු-ක්ලික් කිරීමකින් හෝ දිගු එබුමකින්, ඔබගේ පෙළ තේරීම සඳහා අදාළ තතු පෙන්වන්න</translation>
 <translation id="3199127022143353223">සේවාදායක</translation>
 <translation id="3200061262156232574">ඔබගේ සාප්පු කරත්තය තුළ</translation>
@@ -5303,6 +5306,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6455264371803474013">විශේෂිත අඩවි මත</translation>
 <translation id="6455894534188563617">&amp;අලුත් ෆෝල්ඩරය</translation>
 <translation id="645705751491738698">JavaScript දිගටම අවහිර කරන්න</translation>
+<translation id="6458347417133445570">සියලු කුකිවලට ඉඩ දීම ගැන විස්තර පෙන්වන්න</translation>
 <translation id="6458701200018867744">උඩුගත කිරීම අසාර්ථක විය (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Find සඳහා තෝරාගැනීම භාවිත කරන්න</translation>
 <translation id="6459799433792303855">සක්‍රිය කවුළුව වෙනත් සංදර්ශකයකට මාරු කරන ලදි.</translation>
@@ -6732,6 +6736,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7919210519031517829">ත<ph name="DURATION" /></translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> හට <ph name="FILENAME" /> බැලිය හැක</translation>
 <translation id="7920482456679570420">ඔබට අක්ෂර වින්‍යාස පරීක්ෂාව විසින් මග හරිනු ලැබීමට අවශ්‍ය වචන එක් කරන්න</translation>
+<translation id="7922935920104868876">අප්‍රසිද්ධ ප්‍රකාරය තුළ තෙවන පාර්ශ්ව කුකි අවහිර කිරීම පිළිබඳ විස්තර පෙන්වන්න</translation>
 <translation id="7924358170328001543">තොට යොමු කිරීමේ දෝෂයයි</translation>
 <translation id="7925108652071887026">ස්වයං පිරවුම් දත්ත</translation>
 <translation id="792514962475806987">ඈඳන ලද විශාලන මට්ටම:</translation>
@@ -7205,6 +7210,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> සහ තවත් <ph name="COUNT" />ක් ඉඩ දේ</translation>
 <translation id="8413385045638830869">පළමුව අසන්න (නිර්දේශිතයි)</translation>
+<translation id="8414249071344507766">මතක දින දෙකක් සඟවනු ලැබේ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (කොපුව)</translation>
 <translation id="8417548266957501132">මාපිය මුරපදය</translation>
 <translation id="8418445294933751433">ටැබයක් ලෙස පෙන්වන්න</translation>

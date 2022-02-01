@@ -1691,6 +1691,7 @@
 <translation id="2684004000387153598">തുടരാൻ, ശരി ക്ലിക്ക് ചെയ്യുക, തുടർന്ന് നിങ്ങളുടെ ഇമെയിൽ വിലാസത്തിനൊരു പുതിയ പ്രൊഫൈൽ സൃഷ്ടിക്കാൻ, 'ഒരു വ്യക്തിയെ ചേർക്കുക' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="2687403674020088961">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="2687407218262674387">Google സേവന നിബന്ധനകൾ</translation>
+<translation id="2687621393791886981">എന്നോട് പിന്നീട് ചോദിക്കുക</translation>
 <translation id="2688196195245426394">ഉപകരണം സെർവറിൽ രജിസ്റ്റർ ചെയ്യുന്നതിൽ പിശക്: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">ഭാഷ ഓപ്‌ഷനുകൾ കാണിക്കുക</translation>
 <translation id="2691385045260836588">മോഡല്‍</translation>
@@ -1896,6 +1897,7 @@
 <translation id="287205682142673348">പോർട്ട് ഫോർവേഡിങ്</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> ചേർക്കുക...</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
+<translation id="2873995907777332853">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുന്നതിനെ കുറിച്ചുള്ള വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="2874939134665556319">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="2875698561019555027">(Chrome പിശക് പേജുകൾ)</translation>
 <translation id="2876336351874743617">വിരൽ 2</translation>
@@ -2202,6 +2204,7 @@
 <translation id="3189187154924005138">വലിയ കഴ്‌സർ</translation>
 <translation id="3190558889382726167">പാസ്‌വേഡ് സംരക്ഷിച്ചു</translation>
 <translation id="3192947282887913208">ഓഡിയോ ഫയലുകള്‍</translation>
+<translation id="3194786596445804250">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുന്നതിനെ കുറിച്ചുള്ള വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="3197453258332670132">വലത്-ക്ലിക്കിലൂടെയോ ദീർഘനേരം അമർത്തുന്നതിലൂടെയോ നിങ്ങൾ തിരഞ്ഞെടുത്ത ടെക്സ്റ്റിന്റെ അനുബന്ധ വിവരങ്ങൾ കാണിക്കുക</translation>
 <translation id="3199127022143353223">സെര്‍‌വറുകള്‍‌</translation>
 <translation id="3200061262156232574">നിങ്ങളുടെ ഷോപ്പിംഗ് കാർട്ടിൽ</translation>
@@ -5298,6 +5301,7 @@
 <translation id="6455264371803474013">നിർദിഷ്‌ട സൈറ്റുകളിൽ</translation>
 <translation id="6455894534188563617">&amp;പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="645705751491738698">JavaScript തടയുന്നത് തുടരുക</translation>
+<translation id="6458347417133445570">എല്ലാ കുക്കികളും അനുവദിക്കുന്നതിനെ കുറിച്ചുള്ള വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="6458701200018867744">അപ്‌ലോഡ് ചെയ്യാനായില്ല (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">കണ്ടെത്തുന്നതിനായി തിരഞ്ഞെടുപ്പ് ഉപയോഗിക്കുക</translation>
 <translation id="6459799433792303855">സജീവ വിൻഡോ മറ്റൊരു ഡിസ്‌പ്ലേയിലേക്ക് നീക്കി.</translation>
@@ -6730,6 +6734,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />സെക്കൻഡ്</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ന് <ph name="FILENAME" /> കാണാനാവും</translation>
 <translation id="7920482456679570420">സ്പെൽ ചെക്ക് ഒഴിവാക്കേണ്ട വാക്കുകൾ ചേർക്കുക</translation>
+<translation id="7922935920104868876">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുന്നതിനെ കുറിച്ചുള്ള വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="7924358170328001543">പോർട്ട് കൈമാറുന്നതിൽ പിശക്</translation>
 <translation id="7925108652071887026">യാന്ത്രിക പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="792514962475806987">ഡോക്ക് ചെയ്‌ത സൂം നില:</translation>
@@ -7204,6 +7209,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> എന്നതും മറ്റ് <ph name="COUNT" /> എണ്ണവും അനുവദിച്ചു</translation>
 <translation id="8413385045638830869">ആദ്യം ചോദിക്കുക (ശുപാർശ ചെയ്‌തത്)</translation>
+<translation id="8414249071344507766">മനോഹര ഓർമ്മകൾ രണ്ട് ദിവസത്തേക്ക് മറച്ചു</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (കെയ്‌സ്)</translation>
 <translation id="8417548266957501132">രക്ഷിതാവിന്റെ പാസ്‌വേഡ്</translation>
 <translation id="8418445294933751433">&amp;ടാബായി കാണിക്കുക</translation>

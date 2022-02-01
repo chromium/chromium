@@ -509,6 +509,7 @@
 <translation id="1521442365706402292">სერთიფიკატების მართვა</translation>
 <translation id="1521774566618522728">აქტიური იყო დღეს</translation>
 <translation id="152234381334907219">არასოდეს შენახულა</translation>
+<translation id="1523279371236772909">ნანახია წინა თვეში</translation>
 <translation id="1523978563989812243">ტექსტის გახმოვანების ძრავები</translation>
 <translation id="1524430321211440688">კლავიატურა</translation>
 <translation id="1524563461097350801">არა, გმადლობთ</translation>
@@ -1241,6 +1242,7 @@
 <translation id="2232876851878324699">ფაილი შეიცავდა ერთ სერტიფიკატს, რომელიც არ დაიმპორტდა:</translation>
 <translation id="2233502537820838181">&amp;დამატებითი ინფორმაცია</translation>
 <translation id="223356358902285214">ვებსა და აპებში აქტივობა</translation>
+<translation id="2234827758954819389">კონფიდენციალურობის სახელმძღვანელო</translation>
 <translation id="2234876718134438132">სინქრონიზაციის/Google სერვისები</translation>
 <translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
 <translation id="2238379619048995541">სიხშირის მდგომარეობის მონაცემები</translation>
@@ -1690,6 +1692,7 @@
 <translation id="2684004000387153598">გასაგრძელებლად დაწკაპუნებით აირჩიეთ „კარგი“, ხოლო შემდეგ — „მომხმარებლის დამატება“, რათა შექმნათ ახალი პროფილი თქვენი ელფოსტის მისამართისთვის.</translation>
 <translation id="2687403674020088961">ყველა ქუქი-ჩანაწერის დაბლოკვა (არარეკომენდებული)</translation>
 <translation id="2687407218262674387">Google-ის მომსახურების პირობები</translation>
+<translation id="2687621393791886981">მოგვიანებით მკითხეთ</translation>
 <translation id="2688196195245426394">შეცდომა სერვერზე მოწყობილობის დარეგისტრირებისას: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">ენის ვარიანტების ჩვენება</translation>
 <translation id="2691385045260836588">მოდელი</translation>
@@ -3095,6 +3098,7 @@
 <translation id="4095264805865317199">მობილური ქსელის გააქტიურების ინტერფეისის გახსნა</translation>
 <translation id="4095507791297118304">ძირითადი ეკრანი</translation>
 <translation id="4096508467498758490">შემმუშავებლის რეჟიმის გაფართოებების გამორთვა</translation>
+<translation id="4096797685681362305">ნანახია წინა კვირაში</translation>
 <translation id="4097406557126260163">აპები და გაფართოებები</translation>
 <translation id="409742781329613461">რჩევები Chrome-ისთვის</translation>
 <translation id="4097560579602855702">Google-ში ძიება</translation>
@@ -3650,6 +3654,7 @@
 <translation id="4699172675775169585">ქეშირებული სურათები და ფაილები</translation>
 <translation id="4699357559218762027">(ავტომატურად გაშვებული)</translation>
 <translation id="4701025263201366865">შესვლა მშობლისთვის</translation>
+<translation id="4701335814944566468">ნანახია გუშინ</translation>
 <translation id="4708794300267213770">ძილიდან გამოღვიძებისას ჩაკეტილი ეკრანის ჩვენება</translation>
 <translation id="4708849949179781599">გასვლა <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">პარამეტრების აღდგენა</translation>
@@ -3717,6 +3722,7 @@
 <translation id="479536056609751218">ვებგვერდი, მხოლოდ HTML</translation>
 <translation id="4796142525425001238">ყოველთვის აღდგეს</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ჟურნალების<ph name="END_LINK" /> დართვა (Google-ის შიდა გამოყენებისთვის)</translation>
+<translation id="479863874072008121">მოწყობილობების მართვა</translation>
 <translation id="4800839971935185386">სახელისა და ხატულის განახლებების გადახედვა</translation>
 <translation id="4801448226354548035">ანგარიშების დამალვა</translation>
 <translation id="4801512016965057443">მობილური მონაცემების როუმინგის ჩართვა</translation>
@@ -6440,6 +6446,7 @@
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7659154729610375585">მაინც გსურთ ინკოგნიტო რეჟიმიდან გასვლა?</translation>
 <translation id="7659297516559011665">მხოლოდ ამ მოწყობილობაზე შენახული პაროლები</translation>
+<translation id="7659336857671800422">კონფიდენციალურობის სახელმძღვანელოს გაცნობა</translation>
 <translation id="7659584679870740384">თქვენ არ გაქვთ ამ მოწყობილობის გამოყენების უფლება. სისტემაში შესვლის ნებართვის მოსაპოვებლად, გთხოვთ, დაუკავშირდეთ ადმინისტრატორს.</translation>
 <translation id="7661259717474717992">საიტებისთვის ქუქი-ჩანაწერების მონაცემების შენახვისა და წაკითხვის დაშვება</translation>
 <translation id="7661451191293163002">სარეგისტრაციო სერტიფიკატის მიღება ვერ მოხერხდა.</translation>
@@ -7197,6 +7204,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">დაშვებულია <ph name="PERMISSION" /> და <ph name="COUNT" /> სხვა</translation>
 <translation id="8413385045638830869">ჯერ მკითხეთ (რეკომენდებულია)</translation>
+<translation id="8414249071344507766">მოგონებები დამალულია ორი დღით</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (სათავსო)</translation>
 <translation id="8417548266957501132">მშობლის პაროლი</translation>
 <translation id="8418445294933751433">ჩ&amp;ვენება ჩანართის სახით</translation>
@@ -7960,6 +7968,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> შეძლებს, დაარედაქტიროს ფაილები „<ph name="FOLDERNAME" />“-ში</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />-ში ძიება</translation>
 <translation id="9201023452444595544">გასუფთავდება ხაზგარეშე მონაცემები</translation>
+<translation id="9201117361710210082">ნანახია ადრე</translation>
 <translation id="9201220332032049474">ეკრანის დაბლოკვის ვარიანტები</translation>
 <translation id="9201842707396338580">წარმოიქმნა შეფერხება. დაუკავშირდით მოწყობილობის მფლობელს ან ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;პროფილირება ჩართულია</translation>

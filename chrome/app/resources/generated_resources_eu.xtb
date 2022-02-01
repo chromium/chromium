@@ -1692,6 +1692,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2684004000387153598">Aurrera egiteko, sakatu Ados eta sakatu Gehitu pertsona bat zure helbide elektronikorako profila sortzeko.</translation>
 <translation id="2687403674020088961">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="2687407218262674387">Google-ren Zerbitzu-baldintzak</translation>
+<translation id="2687621393791886981">Galdetu geroago</translation>
 <translation id="2688196195245426394">Errore bat gertatu da gailua zerbitzariarekin erregistratzean: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Erakutsi hizkuntza-aukerak</translation>
 <translation id="2691385045260836588">Modeloa</translation>
@@ -7202,6 +7203,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Baimendutako <ph name="PERMISSION" /> eta beste <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Galdetu lehenbizi (gomendatua)</translation>
+<translation id="8414249071344507766">Datozen bi egunetan ez da erakutsiko oroitzapenik</translation>
 <translation id="8416730306157376817">% <ph name="BATTERY_PERCENTAGE" /> (kutxa)</translation>
 <translation id="8417548266957501132">Gurasoaren pasahitza</translation>
 <translation id="8418445294933751433">&amp;Erakutsi fitxa gisa</translation>

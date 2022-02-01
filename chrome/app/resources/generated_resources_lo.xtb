@@ -1704,6 +1704,7 @@
 <translation id="2684004000387153598">ເພື່ອສືບຕໍ່, ກະລຸນາຄລິກ ຕົກລົງ, ແລ້ວຄລິກ ເພີ່ມບຸກຄົນ ເພື່ອສ້າງໂປຣໄຟລ໌ໃໝ່ສຳລັບທີ່ຢູ່ອີເມວຂອງທ່ານ.</translation>
 <translation id="2687403674020088961">ບລັອກຄຸກກີ້ທັງໝົດ (ບໍ່ແນະນຳ)</translation>
 <translation id="2687407218262674387">ຂໍ້ກຳນົດການບໍລິການຂອງ Google</translation>
+<translation id="2687621393791886981">ຖາມຂ້ອຍໃນພາຍຫຼັງ</translation>
 <translation id="2688196195245426394">ຜິດພາດເມື່ອລົງທະບຽນກັບເຊີບເວີ: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">ສະແດງຕົວເລືອກພາສາ</translation>
 <translation id="2691385045260836588">ລຸ້ນ</translation>
@@ -7215,6 +7216,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">ອະນຸຍາດ <ph name="PERMISSION" /> ແລະ ອີກ <ph name="COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="8413385045638830869">ຖາມ​ກ່ອນ (ແນະ​ນຳ​ໃຫ້)</translation>
+<translation id="8414249071344507766">ເຊື່ອງຄວາມຊົງຈຳໄວ້ສອງມື້ແລ້ວ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ເຄສ)</translation>
 <translation id="8417548266957501132">ລະຫັດຜ່ານຂອງພໍ່ແມ່</translation>
 <translation id="8418445294933751433">ສະ​ແດງ​ແຖບ</translation>

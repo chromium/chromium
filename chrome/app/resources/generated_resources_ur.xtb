@@ -1692,6 +1692,7 @@
 <translation id="2684004000387153598">جاری رکھنے کے لیے،'ٹھیک ہے' پر کلک کریں، پھر اپنے ای میل پتہ کے لیے ایک نیا پروفائل تخلیق کرنے کی خاطر 'فرد شامل کریں' پر کلک کریں۔</translation>
 <translation id="2687403674020088961">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="2687407218262674387">‏Google کی سروس کی شرائط</translation>
+<translation id="2687621393791886981">مجھ سے بعد میں پوچھیں</translation>
 <translation id="2688196195245426394">سرور کے ساتھ آلہ رجسٹر کرتے وقت خرابی پیش آ گئی: <ph name="CLIENT_ERROR" />۔</translation>
 <translation id="2690024944919328218">زبان کے اختیارات دکھائیں</translation>
 <translation id="2691385045260836588">ماڈل</translation>
@@ -1896,6 +1897,7 @@
 <translation id="287205682142673348">پورٹ فارورڈنگ</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> شامل کریں…</translation>
 <translation id="2872961005593481000">بند کریں</translation>
+<translation id="2873995907777332853">تمام کوکیز کو مسدود کرنے کے بارے میں تفصیلات دکھائیں</translation>
 <translation id="2874939134665556319">پچھلا ٹریک</translation>
 <translation id="2875698561019555027">‏(Chrome میں خرابی کے صفحات)</translation>
 <translation id="2876336351874743617">فنگر 2</translation>
@@ -2202,6 +2204,7 @@
 <translation id="3189187154924005138">بڑا کرسر</translation>
 <translation id="3190558889382726167">پاس ورڈ محفوظ ہوگیا</translation>
 <translation id="3192947282887913208">آڈیو فائلز</translation>
+<translation id="3194786596445804250">فریق ثالث کی کوکیز کو مسدود کرنے کے بارے میں تفصیلات دکھائیں</translation>
 <translation id="3197453258332670132">دائیں طرف کلک کرنے یا لانگ پریس سے اپنے ٹیکسٹ کے انتخاب کے لیے متعلقہ معلومات دکھائیں</translation>
 <translation id="3199127022143353223">سرورز</translation>
 <translation id="3200061262156232574">آپ کی خریداری کی کارٹ میں</translation>
@@ -5296,6 +5299,7 @@
 <translation id="6455264371803474013">مخصوص سائٹس پر</translation>
 <translation id="6455894534188563617">&amp;نیا فولڈر</translation>
 <translation id="645705751491738698">‏JavaScript کو مسدود کرنا جاری رکھیں</translation>
+<translation id="6458347417133445570">تمام کوکیز کی اجازت دینے کے بارے میں تفصیلات دکھائیں</translation>
 <translation id="6458701200018867744">اپ لوڈ نہیں ہو سکا (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)۔</translation>
 <translation id="6459488832681039634">تلاش کیلئے انتخاب کا استعمال کریں</translation>
 <translation id="6459799433792303855">فعال ونڈو کسی اور ڈسپلے میں منتقل کر دی گئی۔</translation>
@@ -6729,6 +6733,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> سیکنڈ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> دیکھ سکتا ہے</translation>
 <translation id="7920482456679570420">وہ الفاظ شامل کریں جنہیں آپ چاہتے ہیں کہ املا کی جانچ نظر انداز کرے</translation>
+<translation id="7922935920104868876">پوشیدگی میں فریق ثالث کی کوکیز کو مسدود کرنے کے بارے میں تفصیلات دکھائیں</translation>
 <translation id="7924358170328001543">پورٹ فارورڈ کرنے میں خرابی</translation>
 <translation id="7925108652071887026">آٹو فل ڈیٹا</translation>
 <translation id="792514962475806987">ڈاک کردہ زوم کی سطح:</translation>
@@ -7202,6 +7207,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کی اجازت دی گئی</translation>
 <translation id="8413385045638830869">پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="8414249071344507766">دو دنوں کے لیے مخفی میموریز</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (کیس)</translation>
 <translation id="8417548266957501132">والد/والدہ کا پاس ورڈ</translation>
 <translation id="8418445294933751433">ٹیب کے بطور &amp;دکھائیں</translation>

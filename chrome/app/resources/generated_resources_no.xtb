@@ -1701,6 +1701,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2684004000387153598">For å fortsette, klikk på OK. Klikk deretter på Legg til person for å opprette en ny profil for e-postadressen din.</translation>
 <translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="2687407218262674387">Googles vilkår for bruk</translation>
+<translation id="2687621393791886981">Spør meg senere</translation>
 <translation id="2688196195245426394">Feil under registreringen av enheten hos tjeneren: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Vis alternativer for språk</translation>
 <translation id="2691385045260836588">Modell</translation>
@@ -7210,6 +7211,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Tillot <ph name="PERMISSION" /> og <ph name="COUNT" /> til</translation>
 <translation id="8413385045638830869">Spør først (anbefales)</translation>
+<translation id="8414249071344507766">Minner er skjult i to dager</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (etui)</translation>
 <translation id="8417548266957501132">Foreldrepassord</translation>
 <translation id="8418445294933751433">Vi&amp;s som fane</translation>

@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">לפרטים</translation>
 <translation id="1030706264415084469"><ph name="URL" /> רוצה לאחסן באופן קבוע כמות גדולה של נתונים במכשיר שלך</translation>
 <translation id="1032854598605920125">סיבוב בכיוון השעון</translation>
+<translation id="1033329911862281889">המצב הפרטי לא מסתיר אותך לגמרי באינטרנט:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />אתרים והשירותים שבהם נעשה שימוש יודעים שביקרת בהם<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />מעסיקים ומוסדות לימודים יכולים לעקוב אחר פעילות הגלישה שלך<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />יכול להיות שספקי אינטרנט יעקבו אחר תנועת הגולשים<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1036982837258183574">יש ללחוץ על |<ph name="ACCELERATOR" />| כדי לצאת ממסך מלא</translation>
 <translation id="1038106730571050514">הצגת הצעות</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">המטמון של המדיניות תקין</translation>
 <translation id="1130564665089811311">‏הלחצן 'תרגום הדף', יש ללחוץ על Enter כדי לתרגם את הדף הזה באמצעות Google Translate</translation>
 <translation id="1131264053432022307">תמונה שהעתקת</translation>
+<translation id="1142846828089312304">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="1150979032973867961">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי מערכת ההפעלה של המחשב. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="1151972924205500581">נדרשת סיסמה</translation>
 <translation id="1156303062776767266">מוצג לך קובץ מקומי או משותף</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">שליחה</translation>
 <translation id="1484290072879560759">בחירת כתובת למשלוח</translation>
 <translation id="1492194039220927094">דחיפת מדיניות:</translation>
+<translation id="149293076951187737">‏עם הסגירה של כל הכרטיסיות הפרטיות ב-Chrome, הפעילות שלך בכרטיסיות הבאות נמחקת מהמכשיר הזה:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />פעילות הגלישה<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />היסטוריית החיפושים<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />מידע שהוזן בטפסים<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">חזרה לכרטיסייה</translation>
 <translation id="1501859676467574491">‏הצגת כרטיסים מחשבון Google שלך</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;השגיאה הזו תוצג אם משתמשים בפורטל Wi-Fi שבו צריך להיכנס לחשבון לפני התחברות לרשת.&lt;/p&gt;
@@ -284,6 +297,7 @@
     פורמט הכותרת שגוי, ולכן הדפדפן לא יכול למלא
     את הבקשה שלך בשביל <ph name="SITE" />. מפעילי אתרים יכולים להשתמש במדיניות מקור
     כדי להגדיר מאפייני אבטחה ומאפיינים אחרים עבור אתר מסוים.</translation>
+<translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />מידע נוסף על מצב פרטי ב-Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">כאן מופיעות הכרטיסיות שפתחת</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@
 <translation id="2597378329261239068">מסמך זה מוגן באמצעות סיסמה. יש להזין סיסמה.</translation>
 <translation id="2609632851001447353">וריאציות</translation>
 <translation id="2610561535971892504">לחיצה להעתקה</translation>
+<translation id="2617988307566202237">‏Chrome <ph name="BEGIN_EMPHASIS" />לא ישמור<ph name="END_EMPHASIS" /> את הנתונים הבאים:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />היסטוריית הגלישה שלך
+          <ph name="LIST_ITEM" />קובצי cookie ונתוני אתרים
+          <ph name="LIST_ITEM" />מידע שהוזן בטפסים
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)‎</translation>
 <translation id="2623663032199728144">האתר יכול לבקש הרשאה להשתמש במידע לגבי המסכים שלך</translation>
 <translation id="2625385379895617796">השעון שלך מקדים</translation>
@@ -1151,6 +1171,7 @@
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4631649115723685955">הקאשבק מקושר</translation>
 <translation id="4636930964841734540">מידע</translation>
+<translation id="4638670630777875591">‏מצב פרטי ב-Chromium</translation>
 <translation id="464342062220857295">תכונות חיפוש</translation>
 <translation id="4644670975240021822">בסדר הפוך עם הפנים כלפי מטה</translation>
 <translation id="4646534391647090355">אני רוצה לעבור לשם עכשיו</translation>
@@ -1250,6 +1271,7 @@ Del</translation>
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לחפש</translation>
 <translation id="4930153903256238152">קיבולת גבוהה</translation>
+<translation id="4940163644868678279">‏מצב פרטי ב-Chrome</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
 <translation id="4950898438188848926">‏לחצן החלפת כרטיסיות, יש להקיש על Enter כדי לעבור לכרטיסייה הפתוחה, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">פעולות</translation>
@@ -1611,6 +1633,7 @@ Del</translation>
 <translation id="6120179357481664955">‏מזהה UPI שלך זכור לך?</translation>
 <translation id="6124432979022149706">‏מחברים של Chrome Enterprise</translation>
 <translation id="6127379762771434464">הפריט הוסר</translation>
+<translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />מידע נוסף על מצב פרטי ב-Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">יש לבדוק את הכבלים ולהפעיל מחדש את הנתבים, המודמים ושאר התקני הרשת
 שמשתמשים בהם.</translation>
 <translation id="614940544461990577">כדאי לנסות:</translation>
@@ -1886,6 +1909,12 @@ Del</translation>
 <translation id="7111012039238467737">(חוקי)</translation>
 <translation id="7118618213916969306">‏חיפוש כתובת ה-URL שהועתקה ללוח, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">סגירת כרטיסיות או תוכניות אחרות</translation>
+<translation id="7129355289156517987">‏עם הסגירה של כל הכרטיסיות הפרטיות ב-Chromium, הפעילות שלך בכרטיסיות הבאות נמחקת מהמכשיר הזה:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />פעילות הגלישה<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />היסטוריית החיפושים<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />מידע שהוזן בטפסים<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">לא ניתן לבצע משלוח לכתובת הזו. עליך לבחור כתובת אחרת.</translation>
 <translation id="7132939140423847331">מנהל המערכת שלך אסר על העתקת הנתונים האלה.</translation>
 <translation id="7135130955892390533">הצגת סטטוס</translation>
@@ -2004,6 +2033,12 @@ Del</translation>
 <translation id="7485870689360869515">לא נמצאו נתונים.</translation>
 <translation id="7495528107193238112">התוכן הזה חסום. יש לפנות אל הבעלים של האתר כדי לפתור את הבעיה.</translation>
 <translation id="7497998058912824456">‏לחצן ליצירת מסמך, מקישים על Enter כדי ליצור במהירות מסמך ב-Google Docs</translation>
+<translation id="7506488012654002225">‏Chromium <ph name="BEGIN_EMPHASIS" />לא ישמור<ph name="END_EMPHASIS" /> את המידע הבא:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />היסטוריית הגלישה שלך
+          <ph name="LIST_ITEM" />קובצי Cookie ונתוני אתרים
+          <ph name="LIST_ITEM" />מידע שהוזן בטפסים
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">מזהה המכשיר במדיניות שהוחזר ריק או שאינו תואם את מזהה המכשיר הנוכחי</translation>
 <translation id="7508870219247277067">ירוק אבוקדו</translation>
 <translation id="7511955381719512146">‏ייתכן שהשימוש ברשת ה-Wi-Fi ידרוש ממך להיכנס ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2223,6 +2258,7 @@ Del</translation>
 <translation id="8202370299023114387">התנגשות</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)‎</translation>
 <translation id="8211406090763984747">החיבור מאובטח</translation>
+<translation id="8217240300496046857">‏אתרים לא יכולים להשתמש בקובצי cookie שעוקבים אחריך באינטרנט. ייתכן שתכונות באתרים מסוימים לא יפעלו כראוי.</translation>
 <translation id="8218327578424803826">מיקום מוקצה:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)‎</translation>
 <translation id="8225771182978767009">המשתמש שהגדיר את המחשב הזה בחר לחסום את האתר הזה.</translation>

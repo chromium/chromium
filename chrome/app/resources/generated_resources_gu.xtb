@@ -1690,6 +1690,7 @@
 <translation id="2684004000387153598">ચાલુ રાખવા માટે, ઓકે ક્લિક કરો, પછી તમારા ઇમેઇલ ઍડ્રેસ માટે નવી પ્રોફાઇલ બનાવવા માટે વ્યક્તિ ઉમેરો પર ક્લિક કરો.</translation>
 <translation id="2687403674020088961">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
 <translation id="2687407218262674387">Googleની સેવાની શરતો</translation>
+<translation id="2687621393791886981">મને થોડા સમય પછી પૂછો</translation>
 <translation id="2688196195245426394">સર્વર સાથે ઉપકરણની નોંધણી કરતી વખતે ભૂલ: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">ભાષા વિકલ્પો બતાવો</translation>
 <translation id="2691385045260836588">મોડલ</translation>
@@ -1895,6 +1896,7 @@
 <translation id="287205682142673348">પોર્ટ ફૉરવર્ડિંગ</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> ઉમેરો...</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
+<translation id="2873995907777332853">તમામ કુકીને બ્લૉક કરવા વિશેની વિગતો બતાવો</translation>
 <translation id="2874939134665556319">પાછલું ટ્રૅક</translation>
 <translation id="2875698561019555027">(Chrome ભૂલના પેજ)</translation>
 <translation id="2876336351874743617">આંગળી 2</translation>
@@ -2201,6 +2203,7 @@
 <translation id="3189187154924005138">મોટું કર્સર</translation>
 <translation id="3190558889382726167">પાસવર્ડ સાચવ્યો</translation>
 <translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
+<translation id="3194786596445804250">ત્રીજા પક્ષની કુકીને બ્લૉક કરવા વિશેની વિગતો બતાવો</translation>
 <translation id="3197453258332670132">તમારી ટેક્સ્ટની પસંદગી માટે, રાઇટ ક્લિક વડે અથવા થોડીવાર દબાવી રાખીને સંબંધિત માહિતી બતાવો</translation>
 <translation id="3199127022143353223">સર્વર્સ</translation>
 <translation id="3200061262156232574">તમારા શૉપિંગ કાર્ટમાં</translation>
@@ -5298,6 +5301,7 @@ USB ડિવાઇસ</translation>
 <translation id="6455264371803474013">વિશિષ્ટ સાઇટ પર</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
 <translation id="645705751491738698">JavaScript ને અવરોધિત કરવાનું ચાલુ રાખો</translation>
+<translation id="6458347417133445570">તમામ કુકીને મંજૂરી આપવા વિશેની વિગતો બતાવો</translation>
 <translation id="6458701200018867744">અપલોડ નિષ્ફળ થયું (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">શોધવા માટે પસંદગીનો ઉપયોગ કરો</translation>
 <translation id="6459799433792303855">સક્રિય વિંડો બીજા ડિસ્પ્લેમાં ખસેડી છે.</translation>
@@ -6730,6 +6734,7 @@ USB ડિવાઇસ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />સેકન્ડ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> જોઈ શકે છે <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">જોડણીની તપાસમાં તમે છોડવા માગતા હો તે શબ્દો ઉમેરો</translation>
+<translation id="7922935920104868876">છૂપા મોડમાં ત્રીજા પક્ષની કુકીને બ્લૉક કરવા વિશેની વિગતો બતાવો</translation>
 <translation id="7924358170328001543">પોર્ટ ફૉરવર્ડ કરવામાં ભૂલ આવી</translation>
 <translation id="7925108652071887026">સ્વત:ભરણ ડેટા</translation>
 <translation id="792514962475806987">ડૉક કરેલ ઝૂમ લેવલ:</translation>
@@ -7199,6 +7204,7 @@ USB ડિવાઇસ</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> અને વધુ <ph name="COUNT" />ને મંજૂરી આપી</translation>
 <translation id="8413385045638830869">પહેલા પૂછો (ભલામણ કરેલ)</translation>
+<translation id="8414249071344507766">બે દિવસ માટે યાદગીરીઓ છુપાવેલી છે</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (કેસ)</translation>
 <translation id="8417548266957501132">માતાપિતાનો પાસવર્ડ</translation>
 <translation id="8418445294933751433">ટૅબ તરીકે &amp;બતાવો</translation>

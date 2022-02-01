@@ -1698,6 +1698,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2684004000387153598">Jätkamiseks klõpsake nupul OK, seejärel klõpsake valikul Inimese lisamine, et luua oma e-posti aadressi jaoks uus profiil.</translation>
 <translation id="2687403674020088961">Blokeeri kõik küpsised (ei ole soovitatav)</translation>
 <translation id="2687407218262674387">Google'i teenusetingimused</translation>
+<translation id="2687621393791886981">Küsi hiljem</translation>
 <translation id="2688196195245426394">Seadme serveris registreerimisel ilmnes viga: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Kuva keelevalikud</translation>
 <translation id="2691385045260836588">Mudel</translation>
@@ -7211,6 +7212,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Lubatud on <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Esmalt küsi (soovitatav)</translation>
+<translation id="8414249071344507766">Mälestused on kaheks päevaks peidetud</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ümbris)</translation>
 <translation id="8417548266957501132">Vanema parool</translation>
 <translation id="8418445294933751433">&amp;Kuva vahelehena</translation>

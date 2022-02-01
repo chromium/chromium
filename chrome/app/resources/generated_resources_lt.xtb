@@ -1710,6 +1710,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2684004000387153598">Jei norite tęsti, spustelėkite „Gerai“, tada – „Pridėti asmenį“, kad sukurtumėte naują profilį naudodami savo el. pašto adresą.</translation>
 <translation id="2687403674020088961">Blokuoti visus slapukus (nerekomenduojama)</translation>
 <translation id="2687407218262674387">„Google“ paslaugų teikimo sąlygos</translation>
+<translation id="2687621393791886981">Paklausti vėliau</translation>
 <translation id="2688196195245426394">Įrenginio registravimo serveryje klaida: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Rodyti kalbos parinktis</translation>
 <translation id="2691385045260836588">Modelis</translation>
@@ -1915,6 +1916,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="287205682142673348">Prievado numerio persiuntimas</translation>
 <translation id="287286579981869940">Pridėti „<ph name="PROVIDER_NAME" />“...</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
+<translation id="2873995907777332853">Rodyti išsamią informaciją apie visų slapukų blokavimą</translation>
 <translation id="2874939134665556319">Ankstesnis takelis</translation>
 <translation id="2875698561019555027">(„Chrome“ klaidų puslapiai)</translation>
 <translation id="2876336351874743617">Antras pirštas</translation>
@@ -2221,6 +2223,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3189187154924005138">Didelis žymeklis</translation>
 <translation id="3190558889382726167">Slaptažodis išsaugotas</translation>
 <translation id="3192947282887913208">Garso įrašų failai</translation>
+<translation id="3194786596445804250">Rodyti išsamią informaciją apie trečiųjų šalių slapukų blokavimą</translation>
 <translation id="3197453258332670132">Spustelėjus dešiniuoju pelės klavišu arba ilgai paspaudus rodoma su jūsų teksto pasirinkimu susijusi informacija</translation>
 <translation id="3199127022143353223">Serveriai</translation>
 <translation id="3200061262156232574">Jūsų pirkinių krepšelyje</translation>
@@ -5318,6 +5321,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6455264371803474013">Konkrečiose svetainėse</translation>
 <translation id="6455894534188563617">&amp;Naujas aplankas</translation>
 <translation id="645705751491738698">Tęsti „JavaScript“ blokavimą</translation>
+<translation id="6458347417133445570">Rodyti išsamią informaciją apie visų slapukų leidimą</translation>
 <translation id="6458701200018867744">Nepavyko įkelti (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Paieškai naudoti pasirinkimą</translation>
 <translation id="6459799433792303855">Aktyvus langas perkeltas į kitą ekraną.</translation>
@@ -6751,6 +6755,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> gali peržiūrėti „<ph name="FILENAME" />“</translation>
 <translation id="7920482456679570420">Pridėkite žodžių, kuriuos rašybos tikrinimo funkcija turėtų praleisti</translation>
+<translation id="7922935920104868876">Rodyti išsamią informaciją apie trečiųjų šalių slapukų blokavimą inkognito režimu</translation>
 <translation id="7924358170328001543">Prievado persiuntimo klaida</translation>
 <translation id="7925108652071887026">Automatinio pildymo duomenys</translation>
 <translation id="792514962475806987">Prie doko prijungto didintuvo mastelio keitimo lygis:</translation>
@@ -7225,6 +7230,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Leidžiama: <ph name="PERMISSION" /> ir dar <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Pirmiausia paklausti (rekomenduojama)</translation>
+<translation id="8414249071344507766">Prisiminimai paslėpti dviem dienoms</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (dėklas)</translation>
 <translation id="8417548266957501132">Vieno iš tėvų slaptažodis</translation>
 <translation id="8418445294933751433">&amp;Rodyti kaip skirtuką</translation>

@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Scopri i dettagli</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vuole memorizzare in modo definitivo grandi quantità di dati sul dispositivo</translation>
 <translation id="1032854598605920125">Ruota in senso orario</translation>
+<translation id="1033329911862281889">La modalità di navigazione in incognito non ti rende invisibile online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />I siti e i servizi che utilizzano possono rilevare le visite<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Datori di lavoro o scuole possono monitorare l'attività di navigazione<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />I provider di servizi Internet possono monitorare il traffico web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1036982837258183574">Premi |<ph name="ACCELERATOR" />| per uscire dalla modalità a schermo intero</translation>
 <translation id="1038106730571050514">Mostra suggerimenti</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Cache dei criteri integra</translation>
 <translation id="1130564665089811311">Pulsante Traduci pagina, premi Invio per tradurre questa pagina con Google Traduttore</translation>
 <translation id="1131264053432022307">Immagine copiata</translation>
+<translation id="1142846828089312304">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
 <translation id="1150979032973867961">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile dal sistema operativo del computer. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="1151972924205500581">Password obbligatoria</translation>
 <translation id="1156303062776767266">È visualizzato un file locale o condiviso</translation>
@@ -180,6 +187,12 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1483493594462132177">Invia</translation>
 <translation id="1484290072879560759">Scegli l'indirizzo di spedizione</translation>
 <translation id="1492194039220927094">Push dei criteri:</translation>
+<translation id="149293076951187737">Quando chiudi tutte le schede di navigazione in incognito di Chrome, la tua attività nelle schede viene cancellata da questo dispositivo:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Attività di navigazione<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Cronologia delle ricerche<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informazioni inserite nei moduli<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Torna alla scheda</translation>
 <translation id="1501859676467574491">Mostra le carte dall'Account Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Vedrai questo errore se stai utilizzando un portale Wi-Fi che richiede l'accesso per poterti connettere a Internet.&lt;/p&gt;
@@ -284,6 +297,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     l'intestazione non è in formato corretto e impedisce al browser di soddisfare
     la tua richiesta per <ph name="SITE" />. I criteri di origine possono essere usati dagli
     operatori del sito per configurare la sicurezza e altre proprietà del sito.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Scopri di più sulla modalità di navigazione in incognito in Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Le tue schede aperte vengono visualizzate qui</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2597378329261239068">Questo documento è protetto da password. Inserisci una password.</translation>
 <translation id="2609632851001447353">Varianti</translation>
 <translation id="2610561535971892504">Fai clic per copiare</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />non salverà<ph name="END_EMPHASIS" /> le seguenti informazioni:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Cronologia di navigazione
+          <ph name="LIST_ITEM" />Cookie e dati dei siti
+          <ph name="LIST_ITEM" />Informazioni inserite nei moduli
+        <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2623663032199728144">Può chiedere di usare informazioni sui tuoi schermi</translation>
 <translation id="2625385379895617796">L'orologio è avanti</translation>
@@ -1150,6 +1170,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Rimborso collegato</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4638670630777875591">Modalità di navigazione in incognito in Chromium</translation>
 <translation id="464342062220857295">Funzionalità di ricerca</translation>
 <translation id="4644670975240021822">Ordine inverso a faccia in giù</translation>
 <translation id="4646534391647090355">Vai subito</translation>
@@ -1245,6 +1266,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per cercare</translation>
 <translation id="4930153903256238152">Capacità elevata</translation>
+<translation id="4940163644868678279">Modalità di navigazione in incognito in Chrome</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
 <translation id="4950898438188848926">Pulsante per cambiare scheda, premi INVIO per passare alla scheda aperta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Azioni</translation>
@@ -1605,6 +1627,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6120179357481664955">Ricordi il tuo ID UPI?</translation>
 <translation id="6124432979022149706">Connettori di Chrome Enterprise</translation>
 <translation id="6127379762771434464">Elemento rimosso</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Scopri di più sulla modalità di navigazione in incognito in Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Controlla eventuali cavi e riavvia eventuali router, modem o altri dispositivi di rete in uso.</translation>
 <translation id="614940544461990577">Prova a:</translation>
 <translation id="6150036310511284407">Tripla perforatura a sinistra</translation>
@@ -1879,6 +1902,12 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7111012039238467737">(Valido)</translation>
 <translation id="7118618213916969306">Cerca URL dagli appunti, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Chiudi altri programmi o schede</translation>
+<translation id="7129355289156517987">Quando chiudi tutte le schede di navigazione in incognito di Chromium, la tua attività nelle schede viene cancellata da questo dispositivo:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Attività di navigazione<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Cronologia delle ricerche<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informazioni inserite nei moduli<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Impossibile spedire all'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
 <translation id="7132939140423847331">Il tuo amministratore ha impedito la copia di questi dati.</translation>
 <translation id="7135130955892390533">Mostra stato</translation>
@@ -1997,6 +2026,12 @@ Ulteriori dettagli:
 <translation id="7485870689360869515">Nessun dato trovato.</translation>
 <translation id="7495528107193238112">Questi contenuti sono bloccati. Contatta il proprietario del sito per risolvere il problema.</translation>
 <translation id="7497998058912824456">Pulsante Crea documento, premi Invio per creare rapidamente un nuovo documento Google</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />non salverà<ph name="END_EMPHASIS" /> le seguenti informazioni:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Cronologia di navigazione
+          <ph name="LIST_ITEM" />Cookie e dati dei siti
+          <ph name="LIST_ITEM" />Informazioni inserite nei moduli
+        <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">L'ID dispositivo della norma restituito è vuoto o non corrisponde all'ID dispositivo corrente</translation>
 <translation id="7508870219247277067">Verde pisello</translation>
 <translation id="7511955381719512146">La rete Wi-Fi in uso potrebbe richiedere la visita della pagina <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2216,6 +2251,7 @@ Ulteriori dettagli:
 <translation id="8202370299023114387">Conflitto</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">La connessione è sicura</translation>
+<translation id="8217240300496046857">I siti non possono utilizzare i cookie che monitorano la tua attività sul Web. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="8218327578424803826">Posizione assegnata:</translation>
 <translation id="8220146938470311105">C7/C6 (Busta)</translation>
 <translation id="8225771182978767009">La persona che ha configurato il computer ha deciso di bloccare questo sito.</translation>

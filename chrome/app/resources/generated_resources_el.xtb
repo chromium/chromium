@@ -1707,6 +1707,7 @@
 <translation id="2684004000387153598">Για να συνεχίσετε, κάντε κλικ στο κουμπί OK και, στη συνέχεια, κάντε κλικ στην επιλογή "Προσθήκη ατόμου" για να δημιουργήσετε ένα νέο προφίλ για τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας.</translation>
 <translation id="2687403674020088961">Αποκλεισμός όλων των cookie (δεν συνιστάται)</translation>
 <translation id="2687407218262674387">Όροι Παροχής Υπηρεσιών Google</translation>
+<translation id="2687621393791886981">Να ερωτηθώ αργότερα</translation>
 <translation id="2688196195245426394">Σφάλμα εγγραφής της συσκευής στο διακομιστή: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Εμφάνιση επιλογών γλώσσας</translation>
 <translation id="2691385045260836588">Μοντέλο</translation>
@@ -1912,6 +1913,7 @@
 <translation id="287205682142673348">Προώθηση θύρας</translation>
 <translation id="287286579981869940">Προσθήκη <ph name="PROVIDER_NAME" />…</translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
+<translation id="2873995907777332853">Εμφάνιση λεπτομερειών σχετικά με τον αποκλεισμό όλων των cookie</translation>
 <translation id="2874939134665556319">Προηγούμενο κομμάτι</translation>
 <translation id="2875698561019555027">(Σελίδες σφαλμάτων Chrome)</translation>
 <translation id="2876336351874743617">Δάκτυλο 2</translation>
@@ -2218,6 +2220,7 @@
 <translation id="3189187154924005138">Μεγάλος δείκτης ποντικιού</translation>
 <translation id="3190558889382726167">Ο κωδικός πρόσβασης αποθηκεύτηκε</translation>
 <translation id="3192947282887913208">Αρχεία ήχου</translation>
+<translation id="3194786596445804250">Εμφάνιση λεπτομερειών σχετικά με τον αποκλεισμό cookie τρίτου μέρους</translation>
 <translation id="3197453258332670132">Με δεξί κλικ ή παρατεταμένο πάτημα, εμφανίζονται πληροφορίες που σχετίζονται με την επιλογή κειμένου σας</translation>
 <translation id="3199127022143353223">Διακομιστές</translation>
 <translation id="3200061262156232574">Στο καλάθι αγορών σας</translation>
@@ -5315,6 +5318,7 @@
 <translation id="6455264371803474013">Σε συγκεκριμένους ιστοτόπους</translation>
 <translation id="6455894534188563617">&amp;Νέος φάκελος</translation>
 <translation id="645705751491738698">Συνέχιση αποκλεισμού JavaScript</translation>
+<translation id="6458347417133445570">Εμφάνιση λεπτομερειών σχετικά με την αποδοχή όλων των cookie</translation>
 <translation id="6458701200018867744">Η μεταφόρτωση απέτυχε (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Χρήση Επιλογής για Εύρεση</translation>
 <translation id="6459799433792303855">Το ενεργό παράθυρο μετακινήθηκε στη άλλη οθόνη.</translation>
@@ -6748,6 +6752,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> δ.</translation>
 <translation id="7920363873148656176">Το <ph name="ORIGIN" /> μπορεί να προβάλλει το <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Προσθέστε λέξεις που θέλετε να παραβλέπονται κατά τον ορθογραφικό έλεγχο.</translation>
+<translation id="7922935920104868876">Εμφάνιση λεπτομερειών σχετικά με τον αποκλεισμό cookie τρίτου μέρους σε λειτουργία ανώνυμης περιήγησης</translation>
 <translation id="7924358170328001543">Σφάλμα κατά την προώθηση θύρας</translation>
 <translation id="7925108652071887026">Δεδομένα αυτόματης συμπλήρωσης</translation>
 <translation id="792514962475806987">Επίπεδο εστίασης σε παράθυρο:</translation>
@@ -7222,6 +7227,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Επιτράπηκε η άδεια <ph name="PERMISSION" /> και <ph name="COUNT" /> ακόμη άδειες</translation>
 <translation id="8413385045638830869">Να γίνεται ερώτηση πρώτα (συνιστάται)</translation>
+<translation id="8414249071344507766">Έγινε απόκρυψη των αναμνήσεων για δύο ημέρες</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Θήκη)</translation>
 <translation id="8417548266957501132">Κωδικός πρόσβασης γονέα</translation>
 <translation id="8418445294933751433">&amp;Εμφάνιση ως καρτέλα</translation>

@@ -1689,6 +1689,7 @@
 <translation id="2684004000387153598">जारी राख्न, ठिक छ नामक बटनमा क्लिक गर्नुहोस्, त्यसपछि आफ्नो इमेल ठेगानाको नयाँ प्रोफाइल सिर्जना गर्न व्यक्ति थप्नुहोस् नामक बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="2687403674020088961">सबै कुकीहरूमाथि रोक लगाउनुहोस् (सिफारिस गरिँदैन)</translation>
 <translation id="2687407218262674387">Google का सेवाका सर्तहरू</translation>
+<translation id="2687621393791886981">मलाई पछि सोध्नुहोस्</translation>
 <translation id="2688196195245426394">यन्त्रलाई सर्भरसँग दर्ता गर्नमा त्रुटि: <ph name="CLIENT_ERROR" />।</translation>
 <translation id="2690024944919328218">भाषा सम्बन्धी विकल्पहरू देखाउनुहोस्</translation>
 <translation id="2691385045260836588">मोडेल</translation>
@@ -1894,6 +1895,7 @@
 <translation id="287205682142673348">पोर्ट फर्वार्ड गरिँदै</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> थप्नुहोस्...</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
+<translation id="2873995907777332853">सबै कुकीहरू ब्लक गर्ने तरिकासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
 <translation id="2875698561019555027">(क्रोम त्रुटि पृष्ठ)</translation>
 <translation id="2876336351874743617">औँला २</translation>
@@ -2201,6 +2203,7 @@
 <translation id="3189187154924005138">ठुलो कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेभ गरियो</translation>
 <translation id="3192947282887913208">अडियो फाइलहरू</translation>
+<translation id="3194786596445804250">तेस्रो पक्षीय कुकी ब्लक गर्ने तरिकासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="3197453258332670132">दायाँ क्लिक गर्दा वा केही बेरसम्म थिच्दा मैले चयन गरेका पाठसँग सम्बन्धित जानकारी देखाइयोस्</translation>
 <translation id="3199127022143353223">सर्भरहरू</translation>
 <translation id="3200061262156232574">तपाईंको सपिङ कार्टमा भएका</translation>
@@ -5294,6 +5297,7 @@
 <translation id="6455264371803474013">खास साइटहरूमा</translation>
 <translation id="6455894534188563617">&amp;नयाँ फोल्डर</translation>
 <translation id="645705751491738698">जाभास्क्रिप्ट रोक्न जारी राख्नुहोस्</translation>
+<translation id="6458347417133445570">सबै कुकीहरू प्रयोग गर्ने अनुमति दिने तरिकासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="6458701200018867744">अपलोड गर्न सकिएन (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">पत्ता लगाउन छनोट प्रयोग गर्नुहोस्</translation>
 <translation id="6459799433792303855">सक्रिय विन्डोलाई अर्को प्रदर्शनमा सारियो।</translation>
@@ -6727,6 +6731,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकेन्ड</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न सक्छ</translation>
 <translation id="7920482456679570420">तपाईं जुन जुन शब्दहरूको हिज्जे जाँच नगरियोस् भन्ने चाहनुहुन्छ ती शब्दहरू थप्नुहोस्</translation>
+<translation id="7922935920104868876">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकी ब्लक गर्ने तरिकासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="7924358170328001543">पोर्ट थप्ने क्रममा त्रुटि भयो</translation>
 <translation id="7925108652071887026">स्वतः भरण डेटा</translation>
 <translation id="792514962475806987">डक गरिएको जुमको स्तर:</translation>
@@ -7200,6 +7205,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">तपाईंले हालसालै <ph name="PERMISSION" /> सम्बन्धी अनुमति र अन्य <ph name="COUNT" /> वटा अनुमति दिनुभएको छ</translation>
 <translation id="8413385045638830869">पहिलो (सिफारिस गरिएको) सोध्नुहोस्</translation>
+<translation id="8414249071344507766">"स्मरणीय क्षणहरू" दुई दिनका लागि लुकाइएका छन्</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (केस)</translation>
 <translation id="8417548266957501132">अभिभावकको पासवर्ड</translation>
 <translation id="8418445294933751433">&amp;ट्याबको रूपमा देखाउनुहोस्</translation>

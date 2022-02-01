@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Докладніше</translation>
 <translation id="1030706264415084469">Сайт <ph name="URL" /> хоче постійно зберігати великий обсяг даних на вашому пристрої</translation>
 <translation id="1032854598605920125">Обернути за годинниковою стрілкою</translation>
+<translation id="1033329911862281889">В анонімному режимі ваші дії в Інтернеті не стають невидимими:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сайти та сервіси, якими вони користуються, бачать інформацію про ваші відвідування;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />роботодавці та заклади освіти можуть відстежувати ваші дії у веб-переглядачі;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />постачальники послуг Інтернету (ISP) можуть відстежувати веб-трафік.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1036982837258183574">Натисніть |<ph name="ACCELERATOR" />|, щоб вийти з повноекранного режиму</translation>
 <translation id="1038106730571050514">Показувати пропозиції</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Кеш-пам’ять правила не пошкоджено</translation>
 <translation id="1130564665089811311">Кнопка "Перекласти сторінку"; натисніть Enter, що перекласти цю сторінку в Google Перекладачі</translation>
 <translation id="1131264053432022307">Скопійоване зображення</translation>
+<translation id="1142846828089312304">Блокувати файли cookie третіх сторін в анонімному режимі</translation>
 <translation id="1150979032973867961">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Операційна система вашого комп’ютера не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="1151972924205500581">Потрібен пароль</translation>
 <translation id="1156303062776767266">Ви переглядаєте локальний або спільний файл</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">Надіслати</translation>
 <translation id="1484290072879560759">Вибрати адресу доставки</translation>
 <translation id="1492194039220927094">Сповіщення про правила:</translation>
+<translation id="149293076951187737">Коли ви закриваєте всі анонімні вкладки в Chrome, з пристрою видаляються дані про ваші дії в них, зокрема:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />дії у веб-переглядачі;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />історію пошуку;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />інформацію, яку ви вводите у формах.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Назад на вкладку</translation>
 <translation id="1501859676467574491">Показує картки з облікового запису Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Це повідомлення про помилку з’являється, якщо ви користуєтеся порталом Wi-Fi, на який потрібно ввійти, перш ніж підключитися до мережі.&lt;/p&gt;
@@ -284,6 +297,7 @@
     структура заголовка неправильна, тому веб-переглядач не може виконати
     ваш запит для сайту <ph name="SITE" />. Оператори можуть використовувати
     правило джерела, щоб налаштувати захист та інші ресурси сайту.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Докладніше про анонімний режим у Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Тут відображатимуться ваші відкриті вкладки</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -525,6 +539,12 @@
 <translation id="2597378329261239068">Цей документ захищено паролем. Введіть пароль.</translation>
 <translation id="2609632851001447353">Різновиди</translation>
 <translation id="2610561535971892504">Натиснути, щоб скопіювати</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />історію веб-перегляду;
+            <ph name="LIST_ITEM" />файли cookie та дані із сайтів
+            <ph name="LIST_ITEM" />інформацію, яку ви вводите у формах.
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (конверт)</translation>
 <translation id="2623663032199728144">Може просити доступ до інформації про ваші екрани</translation>
 <translation id="2625385379895617796">Ваш годинник спішить</translation>
@@ -1153,6 +1173,7 @@
 <translation id="4628948037717959914">Фотографія</translation>
 <translation id="4631649115723685955">З кешбеком</translation>
 <translation id="4636930964841734540">Інформація</translation>
+<translation id="4638670630777875591">Анонімний режим у Chromium</translation>
 <translation id="464342062220857295">Функції пошуку</translation>
 <translation id="4644670975240021822">Зворотний порядок лицевою стороною вниз</translation>
 <translation id="4646534391647090355">Перейти зараз</translation>
@@ -1248,6 +1269,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" /> з <ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб шукати</translation>
 <translation id="4930153903256238152">Велика місткість</translation>
+<translation id="4940163644868678279">Анонімний режим у Chrome</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
 <translation id="4950898438188848926">Кнопка перемикання вкладки: натисніть Enter, щоб перейти на відкриту вкладку, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Дії</translation>
@@ -1608,6 +1630,7 @@
 <translation id="6120179357481664955">Запам'ятати ідентифікатор UPI?</translation>
 <translation id="6124432979022149706">Конектори Chrome Enterprise</translation>
 <translation id="6127379762771434464">Веб-сайт видалено</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Докладніше про анонімний режим у Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Перевірте всі кабелі та перезавантажте всі маршрутизатори, модеми чи інші мережеві
     пристрої, які ви використовуєте.</translation>
 <translation id="614940544461990577">Спробуйте:</translation>
@@ -1883,6 +1906,12 @@
 <translation id="7111012039238467737">(Дійсний)</translation>
 <translation id="7118618213916969306">Пошук URL-адреси з буфера обміну, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Закрийте інші вкладки та програми</translation>
+<translation id="7129355289156517987">Коли ви закриваєте всі анонімні вкладки в Chromium, з пристрою видаляються дані про ваші дії в них, зокрема:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />дії у веб-переглядачі;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />історію пошуку;<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />інформацію, яку ви вводите у формах.<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Неможливо відправити замовлення на цю адресу. Укажіть іншу адресу.</translation>
 <translation id="7132939140423847331">Ваш адміністратор заборонив копіювати ці дані.</translation>
 <translation id="7135130955892390533">Показати статус</translation>
@@ -2001,6 +2030,12 @@
 <translation id="7485870689360869515">Даних не знайдено.</translation>
 <translation id="7495528107193238112">Підключення заблоковано. Щоб вирішити проблему, зв'яжіться з власником сайту.</translation>
 <translation id="7497998058912824456">Кнопка "Створити документ"; натисніть Enter, щоб швидко створити новий документ Google</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />історію веб-перегляду;
+            <ph name="LIST_ITEM" />файли cookie та дані із сайтів
+            <ph name="LIST_ITEM" />інформацію, яку ви вводите у формах.
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">Отриманий ідентифікатор правил пристрою порожній або не збігається з поточним ідентифікатором пристрою</translation>
 <translation id="7508870219247277067">Світло-зелений</translation>
 <translation id="7511955381719512146">Можливо, щоб під’єднатися до цієї мережі Wi-Fi, потрібно відвідати сторінку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2220,6 +2255,7 @@
 <translation id="8202370299023114387">Конфлікт</translation>
 <translation id="8206978196348664717">Prc4 (конверт)</translation>
 <translation id="8211406090763984747">З’єднання безпечне</translation>
+<translation id="8217240300496046857">Сайти не можуть використовувати файли cookie, через які відстежуються ваші дії в Інтернеті. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="8218327578424803826">Указане місцезнаходження:</translation>
 <translation id="8220146938470311105">C7/C6 (конверт)</translation>
 <translation id="8225771182978767009">Користувач, який налаштував комп’ютер, заблокував цей сайт.</translation>

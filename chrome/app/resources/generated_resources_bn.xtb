@@ -1708,6 +1708,7 @@
 <translation id="2684004000387153598">চালিয়ে যেতে 'ঠিক আছে' বোতামে ক্লিক করুন, তারপর আপনার ইমেল আইডির জন্য নতুন প্রোফাইল তৈরি করতে 'কাউকে যোগ করুন' বোতামে ক্লিক করুন।</translation>
 <translation id="2687403674020088961">সব কুকি ব্লক করুন (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2687407218262674387">Google পরিষেবার শর্তাবলী</translation>
+<translation id="2687621393791886981">আমাকে পরে জিজ্ঞাসা করুন</translation>
 <translation id="2688196195245426394">ডিভাইসটি সার্ভারে নথিভুক্ত করার সময়ে ত্রুটি: <ph name="CLIENT_ERROR" />৷</translation>
 <translation id="2690024944919328218">ভাষা বিকল্পগুলি দেখান</translation>
 <translation id="2691385045260836588">মডেল</translation>
@@ -1912,6 +1913,7 @@
 <translation id="287205682142673348">পোর্ট ফরওয়ার্ড করা</translation>
 <translation id="287286579981869940">যোগ করুন <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
+<translation id="2873995907777332853">সমস্ত কুকি ব্লক করার বিষয়ে বিবরণ দেখুন</translation>
 <translation id="2874939134665556319">পূর্ববর্তী ট্র্যাক</translation>
 <translation id="2875698561019555027">(Chrome এর ত্রুটি পৃষ্ঠাগুলি)</translation>
 <translation id="2876336351874743617">আঙ্গুল ২</translation>
@@ -2218,6 +2220,7 @@
 <translation id="3189187154924005138">বড় কার্সর</translation>
 <translation id="3190558889382726167">পাসওয়ার্ড সংরক্ষিত</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
+<translation id="3194786596445804250">থার্ড-পার্টি কুকি ব্লক করার বিষয়ে বিবরণ দেখুন</translation>
 <translation id="3197453258332670132">ডানদিকের বোতামে ক্লিক করলে বা অনেকক্ষণ প্রেস করে ধরে রাখলে, আপনার বেছে নেওয়া টেক্সটের ব্যাপারে তথ্য দেখা যায়</translation>
 <translation id="3199127022143353223">সার্ভারসমূহ</translation>
 <translation id="3200061262156232574">আপনার শপিং কার্টে এগুলি রয়েছে</translation>
@@ -5314,6 +5317,7 @@
 <translation id="6455264371803474013">নির্দিষ্ট সাইটগুলিতে</translation>
 <translation id="6455894534188563617">&amp;নতুন ফোল্ডার</translation>
 <translation id="645705751491738698">জাভাস্ক্রিপ্ট ব্লক করা চালিয়ে যান</translation>
+<translation id="6458347417133445570">সমস্ত কুকিকে অনুমতি দেওয়ার বিষয়ে বিবরণ দেখুন</translation>
 <translation id="6458701200018867744">আপলোড করা যায়নি (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">খোঁজার জন্য নির্বাচন ব্যবহার করুন</translation>
 <translation id="6459799433792303855">অন্য ডিসপ্লেতে সক্রিয় উইন্ডোটি সরিয়ে দেওয়া হয়েছে।</translation>
@@ -6746,6 +6750,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> সেকেন্ড</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> নামের ফাইলটি দেখতে পারবে</translation>
 <translation id="7920482456679570420">যেসব শব্দের বানান পরীক্ষা করতে দিতে চান না সেগুলি যোগ করুন</translation>
+<translation id="7922935920104868876">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করার বিষয়ে বিবরণ দেখুন</translation>
 <translation id="7924358170328001543">পোর্ট ফরওয়ার্ড করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="7925108652071887026">স্বতঃপূর্ণ ডেটা</translation>
 <translation id="792514962475806987">ডক করা জুম লেভেল:</translation>
@@ -7220,6 +7225,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> এবং আরও <ph name="COUNT" />টি অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8413385045638830869">প্রথমে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
+<translation id="8414249071344507766">মেমরি দুদিন ধরে লুকানো আছে</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কেস)</translation>
 <translation id="8417548266957501132">অভিভাবকের পাসওয়ার্ড</translation>
 <translation id="8418445294933751433">ট্যাব রূপে &amp;দেখান</translation>

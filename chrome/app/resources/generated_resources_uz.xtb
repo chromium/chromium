@@ -1694,6 +1694,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2684004000387153598">Davom etish uchun OK tugmasini bosing. Keyin esa “Foydalanuvchi qo‘shish” bandi orqali e-pochta manzilingiz uchun yangi profil yarating.</translation>
 <translation id="2687403674020088961">Barcha cookie fayllarini taqiqlash (tavsiya etilmaydi)</translation>
 <translation id="2687407218262674387">Google xizmat shartlari</translation>
+<translation id="2687621393791886981">Keyinroq soʻralsin</translation>
 <translation id="2688196195245426394">Qurilmani server ro‘yxatidan o‘tkazishda xatolik: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Til sozlamalarini ko‘rsatish</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -1899,6 +1900,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="287205682142673348">Portni uzatish</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> tarmog‘ini qo‘shish...</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
+<translation id="2873995907777332853">Barcha cookie fayllar bloklanishi tafsilotini chiqarish</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
 <translation id="2875698561019555027">(Chrome xatolik sahifalari)</translation>
 <translation id="2876336351874743617">Barmoq izi 2</translation>
@@ -2205,6 +2207,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3189187154924005138">Katta kursor</translation>
 <translation id="3190558889382726167">Parol saqlandi</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
+<translation id="3194786596445804250">Tashqi cookie fayllar bloklanishi tafsilotini chiqarish</translation>
 <translation id="3197453258332670132">Oʻng klik yoki biroz bosib turilsa, belgilangan matn uchun aloqador axborot chiqariladi</translation>
 <translation id="3199127022143353223">Serverlar</translation>
 <translation id="3200061262156232574">Xarid qutingizda</translation>
@@ -5301,6 +5304,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6455264371803474013">Tanlangan saytlarda</translation>
 <translation id="6455894534188563617">&amp;Yangi jild</translation>
 <translation id="645705751491738698">JavaScript bloklansin</translation>
+<translation id="6458347417133445570">Barcha cookie fayllarga ruxsat berilishi tafsilotini chiqarish</translation>
 <translation id="6458701200018867744">Yuklanmadi (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Belgilanish bo‘yicha qidiruv</translation>
 <translation id="6459799433792303855">Faol oyna boshqa ekranga uzatildi.</translation>
@@ -6734,6 +6738,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> sayti <ph name="FILENAME" /> faylini koʻra oladi</translation>
 <translation id="7920482456679570420">Imlo tekshiruvidan istisno soʻzlarni kiriting</translation>
+<translation id="7922935920104868876">Inkognito rejimida tashqi cookie fayllar bloklanishi tafsilotini chiqarish</translation>
 <translation id="7924358170328001543">Portni uzatishda xato</translation>
 <translation id="7925108652071887026">Avtomatik to‘ldiriladigan ma’lumotlar</translation>
 <translation id="792514962475806987">Mahkamlangan lupa masshtabi:</translation>
@@ -7207,6 +7212,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Ruxsat berildi: <ph name="PERMISSION" /> va yana <ph name="COUNT" /> ta</translation>
 <translation id="8413385045638830869">Avval so‘ralsin (tavsiya etiladi)</translation>
+<translation id="8414249071344507766">Xotiralar ikki kun chiqmaydi</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (quti)</translation>
 <translation id="8417548266957501132">Ota-ona paroli</translation>
 <translation id="8418445294933751433">&amp;Ichki oyna sifatida ko‘rsatish</translation>

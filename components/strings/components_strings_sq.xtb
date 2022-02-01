@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">Shiko detajet</translation>
 <translation id="1030706264415084469"><ph name="URL" /> do të ruajë në mënyrë të përhershme të dhëna të mëdha në pajisjen tënde</translation>
 <translation id="1032854598605920125">Rrotullo në drejtim të akrepave të orës</translation>
+<translation id="1033329911862281889">Modaliteti "I fshehtë" nuk të bën të padukshëm në linjë:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Sajtet dhe shërbimet që ato përdorin mund të shohin vizitat<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Punëdhënësit ose shkollat mund të monitorojnë aktivitetin e shfletimit<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ofruesit e shërbimit të internetit mund të monitorojnë trafikun e uebit<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1036982837258183574">Shtyp |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë</translation>
 <translation id="1038106730571050514">Shfaq sugjerimet</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">Memoria specifike e politikës është në rregull</translation>
 <translation id="1130564665089811311">Butoni "Përkthe faqen", shtyp "Enter" për ta përkthyer këtë faqe me "Përkthe me Google"</translation>
 <translation id="1131264053432022307">Imazhi që kopjove</translation>
+<translation id="1142846828089312304">Blloko kukit e palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="1150979032973867961">Ky server nuk mundi të dëshmonte se ky është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga sistemi operativ i kompjuterit. Kjo mund të shkaktohet nga keqkonfigurimi ose ndonjë sulmues që po ndërhyn në lidhjen tënde.</translation>
 <translation id="1151972924205500581">Kërkohet fjalëkalimi</translation>
 <translation id="1156303062776767266">Po shikon një skedar lokal ose të ndarë</translation>
@@ -180,6 +187,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1483493594462132177">Dërgo</translation>
 <translation id="1484290072879560759">Zgjidh adresën e dërgimit</translation>
 <translation id="1492194039220927094">Politikat e detyruara:</translation>
+<translation id="149293076951187737">Kur mbyll të gjitha skedat "e fshehta" në Chrome, aktiviteti yt në këto skeda fshihet nga kjo pajisje:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktiviteti i shfletimit<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historiku i kërkimeve<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informacionet e futura në formularë<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">Kthehu te skeda</translation>
 <translation id="1501859676467574491">Shfaq kartat nga "Llogaria jote e Google"</translation>
 <translation id="1507202001669085618">&lt;p&gt;Do të shikosh këtë gabim nëse përdor një portal Wi-Fi ku duhet të identifikohesh përpara se të hysh në linjë.&lt;/p&gt;
@@ -283,6 +296,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     që kërkon që të aplikohet një politikë origjine për të gjitha kërkesat drejtuar atij. Por
     titulli është formuar gabimisht, gjë që e parandalon përmbushjen e
     kërkesës sate për <ph name="SITE" />. Politikat e origjinës mund të përdoren nga operatorët e sajtit për të konfiguruar karakteristikat e sigurisë dhe karakteristika të tjera për një sajt.</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Mëso më shumë për modalitetin "I fshehtë" në Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Skedat e tua të hapura shfaqen këtu</translation>
 <translation id="1791429645902722292">Smart Lock-u i Google</translation>
@@ -524,6 +538,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2597378329261239068">Ky dokument mbrohet me fjalëkalim. Fut një fjalëkalim.</translation>
 <translation id="2609632851001447353">Variantet</translation>
 <translation id="2610561535971892504">Kliko për të kopjuar</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" /> informacionet e mëposhtme:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Historikun tënd të shfletimit
+            <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
+            <ph name="LIST_ITEM" />Informacionet e futura në formularë
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Zarf)</translation>
 <translation id="2623663032199728144">Mund të kërkojë të përdorë informacione rreth ekraneve të tua</translation>
 <translation id="2625385379895617796">Ora jote është përpara</translation>
@@ -1150,6 +1170,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4631649115723685955">Oferta e kthimit të parave është e lidhur</translation>
 <translation id="4636930964841734540">Informacion</translation>
+<translation id="4638670630777875591">Modaliteti "I fshehtë" në Chromium</translation>
 <translation id="464342062220857295">Veçoritë e kërkimit</translation>
 <translation id="4644670975240021822">Renditja e kundërt e kthyer poshtë</translation>
 <translation id="4646534391647090355">Më ço atje tani</translation>
@@ -1245,6 +1266,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të kërkuar</translation>
 <translation id="4930153903256238152">Kapaciteti i madh</translation>
+<translation id="4940163644868678279">Modaliteti "I fshehtë" në Chrome</translation>
 <translation id="4943872375798546930">Asnjë rezultat</translation>
 <translation id="4950898438188848926">Butoni i ndërrimit të skedës. Shtyp "Enter" për të kaluar te skeda e hapur, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Veprimet</translation>
@@ -1605,6 +1627,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6120179357481664955">Të kujtohet ID-ja e UPI?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Artikulli u hoq</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Mëso më shumë për modalitetin "I fshehtë" në Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Kontrollo kabllot dhe rindiz router-it, modemët ose pajisjet e tjera të rrjetit që mund të jesh duke përdorur.</translation>
 <translation id="614940544461990577">Provo:</translation>
 <translation id="6150036310511284407">Tri shpime majtas</translation>
@@ -1879,6 +1902,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7111012039238467737">(E vlefshme)</translation>
 <translation id="7118618213916969306">Kërko për URL-në e kujtesës së fragmenteve, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Mbyll skedat ose programet e tjera</translation>
+<translation id="7129355289156517987">Kur mbyll të gjitha skedat "e fshehta" në Chromium, aktiviteti yt në këto skeda fshihet nga kjo pajisje:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Aktiviteti i shfletimit<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Historiku i kërkimeve<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />Informacionet e futura në formularë<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Nuk mund të dërgohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
 <translation id="7132939140423847331">Administratori yt e ka ndaluar kopjimin e këtyre të dhënave.</translation>
 <translation id="7135130955892390533">Shfaq statusin</translation>
@@ -1997,6 +2026,12 @@ Detaje shtesë:
 <translation id="7485870689360869515">Nuk u gjetën të dhëna.</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>
 <translation id="7497998058912824456">Butoni "Krijo dokument", shtyp Enter për të krijuar shpejt një "Dokument të ri të Google"</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" /> informacionet e mëposhtme:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Historikun tënd të shfletimit
+            <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
+            <ph name="LIST_ITEM" />Informacionet e futura në formularë
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">ID-ja e kthyer e pajisjes së politikës është bosh ose nuk përputhet me ID-në e pajisjes aktuale</translation>
 <translation id="7508870219247277067">Jeshile avokadoje</translation>
 <translation id="7511955381719512146">Wi-Fi që po përdor mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2216,6 +2251,7 @@ Detaje shtesë:
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (Zarf)</translation>
 <translation id="8211406090763984747">Lidhja është e sigurt</translation>
+<translation id="8217240300496046857">Sajtet nuk mund të përdorin kuki që të monitorojnë nëpër ueb. Veçoritë në disa sajte mund të ndalojnë së funksionuari.</translation>
 <translation id="8218327578424803826">Vendndodhja e caktuar:</translation>
 <translation id="8220146938470311105">C7/C6 (Zarf)</translation>
 <translation id="8225771182978767009">Personi që ka konfiguruar këtë kompjuter ka zgjedhur ta bllokojë këtë sajt.</translation>

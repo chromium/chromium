@@ -1689,6 +1689,7 @@
 <translation id="2684004000387153598">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、お使いのメールアドレス用の新しいプロフィールを作成してください。</translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2687407218262674387">Google 利用規約</translation>
+<translation id="2687621393791886981">後で確認</translation>
 <translation id="2688196195245426394">デバイスをサーバーに登録するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="2690024944919328218">言語オプションを表示</translation>
 <translation id="2691385045260836588">機種</translation>
@@ -7186,6 +7187,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件を許可しました</translation>
 <translation id="8413385045638830869">最初に確認する（推奨）</translation>
+<translation id="8414249071344507766">思い出を 2 日間非表示にします</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
 <translation id="8417548266957501132">保護者のパスワード</translation>
 <translation id="8418445294933751433">タブで表示(&amp;S)</translation>

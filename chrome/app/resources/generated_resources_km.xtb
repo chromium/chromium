@@ -1707,6 +1707,7 @@
 <translation id="2684004000387153598">ដើម្បី​បន្ត សូម​ចុចយល់ព្រម បន្ទាប់​មកចុច​បញ្ចូល​មនុស្ស​ ដើម្បី​បង្កើត​កម្រង​ព័ត៌មាន​ថ្មីសម្រាប់​អាសយដ្ឋាន​អ៊ីមែល​របស់អ្នក។</translation>
 <translation id="2687403674020088961">ទប់ស្កាត់ខូគីទាំងអស់ (មិនណែនាំ)</translation>
 <translation id="2687407218262674387">លក្ខខណ្ឌប្រើប្រាស់ Google</translation>
+<translation id="2687621393791886981">សួរខ្ញុំនៅពេលក្រោយ</translation>
 <translation id="2688196195245426394">កំហុសឆ្គងនៅពេលចុះឈ្មោះឧបករណ៍ជាមួយម៉ាស៊ីនមេ៖ <ph name="CLIENT_ERROR" />។</translation>
 <translation id="2690024944919328218">បង្ហាញជម្រើសភាសា</translation>
 <translation id="2691385045260836588">ម៉ូដែល</translation>
@@ -1912,6 +1913,7 @@
 <translation id="287205682142673348">ការបញ្ជូនច្រកបន្ត</translation>
 <translation id="287286579981869940">បន្ថែម <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">បិទ</translation>
+<translation id="2873995907777332853">បង្ហាញព័ត៌មានលម្អិតអំពីការទប់ស្កាត់ខូគីទាំងអស់</translation>
 <translation id="2874939134665556319">បទ​មុន</translation>
 <translation id="2875698561019555027">(ទំព័រកំហុសរបស់ Chrome)</translation>
 <translation id="2876336351874743617">ម្រាមដៃទី 2</translation>
@@ -2218,6 +2220,7 @@
 <translation id="3189187154924005138">ទស្សន៍ទ្រនិច​ធំ</translation>
 <translation id="3190558889382726167">បានរក្សាទុកពាក្យសម្ងាត់</translation>
 <translation id="3192947282887913208">ឯកសារសម្លេង</translation>
+<translation id="3194786596445804250">បង្ហាញព័ត៌មានលម្អិតអំពីការទប់ស្កាត់ខូគីភាគីទីបី</translation>
 <translation id="3197453258332670132">បង្ហាញព័ត៌មាន​ដែលពាក់ព័ន្ធ​សម្រាប់ការជ្រើសរើសអត្ថបទ​របស់អ្នក នៅពេលអ្នកចុច​កណ្ដុរខាងស្ដាំ ឬចុចឱ្យយូរ</translation>
 <translation id="3199127022143353223">ម៉ាស៊ីនមេ</translation>
 <translation id="3200061262156232574">នៅក្នុងរទេះ​ទិញទំនិញរបស់អ្នក</translation>
@@ -5315,6 +5318,7 @@
 <translation id="6455264371803474013">នៅលើគេហទំព័រជាក់លាក់</translation>
 <translation id="6455894534188563617">&amp;ថតថ្មី</translation>
 <translation id="645705751491738698">បន្តការរារាំង JavaScript</translation>
+<translation id="6458347417133445570">បង្ហាញព័ត៌មានលម្អិតអំពីការអនុញ្ញាតខូគីទាំងអស់</translation>
 <translation id="6458701200018867744">មិន​អាច​បង្ហោះបានទេ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)។</translation>
 <translation id="6459488832681039634">ប្រើការជ្រើសរើសសម្រាប់ស្វែងរក</translation>
 <translation id="6459799433792303855">វិនដូ​សកម្ម​បាន​ផ្លាស់ទី​ទៅ​ផ្ទាំងអេក្រង់​ផ្សេងទៀត។</translation>
@@ -6748,6 +6752,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />វិ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> អាចមើល <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">បញ្ចូលពាក្យសម្ងាត់ដែលអ្នកចង់រំលងការពិនិត្យ​អក្ខរាវិរុទ្ធ</translation>
+<translation id="7922935920104868876">បង្ហាញព័ត៌មានលម្អិតអំពីការទប់ស្កាត់ខូគីភាគីទីបីនៅក្នុងមុខងារឯកជន</translation>
 <translation id="7924358170328001543">មានបញ្ហា​ក្នុងការ​បញ្ជូន​ច្រកបន្ត</translation>
 <translation id="7925108652071887026">ទិន្នន័យបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="792514962475806987">កម្រិត​ពង្រីកបង្រួម​នៃ​កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត៖</translation>
@@ -7221,6 +7226,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">បានអនុញ្ញាត <ph name="PERMISSION" /> និង <ph name="COUNT" /> ទៀត</translation>
 <translation id="8413385045638830869">សួរជាមុនសិន (បានណែនាំ)</translation>
+<translation id="8414249071344507766">បានលាក់អនុស្សាវរីយ៍​រយៈពេលពីរថ្ងៃ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ប្រអប់កាស)</translation>
 <translation id="8417548266957501132">ពាក្យសម្ងាត់​របស់​មាតាបិតា</translation>
 <translation id="8418445294933751433">បង្ហាញជាផ្ទាំង</translation>

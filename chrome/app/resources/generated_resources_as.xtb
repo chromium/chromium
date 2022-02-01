@@ -1705,6 +1705,7 @@
 <translation id="2684004000387153598">অব্যাহত ৰাখিবলৈ ঠিক আছে-ত ক্লিক কৰক আৰু তাৰপাছত আপোনাৰ ইমেইল ঠিকনাৰ বাবে এটা নতুন প্ৰ'ফাইল সৃষ্টি কৰিবলৈ 'কোনো লোকক যোগ কৰক'-ত ক্লিক কৰক।</translation>
 <translation id="2687403674020088961">সকলো কুকি অৱৰোধ কৰক (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="2687407218262674387">Googleৰ সেৱাৰ চৰ্তাৱলী</translation>
+<translation id="2687621393791886981">মোক পাছত সুধিব</translation>
 <translation id="2688196195245426394">ডিভাইচটো ছার্ভাৰৰ সৈতে পঞ্জীয়ন কৰোঁতে আসোঁৱাহ হৈছে: <ph name="CLIENT_ERROR" />।</translation>
 <translation id="2690024944919328218">ভাষাৰ বিকল্প দেখুৱাওক</translation>
 <translation id="2691385045260836588">ম’ডেল</translation>
@@ -1909,6 +1910,7 @@
 <translation id="287205682142673348">প’ৰ্ট ফৰৱাৰ্ডিং</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> যোগ কৰক...</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
+<translation id="2873995907777332853">আটাইবোৰ কুকিক অৱৰোধ কৰাৰ বিষয়ে সবিশেষ দেখুৱাওক</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2875698561019555027">(Chromeৰ আসোঁৱাহপূৰ্ণ পৃষ্ঠা)</translation>
 <translation id="2876336351874743617">আঙুলি ২</translation>
@@ -2215,6 +2217,7 @@
 <translation id="3189187154924005138">ডাঙৰ কাৰ্ছৰ</translation>
 <translation id="3190558889382726167">পাছৱর্ড ছেভ কৰা হ'ল</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
+<translation id="3194786596445804250">তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰাৰ বিষয়ে সবিশেষ দেখুৱাওক</translation>
 <translation id="3197453258332670132">এবাৰ ৰাইট-ক্লিক কৰি অথবা দীঘলীয়াকৈ টিপি, আপোনাৰ পৰৱৰ্তী পাঠৰ বাছনি সম্পৰ্কীয় তথ্য দেখুৱাওক</translation>
 <translation id="3199127022143353223">ছাৰ্ভাৰসমূহ</translation>
 <translation id="3200061262156232574">আপোনাৰ শ্বপিং কাৰ্টত</translation>
@@ -5310,6 +5313,7 @@
 <translation id="6455264371803474013">বিশেষ ছাইটসমূহত</translation>
 <translation id="6455894534188563617">&amp;নতুন ফ’ল্ডাৰ</translation>
 <translation id="645705751491738698">JavaScript অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
+<translation id="6458347417133445570">আটাইবোৰ কুকিক অনুমতি দিয়াৰ বিষয়ে সবিশেষ দেখুৱাওক</translation>
 <translation id="6458701200018867744">আপল’ড কৰিব পৰা নগ’ল (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">বিচাৰিবলৈ বাছনি কৰাবোৰ ব্যৱহাৰ কৰক</translation>
 <translation id="6459799433792303855">সক্ৰিয় উইণ্ড’ অন্য ডিছপ্লে’লৈ স্থানান্তৰ কৰা হ’ল।</translation>
@@ -6742,6 +6746,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />ছে</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />এ <ph name="FILENAME" /> চাব পাৰে</translation>
 <translation id="7920482456679570420">আপুনি বানান পৰীক্ষা কৰা সুবিধাটোৱে যিবোৰ শব্দ বাদ দিয়াটো বিচাৰে সেইবোৰ যোগ দিয়ক</translation>
+<translation id="7922935920104868876">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰাৰ বিষয়ে সবিশেষ দেখুৱাওক</translation>
 <translation id="7924358170328001543">প’ৰ্ট যোগ কৰাটো ফৰৱাৰ্ড কৰাৰ সময়ত আসোঁৱাহ হৈছে</translation>
 <translation id="7925108652071887026">স্বয়ংক্রিয়ভাৱে পূৰ হোৱা ডেটা</translation>
 <translation id="792514962475806987">ড’ক কৰা জুমৰ স্তৰ:</translation>
@@ -7215,6 +7220,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />ক আৰু <ph name="COUNT" /> টাক অনুমতি দিয়া হৈছে</translation>
 <translation id="8413385045638830869">প্ৰথমে সোধক (চুপাৰিছ কৰা)</translation>
+<translation id="8414249071344507766">মেম’ৰি দুদিনৰ বাবে লুকুওৱা হৈছে</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কে’ছ)</translation>
 <translation id="8417548266957501132">অভিভাৱকৰ পাছৱৰ্ড</translation>
 <translation id="8418445294933751433">টেব হিচাপে &amp;দেখুৱাওক</translation>

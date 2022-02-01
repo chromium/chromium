@@ -1703,6 +1703,7 @@
 <translation id="2684004000387153598">За да продължите, кликнете върху „OK“ и след това – върху „Добавяне на човек“, така че да създадете нов потребителски профил за имейл адреса си.</translation>
 <translation id="2687403674020088961">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
 <translation id="2687407218262674387">Общи условия на Google</translation>
+<translation id="2687621393791886981">Попитайте ме по-късно</translation>
 <translation id="2688196195245426394">Грешка при регистрирането на устройството в сървъра: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показване на езиковите опции</translation>
 <translation id="2691385045260836588">Модел</translation>
@@ -7219,6 +7220,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Разрешени са „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Първо ще се извежда запитване (препоръчително)</translation>
+<translation id="8414249071344507766">Спомените ще бъдат скрити за два дни</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (калъф)</translation>
 <translation id="8417548266957501132">Парола на родител</translation>
 <translation id="8418445294933751433">&amp;Показване като раздел</translation>

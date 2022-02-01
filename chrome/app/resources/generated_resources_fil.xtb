@@ -1708,6 +1708,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2684004000387153598">Upang magpatuloy, i-click ang OK, tapos i-click ang Magdagdag ng Tao upang gumawa ng bagong profile para sa iyong email address.</translation>
 <translation id="2687403674020088961">I-block ang lahat ng cookies (hindi inirerekomenda)</translation>
 <translation id="2687407218262674387">Mga tuntunin ng serbisyo ng Google</translation>
+<translation id="2687621393791886981">Tanungin ako sa ibang pagkakataon</translation>
 <translation id="2688196195245426394">Error kapag inirerehistro ang device sa server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Ipakita ang mga opsyon sa wika</translation>
 <translation id="2691385045260836588">Modelo</translation>
@@ -1913,6 +1914,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="287205682142673348">Pag-forward ng port</translation>
 <translation id="287286579981869940">Magdagdag ng <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Shut down</translation>
+<translation id="2873995907777332853">Ipakita ang mga detalye tungkol sa pag-block ng lahat ng cookies</translation>
 <translation id="2874939134665556319">Nakaraang track</translation>
 <translation id="2875698561019555027">(Mga page ng error sa Chrome)</translation>
 <translation id="2876336351874743617">Daliri 2</translation>
@@ -2219,6 +2221,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3189187154924005138">Malaking cursor</translation>
 <translation id="3190558889382726167">Nai-save ang password</translation>
 <translation id="3192947282887913208">Mga Audio File</translation>
+<translation id="3194786596445804250">Ipakita ang mga detalye tungkol sa pag-block ng third-party na cookies</translation>
 <translation id="3197453258332670132">Sa pamamagitan ng pag-right click o matagal na pagpindot, magpakita ng nauugnay na impormasyon para sa iyong piniling text.</translation>
 <translation id="3199127022143353223">Mga Server</translation>
 <translation id="3200061262156232574">Sa iyong shopping cart</translation>
@@ -5315,6 +5318,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6455264371803474013">Sa mga partikular na site</translation>
 <translation id="6455894534188563617">&amp;Bagong Folder</translation>
 <translation id="645705751491738698">Magpatuloy sa pagharang ng JavaScript</translation>
+<translation id="6458347417133445570">Ipakita ang mga detalye tungkol sa pagpayag sa lahat ng cookies</translation>
 <translation id="6458701200018867744">Hindi na-upload (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Inilipat ang aktibong window sa ibang display.</translation>
@@ -6748,6 +6752,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176">Puwedeng tingnan ng <ph name="ORIGIN" /> ang <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Magdagdag ng mga salitang gusto mong laktawan ng pang-check ng pagbabaybay</translation>
+<translation id="7922935920104868876">Ipakita ang mga detalye tungkol sa pag-block ng third-party na cookies sa Incognito</translation>
 <translation id="7924358170328001543">Nagka-error sa pag-forward ng port</translation>
 <translation id="7925108652071887026">Mag-autofill ng data</translation>
 <translation id="792514962475806987">Antas ng naka-dock na pag-zoom:</translation>
@@ -7222,6 +7227,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Pinayagan ang <ph name="PERMISSION" /> at <ph name="COUNT" /> pa</translation>
 <translation id="8413385045638830869">Magtanong muna (inirerekomenda)</translation>
+<translation id="8414249071344507766">Nakatago ang mga alaala nang dalawang araw</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Case)</translation>
 <translation id="8417548266957501132">Parent password</translation>
 <translation id="8418445294933751433">&amp;Ipakita bilang tab</translation>

@@ -14,6 +14,12 @@
 <translation id="1028781062521375153">ดูรายละเอียด</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ต้องการจัดเก็บข้อมูลขนาดใหญ่อย่างถาวรในอุปกรณ์ของคุณ</translation>
 <translation id="1032854598605920125">หมุนตามเข็มนาฬิกา</translation>
+<translation id="1033329911862281889">โหมดไม่ระบุตัวตนไม่ได้ซ่อนการใช้งานออนไลน์ของคุณ
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />เว็บไซต์และบริการที่คุณใช้จะเห็นการเข้าชม<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />นายจ้างหรือโรงเรียนติดตามกิจกรรมการท่องเว็บได้<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ผู้ให้บริการอินเทอร์เน็ตจะตรวจสอบการเข้าชมเว็บได้<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1036982837258183574">กด |<ph name="ACCELERATOR" />| เพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="1038106730571050514">แสดงคำแนะนำ</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">แคชนโยบายใช้ได้</translation>
 <translation id="1130564665089811311">ปุ่มแปลหน้าเว็บ กด Enter เพื่อแปลหน้านี้ด้วย Google แปลภาษา</translation>
 <translation id="1131264053432022307">รูปภาพที่คุณคัดลอก</translation>
+<translation id="1142846828089312304">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="1150979032973867961">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะระบบปฏิบัติการของคอมพิวเตอร์ของคุณไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="1151972924205500581">ต้องมีรหัสผ่าน</translation>
 <translation id="1156303062776767266">คุณกำลังดูไฟล์ในเครื่องหรือไฟล์ที่แชร์</translation>
@@ -180,6 +187,12 @@
 <translation id="1483493594462132177">ส่ง</translation>
 <translation id="1484290072879560759">เลือกที่อยู่สำหรับจัดส่ง</translation>
 <translation id="1492194039220927094">การพุชนโยบาย:</translation>
+<translation id="149293076951187737">เมื่อคุณปิดแท็บที่ไม่ระบุตัวตนใน Chrome ทั้งหมด ระบบจะล้างกิจกรรมในแท็บเหล่านั้นจากอุปกรณ์เครื่องนี้
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />กิจกรรมการท่องเว็บ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ประวัติการค้นหา<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">กลับไปที่แท็บ</translation>
 <translation id="1501859676467574491">แสดงบัตรจากบัญชี Google ของคุณ</translation>
 <translation id="1507202001669085618">&lt;p&gt;คุณจะเห็นข้อผิดพลาดนี้ หากใช้พอร์ทัล Wi-Fi ที่คุณต้องลงชื่อเข้าใช้ก่อนจึงจะสามารถออนไลน์ได้&lt;/p&gt;
@@ -280,6 +293,7 @@
 <translation id="1763864636252898013">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะระบบปฏิบัติการของอุปกรณ์ของคุณไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
 <translation id="1772163372082567643">เซิร์ฟเวอร์ที่คุณกำลังจะเข้าถึง <ph name="ORIGIN" /> ได้ตั้งค่าส่วนหัวที่กำหนดให้บังคับใช้นโยบายดั้งเดิมกับคำขอทั้งหมดที่ส่งถึงเซิร์ฟเวอร์ แต่ส่วนหัวดังกล่าวมีรูปแบบที่ไม่ถูกต้อง ซึ่งทำให้เบราว์เซอร์ดำเนินการตามคำขอของคุณสำหรับ <ph name="SITE" /> ไม่ได้ ผู้ให้บริการเว็บไซต์อาจใช้นโยบายดั้งเดิมในการกำหนดค่าความปลอดภัยและพร็อพเพอร์ตี้อื่นๆ ของเว็บไซต์</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดไม่ระบุตัวตนใน Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">แท็บที่คุณเปิดไว้จะปรากฏที่นี่</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -521,6 +535,12 @@
 <translation id="2597378329261239068">เอกสารนี้ได้รับการป้องกันด้วยรหัสผ่าน โปรดป้อนรหัสผ่าน</translation>
 <translation id="2609632851001447353">รูปแบบต่างๆ</translation>
 <translation id="2610561535971892504">คลิกเพื่อคัดลอก</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ประวัติการท่องเว็บ
+            <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
+            <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (ซองจดหมาย)</translation>
 <translation id="2623663032199728144">สามารถขอใช้ข้อมูลเกี่ยวกับหน้าจอได้</translation>
 <translation id="2625385379895617796">นาฬิกาเร็วเกินไป</translation>
@@ -1143,6 +1163,7 @@
 <translation id="4628948037717959914">รูปภาพ</translation>
 <translation id="4631649115723685955">บริการคืนเงินที่ลิงก์อยู่</translation>
 <translation id="4636930964841734540">ข้อมูล</translation>
+<translation id="4638670630777875591">โหมดไม่ระบุตัวตนใน Chromium</translation>
 <translation id="464342062220857295">ฟีเจอร์การค้นหา</translation>
 <translation id="4644670975240021822">ลำดับย้อนกลับคว่ำหน้าลง</translation>
 <translation id="4646534391647090355">พาฉันไปที่นั่นเลย</translation>
@@ -1238,6 +1259,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อค้นหา</translation>
 <translation id="4930153903256238152">ความจุมาก</translation>
+<translation id="4940163644868678279">โหมดไม่ระบุตัวตนใน Chrome</translation>
 <translation id="4943872375798546930">ไม่มีผลการค้นหา</translation>
 <translation id="4950898438188848926">ปุ่มเปลี่ยนแท็บ โปรดกด Enter เพื่อเปลี่ยนไปยังแท็บที่เปิดอยู่ <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">การทำงาน</translation>
@@ -1598,6 +1620,7 @@
 <translation id="6120179357481664955">จำรหัส UPI ไหม</translation>
 <translation id="6124432979022149706">เครื่องมือเชื่อมต่อ Chrome Enterprise</translation>
 <translation id="6127379762771434464">นำรายการออกแล้ว</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดไม่ระบุตัวตนใน Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">ตรวจสายเคเบิลและรีบูตเราเตอร์ โมเด็ม หรืออุปกรณ์เครือข่ายอื่น
     ที่คุณอาจใช้งานอยู่</translation>
 <translation id="614940544461990577">ลอง:</translation>
@@ -1873,6 +1896,12 @@
 <translation id="7111012039238467737">(ถูกต้อง)</translation>
 <translation id="7118618213916969306">ค้นหา URL ในคลิปบอร์ด <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">ปิดแท็บหรือโปรแกรมอื่นๆ</translation>
+<translation id="7129355289156517987">เมื่อคุณปิดแท็บที่ไม่ระบุตัวตนใน Chromium ทั้งหมด ระบบจะล้างกิจกรรมในแท็บเหล่านั้นจากอุปกรณ์เครื่องนี้
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />กิจกรรมการท่องเว็บ<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ประวัติการค้นหา<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ไม่สามารถจัดส่งสินค้าไปยังที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
 <translation id="7132939140423847331">ผู้ดูแลระบบของคุณห้ามไม่ให้คัดลอกข้อมูลนี้</translation>
 <translation id="7135130955892390533">แสดงสถานะ</translation>
@@ -1991,6 +2020,12 @@
 <translation id="7485870689360869515">ไม่พบข้อมูล</translation>
 <translation id="7495528107193238112">เนื้อหานี้ถูกบล็อก โปรดติดต่อเจ้าของเว็บไซต์เพื่อให้แก้ปัญหา</translation>
 <translation id="7497998058912824456">ปุ่มสร้างเอกสาร กด Enter เพื่อสร้างเอกสารใหม่ใน Google เอกสารอย่างรวดเร็ว</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />ประวัติการท่องเว็บ
+            <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
+            <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">รหัสอุปกรณ์นโยบายที่ส่งกลับว่างเปล่าหรือไม่ตรงกับรหัสอุปกรณ์ปัจจุบัน</translation>
 <translation id="7508870219247277067">เขียวอะโวคาโด</translation>
 <translation id="7511955381719512146">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
@@ -2210,6 +2245,7 @@
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
 <translation id="8206978196348664717">Prc4 (ซองจดหมาย)</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
+<translation id="8217240300496046857">เว็บไซต์ต่างๆ จะใช้คุกกี้ที่ติดตามคุณในอินเทอร์เน็ตไม่ได้ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="8218327578424803826">ตำแหน่งที่มอบหมาย:</translation>
 <translation id="8220146938470311105">C7/C6 (ซองจดหมาย)</translation>
 <translation id="8225771182978767009">ผู้ที่ตั้งค่าคอมพิวเตอร์เครื่องนี้เลือกบล็อกเว็บไซต์นี้</translation>

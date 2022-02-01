@@ -1706,6 +1706,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2684004000387153598">Jos haluat jatkaa, valitse OK, Lisää henkilö ja luo sähköpostiosoitteellasi uusi profiili.</translation>
 <translation id="2687403674020088961">Estä kaikki evästeet (ei suositella)</translation>
 <translation id="2687407218262674387">Googlen käyttöehdot</translation>
+<translation id="2687621393791886981">Kysy myöhemmin</translation>
 <translation id="2688196195245426394">Virhe rekisteröitäessä laitetta palvelimelle: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Näytä kieliasetukset</translation>
 <translation id="2691385045260836588">Malli</translation>
@@ -7216,6 +7217,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Sallittu: <ph name="PERMISSION" /> ja <ph name="COUNT" /> muuta</translation>
 <translation id="8413385045638830869">Kysy ensin (suositus)</translation>
+<translation id="8414249071344507766">Muistot on piilotettu kahdeksi päiväksi</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (kotelo)</translation>
 <translation id="8417548266957501132">Vanhemman salasana</translation>
 <translation id="8418445294933751433">&amp;Näytä välilehtenä</translation>
