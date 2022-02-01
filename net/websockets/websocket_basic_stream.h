@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_frame_parser.h"
 #include "net/websockets/websocket_stream.h"
@@ -109,7 +110,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   WebSocketBasicStream(std::unique_ptr<Adapter> connection,
                        const scoped_refptr<GrowableIOBuffer>& http_read_buffer,
                        const std::string& sub_protocol,
-                       const std::string& extensions);
+                       const std::string& extensions,
+                       const NetLogWithSource& net_log);
 
   // The destructor has to make sure the connection is closed when we finish so
   // that it does not get returned to the pool.
@@ -137,6 +139,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
       const scoped_refptr<GrowableIOBuffer>& http_read_buffer,
       const std::string& sub_protocol,
       const std::string& extensions,
+      const NetLogWithSource& net_log,
       WebSocketMaskingKeyGeneratorFunction key_generator_function);
 
  private:
@@ -237,6 +240,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
 
   // The extensions negotiated with the remote server.
   const std::string extensions_;
+
+  NetLogWithSource net_log_;
 
   // This is used for adaptive read buffer size.
   BufferSizeManager buffer_size_manager_;

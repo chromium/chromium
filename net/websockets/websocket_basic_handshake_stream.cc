@@ -416,7 +416,7 @@ std::unique_ptr<WebSocketStream> WebSocketBasicHandshakeStream::Upgrade() {
       std::make_unique<WebSocketBasicStream>(
           std::make_unique<WebSocketClientSocketHandleAdapter>(
               state_.ReleaseConnection()),
-          state_.read_buf(), sub_protocol_, extensions_);
+          state_.read_buf(), sub_protocol_, extensions_, net_log_);
   DCHECK(extension_params_.get());
   if (extension_params_->deflate_enabled) {
     return std::make_unique<WebSocketDeflateStream>(

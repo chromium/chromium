@@ -4113,3 +4113,10 @@ EVENT_TYPE(COMPUTED_PRIVACY_MODE)
 //    "message": <Failure message>,
 // }
 EVENT_TYPE(WEBSOCKET_UPGRADE_FAILURE)
+
+// This event is logged when the WebSocket read buffer size is changed. It
+// contains the following parameters:
+// {
+//    "read_buffer_size_in_bytes": <New read buffer size in bytes>,
+// }
+EVENT_TYPE(WEBSOCKET_READ_BUFFER_SIZE_CHANGED)

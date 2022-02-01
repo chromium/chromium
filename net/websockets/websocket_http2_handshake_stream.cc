@@ -253,8 +253,9 @@ std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {
 
   stream_adapter_->DetachDelegate();
   std::unique_ptr<WebSocketStream> basic_stream =
-      std::make_unique<WebSocketBasicStream>(
-          std::move(stream_adapter_), nullptr, sub_protocol_, extensions_);
+      std::make_unique<WebSocketBasicStream>(std::move(stream_adapter_),
+                                             nullptr, sub_protocol_,
+                                             extensions_, net_log_);
 
   if (!extension_params_->deflate_enabled)
     return basic_stream;

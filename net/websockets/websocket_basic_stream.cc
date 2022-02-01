@@ -105,6 +105,12 @@ int CalculateSerializedSizeAndTurnOnMaskBit(
   return static_cast<int>(total_size);
 }
 
+base::Value NetLogBufferSizeParam(int buffer_size) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("read_buffer_size_in_bytes", buffer_size);
+  return dict;
+}
+
 }  // namespace
 
 WebSocketBasicStream::BufferSizeManager::BufferSizeManager() = default;
@@ -144,7 +150,8 @@ WebSocketBasicStream::WebSocketBasicStream(
     std::unique_ptr<Adapter> connection,
     const scoped_refptr<GrowableIOBuffer>& http_read_buffer,
     const std::string& sub_protocol,
-    const std::string& extensions)
+    const std::string& extensions,
+    const NetLogWithSource& net_log)
     : read_buffer_(
           base::MakeRefCounted<IOBufferWithSize>(kSmallReadBufferSize)),
       target_read_buffer_size_(read_buffer_->size()),
@@ -152,6 +159,7 @@ WebSocketBasicStream::WebSocketBasicStream(
       http_read_buffer_(http_read_buffer),
       sub_protocol_(sub_protocol),
       extensions_(extensions),
+      net_log_(net_log),
       generate_websocket_masking_key_(&GenerateWebSocketMaskingKey) {
   // http_read_buffer_ should not be set if it contains no data.
   if (http_read_buffer_.get() && http_read_buffer_->offset() == 0)
@@ -233,11 +241,12 @@ WebSocketBasicStream::CreateWebSocketBasicStreamForTesting(
     const scoped_refptr<GrowableIOBuffer>& http_read_buffer,
     const std::string& sub_protocol,
     const std::string& extensions,
+    const NetLogWithSource& net_log,
     WebSocketMaskingKeyGeneratorFunction key_generator_function) {
   auto stream = std::make_unique<WebSocketBasicStream>(
       std::make_unique<WebSocketClientSocketHandleAdapter>(
           std::move(connection)),
-      http_read_buffer, sub_protocol, extensions);
+      http_read_buffer, sub_protocol, extensions, net_log);
   stream->generate_websocket_masking_key_ = key_generator_function;
   return stream;
 }
@@ -270,6 +279,9 @@ int WebSocketBasicStream::ReadEverything(
               ? kSmallReadBufferSize
               : kLargeReadBufferSize);
       buffer_size_ = buffer_size_manager_.buffer_size();
+      net_log_.AddEvent(
+          net::NetLogEventType::WEBSOCKET_READ_BUFFER_SIZE_CHANGED,
+          [&] { return NetLogBufferSizeParam(read_buffer_->size()); });
     }
     buffer_size_manager_.OnRead(base::TimeTicks::Now());
 

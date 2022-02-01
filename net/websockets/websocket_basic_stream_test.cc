@@ -170,7 +170,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
                     base::span<const MockWrite> writes) {
     stream_ = WebSocketBasicStream::CreateWebSocketBasicStreamForTesting(
         MakeTransportSocket(reads, writes), http_read_buffer_, sub_protocol_,
-        extensions_, generator_);
+        extensions_, net_log_, generator_);
   }
 
   std::unique_ptr<SocketDataProvider> socket_data_;
@@ -182,6 +182,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
   scoped_refptr<GrowableIOBuffer> http_read_buffer_;
   std::string sub_protocol_;
   std::string extensions_;
+  NetLogWithSource net_log_;
   WebSocketBasicStream::WebSocketMaskingKeyGeneratorFunction generator_;
   bool expect_all_io_to_complete_;
   std::unique_ptr<WebSocketBasicStream> stream_;
