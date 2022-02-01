@@ -46,19 +46,23 @@ html[dir='rtl'] cr-menu > [shortcutText]::after {
 }
 
 cr-menu > [sub-menu]::after {
-  color: var(--cros-menu-shortcut-color);
-  content: '▶' / '';
+  -webkit-mask-image: url(../images/files/ui/arrow_right.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-primary);
+  content: '';
   float: right;
-  font-size: 0.7em;
+  height: 32px;
+  width: 20px;
 }
 
 html[dir='rtl'] cr-menu > [sub-menu]::after {
-  content: '◀' / '';
   float: left;
+  transform: scaleX(-1);
 }
 
 cr-menu > [sub-menu][disabled]::after {
-  color: var(--cros-text-color-disabled);
+  background-color: var(--cros-text-color-disabled);
 }
 
 /* Keeps menu visibile while animating. Fade out animation is performed by
