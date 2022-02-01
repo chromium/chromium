@@ -433,6 +433,9 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
   if (response.num_credentials) {
     response_map.emplace(5, response.num_credentials.value());
   }
+  if (response.user_selected) {
+    response_map.emplace(6, true);
+  }
   if (response.large_blob_key) {
     response_map.emplace(0x07, cbor::Value(*response.large_blob_key));
   }
@@ -1504,6 +1507,13 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     memcpy(hmac_shared_key->data(), shared_key.data(), shared_key.size());
   }
 
+  if (request.allow_list.empty() && found_registrations.size() > 1 &&
+      config_.internal_account_chooser) {
+    // Simulate a local account chooser by erasing all but the first result.
+    found_registrations.erase(found_registrations.begin() + 1,
+                              found_registrations.end());
+  }
+
   // This implementation does not sort credentials by creation time as the spec
   // requires.
   bool done_first = false;
@@ -1609,6 +1619,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
 
     if (registration.second->is_resident) {
       assertion.user_entity = registration.second->user.value();
+    }
+
+    if (request.allow_list.empty() && config_.internal_account_chooser) {
+      assertion.user_selected = true;
     }
 
     if (request.large_blob_key) {

@@ -133,8 +133,11 @@ bool ValidateResponseExtensions(const CtapGetAssertionRequest& request,
 }
 
 // ResponseValid returns whether |response| is permissible for the given
-// |authenticator| and |request|.
-bool ResponseValid(const FidoAuthenticator& authenticator,
+// |authenticator| and |request|. |is_first_response| is true if this is the
+// first assertion response read. For responses to getNextAssertion commands
+// it should be false.
+bool ResponseValid(bool is_first_response,
+                   const FidoAuthenticator& authenticator,
                    const CtapGetAssertionRequest& request,
                    const CtapGetAssertionOptions& options,
                    const AuthenticatorGetAssertionResponse& response) {
@@ -188,6 +191,11 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
       !ValidateResponseExtensions(request, options, *extensions)) {
     FIDO_LOG(ERROR) << "assertion response invalid due to extensions block: "
                     << cbor::DiagnosticWriter::Write(*extensions);
+    return false;
+  }
+
+  if (!is_first_response && response.user_selected) {
+    // It is invalid to set `userSelected` on subsequent responses.
     return false;
   }
 
@@ -574,7 +582,8 @@ void GetAssertionRequestHandler::HandleResponse(
                absl::nullopt, authenticator);
       return;
     }
-    if (!ResponseValid(*authenticator, request, options_, *response)) {
+    if (!ResponseValid(/*is_first_response=*/true, *authenticator, request,
+                       options_, *response)) {
       FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                       << authenticator->GetDisplayName();
       std::move(completion_callback_)
@@ -644,8 +653,8 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
-  if (!response ||
-      !ResponseValid(*authenticator, request, options_, *response)) {
+  if (!response || !ResponseValid(/*is_first_response=*/true, *authenticator,
+                                  request, options_, *response)) {
     FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                     << authenticator->GetDisplayName();
     std::move(completion_callback_)
@@ -699,7 +708,8 @@ void GetAssertionRequestHandler::HandleNextResponse(
     return;
   }
 
-  if (!ResponseValid(*authenticator, request, options_, *response)) {
+  if (!ResponseValid(/*is_first_response=*/false, *authenticator, request,
+                     options_, *response)) {
     FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                     << authenticator->GetDisplayName();
     std::move(completion_callback_)

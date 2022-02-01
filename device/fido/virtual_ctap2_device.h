@@ -189,6 +189,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // response.
     PINUVAuthProtocol pin_protocol = PINUVAuthProtocol::kV1;
 
+    // internal_account_chooser indicates that the authenticator has a screen
+    // and thus presents the account chooser for discoverable credential
+    // assertions itself. This causes userSelected to be asserted on those
+    // responses.
+    bool internal_account_chooser = false;
+
     // override_response_map allows overriding the response for a given command
     // with a given code. The actual command won't be executed.
     base::flat_map<CtapRequestCommand, CtapDeviceResponseCode>

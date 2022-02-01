@@ -1519,40 +1519,43 @@ void AuthenticatorCommon::OnSignResponse(
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
     case device::GetAssertionStatus::kSuccess:
-      DCHECK(response_data.has_value());
-      DCHECK(authenticator);
+      break;
+  }
+
+  DCHECK_EQ(status_code, device::GetAssertionStatus::kSuccess);
+  DCHECK(response_data.has_value());
+  DCHECK(authenticator);
 
 #if BUILDFLAG(IS_WIN)
-      GetWebAuthenticationDelegate()->OperationSucceeded(
-          GetBrowserContext(), authenticator->IsWinNativeApiAuthenticator());
+  GetWebAuthenticationDelegate()->OperationSucceeded(
+      GetBrowserContext(), authenticator->IsWinNativeApiAuthenticator());
 #endif
 
-      // Show an account picker for requests with empty allow lists.
-      // Authenticators may omit the identifying information in the user entity
-      // if only one credential matches, or if they have account selection UI
-      // built-in. In that case, consider that credential pre-selected.
-      if (empty_allow_list_ &&
-          (response_data->size() > 1 ||
-           (response_data->at(0).user_entity &&
-            (response_data->at(0).user_entity->name ||
-             response_data->at(0).user_entity->display_name)))) {
-        std::vector<device::PublicKeyCredentialUserEntity> users_list;
-        users_list.reserve(response_data->size());
-        for (const auto& response : *response_data) {
-          if (response.user_entity) {
-            users_list.push_back(*response.user_entity);
-          }
-        }
-        request_delegate_->SelectAccount(
-            std::move(*response_data),
-            base::BindOnce(&AuthenticatorCommon::OnAccountSelected,
-                           weak_factory_.GetWeakPtr()));
-      } else {
-        OnAccountSelected(std::move(response_data->at(0)));
+  // Show an account picker for requests with empty allow lists.
+  // Authenticators may omit the identifying information in the user entity
+  // if only one credential matches, or if they have account selection UI
+  // built-in. In that case, consider that credential pre-selected.
+  // Authenticators can also use the userSelected signal (from CTAP 2.1)
+  // to indicate that selection has already occurred.
+  if (empty_allow_list_ && !response_data->at(0).user_selected &&
+      (response_data->size() > 1 ||
+       (response_data->at(0).user_entity &&
+        (response_data->at(0).user_entity->name ||
+         response_data->at(0).user_entity->display_name)))) {
+    std::vector<device::PublicKeyCredentialUserEntity> users_list;
+    users_list.reserve(response_data->size());
+    for (const auto& response : *response_data) {
+      if (response.user_entity) {
+        users_list.push_back(*response.user_entity);
       }
-      return;
+    }
+    request_delegate_->SelectAccount(
+        std::move(*response_data),
+        base::BindOnce(&AuthenticatorCommon::OnAccountSelected,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    OnAccountSelected(std::move(response_data->at(0)));
   }
-  NOTREACHED();
 }
 
 void AuthenticatorCommon::OnAccountSelected(

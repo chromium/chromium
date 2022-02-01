@@ -183,6 +183,15 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     response.num_credentials = it->second.GetUnsigned();
   }
 
+  it = response_map.find(CBOR(0x06));
+  if (it != response_map.end()) {
+    if (!it->second.is_bool() || response.num_credentials.has_value()) {
+      return absl::nullopt;
+    }
+
+    response.user_selected = it->second.GetBool();
+  }
+
   it = response_map.find(CBOR(0x07));
   if (it != response_map.end()) {
     if (!it->second.is_bytestring()) {

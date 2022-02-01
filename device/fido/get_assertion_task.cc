@@ -274,6 +274,16 @@ void GetAssertionTask::HandleResponse(
   }
 
   if (response_code == CtapDeviceResponseCode::kSuccess) {
+    if (response_data->user_selected && !allow_list.empty()) {
+      // The userSelected signal is only valid if the request had an empty
+      // allowList.
+      FIDO_LOG(DEBUG)
+          << "Assertion response has userSelected for non-empty allowList";
+      std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
+                               absl::nullopt);
+      return;
+    }
+
     if (!SetResponseCredential(&response_data.value(), allow_list)) {
       FIDO_LOG(DEBUG)
           << "Assertion response has invalid credential information";

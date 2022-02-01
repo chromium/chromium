@@ -6797,6 +6797,35 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
   EXPECT_TRUE(HasUV(result.response));
 }
 
+TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionUserSelected) {
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+      /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
+      /*user_id=*/{{1, 2, 3, 4}}, "Test", "User"));
+
+  for (const bool internal_account_chooser : {false, true}) {
+    SCOPED_TRACE(internal_account_chooser);
+
+    device::VirtualCtap2Device::Config config;
+    config.pin_support = true;
+    config.resident_key_support = true;
+    config.internal_account_chooser = internal_account_chooser;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    // |SelectAccount| should not be called when userSelected is set.
+    if (internal_account_chooser) {
+      test_client_.expected_accounts = "<invalid>";
+    } else {
+      test_client_.expected_accounts = "01020304:Test:User";
+      test_client_.selected_user_id = {1, 2, 3, 4};
+    }
+    GetAssertionResult result =
+        AuthenticatorGetAssertion(get_credential_options());
+
+    EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+    EXPECT_TRUE(HasUV(result.response));
+  }
+}
+
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleWithPII) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,

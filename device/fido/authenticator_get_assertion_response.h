@@ -63,6 +63,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // capable authenticator and the credential has an associated large blob key.
   absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
 
+  // user_selected indicates that the authenticator has a UI and has already
+  // shown the user an account chooser for the empty-allowList request.
+  bool user_selected = false;
+
   // The large blob associated with the credential.
   absl::optional<std::vector<uint8_t>> large_blob;
 

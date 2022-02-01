@@ -24,6 +24,9 @@ PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
 
   PublicKeyCredentialUserEntity user(id_it->second.GetBytestring());
 
+  // Note: this code treats `name` and `displayName` fields as optional, but
+  // they are required in the spec:
+  // https://www.w3.org/TR/webauthn-2/#dictionary-user-credential-params
   auto name_it = cbor_map.find(cbor::Value(kEntityNameMapKey));
   if (name_it != cbor_map.end()) {
     if (!name_it->second.is_string()) {
