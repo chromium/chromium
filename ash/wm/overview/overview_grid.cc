@@ -1033,15 +1033,17 @@ void OverviewGrid::OnDisplayMetricsChanged() {
 
   UpdateCannotSnapWarningVisibility();
 
-  if (desks_templates_grid_widget_)
-    desks_templates_grid_widget_->SetBounds(GetGridEffectiveBounds());
-
   // In case of split view mode, the grid bounds and item positions will be
   // updated in |OnSplitViewDividerPositionChanged|.
   if (SplitViewController::Get(root_window_)->InSplitViewMode())
     return;
   SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
                               /*ignored_items=*/{}, /*animate=*/false);
+
+  // This needs to be done after `SetBoundsAndUpdatePositions` since it needs
+  // `bounds_` to have its new value.
+  if (desks_templates_grid_widget_)
+    desks_templates_grid_widget_->SetBounds(GetGridEffectiveBounds());
 }
 
 void OverviewGrid::OnUserWorkAreaInsetsChanged(aura::Window* root_window) {
