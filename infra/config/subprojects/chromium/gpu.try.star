@@ -119,6 +119,11 @@ gpu_chromeos_builder(
 )
 
 gpu_chromeos_builder(
+    name = "gpu-fyi-try-chromeos-jacuzzi-exp",
+    pool = "luci.chromium.gpu.chromeos.jacuzzi.try",
+)
+
+gpu_chromeos_builder(
     name = "gpu-fyi-try-chromeos-kevin",
     pool = "luci.chromium.gpu.chromeos.kevin.try",
 )

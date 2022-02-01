@@ -309,6 +309,14 @@
       ],
     },
   },
+  'chromeos-jacuzzi': {
+    'swarming': {
+      'dimensions': {
+        'os': 'ChromeOS',
+        'device_type': 'jacuzzi',
+      },
+    },
+  },
   'chromeos-kevin': {
     'swarming': {
       'dimensions': {
@@ -437,6 +445,13 @@
       'args': [
         '--logs-dir=${ISOLATED_OUTDIR}/logs',
       ],
+    },
+  },
+  'gpu-exp-swarming-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.tests.gpu.experimental',
+      },
     },
   },
   'gpu-swarming-pool': {

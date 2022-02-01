@@ -466,6 +466,7 @@
       # These all use the 'trybot' mixins to ensure that dcheck is on.
       'ANGLE GPU Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
       'ChromeOS FYI Release (amd64-generic)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
+      'gpu-fyi-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
       'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
@@ -943,6 +944,7 @@
       'chromeos-kevin-compile-rel': 'chromeos_kevin_dchecks',
       'chromeos-kevin-rel': 'chromeos_kevin_dchecks',
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
+      'gpu-fyi-try-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
@@ -2364,6 +2366,10 @@
     'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols': [
       'gpu_tests', 'chromeos_amd64-generic-vm', 'release_trybot_dcheck_off',
       'no_symbols',
+    ],
+
+    'gpu_tests_chromeos_jacuzzi_release_trybot': [
+      'gpu_tests', 'chromeos_device', 'jacuzzi', 'release_trybot',
     ],
 
     'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols': [
