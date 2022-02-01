@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -17,6 +18,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
@@ -30,7 +32,8 @@ SurveyBitsData GetPrivacySettingsProductSpecificBitsData(Profile* profile) {
           profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
       content_settings::CookieControlsMode::kBlockThirdParty;
   const bool privacy_sandbox_enabled =
-      profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+      PrivacySandboxSettingsFactory::GetForProfile(profile)
+          ->IsPrivacySandboxEnabled();
 
   return {{"3P cookies blocked", third_party_cookies_blocked},
           {"Privacy Sandbox enabled", privacy_sandbox_enabled}};

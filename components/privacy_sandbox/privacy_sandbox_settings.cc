@@ -4,6 +4,7 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
+#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -11,6 +12,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
@@ -92,7 +94,7 @@ PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
 bool PrivacySandboxSettings::IsFlocAllowed() const {
   return pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled) &&
-         pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+         IsPrivacySandboxEnabled();
 }
 
 bool PrivacySandboxSettings::IsFlocAllowedForContext(
@@ -105,7 +107,7 @@ bool PrivacySandboxSettings::IsFlocAllowedForContext(
   ContentSettingsForOneType cookie_settings;
   cookie_settings_->GetCookieSettings(&cookie_settings);
 
-  return IsPrivacySandboxAllowedForContext(url, top_frame_origin,
+  return IsPrivacySandboxEnabledForContext(url, top_frame_origin,
                                            cookie_settings);
 }
 
@@ -128,7 +130,7 @@ bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
   ContentSettingsForOneType cookie_settings;
   cookie_settings_->GetCookieSettings(&cookie_settings);
 
-  return IsPrivacySandboxAllowedForContext(reporting_origin.GetURL(),
+  return IsPrivacySandboxEnabledForContext(reporting_origin.GetURL(),
                                            top_frame_origin, cookie_settings);
 }
 
@@ -145,9 +147,9 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
   // and conversion contexts. These are both checked when they occur, but
   // user settings may have changed between then and when the conversion report
   // is sent.
-  return IsPrivacySandboxAllowedForContext(
+  return IsPrivacySandboxEnabledForContext(
              reporting_origin.GetURL(), impression_origin, cookie_settings) &&
-         IsPrivacySandboxAllowedForContext(reporting_origin.GetURL(),
+         IsPrivacySandboxEnabledForContext(reporting_origin.GetURL(),
                                            conversion_origin, cookie_settings);
 }
 
@@ -235,7 +237,7 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party) {
   // If the sandbox is disabled, then FLEDGE is never allowed.
-  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
+  if (!IsPrivacySandboxEnabled())
     return false;
 
   // Third party cookies must also be available for this context. An empty site
@@ -248,7 +250,7 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
     const url::Origin& top_frame_origin,
     const std::vector<GURL>& auction_parties) {
   // If the sandbox is disabled, then no parties are allowed.
-  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
+  if (!IsPrivacySandboxEnabled())
     return {};
 
   std::vector<GURL> allowed_parties;
@@ -261,13 +263,23 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
   return allowed_parties;
 }
 
-bool PrivacySandboxSettings::IsPrivacySandboxAllowed() {
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
+  // Which preference is consulted is dependent on whether release 3 of the
+  // settings is available.
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxSettings3)) {
+    return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+  }
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
 }
 
 void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlled, true);
+
+  // Simply apply the decision to both versions of the preference. The correct
+  // preference will be consulted when the value is read.
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
 }
 
 void PrivacySandboxSettings::OnCookiesCleared() {
@@ -282,11 +294,11 @@ void PrivacySandboxSettings::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool PrivacySandboxSettings::IsPrivacySandboxAllowedForContext(
+bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
     const GURL& url,
     const absl::optional<url::Origin>& top_frame_origin,
     const ContentSettingsForOneType& cookie_settings) const {
-  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
+  if (!IsPrivacySandboxEnabled())
     return false;
 
   // TODO (crbug.com/1155504): Bypassing the CookieSettings class to access

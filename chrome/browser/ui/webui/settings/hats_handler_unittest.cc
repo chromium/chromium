@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -20,6 +21,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -92,7 +94,8 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(HatsHandlerTest, PrivacySettingsHats) {
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
@@ -146,7 +149,8 @@ class HatsHandlerNoSandboxTest : public HatsHandlerTest {
 };
 
 TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
@@ -171,7 +175,8 @@ TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
 TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   // Check that the handler correctly forwards the survey request to the
   // HaTS service and also includes the appropriate product specific data.
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));

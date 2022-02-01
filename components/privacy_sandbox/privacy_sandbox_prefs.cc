@@ -12,6 +12,8 @@ namespace prefs {
 
 const char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 
+const char kPrivacySandboxApisEnabledV2[] = "privacy_sandbox.apis_enabled_v2";
+
 const char kPrivacySandboxManuallyControlled[] =
     "privacy_sandbox.manually_controlled";
 
@@ -36,6 +38,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxApisEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxApisEnabledV2, false);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxManuallyControlled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

@@ -35,6 +35,7 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
     // sandbox while privacy sandbox is an experiment.
     if (third_party_cookie_blocking->GetBool()) {
       prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+      prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
     }
   }
   // Also check against the default cookie content settings policy and disable
@@ -45,6 +46,7 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
       static_cast<ContentSetting>(default_cookie_setting->GetInt()) ==
           CONTENT_SETTING_BLOCK) {
     prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
   }
 }
 

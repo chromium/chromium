@@ -2842,7 +2842,7 @@ bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(
       return privacy_sandbox_settings->ShouldSendConversionReport(
           *impression_origin, *conversion_origin, *reporting_origin);
     case ConversionMeasurementOperation::kAny:
-      return privacy_sandbox_settings->IsPrivacySandboxAllowed();
+      return privacy_sandbox_settings->IsPrivacySandboxEnabled();
   }
 }
 

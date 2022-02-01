@@ -6,11 +6,13 @@
 
 #include "base/json/values_util.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -18,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-class PrivacySandboxSettingsTest : public testing::Test {
+class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
  public:
   PrivacySandboxSettingsTest()
       : browser_task_environment_(
@@ -46,6 +48,16 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
   virtual void InitializePrefsBeforeStart() {}
 
+  virtual void InitializeFeaturesBeforeStart() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          privacy_sandbox::kPrivacySandboxSettings3);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          privacy_sandbox::kPrivacySandboxSettings3);
+    }
+  }
+
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   HostContentSettingsMap* host_content_settings_map() {
     return host_content_settings_map_.get();
@@ -64,6 +76,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
@@ -71,7 +84,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
   std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
 };
 
-TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
+TEST_P(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
   // When the Privacy Sandbox UI is available, the sandbox preference should
   // override the default cookie content setting.
   privacy_sandbox_test_util::SetupTestState(
@@ -142,7 +155,7 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
                  GURL("https://another-embedded.com")}));
 }
 
-TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
+TEST_P(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
   // When the Privacy Sandbox preference is enabled, targeted cookie block
   // exceptions should still apply.
   privacy_sandbox_test_util::SetupTestState(
@@ -365,7 +378,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
                  GURL("https://another-embedded.com")}));
 }
 
-TEST_F(PrivacySandboxSettingsTest, IsFledgeAllowed) {
+TEST_P(PrivacySandboxSettingsTest, IsFledgeAllowed) {
   // FLEDGE should be disabled if 3P cookies are blocked.
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -445,7 +458,7 @@ TEST_F(PrivacySandboxSettingsTest, IsFledgeAllowed) {
                 {GURL("https://embedded.com")}));
 }
 
-TEST_F(PrivacySandboxSettingsTest, IsPrivacySandboxAllowed) {
+TEST_P(PrivacySandboxSettingsTest, IsPrivacySandboxEnabled) {
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/false,
@@ -454,7 +467,7 @@ TEST_F(PrivacySandboxSettingsTest, IsPrivacySandboxAllowed) {
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
       /*managed_cookie_exceptions=*/{});
-  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -464,7 +477,7 @@ TEST_F(PrivacySandboxSettingsTest, IsPrivacySandboxAllowed) {
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
       /*managed_cookie_exceptions=*/{});
-  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -474,10 +487,10 @@ TEST_F(PrivacySandboxSettingsTest, IsPrivacySandboxAllowed) {
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
       /*managed_cookie_exceptions=*/{});
-  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 }
 
-TEST_F(PrivacySandboxSettingsTest, IsFlocAllowed) {
+TEST_P(PrivacySandboxSettingsTest, IsFlocAllowed) {
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,
@@ -523,7 +536,7 @@ TEST_F(PrivacySandboxSettingsTest, IsFlocAllowed) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed());
 }
 
-TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
+TEST_P(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
   ASSERT_NE(base::Time(), base::Time::Now());
 
   EXPECT_EQ(base::Time(),
@@ -535,7 +548,7 @@ TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
             privacy_sandbox_settings()->FlocDataAccessibleSince());
 }
 
-TEST_F(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
+TEST_P(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
   // Whether or not a site can join a user to an interest group is independent
   // of any other profile state.
   privacy_sandbox_test_util::SetupTestState(
@@ -581,7 +594,7 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
       url::Origin::Create(GURL("https://example.com.au"))));
 }
 
-TEST_F(PrivacySandboxSettingsTest, FledgeJoiningEtldChange) {
+TEST_P(PrivacySandboxSettingsTest, FledgeJoiningEtldChange) {
   // Confirm that if what constitutes an eTLD+1 changes (e.g. due to Public
   // Suffix List membership changing) previous settings still apply.
 
@@ -603,7 +616,7 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoiningEtldChange) {
       url::Origin::Create(GURL("https://example.com"))));
 }
 
-TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
+TEST_P(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
   // Confirm that time range deletions work appropriately for FLEDGE join
   // settings.
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("first.com", false);
@@ -645,6 +658,10 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
       url::Origin::Create(GURL("https://third.com"))));
 }
 
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsTestInstance,
+                         PrivacySandboxSettingsTest,
+                         testing::Bool());
+
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
     : public PrivacySandboxSettingsTest {
  public:
@@ -653,13 +670,19 @@ class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
                          std::make_unique<base::Value>(::base::TimeToValue(
                              base::Time::FromTimeT(12345))));
   }
+  void InitializeFeaturesBeforeStart() override {}
 };
 
-TEST_F(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff,
+TEST_P(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff,
        UseLastFlocDataAccessibleSince) {
   EXPECT_EQ(base::Time::FromTimeT(12345),
             privacy_sandbox_settings()->FlocDataAccessibleSince());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxSettingsTestCookiesClearOnExitTurnedOffInstance,
+    PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff,
+    testing::Bool());
 
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn
     : public PrivacySandboxSettingsTest {
@@ -675,8 +698,13 @@ class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn
   }
 };
 
-TEST_F(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
+TEST_P(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
        UpdateFlocDataAccessibleSince) {
   EXPECT_EQ(base::Time::Now(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxSettingsTestCookiesClearOnExitTurnedOnInstance,
+    PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
+    testing::Bool());

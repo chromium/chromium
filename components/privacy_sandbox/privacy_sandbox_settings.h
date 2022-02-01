@@ -117,7 +117,7 @@ class PrivacySandboxSettings : public KeyedService {
   // value of false indicates that the sandbox is completely disabled. A return
   // value of true *must* be followed up by the appropriate context specific
   // check.
-  bool IsPrivacySandboxAllowed();
+  bool IsPrivacySandboxEnabled() const;
 
   // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
   // is true, more granular checks will still be performed to determine if
@@ -138,7 +138,7 @@ class PrivacySandboxSettings : public KeyedService {
   // |url| on |top_frame_origin|. Individual APIs may perform additional checks
   // for allowability (such as incognito) ontop of this. |cookie_settings| is
   // provided as a parameter to allow callers to cache it between calls.
-  bool IsPrivacySandboxAllowedForContext(
+  bool IsPrivacySandboxEnabledForContext(
       const GURL& url,
       const absl::optional<url::Origin>& top_frame_origin,
       const ContentSettingsForOneType& cookie_settings) const;

@@ -74,6 +74,7 @@ TEST_F(CookieSettingsPolicyHandlerTest,
   UpdateProviderPolicy(policy);
   const base::Value* value;
   EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
+  EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
@@ -82,6 +83,8 @@ TEST_F(CookieSettingsPolicyHandlerTest,
   const base::Value* value;
   EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
   EXPECT_EQ(value->GetBool(), false);
+  EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
+  EXPECT_EQ(value->GetBool(), false);
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
@@ -89,6 +92,7 @@ TEST_F(CookieSettingsPolicyHandlerTest,
   SetThirdPartyCookiePolicy(false);
   const base::Value* value;
   EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
+  EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
@@ -97,6 +101,8 @@ TEST_F(CookieSettingsPolicyHandlerTest,
   const base::Value* value;
   EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
   EXPECT_EQ(value->GetBool(), false);
+  EXPECT_TRUE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
+  EXPECT_EQ(value->GetBool(), false);
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
@@ -104,6 +110,7 @@ TEST_F(CookieSettingsPolicyHandlerTest,
   SetDefaultCookiePolicy(CONTENT_SETTING_ALLOW);
   const base::Value* value;
   EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabled, &value));
+  EXPECT_FALSE(store_->GetValue(prefs::kPrivacySandboxApisEnabledV2, &value));
 }
 
 }  // namespace content_settings
