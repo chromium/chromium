@@ -38,13 +38,6 @@ class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegate {
   virtual void SetTransientWindowForParent(gfx::AcceleratedWidget parent,
                                            gfx::AcceleratedWidget transient);
 
-  // Exports a prefixed, platform-dependent (X11 or Wayland) window handle for
-  // an Aura window id, then calls the given callback with the handle. Returns
-  // true on success.  |callback| may be run synchronously or asynchronously.
-  virtual bool ExportWindowHandle(
-      gfx::AcceleratedWidget window_id,
-      base::OnceCallback<void(std::string)> callback) = 0;
-
  private:
   static LinuxUiDelegate* instance_;
 };

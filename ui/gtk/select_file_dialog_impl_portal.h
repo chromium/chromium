@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
-#define UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
+#ifndef UI_GTK_SELECT_FILE_DIALOG_IMPL_PORTAL_H_
+#define UI_GTK_SELECT_FILE_DIALOG_IMPL_PORTAL_H_
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,21 +12,20 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "ui/shell_dialogs/select_file_dialog_linux.h"
+#include "ui/gtk/select_file_dialog_impl.h"
 
-namespace ui {
+namespace gtk {
 
 // Implementation of SelectFileDialog that has the XDG file chooser portal show
 // a platform-dependent file selection dialog. This acts as a modal dialog.
-class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
+class SelectFileDialogImplPortal : public SelectFileDialogImpl {
  public:
-  SelectFileDialogLinuxPortal(Listener* listener,
-                              std::unique_ptr<ui::SelectFilePolicy> policy);
+  SelectFileDialogImplPortal(Listener* listener,
+                             std::unique_ptr<ui::SelectFilePolicy> policy);
 
-  SelectFileDialogLinuxPortal(const SelectFileDialogLinuxPortal& other) =
-      delete;
-  SelectFileDialogLinuxPortal& operator=(
-      const SelectFileDialogLinuxPortal& other) = delete;
+  SelectFileDialogImplPortal(const SelectFileDialogImplPortal& other) = delete;
+  SelectFileDialogImplPortal& operator=(
+      const SelectFileDialogImplPortal& other) = delete;
 
   // Starts running a test to check for the presence of the file chooser portal
   // on the D-Bus task runner. This should only be called once, preferably
@@ -41,7 +40,7 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   static void DestroyPortalConnection();
 
  protected:
-  ~SelectFileDialogLinuxPortal() override;
+  ~SelectFileDialogImplPortal() override;
 
   // BaseShellDialog implementation:
   bool IsRunning(gfx::NativeWindow parent_window) const override;
@@ -203,6 +202,6 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   std::vector<PortalFilter> filters_;
 };
 
-}  // namespace ui
+}  // namespace gtk
 
-#endif  // UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
+#endif  // UI_GTK_SELECT_FILE_DIALOG_IMPL_PORTAL_H_

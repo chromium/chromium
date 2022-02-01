@@ -27,11 +27,4 @@ void LinuxUiDelegateX11::SetTransientWindowForParent(
     parent_window->SetTransientWindow(static_cast<x11::Window>(transient));
 }
 
-bool LinuxUiDelegateX11::ExportWindowHandle(
-    gfx::AcceleratedWidget window_id,
-    base::OnceCallback<void(std::string)> callback) {
-  std::move(callback).Run(base::StringPrintf("x11:%#x", window_id));
-  return true;
-}
-
 }  // namespace ui
