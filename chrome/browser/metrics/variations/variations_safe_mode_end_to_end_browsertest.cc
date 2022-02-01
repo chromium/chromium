@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/atomic_sequence_num.h"
 #include "base/base_switches.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -15,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/ranges/ranges.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/task_environment.h"
@@ -70,7 +72,8 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeEndToEndBrowserTestHelper,
       base::PathService::Get(chrome::DIR_USER_DATA, &actual_user_data_dir));
   ASSERT_FALSE(expected_user_data_dir.empty());
   ASSERT_FALSE(actual_user_data_dir.empty());
-  ASSERT_EQ(actual_user_data_dir, expected_user_data_dir);
+  ASSERT_TRUE(base::EndsWith(actual_user_data_dir.value(),
+                             expected_user_data_dir.value()));
 
   // If the test makes it this far, then either it's the first run of the
   // test, or the safe seed was used.
@@ -103,9 +106,10 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
   const base::FilePath& user_data_dir() const { return user_data_dir_; }
   const base::FilePath& local_state_file() const { return local_state_file_; }
 
-  const base::FilePath CopyOfLocalStateFile(int suffix) const {
+  const base::FilePath CopyOfLocalStateFile() const {
+    static base::AtomicSequenceNumber suffix;
     base::FilePath copy_of_local_state_file = temp_dir_.GetPath().AppendASCII(
-        base::StringPrintf("local-state-copy-%d.json", suffix));
+        base::StringPrintf("local-state-copy-%d.json", suffix.GetNext()));
     base::CopyFile(local_state_file(), copy_of_local_state_file);
     return copy_of_local_state_file;
   }
@@ -181,13 +185,7 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
   base::FilePath local_state_file_;
 };
 
-// TODO(crbug.com/1290822): Test failed on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ExtendedSafeModeEndToEnd DISABLED_ExtendedSafeModeEndToEnd
-#else
-#define MAYBE_ExtendedSafeModeEndToEnd ExtendedSafeModeEndToEnd
-#endif
-TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeModeEndToEnd) {
+TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeModeEndToEnd) {
   // Reuse the browser_tests binary (i.e., that this test code is in), to
   // manually run the sub-test.
   base::CommandLine sub_test =
@@ -208,10 +206,10 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeModeEndToEnd) {
       ::switches::kForceFieldTrials,
       base::StrCat({"*", kExtendedSafeModeTrial, "/", group_name, "/"}));
 
-  // Assign the test environment to be on the "Dev" channel. This ensures
+  // Assign the test environment to be on the "Canary" channel. This ensures
   // compatibility with both the extended safe mode trial and the crashing
   // study in the seed.
-  sub_test.AppendSwitchASCII(switches::kFakeVariationsChannel, "dev");
+  sub_test.AppendSwitchASCII(switches::kFakeVariationsChannel, "canary");
 
   // Explicitly avoid any terminal control characters in the output.
   sub_test.AppendSwitchASCII("gtest_color", "no");
@@ -219,24 +217,27 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeModeEndToEnd) {
   // Initial sub-test run should be successful.
   RunAndExpectSuccessfulSubTest(sub_test);
 
+  // To speed up the test, skip the first k-1 crashing runs.
+  const int initial_crash_count = kCrashStreakThreshold - 1;
+
   // Inject the safe and crashing seeds into the Local State of |sub_test|.
   {
     auto local_state = LoadLocalState(local_state_file());
+    local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
     WriteSeedData(local_state.get(), kTestSeedData, kSafeSeedPrefKeys);
     WriteSeedData(local_state.get(), kCrashingSeedData, kRegularSeedPrefKeys);
   }
 
   SetUpExtendedSafeModeExperiment(group_name);
 
-  // The next |kCrashStreakThreshold| runs of the sub-test should crash...
-  for (int run_count = 1; run_count <= kCrashStreakThreshold; ++run_count) {
-    SCOPED_TRACE(base::StringPrintf("Run #%d with crashing seed", run_count));
+  // The next run will be |kCrashStreakThreshold| crashing runs of the sub-test.
+  {
     RunAndExpectCrashingSubTest(sub_test);
-    auto local_state = LoadLocalState(CopyOfLocalStateFile(run_count));
+    auto local_state = LoadLocalState(CopyOfLocalStateFile());
     auto clean_exit_beacon = LoadCleanExitBeacon(local_state.get());
     ASSERT_TRUE(clean_exit_beacon != nullptr);
     ASSERT_FALSE(clean_exit_beacon->exited_cleanly());
-    ASSERT_EQ(run_count,
+    ASSERT_EQ(kCrashStreakThreshold,
               local_state->GetInteger(prefs::kVariationsCrashStreak));
   }
 
