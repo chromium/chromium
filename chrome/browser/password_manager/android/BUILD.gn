@@ -65,6 +65,7 @@ android_library("java") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/device_reauth:device_reauth_java_enums",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/signin/public/android:java",

@@ -4,6 +4,35 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- TODO(https://crbug.com/1242702): Rename to ThemeOverlay.Chromium.AlertDialog. -->
+    <!-- AlertDialog styles -->
+    <!-- This should be kept in sync with |Theme.BrowserUI.AlertDialog.NoActionBar|. -->
+    <style name="Base.Theme.Chromium.AlertDialog"
+        parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:textColorPrimary">@macro/default_text_color</item>
+        <item name="android:windowBackground">@drawable/dialog_bg_tinted</item>
+        <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+
+        <!--  Overriding AppCompat values -->
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="spinnerStyle">@style/SpinnerStyle</item>
+
+        <!-- Depending on if the support library or framework is inflating the
+             dialog, a different layout is used, that names this style slightly
+             differently. WebView will use the framework version for the
+             foreseeable future, so both of these need to be specified. See
+             https://crbug.com/1234129. -->
+        <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+    </style>
+    <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
+
+    <style name="Theme.Chromium.AlertDialog.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
     <!-- Card styles -->
     <style name="CardTransparentForDark">
         <item name="android:background">@drawable/incognito_card_bg</item>

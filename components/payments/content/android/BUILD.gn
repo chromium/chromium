@@ -196,6 +196,7 @@ android_library("full_java") {
     "//base:base_java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
     "//components/payments/mojom:mojom_java",

@@ -254,6 +254,7 @@ android_resources("java_resources") {
     "java/res/values/drawables.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
+    "java/res/values/themes.xml",
     "java/res/values/values.xml",
   ]
   deps = [
