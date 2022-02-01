@@ -7649,3 +7649,4 @@ crbug.com/1292296 [ Win7 ] http/tests/inspector-protocol/accessibility/accessibi
 crbug.com/1292843 [ Mac ] external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
 crbug.com/1292844 [ Mac ] external/wpt/css/css-writing-modes/alt-display-vertical-001-manual.html [ Failure Pass ]
 crbug.com/1292852 [ Mac ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-focus-shadow.html [ Failure Pass ]
+crbug.com/1292865 [ Mac ] external/wpt/resource-timing/iframe-sequence-of-events.html [ Failure Pass ]
