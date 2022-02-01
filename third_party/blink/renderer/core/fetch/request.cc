@@ -623,10 +623,10 @@ Request* Request::CreateRequestWithRequestOrString(
 
     // "Fill |r|'s Headers object with |headers|. Rethrow any exceptions."
     if (init->hasHeaders()) {
-      r->getHeaders()->FillWith(init->headers(), exception_state);
+      r->getHeaders()->FillWith(script_state, init->headers(), exception_state);
     } else {
       DCHECK(headers);
-      r->getHeaders()->FillWith(headers, exception_state);
+      r->getHeaders()->FillWith(script_state, headers, exception_state);
     }
     if (exception_state.HadException())
       return nullptr;
@@ -676,8 +676,8 @@ Request* Request::CreateRequestWithRequestOrString(
     //   `Content-Type`/|Content-Type| to |this|'s headers object.
     if (!content_type.IsEmpty() &&
         !r->getHeaders()->has(http_names::kContentType, exception_state)) {
-      r->getHeaders()->append(http_names::kContentType, content_type,
-                              exception_state);
+      r->getHeaders()->append(script_state, http_names::kContentType,
+                              content_type, exception_state);
     }
     if (exception_state.HadException())
       return nullptr;

@@ -7,7 +7,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_bytestringbytestringrecord_bytestringsequencesequence.h"
 #include "third_party/blink/renderer/core/dom/iterator.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -46,17 +49,18 @@ class HeadersIterationSource final
 
 }  // namespace
 
-Headers* Headers::Create(ExceptionState&) {
+Headers* Headers::Create(ScriptState* script_state, ExceptionState&) {
   return MakeGarbageCollected<Headers>();
 }
 
-Headers* Headers::Create(const V8HeadersInit* init,
+Headers* Headers::Create(ScriptState* script_state,
+                         const V8HeadersInit* init,
                          ExceptionState& exception_state) {
   // "The Headers(|init|) constructor, when invoked, must run these steps:"
   // "1. Let |headers| be a new Headers object whose guard is "none".
-  Headers* headers = Create(exception_state);
+  Headers* headers = Create(script_state, exception_state);
   // "2. If |init| is given, fill headers with |init|. Rethrow any exception."
-  headers->FillWith(init, exception_state);
+  headers->FillWith(script_state, init, exception_state);
   // "3. Return |headers|."
   return headers;
 }
@@ -72,7 +76,8 @@ Headers* Headers::Clone() const {
   return headers;
 }
 
-void Headers::append(const String& name,
+void Headers::append(ScriptState* script_state,
+                     const String& name,
                      const String& value,
                      ExceptionState& exception_state) {
   // "To append a name/value (|name|/|value|) pair to a Headers object
@@ -93,6 +98,12 @@ void Headers::append(const String& name,
   if (guard_ == kImmutableGuard) {
     exception_state.ThrowTypeError("Headers are immutable");
     return;
+  }
+  // UseCounter for usages of "set-cookie" in kRequestGuard'ed Headers.
+  if (guard_ == kRequestGuard && name.LowerASCII() == "set-cookie") {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    UseCounter::Count(execution_context,
+                      WebFeature::kFetchSetCookieInRequestGuardedHeaders);
   }
   // "4. Otherwise, if guard is |request| and |name| is a forbidden header
   //     name, return."
@@ -133,7 +144,9 @@ void Headers::append(const String& name,
     RemovePrivilegedNoCorsRequestHeaders();
 }
 
-void Headers::remove(const String& name, ExceptionState& exception_state) {
+void Headers::remove(ScriptState* script_state,
+                     const String& name,
+                     ExceptionState& exception_state) {
   // "The delete(|name|) method, when invoked, must run these steps:"
   // "1. If name is not a name, throw a TypeError."
   if (!FetchHeaderList::IsValidHeaderName(name)) {
@@ -144,6 +157,12 @@ void Headers::remove(const String& name, ExceptionState& exception_state) {
   if (guard_ == kImmutableGuard) {
     exception_state.ThrowTypeError("Headers are immutable");
     return;
+  }
+  // UseCounter for usages of "set-cookie" in kRequestGuard'ed Headers.
+  if (guard_ == kRequestGuard && name.LowerASCII() == "set-cookie") {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    UseCounter::Count(execution_context,
+                      WebFeature::kFetchSetCookieInRequestGuardedHeaders);
   }
   // "3. Otherwise, if guard is |request| and |name| is a forbidden header
   //     name, return."
@@ -201,7 +220,8 @@ bool Headers::has(const String& name, ExceptionState& exception_state) {
   return header_list_->Has(name);
 }
 
-void Headers::set(const String& name,
+void Headers::set(ScriptState* script_state,
+                  const String& name,
                   const String& value,
                   ExceptionState& exception_state) {
   // "The set(|name|, |value|) method, when invoked, must run these steps:"
@@ -221,6 +241,12 @@ void Headers::set(const String& name,
   if (guard_ == kImmutableGuard) {
     exception_state.ThrowTypeError("Headers are immutable");
     return;
+  }
+  // UseCounter for usages of "set-cookie" in kRequestGuard'ed Headers.
+  if (guard_ == kRequestGuard && name.LowerASCII() == "set-cookie") {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    UseCounter::Count(execution_context,
+                      WebFeature::kFetchSetCookieInRequestGuardedHeaders);
   }
   // "4. Otherwise, if guard is |request| and |name| is a forbidden header
   //     name, return."
@@ -249,16 +275,19 @@ void Headers::set(const String& name,
 // This overload is not called directly by Web APIs, but rather by other C++
 // classes. For example, when initializing a Request object it is possible that
 // a Request's Headers must be filled with an existing Headers object.
-void Headers::FillWith(const Headers* object, ExceptionState& exception_state) {
+void Headers::FillWith(ScriptState* script_state,
+                       const Headers* object,
+                       ExceptionState& exception_state) {
   DCHECK_EQ(header_list_->size(), 0U);
   for (const auto& header : object->header_list_->List()) {
-    append(header.first, header.second, exception_state);
+    append(script_state, header.first, header.second, exception_state);
     if (exception_state.HadException())
       return;
   }
 }
 
-void Headers::FillWith(const V8HeadersInit* init,
+void Headers::FillWith(ScriptState* script_state,
+                       const V8HeadersInit* init,
                        ExceptionState& exception_state) {
   DCHECK_EQ(header_list_->size(), 0U);
 
@@ -267,15 +296,18 @@ void Headers::FillWith(const V8HeadersInit* init,
 
   switch (init->GetContentType()) {
     case V8HeadersInit::ContentType::kByteStringByteStringRecord:
-      return FillWith(init->GetAsByteStringByteStringRecord(), exception_state);
+      return FillWith(script_state, init->GetAsByteStringByteStringRecord(),
+                      exception_state);
     case V8HeadersInit::ContentType::kByteStringSequenceSequence:
-      return FillWith(init->GetAsByteStringSequenceSequence(), exception_state);
+      return FillWith(script_state, init->GetAsByteStringSequenceSequence(),
+                      exception_state);
   }
 
   NOTREACHED();
 }
 
-void Headers::FillWith(const Vector<Vector<String>>& object,
+void Headers::FillWith(ScriptState* script_state,
+                       const Vector<Vector<String>>& object,
                        ExceptionState& exception_state) {
   DCHECK(!header_list_->size());
   // "1. If |object| is a sequence, then for each |header| in |object|, run
@@ -289,18 +321,19 @@ void Headers::FillWith(const Vector<Vector<String>>& object,
       exception_state.ThrowTypeError("Invalid value");
       return;
     }
-    append(object[i][0], object[i][1], exception_state);
+    append(script_state, object[i][0], object[i][1], exception_state);
     if (exception_state.HadException())
       return;
   }
 }
 
-void Headers::FillWith(const Vector<std::pair<String, String>>& object,
+void Headers::FillWith(ScriptState* script_state,
+                       const Vector<std::pair<String, String>>& object,
                        ExceptionState& exception_state) {
   DCHECK(!header_list_->size());
 
   for (const auto& item : object) {
-    append(item.first, item.second, exception_state);
+    append(script_state, item.first, item.second, exception_state);
     if (exception_state.HadException())
       return;
   }
