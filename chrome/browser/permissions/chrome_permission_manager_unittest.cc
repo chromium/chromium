@@ -10,6 +10,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -95,21 +96,23 @@ TEST_F(ChromePermissionManagerTest, GetCanonicalOriginSearch) {
 TEST_F(ChromePermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
   const GURL requesting_origin("https://www.requesting.com");
   const GURL embedding_origin("https://www.google.de");
-  const GURL extensions_requesting_origin(
-      "chrome-extension://abcdefghijklmnopqrstuvxyz");
 
-  // The embedding origin should be returned
-  // except in the case of extensions and notifications.
+  // The embedding origin should be returned except in the case of notifications
+  // and, if they're enabled, extensions.
   EXPECT_EQ(embedding_origin,
             GetPermissionControllerDelegate()->GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, requesting_origin,
-                embedding_origin));
-  EXPECT_EQ(extensions_requesting_origin,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, extensions_requesting_origin,
                 embedding_origin));
   EXPECT_EQ(requesting_origin,
             GetPermissionControllerDelegate()->GetCanonicalOrigin(
                 ContentSettingsType::NOTIFICATIONS, requesting_origin,
                 embedding_origin));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const GURL extensions_requesting_origin(
+      "chrome-extension://abcdefghijklmnopqrstuvxyz");
+  EXPECT_EQ(extensions_requesting_origin,
+            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+                ContentSettingsType::GEOLOCATION, extensions_requesting_origin,
+                embedding_origin));
+#endif
 }

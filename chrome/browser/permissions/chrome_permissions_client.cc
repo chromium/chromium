@@ -42,7 +42,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/ukm/content/source_url_recorder.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
 
@@ -66,6 +66,10 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
 #endif
 
 namespace {
@@ -318,15 +322,20 @@ absl::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
 bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  // The New Tab Page is excluded from origin checks as its effective requesting
-  // origin may be the Default Search Engine origin. Extensions are also
-  // excluded as currently they can request permission from iframes when
-  // embedded in non-secure contexts (https://crbug.com/530507).
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Extensions are excluded from origin checks as currently they can request
+  // permission from iframes when embedded in non-secure contexts
+  // (https://crbug.com/530507).
+  if (requesting_origin.SchemeIs(extensions::kExtensionScheme))
+    return true;
+#endif
+
+  // The New Tab Page is excluded from origin checks as its effective
+  // requesting origin may be the Default Search Engine origin.
   return embedding_origin ==
              GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() ||
          embedding_origin ==
-             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() ||
-         requesting_origin.SchemeIs(extensions::kExtensionScheme);
+             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
 }
 
 absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
@@ -342,6 +351,7 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
     return requesting_origin;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Note that currently chrome extensions are allowed to use permissions even
   // when in embedded in non-secure contexts. This is unfortunate and we
   // should remove this at some point, but for now always use the requesting
@@ -349,6 +359,7 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
   if (requesting_origin.SchemeIs(extensions::kExtensionScheme)) {
     return requesting_origin;
   }
+#endif
 
   return absl::nullopt;
 }
