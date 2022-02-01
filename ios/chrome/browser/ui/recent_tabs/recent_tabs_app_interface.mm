@@ -15,19 +15,14 @@
 @implementation RecentTabsAppInterface
 
 + (void)clearCollapsedListViewSectionStates {
-  if (base::ios::IsSceneStartupSupported()) {
-    NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
-    for (UIWindow* window in windows) {
-      UISceneSession* session = window.windowScene.session;
+  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+  for (UIWindow* window in windows) {
+    UISceneSession* session = window.windowScene.session;
 
-      NSMutableDictionary* newUserInfo =
-          [NSMutableDictionary dictionaryWithDictionary:session.userInfo];
-      [newUserInfo removeObjectForKey:kListModelCollapsedKey];
-      session.userInfo = newUserInfo;
-    }
-  } else {
-    [NSUserDefaults.standardUserDefaults setObject:@{}
-                                            forKey:kListModelCollapsedKey];
+    NSMutableDictionary* newUserInfo =
+        [NSMutableDictionary dictionaryWithDictionary:session.userInfo];
+    [newUserInfo removeObjectForKey:kListModelCollapsedKey];
+    session.userInfo = newUserInfo;
   }
 }
 

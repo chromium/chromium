@@ -29,10 +29,11 @@
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
-  UIWindow* _window;
 }
 
 @synthesize interfaceProvider = _interfaceProvider;
+
+@synthesize window = _window;
 
 - (instancetype)initWithAppState:(AppState*)appState
                     browserState:(ChromeBrowserState*)browserState {
@@ -81,14 +82,6 @@
   for (int i = 0; i < count; i++) {
     [self appendWebStateWithURL:URL];
   }
-}
-
-- (UIWindow*)window {
-  return _window;
-}
-
-- (void)setWindow:(UIWindow*)window {
-  _window = window;
 }
 
 @end

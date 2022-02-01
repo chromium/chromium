@@ -36,17 +36,19 @@
 #endif
 
 @interface StubSceneState : SceneState
+
+// Window for the associated scene, if any.
+// This is redeclared relative to FakeScene.window, except this is now readwrite
+// and backed by an instance variable.
+@property(nonatomic, strong, readwrite) UIWindow* window;
+
 @end
 
 @implementation StubSceneState {
-  UIWindow* _window;
 }
-- (void)setWindow:(UIWindow*)window {
-  _window = window;
-}
-- (UIWindow*)window {
-  return _window;
-}
+
+@synthesize window = _window;
+
 @end
 
 @interface TestTabGridCoordinatorDelegate
@@ -163,7 +165,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   std::unique_ptr<Browser> incognito_browser_;
 
   // Scene state emulated in this test.
-  SceneState* scene_state_;
+  StubSceneState* scene_state_;
 
   // The TabGridCoordinator that is under test.  The test fixture sets
   // this VC as the root VC for the window.

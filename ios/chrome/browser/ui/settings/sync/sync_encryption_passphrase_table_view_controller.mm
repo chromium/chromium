@@ -160,11 +160,10 @@ const CGFloat kSpinnerButtonPadding = 18;
   [super viewDidLoad];
   [self loadModel];
   [self setRightNavBarItem];
-  if (base::ios::IsSceneStartupSupported()) {
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-    _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  }
+
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 }
 
 - (void)didReceiveMemoryWarning {

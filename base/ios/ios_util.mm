@@ -111,16 +111,6 @@ bool IsMultiwindowSupported() {
   return cached_value;
 }
 
-bool IsSceneStartupSupported() {
-  static bool cached_value = false;
-  static dispatch_once_t once_token = 0;
-  dispatch_once(&once_token, ^{
-    NSDictionary* scene_api_manifest = SceneAPIManifestFromInfoPlist();
-    cached_value = scene_api_manifest != nil;
-  });
-  return cached_value;
-}
-
 bool IsMultipleScenesSupported() {
   if (@available(iOS 13, *)) {
     return UIApplication.sharedApplication.supportsMultipleScenes;

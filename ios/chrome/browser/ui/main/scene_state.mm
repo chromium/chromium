@@ -63,8 +63,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   ContentVisibility _contentVisibility;
 }
 
-@synthesize window = _window;
-
 - (instancetype)initWithAppState:(AppState*)appState {
   self = [super init];
   if (self) {
@@ -104,26 +102,14 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 #pragma mark - Setters & Getters.
 
-- (void)setWindow:(UIWindow*)window {
-  if (base::ios::IsSceneStartupSupported()) {
-    // No need to set anything, instead the getter is backed by scene.windows
-    // property.
-    return;
-  }
-  _window = window;
-}
-
 - (UIWindow*)window {
-  if (base::ios::IsSceneStartupSupported()) {
-    UIWindow* mainWindow = nil;
-    for (UIWindow* window in self.scene.windows) {
-      if ([window isKindOfClass:[ChromeOverlayWindow class]]) {
-        mainWindow = window;
-      }
+  UIWindow* mainWindow = nil;
+  for (UIWindow* window in self.scene.windows) {
+    if ([window isKindOfClass:[ChromeOverlayWindow class]]) {
+      mainWindow = window;
     }
-    return mainWindow;
   }
-  return _window;
+  return mainWindow;
 }
 
 - (NSString*)sceneSessionID {

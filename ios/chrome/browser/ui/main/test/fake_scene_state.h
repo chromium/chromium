@@ -28,6 +28,11 @@ class ChromeBrowserState;
 
 - (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
 
+// Window for the associated scene, if any.
+// This is redeclared relative to FakeScene.window, except this is now readwrite
+// and backed by an instance variable.
+@property(nonatomic, strong, readwrite) UIWindow* window;
+
 // Append a suitable web state test double to the receiver's main interface.
 - (void)appendWebStateWithURL:(const GURL)URL;
 

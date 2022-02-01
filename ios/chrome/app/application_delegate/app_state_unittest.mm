@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
+#include "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
@@ -825,7 +826,8 @@ TEST_F(AppStateTest,
 
   // Starting safe mode will call makeKeyAndVisible on the window.
   [[window expect] makeKeyAndVisible];
-  SceneState* sceneState = appState.connectedScenes.firstObject;
+  FakeSceneState* sceneState = base::mac::ObjCCastStrict<FakeSceneState>(
+      appState.connectedScenes.firstObject);
   sceneState.window = window;
 
   // Actions.
