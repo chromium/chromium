@@ -3323,6 +3323,16 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
                         fragment_relative_block_offset),
           item_offsets.relative_offset);
 
+      // We may have failed to generate a fragment (due to running out of
+      // fragmentainer space). Force a breakpoint at the row, so we shift the
+      // item into the next fragmentainer.
+      if (result->Status() != NGLayoutResult::kSuccess) {
+        DCHECK_EQ(result->Status(), NGLayoutResult::kOutOfFragmentainerSpace);
+        breakpoint_row_set_index =
+            std::min(item_row_set_index, breakpoint_row_set_index);
+        continue;
+      }
+
       const NGBoxFragment fragment(
           container_writing_direction,
           To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
