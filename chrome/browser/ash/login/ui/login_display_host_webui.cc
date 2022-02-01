@@ -98,8 +98,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/compositor/compositor.h"
-#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -364,44 +362,6 @@ void ResetKeyboardOverscrollBehavior() {
   config.overscroll_behavior = keyboard::KeyboardOverscrollBehavior::kDefault;
   client->SetKeyboardConfig(config);
 }
-
-// Workaround for graphical glitches with animated user avatars due to a race
-// between GPU process cleanup for the closing WebContents versus compositor
-// draw of new animation frames. https://crbug.com/759148
-class CloseAfterCommit : public ui::CompositorObserver,
-                         public views::WidgetObserver {
- public:
-  explicit CloseAfterCommit(views::Widget* widget) : widget_(widget) {
-    widget->GetCompositor()->AddObserver(this);
-    widget_->AddObserver(this);
-  }
-
-  CloseAfterCommit(const CloseAfterCommit&) = delete;
-  CloseAfterCommit& operator=(const CloseAfterCommit&) = delete;
-
-  ~CloseAfterCommit() override {
-    widget_->RemoveObserver(this);
-    widget_->GetCompositor()->RemoveObserver(this);
-    CHECK(!IsInObserverList());
-  }
-
-  // ui::CompositorObserver:
-  void OnCompositingDidCommit(ui::Compositor* compositor) override {
-    DCHECK_EQ(widget_->GetCompositor(), compositor);
-    LOG(WARNING) << "Close login widget";
-    widget_->Close();
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override {
-    DCHECK_EQ(widget, widget_);
-    LOG(WARNING) << "Login widget destroying";
-    delete this;
-  }
-
- private:
-  views::Widget* const widget_;
-};
 
 // Returns true if we have default audio device.
 bool CanPlayStartupSound() {
@@ -959,10 +919,7 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
   }
 
   if (login_window_) {
-    login_window_->Hide();
-    // This CompositorObserver becomes "owned" by login_window_ after
-    // construction and will delete itself once login_window_ is destroyed.
-    new CloseAfterCommit(login_window_);
+    login_window_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     login_window_->RemoveRemovalsObserver(this);
     login_window_->RemoveObserver(this);
     login_window_ = nullptr;
