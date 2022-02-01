@@ -166,8 +166,8 @@ void ExternalProviderImpl::SetPrefs(
         InstallStageTracker::InstallCreationStage::SEEN_BY_EXTERNAL_PROVIDER);
   }
 
-  prefs_ =
-      std::make_unique<base::Value::DictStorage>(std::move(*prefs).TakeDict());
+  prefs_ = std::make_unique<base::Value::DictStorage>(
+      std::move(*prefs).TakeDictDeprecated());
   ready_ = true;  // Queries for extensions are allowed from this point.
 
   NotifyServiceOnExternalExtensionsFound(/*is_initial_load=*/true);
@@ -221,8 +221,8 @@ void ExternalProviderImpl::UpdatePrefs(
       removed_extensions.insert(extension_id);
   }
 
-  prefs_ =
-      std::make_unique<base::Value::DictStorage>(std::move(*prefs).TakeDict());
+  prefs_ = std::make_unique<base::Value::DictStorage>(
+      std::move(*prefs).TakeDictDeprecated());
 
   std::vector<ExternalInstallInfoUpdateUrl> external_update_url_extensions;
   std::vector<ExternalInstallInfoFile> external_file_extensions;

@@ -291,7 +291,7 @@ URLRequestContextConfig::URLRequestContextConfig(
       bypass_public_key_pinning_for_local_trust_anchors(
           bypass_public_key_pinning_for_local_trust_anchors),
       effective_experimental_options(
-          base::Value(experimental_options).TakeDict()),
+          base::Value(experimental_options).TakeDictDeprecated()),
       experimental_options(std::move(experimental_options)),
       network_thread_priority(network_thread_priority),
       bidi_stream_detect_broken_connection(false),
@@ -364,7 +364,7 @@ URLRequestContextConfig::ParseExperimentalOptions(
     return absl::nullopt;
   }
 
-  return std::move(experimental_options_value).TakeDict();
+  return std::move(experimental_options_value).TakeDictDeprecated();
 }
 
 void URLRequestContextConfig::SetContextConfigExperimentalOptions() {

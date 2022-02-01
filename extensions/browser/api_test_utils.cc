@@ -112,7 +112,7 @@ base::Value::DictStorage GetDict(const base::Value::DictStorage& dict,
     ADD_FAILURE() << key << " does not exist or is not a dict.";
     return base::Value::DictStorage();
   }
-  return iter->second.Clone().TakeDict();
+  return iter->second.Clone().TakeDictDeprecated();
 }
 
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(

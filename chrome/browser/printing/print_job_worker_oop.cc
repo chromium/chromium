@@ -182,7 +182,8 @@ void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Don't use as a const reference, since that reference into `new_settings`
-  // isn't safe after TakeDict() destroys the internal dictionary for it.
+  // isn't safe after TakeDictDeprecated() destroys the internal dictionary for
+  // it.
   std::string device_name = *new_settings.FindStringKey(kSettingDeviceName);
 
   // Save the print target type from the settings, since this will be needed
@@ -194,7 +195,7 @@ void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
       PrintBackendServiceManager::GetInstance();
 
   service_mgr.UpdatePrintSettings(
-      device_name, std::move(new_settings).TakeDict(),
+      device_name, std::move(new_settings).TakeDictDeprecated(),
       base::BindOnce(&PrintJobWorkerOop::OnDidUpdatePrintSettings,
                      ui_weak_factory_.GetWeakPtr(), device_name,
                      std::move(callback)));

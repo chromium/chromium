@@ -331,11 +331,11 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(1U, args.size());
     EXPECT_NE(args[0], nullptr);
     EXPECT_TRUE(args[0]->is_dict());
-    // base::Value has no GetDict(), so copy then TakeDict(). Alternatively,
-    // this could return iterators over the key-value pairs, via GetDictItems().
-    // But looking up a key over key-value pairs is more unpleasant than using
-    // contains() and the [] operator on the map.
-    return args[0]->Clone().TakeDict();
+    // base::Value has no GetDict(), so copy then TakeDictDeprecated().
+    // Alternatively, this could return iterators over the key-value pairs, via
+    // GetDictItems(). But looking up a key over key-value pairs is more
+    // unpleasant than using contains() and the [] operator on the map.
+    return args[0]->Clone().TakeDictDeprecated();
   }
 
   // Must be called at most once per test to check if a sync-status-changed
@@ -346,11 +346,11 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(1U, args.size());
     EXPECT_NE(args[0], nullptr);
     EXPECT_TRUE(args[0]->is_dict());
-    // base::Value has no GetDict(), so copy then TakeDict(). Alternatively,
-    // this could return iterators over the key-value pairs, via GetDictItems().
-    // But looking up a key over key-value pairs is more unpleasant than using
-    // contains() and the [] operator on the map.
-    return args[0]->Clone().TakeDict();
+    // base::Value has no GetDict(), so copy then TakeDictDeprecated().
+    // Alternatively, this could return iterators over the key-value pairs, via
+    // GetDictItems(). But looking up a key over key-value pairs is more
+    // unpleasant than using contains() and the [] operator on the map.
+    return args[0]->Clone().TakeDictDeprecated();
   }
 
   void NotifySyncStateChanged() {

@@ -67,14 +67,14 @@ base::Value::DictStorage ToDictionary(std::unique_ptr<base::Value> val) {
     ADD_FAILURE() << "val is nullptr or is not a dictonary.";
     return base::Value::DictStorage();
   }
-  return std::move(*val).TakeDict();
+  return std::move(*val).TakeDictDeprecated();
 }
 
 base::Value::DictStorage ToDictionary(const base::Value& val) {
   EXPECT_TRUE(val.is_dict());
   if (!val.is_dict())
     return base::Value::DictStorage();
-  return val.Clone().TakeDict();
+  return val.Clone().TakeDictDeprecated();
 }
 
 std::unique_ptr<base::ListValue> ToList(std::unique_ptr<base::Value> val) {

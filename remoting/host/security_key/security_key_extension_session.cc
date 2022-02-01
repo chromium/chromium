@@ -109,7 +109,8 @@ bool SecurityKeyExtensionSession::OnExtensionMessage(
   }
   std::string type = *maybe_type;
 
-  base::Value::DictStorage client_message = std::move(*value).TakeDict();
+  base::Value::DictStorage client_message =
+      std::move(*value).TakeDictDeprecated();
   if (type == kControlMessage) {
     ProcessControlMessage(client_message);
   } else if (type == kDataMessage) {
