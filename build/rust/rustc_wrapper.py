@@ -110,7 +110,9 @@ def main():
     env[k] = v
     fixed_env_vars.append(k)
 
-  subprocess.run([args.rustc, *rustc_args], env=env, check=True)
+  r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
+  if r.returncode != 0:
+    sys.exit(r.returncode)
 
   # Now edit the depfile produced
   if args.depfile is not None:
