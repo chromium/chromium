@@ -4,7 +4,7 @@
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK} from './events.js';
-import {EmojiGroup} from './types.js';
+import {CategoryEnum, EmojiGroup} from './types.js';
 
 class EmoticonGroupComponent extends PolymerElement {
   static get is() {
@@ -26,11 +26,12 @@ class EmoticonGroupComponent extends PolymerElement {
     const emoticonString = ev.target.getAttribute('emoticon-string');
     const emoticonName = ev.target.getAttribute('emoticon-name');
     this.dispatchEvent(createCustomEvent(EMOJI_BUTTON_CLICK, {
-      emoji: emoticonString,
+      text: emoticonString,
       isVariant: false,
       baseEmoji: emoticonString,
       allVariants: [],
       name: emoticonName,
+      category: CategoryEnum.EMOTICON
     }));
   }
 }

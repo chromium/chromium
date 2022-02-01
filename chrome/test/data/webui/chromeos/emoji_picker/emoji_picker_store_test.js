@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RecentEmojiStore} from 'chrome://emoji-picker/store.js';
+import {RecentlyUsedStore} from 'chrome://emoji-picker/store.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertDeepEquals} from '../../chai_assert.js';
@@ -17,7 +17,7 @@ suite('RecentEmojiStore', () => {
 
   setup(() => {
     window.localStorage.clear();
-    store = new RecentEmojiStore();
+    store = new RecentlyUsedStore('emoji-recently-used');
   });
 
   test('store should be initially empty', () => {
@@ -25,29 +25,29 @@ suite('RecentEmojiStore', () => {
   });
 
   test('store data should be persisted', () => {
-    store.bumpEmoji(TEST_EMOJI.grin.string);
+    store.bumpItem(TEST_EMOJI.grin.string);
 
-    const newStore = new RecentEmojiStore();
+    const newStore = new RecentlyUsedStore('emoji-recently-used');
     assertDeepEquals(store.data, newStore.data);
   });
 
   test('one emoji in recently used', () => {
-    store.bumpEmoji(TEST_EMOJI.grin.string);
+    store.bumpItem(TEST_EMOJI.grin.string);
     assertDeepEquals([TEST_EMOJI.grin.string], store.data);
 
-    store.bumpEmoji(TEST_EMOJI.grin.string);
+    store.bumpItem(TEST_EMOJI.grin.string);
     assertDeepEquals(
         [TEST_EMOJI.grin.string], store.data,
         'clicking an existing emoji should not duplicate it');
   });
 
   test('two emoji in recently used', () => {
-    store.bumpEmoji(TEST_EMOJI.grin.string);
-    store.bumpEmoji(TEST_EMOJI.waving.string);
+    store.bumpItem(TEST_EMOJI.grin.string);
+    store.bumpItem(TEST_EMOJI.waving.string);
     assertDeepEquals(
         [TEST_EMOJI.waving.string, TEST_EMOJI.grin.string], store.data);
 
-    store.bumpEmoji(TEST_EMOJI.grin.string);
+    store.bumpItem(TEST_EMOJI.grin.string);
     assertDeepEquals(
         [TEST_EMOJI.grin.string, TEST_EMOJI.waving.string], store.data,
         'clicking an existing emoji should move it to the front');

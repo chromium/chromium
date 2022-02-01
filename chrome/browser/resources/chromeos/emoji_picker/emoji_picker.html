@@ -346,9 +346,9 @@
       whereas the other groups are created from the emoji metadata.
     -->
     <div data-group="history">
-      <template is="dom-if" if="[[history.emoji.length]]">
-        <emoji-group data="[[history]]" preferred="{}" clearable class="group"
-          v2-enabled$="[[v2Enabled]]">
+      <template is="dom-if" if="[[emojiHistory.emoji.length]]">
+        <emoji-group data="[[emojiHistory]]" preferred="{}" clearable
+          class="group" v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </template>
     </div>
@@ -361,6 +361,13 @@
     </template>
     <div class="category-gap"></div>
     <template is="dom-if" if="[[v2Enabled]]">
+      <div data-group="emoticon-history">
+        <template is="dom-if" if="[[emoticonHistory.emoji.length]]">
+            <emoticon-group data="[[emoticonHistory]]" class="group"
+              data-group="emoticon-history">
+            </emoticon-group>
+        </template>
+      </div>
       <template is="dom-repeat" items="[[emoticonData]]">
         <div data-group$="[[getDataGroupIndex('emoticon', index)]]">
           <emoticon-group data="[[item]]" class="group">

@@ -19,8 +19,8 @@ import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_REMAINING_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK, V2_CONTENT_LOADED} from './events.js';
 import {V2_SUBCATEGORY_TABS} from './metadata_extension.js';
-import {RecentEmojiStore} from './store.js';
-import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji, SubcategoryData} from './types.js';
+import {RecentlyUsedStore} from './store.js';
+import {CategoryEnum, Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredItem, SubcategoryData} from './types.js';
 
 const EMOJI_ORDERING_JSON_TEMPLATE = '/emoji_14_0_ordering';
 const EMOTICON_ORDERING_JSON = '/emoticon_test_ordering.json';
@@ -104,7 +104,7 @@ const GROUP_TABS = [
  * Constructs the emoji group data structure from a given list of recent emoji
  * data from localstorage.
  *
- * @param {!Array<StoredEmoji>} recentEmoji list of recently used emoji strings.
+ * @param {!Array<StoredItem>} recentEmoji list of recently used emoji strings.
  * @return {!Array<EmojiVariants>} list of emoji data structures
  */
 function makeRecentlyUsed(recentEmoji) {
@@ -143,7 +143,9 @@ export class EmojiPicker extends PolymerElement {
       /** @private {Object<string,string>} */
       preferenceMapping: {type: Object},
       /** @private {!EmojiGroup} */
-      history: {type: Object},
+      emojiHistory: {type: Object},
+      /** @private {!EmojiGroup} */
+      emoticonHistory: {type: Object},
       /** @private {string} */
       search: {type: String, value: '', observer: 'onSearchChanged'},
       /** @private {boolean} */
@@ -161,12 +163,17 @@ export class EmojiPicker extends PolymerElement {
   constructor() {
     super();
 
-    /** @type {!RecentEmojiStore} */
-    this.recentEmojiStore = new RecentEmojiStore();
+    /** @type {!RecentlyUsedStore} */
+    this.recentEmojiStore = new RecentlyUsedStore('emoji-recently-used');
+    /** @type {!RecentlyUsedStore} */
+    this.recentEmoticonStore = new RecentlyUsedStore('emoticon-recently-used');
 
     this.emojiGroupTabs = GROUP_TABS;
     this.emojiData = [];
-    this.history = {'group': 'Recently used', 'emoji': []};
+
+    // TODO(b/216475720): rename the data structure below for a generic naming.
+    this.emojiHistory = {'group': 'Recently used', 'emoji': []};
+    this.emoticonHistory = {'group': 'Recently used', 'emoji': []};
 
     this.preferenceMapping = {};
 
@@ -200,10 +207,7 @@ export class EmojiPicker extends PolymerElement {
     this.addEventListener(
         GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
     this.addEventListener(
-        EMOJI_BUTTON_CLICK,
-        ev => this.insertEmoji(
-            ev.detail.emoji, ev.detail.isVariant, ev.detail.baseEmoji,
-            ev.detail.allVariants, ev.detail.name));
+        EMOJI_BUTTON_CLICK, (ev) => this.onEmojiButtonClick(ev));
     this.addEventListener(
         EMOJI_CLEAR_RECENTS_CLICK, ev => this.clearRecentEmoji());
     // variant popup related handlers
@@ -228,16 +232,21 @@ export class EmojiPicker extends PolymerElement {
   async getHistory() {
     const incognito = (await this.apiProxy_.isIncognitoTextField()).incognito;
     if (incognito) {
-      this.set(['history', 'emoji'], makeRecentlyUsed([]));
+      this.set(['emojiHistory', 'emoji'], makeRecentlyUsed([]));
+      this.set(['emoticonHistory', 'emoji'], makeRecentlyUsed([]));
     } else {
       this.set(
-          ['history', 'emoji'],
+          ['emojiHistory', 'emoji'],
           makeRecentlyUsed(this.recentEmojiStore.data.history || []));
+      this.set(
+          ['emoticonHistory', 'emoji'],
+          makeRecentlyUsed(this.recentEmoticonStore.data.history || []));
       this.set(
           ['preferenceMapping'], this.recentEmojiStore.getPreferenceMapping());
     }
     this.set(
-        ['emojiGroupTabs', 0, 'disabled'], this.history.emoji.length === 0);
+        ['emojiGroupTabs', 0, 'disabled'],
+        this.emojiHistory.emoji.length === 0);
     // Make highlight bar visible (now we know where it should be) and
     // add smooth sliding.
     this.updateActiveGroup(/*updateTabsScroll=*/ true);
@@ -325,32 +334,58 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
-   * @param {!string} emoji
-   * @param {boolean} isVariant
-   * @param {!string} baseEmoji
-   * @param {!Array<!string>} allVariants
-   * @param {!string} name
+   * @private
+   * @param {Event} ev
    */
-  async insertEmoji(emoji, isVariant, baseEmoji, allVariants, name) {
-    this.$.message.textContent = emoji + ' inserted.';
+  onEmojiButtonClick(ev) {
+    const category = ev.detail.category;
+    delete ev.detail.category;
+    this.insertText(category, ev.detail);
+  }
+
+  /**
+   * @param {CategoryEnum} category
+   * @param {{emoji: string, isVariant: boolean, baseEmoji: string, allVariants:
+   *     !Array<!string>, name: string}} item
+   */
+  async insertText(category, item) {
+    const {text, isVariant, baseEmoji, allVariants, name} = item;
+    this.$.message.textContent = text + ' inserted.';
     const incognito = (await this.apiProxy_.isIncognitoTextField()).incognito;
+
     if (!incognito) {
-      this.recentEmojiStore.bumpEmoji(
-          {base: emoji, alternates: allVariants, name: name});
-      this.recentEmojiStore.savePreferredVariant(baseEmoji, emoji);
-      this.set(
-          ['history', 'emoji'],
-          makeRecentlyUsed(this.recentEmojiStore.data.history));
+      switch (category) {
+        case CategoryEnum.EMOJI:
+          this.recentEmojiStore.bumpItem(
+              {base: text, alternates: allVariants, name: name});
+          this.recentEmojiStore.savePreferredVariant(baseEmoji, text);
+          this.set(
+              ['emojiHistory', 'emoji'],
+              makeRecentlyUsed(this.recentEmojiStore.data.history));
+          break;
+
+        case CategoryEnum.EMOTICON:
+          this.recentEmoticonStore.bumpItem({base: text, name, alternates: []});
+          this.set(
+              ['emoticonHistory', 'emoji'],
+              makeRecentlyUsed(this.recentEmoticonStore.data.history));
+          break;
+
+        default:
+          throw new Error('Unknown category');
+      }
     }
     const searchLength = this.$['search-container']
                              .shadowRoot.querySelector('cr-search-field')
                              .getSearchInput()
                              .value.length;
-    this.apiProxy_.insertEmoji(emoji, isVariant, searchLength);
+
+    // TODO(b/217276960): change to a more generic name
+    this.apiProxy_.insertEmoji(text, isVariant, searchLength);
   }
 
   clearRecentEmoji() {
-    this.set(['history', 'emoji'], makeRecentlyUsed([]));
+    this.set(['emojiHistory', 'emoji'], makeRecentlyUsed([]));
     this.set(['emojiGroupTabs', 0, 'disabled'], true);
     this.recentEmojiStore.clearRecents();
     afterNextRender(
@@ -412,7 +447,7 @@ export class EmojiPicker extends PolymerElement {
       this.$.tabs.scrollLeft = 0;
       this.scrollToGroup(GROUP_TABS[0].groupId);
       this.groupTabsMoving = true;
-      if (this.history.emoji.length > 0) {
+      if (this.emojiHistory.emoji.length > 0) {
         this.$.bar.style.left = '0';
       } else {
         this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
@@ -530,7 +565,7 @@ export class EmojiPicker extends PolymerElement {
     });
 
     // Ensure that the history tab is not set as active if it is empty.
-    if (index === 0 && this.history.emoji.length === 0) {
+    if (index === 0 && this.emojiHistory.emoji.length === 0) {
       this.set(['emojiGroupTabs', 0, 'active'], false);
       this.set(['emojiGroupTabs', 1, 'active'], true);
       index = 1;
@@ -606,7 +641,7 @@ export class EmojiPicker extends PolymerElement {
 
   hideDialogs() {
     this.hideEmojiVariants();
-    if (this.history.emoji.length > 0) {
+    if (this.emojiHistory.emoji.length > 0) {
       this.shadowRoot.querySelector(`div[data-group="history"]`)
           .querySelector('emoji-group')
           .showClearRecents = false;

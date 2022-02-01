@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
-import {Emoji} from './types.js';
+import {CategoryEnum, Emoji} from './types.js';
 
 export class EmojiButton extends PolymerElement {
   static get is() {
@@ -56,11 +56,12 @@ export class EmojiButton extends PolymerElement {
     if (this.disabled)
       return;
     this.dispatchEvent(createCustomEvent(EMOJI_BUTTON_CLICK, {
-      emoji: this.emoji,
+      text: this.emoji,
       isVariant: this.variant,
       baseEmoji: this.base,
       allVariants: this.allVariants ? this.allVariants : this.variants,
-      name: this.tooltip
+      name: this.tooltip,
+      category: CategoryEnum.EMOJI,
     }));
   }
 

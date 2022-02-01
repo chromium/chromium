@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EMOJI_BUTTON_CLICK, V2_CONTENT_LOADED} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -123,7 +124,7 @@ suite('emoji-picker-extension', () => {
       });
 
   test(
-      'click at an emoticon button should trigger the clicking event with ' +
+      'clicking at an emoticon button should trigger the clicking event with ' +
           'correct emoticon string and name.',
       async () => {
         const firstEmoticonButton = await waitForCondition(
@@ -135,7 +136,7 @@ suite('emoji-picker-extension', () => {
         const buttonClickPromise = new Promise(
             (resolve) =>
                 emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
-                  assertEquals(expectedEmoticonString, event.detail.emoji);
+                  assertEquals(expectedEmoticonString, event.detail.text);
                   assertEquals(expectedEmoticonName, event.detail.name);
                   resolve();
                 }));
@@ -144,5 +145,76 @@ suite('emoji-picker-extension', () => {
         await waitWithTimeout(
             buttonClickPromise, 1000,
             'Failed to receive emoticon button click event');
+      });
+
+  test('there should be no recently used emoticon group when empty.', () => {
+    assert(!findInEmojiPicker('[data-group=emoticon-history] emoticon-group'));
+  });
+
+  test(
+      'history tab button must be disabled when the emoticon history is empty.',
+      () => {
+        const emoticonCategoryButton = findInEmojiPicker(
+            'emoji-search', 'emoji-category-button:last-of-type',
+            'cr-icon-button');
+        emoticonCategoryButton.click();
+        flush();
+        const emoticonHistoryTab = findInEmojiPicker(
+            '.pagination [data-group=history]', 'cr-icon-button');
+        assertTrue(emoticonHistoryTab.disabled);
+      });
+
+  test(
+      'clicking at recently used emoticon buttons should trigger emoticon ' +
+          'insertion.',
+      async () => {
+        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+            new Promise((resolve) => resolve({incognito: false}));
+
+        const emoticonButton = findInEmojiPicker('emoticon-group', 'button');
+        emoticonButton.click();
+
+        const recentEmoticonGroup = await waitForCondition(
+            () => findInEmojiPicker(
+                '[data-group=emoticon-history] emoticon-group'));
+
+        const recentlyUsedEmoticonButton =
+            deepQuerySelector(recentEmoticonGroup, ['.emoticon-button']);
+        const buttonClickPromise = new Promise(
+            (resolve) =>
+                emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
+                  assertEquals(
+                      emoticonButton.innerHTML.trim(), event.detail.text);
+                  assertEquals(
+                      emoticonButton.getAttribute('emoticon-name'),
+                      event.detail.name);
+                  resolve();
+                }));
+
+        recentlyUsedEmoticonButton.click();
+        await waitWithTimeout(
+            buttonClickPromise, 1000,
+            'Clicking at recently used emoticon buttons does not trigger ' +
+                'emoticon insertion.');
+      });
+
+  test(
+      'recently used emoticon group should contain the correct emoticon ' +
+          'after it is clicked.',
+      async () => {
+        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+            new Promise((resolve) => resolve({incognito: false}));
+
+        const emoticonButton = findInEmojiPicker('emoticon-group', 'button');
+        emoticonButton.click();
+
+        const recentEmoticonGroup = await waitForCondition(
+            () => findInEmojiPicker(
+                '[data-group=emoticon-history] emoticon-group'));
+        assert(recentEmoticonGroup);
+
+        const recentlyUsedEmoticons =
+            recentEmoticonGroup.shadowRoot.querySelectorAll('.emoticon-button');
+        assertEquals(1, recentlyUsedEmoticons.length);
       });
 });
