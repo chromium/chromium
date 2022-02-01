@@ -86,8 +86,6 @@ class DefaultAshDisplayUtil : public AshDisplayUtil {
   aura::Window* GetRootWindowForId(DisplayId id) {
     return shell().GetRootWindowForDisplayId(id);
   }
-
-  const std::vector<display::Display> empty_display_list_;
 };
 
 AshDisplayUtil* g_instance_for_testing_ = nullptr;

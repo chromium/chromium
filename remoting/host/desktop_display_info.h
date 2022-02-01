@@ -6,6 +6,7 @@
 #define REMOTING_HOST_DESKTOP_DISPLAY_INFO_H_
 
 #include <stddef.h>
+#include <iosfwd>
 
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -55,6 +56,9 @@ class DesktopDisplayInfo {
   std::vector<DisplayGeometry> displays_;
 };
 
+// The output format is:
+//      "Display <id>: <x>+<y>-<width>x<height>@<dpi>"
+std::ostream& operator<<(std::ostream& out, const DisplayGeometry& geo);
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_DESKTOP_DISPLAY_INFO_H_

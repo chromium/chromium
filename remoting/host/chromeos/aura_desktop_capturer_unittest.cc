@@ -11,9 +11,12 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/features.h"
+#include "remoting/host/chromeos/scoped_fake_ash_display_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -28,13 +31,6 @@ using testing::NotNull;
 namespace remoting {
 
 namespace {
-
-const DisplayId kDefaultPrimaryDisplayId = (0xFFl << 33);
-
-struct ScreenshotRequest {
-  DisplayId display;
-  AshDisplayUtil::ScreenshotCallback callback;
-};
 
 struct CaptureResult {
   webrtc::DesktopCapturer::Result result;
@@ -69,65 +65,6 @@ ACTION_P(SaveUniquePtrArg, dest) {
   *dest = std::move(*arg1);
 }
 
-// Simple basic implementation of |AshDisplayUtil|.
-// Will automatically register itself as the global version in the constructor,
-// and deregister in the destructor.
-// It allows setting the display_id of the primary display (which will then
-// be created as the only display in the system).
-class ScopedAshDisplayUtil : public AshDisplayUtil {
- public:
-  ScopedAshDisplayUtil() { AshDisplayUtil::SetInstanceForTesting(this); }
-  ScopedAshDisplayUtil(const ScopedAshDisplayUtil&) = delete;
-  ScopedAshDisplayUtil& operator=(const ScopedAshDisplayUtil&) = delete;
-  ~ScopedAshDisplayUtil() override {
-    AshDisplayUtil::SetInstanceForTesting(nullptr);
-  }
-
-  void SetPrimaryDisplayId(DisplayId new_id) {
-    GetPrimaryDisplay().set_id(new_id);
-  }
-
-  ScreenshotRequest WaitForScreenshotRequest() {
-    EXPECT_TRUE(screenshot_request_.Wait());
-    return screenshot_request_.Take();
-  }
-
-  void ReplyWithScreenshot(const absl::optional<SkBitmap>& screenshot) {
-    ScreenshotRequest request = WaitForScreenshotRequest();
-    std::move(request.callback).Run(screenshot);
-  }
-
-  const display::Display& GetPrimaryDisplay() const { return displays_[0]; }
-  display::Display& GetPrimaryDisplay() { return displays_[0]; }
-
-  // AshDisplayUtil implementation:
-  DisplayId GetPrimaryDisplayId() const override {
-    return GetPrimaryDisplay().id();
-  }
-
-  const std::vector<display::Display>& GetActiveDisplays() const override {
-    return displays_;
-  }
-
-  const display::Display* GetDisplayForId(DisplayId display_id) const override {
-    if (display_id == displays_[0].id())
-      return &displays_[0];
-    return nullptr;
-  }
-
-  void TakeScreenshotOfDisplay(DisplayId display_id,
-                               ScreenshotCallback callback) override {
-    screenshot_request_.SetValue(
-        ScreenshotRequest{display_id, std::move(callback)});
-  }
-
- private:
-  std::vector<display::Display> displays_{
-      display::Display{kDefaultPrimaryDisplayId}};
-
-  base::test::TestFuture<ScreenshotRequest> screenshot_request_;
-};
-
 class DesktopCapturerCallback : public webrtc::DesktopCapturer::Callback {
  public:
   DesktopCapturerCallback() = default;
@@ -156,29 +93,31 @@ class AuraDesktopCapturerTest : public testing::Test {
  public:
   AuraDesktopCapturerTest() = default;
 
-  ScopedAshDisplayUtil& display_util() { return display_util_; }
+  test::ScopedFakeAshDisplayUtil& display_util() { return display_util_; }
 
   DesktopCapturerCallback& desktop_capturer_callback() { return callback_; }
 
  protected:
   base::test::SingleThreadTaskEnvironment environment_;
-  ScopedAshDisplayUtil display_util_;
+  test::ScopedFakeAshDisplayUtil display_util_;
   DesktopCapturerCallback callback_;
   AuraDesktopCapturer capturer_{display_util_};
 };
 
 TEST_F(AuraDesktopCapturerTest, ShouldSendScreenshotRequestForPrimaryDisplay) {
-  display_util().SetPrimaryDisplayId(111);
+  display_util().AddPrimaryDisplay(111);
 
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();
 
-  ScreenshotRequest request = display_util().WaitForScreenshotRequest();
+  test::ScreenshotRequest request = display_util().WaitForScreenshotRequest();
 
   EXPECT_THAT(request.display, Eq(111));
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldSendScreenshotToCapturer) {
+  display_util().AddPrimaryDisplay();
+
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();
 
@@ -193,6 +132,8 @@ TEST_F(AuraDesktopCapturerTest, ShouldSendScreenshotToCapturer) {
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldSetUpdatedRegion) {
+  display_util().AddPrimaryDisplay();
+
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();
 
@@ -208,7 +149,7 @@ TEST_F(AuraDesktopCapturerTest, ShouldSetDpi) {
   // scale_factor = dpi / default_dpi (and default_dpi is 96).
   const int dpi = static_cast<int>(scale_factor * 96);
 
-  display_util().GetPrimaryDisplay().set_device_scale_factor(scale_factor);
+  display_util().AddPrimaryDisplay().set_device_scale_factor(scale_factor);
 
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();
@@ -224,11 +165,11 @@ TEST_F(AuraDesktopCapturerTest, ShouldSetDpi) {
 TEST_F(AuraDesktopCapturerTest, ShouldNotCrashIfDisplayIsUnavailable) {
   capturer_.Start(&desktop_capturer_callback());
 
-  capturer_.SelectSource(display_util().GetPrimaryDisplayId());
+  display_util().AddDisplayWithId(111);
 
-  // By changing the primary display id, the selected source now no longer
-  // exists.
-  display_util().SetPrimaryDisplayId(666);
+  capturer_.SelectSource(111);
+
+  display_util().RemoveDisplay(111);
 
   capturer_.CaptureFrame();
 
@@ -239,6 +180,8 @@ TEST_F(AuraDesktopCapturerTest, ShouldNotCrashIfDisplayIsUnavailable) {
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldReturnTemporaryErrorIfScreenshotFails) {
+  display_util().AddPrimaryDisplay();
+
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();
 
@@ -248,6 +191,59 @@ TEST_F(AuraDesktopCapturerTest, ShouldReturnTemporaryErrorIfScreenshotFails) {
   EXPECT_THAT(result.result,
               Eq(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY));
   EXPECT_THAT(result.frame, IsNull());
+}
+
+TEST_F(AuraDesktopCapturerTest,
+       ShouldNotAllowSwitchingToSecondaryMonitorIfFeatureFlagIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kEnableMultiMonitorsInCrd);
+
+  display_util().AddDisplayWithId(111);
+
+  capturer_.Start(&desktop_capturer_callback());
+  EXPECT_FALSE(capturer_.SelectSource(111));
+}
+
+TEST_F(AuraDesktopCapturerTest,
+       ShouldAllowSwitchingToSecondaryMonitorIfFeatureFlagIsEnabled) {
+  base::test::ScopedFeatureList features{kEnableMultiMonitorsInCrd};
+
+  // We're using a value bigger than 32 bit to ensure nothing gets truncated.
+  constexpr int64_t display_id = 123456789123456789;
+
+  display_util().AddPrimaryDisplay();
+  display_util().AddDisplayWithId(display_id);
+
+  capturer_.Start(&desktop_capturer_callback());
+  capturer_.SelectSource(display_id);
+
+  capturer_.CaptureFrame();
+
+  test::ScreenshotRequest request = display_util().WaitForScreenshotRequest();
+  EXPECT_THAT(request.display, Eq(display_id));
+}
+
+TEST_F(AuraDesktopCapturerTest, ShouldFailSwitchingToNonExistingMonitor) {
+  base::test::ScopedFeatureList features{kEnableMultiMonitorsInCrd};
+
+  capturer_.Start(&desktop_capturer_callback());
+  EXPECT_FALSE(capturer_.SelectSource(222));
+}
+
+TEST_F(AuraDesktopCapturerTest, ShouldUseCorrectDisplayAfterSwitching) {
+  base::test::ScopedFeatureList features{kEnableMultiMonitorsInCrd};
+
+  display_util().AddPrimaryDisplay();
+  display_util().AddDisplayWithId(222);
+  display_util().AddDisplayWithId(333);
+
+  capturer_.Start(&desktop_capturer_callback());
+  capturer_.SelectSource(333);
+
+  capturer_.CaptureFrame();
+
+  test::ScreenshotRequest request = display_util().WaitForScreenshotRequest();
+  EXPECT_THAT(request.display, Eq(333));
 }
 
 }  // namespace remoting

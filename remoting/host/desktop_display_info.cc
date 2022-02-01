@@ -166,4 +166,11 @@ void DesktopDisplayInfo::AddDisplayFrom(
   displays_.push_back(display);
 }
 
+std::ostream& operator<<(std::ostream& out, const DisplayGeometry& geo) {
+  out << "Display " << geo.id << (geo.is_default ? " (primary)" : "") << ": "
+      << geo.x << "+" << geo.y << "-" << geo.width << "x" << geo.height << " @ "
+      << geo.dpi;
+  return out;
+}
+
 }  // namespace remoting

@@ -12,6 +12,8 @@ source_set("chromeos") {
     "aura_desktop_capturer.h",
     "clipboard_aura.cc",
     "clipboard_aura.h",
+    "features.cc",
+    "features.h",
     "message_box.cc",
     "message_box.h",
     "mouse_cursor_monitor_aura.cc",
@@ -115,6 +117,8 @@ source_set("unit_tests") {
   sources = [
     "aura_desktop_capturer_unittest.cc",
     "clipboard_aura_unittest.cc",
+    "scoped_fake_ash_display_util.cc",
+    "scoped_fake_ash_display_util.h",
   ]
 
   configs += [ "//remoting/build/config:version" ]
@@ -129,5 +133,6 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/display/manager",
   ]
 }

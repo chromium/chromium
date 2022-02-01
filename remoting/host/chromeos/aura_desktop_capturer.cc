@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
 
 namespace remoting {
@@ -87,7 +89,13 @@ bool AuraDesktopCapturer::GetSourceList(SourceList* sources) {
 }
 
 bool AuraDesktopCapturer::SelectSource(SourceId id) {
-  // TODO(zijiehe): Implement screen selection.
+  if (!base::FeatureList::IsEnabled(kEnableMultiMonitorsInCrd))
+    return false;
+
+  if (!util_.GetDisplayForId(id))
+    return false;
+
+  source_display_id_ = id;
   return true;
 }
 

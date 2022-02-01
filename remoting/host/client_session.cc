@@ -747,7 +747,9 @@ void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
   LOG(INFO) << "ClientSession::OnVideoSizeChanged";
   DisplaySize size =
       DisplaySize::FromPixels(size_px.width(), size_px.height(), dpi.x());
-  LOG(INFO) << "  DisplaySize: " << size;
+  LOG(INFO) << "  DisplaySize: " << size
+            << " (size in pixels: " << size_px.width() << "x"
+            << size_px.height() << ")";
 
   // The first video size message that we receive from WebRtc is the full
   // desktop size (if supported). If full desktop capture is not supported,
