@@ -1,16 +1,21 @@
 <style include="cr-shared-style shimless-rma-shared">
   #pageWrapper {
+    align-items: stretch;
     display: flex;
     flex-direction: row;
-    width:  100%;
+    height: 100%;
+    width: 100%;
   }
 
   #leftPane {
-    flex-grow: 1;
+    box-sizing: border-box;
+    padding-inline-end: 32px;
+    width: 40%;
   }
 
   #rightPane {
-    flex-basis: 500px;
+    flex-grow: 1;
+    padding-inline-start: 48px;
   }
 </style>
 <div id="pageWrapper">
