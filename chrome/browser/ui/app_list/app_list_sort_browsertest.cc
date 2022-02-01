@@ -642,6 +642,29 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
   EXPECT_FALSE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
 }
 
+// Verify that installing an app under color sort works as expected.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, InstallAppUnderColorSort) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
+                                   MenuType::kAppListNonFolderItemMenu,
+                                   AnimationTargetStatus::kCompleted);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
+
+  // TODO(https://crbug.com/1293162): verify app 4's position after new item
+  // position calculation under color sorting is fixed.
+  LoadExtension(test_data_dir_.AppendASCII("app4"));
+}
+
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, TransitionToTabletCommitsSort) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
 
@@ -748,8 +771,6 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 #define MAYBE_TransitionToClamshellModeDuringReorderAnimation \
   TransitionToClamshellModeDuringReorderAnimation
 #endif
-
-
 
 // Verify that switching to tablet mode when the app list reorder animation in
 // clamshell mode is running works as expected.
