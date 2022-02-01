@@ -1452,15 +1452,9 @@ TEST_F(TaskEnvironmentTest,
   TaskEnvironment::ParallelExecutionFence fence;
 }
 
-// Flaky on Android (http://crbug.com/1289110)
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ParallelExecutionFenceNonMainThreadDeath \
-  DISABLED_ParallelExecutionFenceNonMainThreadDeath
-#else
-#define MAYBE_ParallelExecutionFenceNonMainThreadDeath \
-  ParallelExecutionFenceNonMainThreadDeath
-#endif
-TEST_F(TaskEnvironmentTest, MAYBE_ParallelExecutionFenceNonMainThreadDeath) {
+// Android doesn't support death tests, see base/test/gtest_util.h
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(TaskEnvironmentTest, ParallelExecutionFenceNonMainThreadDeath) {
   TaskEnvironment task_environment;
 
   ThreadPool::PostTask(BindOnce([]() {
@@ -1476,6 +1470,7 @@ TEST_F(TaskEnvironmentTest, MAYBE_ParallelExecutionFenceNonMainThreadDeath) {
 
   task_environment.RunUntilIdle();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace test
 }  // namespace base
