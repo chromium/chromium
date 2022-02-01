@@ -48,8 +48,8 @@ sys.path.append(
 from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 
-# Trunk on 1/26/2021
-RUST_REVISION = 'a7f3757'
+# Trunk on 1/31/2021
+RUST_REVISION = '24b8bb1'
 RUST_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION,
