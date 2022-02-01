@@ -9,9 +9,12 @@
 load("//lib/branches.star", "branches")
 
 lucicfg.check_version(
-    min = "1.28.0",
+    min = "1.30.9",
     message = "Update depot_tools",
 )
+
+# Use LUCI Scheduler BBv2 names and add Scheduler realms configs.
+lucicfg.enable_experiment("crbug.com/1182002")
 
 # Tell lucicfg what files it is allowed to touch
 lucicfg.config(
