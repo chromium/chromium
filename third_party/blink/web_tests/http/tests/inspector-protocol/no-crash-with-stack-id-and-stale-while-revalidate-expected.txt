@@ -1,4 +1,2 @@
 Tests that checks for no crashes when stale-while-revalidate is on
-Request Will be Sent for stale-script.php
-Request Will be Sent for stale-script.php
 

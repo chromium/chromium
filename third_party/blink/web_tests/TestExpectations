@@ -7596,4 +7596,3 @@ crbug.com/1292887 [ Mac ] virtual/plz-dedicated-worker/external/wpt/resource-tim
 crbug.com/1292889 [ Mac ] virtual/threaded/external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
 
 crbug.com/1197296 [ Mac10.12 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Pass Failure ]
-crbug.com/1291568 http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js [ Pass Timeout ]
