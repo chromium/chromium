@@ -32,11 +32,13 @@ std::unique_ptr<apps::IconKey> CreateIconKey(bool is_browser_load_success) {
                                        ? apps::IconEffects::kNone
                                        : apps::IconEffects::kBlocked;
 
+  // Use Chrome or Chromium icon by default.
+  int32_t resource_id = IDR_PRODUCT_LOGO_256;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Canary icon only exists in branded builds.
-  constexpr int32_t resource_id = IDR_PRODUCT_LOGO_256_CANARY;
-#else
-  constexpr int32_t resource_id = IDR_PRODUCT_LOGO_256;
+  // Canary icon only exists in branded builds. Fallback to Canary icon
+  // if ash-chrome web browser is still enabled.
+  if (crosapi::browser_util::IsAshWebBrowserEnabled())
+    resource_id = IDR_PRODUCT_LOGO_256_CANARY;
 #endif
 
   std::unique_ptr<apps::IconKey> icon_key = std::make_unique<apps::IconKey>(
