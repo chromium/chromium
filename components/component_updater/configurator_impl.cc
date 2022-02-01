@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/enterprise_util.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
@@ -133,6 +134,17 @@ std::string ConfiguratorImpl::GetAppGuid() const {
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 ConfiguratorImpl::GetProtocolHandlerFactory() const {
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
+}
+
+// Returns a "do nothing" callback which returns an empty updater state.
+// This is the correct default for all the embedders except the component
+// updater for Chrome on macOS and Windows, which includes a recovery
+// component.
+update_client::UpdaterStateProvider ConfiguratorImpl::GetUpdaterStateProvider()
+    const {
+  return base::BindRepeating([](bool /*is_machine*/) {
+    return base::flat_map<std::string, std::string>();
+  });
 }
 
 absl::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {

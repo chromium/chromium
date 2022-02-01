@@ -97,6 +97,8 @@ class ConfiguratorImpl {
 
   absl::optional<bool> IsMachineExternallyManaged() const;
 
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const;
+
  private:
   base::flat_map<std::string, std::string> extra_info_;
   const bool background_downloads_enabled_;

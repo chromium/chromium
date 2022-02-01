@@ -71,6 +71,7 @@ class IOSConfigurator : public update_client::Configurator {
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
 
  private:
   friend class base::RefCountedThreadSafe<IOSConfigurator>;
@@ -216,6 +217,11 @@ IOSConfigurator::GetProtocolHandlerFactory() const {
 
 absl::optional<bool> IOSConfigurator::IsMachineExternallyManaged() const {
   return configurator_impl_.IsMachineExternallyManaged();
+}
+
+update_client::UpdaterStateProvider IOSConfigurator::GetUpdaterStateProvider()
+    const {
+  return configurator_impl_.GetUpdaterStateProvider();
 }
 
 }  // namespace

@@ -80,6 +80,7 @@ class ChromeConfigurator : public update_client::Configurator {
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
@@ -242,6 +243,14 @@ ChromeConfigurator::GetProtocolHandlerFactory() const {
 
 absl::optional<bool> ChromeConfigurator::IsMachineExternallyManaged() const {
   return configurator_impl_.IsMachineExternallyManaged();
+}
+
+update_client::UpdaterStateProvider
+ChromeConfigurator::GetUpdaterStateProvider() const {
+  // TODO(crbug.com/1286378) - add a dependency on //chrome/updater and
+  // implement this function so that it picks up that updater state, in
+  // addition to Omaha or Keystone updater states.
+  return configurator_impl_.GetUpdaterStateProvider();
 }
 
 }  // namespace

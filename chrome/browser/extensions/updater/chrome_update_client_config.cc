@@ -288,6 +288,11 @@ absl::optional<bool> ChromeUpdateClientConfig::IsMachineExternallyManaged()
   return impl_.IsMachineExternallyManaged();
 }
 
+update_client::UpdaterStateProvider
+ChromeUpdateClientConfig::GetUpdaterStateProvider() const {
+  return impl_.GetUpdaterStateProvider();
+}
+
 // static
 scoped_refptr<ChromeUpdateClientConfig> ChromeUpdateClientConfig::Create(
     content::BrowserContext* context,

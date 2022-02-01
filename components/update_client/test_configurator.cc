@@ -4,8 +4,11 @@
 
 #include "components/update_client/test_configurator.h"
 
+#include <string>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "components/prefs/pref_service.h"
@@ -143,6 +146,10 @@ bool TestConfigurator::EnabledCupSigning() const {
   return enabled_cup_signing_;
 }
 
+PrefService* TestConfigurator::GetPrefService() const {
+  return pref_service_;
+}
+
 ActivityDataService* TestConfigurator::GetActivityDataService() const {
   return nullptr;
 }
@@ -158,6 +165,12 @@ TestConfigurator::GetProtocolHandlerFactory() const {
 
 absl::optional<bool> TestConfigurator::IsMachineExternallyManaged() const {
   return is_machine_externally_managed_;
+}
+
+UpdaterStateProvider TestConfigurator::GetUpdaterStateProvider() const {
+  return base::BindRepeating([](bool /*is_machine*/) {
+    return base::flat_map<std::string, std::string>();
+  });
 }
 
 void TestConfigurator::SetOnDemandTime(int seconds) {
@@ -188,10 +201,6 @@ void TestConfigurator::SetPingUrl(const GURL& url) {
 void TestConfigurator::SetCrxDownloaderFactory(
     scoped_refptr<CrxDownloaderFactory> crx_downloader_factory) {
   crx_downloader_factory_ = crx_downloader_factory;
-}
-
-PrefService* TestConfigurator::GetPrefService() const {
-  return pref_service_;
 }
 
 void TestConfigurator::SetIsMachineExternallyManaged(

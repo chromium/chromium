@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -203,6 +205,13 @@ scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
 
 crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
   return external_constants_->CrxVerifierFormat();
+}
+
+update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
+    const {
+  return base::BindRepeating([](bool /*is_machine*/) {
+    return base::flat_map<std::string, std::string>();
+  });
 }
 
 }  // namespace updater

@@ -186,6 +186,11 @@ AwComponentUpdaterConfigurator::IsMachineExternallyManaged() const {
   return absl::nullopt;
 }
 
+update_client::UpdaterStateProvider
+AwComponentUpdaterConfigurator::GetUpdaterStateProvider() const {
+  return configurator_impl_.GetUpdaterStateProvider();
+}
+
 scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(
     const base::CommandLine* cmdline,
     PrefService* pref_service) {

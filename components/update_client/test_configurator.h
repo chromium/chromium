@@ -102,6 +102,7 @@ class TestConfigurator : public Configurator {
   std::unique_ptr<ProtocolHandlerFactory> GetProtocolHandlerFactory()
       const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
+  UpdaterStateProvider GetUpdaterStateProvider() const override;
 
   void SetOnDemandTime(int seconds);
   void SetInitialDelay(double seconds);

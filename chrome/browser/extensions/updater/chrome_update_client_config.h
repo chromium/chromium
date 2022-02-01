@@ -78,6 +78,7 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
 
  protected:
   friend class base::RefCountedThreadSafe<ChromeUpdateClientConfig>;
