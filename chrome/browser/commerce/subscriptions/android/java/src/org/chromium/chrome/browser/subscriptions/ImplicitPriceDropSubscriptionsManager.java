@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -25,10 +26,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,6 +59,13 @@ public class ImplicitPriceDropSubscriptionsManager {
 
             @Override
             public void tabRemoved(Tab tab) {
+                unsubscribe(tab);
+            }
+
+            // TODO(crbug.com/1289031): Unsubscribe when user navigates away instead of once
+            // selecting the tab.
+            @Override
+            public void didSelectTab(Tab tab, int type, int lastId) {
                 unsubscribe(tab);
             }
         };
@@ -104,48 +110,53 @@ public class ImplicitPriceDropSubscriptionsManager {
         // turns off price notification, we still subscribe for tabs. Now we call this method only
         // to record notification opt-in metrics.
         mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
-        Map<String, Tab> urlTabMapping = new HashMap<>();
+        // Store previously eligible urls to avoid duplicate subscriptions.
+        Set<String> urlSet = new HashSet<>();
         TabModel normalTabModel = mTabModelSelector.getModel(false);
         for (int index = 0; index < normalTabModel.getCount(); index++) {
             Tab tab = normalTabModel.getTabAt(index);
-            boolean tabEligible = hasOfferId(tab) && isStaleTab(tab);
-            RecordHistogram.recordBooleanHistogram(
-                    "Commerce.Subscriptions.TabEligible", tabEligible);
-            if (tabEligible) {
-                urlTabMapping.put(tab.getOriginalUrl().getSpec(), tab);
-            }
+            fetchOfferId(tab, (offerId) -> {
+                boolean tabEligible = (offerId != null) && isStaleTab(tab);
+                RecordHistogram.recordBooleanHistogram(
+                        "Commerce.Subscriptions.TabEligible", tabEligible);
+                if (!tabEligible) return;
+                String url = tab.getOriginalUrl().getSpec();
+                if (urlSet.contains(url)) return;
+                urlSet.add(url);
+                CommerceSubscription subscription =
+                        new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
+                                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
+                mSubscriptionManager.subscribe(subscription, (status) -> {
+                    // TODO: Add histograms for implicit tabs creation.
+                    assert status == SubscriptionsManager.StatusCode.OK;
+                });
+            });
         }
-        List<CommerceSubscription> subscriptions = new ArrayList<>();
-        for (Tab tab : urlTabMapping.values()) {
-            CommerceSubscription subscription =
-                    new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                            ShoppingPersistedTabData.from(tab).getMainOfferId(),
-                            SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-            subscriptions.add(subscription);
-        }
-
-        mSubscriptionManager.subscribe(subscriptions, (status) -> {
-            // TODO: Add histograms for implicit tabs creation.
-            assert status == SubscriptionsManager.StatusCode.OK;
-        });
     }
 
     private void unsubscribe(Tab tab) {
-        if (!isUniqueTab(tab) || !hasOfferId(tab)) {
-            return;
-        }
+        if (!isUniqueTab(tab)) return;
 
-        CommerceSubscription subscription =
-                new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                        ShoppingPersistedTabData.from(tab).getMainOfferId(),
-                        SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-        mSubscriptionManager.unsubscribe(
-                subscription, (status) -> { assert status == SubscriptionsManager.StatusCode.OK; });
+        fetchOfferId(tab, (offerId) -> {
+            if (offerId == null) return;
+            CommerceSubscription subscription =
+                    new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
+                            SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
+            mSubscriptionManager.unsubscribe(subscription,
+                    (status) -> { assert status == SubscriptionsManager.StatusCode.OK; });
+        });
     }
 
-    private boolean hasOfferId(Tab tab) {
-        return ShoppingPersistedTabData.from(tab) != null
-                && !TextUtils.isEmpty(ShoppingPersistedTabData.from(tab).getMainOfferId());
+    @VisibleForTesting
+    protected void fetchOfferId(Tab tab, Callback<String> callback) {
+        // Asynchronously fetch the tab's offer id.
+        ShoppingPersistedTabData.from(tab, (tabData) -> {
+            if (tabData == null || TextUtils.isEmpty(tabData.getMainOfferId())) {
+                callback.onResult(null);
+            } else {
+                callback.onResult(tabData.getMainOfferId());
+            }
+        });
     }
 
     // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time
