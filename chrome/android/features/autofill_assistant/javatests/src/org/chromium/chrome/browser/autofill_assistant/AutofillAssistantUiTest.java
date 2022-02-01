@@ -120,7 +120,8 @@ public class AutofillAssistantUiTest {
                     staticDependencies.getAccessibilityUtil(),
                     staticDependencies.createInfoPageUtil(),
                     staticDependencies.createProfileImageUtilOrNull(
-                            getActivity(), R.dimen.autofill_assistant_profile_size));
+                            getActivity(), R.dimen.autofill_assistant_profile_size),
+                    staticDependencies.createEditorFactory());
             coordinator.show();
             return coordinator;
         });

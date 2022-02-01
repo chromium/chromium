@@ -101,7 +101,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
             @Nullable AssistantTabObscuringUtil tabObscuringUtil,
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
-            @Nullable AssistantProfileImageUtil profileImageUtil) {
+            @Nullable AssistantProfileImageUtil profileImageUtil,
+            AssistantEditorFactory editorFactory) {
         mAccessibilityUtil = accessibilityUtil;
         mModel = model;
         mOverlayCoordinator = overlayCoordinator;
@@ -145,8 +146,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 new AssistantDetailsCoordinator(activity, infoPageUtil, model.getDetailsModel(),
                         ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY,
                                 AutofillAssistantUiController.getProfile().getProfileKey()));
-        mCollectUserDataCoordinator =
-                new AssistantCollectUserDataCoordinator(activity, model.getCollectUserDataModel());
+        mCollectUserDataCoordinator = new AssistantCollectUserDataCoordinator(
+                activity, model.getCollectUserDataModel(), editorFactory);
         AssistantFormCoordinator formCoordinator =
                 new AssistantFormCoordinator(activity, model.getFormModel());
         mActionsCoordinator =

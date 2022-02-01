@@ -16,10 +16,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.OptionModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
  * @param <T> The type of entry that a concrete instance of this class is created for,
  *            such as {@link AssistantAutofillProfile}, {@link AssistantPaymentInstrument}, etc.
  */
-public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
+public abstract class AssistantCollectUserDataSection<T extends AssistantOptionModel> {
     interface Delegate<T> {
         void onUserDataChanged(T item, @AssistantUserDataEventType int type);
     }

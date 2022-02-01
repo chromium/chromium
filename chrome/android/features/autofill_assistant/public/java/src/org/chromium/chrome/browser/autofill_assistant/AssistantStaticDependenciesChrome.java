@@ -100,6 +100,11 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
         return new AssistantProfileImageUtilChrome(context, signedInAccountEmail, imageSizeRedId);
     }
 
+    @Override
+    public AssistantEditorFactory createEditorFactory() {
+        return new AssistantEditorFactoryChrome();
+    }
+
     @NativeMethods
     interface Natives {
         long init(AssistantStaticDependencies staticDependencies);

@@ -103,7 +103,8 @@ public class AutofillAssistantUiController {
                 dependencies.createBrowserControlsFactory(), dependencies.getBottomInsetProvider(),
                 dependencies.getAccessibilityUtil(), dependencies.createInfoPageUtil(),
                 dependencies.createProfileImageUtilOrNull(
-                        mActivity, R.dimen.autofill_assistant_profile_size));
+                        mActivity, R.dimen.autofill_assistant_profile_size),
+                dependencies.createEditorFactory());
 
         mTabChangeObserverDestroyer =
                 dependencies.observeTabChanges(new AssistantTabChangeObserver() {

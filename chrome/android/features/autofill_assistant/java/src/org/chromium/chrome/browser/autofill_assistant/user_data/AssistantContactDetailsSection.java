@@ -16,9 +16,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
-import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.ContactEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantContactEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,8 @@ import java.util.List;
  * The contact details section of the Autofill Assistant payment request.
  */
 public class AssistantContactDetailsSection extends AssistantCollectUserDataSection<ContactModel> {
-    private ContactEditor mEditor;
+    @Nullable
+    private AssistantContactEditor mEditor;
     private boolean mIgnoreProfileChangeNotifications;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mSummaryOptions;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mFullOptions;
@@ -41,14 +41,14 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
                 context.getString(R.string.payments_add_contact));
     }
 
-    public void setEditor(ContactEditor editor) {
+    public void setEditor(@Nullable AssistantContactEditor editor) {
         mEditor = editor;
         if (mEditor == null) {
             return;
         }
 
         for (ContactModel item : getItems()) {
-            addAutocompleteInformationToEditor(item.mOption);
+            mEditor.addContactInformationForAutocomplete(item.mOption);
         }
     }
 
@@ -58,24 +58,16 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
             return;
         }
 
-        AutofillContact oldContact = oldItem == null
-                ? null
-                : AutofillUtilChrome.assistantAutofillProfileToAutofillContact(
-                        oldItem.mOption, mContext, mEditor);
-
-        Callback<AutofillContact> doneCallback = contact -> {
-            assert (contact != null && contact.isComplete() && contact.getProfile() != null);
+        Callback<ContactModel> doneCallback = editedItem -> {
             mIgnoreProfileChangeNotifications = true;
-            addOrUpdateItem(
-                    new ContactModel(AutofillUtilChrome.autofillProfileToAssistantAutofillProfile(
-                            contact.getProfile())),
+            addOrUpdateItem(editedItem,
                     /* select= */ true, /* notify= */ true);
             mIgnoreProfileChangeNotifications = false;
         };
 
-        Callback<AutofillContact> cancelCallback = contact -> {};
+        Callback<ContactModel> cancelCallback = ignoredItem -> {};
 
-        mEditor.edit(oldContact, doneCallback, cancelCallback);
+        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
     }
 
     @Override
@@ -173,16 +165,10 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
     @Override
     protected void addOrUpdateItem(ContactModel model, boolean select, boolean notify) {
         super.addOrUpdateItem(model, select, notify);
-        addAutocompleteInformationToEditor(model.mOption);
-    }
 
-    private void addAutocompleteInformationToEditor(AssistantAutofillProfile contact) {
-        if (mEditor == null || contact == null) {
-            return;
+        if (mEditor != null) {
+            mEditor.addContactInformationForAutocomplete(model.mOption);
         }
-        mEditor.addEmailAddressIfValid(contact.getEmailAddress());
-        mEditor.addPayerNameIfValid(contact.getFullName());
-        mEditor.addPhoneNumberIfValid(contact.getPhoneNumber());
     }
 
     /**

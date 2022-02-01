@@ -9,31 +9,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill.settings.AddressEditor;
-import org.chromium.chrome.browser.autofill.settings.CardEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditorFactory;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
-import org.chromium.chrome.browser.payments.ContactEditor;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.payments.BasicCardUtils;
-import org.chromium.components.payments.MethodStrings;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class is responsible for pushing updates to the Autofill Assistant UI for requesting user
@@ -64,6 +54,7 @@ class AssistantCollectUserDataBinder
         private final ViewGroup mGenericUserInterfaceContainerAppended;
         private final Object mDividerTag;
         private final Activity mActivity;
+        private final AssistantEditorFactory mEditorFactory;
 
         public ViewHolder(View rootView, AssistantVerticalExpanderAccordion accordion,
                 int sectionPadding, AssistantLoginSection loginSection,
@@ -76,7 +67,7 @@ class AssistantCollectUserDataBinder
                 AssistantAdditionalSectionContainer appendedSections,
                 ViewGroup genericUserInterfaceContainerPrepended,
                 ViewGroup genericUserInterfaceContainerAppended, Object dividerTag,
-                Activity activity) {
+                Activity activity, AssistantEditorFactory editorFactory) {
             mRootView = rootView;
             mPaymentRequestExpanderAccordion = accordion;
             mSectionToSectionPadding = sectionPadding;
@@ -93,6 +84,7 @@ class AssistantCollectUserDataBinder
             mGenericUserInterfaceContainerAppended = genericUserInterfaceContainerAppended;
             mDividerTag = dividerTag;
             mActivity = activity;
+            mEditorFactory = editorFactory;
         }
     }
 
@@ -204,17 +196,10 @@ class AssistantCollectUserDataBinder
      */
     private boolean updateSectionContents(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
-        if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS
-                || propertyKey == AssistantCollectUserDataModel.WEB_CONTENTS) {
+        if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS) {
             if (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
-                List<PaymentInstrumentModel> paymentInstruments;
-                if (model.get(AssistantCollectUserDataModel.WEB_CONTENTS) == null) {
-                    paymentInstruments = Collections.emptyList();
-                } else {
-                    paymentInstruments =
-                            model.get(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS);
-                }
-                view.mPaymentMethodSection.onAvailablePaymentMethodsChanged(paymentInstruments);
+                view.mPaymentMethodSection.onAvailablePaymentMethodsChanged(
+                        model.get(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS));
             }
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_CONTACTS) {
@@ -521,12 +506,12 @@ class AssistantCollectUserDataBinder
      */
     private boolean updateEditors(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
-        if ((propertyKey != AssistantCollectUserDataModel.WEB_CONTENTS)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_NAME)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE)
-                && (propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS)
-                && (propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES)) {
+        if (propertyKey != AssistantCollectUserDataModel.WEB_CONTENTS
+                && propertyKey != AssistantCollectUserDataModel.REQUEST_NAME
+                && propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL
+                && propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE
+                && propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS
+                && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES) {
             return false;
         }
 
@@ -535,74 +520,26 @@ class AssistantCollectUserDataBinder
             view.mContactDetailsSection.setEditor(null);
             view.mPaymentMethodSection.setEditor(null);
             view.mShippingAddressSection.setEditor(null);
-            view.mPaymentMethodSection.setWebContents(null);
             return true;
         }
 
         boolean shouldStoreChanges =
                 model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
 
-        Profile profile = Profile.fromWebContents(webContents);
         if (shouldShowContactDetails(model)) {
-            ContactEditor contactEditor =
-                    new ContactEditor(model.get(AssistantCollectUserDataModel.REQUEST_NAME),
-                            model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
-                            model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                            /* saveToDisk= */ shouldStoreChanges);
-            contactEditor.setEditorDialog(new EditorDialog(view.mActivity,
-                    /*deleteRunnable =*/null, profile));
-            view.mContactDetailsSection.setEditor(contactEditor);
+            view.mContactDetailsSection.setEditor(view.mEditorFactory.createContactEditor(
+                    webContents, view.mActivity,
+                    model.get(AssistantCollectUserDataModel.REQUEST_NAME),
+                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
+                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL), shouldStoreChanges));
         }
+        view.mShippingAddressSection.setEditor(view.mEditorFactory.createAddressEditor(
+                webContents, view.mActivity, shouldStoreChanges));
+        view.mPaymentMethodSection.setEditor(
+                view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
+                        model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
+                        shouldStoreChanges));
 
-        AddressEditor addressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_ASSISTANT,
-                /* saveToDisk= */ shouldStoreChanges);
-        addressEditor.setEditorDialog(new EditorDialog(view.mActivity,
-                /* deleteRunnable= */ null, profile));
-
-        CardEditor cardEditor = new CardEditor(webContents, addressEditor,
-                /* includeOrgLabel= */ false, /* saveToDisk= */ shouldStoreChanges);
-        List<String> supportedCardNetworks =
-                model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS);
-        if (supportedCardNetworks != null) {
-            cardEditor.addAcceptedPaymentMethodIfRecognized(
-                    getPaymentMethodDataFromNetworks(supportedCardNetworks));
-        }
-
-        EditorDialog cardEditorDialog = new EditorDialog(view.mActivity,
-                /*deleteRunnable =*/null, profile);
-        if (VersionInfo.isBetaBuild() || VersionInfo.isStableBuild()) {
-            cardEditorDialog.disableScreenshots();
-        }
-        cardEditor.setEditorDialog(cardEditorDialog);
-
-        view.mShippingAddressSection.setEditor(addressEditor);
-        view.mPaymentMethodSection.setEditor(cardEditor);
-        view.mPaymentMethodSection.setWebContents(webContents);
         return true;
-    }
-
-    private PaymentMethodData getPaymentMethodDataFromNetworks(List<String> supportedCardNetworks) {
-        // Only enable 'basic-card' payment method.
-        PaymentMethodData methodData = new PaymentMethodData();
-        methodData.supportedMethod = MethodStrings.BASIC_CARD;
-
-        // Apply basic-card filter if specified
-        if (supportedCardNetworks != null && supportedCardNetworks.size() > 0) {
-            ArrayList<Integer> filteredNetworks = new ArrayList<>();
-            Map<String, Integer> networks = BasicCardUtils.getNetworkIdentifiers();
-            for (String network : supportedCardNetworks) {
-                assert networks.containsKey(network);
-                if (networks.containsKey(network)) {
-                    filteredNetworks.add(networks.get(network));
-                }
-            }
-
-            methodData.supportedNetworks = new int[filteredNetworks.size()];
-            for (int i = 0; i < filteredNetworks.size(); ++i) {
-                methodData.supportedNetworks[i] = filteredNetworks.get(i);
-            }
-        }
-
-        return methodData;
     }
 }

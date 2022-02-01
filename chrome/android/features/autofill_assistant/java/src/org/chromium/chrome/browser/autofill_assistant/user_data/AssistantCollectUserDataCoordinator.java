@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditorFactory;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
@@ -27,8 +28,8 @@ public class AssistantCollectUserDataCoordinator {
     private final AssistantCollectUserDataModel mModel;
     private AssistantCollectUserDataBinder.ViewHolder mViewHolder;
 
-    public AssistantCollectUserDataCoordinator(
-            Activity activity, AssistantCollectUserDataModel model) {
+    public AssistantCollectUserDataCoordinator(Activity activity,
+            AssistantCollectUserDataModel model, AssistantEditorFactory editorFactory) {
         mActivity = activity;
         mModel = model;
         int sectionToSectionPadding = activity.getResources().getDimensionPixelSize(
@@ -115,7 +116,7 @@ public class AssistantCollectUserDataCoordinator {
                 contactDetailsSection, paymentMethodSection, shippingAddressSection, termsSection,
                 termsAsCheckboxSection, infoSection, prependedSections, appendedSections,
                 genericUserInterfaceContainerPrepended, genericUserInterfaceContainerAppended,
-                DIVIDER_TAG, mActivity);
+                DIVIDER_TAG, mActivity, editorFactory);
         AssistantCollectUserDataBinder binder = new AssistantCollectUserDataBinder();
         PropertyModelChangeProcessor.create(model, mViewHolder, binder);
 

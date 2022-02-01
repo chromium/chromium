@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant.user_data;
+package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 
@@ -11,9 +11,6 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
-import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.payments.AutofillContact;
@@ -25,7 +22,7 @@ import org.chromium.content_public.browser.WebContents;
 /**
  * Utility class for Chrome to handle Autofill / Assistant conversions.
  */
-public class AutofillUtilChrome {
+public class AssistantAutofillUtilChrome {
     /**
      * Transform an {@link AssistantAutofillProfile} to an {@link AutofillProfile}.
      *

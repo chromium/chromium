@@ -17,14 +17,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill.settings.CardEditor;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
-import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
-import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -33,8 +30,8 @@ import java.util.List;
  */
 public class AssistantPaymentMethodSection
         extends AssistantCollectUserDataSection<PaymentInstrumentModel> {
-    private CardEditor mEditor;
-    private WebContents mWebContents;
+    @Nullable
+    private AssistantPaymentInstrumentEditor mEditor;
     private boolean mIgnorePaymentMethodsChangeNotifications;
 
     AssistantPaymentMethodSection(Context context, ViewGroup parent) {
@@ -47,7 +44,7 @@ public class AssistantPaymentMethodSection
         setTitle(context.getString(R.string.payments_method_of_payment_label));
     }
 
-    public void setEditor(CardEditor editor) {
+    public void setEditor(@Nullable AssistantPaymentInstrumentEditor editor) {
         mEditor = editor;
         if (mEditor == null) {
             return;
@@ -61,34 +58,23 @@ public class AssistantPaymentMethodSection
         }
     }
 
-    public void setWebContents(WebContents webContents) {
-        mWebContents = webContents;
-    }
-
     @Override
     protected void createOrEditItem(@Nullable PaymentInstrumentModel oldItem) {
-        if (mEditor == null || mWebContents == null) {
+        if (mEditor == null) {
             return;
         }
 
-        AutofillPaymentInstrument oldPaymentInstrument = oldItem == null
-                ? null
-                : AutofillUtilChrome.assistantPaymentInstrumentToAutofillPaymentInstrument(
-                        oldItem.mOption, mWebContents);
-        Callback<AutofillPaymentInstrument> doneCallback = paymentInstrument -> {
-            assert (paymentInstrument != null && paymentInstrument.isComplete()
-                    && paymentInstrument.getCard() != null);
+        Callback<PaymentInstrumentModel> doneCallback = editedItem -> {
             mIgnorePaymentMethodsChangeNotifications = true;
-            addOrUpdateItem(new PaymentInstrumentModel(
-                                    AutofillUtilChrome
-                                            .autofillPaymentInstrumentToAssistantPaymentInstrument(
-                                                    paymentInstrument)),
+            addOrUpdateItem(editedItem,
                     /* select= */ true,
                     /* notify= */ true);
             mIgnorePaymentMethodsChangeNotifications = false;
         };
-        Callback<AutofillPaymentInstrument> cancelCallback = paymentInstrument -> {};
-        mEditor.edit(oldPaymentInstrument, doneCallback, cancelCallback);
+
+        Callback<PaymentInstrumentModel> cancelCallback = ignoredItem -> {};
+
+        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
     }
 
     @Override
@@ -219,16 +205,8 @@ public class AssistantPaymentMethodSection
     }
 
     private void addAutocompleteInformationToEditor(AssistantAutofillProfile profile) {
-        if (mEditor == null) {
-            return;
+        if (mEditor != null) {
+            mEditor.addAddressInformationForAutocomplete(profile);
         }
-        // TODO(sandromaggi): Find a way to abstract this, such that we can remove the
-        //  AutofillAddress.
-        AutofillAddress address =
-                AutofillUtilChrome.assistantAutofillProfileToAutofillAddress(profile, mContext);
-        if (address.getProfile().getLabel() == null) {
-            address.getProfile().setLabel(AutofillUtilChrome.getBillingAddressLabel(profile));
-        }
-        mEditor.updateBillingAddressIfComplete(address);
     }
 }

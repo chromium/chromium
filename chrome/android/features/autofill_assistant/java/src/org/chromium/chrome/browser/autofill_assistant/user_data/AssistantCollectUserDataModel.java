@@ -14,6 +14,10 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPopup;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantPopupListSection;
@@ -42,75 +46,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         public int mMaxNumberLines;
     }
 
-    /**
-     * Model wrapper for a data item to contain errors.
-     *
-     * @param <T> The type that an instance of this class is created for, such as
-     *            {@link AssistantAutofillProfile}, {@link AssistantPaymentInstrument}, etc.
-     */
-    public static class OptionModel<T> {
-        public T mOption;
-        public List<String> mErrors;
-
-        public OptionModel(T option, List<String> errors) {
-            this.mOption = option;
-            this.mErrors = errors;
-        }
-
-        public OptionModel(T option) {
-            this(option, new ArrayList<>());
-        }
-
-        boolean isComplete() {
-            return mErrors.isEmpty();
-        }
-    }
-
-    /** Model wrapper for an {@code AssistantAutofillProfile}. */
-    public static class ContactModel extends OptionModel<AssistantAutofillProfile> {
-        private final boolean mCanEdit;
-
-        public ContactModel(
-                AssistantAutofillProfile contact, List<String> errors, boolean canEdit) {
-            super(contact, errors);
-            mCanEdit = canEdit;
-        }
-
-        public ContactModel(AssistantAutofillProfile contact) {
-            super(contact);
-            mCanEdit = true;
-        }
-
-        public boolean canEdit() {
-            return mCanEdit;
-        }
-    }
-
-    /** Model wrapper for an {@code AssistantAutofillProfile}. */
-    public static class AddressModel extends OptionModel<AssistantAutofillProfile> {
-        public AddressModel(AssistantAutofillProfile address, List<String> errors) {
-            super(address, errors);
-        }
-
-        public AddressModel(AssistantAutofillProfile address) {
-            super(address);
-        }
-    }
-
-    /** Model wrapper for an {@code AssistantPaymentInstrument}. */
-    public static class PaymentInstrumentModel extends OptionModel<AssistantPaymentInstrument> {
-        public PaymentInstrumentModel(
-                AssistantPaymentInstrument paymentInstrument, List<String> errors) {
-            super(paymentInstrument, errors);
-        }
-
-        public PaymentInstrumentModel(AssistantPaymentInstrument paymentInstrument) {
-            super(paymentInstrument);
-        }
-    }
-
     /** Model wrapper for an {@code AssistantLoginChoice}. */
-    public static class LoginChoiceModel extends OptionModel<AssistantLoginChoice> {
+    public static class LoginChoiceModel extends AssistantOptionModel<AssistantLoginChoice> {
         public LoginChoiceModel(AssistantLoginChoice loginChoice) {
             super(loginChoice);
         }
@@ -260,6 +197,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(REQUEST_LOGIN_CHOICE, false);
         set(PREPENDED_SECTIONS, Collections.emptyList());
         set(APPENDED_SECTIONS, Collections.emptyList());
+        set(SUPPORTED_BASIC_CARD_NETWORKS, Collections.emptyList());
         set(AVAILABLE_PAYMENT_INSTRUMENTS, Collections.emptyList());
         set(AVAILABLE_CONTACTS, Collections.emptyList());
         set(AVAILABLE_SHIPPING_ADDRESSES, Collections.emptyList());

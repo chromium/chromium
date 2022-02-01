@@ -106,22 +106,21 @@ public class AutofillAssistantCollectUserDataTestHelper {
         Map<String, AssistantValue> mAdditionalValues = new HashMap<>();
 
         @Override
-        public void onContactInfoChanged(
-                @Nullable AssistantCollectUserDataModel.ContactModel contactModel,
+        public void onContactInfoChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
                 @AssistantUserDataEventType int eventType) {
             mContact = contactModel == null ? null : contactModel.mOption;
         }
 
         @Override
         public void onShippingAddressChanged(
-                @Nullable AssistantCollectUserDataModel.AddressModel addressModel,
+                @Nullable AssistantOptionModel.AddressModel addressModel,
                 @AssistantUserDataEventType int eventType) {
             mShippingAddress = addressModel == null ? null : addressModel.mOption;
         }
 
         @Override
-        public void onPaymentMethodChanged(@Nullable AssistantCollectUserDataModel
-                                                   .PaymentInstrumentModel paymentInstrumentModel,
+        public void onPaymentMethodChanged(
+                @Nullable AssistantOptionModel.PaymentInstrumentModel paymentInstrumentModel,
                 @AssistantUserDataEventType int eventType) {
             mPaymentInstrument =
                     paymentInstrumentModel == null ? null : paymentInstrumentModel.mOption;

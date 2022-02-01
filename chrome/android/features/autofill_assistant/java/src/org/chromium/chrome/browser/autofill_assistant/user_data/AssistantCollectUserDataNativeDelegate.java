@@ -11,6 +11,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 
 /** Delegate for the Collect user data UI which forwards events to a native counterpart. */
@@ -29,8 +30,7 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public void onContactInfoChanged(
-            @Nullable AssistantCollectUserDataModel.ContactModel contactModel,
+    public void onContactInfoChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
             @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onContactInfoChanged(
@@ -41,8 +41,7 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public void onShippingAddressChanged(
-            @Nullable AssistantCollectUserDataModel.AddressModel addressModel,
+    public void onShippingAddressChanged(@Nullable AssistantOptionModel.AddressModel addressModel,
             @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onShippingAddressChanged(
@@ -54,7 +53,7 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
 
     @Override
     public void onPaymentMethodChanged(
-            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel,
+            @Nullable AssistantOptionModel.PaymentInstrumentModel paymentInstrumentModel,
             @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onCreditCardChanged(

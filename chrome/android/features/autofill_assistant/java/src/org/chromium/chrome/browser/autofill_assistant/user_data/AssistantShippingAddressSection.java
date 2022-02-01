@@ -15,9 +15,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill.settings.AddressEditor;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
-import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillUtilChrome;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantAddressEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
 
 import java.util.List;
 
@@ -25,7 +25,8 @@ import java.util.List;
  * The shipping address section of the Autofill Assistant payment request.
  */
 public class AssistantShippingAddressSection extends AssistantCollectUserDataSection<AddressModel> {
-    private AddressEditor mEditor;
+    @Nullable
+    private AssistantAddressEditor mEditor;
     private boolean mIgnoreProfileChangeNotifications;
 
     AssistantShippingAddressSection(Context context, ViewGroup parent) {
@@ -37,7 +38,7 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
                 context.getString(R.string.payments_add_address));
     }
 
-    public void setEditor(AddressEditor editor) {
+    public void setEditor(@Nullable AssistantAddressEditor editor) {
         mEditor = editor;
     }
 
@@ -47,24 +48,16 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
             return;
         }
 
-        AutofillAddress oldAddress = oldItem == null
-                ? null
-                : AutofillUtilChrome.assistantAutofillProfileToAutofillAddress(
-                        oldItem.mOption, mContext);
-
-        Callback<AutofillAddress> doneCallback = address -> {
-            assert (address != null && address.isComplete() && address.getProfile() != null);
+        Callback<AddressModel> doneCallback = editedItem -> {
             mIgnoreProfileChangeNotifications = true;
-            addOrUpdateItem(
-                    new AddressModel(AutofillUtilChrome.autofillProfileToAssistantAutofillProfile(
-                            address.getProfile())),
+            addOrUpdateItem(editedItem,
                     /* select= */ true, /* notify= */ true);
             mIgnoreProfileChangeNotifications = false;
         };
 
-        Callback<AutofillAddress> cancelCallback = address -> {};
+        Callback<AddressModel> cancelCallback = ignoredItem -> {};
 
-        mEditor.edit(oldAddress, doneCallback, cancelCallback);
+        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
     }
 
     @Override
@@ -77,8 +70,9 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
         hideIfEmpty(fullNameView);
 
         TextView fullAddressView = fullView.findViewById(R.id.full_address);
-        fullAddressView.setText(
-                AutofillUtilChrome.getShippingAddressLabel(model.mOption, /* withCountry= */ true));
+        // TODO(b/211748133): Remove dependency to AutofillUtilChrome.
+        fullAddressView.setText(AssistantAutofillUtilChrome.getShippingAddressLabel(
+                model.mOption, /* withCountry= */ true));
         hideIfEmpty(fullAddressView);
 
         TextView errorView = fullView.findViewById(R.id.incomplete_error);
@@ -101,7 +95,8 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
         hideIfEmpty(fullNameView);
 
         TextView shortAddressView = summaryView.findViewById(R.id.short_address);
-        shortAddressView.setText(AutofillUtilChrome.getShippingAddressLabel(
+        // TODO(b/211748133): Remove dependency to AutofillUtilChrome.
+        shortAddressView.setText(AssistantAutofillUtilChrome.getShippingAddressLabel(
                 model.mOption, /* withCountry= */ false));
         hideIfEmpty(shortAddressView);
 

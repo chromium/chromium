@@ -49,13 +49,13 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataTestHelper.ViewHolder;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantContactField;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantLoginChoice;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantTermsAndConditionsState;
@@ -113,7 +113,9 @@ public class AutofillAssistantCollectUserDataUiTest {
     private AssistantCollectUserDataCoordinator createCollectUserDataCoordinator(
             AssistantCollectUserDataModel model) throws Exception {
         AssistantCollectUserDataCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
-                () -> new AssistantCollectUserDataCoordinator(mTestRule.getActivity(), model));
+                ()
+                        -> new AssistantCollectUserDataCoordinator(mTestRule.getActivity(), model,
+                                new AssistantStaticDependenciesChrome().createEditorFactory()));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -136,8 +138,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         assertThat(model.get(AssistantCollectUserDataModel.AVAILABLE_CONTACTS), empty());
         assertThat(model.get(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES), empty());
         assertThat(model.get(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS), empty());
-        assertThat(model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
-                nullValue());
+        assertThat(model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS), empty());
         assertThat(model.get(AssistantCollectUserDataModel.EXPANDED_SECTION), nullValue());
         assertThat(model.get(AssistantCollectUserDataModel.DELEGATE), nullValue());
         assertThat(model.get(AssistantCollectUserDataModel.WEB_CONTENTS), nullValue());
@@ -487,66 +488,6 @@ public class AutofillAssistantCollectUserDataUiTest {
                        isDescendantOfA(is(viewHolder.mPaymentSection))))
                 .perform(click());
         onView(withId(R.id.editor_container)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    public void testPaymentMethodsUpdatesFromWebContents() throws Exception {
-        AssistantCollectUserDataModel model = createCollectUserDataModel();
-        AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
-        AutofillAssistantCollectUserDataTestHelper
-                .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
-                () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
-
-        PersonalDataManager.AutofillProfile billingAddress =
-                mHelper.createDummyProfile("Jill Doe", "jill@gmail.com");
-        String billingAddressId = mHelper.setProfile(billingAddress);
-        PersonalDataManager.CreditCard creditCard = mHelper.createDummyCreditCard(billingAddressId);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // WEB_CONTENTS are necessary for the creation of the editors.
-            model.set(AssistantCollectUserDataModel.WEB_CONTENTS, mTestRule.getWebContents());
-            model.set(AssistantCollectUserDataModel.REQUEST_PAYMENT, true);
-            model.set(AssistantCollectUserDataModel.VISIBLE, true);
-            AssistantPaymentInstrument paymentInstrument =
-                    AssistantCollectUserDataModel.createAssistantPaymentInstrument(
-                            createDummyCreditCard(creditCard), createDummyAddress(billingAddress));
-            model.set(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS,
-                    Collections.singletonList(new PaymentInstrumentModel(paymentInstrument)));
-            model.set(AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT,
-                    new PaymentInstrumentModel(paymentInstrument));
-        });
-
-        // Payment method section contains the new credit card, which should be pre-selected.
-        onView(allOf(withId(R.id.section_title_add_button),
-                       isDescendantOfA(is(viewHolder.mPaymentSection))))
-                .check(matches(not(isDisplayed())));
-        assertThat(viewHolder.mPaymentMethodList.getItemCount(), is(1));
-        onView(allOf(withId(R.id.credit_card_name),
-                       isDescendantOfA(is(viewHolder.mPaymentMethodList.getItem(0)))))
-                .check(matches(withText("Jill Doe")));
-
-        // Detach WebContents. Section should be empty again.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { model.set(AssistantCollectUserDataModel.WEB_CONTENTS, null); });
-
-        onView(allOf(withId(R.id.section_title_add_button),
-                       isDescendantOfA(is(viewHolder.mPaymentSection))))
-                .check(matches(isDisplayed()));
-        assertThat(viewHolder.mPaymentMethodList.getItemCount(), is(0));
-
-        // Attach WebContents again. Section should be filled.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            model.set(AssistantCollectUserDataModel.WEB_CONTENTS, mTestRule.getWebContents());
-        });
-
-        onView(allOf(withId(R.id.section_title_add_button),
-                       isDescendantOfA(is(viewHolder.mPaymentSection))))
-                .check(matches(not(isDisplayed())));
-        assertThat(viewHolder.mPaymentMethodList.getItemCount(), is(1));
-        onView(allOf(withId(R.id.credit_card_name),
-                       isDescendantOfA(is(viewHolder.mPaymentMethodList.getItem(0)))))
-                .check(matches(withText("Jill Doe")));
     }
 
     /**
