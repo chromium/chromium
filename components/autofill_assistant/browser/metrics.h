@@ -609,6 +609,21 @@ class Metrics {
     VALID_NUMBER = 1 << 5,
   };
 
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantOnboardingFetcherResultStatus enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class OnboardingFetcherResultStatus {
+    kOk = 0,
+    // No body was received from the server.
+    kNoBody = 1,
+    // Parsing the JSON failed.
+    kInvalidJson = 1,
+    // The JSON was not in the form we expected it to be.
+    kInvalidData = 2,
+    kMaxValue = kInvalidData
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -680,6 +695,8 @@ class Metrics {
                                            ukm::SourceId source_id,
                                            bool success,
                                            int64_t time_taken_ms);
+  static void RecordOnboardingFetcherResult(
+      OnboardingFetcherResultStatus status);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.
