@@ -3045,7 +3045,7 @@ htmlParsePubidLiteral(htmlParserCtxtPtr ctxt) {
         NEXT;
     }
 
-    if (CUR != '"') {
+    if (CUR != quote) {
         htmlParseErr(ctxt, XML_ERR_LITERAL_NOT_FINISHED,
                      "Unfinished PubidLiteral\n", NULL, NULL);
     } else {
@@ -3958,13 +3958,25 @@ htmlParseStartTag(htmlParserCtxtPtr ctxt) {
 	htmlParseErr(ctxt, XML_ERR_NAME_REQUIRED,
 	             "htmlParseStartTag: invalid element name\n",
 		     NULL, NULL);
+        /*
+         * The recovery code is disabled for now as it can result in
+         * quadratic behavior with the push parser. htmlParseStartTag
+         * must consume all content up to the final '>' in order to avoid
+         * rescanning for this terminator.
+         *
+         * For a proper fix in line with HTML5, htmlParseStartTag and
+         * htmlParseElement should only be called when there's an ASCII
+         * alpha character following the initial '<'. Otherwise, the '<'
+         * should be emitted as text (unless followed by '!', '/' or '?').
+         */
+#if 0
 	/* if recover preserve text on classic misconstructs */
 	if ((ctxt->recovery) && ((IS_BLANK_CH(CUR)) || (CUR == '<') ||
 	    (CUR == '=') || (CUR == '>') || (((CUR >= '0') && (CUR <= '9'))))) {
 	    htmlParseCharDataInternal(ctxt, '<');
 	    return(-1);
 	}
-
+#endif
 
 	/* Dump the bogus tag like browsers do */
 	while ((CUR != 0) && (CUR != '>') &&
@@ -5185,6 +5197,7 @@ htmlCreateMemoryParserCtxt(const char *buffer, int size) {
 
     input = xmlNewInputStream(ctxt);
     if (input == NULL) {
+	xmlFreeParserInputBuffer(buf);
 	xmlFreeParserCtxt(ctxt);
 	return(NULL);
     }
@@ -5992,32 +6005,12 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 		    } else if (cur == '<') {
                         if ((!terminate) && (next == 0))
                             goto done;
-                        /*
-                         * Only switch to START_TAG if the next character
-                         * starts a valid name. Otherwise, htmlParseStartTag
-                         * might return without consuming all characters
-                         * up to the final '>'.
-                         */
-                        if ((IS_ASCII_LETTER(next)) ||
-                            (next == '_') || (next == ':') || (next == '.')) {
-                            ctxt->instate = XML_PARSER_START_TAG;
-                            ctxt->checkIndex = 0;
+                        ctxt->instate = XML_PARSER_START_TAG;
+                        ctxt->checkIndex = 0;
 #ifdef DEBUG_PUSH
-                            xmlGenericError(xmlGenericErrorContext,
-                                    "HPP: entering START_TAG\n");
+                        xmlGenericError(xmlGenericErrorContext,
+                                "HPP: entering START_TAG\n");
 #endif
-                        } else {
-                            htmlParseErr(ctxt, XML_ERR_NAME_REQUIRED,
-                                         "htmlParseTryOrFinish: "
-                                         "invalid element name\n",
-                                         NULL, NULL);
-                            htmlCheckParagraph(ctxt);
-                            if ((ctxt->sax != NULL) &&
-                                (ctxt->sax->characters != NULL))
-                                ctxt->sax->characters(ctxt->userData,
-                                                      in->cur, 1);
-                            NEXT;
-                        }
 			break;
 		    } else {
 		        /*
@@ -6999,7 +6992,9 @@ htmlReadMemory(const char *buffer, int size, const char *URL, const char *encodi
  * @encoding:  the document encoding, or NULL
  * @options:  a combination of htmlParserOption(s)
  *
- * parse an XML from a file descriptor and build a tree.
+ * parse an HTML from a file descriptor and build a tree.
+ * NOTE that the file descriptor will not be closed when the
+ *      reader is closed or reset.
  *
  * Returns the resulting document tree
  */
@@ -7008,17 +7003,17 @@ htmlReadFd(int fd, const char *URL, const char *encoding, int options)
 {
     htmlParserCtxtPtr ctxt;
     xmlParserInputBufferPtr input;
-    xmlParserInputPtr stream;
+    htmlParserInputPtr stream;
 
     if (fd < 0)
         return (NULL);
-    xmlInitParser();
 
     xmlInitParser();
     input = xmlParserInputBufferCreateFd(fd, XML_CHAR_ENCODING_NONE);
     if (input == NULL)
         return (NULL);
-    ctxt = xmlNewParserCtxt();
+    input->closecallback = NULL;
+    ctxt = htmlNewParserCtxt();
     if (ctxt == NULL) {
         xmlFreeParserInputBuffer(input);
         return (NULL);
@@ -7026,7 +7021,7 @@ htmlReadFd(int fd, const char *URL, const char *encoding, int options)
     stream = xmlNewIOInputStream(ctxt, input, XML_CHAR_ENCODING_NONE);
     if (stream == NULL) {
         xmlFreeParserInputBuffer(input);
-	xmlFreeParserCtxt(ctxt);
+	htmlFreeParserCtxt(ctxt);
         return (NULL);
     }
     inputPush(ctxt, stream);

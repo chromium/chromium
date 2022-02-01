@@ -78,7 +78,7 @@ void xmlMallocBreakpoint(void);
  * Each of the blocks allocated begin with a header containing information
  */
 
-#define MEMTAG 0x5aa5
+#define MEMTAG 0x5aa5U
 
 #define MALLOC_TYPE 1
 #define REALLOC_TYPE 2

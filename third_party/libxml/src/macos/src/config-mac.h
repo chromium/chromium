@@ -9,15 +9,11 @@
 #define PACKAGE
 #define VERSION
 
-#undef HAVE_LIBZ
 #undef HAVE_LIBM
-#undef HAVE_ISINF
-#undef HAVE_ISNAN
 #undef HAVE_LIBHISTORY
 #undef HAVE_LIBREADLINE
 
 #define XML_SOCKLEN_T socklen_t
-#define HAVE_LIBPTHREAD
 #define HAVE_PTHREAD_H
 #define LIBXML_THREAD_ENABLED
 
@@ -29,9 +25,6 @@
 
 /* Define if you have the printf function.  */
 #define HAVE_PRINTF
-
-/* Define if you have the signal function.  */
-#define HAVE_SIGNAL
 
 /* Define if you have the snprintf function.  */
 #define HAVE_SNPRINTF
@@ -63,9 +56,6 @@
 /* Define if you have the <ctype.h> header file.  */
 #define HAVE_CTYPE_H
 
-/* Define if you have the <dirent.h> header file.  */
-#define HAVE_DIRENT_H
-
 /* Define if you have the <dlfcn.h> header file.  */
 #define HAVE_DLFCN_H
 
@@ -83,9 +73,6 @@
 
 /* Define if you have the <math.h> header file.  */
 #define HAVE_MATH_H
-
-/* Define if you have the <ndir.h> header file.  */
-#define HAVE_NDIR_H
 
 /* Define if you have the <netdb.h> header file.  */
 #define HAVE_NETDB_H
@@ -105,14 +92,8 @@
 /* Define if you have the <string.h> header file.  */
 #define HAVE_STRING_H
 
-/* Define if you have the <sys/dir.h> header file.  */
-#define HAVE_SYS_DIR_H
-
 /* Define if you have the <sys/mman.h> header file.  */
 #undef HAVE_SYS_MMAN_H
-
-/* Define if you have the <sys/ndir.h> header file.  */
-#undef HAVE_SYS_NDIR_H
 
 /* Define if you have the <sys/select.h> header file.  */
 #define HAVE_SYS_SELECT_H
