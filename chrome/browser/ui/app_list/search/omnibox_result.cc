@@ -49,7 +49,7 @@ enum class IconType {
   kCalculator,
 };
 
-const IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
+IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
   switch (type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::HISTORY_URL:
