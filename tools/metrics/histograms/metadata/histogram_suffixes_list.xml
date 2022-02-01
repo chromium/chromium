@@ -9946,7 +9946,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SpellCheck" label="Spell check"/>
   <suffix name="Translate"
       label="Offer to translate pages in a language you don't read"/>
-  <affected-histogram name="ChromeOS.Settings.Languages.Browser.Toggle"/>
   <affected-histogram name="ChromeOS.Settings.Languages.Toggle"/>
 </histogram_suffixes>
 

@@ -57,19 +57,6 @@ chromium-metrics-reviews@google.com.
       summary="Validates bloom filer allowlist/blocklist based hints"/>
   <variant name="CompressPublicImages" summary="Compresses public images"/>
   <variant name="DeferAllScript" summary="Defers execution of script"/>
-  <variant name="DelayAsyncScriptExecution"
-      summary="Delays execution of async scripts">
-    <obsolete>
-      Removed in M94.
-    </obsolete>
-  </variant>
-  <variant name="DelayCompetingLowPriorityRequests"
-      summary="Delays low priority requests behind in-flight 'important'
-               requests">
-    <obsolete>
-      Removed in M94.
-    </obsolete>
-  </variant>
   <variant name="FastHostHints"
       summary="Provides information about hosts that historically provide a
                fast and responsive user experience"/>
@@ -78,12 +65,6 @@ chromium-metrics-reviews@google.com.
                page"/>
   <variant name="LitePage"
       summary="HTTP server preview (served from the Data Reduction Proxy)"/>
-  <variant name="LitePageRedirect"
-      summary="HTTPS server preview (served from the litepages service)">
-    <obsolete>
-      Removed in M84.
-    </obsolete>
-  </variant>
   <variant name="LiteVideo"
       summary="Provides information on how to throttle media requests to
                reduce the adaptive bit rates of media streams."/>
@@ -99,24 +80,12 @@ chromium-metrics-reviews@google.com.
       summary="Provides trust data related to the merchant -- version 2."/>
   <variant name="MetadataFetchValidation"
       summary="Validates metadata fetch on navigation"/>
-  <variant name="NoScript"
-      summary="Disables the fetching and execution of JavaScript">
-    <obsolete>
-      Removed in M89.
-    </obsolete>
-  </variant>
   <variant name="PageEntities"
       summary="Provides the entities that are present on the page"/>
   <variant name="PerformanceHints"
       summary="Provides aggregated performance information about the page"/>
   <variant name="PriceTracking"
       summary="Returns price related data for shopping websites"/>
-  <variant name="ResourceLoading"
-      summary="Applies a set of resource loading hints to load the page">
-    <obsolete>
-      Removed in M89.
-    </obsolete>
-  </variant>
   <variant name="ShoppingPagePredictor"
       summary="Determines if a page is shopping related or not"/>
 </variants>
@@ -127,11 +96,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="RequestContext">
-  <variant name="BatchUpdate" summary="Batch update.">
-    <obsolete>
-      Obsolete as of 10/2021.
-    </obsolete>
-  </variant>
   <variant name="BatchUpdateActiveTabs"
       summary="Batch update of hints for active tabs"/>
   <variant name="BatchUpdateGoogleSRP"
@@ -453,25 +417,6 @@ chromium-metrics-reviews@google.com.
     calling the code path where this histogram is recorded. If this histogram
     has 100% of samples in the true bucket, make sure to double-check that there
     isn't a separate histogram specific to the model.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.ModelExecutor.ModelLoadingDuration.{OptimizationTarget}"
-    units="ms" expires_after="M106">
-  <obsolete>
-    Replaced by
-    OptimizationGuide.ModelExecutor.ModelLoadingDuration2.{OptimizationTarget}
-    in M99 becuase the metrics recorded here were incorrect and should not be
-    used.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the time duration it took to load a model file (un)successfully for
-    {OptimizationTarget}. Recorded once per model load attempt for
-    {OptimizationTarget}.
   </summary>
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>

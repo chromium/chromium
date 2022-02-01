@@ -157,28 +157,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.BlockingPage.ResourceType"
-    enum="ContentResourceType2" expires_after="2022-02-06">
-  <obsolete>
-    Removed from code in M94. Replaced with
-    SafeBrowsing.BlockingPage.RequestDestination.
-  </obsolete>
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Logs the resource type that triggers the safe browsing blocking page. Logged
-    each time a safe browsing blocking page is created. This metric is useful to
-    show the priority of checking each resource type in real time. Note that
-    this metric may be bias towards mainframe, because the default resource type
-    is set to mainframe.
-
-    Starting M89, this metric is derived from
-    network::mojom::RequestDestination. kPrefetch, kFavicon, kXhr, kPing,
-    kNavigationPreloadMainFrame, and kNavigationPreloadSubFrame are all mapped
-    to kSubResource.
-  </summary>
-</histogram>
-
 <histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
     enum="BooleanCompleted" expires_after="2022-07-11">
