@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
@@ -53,7 +56,14 @@ void ShowSyncSetup(Profile* profile) {
     return;
   }
 
-  chrome::ShowSettingsSubPageForProfile(profile, chrome::kSyncSetupSubPage);
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
+  } else {
+    // TODO(crbug.com/1286405): remove this once it's not possible to use ash
+    // as a primary browser.
+    chrome::ShowSettingsSubPageForProfile(profile, chrome::kSyncSetupSubPage);
+  }
 }
 
 void TriggerSyncKeyRetrieval(Profile* profile) {
