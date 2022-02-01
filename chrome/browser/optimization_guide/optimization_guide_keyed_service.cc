@@ -325,7 +325,6 @@ void OptimizationGuideKeyedService::AddHintForTesting(
 
 void OptimizationGuideKeyedService::ClearData() {
   hints_manager_->ClearFetchedHints();
-  prediction_manager_->ClearHostModelFeatures();
 }
 
 void OptimizationGuideKeyedService::Shutdown() {

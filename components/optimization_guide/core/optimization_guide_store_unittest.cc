@@ -88,8 +88,6 @@ class OptimizationGuideStoreTest : public testing::Test {
       MetadataSchemaState state,
       absl::optional<size_t> component_hint_count = absl::optional<size_t>(),
       absl::optional<base::Time> fetched_hints_update =
-          absl::optional<base::Time>(),
-      absl::optional<base::Time> host_model_features_update =
           absl::optional<base::Time>()) {
     db_store_.clear();
 
@@ -135,13 +133,6 @@ class OptimizationGuideStoreTest : public testing::Test {
                     OptimizationGuideStore::MetadataType::kFetched)]
           .set_update_time_secs(
               fetched_hints_update->ToDeltaSinceWindowsEpoch().InSeconds());
-    }
-    if (host_model_features_update) {
-      db_store_[OptimizationGuideStore::GetMetadataTypeEntryKey(
-                    OptimizationGuideStore::MetadataType::kHostModelFeatures)]
-          .set_update_time_secs(
-              host_model_features_update->ToDeltaSinceWindowsEpoch()
-                  .InSeconds());
     }
   }
 
@@ -196,21 +187,6 @@ class OptimizationGuideStoreTest : public testing::Test {
           FilePathToString(*model_file_path));
     }
     update_data->CopyPredictionModelIntoUpdateData(*prediction_model);
-  }
-
-  // Moves |host_model_features_count| into |update_data|.
-  void SeedHostModelFeaturesUpdateData(StoreUpdateData* update_data,
-                                       size_t host_model_features_count) {
-    for (size_t i = 0; i < host_model_features_count; i++) {
-      std::string host = GetHost(i);
-      proto::HostModelFeatures host_model_features;
-      proto::ModelFeature* model_feature =
-          host_model_features.add_model_features();
-      model_feature->set_feature_name("host_feat1");
-      model_feature->set_double_value(2.0);
-      host_model_features.set_host(host);
-      update_data->CopyHostModelFeaturesIntoUpdateData(host_model_features);
-    }
   }
 
   void CreateDatabase() {
@@ -309,48 +285,14 @@ class OptimizationGuideStoreTest : public testing::Test {
     }
   }
 
-  void UpdateHostModelFeatures(
-      std::unique_ptr<StoreUpdateData> host_model_features_data,
-      bool update_success = true,
-      bool load_host_model_features_entry_keys_success = true) {
-    EXPECT_CALL(*this, OnUpdateStore());
-    guide_store()->UpdateHostModelFeatures(
-        std::move(host_model_features_data),
-        base::BindOnce(&OptimizationGuideStoreTest::OnUpdateStore,
-                       base::Unretained(this)));
-    // OnUpdateStore callback
-    db()->UpdateCallback(update_success);
-    if (update_success) {
-      // OnLoadEntryKeys callback
-      db()->LoadCallback(load_host_model_features_entry_keys_success);
-    }
-  }
-
   void ClearFetchedHintsFromDatabase() {
     guide_store()->ClearFetchedHintsFromDatabase();
     db()->UpdateCallback(true);
     db()->LoadCallback(true);
   }
 
-  void ClearHostModelFeaturesFromDatabase() {
-    guide_store()->ClearHostModelFeaturesFromDatabase();
-    db()->UpdateCallback(true);
-    db()->LoadCallback(true);
-  }
-
   void PurgeExpiredFetchedHints() {
     guide_store()->PurgeExpiredFetchedHints();
-
-    // OnLoadExpiredEntriesToPurge
-    db()->LoadCallback(true);
-    // OnUpdateStore
-    db()->UpdateCallback(true);
-    // OnLoadEntryKeys callback
-    db()->LoadCallback(true);
-  }
-
-  void PurgeExpiredHostModelFeatures() {
-    guide_store()->PurgeExpiredHostModelFeatures();
 
     // OnLoadExpiredEntriesToPurge
     db()->LoadCallback(true);
@@ -393,23 +335,6 @@ class OptimizationGuideStoreTest : public testing::Test {
     }
   }
 
-  // Verifies that the host model features metadata has the expected next update
-  // time.
-  void ExpectHostModelFeaturesMetadata(base::Time update_time) const {
-    const auto& metadata_entry =
-        db_store_.find(OptimizationGuideStore::GetMetadataTypeEntryKey(
-            OptimizationGuideStore::MetadataType::kHostModelFeatures));
-    if (metadata_entry != db_store_.end()) {
-      // The next update time should have same time up to the second as the
-      // metadata entry is stored in seconds.
-      EXPECT_TRUE(base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(
-                      metadata_entry->second.update_time_secs())) -
-                      update_time <
-                  base::Seconds(1));
-    } else {
-      FAIL() << "No host model features metadata found";
-    }
-  }
   // Verifies that the component metadata has the expected version and all
   // expected component hints are present.
   void ExpectComponentHintsPresent(const std::string& version,
@@ -463,14 +388,6 @@ class OptimizationGuideStoreTest : public testing::Test {
 
   MemoryHint* last_loaded_hint() { return last_loaded_hint_.get(); }
 
-  proto::HostModelFeatures* last_loaded_host_model_features() {
-    return last_loaded_host_model_features_.get();
-  }
-
-  std::vector<proto::HostModelFeatures>* last_loaded_all_host_model_features() {
-    return last_loaded_all_host_model_features_.get();
-  }
-
   proto::PredictionModel* last_loaded_prediction_model() {
     return last_loaded_prediction_model_.get();
   }
@@ -479,18 +396,6 @@ class OptimizationGuideStoreTest : public testing::Test {
                     std::unique_ptr<MemoryHint> loaded_hint) {
     last_loaded_entry_key_ = hint_entry_key;
     last_loaded_hint_ = std::move(loaded_hint);
-  }
-
-  void OnHostModelFeaturesLoaded(
-      std::unique_ptr<proto::HostModelFeatures> loaded_host_model_features) {
-    last_loaded_host_model_features_ = std::move(loaded_host_model_features);
-  }
-
-  void OnAllHostModelFeaturesLoaded(
-      std::unique_ptr<std::vector<proto::HostModelFeatures>>
-          loaded_all_host_model_features) {
-    last_loaded_all_host_model_features_ =
-        std::move(loaded_all_host_model_features);
   }
 
   void OnPredictionModelLoaded(
@@ -512,9 +417,6 @@ class OptimizationGuideStoreTest : public testing::Test {
 
   OptimizationGuideStore::EntryKey last_loaded_entry_key_;
   std::unique_ptr<MemoryHint> last_loaded_hint_;
-  std::unique_ptr<proto::HostModelFeatures> last_loaded_host_model_features_;
-  std::unique_ptr<std::vector<proto::HostModelFeatures>>
-      last_loaded_all_host_model_features_;
   std::unique_ptr<proto::PredictionModel> last_loaded_prediction_model_;
 };
 
@@ -742,10 +644,6 @@ TEST_F(OptimizationGuideStoreTest,
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
       0 /* kSuccess */, 1);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -844,11 +742,6 @@ TEST_F(OptimizationGuideStoreTest, InitializeSucceededWithValidSchemaEntry) {
       6 /* kComponentAndFetchedMetadataMissing*/, 1);
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -906,9 +799,6 @@ TEST_F(OptimizationGuideStoreTest, InitializeSucceededWithPurgeExistingData) {
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult", 0);
-
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
@@ -928,15 +818,14 @@ TEST_F(OptimizationGuideStoreTest,
   MetadataSchemaState schema_state = MetadataSchemaState::kValid;
   size_t component_hint_count = 10;
   SeedInitialData(schema_state, component_hint_count,
-                  base::Time().Now(), /* fetch_update_time */
-                  base::Time().Now() /* host_model_features_update_time */);
+                  base::Time().Now() /* fetch_update_time */);
   CreateDatabase();
   InitializeStore(schema_state);
 
   // The store should contain the schema metadata entry, the component metadata
   // entry, and all of the initial component hints.
   EXPECT_EQ(GetDBStoreEntryCount(),
-            static_cast<size_t>(component_hint_count + 4));
+            static_cast<size_t>(component_hint_count + 3));
   EXPECT_EQ(GetStoreEntryKeyCount(), component_hint_count);
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
@@ -945,11 +834,6 @@ TEST_F(OptimizationGuideStoreTest,
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
       0 /* kSuccess */, 1);
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      true, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -993,11 +877,6 @@ TEST_F(OptimizationGuideStoreTest,
       6 /* kComponentAndFetchedMetadataMissing*/, 0);
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -1030,11 +909,6 @@ TEST_F(OptimizationGuideStoreTest,
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
       4 /* kComponentMetadataMissing*/, 1);
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -2508,202 +2382,6 @@ TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
   RunUntilIdle();
   // Make sure file is deleted when model is removed.
   EXPECT_FALSE(base::PathExists(file_path));
-}
-
-TEST_F(OptimizationGuideStoreTest, HostModelFeaturesMetadataStored) {
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 10, update_time,
-                  base::Time().Now() /* host_model_features_update_time */);
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  ExpectHostModelFeaturesMetadata(update_time);
-}
-
-TEST_F(OptimizationGuideStoreTest, FindEntryKeyForHostModelFeatures) {
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  size_t update_host_model_features_count = 5;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0,
-                  base::Time().Now() /* host_model_features_update_time */);
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    bool success =
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key);
-    EXPECT_EQ(success, i < update_host_model_features_count);
-  }
-}
-
-TEST_F(OptimizationGuideStoreTest, LoadHostModelFeaturesForHost) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    bool success =
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key);
-    EXPECT_TRUE(success);
-
-    guide_store()->LoadHostModelFeatures(
-        entry_key,
-        base::BindOnce(&OptimizationGuideStoreTest::OnHostModelFeaturesLoaded,
-                       base::Unretained(this)));
-
-    // OnPredictionModelLoaded callback
-    db()->GetCallback(true);
-
-    if (!last_loaded_host_model_features()) {
-      FAIL() << "Loaded host model features was null for entry key: "
-             << entry_key;
-    }
-
-    EXPECT_EQ(last_loaded_host_model_features()->host(), host);
-  }
-}
-
-TEST_F(OptimizationGuideStoreTest, LoadAllHostModelFeatures) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-  guide_store()->LoadAllHostModelFeatures(
-      base::BindOnce(&OptimizationGuideStoreTest::OnAllHostModelFeaturesLoaded,
-                     base::Unretained(this)));
-
-  // OnAllHostModelFeaturesLoaded callback
-  db()->LoadCallback(true);
-
-  std::vector<proto::HostModelFeatures>* all_host_model_features =
-      last_loaded_all_host_model_features();
-  EXPECT_TRUE(all_host_model_features);
-  EXPECT_EQ(update_host_model_features_count, all_host_model_features->size());
-
-  // Build a list of the hosts that are stored in the store.
-  base::flat_set<std::string> hosts = {};
-  for (size_t i = 0; i < update_host_model_features_count; i++)
-    hosts.insert(GetHost(i));
-
-  // Make sure all of the hosts of the host model features are returned.
-  for (const auto& host_model_features : *all_host_model_features)
-    EXPECT_NE(hosts.find(host_model_features.host()), hosts.end());
-}
-
-TEST_F(OptimizationGuideStoreTest, ClearHostModelFeatures) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_TRUE(guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
-
-  // Remove the host model features from the OptimizationGuideStore.
-  ClearHostModelFeaturesFromDatabase();
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ClearHostModelFeatures.StoreAvailable", true, 1);
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_FALSE(
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
-}
-
-TEST_F(OptimizationGuideStoreTest, PurgeExpiredHostModelFeatures) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time -
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_TRUE(guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
-
-  // Remove expired host model features from the opt. guide store.
-  PurgeExpiredHostModelFeatures();
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_FALSE(
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
 }
 
 TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {

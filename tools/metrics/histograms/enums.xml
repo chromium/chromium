@@ -43488,6 +43488,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Metadata"/>
   <int value="2" label="Component Hint"/>
   <int value="3" label="Fetched Hint"/>
+  <int value="4" label="Prediction Model"/>
+  <int value="5" label="[Deprecated] Host Model Features"/>
 </enum>
 
 <enum name="HistogramActivityReport">

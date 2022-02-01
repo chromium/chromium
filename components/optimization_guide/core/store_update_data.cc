@@ -38,40 +38,6 @@ StoreUpdateData::CreatePredictionModelStoreUpdateData(base::Time expiry_time) {
   return base::WrapUnique<StoreUpdateData>(new StoreUpdateData(expiry_time));
 }
 
-// static
-std::unique_ptr<StoreUpdateData>
-StoreUpdateData::CreateHostModelFeaturesStoreUpdateData(
-    base::Time host_model_features_update_time,
-    base::Time expiry_time) {
-  std::unique_ptr<StoreUpdateData> host_model_features_update_data(
-      new StoreUpdateData(host_model_features_update_time, expiry_time));
-  return host_model_features_update_data;
-}
-
-StoreUpdateData::StoreUpdateData(base::Time host_model_features_update_time,
-                                 base::Time expiry_time)
-    : update_time_(host_model_features_update_time),
-      expiry_time_(expiry_time),
-      entries_to_save_(std::make_unique<EntryVector>()) {
-  entry_key_prefix_ =
-      OptimizationGuideStore::GetHostModelFeaturesEntryKeyPrefix();
-  proto::StoreEntry metadata_host_model_features_entry;
-  metadata_host_model_features_entry.set_entry_type(
-      static_cast<proto::StoreEntryType>(
-          OptimizationGuideStore::StoreEntryType::kMetadata));
-  metadata_host_model_features_entry.set_update_time_secs(
-      host_model_features_update_time.ToDeltaSinceWindowsEpoch().InSeconds());
-  entries_to_save_->emplace_back(
-      OptimizationGuideStore::GetMetadataTypeEntryKey(
-          OptimizationGuideStore::MetadataType::kHostModelFeatures),
-      std::move(metadata_host_model_features_entry));
-
-  // |this| may be modified on another thread after construction but all
-  // future modifications, from that call forward, must be made on the same
-  // thread.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
 StoreUpdateData::StoreUpdateData(base::Time expiry_time)
     : expiry_time_(expiry_time),
       entries_to_save_(std::make_unique<EntryVector>()) {
@@ -158,28 +124,6 @@ void StoreUpdateData::MoveHintIntoUpdateData(proto::Hint&& hint) {
   }
   entry_proto.set_allocated_hint(new proto::Hint(std::move(hint)));
   entries_to_save_->emplace_back(std::move(hint_entry_key),
-                                 std::move(entry_proto));
-}
-
-void StoreUpdateData::CopyHostModelFeaturesIntoUpdateData(
-    const proto::HostModelFeatures& host_model_features) {
-  // All future modifications must be made by the same thread. Note, |this| may
-  // have been constructed on another thread.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!entry_key_prefix_.empty());
-  DCHECK(expiry_time_);
-
-  // To avoid any unnecessary copying, the host model feature data is moved into
-  // proto::StoreEntry.
-  OptimizationGuideStore::EntryKey host_model_features_entry_key =
-      entry_key_prefix_ + host_model_features.host();
-  proto::StoreEntry entry_proto;
-  entry_proto.set_entry_type(static_cast<proto::StoreEntryType>(
-      OptimizationGuideStore::StoreEntryType::kHostModelFeatures));
-  entry_proto.set_expiry_time_secs(
-      expiry_time_->ToDeltaSinceWindowsEpoch().InSeconds());
-  entry_proto.mutable_host_model_features()->CopyFrom(host_model_features);
-  entries_to_save_->emplace_back(std::move(host_model_features_entry_key),
                                  std::move(entry_proto));
 }
 

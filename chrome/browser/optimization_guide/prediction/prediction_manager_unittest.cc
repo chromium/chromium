@@ -67,7 +67,6 @@ proto::PredictionModel CreatePredictionModel(
 
   proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
-  model_info->add_supported_host_model_features("host_feat1");
   model_info->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model_info->add_supported_model_engine_versions(
@@ -88,8 +87,6 @@ std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse(
 
   proto::PredictionModel prediction_model =
       CreatePredictionModel(output_model_as_download_url);
-  prediction_model.mutable_model_info()->add_supported_host_model_features(
-      "host_feat1");
   prediction_model.mutable_model_info()->set_version(2);
   *get_models_response->add_models() = std::move(prediction_model);
 
@@ -342,16 +339,10 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
   }
 
   void RunInitCallback(bool load_models = true,
-                       bool load_host_model_features = true,
                        bool have_models_in_store = true) {
     load_models_ = load_models;
-    load_host_model_features_ = load_host_model_features;
     have_models_in_store_ = have_models_in_store;
     std::move(init_callback_).Run();
-  }
-
-  void RunUpdateHostModelFeaturesCallback() {
-    std::move(update_host_models_callback_).Run();
   }
 
   void LoadPredictionModel(const EntryKey& prediction_model_entry_key,
@@ -360,26 +351,6 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
     if (load_models_) {
       std::move(callback).Run(
           std::make_unique<proto::PredictionModel>(CreatePredictionModel()));
-    } else {
-      std::move(callback).Run(nullptr);
-    }
-  }
-
-  void LoadAllHostModelFeatures(
-      AllHostModelFeaturesLoadedCallback callback) override {
-    host_model_features_loaded_ = true;
-    if (load_host_model_features_) {
-      proto::HostModelFeatures host_model_features;
-      host_model_features.set_host("foo.com");
-      proto::ModelFeature* model_feature =
-          host_model_features.add_model_features();
-      model_feature->set_feature_name("host_feat1");
-      model_feature->set_double_value(2.0);
-      std::unique_ptr<std::vector<proto::HostModelFeatures>>
-          all_host_model_features =
-              std::make_unique<std::vector<proto::HostModelFeatures>>();
-      all_host_model_features->emplace_back(host_model_features);
-      std::move(callback).Run(std::move(all_host_model_features));
     } else {
       std::move(callback).Run(nullptr);
     }
@@ -401,14 +372,6 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
     return false;
   }
 
-  void UpdateHostModelFeatures(
-      std::unique_ptr<StoreUpdateData> host_model_features_update_data,
-      base::OnceClosure callback) override {
-    host_model_features_update_time_ =
-        *host_model_features_update_data->update_time();
-    update_host_models_callback_ = std::move(callback);
-  }
-
   void UpdatePredictionModels(
       std::unique_ptr<StoreUpdateData> prediction_models_update_data,
       base::OnceClosure callback) override {
@@ -416,17 +379,11 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
   }
 
   bool WasModelLoaded() const { return model_loaded_; }
-  bool WasHostModelFeaturesLoaded() const {
-    return host_model_features_loaded_;
-  }
 
  private:
   base::OnceClosure init_callback_;
-  base::OnceClosure update_host_models_callback_;
   bool model_loaded_ = false;
-  bool host_model_features_loaded_ = false;
   bool load_models_ = true;
-  bool load_host_model_features_ = true;
   bool have_models_in_store_ = true;
 };
 
@@ -455,15 +412,7 @@ class TestPredictionManager : public PredictionManager {
     create_valid_prediction_model_ = create_valid_prediction_model;
   }
 
-  using PredictionManager::GetHostModelFeaturesForHost;
-  using PredictionManager::GetHostModelFeaturesForTesting;
   using PredictionManager::GetPredictionModelForTesting;
-
-  void UpdateHostModelFeaturesForTesting(
-      proto::GetModelsResponse* get_models_response) {
-    UpdateHostModelFeatures(get_models_response->host_model_features());
-  }
-
   void UpdatePredictionModelsForTesting(
       proto::GetModelsResponse* get_models_response) {
     UpdatePredictionModels(get_models_response->models());
@@ -539,10 +488,9 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   }
 
   void SetStoreInitialized(bool load_models = true,
-                           bool load_host_model_features = true,
                            bool have_models_in_store = true) {
-    models_and_features_store()->RunInitCallback(
-        load_models, load_host_model_features, have_models_in_store);
+    models_and_features_store()->RunInitCallback(load_models,
+                                                 have_models_in_store);
     RunUntilIdle();
     // Move clock forward for any short delays added for the fetcher.
     MoveClockForwardBy(base::Seconds(2));
@@ -679,7 +627,6 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_metadata, &observer);
   SetStoreInitialized(/* load_models= */ false,
-                      /* load_host_model_features= */ false,
                       /* have_models_in_store= */ false);
 
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
@@ -771,7 +718,6 @@ TEST_F(PredictionManagerTest,
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/absl::nullopt, &observer1);
   SetStoreInitialized(/* load_models= */ false,
-                      /* load_host_model_features= */ false,
                       /* have_models_in_store= */ false);
 
   proto::ModelInfo model_info;
@@ -837,7 +783,6 @@ TEST_F(PredictionManagerTest,
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_metadata, &observer);
   SetStoreInitialized(/* load_models= */ false,
-                      /* load_host_model_features= */ false,
                       /* have_models_in_store= */ false);
 
   // Make sure no models are fetched.
@@ -1049,9 +994,6 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
   EXPECT_TRUE(prediction_model_download_manager()->cancel_downloads_called());
 
-  models_and_features_store()->RunUpdateHostModelFeaturesCallback();
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", true, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 0);
   histogram_tester.ExpectUniqueSample(
@@ -1090,8 +1032,7 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 0);
+
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
@@ -1112,8 +1053,7 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 0);
+
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
@@ -1141,8 +1081,7 @@ TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 0);
+
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 3, 1);
   histogram_tester.ExpectBucketCount(
@@ -1205,14 +1144,10 @@ TEST_F(PredictionManagerTest,
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
-  EXPECT_FALSE(models_and_features_store()->WasHostModelFeaturesLoaded());
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
-  EXPECT_FALSE(prediction_manager()->GetHostModelFeaturesForHost("foo.com"));
 
   SetStoreInitialized();
-  EXPECT_TRUE(models_and_features_store()->WasHostModelFeaturesLoaded());
   EXPECT_TRUE(models_and_features_store()->WasModelLoaded());
-  EXPECT_TRUE(prediction_manager()->GetHostModelFeaturesForHost("foo.com"));
 
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
   histogram_tester.ExpectUniqueSample(
@@ -1229,17 +1164,13 @@ TEST_F(PredictionManagerTest,
           PredictionModelFetcherEndState::kFetchFailed));
   SetStoreInitialized();
 
-  EXPECT_FALSE(models_and_features_store()->WasHostModelFeaturesLoaded());
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
-  EXPECT_FALSE(prediction_manager()->GetHostModelFeaturesForHost("foo.com"));
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
   RunUntilIdle();
 
-  EXPECT_TRUE(models_and_features_store()->WasHostModelFeaturesLoaded());
   EXPECT_TRUE(models_and_features_store()->WasModelLoaded());
-  EXPECT_TRUE(prediction_manager()->GetHostModelFeaturesForHost("foo.com"));
 
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
   histogram_tester.ExpectUniqueSample(

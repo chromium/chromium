@@ -153,33 +153,6 @@ TEST(StoreUpdateDataTest, BuildPredictionModelUpdateData) {
   EXPECT_TRUE(found_prediction_model_entry);
 }
 
-TEST(StoreUpdateDataTest, BuildHostModelFeaturesUpdateData) {
-  // Verify creating a Prediction Model update data.
-  base::Time host_model_features_update_time = base::Time::Now();
-
-  proto::HostModelFeatures host_model_features;
-  host_model_features.set_host("foo.com");
-  proto::ModelFeature* model_feature = host_model_features.add_model_features();
-  model_feature->set_feature_name("host_feat1");
-  model_feature->set_double_value(2.0);
-
-  std::unique_ptr<StoreUpdateData> host_model_features_update =
-      StoreUpdateData::CreateHostModelFeaturesStoreUpdateData(
-          host_model_features_update_time,
-          host_model_features_update_time +
-              optimization_guide::features::
-                  StoredHostModelFeaturesFreshnessDuration());
-  host_model_features_update->CopyHostModelFeaturesIntoUpdateData(
-      std::move(host_model_features));
-  EXPECT_FALSE(host_model_features_update->component_version().has_value());
-  EXPECT_TRUE(host_model_features_update->update_time().has_value());
-  EXPECT_EQ(host_model_features_update_time,
-            *host_model_features_update->update_time());
-  // Verify there are 2 store entries, 1 for the metadata entry and 1 for the
-  // added host model features entry.
-  EXPECT_EQ(2ul, host_model_features_update->TakeUpdateEntries()->size());
-}
-
 }  // namespace
 
 }  // namespace optimization_guide

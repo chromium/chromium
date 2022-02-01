@@ -293,20 +293,6 @@ void OptimizationGuideStore::PurgeExpiredFetchedHints() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OptimizationGuideStore::PurgeExpiredHostModelFeatures() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsAvailable())
-    return;
-
-  // Load all the host model features to check their expiry times.
-  database_->LoadKeysAndEntriesWithFilter(
-      base::BindRepeating(&DatabasePrefixFilter,
-                          GetHostModelFeaturesEntryKeyPrefix()),
-      base::BindOnce(&OptimizationGuideStore::OnLoadEntriesToPurgeExpired,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void OptimizationGuideStore::PurgeInactiveModels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -457,14 +443,6 @@ base::Time OptimizationGuideStore::GetFetchedHintsUpdateTime() const {
   return fetched_update_time_;
 }
 
-base::Time OptimizationGuideStore::GetHostModelFeaturesUpdateTime() const {
-  // If the store is not available, the metadata entries have not been loaded
-  // so there are no host model features.
-  if (!IsAvailable())
-    return base::Time();
-  return host_model_features_update_time_;
-}
-
 // static
 const char OptimizationGuideStore::kStoreSchemaVersion[] = "1";
 
@@ -532,14 +510,6 @@ OptimizationGuideStore::GetOptimizationTargetFromPredictionModelEntryKey(
     return proto::OPTIMIZATION_TARGET_UNKNOWN;
   }
   return static_cast<proto::OptimizationTarget>(optimization_target_number);
-}
-
-// static
-OptimizationGuideStore::EntryKeyPrefix
-OptimizationGuideStore::GetHostModelFeaturesEntryKeyPrefix() {
-  return base::NumberToString(static_cast<int>(
-             OptimizationGuideStore::StoreEntryType::kHostModelFeatures)) +
-         kKeySectionDelimiter;
 }
 
 void OptimizationGuideStore::UpdateStatus(Status new_status) {
@@ -783,24 +753,6 @@ void OptimizationGuideStore::OnLoadMetadata(
     }
     fetched_update_time_ = base::Time();
   }
-
-  auto host_model_features_entry = metadata_entries->find(
-      GetMetadataTypeEntryKey(MetadataType::kHostModelFeatures));
-  bool host_model_features_metadata_loaded = false;
-  host_model_features_update_time_ = base::Time();
-  if (host_model_features_entry != metadata_entries->end()) {
-    DCHECK(host_model_features_entry->second.has_update_time_secs());
-    host_model_features_update_time_ = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Seconds(host_model_features_entry->second.update_time_secs()));
-    host_model_features_metadata_loaded = true;
-  }
-  // TODO(crbug/1001194): Metrics should be separated so that stores maintaining
-  // different information types only record metrics for the types of entries
-  // they store.
-  UMA_HISTOGRAM_BOOLEAN(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      host_model_features_metadata_loaded);
 
   UpdateStatus(Status::kAvailable);
   MaybeLoadEntryKeys(std::move(callback));
@@ -1191,169 +1143,6 @@ void OptimizationGuideStore::OnModelFilePathVerified(
     RemovePredictionModelFromEntryKey(model_entry_key);
   }
   std::move(callback).Run(nullptr);
-}
-
-std::unique_ptr<StoreUpdateData>
-OptimizationGuideStore::CreateUpdateDataForHostModelFeatures(
-    base::Time host_model_features_update_time,
-    base::Time expiry_time) const {
-  // Create and returns a StoreUpdateData object. This object has host model
-  // features from the GetModelsResponse moved into and organizes them in a
-  // format usable by the store. The object will be stored with
-  // UpdateHostModelFeatures().
-  return StoreUpdateData::CreateHostModelFeaturesStoreUpdateData(
-      host_model_features_update_time, expiry_time);
-}
-
-void OptimizationGuideStore::UpdateHostModelFeatures(
-    std::unique_ptr<StoreUpdateData> host_model_features_update_data,
-    base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(host_model_features_update_data->update_time());
-
-  if (!IsAvailable()) {
-    std::move(callback).Run();
-    return;
-  }
-
-  host_model_features_update_time_ =
-      *host_model_features_update_data->update_time();
-
-  entry_keys_.reset();
-
-  // This will remove the host model features metadata entry and insert all the
-  // entries currently in |host_model_features_update_data|.
-  database_->UpdateEntriesWithRemoveFilter(
-      host_model_features_update_data->TakeUpdateEntries(),
-      base::BindRepeating(
-          &DatabasePrefixFilter,
-          GetMetadataTypeEntryKey(MetadataType::kHostModelFeatures)),
-      base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-bool OptimizationGuideStore::FindHostModelFeaturesEntryKey(
-    const std::string& host,
-    OptimizationGuideStore::EntryKey* out_host_model_features_entry_key) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!entry_keys_)
-    return false;
-
-  return FindEntryKeyForHostWithPrefix(host, out_host_model_features_entry_key,
-                                       GetHostModelFeaturesEntryKeyPrefix());
-}
-
-void OptimizationGuideStore::LoadAllHostModelFeatures(
-    AllHostModelFeaturesLoadedCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsAvailable()) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  // Load all the host model features within the store.
-  database_->LoadEntriesWithFilter(
-      base::BindRepeating(&DatabasePrefixFilter,
-                          GetHostModelFeaturesEntryKeyPrefix()),
-      base::BindOnce(&OptimizationGuideStore::OnLoadAllHostModelFeatures,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void OptimizationGuideStore::LoadHostModelFeatures(
-    const EntryKey& host_model_features_entry_key,
-    HostModelFeaturesLoadedCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsAvailable()) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  // Load all the host model features within the store.
-  database_->GetEntry(
-      host_model_features_entry_key,
-      base::BindOnce(&OptimizationGuideStore::OnLoadHostModelFeatures,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void OptimizationGuideStore::OnLoadHostModelFeatures(
-    HostModelFeaturesLoadedCallback callback,
-    bool success,
-    std::unique_ptr<proto::StoreEntry> entry) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If either the request failed or the store was set to unavailable after the
-  // request was started, then the loaded host model features should not
-  // be considered valid. Reset the entry so that nothing is returned to the
-  // requester.
-  if (!success || !IsAvailable()) {
-    entry.reset();
-  }
-  if (!entry || !entry->has_host_model_features()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::unique_ptr<proto::HostModelFeatures> loaded_host_model_features(
-      entry->release_host_model_features());
-  std::move(callback).Run(std::move(loaded_host_model_features));
-}
-
-void OptimizationGuideStore::OnLoadAllHostModelFeatures(
-    AllHostModelFeaturesLoadedCallback callback,
-    bool success,
-    std::unique_ptr<std::vector<proto::StoreEntry>> entries) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If either the request failed or the store was set to unavailable after the
-  // request was started, then the loaded host model features should not
-  // be considered valid. Reset the entry so that nothing is returned to the
-  // requester.
-  if (!success || !IsAvailable()) {
-    entries.reset();
-  }
-
-  if (!entries || entries->size() == 0) {
-    std::unique_ptr<std::vector<proto::HostModelFeatures>>
-        loaded_host_model_features(nullptr);
-    std::move(callback).Run(std::move(loaded_host_model_features));
-    return;
-  }
-
-  std::unique_ptr<std::vector<proto::HostModelFeatures>>
-      loaded_host_model_features =
-          std::make_unique<std::vector<proto::HostModelFeatures>>();
-  for (auto& entry : *entries.get()) {
-    if (!entry.has_host_model_features())
-      continue;
-    loaded_host_model_features->emplace_back(entry.host_model_features());
-  }
-  std::move(callback).Run(std::move(loaded_host_model_features));
-}
-
-void OptimizationGuideStore::ClearHostModelFeaturesFromDatabase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.ClearHostModelFeatures.StoreAvailable", IsAvailable());
-  if (!IsAvailable())
-    return;
-
-  auto entries_to_save = std::make_unique<EntryVector>();
-
-  entry_keys_.reset();
-
-  // Removes all |kHostModelFeatures| store entries. OnUpdateStore will handle
-  // updating status and re-filling entry_keys with the entries still in the
-  // store.
-  database_->UpdateEntriesWithRemoveFilter(
-      std::move(entries_to_save),  // this should be empty.
-      base::BindRepeating(&DatabasePrefixFilter,
-                          GetHostModelFeaturesEntryKeyPrefix()),
-      base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 }  // namespace optimization_guide

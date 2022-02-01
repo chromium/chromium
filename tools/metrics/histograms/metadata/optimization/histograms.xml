@@ -177,7 +177,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ClearHostModelFeatures.StoreAvailable"
-    units="BooleanAvailable" expires_after="M106">
+    units="BooleanAvailable" expires_after="2022-01-28">
+  <obsolete>
+    Deprecated as of 2022-01-28.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -758,7 +761,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PredictionManager.HostModelFeaturesMapSize"
-    units="total host count" expires_after="M106">
+    units="total host count" expires_after="2022-01-28">
+  <obsolete>
+    Deprecated as of 2022-01-28.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -879,7 +885,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelStore.HostModelFeaturesLoadMetadataResult"
-    enum="BooleanLoaded" expires_after="M106">
+    enum="BooleanLoaded" expires_after="2022-01-28">
+  <obsolete>
+    Deprecated as of 2022-01-28.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
