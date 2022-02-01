@@ -1352,8 +1352,14 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                 .ToString());
 }
 
+// Flaky on Lacros: https://crbug.com/1292527
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ControlsIdsForDateTimePopup DISABLED_ControlsIdsForDateTimePopup
+#else
+#define MAYBE_ControlsIdsForDateTimePopup ControlsIdsForDateTimePopup
+#endif
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       ControlsIdsForDateTimePopup) {
+                       MAYBE_ControlsIdsForDateTimePopup) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
