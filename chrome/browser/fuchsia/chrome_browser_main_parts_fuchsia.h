@@ -13,6 +13,9 @@ namespace base {
 class ProcessLifecycle;
 }
 
+class ScopedKeepAlive;
+class ElementManagerImpl;
+
 class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
  public:
   ChromeBrowserMainPartsFuchsia(content::MainFunctionParams parameters,
@@ -37,8 +40,13 @@ class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
 
   std::unique_ptr<base::ProcessLifecycle> lifecycle_;
 
-  // Initialized if GraphicalPresenter is to be used to show top-level windows.
+  // Implementations used when running under CFv2. Under CFv2 Chrome runs in the
+  // background, only opening windows when requested to via the
+  // fuchsia.element.Manager service. The browser process must remain live until
+  // explicitly torn-down by the ELF runner.
   std::unique_ptr<UseGraphicalPresenter> use_graphical_presenter_;
+  std::unique_ptr<ElementManagerImpl> element_manager_;
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   // TODO(crbug.com/1284806): Remove this once ViewProvider is deprecated.
   std::unique_ptr<ViewProviderRouter> view_provider_;

@@ -5902,6 +5902,8 @@ static_library("browser") {
       "first_run/upgrade_util_fuchsia.cc",
       "fuchsia/chrome_browser_main_parts_fuchsia.cc",
       "fuchsia/chrome_browser_main_parts_fuchsia.h",
+      "fuchsia/element_manager_impl.cc",
+      "fuchsia/element_manager_impl.h",
       "fuchsia/switches.cc",
       "fuchsia/switches.h",
       "fullscreen_fuchsia.cc",
@@ -5920,7 +5922,6 @@ static_library("browser") {
     ]
 
     deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
@@ -5929,6 +5930,8 @@ static_library("browser") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//ui/platform_window",
     ]
+
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element" ]
   }
 
   if (is_posix) {

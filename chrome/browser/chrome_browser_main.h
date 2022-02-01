@@ -57,6 +57,15 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // by InProcessBrowserTests to allow them to run until the BrowserProcess is
   // ready for the browser to exit.
   static std::unique_ptr<base::RunLoop> TakeRunLoopForTest();
+
+  // Handles notifications from other processes. The function receives the
+  // command line and directory with which the other Chrome process was
+  // launched. Return true if the command line will be handled within the
+  // current browser instance or false if the remote process should handle it
+  // (i.e., because the current process is shutting down).
+  static bool ProcessSingletonNotificationCallback(
+      const base::CommandLine& command_line,
+      const base::FilePath& current_directory);
 #endif
 
  protected:

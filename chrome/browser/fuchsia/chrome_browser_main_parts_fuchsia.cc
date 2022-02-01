@@ -27,8 +27,12 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
+#include "chrome/browser/fuchsia/element_manager_impl.h"
 #include "chrome/browser/fuchsia/switches.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
@@ -54,6 +58,14 @@ void HandleOzonePlatformArgs() {
                                   scenic_uses_flatland ? "flatland" : "scenic");
 }
 
+void HandleCFv2Argument() {
+  base::CommandLine* const launch_args = base::CommandLine::ForCurrentProcess();
+  if (!launch_args->HasSwitch(switches::kEnableCFv2)) {
+    return;
+  }
+  launch_args->AppendSwitch(switches::kNoStartupWindow);
+}
+
 fuchsia::ui::views::ViewRef CloneViewRef(
     const fuchsia::ui::views::ViewRef& view_ref) {
   fuchsia::ui::views::ViewRef dup;
@@ -61,6 +73,12 @@ fuchsia::ui::views::ViewRef CloneViewRef(
       view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
   ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
   return dup;
+}
+
+bool NotifyNewBrowserWindow(const base::CommandLine& command_line) {
+  base::FilePath path;
+  return ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
+      command_line, path);
 }
 
 // ViewProviderScenic ----------------------------------------------------------
@@ -600,6 +618,7 @@ void ChromeBrowserMainPartsFuchsia::ShowMissingLocaleMessageBox() {
 
 int ChromeBrowserMainPartsFuchsia::PreEarlyInitialization() {
   HandleOzonePlatformArgs();
+  HandleCFv2Argument();
   return ChromeBrowserMainParts::PreEarlyInitialization();
 }
 
@@ -608,6 +627,12 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
           switches::kEnableCFv2)) {
     // Configure Ozone to create top-level Views via GraphicalPresenter.
     use_graphical_presenter_ = std::make_unique<UseGraphicalPresenter>();
+    element_manager_ = std::make_unique<ElementManagerImpl>(
+        base::ComponentContextForProcess()->outgoing().get(),
+        base::BindRepeating(&NotifyNewBrowserWindow));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA,
+        KeepAliveRestartOption::ENABLED);
   } else {
     // Register the ViewProvider API.
     view_provider_ = std::make_unique<ViewProviderRouter>(

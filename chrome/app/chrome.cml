@@ -24,6 +24,7 @@
     capabilities: [
         {
             protocol: [
+                "fuchsia.element.Manager",
                 "fuchsia.ui.app.ViewProvider",
             ],
         },
@@ -72,6 +73,7 @@
     expose: [
         {
             protocol: [
+                "fuchsia.element.Manager",
                 "fuchsia.ui.app.ViewProvider",
             ],
             from: "self",

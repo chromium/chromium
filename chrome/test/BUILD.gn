@@ -7960,6 +7960,8 @@ test("unit_tests") {
     # including CrashKeys in reports.
     sources -= [ "../common/crash_keys_unittest.cc" ]
 
+    sources += [ "../browser/fuchsia/element_manager_impl_unittest.cc" ]
+
     data += [ "//testing/buildbot/filters/fuchsia.unit_tests.filter" ]
 
     additional_manifest_fragments = [
