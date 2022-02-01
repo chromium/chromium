@@ -218,8 +218,29 @@ void DevicePairingHandler::OnDeviceConnect(
     return;
   }
 
-  BLUETOOTH_LOG(ERROR) << "Pairing failed with error code: "
+  device::BluetoothDevice* device = FindDevice(current_pairing_device_id_);
+
+  // In some cases, device->Connect() will return a failure if the pairing
+  // succeeded but the subsequent connection request returns with a failure.
+  // Empirically, it's found that the device actually does connect, and
+  // device->IsConnected() returns true. Handle this case the
+  // same as pairing succeeding. TODO(b/209531279): Remove this when root cause
+  // of issue is fixed.
+  if (device && device->IsConnected()) {
+    BLUETOOTH_LOG(EVENT)
+        << device->GetAddress()
+        << ": Pairing finished with an error code, but device "
+        << "is connected. Handling like pairing succeeded. Error code: "
+        << error_code.value();
+    FinishCurrentPairingRequest(absl::nullopt);
+    NotifyFinished();
+    return;
+  }
+
+  BLUETOOTH_LOG(ERROR) << device->GetAddress()
+                       << ": Pairing failed with error code: "
                        << error_code.value();
+
   using ErrorCode = device::BluetoothDevice::ConnectErrorCode;
   switch (error_code.value()) {
     case ErrorCode::ERROR_AUTH_CANCELED:
