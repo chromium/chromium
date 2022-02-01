@@ -1265,12 +1265,12 @@ TEST_F(CrostiniManagerRestartTest,
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
 
-  task_environment_.FastForwardBy(base::Days(4));
+  task_environment_.FastForwardBy(base::Minutes(2));
   crostini_manager_->OnLxdContainerStarting(signal);
-  task_environment_.FastForwardBy(base::Days(4));
+  task_environment_.FastForwardBy(base::Minutes(2));
   ASSERT_EQ(0, restart_crostini_callback_count_);
 
-  task_environment_.FastForwardBy(base::Days(4));
+  task_environment_.FastForwardBy(base::Minutes(2));
   ASSERT_EQ(1, restart_crostini_callback_count_);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);

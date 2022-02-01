@@ -454,7 +454,7 @@ class CrostiniManager::CrostiniRestarter
 
   // TODO(crbug/1153210): Better numbers for timeouts once we have data.
   std::map<mojom::InstallerState, base::TimeDelta> stage_timeouts_ = {
-      {mojom::InstallerState::kStart, base::Minutes(5)},
+      {mojom::InstallerState::kStart, base::Minutes(2)},
       {mojom::InstallerState::kInstallImageLoader,
        base::Hours(6)},  // May need to download DLC or component
       {mojom::InstallerState::kCreateDiskImage, base::Minutes(5)},
@@ -464,11 +464,10 @@ class CrostiniManager::CrostiniRestarter
       // messages that reset the countdown.
       {mojom::InstallerState::kCreateContainer, base::Minutes(5)},
       {mojom::InstallerState::kSetupContainer, base::Minutes(5)},
-      // StartContainer might need to do a UID remapping, which in the worst
-      // case can take a very long time.
-      // TODO(crbug/1197416) once the heartbeat change has landed in Tremplin
-      // and made it out, make this something shorter like a few minutes.
-      {mojom::InstallerState::kStartContainer, base::Days(5)},
+      // StartContainer sends heartbeat messages on a 30-second interval, but
+      // there's a bit of work that's not covered by heartbeat messages so to be
+      // safe set a 3 minute timeout.
+      {mojom::InstallerState::kStartContainer, base::Minutes(3)},
       // ConfigureContainer is special, it's not part of the restarter flow, so
       // it doesn't have a timeout.
       {mojom::InstallerState::kConfigureContainer, base::Hours(0)},
