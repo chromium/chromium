@@ -259,15 +259,14 @@ class IntegrationTest(unittest.TestCase):
             yield container_name, apk_spec, pak_spec, native_spec
 
       raw_symbols_list = []
-      build_config = {}
 
       with test_util.AddMocksToPath():
+        build_config = archive.CreateBuildConfig(output_directory,
+                                                 _TEST_SOURCE_DIR)
         pak_id_map = pakfile.PakIdMap()
         for container_name, apk_spec, pak_spec, native_spec in iter_specs():
-          metadata = archive.CreateMetadata(build_config=build_config,
-                                            apk_spec=apk_spec,
+          metadata = archive.CreateMetadata(apk_spec=apk_spec,
                                             native_spec=native_spec,
-                                            source_directory=_TEST_SOURCE_DIR,
                                             output_directory=output_directory)
           raw_symbols = archive.CreateContainerSymbols(
               container_name=container_name,

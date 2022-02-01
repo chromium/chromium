@@ -6,7 +6,6 @@
 import argparse
 import collections
 import dataclasses
-import functools
 import logging
 import os
 import posixpath
@@ -227,40 +226,37 @@ def _ListSplits(minimal_apks_path):
   return sorted(ret, key=lambda x: (x != 'base', x))
 
 
-def CreateMetadata(*, build_config, apk_spec, native_spec, source_directory,
-                   output_directory):
-  """Creates metadata dict while updating |build_config|.
+def CreateBuildConfig(output_directory, source_directory):
+  """Creates the dict to use for SizeInfo.build_info."""
+  logging.debug('Constructing build_config')
+  build_config = {}
+  if output_directory:
+    gn_args = _ParseGnArgs(os.path.join(output_directory, 'args.gn'))
+    build_config[models.BUILD_CONFIG_GN_ARGS] = gn_args
+
+  git_rev = _DetectGitRevision(source_directory)
+  if git_rev:
+    build_config[models.BUILD_CONFIG_GIT_REVISION] = git_rev
+
+  return build_config
+
+
+def CreateMetadata(*, apk_spec, native_spec, output_directory):
+  """Creates metadata dict.
 
   Returns:
     A dict of models.METADATA_* -> values. Performs "best effort" extraction
     using available data.
   """
   logging.debug('Constructing metadata')
-
-  def update_build_config(key, value):
-    if key in build_config:
-      old_value = build_config[key]
-      if value != old_value:
-        raise ValueError('Inconsistent {}: {} (was {})'.format(
-            key, value, old_value))
-    else:
-      build_config[key] = value
-
   metadata = {}
 
   # Ensure all paths are relative to output directory to make them hermetic.
   if output_directory:
     shorten_path = lambda path: os.path.relpath(path, output_directory)
-    gn_args = _ParseGnArgs(os.path.join(output_directory, 'args.gn'))
-    update_build_config(models.BUILD_CONFIG_GN_ARGS, gn_args)
   else:
     # If output directory is unavailable, just store basenames.
     shorten_path = os.path.basename
-
-  # Deduce GIT revision (cached via @lru_cache).
-  git_rev = _DetectGitRevision(source_directory)
-  if git_rev:
-    update_build_config(models.BUILD_CONFIG_GIT_REVISION, git_rev)
 
   if apk_spec:
     metadata[models.METADATA_APK_SIZE] = os.path.getsize(apk_spec.apk_path)
@@ -458,7 +454,6 @@ def CreateSizeInfo(build_config,
   return models.SizeInfo(build_config, container_list, all_raw_symbols)
 
 
-@functools.lru_cache
 def _DetectGitRevision(directory):
   """Runs git rev-parse to get the SHA1 hash of the current revision.
 
@@ -477,7 +472,6 @@ def _DetectGitRevision(directory):
     return None
 
 
-@functools.lru_cache
 def _ParseGnArgs(args_path):
   """Returns a list of normalized "key=value" strings."""
   args = {}
@@ -1050,7 +1044,7 @@ def Run(top_args, on_config_error):
     except Exception as e:
       on_config_error(f'Bad --container-filter input: {e}')
 
-  build_config = {}
+  build_config = None
   seen_container_names = set()
   raw_symbols_list = []
   pak_id_map = pakfile.PakIdMap()
@@ -1058,6 +1052,10 @@ def Run(top_args, on_config_error):
   # Iterate over each container.
   for (sub_args, apk_spec, pak_spec, native_specs, container_name,
        resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
+    if build_config is None:
+      # TODO(agrieve): Move this out of the loop.
+      build_config = CreateBuildConfig(sub_args.output_directory,
+                                       sub_args.source_directory)
     if not native_specs:
       native_specs = [None]
 
@@ -1071,10 +1069,8 @@ def Run(top_args, on_config_error):
         continue
       logging.info('Starting on container %s', container_name)
 
-      metadata = CreateMetadata(build_config=build_config,
-                                apk_spec=apk_spec,
+      metadata = CreateMetadata(apk_spec=apk_spec,
                                 native_spec=native_spec,
-                                source_directory=sub_args.source_directory,
                                 output_directory=sub_args.output_directory)
       raw_symbols = CreateContainerSymbols(
           container_name=container_name,
