@@ -152,6 +152,7 @@ source_set("chromeos") {
     "//ash/webui/resources:help_app_resources_grit",
     "//ash/webui/resources:media_app_resources_grit",
     "//ash/webui/resources:os_feedback_resources_grit",
+    "//ash/webui/resources:os_feedback_untrusted_resources_grit",
     "//ash/webui/resources:personalization_app_resources_grit",
     "//ash/webui/resources:print_management_resources_grit",
     "//ash/webui/resources:projector_app_bundle_resources_grit",

@@ -270,6 +270,7 @@ template("chrome_extra_paks") {
         "//ash/webui/resources:media_app_resources",
         "//ash/webui/resources:multidevice_debug_resources",
         "//ash/webui/resources:os_feedback_resources",
+        "//ash/webui/resources:os_feedback_untrusted_resources",
         "//ash/webui/resources:personalization_app_resources",
         "//ash/webui/resources:print_management_resources",
         "//ash/webui/resources:projector_app_bundle_resources",
