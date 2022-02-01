@@ -939,11 +939,21 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
     }
 
+    void maybeShowFeatureNotificationVoiceSearchIPH() {
+        IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
+                R.string.feature_notification_guide_tooltip_message_voice_search,
+                R.string.feature_notification_guide_tooltip_message_voice_search,
+                mSearchBoxCoordinator.getVoiceSearchButton(), true);
+        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
+        userEducationHelper.requestShowIPH(iphCommandBuilder.build());
+    }
+
     private static IPHCommandBuilder createIPHCommandBuilder(Resources resources,
             @StringRes int stringId, @StringRes int accessibilityStringId, View anchorView,
             boolean showHighlight) {
         IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(resources,
-                FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE, stringId, accessibilityStringId);
+                FeatureConstants.FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE,
+                stringId, accessibilityStringId);
         iphCommandBuilder.setAnchorView(anchorView);
         int yInsetPx = resources.getDimensionPixelOffset(
                 R.dimen.video_tutorial_try_now_iph_ntp_searchbox_y_inset);

@@ -34,6 +34,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
+import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
@@ -84,6 +86,7 @@ public class FeedSurfaceCoordinator
                    BackToTopBubbleScrollListener.ResultHandler, SurfaceCoordinator,
                    FeedAutoplaySettingsDelegate, FeedReliabilityLoggingSignals {
     private static final String TAG = "FeedSurfaceCoordinator";
+    private static final long DELAY_FEED_HEADER_IPH_MS = 5;
 
     protected final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
@@ -336,6 +339,13 @@ public class FeedSurfaceCoordinator
         }
     }
 
+    private void showDiscoverIph() {
+        mHandler.postDelayed(() -> {
+            UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
+            mSectionHeaderView.showHeaderIph(helper);
+        }, DELAY_FEED_HEADER_IPH_MS);
+    }
+
     @Override
     public void destroy() {
         if (mSwipeRefreshLayout != null) {
@@ -469,6 +479,8 @@ public class FeedSurfaceCoordinator
             observer.surfaceOpened();
         }
         mMediator.onSurfaceOpened();
+        FeatureNotificationUtils.registerIPHCallback(
+                FeatureType.NTP_SUGGESTION_CARD, this::showDiscoverIph);
     }
 
     /** Hides the feed. */
@@ -477,6 +489,7 @@ public class FeedSurfaceCoordinator
         if (!FeedSurfaceTracker.getInstance().isStartupCalled()) return;
         mIsActive = false;
         mMediator.onSurfaceClosed();
+        FeatureNotificationUtils.unregisterIPHCallback(FeatureType.NTP_SUGGESTION_CARD);
     }
 
     /** Returns a string usable for restoring the UI to current state. */

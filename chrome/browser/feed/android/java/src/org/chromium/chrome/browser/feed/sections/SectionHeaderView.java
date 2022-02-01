@@ -446,6 +446,17 @@ public class SectionHeaderView extends LinearLayout {
                         .build());
     }
 
+    /** Shows an IPH on the feed section header title. */
+    public void showHeaderIph(UserEducationHelper helper) {
+        helper.requestShowIPH(new IPHCommandBuilder(mTitleView.getContext().getResources(),
+                FeatureConstants.FEATURE_NOTIFICATION_GUIDE_NTP_SUGGESTION_CARD_HELP_BUBBLE_FEATURE,
+                R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card,
+                R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card)
+                                      .setAnchorView(mTitleView)
+                                      .setDismissOnTouch(false)
+                                      .build());
+    }
+
     private void adjustMenuTouchDelegate(int touchSize) {
         Rect rect = new Rect();
         mMenuView.getHitRect(rect);
