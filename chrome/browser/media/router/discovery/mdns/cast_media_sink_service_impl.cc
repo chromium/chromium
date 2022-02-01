@@ -728,9 +728,10 @@ bool CastMediaSinkServiceImpl::HasSink(const MediaSink::Id& sink_id) {
   return base::Contains(GetSinks(), sink_id);
 }
 
-void CastMediaSinkServiceImpl::RemoveSink(const MediaSinkInternal& sink) {
+void CastMediaSinkServiceImpl::DisconnectAndRemoveSink(
+    const MediaSinkInternal& sink) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MediaSinkServiceBase::RemoveSink(sink);
+  RemoveSink(sink);
 
   // Need a PostTask() here because CloseSocket() will release the memory of
   // |socket|. Need to make sure all tasks on |socket| finish before deleting

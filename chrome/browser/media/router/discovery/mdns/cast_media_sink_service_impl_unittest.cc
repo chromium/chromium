@@ -1364,7 +1364,7 @@ TEST_P(CastMediaSinkServiceImplTest, TestHasSink) {
   EXPECT_FALSE(media_sink_service_impl_.HasSink(cast_sink2.id()));
 }
 
-TEST_P(CastMediaSinkServiceImplTest, TestRemoveSink) {
+TEST_P(CastMediaSinkServiceImplTest, TestDisconnectAndRemoveSink) {
   auto cast_sink = CreateCastSink(1);
   net::IPEndPoint ip_endpoint = CreateIPEndPoint(1);
   cast_channel::MockCastSocket socket;
@@ -1396,7 +1396,7 @@ TEST_P(CastMediaSinkServiceImplTest, TestRemoveSink) {
   // Expect that the sink is removed from objects.
   EXPECT_CALL(*mock_cast_socket_service_, CloseSocket(_));
   EXPECT_CALL(observer_, OnSinkRemoved(cast_sink));
-  media_sink_service_impl_.RemoveSink(cast_sink);
+  media_sink_service_impl_.DisconnectAndRemoveSink(cast_sink);
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(media_sink_service_impl_.GetSinks().empty());
 }
