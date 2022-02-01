@@ -11435,6 +11435,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="1002" label="DRIVE_RESPONSE_TOO_LARGE"/>
 </enum>
 
+<enum name="CalendarViewShowMethod">
+  <int value="0" label="Invalid Event"/>
+  <int value="1" label="Tap"/>
+  <int value="2" label="Mouse Click"/>
+  <int value="3" label="Accelerator"/>
+  <int value="4" label="Stylus"/>
+</enum>
+
 <enum name="CameraPrivacySwitchEvent">
   <int value="0" label="Camera privacy switch toggled on"/>
   <int value="1" label="Camera privacy switch toggled off"/>

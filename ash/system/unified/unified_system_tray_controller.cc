@@ -45,6 +45,7 @@
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 #include "ash/system/privacy_screen/privacy_screen_feature_pod_controller.h"
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/unified_calendar_view_controller.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/tray/tray_constants.h"
@@ -70,6 +71,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget.h"
@@ -394,9 +396,14 @@ void UnifiedSystemTrayController::ShowNotifierSettingsView() {
   ShowDetailedView(std::make_unique<UnifiedNotifierSettingsController>(this));
 }
 
-void UnifiedSystemTrayController::ShowCalendarView() {
-  if (features::IsCalendarViewEnabled())
-    ShowDetailedView(std::make_unique<UnifiedCalendarViewController>(this));
+void UnifiedSystemTrayController::ShowCalendarView(
+    CalendarViewShowSource show_source,
+    const ui::Event& event) {
+  if (!features::IsCalendarViewEnabled())
+    return;
+
+  RecordCalendarShowMetrics(show_source, event);
+  ShowDetailedView(std::make_unique<UnifiedCalendarViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowMediaControlsDetailedView() {

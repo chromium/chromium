@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_event_filter.h"
@@ -22,6 +23,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -150,13 +152,15 @@ void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
   controller_->ShowAudioDetailedView();
 }
 
-void UnifiedSystemTrayBubble::ShowCalendarView() {
+void UnifiedSystemTrayBubble::ShowCalendarView(
+    CalendarViewShowSource show_source,
+    const ui::Event& event) {
   if (!bubble_widget_)
     return;
 
   DCHECK(unified_view_);
   DCHECK(controller_);
-  controller_->ShowCalendarView();
+  controller_->ShowCalendarView(show_source, event);
 }
 
 void UnifiedSystemTrayBubble::ShowNetworkDetailedView(bool force) {

@@ -19,6 +19,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/supervised/supervised_icon_string.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
@@ -73,6 +74,9 @@ class DateView : public views::Button, public ClockObserver {
   void OnThemeChanged() override;
 
  private:
+  // Callback called when this is pressed.
+  void OnButtonPressed(const ui::Event& event);
+
   void Update();
 
   // views::Button:
@@ -84,17 +88,19 @@ class DateView : public views::Button, public ClockObserver {
   void OnSystemClockCanSetTimeChanged(bool can_set_time) override;
   void Refresh() override;
 
+  // Owned by the views hierarchy.
   views::Label* label_;
+
+  // Unowned.
+  UnifiedSystemTrayController* const controller_;
 };
 
 DateView::DateView(UnifiedSystemTrayController* controller)
-    : Button(base::BindRepeating(
-          features::IsCalendarViewEnabled()
-              ? &UnifiedSystemTrayController::ShowCalendarView
-              : &UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction,
-          base::Unretained(controller))) {
+    : Button(base::BindRepeating(&DateView::OnButtonPressed,
+                                 base::Unretained(this))),
+      label_(AddChildView(std::make_unique<views::Label>())),
+      controller_(controller) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  label_ = AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
   Update();
@@ -116,6 +122,15 @@ void DateView::OnThemeChanged() {
       ContentLayerType::kTextColorPrimary));
   views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
+}
+
+void DateView::OnButtonPressed(const ui::Event& event) {
+  if (features::IsCalendarViewEnabled()) {
+    controller_->ShowCalendarView(CalendarViewShowSource::kDateView, event);
+    return;
+  }
+
+  controller_->HandleOpenDateTimeSettingsAction();
 }
 
 void DateView::Update() {

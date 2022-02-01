@@ -504,6 +504,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.ShowSource.{ViewShowSource}"
+    enum="CalendarViewShowMethod" expires_after="2022-11-10">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the calendar view is shown from the {ViewShowSource} tap,
+    click, or key press.
+  </summary>
+  <token key="ViewShowSource">
+    <variant name="Accelerator" summary="accelerator"/>
+    <variant name="DateView" summary="date view in quick settings"/>
+    <variant name="TimeView" summary="time view in the status area"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
     enum="CaptureModeBarButtonType" expires_after="2022-09-29">
   <owner>afakhry@chromium.org</owner>

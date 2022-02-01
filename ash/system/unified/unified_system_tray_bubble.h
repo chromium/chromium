@@ -10,6 +10,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/screen_layout_observer.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_bubble_base.h"
 #include "base/time/time.h"
@@ -18,6 +19,10 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace ui {
+class Event;
+}  // namespace ui
 
 namespace views {
 class Widget;
@@ -74,7 +79,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   void ShowAudioDetailedView();
 
   // Show calendar view.
-  void ShowCalendarView();
+  void ShowCalendarView(CalendarViewShowSource show_source,
+                        const ui::Event& event);
 
   // Show network settings detailed view.
   void ShowNetworkDetailedView(bool force);

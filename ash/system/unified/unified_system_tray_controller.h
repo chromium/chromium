@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/media/unified_media_controls_controller.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +22,10 @@
 
 class PrefRegistrySimple;
 class PrefService;
+
+namespace ui {
+class Event;
+}  // namespace ui
 
 namespace gfx {
 class SlideAnimation;
@@ -110,7 +115,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Show the detailed view of media controls. Called from the view.
   void ShowMediaControlsDetailedView();
   // Show the detailed view of Calendar. Called from the view.
-  void ShowCalendarView();
+  void ShowCalendarView(CalendarViewShowSource show_source,
+                        const ui::Event& event);
 
   // If you want to add a new detailed view, add here.
 

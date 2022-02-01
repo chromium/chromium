@@ -22,6 +22,7 @@
 #include "ash/system/network/network_tray_view.h"
 #include "ash/system/power/tray_power.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -466,7 +467,7 @@ void UnifiedSystemTray::OnTimeViewActionPerformed(const ui::Event& event) {
     CloseBubble();
   } else {
     ShowBubble();
-    bubble_->ShowCalendarView();
+    bubble_->ShowCalendarView(CalendarViewShowSource::kTimeView, event);
   }
 }
 
