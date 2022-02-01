@@ -67,6 +67,11 @@ crosapi::mojom::ScreenShareAreaPtr ConvertToScreenShareArea(
   }
   DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
   aura::Window* window = content::DesktopMediaID::GetNativeWindowById(media_id);
+  // TODO(crbug.com/1293023): Should not normally happen when |window_id| will
+  // be correctly set.
+  if (media_id.window_id == 0 || !window) {
+    return nullptr;
+  }
   result->window_id = lacros_window_utility::GetRootWindowUniqueId(window);
   return result;
 }
@@ -107,9 +112,15 @@ void DlpContentManagerLacros::CheckScreenShareRestriction(
     return;
   }
 
+  crosapi::mojom::ScreenShareAreaPtr area = ConvertToScreenShareArea(media_id);
+  if (!area) {
+    LOG(WARNING) << "DLP can't identify screen shared area";
+    std::move(callback).Run(true);
+    return;
+  }
+
   lacros_service->GetRemote<crosapi::mojom::Dlp>()->CheckScreenShareRestriction(
-      ConvertToScreenShareArea(media_id), application_title,
-      std::move(callback));
+      std::move(area), application_title, std::move(callback));
 }
 
 void DlpContentManagerLacros::OnScreenCaptureStarted(
@@ -123,12 +134,19 @@ void DlpContentManagerLacros::OnScreenCaptureStarted(
       AddScreenShare(label, media_id, application_title, stop_callback,
                      state_change_callback);
     } else {
+      crosapi::mojom::ScreenShareAreaPtr area =
+          ConvertToScreenShareArea(media_id);
+      if (!area) {
+        LOG(WARNING) << "DLP can't identify screen shared area";
+        continue;
+      }
+
       chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
       auto delegate = std::make_unique<ScreenShareStateChangeDelegate>(
           label, media_id, state_change_callback, stop_callback);
       if (lacros_service->IsAvailable<crosapi::mojom::Dlp>()) {
         lacros_service->GetRemote<crosapi::mojom::Dlp>()->OnScreenShareStarted(
-            label, ConvertToScreenShareArea(media_id), application_title,
+            label, std::move(area), application_title,
             delegate->BindDelegate());
         running_remote_screen_shares_.push_back(std::move(delegate));
       }
@@ -143,10 +161,17 @@ void DlpContentManagerLacros::OnScreenCaptureStopped(
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
     RemoveScreenShare(label, media_id);
   } else {
+    crosapi::mojom::ScreenShareAreaPtr area =
+        ConvertToScreenShareArea(media_id);
+    if (!area) {
+      LOG(WARNING) << "DLP can't identify screen shared area";
+      return;
+    }
     chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+
     if (lacros_service->IsAvailable<crosapi::mojom::Dlp>()) {
       lacros_service->GetRemote<crosapi::mojom::Dlp>()->OnScreenShareStopped(
-          label, ConvertToScreenShareArea(media_id));
+          label, std::move(area));
     }
     base::EraseIf(
         running_remote_screen_shares_,
