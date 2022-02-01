@@ -54,7 +54,6 @@
 #import "ios/testing/open_url_context.h"
 #include "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -922,36 +921,6 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 }
 
 #pragma mark - JavaScript Utilities (EG2)
-
-+ (id)executeJavaScript:(NSString*)javaScript error:(NSError**)outError {
-  __block bool handlerCalled = false;
-  __block id blockResult = nil;
-  __block NSError* blockError = nil;
-  [chrome_test_util::GetCurrentWebState()->GetJSInjectionReceiver()
-      executeJavaScript:javaScript
-      completionHandler:^(id result, NSError* error) {
-        handlerCalled = true;
-        blockResult = [result copy];
-        blockError = [error copy];
-      }];
-
-  bool completed = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return handlerCalled;
-  });
-
-  if (completed) {
-    NSError* __autoreleasing autoreleasedError = blockError;
-    *outError = autoreleasedError;
-  } else {
-    NSString* errorDescription = [NSString
-        stringWithFormat:@"Did not complete execution of JavaScript: %@",
-                         javaScript];
-    NSError* __autoreleasing autoreleasedError =
-        testing::NSErrorWithLocalizedDescription(errorDescription);
-    *outError = autoreleasedError;
-  }
-  return blockResult;
-}
 
 + (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript {
   __block bool handlerCalled = false;

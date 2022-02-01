@@ -1147,13 +1147,6 @@ UIWindow* GetAnyKeyWindow() {
   EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface clearBookmarks]);
 }
 
-- (id)executeJavaScript:(NSString*)JS {
-  NSError* error = nil;
-  id result = [ChromeEarlGreyAppInterface executeJavaScript:JS error:&error];
-  EG_TEST_HELPER_ASSERT_NO_ERROR(error);
-  return result;
-}
-
 - (base::Value)evaluateJavaScript:(NSString*)javaScript {
   JavaScriptExecutionResult* result =
       [ChromeEarlGreyAppInterface executeJavaScript:javaScript];
