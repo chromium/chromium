@@ -23,7 +23,7 @@ function tryRun(func) {
 if (!isPrerendering) {
   // Ensure that the primary page can move this window.
   tryRun(() => {
-    const expectedPosition = {x: window.screenX + 1, y: window.screenY + 1};
+    const expectedPosition = {x: screen.availLeft + 1, y: screen.availTop + 1};
     window.moveTo(expectedPosition.x, expectedPosition.y);
     assert_equals(window.screenX, expectedPosition.x, 'x position for primary');
     assert_equals(window.screenY, expectedPosition.y, 'y position for primary');

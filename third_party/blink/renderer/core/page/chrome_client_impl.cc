@@ -198,10 +198,22 @@ void ChromeClientImpl::ChromeDestroyed() {
   web_view_ = nullptr;
 }
 
-void ChromeClientImpl::SetWindowRect(const gfx::Rect& r, LocalFrame& frame) {
+void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
+                                     LocalFrame& frame) {
   DCHECK(web_view_);
   DCHECK_EQ(&frame, web_view_->MainFrameImpl()->GetFrame());
-  web_view_->MainFrameViewWidget()->SetWindowRect(r);
+  const gfx::Rect adjusted_rect =
+      CalculateWindowRectWithAdjustment(requested_rect, frame);
+  // Request the unadjusted rect if the browser may honor cross-screen bounds.
+  // Permission state is not readily available, so adjusted bounds are clamped
+  // to the same-screen, to retain legacy behavior of synchronous pending values
+  // and to avoid exposing other screen details to frames without permission.
+  // TODO(crbug.com/897300): Use permission state for better sync estimates or
+  // store unadjusted pending window rects if that will not break many sites.
+  const bool request_unadjusted_rect =
+      RuntimeEnabledFeatures::WindowPlacementEnabled(frame.DomWindow());
+  web_view_->MainFrameViewWidget()->SetWindowRect(
+      request_unadjusted_rect ? requested_rect : adjusted_rect, adjusted_rect);
 }
 
 gfx::Rect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
@@ -325,13 +337,25 @@ void ChromeClientImpl::SetOverscrollBehavior(
       overscroll_behavior);
 }
 
-void ChromeClientImpl::Show(const blink::LocalFrameToken& opener_frame_token,
+void ChromeClientImpl::Show(LocalFrame& frame,
+                            LocalFrame& opener_frame,
                             NavigationPolicy navigation_policy,
                             const gfx::Rect& initial_rect,
                             bool user_gesture) {
   DCHECK(web_view_);
-  web_view_->Show(opener_frame_token, navigation_policy, initial_rect,
-                  user_gesture);
+  const gfx::Rect adjusted_rect =
+      CalculateWindowRectWithAdjustment(initial_rect, frame);
+  // Request the unadjusted rect if the browser may honor cross-screen bounds.
+  // Permission state is not readily available, so adjusted bounds are clamped
+  // to the same-screen, to retain legacy behavior of synchronous pending values
+  // and to avoid exposing other screen details to frames without permission.
+  // TODO(crbug.com/897300): Use permission state for better sync estimates or
+  // store unadjusted pending window rects if that will not break many sites.
+  const bool request_unadjusted_rect =
+      RuntimeEnabledFeatures::WindowPlacementEnabled(opener_frame.DomWindow());
+  web_view_->Show(opener_frame.GetLocalFrameToken(), navigation_policy,
+                  request_unadjusted_rect ? initial_rect : adjusted_rect,
+                  adjusted_rect, user_gesture);
 }
 
 bool ChromeClientImpl::ShouldReportDetailedMessageForSourceAndSeverity(
@@ -1280,6 +1304,48 @@ void ChromeClientImpl::PasswordFieldReset(HTMLInputElement& element) {
           AutofillClientFromFrame(element.GetDocument().GetFrame())) {
     fill_client->PasswordFieldReset(WebInputElement(&element));
   }
+}
+
+gfx::Rect ChromeClientImpl::CalculateWindowRectWithAdjustment(
+    const gfx::Rect& pending_rect,
+    LocalFrame& frame) {
+  gfx::Rect screen = GetScreenInfo(frame).available_rect;
+  gfx::Rect window = pending_rect;
+
+  gfx::Size minimum_size = MinimumWindowSize();
+  gfx::Size size_for_constraining_move = minimum_size;
+  // Let size 0 pass through, since that indicates default size, not minimum
+  // size.
+  if (window.width()) {
+    int width = std::max(minimum_size.width(), window.width());
+    width = std::min(width, screen.width());
+    window.set_width(width);
+    size_for_constraining_move.set_width(window.width());
+  }
+  if (window.height()) {
+    int height = std::max(minimum_size.height(), window.height());
+    height = std::min(height, screen.height());
+    window.set_height(height);
+    size_for_constraining_move.set_height(window.height());
+  }
+
+  // Constrain the window position within the valid screen area.
+  window.set_x(
+      std::max(screen.x(),
+               std::min(window.x(),
+                        screen.right() - size_for_constraining_move.width())));
+  window.set_y(std::max(
+      screen.y(),
+      std::min(window.y(),
+               screen.bottom() - size_for_constraining_move.height())));
+
+  // Coarsely measure whether coordinates may be requesting another screen.
+  if (!screen.Contains(window)) {
+    UseCounter::Count(frame.DomWindow(),
+                      WebFeature::kDOMWindowSetWindowRectCrossScreen);
+  }
+
+  return window;
 }
 
 }  // namespace blink

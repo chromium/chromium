@@ -1737,7 +1737,7 @@ void LocalDOMWindow::moveBy(int x, int y) const {
   window_rect.Offset(x, y);
   // Security check (the spec talks about UniversalBrowserWrite to disable this
   // check...)
-  page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, *frame);
+  page->GetChromeClient().SetWindowRect(window_rect, *frame);
 }
 
 void LocalDOMWindow::moveTo(int x, int y) const {
@@ -1753,7 +1753,7 @@ void LocalDOMWindow::moveTo(int x, int y) const {
   window_rect.set_origin(gfx::Point(x, y));
   // Security check (the spec talks about UniversalBrowserWrite to disable this
   // check...)
-  page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, *frame);
+  page->GetChromeClient().SetWindowRect(window_rect, *frame);
 }
 
 void LocalDOMWindow::resizeBy(int x, int y) const {
@@ -1768,7 +1768,7 @@ void LocalDOMWindow::resizeBy(int x, int y) const {
   gfx::Rect fr = page->GetChromeClient().RootWindowRect(*frame);
   gfx::Size dest(fr.width() + x, fr.height() + y);
   gfx::Rect update(fr.origin(), dest);
-  page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame);
+  page->GetChromeClient().SetWindowRect(update, *frame);
 }
 
 void LocalDOMWindow::resizeTo(int width, int height) const {
@@ -1783,7 +1783,7 @@ void LocalDOMWindow::resizeTo(int width, int height) const {
   gfx::Rect fr = page->GetChromeClient().RootWindowRect(*frame);
   gfx::Size dest = gfx::Size(width, height);
   gfx::Rect update(fr.origin(), dest);
-  page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame);
+  page->GetChromeClient().SetWindowRect(update, *frame);
 }
 
 int LocalDOMWindow::requestAnimationFrame(V8FrameRequestCallback* callback) {

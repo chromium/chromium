@@ -2854,14 +2854,15 @@ void WebViewImpl::TakeFocus(bool reverse) {
 
 void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
                        NavigationPolicy policy,
-                       const gfx::Rect& rect,
+                       const gfx::Rect& requested_rect,
+                       const gfx::Rect& adjusted_rect,
                        bool opened_by_user_gesture) {
   // This is only called on local main frames.
   DCHECK(local_main_frame_host_remote_);
   DCHECK(web_widget_);
-  web_widget_->SetPendingWindowRect(rect);
+  web_widget_->SetPendingWindowRect(adjusted_rect);
   local_main_frame_host_remote_->ShowCreatedWindow(
-      opener_frame_token, NavigationPolicyToDisposition(policy), rect,
+      opener_frame_token, NavigationPolicyToDisposition(policy), requested_rect,
       opened_by_user_gesture,
       WTF::Bind(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
 

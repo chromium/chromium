@@ -516,7 +516,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // pixels).
   gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);
 
-  void SetWindowRect(const gfx::Rect& window_rect);
+  void SetWindowRect(const gfx::Rect& requested_rect,
+                     const gfx::Rect& adjusted_rect);
   void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
 
   void UpdateTooltipUnderCursor(const String& tooltip_text, TextDirection dir);
