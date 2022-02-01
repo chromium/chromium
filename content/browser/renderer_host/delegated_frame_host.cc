@@ -435,7 +435,10 @@ void DelegatedFrameHost::DidCopyStaleContent(
   if (stale_content_layer_->parent() != client_->DelegatedFrameHostGetLayer())
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
 
+// TODO(crbug.com/1281251): This DCHECK occasionally gets hit on Chrome OS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!stale_content_layer_->has_external_content());
+#endif
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));
   stale_content_layer_->SetTransferableResource(
