@@ -9,8 +9,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
-#include "ash/system/accessibility/dictation_bubble_controller.h"
-#include "ash/system/accessibility/dictation_bubble_view.h"
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/metrics/metrics_hashes.h"
@@ -21,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
@@ -1167,7 +1166,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
 // Tests the behavior of the Dictation bubble UI.
 class DictationUITest : public DictationCommandsExtensionTest {
  protected:
-  DictationUITest() {}
+  DictationUITest() : dictation_bubble_test_helper_() {}
   ~DictationUITest() override = default;
   DictationUITest(const DictationUITest&) = delete;
   DictationUITest& operator=(const DictationUITest&) = delete;
@@ -1209,74 +1208,22 @@ class DictationUITest : public DictationCommandsExtensionTest {
  private:
   // Helpers for SuccessWaiters above.
   bool HasVisibility(bool expected) {
-    return GetController()->widget_->IsVisible() == expected;
+    return dictation_bubble_test_helper_.IsVisible() == expected;
   }
 
   bool HasVisibleIcon(DictationBubbleIconType expected) {
-    return GetVisibleIcon() == expected;
+    return dictation_bubble_test_helper_.GetVisibleIcon() == expected;
   }
 
-  bool HasText(const std::u16string& expected) { return GetText() == expected; }
+  bool HasText(const std::u16string& expected) {
+    return dictation_bubble_test_helper_.GetText() == expected;
+  }
 
   bool HasVisibleHints(const std::vector<std::u16string>& expected) {
-    std::vector<std::u16string> actual =
-        GetController()->dictation_bubble_view_->GetVisibleHintsForTesting();
-    if (expected.size() != actual.size())
-      return false;
-
-    for (size_t i = 0; i < expected.size(); ++i) {
-      if (expected[i] != actual[i])
-        return false;
-    }
-
-    return true;
+    return dictation_bubble_test_helper_.HasVisibleHints(expected);
   }
 
-  // Additional helpers and accessors.
-
-  DictationBubbleIconType GetVisibleIcon() {
-    EXPECT_GE(1, IsStandbyViewVisible() + IsMacroSucceededImageVisible() +
-                     IsMacroFailedImageVisible())
-        << "No more than one icon should be visible!";
-    if (IsStandbyViewVisible())
-      return DictationBubbleIconType::kStandby;
-    if (IsMacroSucceededImageVisible())
-      return DictationBubbleIconType::kMacroSuccess;
-    if (IsMacroFailedImageVisible())
-      return DictationBubbleIconType::kMacroFail;
-    return DictationBubbleIconType::kHidden;
-  }
-
-  bool IsVisible() { return GetController()->widget_->IsVisible(); }
-
-  std::u16string GetText() {
-    return GetController()->dictation_bubble_view_->GetTextForTesting();
-  }
-
-  bool IsStandbyViewVisible() {
-    return GetController()
-        ->dictation_bubble_view_->IsStandbyViewVisibleForTesting();
-  }
-
-  bool IsMacroSucceededImageVisible() {
-    return GetController()
-        ->dictation_bubble_view_->IsMacroSucceededImageVisibleForTesting();
-  }
-
-  bool IsMacroFailedImageVisible() {
-    return GetController()
-        ->dictation_bubble_view_->IsMacroFailedImageVisibleForTesting();
-  }
-
-  DictationBubbleController* GetController() {
-    DictationBubbleController* controller =
-        Shell::Get()
-            ->accessibility_controller()
-            ->GetDictationBubbleControllerForTest();
-    EXPECT_TRUE(controller);
-    return controller;
-  }
-
+  DictationBubbleTestHelper dictation_bubble_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

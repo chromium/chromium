@@ -57,9 +57,8 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
   void OnColorModeThemed(bool is_themed) override {}
 
  private:
-  friend class AccessibilityPrivateApiTest;
   friend class DictationBubbleControllerTest;
-  friend class DictationUITest;
+  friend class DictationBubbleTestHelper;
 
   // Performs initialization if necessary.
   void MaybeInitialize();
