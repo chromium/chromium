@@ -77,8 +77,6 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   jint GetAuthError(JNIEnv* env);
   jboolean HasUnrecoverableError(JNIEnv* env);
   jboolean RequiresClientUpgrade(JNIEnv* env);
-  void SetDecoupledFromAndroidMasterSync(JNIEnv* env);
-  jboolean GetDecoupledFromAndroidMasterSync(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);
   jboolean HasSyncConsent(JNIEnv* env);
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);

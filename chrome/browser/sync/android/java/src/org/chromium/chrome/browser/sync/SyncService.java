@@ -131,10 +131,6 @@ public abstract class SyncService {
 
     public abstract boolean requiresClientUpgrade();
 
-    public abstract void setDecoupledFromAndroidMasterSync();
-
-    public abstract boolean getDecoupledFromAndroidMasterSync();
-
     public abstract @Nullable CoreAccountInfo getAccountInfo();
 
     public abstract boolean hasSyncConsent();

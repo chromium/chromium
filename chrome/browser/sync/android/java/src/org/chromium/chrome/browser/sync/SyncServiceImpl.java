@@ -116,17 +116,6 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void setDecoupledFromAndroidMasterSync() {
-        SyncServiceImplJni.get().setDecoupledFromAndroidMasterSync(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean getDecoupledFromAndroidMasterSync() {
-        return SyncServiceImplJni.get().getDecoupledFromAndroidMasterSync(
-                mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public @Nullable CoreAccountInfo getAccountInfo() {
         return SyncServiceImplJni.get().getAccountInfo(mSyncServiceAndroidBridge);
     }
@@ -422,8 +411,6 @@ public class SyncServiceImpl extends SyncService {
         int getAuthError(long nativeSyncServiceAndroidBridge);
         boolean hasUnrecoverableError(long nativeSyncServiceAndroidBridge);
         boolean requiresClientUpgrade(long nativeSyncServiceAndroidBridge);
-        void setDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
-        boolean getDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
         @Nullable
         CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
         boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);

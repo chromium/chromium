@@ -1114,36 +1114,6 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
   EXPECT_FALSE(service()->GetDisableReasons().Empty());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfInitializedSignedOut) {
-  SyncPrefs sync_prefs(prefs());
-  CreateService(SyncServiceImpl::MANUAL_START);
-  ASSERT_FALSE(sync_prefs.GetDecoupledFromAndroidMasterSync());
-
-  service()->Initialize();
-  EXPECT_TRUE(sync_prefs.GetDecoupledFromAndroidMasterSync());
-}
-
-TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfSignsOut) {
-  SyncPrefs sync_prefs(prefs());
-  SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
-  InitializeForNthSync();
-  ASSERT_FALSE(sync_prefs.GetDecoupledFromAndroidMasterSync());
-
-  // Sign-out.
-  signin::PrimaryAccountMutator* account_mutator =
-      identity_manager()->GetPrimaryAccountMutator();
-  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
-  // Wait for SyncServiceImpl to be notified.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(sync_prefs.GetDecoupledFromAndroidMasterSync());
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
        ShouldSendDataTypesToSyncInvalidationsService) {
   SignIn();

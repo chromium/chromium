@@ -303,17 +303,6 @@ jboolean SyncServiceAndroidBridge::RequiresClientUpgrade(JNIEnv* env) {
   return native_sync_service_->RequiresClientUpgrade();
 }
 
-void SyncServiceAndroidBridge::SetDecoupledFromAndroidMasterSync(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->SetDecoupledFromAndroidMasterSync();
-}
-
-jboolean SyncServiceAndroidBridge::GetDecoupledFromAndroidMasterSync(
-    JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_sync_service_->GetDecoupledFromAndroidMasterSync();
-}
-
 base::android::ScopedJavaLocalRef<jobject>
 SyncServiceAndroidBridge::GetAccountInfo(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -1617,6 +1617,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   // Added 02/2021
   feed::MigrateObsoleteProfilePrefsFeb_2021(profile_prefs);
+
+  // Added 01/2022.
+  syncer::ClearObsoleteSyncDecoupledFromAndroidMasterSync(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
   syncer::ClearObsoletePassphrasePromptPrefs(profile_prefs);
 

@@ -82,14 +82,6 @@ constexpr inline char kEnableLocalSyncBackend[] =
 // flag is present.
 constexpr inline char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
-#if BUILDFLAG(IS_ANDROID)
-// Stores whether sync should no longer respect the state of master toggle for
-// this user.
-// TODO(crbug.com/1107904): Clean pref when the decoupling logic is removed.
-constexpr inline char kSyncDecoupledFromAndroidMasterSync[] =
-    "sync.decoupled_from_master_sync";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace prefs
 
 }  // namespace syncer

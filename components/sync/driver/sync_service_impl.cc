@@ -254,11 +254,6 @@ void SyncServiceImpl::Initialize() {
     // Remove after 11/2021. Migration logic to set SyncRequested to false if
     // the user is signed-out or signed-in but not syncing (crbug.com/1147026).
     user_settings_->SetSyncRequested(false);
-
-#if BUILDFLAG(IS_ANDROID)
-    // If Sync gets turned on, it should be in the decoupled state.
-    sync_prefs_.SetDecoupledFromAndroidMasterSync();
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // Auto-start means the first time the profile starts up, sync should start up
@@ -318,15 +313,6 @@ bool SyncServiceImpl::IsDataTypeControllerRunningForTest(ModelType type) const {
 
 void SyncServiceImpl::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Sync and master sync should only remain coupled if the former stays enabled
-  // and the latter disabled. Upon sign-out set the pref so they are decoupled
-  // on the next time Sync is turned on.
-  if (!HasSyncConsent()) {
-    sync_prefs_.SetDecoupledFromAndroidMasterSync();
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   if (!IsSignedIn()) {
     // The account was signed out, so shut down.
@@ -1777,18 +1763,6 @@ void SyncServiceImpl::OverrideNetworkForTest(
     startup_controller_->TryStart(/*force_immediate=*/true);
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void SyncServiceImpl::SetDecoupledFromAndroidMasterSync() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_prefs_.SetDecoupledFromAndroidMasterSync();
-}
-
-bool SyncServiceImpl::GetDecoupledFromAndroidMasterSync() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return sync_prefs_.GetDecoupledFromAndroidMasterSync();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 SyncEncryptionHandler::Observer*
 SyncServiceImpl::GetEncryptionObserverForTest() {
