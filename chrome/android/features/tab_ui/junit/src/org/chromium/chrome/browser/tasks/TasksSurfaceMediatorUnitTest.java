@@ -48,6 +48,9 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** Tests for {@link TasksSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -162,5 +165,13 @@ public class TasksSurfaceMediatorUnitTest {
         verify(mVoiceRecognitionHandler, times(1))
                 .startVoiceRecognition(
                         eq(VoiceRecognitionHandler.VoiceInteractionSource.TASKS_SURFACE));
+    }
+
+    @Test
+    public void performSearchQuery() {
+        String queryText = "test";
+        List<String> list = Arrays.asList("tbm=nws");
+        mMediator.performSearchQuery(queryText, list);
+        verify(mOmniboxStub, times(1)).performSearchQuery(eq(queryText), eq(list));
     }
 }

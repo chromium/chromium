@@ -151,7 +151,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     private void performSearchQuery(QueryInfo queryInfo) {
-        // TODO(qinmin): load the search result page.
+        mMediator.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
     }
 
     /**

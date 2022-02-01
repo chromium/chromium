@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.OverviewMode
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /**
  * Mediator for handling {@link TasksSurface}-related logic.
  */
@@ -145,4 +147,15 @@ class TasksSurfaceMediator implements OverviewModeObserver {
 
     @Override
     public void finishedHiding() {}
+
+    /**
+     * Called to send the search query and params to omnibox to kick off a search.
+     * @param queryText Text of the search query to perform.
+     * @param searchParams A list of params to sent along with the search query.
+     */
+    void performSearchQuery(String queryText, List<String> searchParams) {
+        if (mOmniboxStub != null) {
+            mOmniboxStub.performSearchQuery(queryText, searchParams);
+        }
+    }
 }
