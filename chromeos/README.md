@@ -36,10 +36,9 @@ directories contain low-level utility code.
 There are two exceptions:
 
 - //chromeos/services contains mojo services that were not considered
-  sufficiently general to live in top-level //services. For example
-  //chromeos/services/secure_channel bootstraps a secure communications channel
-  to an Android phone over Bluetooth, enabling multi-device features like
-  instant tethering.
+  sufficiently general to live in top-level //services and that, at the same
+  time, are shared between ash-chrome and lacros-chrome. In case of an
+  ash-chrome only mojo service, please use //ash/services instead.
 
 - //chromeos/components contains C++ components that were not considered
   sufficiently general to live in top-level //components.

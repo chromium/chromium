@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/timer_factory.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/secure_channel/timer_factory.h"
 
 namespace chromeos {
 

@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_MANAGER_H_
 #define ASH_SERVICES_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_MANAGER_H_
 
-#include "chromeos/services/secure_channel/nearby_connection_manager.h"
+#include "ash/services/secure_channel/nearby_connection_manager.h"
 
 namespace chromeos {
 

@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ash/services/secure_channel/session_keys.h"
 #include "base/callback_forward.h"
-#include "chromeos/services/secure_channel/session_keys.h"
 
 namespace chromeos {
 

@@ -20,6 +20,7 @@ source_set("unit_tests") {
     "//ash/services/ime:unit_tests",
     "//ash/services/nearby/public/cpp:unit_tests",
     "//ash/services/quick_pair:unit_tests",
+    "//ash/services/secure_channel:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
   ]
 }

@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "chromeos/services/secure_channel/wire_message.h"
+#include "ash/services/secure_channel/wire_message.h"
 
 namespace chromeos {
 

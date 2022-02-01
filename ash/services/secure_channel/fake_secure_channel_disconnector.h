@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/secure_channel.h"
+#include "ash/services/secure_channel/secure_channel_disconnector.h"
 #include "base/containers/flat_set.h"
-#include "chromeos/services/secure_channel/secure_channel.h"
-#include "chromeos/services/secure_channel/secure_channel_disconnector.h"
 
 namespace chromeos {
 

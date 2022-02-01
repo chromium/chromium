@@ -15,7 +15,7 @@
 #include "ash/services/secure_channel/device_id_pair.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/services/secure_channel/shared_resource_scheduler.h"
+#include "ash/services/secure_channel/shared_resource_scheduler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

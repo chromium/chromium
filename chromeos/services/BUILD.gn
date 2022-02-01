@@ -29,7 +29,6 @@ source_set("unit_tests") {
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
     "//chromeos/services/multidevice_setup:unit_tests",
     "//chromeos/services/network_config:unit_tests",
-    "//chromeos/services/secure_channel:unit_tests",
     "//chromeos/services/tts:services_unittests",
   ]
   if (is_cfm) {

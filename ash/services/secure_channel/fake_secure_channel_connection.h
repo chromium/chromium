@@ -10,9 +10,9 @@
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "ash/services/secure_channel/register_payload_file_request.h"
+#include "ash/services/secure_channel/secure_channel.h"
 #include "base/callback.h"
-#include "chromeos/services/secure_channel/register_payload_file_request.h"
-#include "chromeos/services/secure_channel/secure_channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

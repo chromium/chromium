@@ -117,6 +117,8 @@ static_library("phonehub") {
   deps = [
     "//ash/components/phonehub/proto",
     "//ash/constants",
+    "//ash/services/secure_channel/public/cpp/client",
+    "//ash/services/secure_channel/public/mojom",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
@@ -126,8 +128,6 @@ static_library("phonehub") {
     "//chromeos/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/services/network_config",
     "//chromeos/services/network_config:in_process_instance",
-    "//chromeos/services/secure_channel/public/cpp/client",
-    "//chromeos/services/secure_channel/public/mojom",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/session_manager/core",
@@ -209,8 +209,8 @@ static_library("test_support") {
 
   deps = [
     "//ash/components/phonehub/proto",
+    "//ash/services/secure_channel/public/mojom",
     "//base",
-    "//chromeos/services/secure_channel/public/mojom",
   ]
 }
 
@@ -252,6 +252,8 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/components/phonehub/proto",
     "//ash/constants",
+    "//ash/services/secure_channel/public/cpp/client:test_support",
+    "//ash/services/secure_channel/public/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
@@ -266,8 +268,6 @@ source_set("unit_tests") {
     "//chromeos/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp:test_support",
-    "//chromeos/services/secure_channel/public/cpp/client:test_support",
-    "//chromeos/services/secure_channel/public/mojom",
     "//components/prefs:test_support",
     "//components/session_manager/core",
     "//device/bluetooth:mocks",

@@ -14,10 +14,10 @@
 #include "ash/services/secure_channel/connection_attempt_delegate.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/connection_details.h"
+#include "ash/services/secure_channel/pending_connection_request.h"
+#include "ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "base/time/clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/pending_connection_request.h"
-#include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
 
 namespace chromeos {
 

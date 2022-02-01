@@ -10,14 +10,14 @@
 #include "ash/services/secure_channel/authenticator.h"
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/device_to_device_secure_context.h"
+#include "ash/services/secure_channel/secure_context.h"
+#include "ash/services/secure_channel/wire_message.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
-#include "chromeos/services/secure_channel/secure_context.h"
-#include "chromeos/services/secure_channel/wire_message.h"
 
 namespace chromeos {
 

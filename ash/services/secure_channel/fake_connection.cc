@@ -10,10 +10,10 @@
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "ash/services/secure_channel/register_payload_file_request.h"
+#include "ash/services/secure_channel/wire_message.h"
 #include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
-#include "chromeos/services/secure_channel/register_payload_file_request.h"
-#include "chromeos/services/secure_channel/wire_message.h"
 
 namespace chromeos {
 

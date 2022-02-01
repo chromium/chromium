@@ -7,6 +7,8 @@
 #include <cstring>
 #include <memory>
 
+#include "ash/services/secure_channel/raw_eid_generator.h"
+#include "ash/services/secure_channel/raw_eid_generator_impl.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -15,8 +17,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/secure_channel/raw_eid_generator.h"
-#include "chromeos/services/secure_channel/raw_eid_generator_impl.h"
 
 namespace chromeos {
 

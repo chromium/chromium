@@ -10,11 +10,11 @@
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_attempt.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
+#include "ash/services/secure_channel/pending_connection_request.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/time/default_clock.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/secure_channel/pending_connection_request.h"
 
 namespace chromeos {
 

@@ -15,11 +15,11 @@
 #include "ash/services/secure_channel/ble_weave_client_connection.h"
 #include "ash/services/secure_channel/connection_metrics_logger.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "ash/services/secure_channel/secure_channel_disconnector.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/secure_channel_disconnector.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace chromeos {

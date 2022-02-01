@@ -11,9 +11,9 @@
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/device_to_device_initiator_helper.h"
+#include "ash/services/secure_channel/session_keys.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/secure_channel/session_keys.h"
 
 namespace base {
 class OneShotTimer;

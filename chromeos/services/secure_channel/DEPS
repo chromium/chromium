@@ -1,9 +1,0 @@
-include_rules = [
-  # TODO(https://crbug.com/1164001): allow these headers while being migrated.
-  "+ash/services/secure_channel",
-  "+chromeos/components/multidevice/logging/logging.h",
-  "+device/bluetooth",
-  "+mojo/public",
-  "+third_party/securemessage",
-  "+third_party/ukey2",
-]

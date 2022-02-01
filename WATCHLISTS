@@ -1356,6 +1356,7 @@
     'multidevice': {
       'filepath': 'ash/components/proximity_auth/'\
                   '|ash/multi_device_setup/'\
+                  '|ash/services/secure_channel/'\
                   '|chrome/browser/ash/cryptauth/'\
                   '|chrome/browser/ash/device_sync/'\
                   '|chrome/browser/ash/multidevice_setup/'\
@@ -1369,7 +1370,6 @@
                   '|chromeos/resources/multidevice_resources.grdp'\
                   '|chromeos/services/device_sync/'\
                   '|chromeos/services/multidevice_setup/'\
-                  '|chromeos/services/secure_channel/'\
                   '|ui/webui/resources/cr_components/chromeos/multidevice_setup/'
     },
     'multipaste': {

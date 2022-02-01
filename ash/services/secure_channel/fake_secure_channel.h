@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "ash/services/secure_channel/secure_channel_base.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
-#include "chromeos/services/secure_channel/secure_channel_base.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

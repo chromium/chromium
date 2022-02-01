@@ -12,6 +12,7 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "ash/services/secure_channel/secure_channel_initializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -20,7 +21,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/secure_channel/secure_channel_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

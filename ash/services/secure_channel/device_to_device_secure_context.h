@@ -9,9 +9,9 @@
 #include <queue>
 #include <vector>
 
+#include "ash/services/secure_channel/secure_context.h"
+#include "ash/services/secure_channel/session_keys.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/secure_channel/secure_context.h"
-#include "chromeos/services/secure_channel/session_keys.h"
 #include "third_party/ukey2/proto/device_to_device_messages.pb.h"
 
 namespace securemessage {

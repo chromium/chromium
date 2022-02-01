@@ -49,6 +49,8 @@ static_library("proximity_auth") {
     "//ash/components/proximity_auth/public/mojom",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/services/secure_channel/public/cpp/client",
+    "//ash/services/secure_channel/public/mojom",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
@@ -56,8 +58,6 @@ static_library("proximity_auth") {
     "//chromeos/dbus/session_manager",
     "//chromeos/services/multidevice_setup/public/cpp",
     "//chromeos/services/multidevice_setup/public/cpp:prefs",
-    "//chromeos/services/secure_channel/public/cpp/client",
-    "//chromeos/services/secure_channel/public/mojom",
     "//components/account_id",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
@@ -81,13 +81,13 @@ static_library("test_support") {
   public_deps = [ ":proximity_auth" ]
 
   deps = [
+    "//ash/services/secure_channel:test_support",
+    "//ash/services/secure_channel/public/cpp/client",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
     "//chromeos/components/multidevice/logging",
     "//chromeos/services/device_sync/proto",
-    "//chromeos/services/secure_channel:test_support",
-    "//chromeos/services/secure_channel/public/cpp/client",
     "//testing/gmock",
   ]
 }
@@ -110,6 +110,8 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/services/secure_channel:test_support",
+    "//ash/services/secure_channel/public/cpp/client:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
@@ -119,8 +121,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/services/multidevice_setup/public/cpp:test_support",
-    "//chromeos/services/secure_channel:test_support",
-    "//chromeos/services/secure_channel/public/cpp/client:test_support",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//device/bluetooth:mocks",
