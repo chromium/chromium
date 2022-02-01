@@ -34,7 +34,10 @@ grit("resources") {
 generate_grd("build_grd") {
   grd_prefix = "privacy_sandbox"
   out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "privacy_sandbox_dialog.html" ]
+  input_files = [
+    "privacy_sandbox_dialog.html",
+    "images/privacy_sandbox_confirmation_banner.svg",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]

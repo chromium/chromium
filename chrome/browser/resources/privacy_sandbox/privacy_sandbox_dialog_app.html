@@ -1,4 +1,88 @@
-<div>
-  Lorum Ipsum
-  <cr-button  on-click="onClose_"> close </cr-button>
+<style include="cr-shared-style">
+  cr-button+cr-button {
+    margin-inline-start: 8px;
+  }
+
+  :host {
+    display: block;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .expand-section {
+    border-bottom: var(--cr-separator-line);
+    border-top: var(--cr-separator-line);
+  }
+
+  .header {
+    text-align: center;
+  }
+
+  .header h1 {
+    font-weight: 500;
+    margin: 10px 0;
+  }
+
+  .header h2 {
+    font-weight: normal;
+    margin: 0;
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: end;
+  }
+</style>
+
+<div class="header">
+  <img src="images/privacy_sandbox_confirmation_banner.svg">
+
+  <template is="dom-if" if="[[isConsent_]]">
+    <h1>Nullam mollis, enim pellentesque</h1>
+  </template>
+
+  <h2>Integer tristique vitae dolor quis imperdiet. Nunc facilisis dolor id
+    tempus sollicitudin. Cras interdum eros tincidunt ornare mattis.
+</div>
+
+<div class="section cr-padded-text">
+  <div>Sub subtitle 1</div>
+  <div class="cr-secondary-text">Nunc a odio sodales, tincidunt purus tempus,
+    sodales mauris. Aliquam ultricies lorem
+    sed auctor tristique. </div>
+</div>
+
+<div class="section cr-padded-text">
+  <div>Sub subtitle 2</div>
+  <div class="cr-secondary-text">Suspendisse suscipit pulvinar varius.
+    Vestibulum bibendum, nisi non facilisis euismod, dui urna viverra diam,
+    euismod interdum ipsum nulla id felis. Cras suscipit dolor justo, id
+    pellentesque ipsum finibus in. Ut accumsan
+    suscipit eros quis sodales. </div>
+</div>
+
+<template is="dom-if" if="[[isConsent_]]">
+  <cr-expand-button class="expand-section" expanded="{{expanded_}}">
+    <div class="cr-secondary-text">Some text</div>
+  </cr-expand-button>
+  <iron-collapse opened="[[expanded_]]">
+    Text in expanded
+  </iron-collapse>
+</template>
+
+<div class="cr-secondary-text cr-padded-text">Donec consectetur id eros sed
+  placerat. Maecenas tincidunt diam eros, a tempus lectus consequat ac.
+  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+  turpis egestas. Sed gravida vitae mauris non vulputate. </div>
+
+<div class="buttons-container">
+  <template is="dom-if" if="[[isConsent_]]">
+    <cr-button class="action-button">Cancel</cr-button>
+    <cr-button class="action-button" on-click="onClose_">Close</cr-button>
+  </template>
+
+  <template is="dom-if" if="[[!isConsent_]]">
+    <cr-button>Settings</cr-button>
+    <cr-button class="action-button" on-click="onClose_">Close</cr-button>
+</div>
+</template>
 </div>

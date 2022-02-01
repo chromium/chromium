@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -24,6 +27,7 @@ export class PrivacySandboxDialogAppElement extends
 
   static get properties() {
     return {
+      expanded_: Boolean,
       isConsent_: {
         type: Boolean,
         value: () => {
@@ -33,7 +37,8 @@ export class PrivacySandboxDialogAppElement extends
     };
   }
 
-  isConsent_: boolean;
+  private expanded_: boolean;
+  private isConsent_: boolean;
 
   private onClose_() {
     PrivacySandboxDialogBrowserProxy.getInstance().closeDialog();
