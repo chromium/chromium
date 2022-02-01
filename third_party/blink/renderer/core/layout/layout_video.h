@@ -83,7 +83,7 @@ class LayoutVideo final : public LayoutMedia {
 
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
-    return true;
+    return RuntimeEnabledFeatures::CompositeVideoElementEnabled();
   }
   CompositingReasons AdditionalCompositingReasons() const override;
 
