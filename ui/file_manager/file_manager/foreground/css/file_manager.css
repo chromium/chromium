@@ -418,10 +418,6 @@ html.pointer-active div.splitter:not(.splitter-active):hover {
   cursor: default;
 }
 
-div.splitter.splitter-active .splitter-button:hover {
-  --hover-bg-color: none;
-}
-
 html.col-resize div.splitter:not(.splitter-active) .splitter-button:hover {
   --hover-bg-color: none;
 }
@@ -431,8 +427,12 @@ html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:act
   cursor: default;
 }
 
-div.splitter.splitter-active .splitter-button:not(:active) {
+div.splitter.splitter-active .splitter-button:active:not(:hover) {
   background-color: var(--cros-ripple-color);
+}
+
+div.splitter.splitter-active .splitter-button:not(:active) {
+  background-color: var(--cros-icon-button-pressed-color);
 }
 
 div.splitter .splitter-button .icon {
