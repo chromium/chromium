@@ -14,4 +14,7 @@
 
     <!-- Menu chip dimensions -->
     <dimen name="menu_chip_highlight_extension">4dp</dimen>
+
+    <!-- Menu action bar bg elevation -->
+    <dimen name="menu_action_bar_bg_elev">@dimen/default_elevation_1</dimen>
 </resources>

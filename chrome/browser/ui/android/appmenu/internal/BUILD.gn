@@ -28,6 +28,7 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -39,11 +40,13 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-v24/menu_action_bar_bg.xml",
     "java/res/drawable/menu_action_bar_bg.xml",
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
     "java/res/layout/menu_item_start_with_icon.xml",
     "java/res/layout/title_button_menu_item.xml",
+    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
   ]
 
