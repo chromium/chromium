@@ -7651,3 +7651,4 @@ crbug.com/1292844 [ Mac ] external/wpt/css/css-writing-modes/alt-display-vertica
 crbug.com/1292852 [ Mac ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-focus-shadow.html [ Failure Pass ]
 crbug.com/1292865 [ Mac ] external/wpt/resource-timing/iframe-sequence-of-events.html [ Failure Pass ]
 crbug.com/1292869 [ Mac ] external/wpt/webaudio/the-audio-api/the-audioparam-interface/audioparam-cancel-and-hold.html [ Failure Pass ]
+crbug.com/1292871 [ Mac ] external/wpt/webaudio/the-audio-api/the-audioparam-interface/k-rate-dynamics-compressor-connections.html [ Failure Pass ]
