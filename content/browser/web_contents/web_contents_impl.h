@@ -1607,15 +1607,15 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // These functions are helpers in managing a hierarchy of WebContents
   // involved in rendering inner WebContents.
 
-  // The following functions register and unregister FrameSinkIds for all
-  // WebContents in the subtree of WebContentsTree rooted at |contents|. They
-  // are used when attaching/detaching an inner web contents. Frame sink ids are
-  // initially registered when a view is created, and they are registered with
-  // the outermost WebContents, which changes when attaching/detaching a
-  // WebContents so we need to unregister and reregister these ids for all
-  // persisting views in the WebContents.
-  void RecursivelyRegisterFrameSinkIds();
-  void RecursivelyUnregisterFrameSinkIds();
+  // The following functions update registrations for all RenderWidgetHostViews
+  // rooted at this WebContents. They are used when attaching/detaching an inner
+  // WebContents.
+  //
+  // Some properties of RenderWidgetHostViews, such as the FrameSinkId and
+  // TextInputManager, depend on the outermost WebContents, and must be updated
+  // during attach/detach.
+  void RecursivelyRegisterRenderWidgetHostViews();
+  void RecursivelyUnregisterRenderWidgetHostViews();
 
   // When multiple WebContents are present within a tab or window, a single one
   // is focused and will route keyboard events in most cases to a RenderWidget

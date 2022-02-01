@@ -16,6 +16,7 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -2440,7 +2441,7 @@ void WebContentsImpl::AttachInnerWebContents(
         inner_render_view_host);
   }
 
-  inner_web_contents_impl->RecursivelyUnregisterFrameSinkIds();
+  inner_web_contents_impl->RecursivelyUnregisterRenderWidgetHostViews();
 
   // Create a link to our outer WebContents.
   node_.AttachInnerWebContents(std::move(inner_web_contents),
@@ -2496,7 +2497,7 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
       ->set_inner_tree_main_frame_tree_node_id(
           FrameTreeNode::kFrameTreeNodeInvalidId);
 
-  RecursivelyUnregisterFrameSinkIds();
+  RecursivelyUnregisterRenderWidgetHostViews();
 
   // Each RenderViewHost has a RenderWidgetHost which can have a
   // RenderWidgetHostView,  and it needs to be re-created with the appropriate
@@ -2537,7 +2538,7 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   for (auto* render_view_host : render_view_hosts)
     CreateRenderWidgetHostViewForRenderManager(render_view_host);
 
-  RecursivelyRegisterFrameSinkIds();
+  RecursivelyRegisterRenderWidgetHostViews();
   GetMainFrame()->UpdateAXTreeData();
 
   // Invoke on the *outer* web contents observers for symmetry.
@@ -2547,19 +2548,40 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   return web_contents;
 }
 
-void WebContentsImpl::RecursivelyRegisterFrameSinkIds() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::RecursivelyRegisterFrameSinkIds");
+void WebContentsImpl::RecursivelyRegisterRenderWidgetHostViews() {
+  OPTIONAL_TRACE_EVENT0(
+      "content", "WebContentsImpl::RecursivelyRegisterRenderWidgetHostViews");
+
+  auto* text_input_manager = GetTextInputManager();
   for (auto* view : GetRenderWidgetHostViewsInWebContentsTree()) {
+    if (text_input_manager) {
+      // Use RenderWidgetHostView::GetTextInputManager() for its side effects,
+      // rather than registering the view directly; the view caches the
+      // TextInputManager.
+      //
+      // TODO(crbug.com/1292036): This probably could be made more symmetrical
+      // with unregistration. Getting rid of lazy registration might also allow
+      // eliminating some special cases in TextInputManager.
+      auto* text_input_manager_for_view = view->GetTextInputManager();
+      DCHECK_EQ(text_input_manager, text_input_manager_for_view);
+    }
+
     if (view->IsRenderWidgetHostViewChildFrame())
       static_cast<RenderWidgetHostViewChildFrame*>(view)->RegisterFrameSinkId();
   }
 }
 
-void WebContentsImpl::RecursivelyUnregisterFrameSinkIds() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::RecursivelyUnregisterFrameSinkIds");
+void WebContentsImpl::RecursivelyUnregisterRenderWidgetHostViews() {
+  OPTIONAL_TRACE_EVENT0(
+      "content", "WebContentsImpl::RecursivelyUnregisterRenderWidgetHostViews");
+
+  auto* text_input_manager = GetTextInputManager();
   for (auto* view : GetRenderWidgetHostViewsInWebContentsTree()) {
+    if (text_input_manager) {
+      // The RenderWidgetHostView will drop the cached TextInputManager itself.
+      text_input_manager->Unregister(view);
+    }
+
     if (view->IsRenderWidgetHostViewChildFrame()) {
       static_cast<RenderWidgetHostViewChildFrame*>(view)
           ->UnregisterFrameSinkId();
@@ -2578,7 +2600,7 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
   render_manager->SetRWHViewForInnerFrameTree(
       static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
 
-  RecursivelyRegisterFrameSinkIds();
+  RecursivelyRegisterRenderWidgetHostViews();
   GetMainFrame()->UpdateAXTreeData();
 }
 

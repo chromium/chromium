@@ -37,6 +37,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+#include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
@@ -3979,6 +3980,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
     EXPECT_TRUE(root_event_router->IsViewInMap(root_view));
     EXPECT_TRUE(root_event_router->IsViewInMap(child_view));
     EXPECT_TRUE(root_event_router->IsViewInMap(grandchild_view));
+    auto* text_input_manager = root_web_contents->GetTextInputManager();
+    ASSERT_TRUE(text_input_manager);
+    EXPECT_EQ(3U, text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(text_input_manager->IsRegistered(root_view));
+    EXPECT_TRUE(text_input_manager->IsRegistered(child_view));
+    EXPECT_TRUE(text_input_manager->IsRegistered(grandchild_view));
   }
 }
 
