@@ -52,7 +52,7 @@ enum class SyncTypedUrlDatabaseError {
   kMaxValue = kLoadMetadataRead
 };
 
-static bool VisitsAreSorted(const VisitVector& visits) {
+static bool VisitsAreSorted(const std::vector<VisitRow>& visits) {
   return base::ranges::is_sorted(
       visits, /*comp=*/{}, [](const VisitRow& row) { return row.visit_time; });
 }
@@ -64,7 +64,7 @@ std::string GetStorageKeyFromURLRow(const URLRow& row) {
   return storage_key;
 }
 
-bool HasTypedUrl(const VisitVector& visits) {
+bool HasTypedUrl(const std::vector<VisitRow>& visits) {
   auto typed_url_visit =
       std::find_if(visits.begin(), visits.end(), [](const VisitRow& visit) {
         return ui::PageTransitionCoreTypeIs(visit.transition,
@@ -104,13 +104,11 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
     syncer::EntityChangeList entity_data) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
-  // Create a mapping of all local data by URLID. These will be narrowed down
+  // Create a mapping of all local data by URL. These will be narrowed down
   // by MergeURLWithSync() to include only the entries different from sync
   // server data.
-  TypedURLMap new_db_urls;
-
-  // Get all the visits and map the URLRows by URL.
-  URLVisitVectorMap local_visit_vectors;
+  std::map<GURL, URLRow> new_db_urls;
+  std::map<GURL, std::vector<VisitRow>> local_visit_vectors;
 
   if (!GetValidURLsAndVisits(&local_visit_vectors, &new_db_urls)) {
     RecordDatabaseError(SyncTypedUrlDatabaseError::kMergeSyncDataRead);
@@ -119,9 +117,9 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
   }
 
   // New sync data organized for different write operations to history backend.
-  URLRows new_synced_urls;
-  URLRows updated_synced_urls;
-  TypedURLVisitVector new_synced_visits;
+  std::vector<URLRow> new_synced_urls;
+  std::vector<URLRow> updated_synced_urls;
+  std::vector<std::pair<GURL, std::vector<VisitInfo>>> new_synced_visits;
 
   // Iterate through entity_data and check for all the urls that
   // sync already knows about. MergeURLWithSync() will remove urls that
@@ -197,10 +195,10 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   std::vector<GURL> pending_deleted_urls;
-  TypedURLVisitVector new_synced_visits;
-  VisitVector deleted_visits;
-  URLRows updated_synced_urls;
-  URLRows new_synced_urls;
+  std::vector<std::pair<GURL, std::vector<VisitInfo>>> new_synced_visits;
+  std::vector<VisitRow> deleted_visits;
+  std::vector<URLRow> updated_synced_urls;
+  std::vector<URLRow> new_synced_urls;
 
   for (const std::unique_ptr<syncer::EntityChange>& entity_change :
        entity_changes) {
@@ -288,7 +286,7 @@ void TypedURLSyncBridge::GetData(StorageKeyList storage_keys,
       continue;
     }
 
-    VisitVector visits_vector;
+    std::vector<VisitRow> visits_vector;
     if (!FixupURLAndGetVisits(&url_row, &visits_vector) ||
         visits_vector.empty()) {
       continue;
@@ -309,7 +307,7 @@ void TypedURLSyncBridge::GetData(StorageKeyList storage_keys,
 void TypedURLSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
-  URLRows typed_urls;
+  std::vector<URLRow> typed_urls;
   if (!history_backend_->GetAllTypedURLs(&typed_urls)) {
     change_processor()->ReportError(
         {FROM_HERE, "Could not get the typed_url entries."});
@@ -318,7 +316,7 @@ void TypedURLSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (URLRow& url : typed_urls) {
-    VisitVector visits_vector;
+    std::vector<VisitRow> visits_vector;
     if (!FixupURLAndGetVisits(&url, &visits_vector) || visits_vector.empty()) {
       continue;
     }
@@ -385,7 +383,7 @@ void TypedURLSyncBridge::OnURLVisited(HistoryBackend* history_backend,
 }
 
 void TypedURLSyncBridge::OnURLsModified(HistoryBackend* history_backend,
-                                        const URLRows& changed_urls,
+                                        const std::vector<URLRow>& changed_urls,
                                         bool is_from_expiration) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(sync_metadata_database_);
@@ -410,7 +408,7 @@ void TypedURLSyncBridge::OnURLsModified(HistoryBackend* history_backend,
 void TypedURLSyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
                                        bool all_history,
                                        bool expired,
-                                       const URLRows& deleted_rows,
+                                       const std::vector<URLRow>& deleted_rows,
                                        const std::set<GURL>& favicon_urls) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(sync_metadata_database_);
@@ -478,7 +476,7 @@ void TypedURLSyncBridge::OnDatabaseError() {
 // static
 bool TypedURLSyncBridge::WriteToTypedUrlSpecifics(
     const URLRow& url,
-    const VisitVector& visits,
+    const std::vector<VisitRow>& visits,
     sync_pb::TypedUrlSpecifics* typed_url) {
   DCHECK(!url.last_visit().is_null());
   DCHECK(!visits.empty());
@@ -566,7 +564,7 @@ bool TypedURLSyncBridge::WriteToTypedUrlSpecifics(
 TypedURLSyncBridge::MergeResult TypedURLSyncBridge::MergeUrls(
     const sync_pb::TypedUrlSpecifics& sync_url,
     const URLRow& url,
-    VisitVector* visits,
+    std::vector<VisitRow>* visits,
     URLRow* new_url,
     std::vector<VisitInfo>* new_visits) {
   DCHECK(new_url);
@@ -684,10 +682,10 @@ TypedURLSyncBridge::MergeResult TypedURLSyncBridge::MergeUrls(
 
 // static
 void TypedURLSyncBridge::DiffVisits(
-    const VisitVector& history_visits,
+    const std::vector<VisitRow>& history_visits,
     const sync_pb::TypedUrlSpecifics& sync_specifics,
     std::vector<VisitInfo>* new_visits,
-    VisitVector* removed_visits) {
+    std::vector<VisitRow>* removed_visits) {
   DCHECK(new_visits);
   size_t old_visit_count = history_visits.size();
   size_t new_visit_count = sync_specifics.visits_size();
@@ -770,11 +768,11 @@ void TypedURLSyncBridge::LoadMetadata() {
 
 void TypedURLSyncBridge::MergeURLWithSync(
     const sync_pb::TypedUrlSpecifics& server_typed_url,
-    TypedURLMap* local_typed_urls,
-    URLVisitVectorMap* local_visit_vectors,
-    URLRows* new_synced_urls,
-    TypedURLVisitVector* new_synced_visits,
-    URLRows* updated_synced_urls) {
+    std::map<GURL, URLRow>* local_typed_urls,
+    std::map<GURL, std::vector<VisitRow>>* local_visit_vectors,
+    std::vector<URLRow>* new_synced_urls,
+    std::vector<std::pair<GURL, std::vector<VisitInfo>>>* new_synced_visits,
+    std::vector<URLRow>* updated_synced_urls) {
   DCHECK_NE(0, server_typed_url.visits_size());
   DCHECK_EQ(server_typed_url.visits_size(),
             server_typed_url.visit_transitions_size());
@@ -806,7 +804,7 @@ void TypedURLSyncBridge::MergeURLWithSync(
         history_backend_->GetURL(untyped_url.url(), &untyped_url);
     if (is_existing_url) {
       // Add a new entry to `local_typed_urls`, and set the iterator to it.
-      VisitVector untyped_visits;
+      std::vector<VisitRow> untyped_visits;
       // TODO(crbug.com/1075573): We early return on urls with all visits
       // expired. It does not feel right as we might get new non-expired visits
       // through sync.
@@ -841,15 +839,14 @@ void TypedURLSyncBridge::MergeURLWithSync(
             ui::PageTransitionFromInt(sync_url.visit_transitions(index));
         added_visits.push_back(VisitInfo(visit_time, transition));
       }
-      new_synced_visits->push_back(
-          std::pair<GURL, std::vector<VisitInfo>>(new_url.url(), added_visits));
+      new_synced_visits->emplace_back(new_url.url(), added_visits);
       return;
     }
   }
 
   // Same URL exists in sync data and in history data - compare the
   // entries to see if there's any difference.
-  VisitVector& visits = (*local_visit_vectors)[it->first];
+  std::vector<VisitRow>& visits = (*local_visit_vectors)[it->first];
   std::vector<VisitInfo> added_visits;
 
   // Empty URLs should be filtered out by ShouldIgnoreUrl() previously.
@@ -897,8 +894,7 @@ void TypedURLSyncBridge::MergeURLWithSync(
     }
     if (difference & DIFF_LOCAL_VISITS_ADDED) {
       // Add entry with new visits to new_synced_visits to update the local db.
-      new_synced_visits->push_back(
-          std::pair<GURL, std::vector<VisitInfo>>(it->first, added_visits));
+      new_synced_visits->emplace_back(it->first, added_visits);
     }
   } else {
     // No difference in urls, erase from map
@@ -908,12 +904,12 @@ void TypedURLSyncBridge::MergeURLWithSync(
 
 void TypedURLSyncBridge::UpdateFromSync(
     const sync_pb::TypedUrlSpecifics& typed_url,
-    TypedURLVisitVector* visits_to_add,
-    VisitVector* visits_to_remove,
-    URLRows* updated_urls,
-    URLRows* new_urls) {
+    std::vector<std::pair<GURL, std::vector<VisitInfo>>>* visits_to_add,
+    std::vector<VisitRow>* visits_to_remove,
+    std::vector<URLRow>* updated_urls,
+    std::vector<URLRow>* new_urls) {
   URLRow new_url(GURL(typed_url.url()));
-  VisitVector existing_visits;
+  std::vector<VisitRow> existing_visits;
   bool existing_url = history_backend_->GetURL(new_url.url(), &new_url);
   if (existing_url) {
     // This URL already exists locally - fetch the visits so we can
@@ -926,8 +922,7 @@ void TypedURLSyncBridge::UpdateFromSync(
       return;
     }
   }
-  visits_to_add->push_back(std::pair<GURL, std::vector<VisitInfo>>(
-      new_url.url(), std::vector<VisitInfo>()));
+  visits_to_add->emplace_back(new_url.url(), std::vector<VisitInfo>());
 
   // Update the URL with information from the typed URL.
   UpdateURLRowFromTypedUrlSpecifics(typed_url, &new_url);
@@ -951,7 +946,7 @@ void TypedURLSyncBridge::UpdateSyncFromLocal(
     return;
 
   // Get the visits for this node.
-  VisitVector visit_vector;
+  std::vector<VisitRow> visit_vector;
   if (!FixupURLAndGetVisits(&row, &visit_vector)) {
     return;
   }
@@ -989,11 +984,11 @@ void TypedURLSyncBridge::ExpireMetadataForURL(const URLRow& row) {
 }
 
 absl::optional<syncer::ModelError> TypedURLSyncBridge::WriteToHistoryBackend(
-    const URLRows* new_urls,
-    const URLRows* updated_urls,
+    const std::vector<URLRow>* new_urls,
+    const std::vector<URLRow>* updated_urls,
     const std::vector<GURL>* deleted_urls,
-    const TypedURLVisitVector* new_visits,
-    const VisitVector* deleted_visits) {
+    const std::vector<std::pair<GURL, std::vector<VisitInfo>>>* new_visits,
+    const std::vector<VisitRow>* deleted_visits) {
   DCHECK_EQ(processing_syncer_changes_, false);
   // Set flag to stop accepting history change notifications from backend.
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
@@ -1083,7 +1078,8 @@ bool TypedURLSyncBridge::ShouldIgnoreUrl(const GURL& url) {
   return false;
 }
 
-bool TypedURLSyncBridge::ShouldIgnoreVisits(const VisitVector& visits) {
+bool TypedURLSyncBridge::ShouldIgnoreVisits(
+    const std::vector<VisitRow>& visits) {
   // We ignore URLs that were imported, but have never been visited by
   // chromium.
   static const int kFirstImportedSource = SOURCE_FIREFOX_IMPORTED;
@@ -1117,7 +1113,7 @@ bool TypedURLSyncBridge::ShouldSyncVisit(int typed_count,
 }
 
 bool TypedURLSyncBridge::FixupURLAndGetVisits(URLRow* url,
-                                              VisitVector* visits) {
+                                              std::vector<VisitRow>* visits) {
   if (!history_backend_->GetMostRecentVisitsForURL(url->id(), kMaxVisitsToFetch,
                                                    visits)) {
     // Couldn't load the visits for this URL due to some kind of DB error.
@@ -1186,7 +1182,7 @@ bool TypedURLSyncBridge::FixupURLAndGetVisits(URLRow* url,
 
 std::unique_ptr<syncer::EntityData> TypedURLSyncBridge::CreateEntityData(
     const URLRow& row,
-    const VisitVector& visits) {
+    const std::vector<VisitRow>& visits) {
   auto entity_data = std::make_unique<syncer::EntityData>();
   sync_pb::TypedUrlSpecifics* specifics =
       entity_data->specifics.mutable_typed_url();
@@ -1199,12 +1195,13 @@ std::unique_ptr<syncer::EntityData> TypedURLSyncBridge::CreateEntityData(
   return entity_data;
 }
 
-bool TypedURLSyncBridge::GetValidURLsAndVisits(URLVisitVectorMap* url_to_visit,
-                                               TypedURLMap* url_to_urlrow) {
+bool TypedURLSyncBridge::GetValidURLsAndVisits(
+    std::map<GURL, std::vector<VisitRow>>* url_to_visit,
+    std::map<GURL, URLRow>* url_to_urlrow) {
   DCHECK(url_to_visit);
   DCHECK(url_to_urlrow);
 
-  URLRows local_typed_urls;
+  std::vector<URLRow> local_typed_urls;
   if (!history_backend_->GetAllTypedURLs(&local_typed_urls)) {
     return false;
   }
@@ -1240,7 +1237,7 @@ std::string TypedURLSyncBridge::GetStorageKeyInternal(const std::string& url) {
 
 void TypedURLSyncBridge::SendTypedURLToProcessor(
     const URLRow& row,
-    const VisitVector& visits,
+    const std::vector<VisitRow>& visits,
     syncer::MetadataChangeList* metadata_change_list) {
   DCHECK(!visits.empty());
   DCHECK(metadata_change_list);
