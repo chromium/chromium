@@ -7,8 +7,16 @@
         runner: "elf",
         binary: "chrome",
         args: [
-            "--enable-features=Vulkan,CanvasOopRasterization"
+            "--enable-cfv2",
+            "--enable-features=Vulkan,CanvasOopRasterization",
         ],
+
+        // SandboxPolicyFuchsia currently expects stderr & stdout to exist.
+        // Route them to the LogSink, to capture any content they emit, for
+        // now.
+        forward_stdout_to: "log",
+        forward_stderr_to: "log",
+
         // Required to allow JIT in child processes such as renderers.
         // Known as 'deprecated-ambient-replace-as-executable' in CFv1.
         job_policy_ambient_mark_vmo_exec: "true",
@@ -22,16 +30,12 @@
     ],
     use: [
         {
-            directory: "cache",
-            from: "parent",
+            storage: "cache",
             path: "/cache",
-            rights: ["rw*"],
         },
         {
-            directory: "data",
-            from: "parent",
+            storage: "data",
             path: "/data",
-            rights: ["rw*"],
         },
         {
             storage: "tmp",
