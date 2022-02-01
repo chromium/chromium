@@ -120,8 +120,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     public FirstRunUtils.Natives mFirstRunUtils;
     @Mock
     public EnterpriseInfo mMockEnterpriseInfo;
-    @Mock
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
 
     @Spy
     public ChromeBrowserInitializer mInitializer;
@@ -283,8 +281,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     @Test
     @SmallTest
-    // TODO(https://crbug.com/1120859): Test the policy check when native initializes before
-    // inflation. This will be possible when FragmentScenario is available.
+    // TODO(crbug.com/1120859): Test the policy check when native initializes before inflation.
+    // This will be possible when FragmentScenario is available.
     public void testDialogEnabled() throws Exception {
         setAppRestrictionsMockInitialized(true);
         launchFirstRunThroughCustomTab();
@@ -369,6 +367,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         setEnterpriseInfoInitializedWithDeviceOwner(false);
 
         launchFirstRunThroughCustomTab();
+        assertUIState(FragmentState.NO_POLICY);
 
         assertHistograms(false, SpeedComparedToInflation.FASTER, SpeedComparedToInflation.FASTER,
                 SpeedComparedToInflation.NOT_RECORDED);
@@ -523,7 +522,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertUIState(FragmentState.LOADING);
 
         // Clear the focus on view to avoid unexpected highlight on background.
-        // @TODO(https://crbug.com/c/1289293): Background sometimes are highlighted in render tests.
         View tosAndUmaFragment =
                 mActivity.getSupportFragmentManager().getFragments().get(0).getView();
         Assert.assertNotNull(tosAndUmaFragment);
@@ -604,76 +602,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 View.VISIBLE);
 
         renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosanduma_withpolicy");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest", "FirstRun"})
-    public void testRenderWhenMetricsReportingAreDisabled() throws Exception {
-        setPolicyServiceMockInitializedWithDialogEnabled(true);
-        Mockito.when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy())
-                .thenReturn(true);
-        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
-
-        launchFirstRunThroughCustomTab();
-        assertUIState(FragmentState.LOADING);
-
-        // Clear the focus on view to avoid unexpected highlight on background.
-        View tosAndUmaFragment =
-                mActivity.getSupportFragmentManager().getFragments().get(0).getView();
-        Assert.assertNotNull(tosAndUmaFragment);
-        TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
-
-        setAppRestrictionsMockInitialized(true);
-        renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_metricsreportingdisabled");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest", "FirstRun"})
-    public void testRenderWhenMetricsReportingAreDisabledWithUmaDialog() throws Exception {
-        setPolicyServiceMockInitializedWithDialogEnabled(true);
-        Mockito.when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy())
-                .thenReturn(true);
-        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
-
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
-                FREMobileIdentityConsistencyFieldTrial.OLD_FRE_WITH_UMA_DIALOG_GROUP);
-        launchFirstRunThroughCustomTab();
-        setAppRestrictionsMockInitialized(true);
-        // Clear the focus on view to avoid unexpected highlight on background.
-        View tosAndUmaFragment =
-                mActivity.getSupportFragmentManager().getFragments().get(0).getView();
-        Assert.assertNotNull(tosAndUmaFragment);
-        TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
-
-        renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_metricsreportingdisabled_umadialog");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest", "FirstRun"})
-    public void testRenderWhenMetricsReportingAreDisabledWithUmaDialogForChildAccount()
-            throws Exception {
-        setPolicyServiceMockInitializedWithDialogEnabled(true);
-        Mockito.when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy())
-                .thenReturn(true);
-        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
-
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
-                FREMobileIdentityConsistencyFieldTrial.OLD_FRE_WITH_UMA_DIALOG_GROUP);
-        mAccountManagerTestRule.addAccount(
-                AccountManagerTestRule.generateChildEmail("account@gmail.com"));
-        launchFirstRunThroughCustomTab();
-        setAppRestrictionsMockInitialized(true);
-        // Clear the focus on view to avoid unexpected highlight on background.
-        View tosAndUmaFragment =
-                mActivity.getSupportFragmentManager().getFragments().get(0).getView();
-        Assert.assertNotNull(tosAndUmaFragment);
-        TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
-
-        renderWithPortraitAndLandscape(
-                tosAndUmaFragment, "fre_metricsreportingdisabled_umadialog_childaccount");
     }
 
     private void launchFirstRunThroughCustomTab() throws TimeoutException {
