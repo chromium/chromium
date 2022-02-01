@@ -309,17 +309,14 @@ def _CreateDexSymbols(*, apk_spec):
   logging.info('Analyzing classes.dex for %s', apk_spec.split_name
                or apk_spec.apk_path)
 
-  def compute_dex_size():
-    with zipfile.ZipFile(apk_spec.apk_path) as z:
-      return sum(i.file_size for i in z.infolist()
-                 if i.filename.endswith('.dex'))
+  with zipfile.ZipFile(apk_spec.apk_path) as z:
+    dex_total_size = sum(i.file_size for i in z.infolist()
+                         if i.filename.endswith('.dex'))
 
-  dex_size_result = parallel.CallOnThread(compute_dex_size)
   raw_symbols = apkanalyzer.CreateDexSymbols(apk_spec.apk_path,
                                              apk_spec.mapping_path,
-                                             apk_spec.size_info_prefix)
-  dex_size = dex_size_result.get()
-
+                                             apk_spec.size_info_prefix,
+                                             dex_total_size)
   sizes = collections.Counter()
   for s in raw_symbols:
     sizes[s.section_name] += s.pss
@@ -327,11 +324,11 @@ def _CreateDexSymbols(*, apk_spec):
   dex_method_size = round(sizes[models.SECTION_DEX_METHOD])
   dex_other_size = round(sizes[models.SECTION_DEX])
 
-  unattributed_dex = dex_size - dex_method_size - dex_other_size
+  unattributed_dex = dex_total_size - dex_method_size - dex_other_size
   # Compare against -5 instead of 0 to guard against round-off errors.
   assert unattributed_dex >= -5, (
       'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
-          dex_method_size + dex_other_size, dex_size))
+          dex_method_size + dex_other_size, dex_total_size))
 
   if unattributed_dex > 0:
     raw_symbols.append(
@@ -345,7 +342,7 @@ def _CreateDexSymbols(*, apk_spec):
   # "dex other" responsible for any unattributed bytes.
   section_ranges = {
       models.SECTION_DEX_METHOD: (0, dex_method_size),
-      models.SECTION_DEX: (0, dex_size - dex_method_size),
+      models.SECTION_DEX: (0, dex_total_size - dex_method_size),
   }
 
   return section_ranges, raw_symbols
