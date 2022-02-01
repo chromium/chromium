@@ -1739,6 +1739,7 @@
     },
     'smartlock': {
       'filepath': 'ash/components/proximity_auth/'\
+                  '|ash/login/ui/smart_lock.*'\
                   '|ash/public/cpp/smartlock'\
                   '|chrome/browser/ash/login/easy_unlock/'\
                   '|chrome/browser/resources/chromeos/quick_unlock/'\
@@ -2760,8 +2761,7 @@
     'security': ['security-watchlist@chromium.org'],
     'select_to_speak': ['katie+watch@chromium.org',
                         'anastasi+watch@google.com'],
-    'send_tab_to_self': ['hansberry+watch-send_tab_to_self@chromium.org',
-                         'jeffreycohen+watch-send_tab_to_self@chromium.org',
+    'send_tab_to_self': ['jeffreycohen+watch-send_tab_to_self@chromium.org',
                          'tgupta+watch@chromium.org'],
     'service_worker': ['horo+watch@chromium.org',
                        'jsbell+serviceworker@chromium.org',
@@ -2785,7 +2785,8 @@
     'smartlock': ['bhartmire+watch-smartlock@google.com',
                   'cclem+watch-smartlock@google.com',
                   'danlee+watch-smartlock@google.com',
-                  'hansberry+watch-smartlock@chromium.org'],
+                  'hansberry+watch-smartlock@chromium.org',
+                  'jasonrhee+watch-smartlock@google.com'],
     'smb': ['cros-enterprise-lax+smbwatch@chromium.org'],
     'source_idls': ['jmedley+watch@chromium.org'],
     'speed_metrics_changelog': ['igrigorik@chromium.org',
@@ -2834,8 +2835,11 @@
     'telemetry': ['telemetry-reviews@chromium.org'],
     'test_runner': ['einbinder+watch-test-runner@chromium.org'],
     'tests': [],
-    'tether': ['danlee+watch-tether@google.com',
-               'hansberry+watch-tether@chromium.org'],
+    'tether': ['bhartmire+watch-tether@google.com',
+               'cclem+watch-tether@google.com',
+               'danlee+watch-tether@google.com',
+               'hansberry+watch-tether@chromium.org',
+               'jasonrhee+watch-tether@google.com'],
     'text_to_speech': ['dtseng+watch@chromium.org'],
     'textinput': ['keithlee+watch@chromium.org',
                   'nona+watch@chromium.org',
