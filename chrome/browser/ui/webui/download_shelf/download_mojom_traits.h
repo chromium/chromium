@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_MOJOM_TRAITS_H_
 
 #include "chrome/browser/ui/download/download_item_mode.h"
-#include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
+#include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom-shared.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 
