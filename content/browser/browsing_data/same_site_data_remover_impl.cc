@@ -41,7 +41,12 @@ void OnGetAllCookiesWithAccessSemantics(
       base::BarrierClosure(cookies.size(), std::move(closure));
   for (size_t i = 0; i < cookies.size(); ++i) {
     const net::CanonicalCookie& cookie = cookies[i];
-    if (cookie.IsEffectivelySameSiteNone(access_semantics_list[i])) {
+    // Partitioned cookies are only available in a single top-level site (or
+    // that site's First-Party Set). Since partitioned cookies cannot be used as
+    // a cross-site tracking mechanism, we exclude them from this type of
+    // clearing.
+    if (!cookie.IsPartitioned() &&
+        cookie.IsEffectivelySameSiteNone(access_semantics_list[i])) {
       same_site_none_domains->emplace(cookie.Domain());
       cookie_manager->DeleteCanonicalCookie(
           cookie, base::BindOnce([](const base::RepeatingClosure& callback,
