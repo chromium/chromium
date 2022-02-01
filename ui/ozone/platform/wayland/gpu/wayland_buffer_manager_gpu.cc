@@ -95,7 +95,8 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_dma_buf,
     bool supports_viewporter,
     bool supports_acquire_fence,
-    bool supports_non_backed_solid_color_buffers) {
+    bool supports_non_backed_solid_color_buffers,
+    bool supports_subpixel_accurate_position) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // See the comment in the constructor.
@@ -107,6 +108,7 @@ void WaylandBufferManagerGpu::Initialize(
   supports_acquire_fence_ = supports_acquire_fence;
   supports_non_backed_solid_color_buffers_ =
       supports_non_backed_solid_color_buffers;
+  supports_subpixel_accurate_position_ = supports_subpixel_accurate_position;
   supports_dmabuf_ = supports_dma_buf;
 
   BindHostInterface(std::move(remote_host));

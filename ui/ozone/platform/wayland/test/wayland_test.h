@@ -63,6 +63,9 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   // height of the surface.
   void ActivateSurface(wl::MockXdgSurface* xdg_surface);
 
+  // Initializes SurfaceAugmenter in |server_|.
+  void InitializeSurfaceAugmenter();
+
   base::test::TaskEnvironment task_environment_;
 
   wl::TestWaylandServerThread server_;

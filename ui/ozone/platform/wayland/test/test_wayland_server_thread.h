@@ -84,6 +84,8 @@ class TestWaylandServerThread : public base::Thread,
 
   // Initializes and returns WpPresentation.
   MockWpPresentation* EnsureWpPresentation();
+  // Initializes and returns SurfaceAugmenter.
+  TestSurfaceAugmenter* EnsureSurfaceAugmenter();
 
   template <typename T>
   T* GetObject(uint32_t id) {

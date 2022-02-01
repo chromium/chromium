@@ -58,7 +58,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_dma_buf,
       bool supports_viewporter,
       bool supports_acquire_fence,
-      bool supports_non_backed_solid_color_buffers) override;
+      bool supports_non_backed_solid_color_buffers,
+      bool supports_subpixel_accurate_position) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
@@ -144,6 +145,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   bool supports_non_backed_solid_color_buffers() const {
     return supports_non_backed_solid_color_buffers_;
   }
+  bool supports_subpixel_accurate_position() const {
+    return supports_subpixel_accurate_position_;
+  }
 
   // Adds a WaylandBufferManagerGpu binding.
   void AddBindingWaylandBufferManagerGpu(
@@ -164,6 +168,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                            GbmSurfacelessWaylandGroupOnSubmissionCallbacksTest);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest,
                            ExecutesTasksAfterInitialization);
+  FRIEND_TEST_ALL_PREFIXES(WaylandOverlayManagerTest,
+                           SupportsNonIntegerDisplayRect);
 
   void BindHostInterface(
       mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host);
@@ -237,6 +243,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Determines whether solid color overlays can be delegated without a backing
   // image via a wayland protocol.
   bool supports_non_backed_solid_color_buffers_ = false;
+
+  // Determines whether subpixel accurate position is supported.
+  bool supports_subpixel_accurate_position_ = false;
 
   // Determines whether Wayland server supports Wayland protocols that allow to
   // export wl_buffers backed by dmabuf.

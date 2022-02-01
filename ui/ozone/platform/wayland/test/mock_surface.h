@@ -56,6 +56,7 @@ class MockSurface : public ServerObject {
   }
   MockXdgSurface* xdg_surface() const { return xdg_surface_; }
 
+  // Must be set iff this MockSurface has role of subsurface.
   void set_sub_surface(TestSubSurface* sub_surface) {
     sub_surface_ = sub_surface;
   }

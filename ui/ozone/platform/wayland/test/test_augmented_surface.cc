@@ -22,6 +22,21 @@ void SetRoundedCornersDEPRECATED(struct wl_client* client,
   LOG(ERROR) << "Deprecated.";
 }
 
+void SetDestinationSize(struct wl_client* client,
+                        struct wl_resource* resource,
+                        wl_fixed_t width,
+                        wl_fixed_t height) {
+  auto* res = GetUserDataAs<TestAugmentedSurface>(resource)->surface();
+  DCHECK(res);
+
+  auto* mock_surface = GetUserDataAs<MockSurface>(res);
+
+  auto* viewport = mock_surface->viewport();
+  DCHECK(viewport);
+  viewport->SetDestination(wl_fixed_to_double(width),
+                           wl_fixed_to_double(height));
+}
+
 void SetRoundedClipBounds(struct wl_client* client,
                           struct wl_resource* resource,
                           int32_t x,
@@ -45,7 +60,7 @@ void SetRoundedClipBounds(struct wl_client* client,
 const struct augmented_surface_interface kTestAugmentedSurfaceImpl = {
     DestroyResource,
     SetRoundedCornersDEPRECATED,
-    nullptr,
+    SetDestinationSize,
     SetRoundedClipBounds,
 };
 

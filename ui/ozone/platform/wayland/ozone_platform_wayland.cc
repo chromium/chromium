@@ -254,7 +254,8 @@ class OzonePlatformWayland : public OzonePlatform,
     buffer_manager_ = std::make_unique<WaylandBufferManagerGpu>();
     surface_factory_ = std::make_unique<WaylandSurfaceFactory>(
         connection_.get(), buffer_manager_.get());
-    overlay_manager_ = std::make_unique<WaylandOverlayManager>();
+    overlay_manager_ =
+        std::make_unique<WaylandOverlayManager>(buffer_manager_.get());
   }
 
   const PlatformProperties& GetPlatformProperties() override {

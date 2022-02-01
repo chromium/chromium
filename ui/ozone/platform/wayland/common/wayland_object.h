@@ -104,6 +104,7 @@ bool CanBind(const std::string& interface,
 
 // For convenience, keep aphabetical order in this list.
 DECLARE_WAYLAND_OBJECT_TRAITS(augmented_surface)
+DECLARE_WAYLAND_OBJECT_TRAITS(augmented_sub_surface)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)

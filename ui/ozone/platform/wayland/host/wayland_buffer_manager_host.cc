@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_shm.h"
@@ -98,6 +99,11 @@ bool WaylandBufferManagerHost::SupportsViewporter() const {
 
 bool WaylandBufferManagerHost::SupportsNonBackedSolidColorBuffers() const {
   return !!connection_->surface_augmenter();
+}
+
+bool WaylandBufferManagerHost::SupportsSubpixelAccuratePosition() const {
+  return connection_->surface_augmenter() &&
+         connection_->surface_augmenter()->SupportsSubpixelAccuratePosition();
 }
 
 void WaylandBufferManagerHost::SetWaylandBufferManagerGpu(

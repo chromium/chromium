@@ -2619,7 +2619,8 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
   buffer_manager_gpu_->Initialize(
       std::move(interface_ptr), {}, false, true, false,
-      /*supports_non_backed_solid_color_buffers*/ false);
+      /*supports_non_backed_solid_color_buffers*/ false,
+      /*supports_subpixel_accurate_position*/ false);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id1 = 1;
@@ -3032,43 +3033,98 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   Sync();
 }
 
-TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
-  VerifyAndClearExpectations();
+namespace {
 
-  std::unique_ptr<WaylandWindow> window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
-      gfx::Rect(0, 0, 640, 480), &delegate_);
-  EXPECT_TRUE(window);
+class WaylandSubsurfaceTest : public WaylandWindowTest {
+ public:
+  WaylandSubsurfaceTest() = default;
+  ~WaylandSubsurfaceTest() override = default;
 
-  gfx::Rect subsurface_bounds(gfx::Point(15, 15), gfx::Size(10, 10));
-  bool result = window->RequestSubsurface();
-  EXPECT_TRUE(result);
+ protected:
+  void OneWaylandSubsurfaceTestHelper(
+      const gfx::RectF& subsurface_bounds,
+      const gfx::RectF& expected_subsurface_bounds) {
+    VerifyAndClearExpectations();
 
-  WaylandSubsurface* wayland_subsurface =
-      window->wayland_subsurfaces().begin()->get();
+    std::unique_ptr<WaylandWindow> window = CreateWaylandWindowWithParams(
+        PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
+        gfx::Rect(0, 0, 640, 480), &delegate_);
+    EXPECT_TRUE(window);
 
-  Sync();
+    bool result = window->RequestSubsurface();
+    EXPECT_TRUE(result);
 
-  auto* mock_surface_root_window = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
-  auto* mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
-      wayland_subsurface->wayland_surface()->GetSurfaceId());
-  EXPECT_TRUE(mock_surface_subsurface);
-  wayland_subsurface->ConfigureAndShowSurface(
-      gfx::RectF(subsurface_bounds),
-      gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/, 1.f /*buffer_scale*/,
-      nullptr, nullptr);
-  connection_->ScheduleFlush();
+    WaylandSubsurface* wayland_subsurface =
+        window->wayland_subsurfaces().begin()->get();
 
-  Sync();
+    Sync();
 
-  auto* test_subsurface = mock_surface_subsurface->sub_surface();
-  EXPECT_TRUE(test_subsurface);
-  auto* parent_resource = mock_surface_root_window->resource();
-  EXPECT_EQ(parent_resource, test_subsurface->parent_resource());
+    auto* mock_surface_root_window = server_.GetObject<wl::MockSurface>(
+        window->root_surface()->GetSurfaceId());
+    auto* mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
+        wayland_subsurface->wayland_surface()->GetSurfaceId());
+    EXPECT_TRUE(mock_surface_subsurface);
+    wayland_subsurface->ConfigureAndShowSurface(
+        subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
+        1.f /*buffer_scale*/, nullptr, nullptr);
+    connection_->ScheduleFlush();
 
-  EXPECT_EQ(test_subsurface->position(), subsurface_bounds.origin());
-  EXPECT_TRUE(test_subsurface->sync());
+    Sync();
+
+    auto* test_subsurface = mock_surface_subsurface->sub_surface();
+    EXPECT_TRUE(test_subsurface);
+    auto* parent_resource = mock_surface_root_window->resource();
+    EXPECT_EQ(parent_resource, test_subsurface->parent_resource());
+
+    // The conversion from double to fixed and back is necessary because it
+    // happens during the roundtrip, and it creates significant error.
+    gfx::PointF expected_position(wl_fixed_to_double(wl_fixed_from_double(
+                                      expected_subsurface_bounds.x())),
+                                  wl_fixed_to_double(wl_fixed_from_double(
+                                      expected_subsurface_bounds.y())));
+    EXPECT_EQ(test_subsurface->position(), expected_position);
+    EXPECT_TRUE(test_subsurface->sync());
+  }
+};
+
+}  // namespace
+
+// Tests integer and non integer size/position support with and without surface
+// augmenter.
+TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceInteger) {
+  ASSERT_FALSE(connection_->surface_augmenter());
+
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({15.12, 15.912}, {10.351, 10.742}),
+       gfx::RectF({16, 16}, {11, 11})},
+      {gfx::RectF({7.041, 8.583}, {13.452, 20.231}),
+       gfx::RectF({7.041, 8.583}, {13.452, 20.231})}};
+
+  for (const auto& item : test_data) {
+    OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
+                                   item[1] /* expected_subsurface_bounds */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
+  };
+}
+
+TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceNonInteger) {
+  ASSERT_FALSE(connection_->surface_augmenter());
+
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
+      {gfx::RectF({7, 8}, {16, 18}), gfx::RectF({7, 8}, {16, 18})}};
+
+  for (const auto& item : test_data) {
+    OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
+                                   item[1] /* expected_subsurface_bounds */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
+  }
 }
 
 // Tests that WaylandPopups can be repositioned.
@@ -3179,5 +3235,14 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
+                         WaylandSubsurfaceTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandSubsurfaceTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 
 }  // namespace ui

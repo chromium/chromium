@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
@@ -29,7 +30,8 @@ OverlaySurfaceCandidate CreateCandidate(const gfx::Rect& rect,
 }  // namespace
 
 TEST(WaylandOverlayManagerTest, MultipleOverlayCandidates) {
-  WaylandOverlayManager manager;
+  WaylandBufferManagerGpu manager_gpu;
+  WaylandOverlayManager manager(&manager_gpu);
 
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(10, 10, 20, 20), -2),
@@ -48,8 +50,14 @@ TEST(WaylandOverlayManagerTest, MultipleOverlayCandidates) {
   EXPECT_TRUE(candidates[4].overlay_handled);
 }
 
-TEST(WaylandOverlayManagerTest, NonIntegerDisplayRect) {
-  WaylandOverlayManager manager;
+namespace {
+
+void NonIntegerDisplayRectTestHelper(WaylandBufferManagerGpu* manager_gpu,
+                                     bool is_context_delegated,
+                                     bool expect_candidates_handled) {
+  WaylandOverlayManager manager(manager_gpu);
+  if (is_context_delegated)
+    manager.SetContextDelegated();
 
   // Candidates for output surface and single-on-top quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
@@ -66,12 +74,36 @@ TEST(WaylandOverlayManagerTest, NonIntegerDisplayRect) {
   candidates[1].overlay_handled = false;
 
   // Modify the display_rect for the second candidate so it's non-integer. We
-  // will never try to promote this to an overlay. This verifies we don't try to
-  // convert the non-integer RectF into a Rect which DCHECKs.
+  // will try to promote this to an overlay iff subpixel accurate position is
+  // supported and overlay delegation is enabled.
   candidates[1].display_rect = gfx::RectF(9.4, 10.43, 20.11, 20.99);
   manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
   EXPECT_TRUE(candidates[0].overlay_handled);
-  EXPECT_FALSE(candidates[1].overlay_handled);
+  EXPECT_EQ(expect_candidates_handled, candidates[1].overlay_handled);
+}
+
+}  // namespace
+
+TEST(WaylandOverlayManagerTest, DoesNotSupportNonIntegerDisplayRect) {
+  WaylandBufferManagerGpu manager_gpu;
+  constexpr bool test_data[2][2] = {{false, false}, {true, false}};
+  for (auto* data : test_data) {
+    NonIntegerDisplayRectTestHelper(&manager_gpu,
+                                    data[0] /* is_delegated_context */,
+                                    data[1] /* expect_candidates_handled */);
+  }
+}
+
+TEST(WaylandOverlayManagerTest, SupportsNonIntegerDisplayRect) {
+  WaylandBufferManagerGpu manager_gpu;
+  manager_gpu.supports_subpixel_accurate_position_ = true;
+
+  constexpr bool test_data[2][2] = {{false, false}, {true, true}};
+  for (auto* data : test_data) {
+    NonIntegerDisplayRectTestHelper(&manager_gpu,
+                                    data[0] /* is_delegated_context */,
+                                    data[1] /* expect_candidates_handled */);
+  }
 }
 
 }  // namespace ui

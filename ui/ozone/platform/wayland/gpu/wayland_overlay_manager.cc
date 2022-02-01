@@ -4,19 +4,41 @@
 
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 
+#include "base/logging.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_candidates.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
 
-WaylandOverlayManager::WaylandOverlayManager() = default;
+namespace {
+
+void NotifyOverlayDelegationLimitedCapabilityOnce() {
+  static bool logged_once = false;
+  if (!logged_once) {
+    DLOG(ERROR)
+        << "Subpixel accurate position is not available. Only some quads "
+           "can be forwarded as overlays.";
+    logged_once = true;
+  }
+}
+
+}  // namespace
+
+WaylandOverlayManager::WaylandOverlayManager(
+    WaylandBufferManagerGpu* manager_gpu)
+    : manager_gpu_(manager_gpu) {}
 WaylandOverlayManager::~WaylandOverlayManager() = default;
 
 std::unique_ptr<OverlayCandidatesOzone>
 WaylandOverlayManager::CreateOverlayCandidates(gfx::AcceleratedWidget widget) {
   return std::make_unique<WaylandOverlayCandidates>(this, widget);
+}
+
+void WaylandOverlayManager::SetContextDelegated() {
+  is_delegated_context_ = true;
 }
 
 void WaylandOverlayManager::CheckOverlaySupport(
@@ -61,8 +83,17 @@ bool WaylandOverlayManager::CanHandleCandidate(
   if (candidate.transform == gfx::OVERLAY_TRANSFORM_INVALID)
     return false;
 
+  if (is_delegated_context_) {
+    // Support for subpixel accurate position could be checked in ctor, but the
+    // WaylandBufferManagerGpu is not initialized when |this| is created. Thus,
+    // do checks here.
+    if (manager_gpu_->supports_subpixel_accurate_position())
+      return true;
+    else
+      NotifyOverlayDelegationLimitedCapabilityOnce();
+  }
+
   // Reject candidates that don't fall on a pixel boundary.
-  // Still required until https://crbug.com/1227813 lands.
   if (!gfx::IsNearestRectWithinDistance(candidate.display_rect, 0.01f))
     return false;
 

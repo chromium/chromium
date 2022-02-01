@@ -28,6 +28,8 @@ class TestAugmentedSurface : public ServerObject {
   }
   const gfx::RRectF& rounded_clip_bounds() { return rounded_clip_bounds_; }
 
+  wl_resource* surface() const { return surface_; }
+
  private:
   // Surface resource that is the ground for this augmented surface.
   wl_resource* surface_ = nullptr;

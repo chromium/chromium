@@ -22,9 +22,11 @@ void SetSource(wl_client* client,
 
 void SetDestination(wl_client* client,
                     wl_resource* resource,
-                    int32_t x,
-                    int32_t y) {
-  NOTIMPLEMENTED_LOG_ONCE();
+                    int32_t width,
+                    int32_t height) {
+  auto* test_vp = GetUserDataAs<TestViewport>(resource);
+  DCHECK(test_vp);
+  test_vp->SetDestination(width, height);
 }
 
 }  // namespace
@@ -44,6 +46,10 @@ TestViewport::~TestViewport() {
   auto* mock_surface = GetUserDataAs<MockSurface>(surface_);
   if (mock_surface)
     mock_surface->set_viewport(nullptr);
+}
+
+void TestViewport::SetDestination(float width, float height) {
+  destination_size_ = gfx::SizeF(width, height);
 }
 
 }  // namespace wl

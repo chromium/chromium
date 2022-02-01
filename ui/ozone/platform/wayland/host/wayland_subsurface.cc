@@ -4,12 +4,15 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 
+#include <surface-augmenter-client-protocol.h>
+
 #include <cstdint>
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -59,6 +62,7 @@ void WaylandSubsurface::Hide() {
   if (!subsurface_)
     return;
 
+  augmented_subsurface_.reset();
   subsurface_.reset();
 }
 
@@ -81,6 +85,14 @@ void WaylandSubsurface::CreateSubsurface() {
   // dispatch all of the input to platform window.
   gfx::Rect region_px;
   wayland_surface()->SetInputRegion(&region_px);
+
+  if (connection_->surface_augmenter()) {
+    // |augmented_subsurface| might be null if the protocol's version is not
+    // high enough.
+    augmented_subsurface_ =
+        connection_->surface_augmenter()->CreateAugmentedSubSurface(
+            subsurface_.get());
+  }
 }
 
 void WaylandSubsurface::ConfigureAndShowSurface(
@@ -98,12 +110,19 @@ void WaylandSubsurface::ConfigureAndShowSurface(
       bounds_px, parent_bounds_px,
       connection_->surface_submission_in_pixel_coordinates() ? 1.f
                                                              : buffer_scale);
-  // TODO(msisov): use an augmented_subsurface to pass rects without loosing
-  // subpixel precision.
-  gfx::Rect enclosed_rect_in_parent =
-      gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
-  wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
-                             enclosed_rect_in_parent.y());
+  if (augmented_subsurface_) {
+    DCHECK(
+        connection_->surface_augmenter()->SupportsSubpixelAccuratePosition());
+    augmented_sub_surface_set_position(
+        augmented_subsurface_.get(),
+        wl_fixed_from_double(bounds_dip_in_parent_surface.x()),
+        wl_fixed_from_double(bounds_dip_in_parent_surface.y()));
+  } else {
+    gfx::Rect enclosed_rect_in_parent =
+        gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
+    wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
+                               enclosed_rect_in_parent.y());
+  }
 
   // Setup the stacking order of this subsurface.
   DCHECK(!reference_above || !reference_below);

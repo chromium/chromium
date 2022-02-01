@@ -110,7 +110,8 @@ class WaylandBufferManagerTest : public WaylandTest {
     auto interface_ptr = manager_host_->BindInterface();
     buffer_manager_gpu_->Initialize(
         std::move(interface_ptr), {}, false, true, false,
-        /*supports_non_backed_solid_color_buffers*/ false);
+        /*supports_non_backed_solid_color_buffers*/ false,
+        /*supports_subpixel_accurate_position*/ false);
 
     window_->set_update_visual_size_immediately(false);
     window_->set_apply_pending_state_on_update_visual_size(false);
@@ -155,7 +156,8 @@ class WaylandBufferManagerTest : public WaylandTest {
             buffer_manager_gpu_ = std::make_unique<WaylandBufferManagerGpu>();
             buffer_manager_gpu_->Initialize(
                 std::move(interface_ptr), {}, false, true, false,
-                /*supports_non_backed_solid_color_buffers*/ false);
+                /*supports_non_backed_solid_color_buffers*/ false,
+                /*supports_subpixel_accurate_position*/ false);
           }));
     }
   }
@@ -1957,7 +1959,8 @@ TEST_P(WaylandBufferManagerTest,
   auto interface_ptr = manager_host_->BindInterface();
   buffer_manager_gpu_->Initialize(
       std::move(interface_ptr), {}, false, true, false,
-      /*supports_non_backed_solid_color_buffers*/ false);
+      /*supports_non_backed_solid_color_buffers*/ false,
+      /*supports_subpixel_accurate_position*/ false);
 
   EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(1);
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
@@ -2070,10 +2073,13 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
 }
 
 TEST_P(WaylandBufferManagerTest, HasSurfaceAugmenter) {
+  InitializeSurfaceAugmenter();
   EXPECT_TRUE(connection_->surface_augmenter());
 }
 
 TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
+  InitializeSurfaceAugmenter();
+
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
@@ -2279,11 +2285,147 @@ TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
   auto interface_ptr = manager_host_->BindInterface();
   buffer_manager_gpu_->Initialize(
       std::move(interface_ptr), {}, false, true, false,
-      /*supports_non_backed_solid_color_buffers*/ false);
+      /*supports_non_backed_solid_color_buffers*/ false,
+      /*supports_subpixel_accurate_position*/ false);
 
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(buffer_manager_gpu_->pending_tasks_.empty());
+}
+
+class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
+ public:
+  WaylandBufferManagerViewportTest() = default;
+  ~WaylandBufferManagerViewportTest() override = default;
+
+ protected:
+  void ViewportDestinationTestHelper(const gfx::RectF& bounds_rect,
+                                     const gfx::RectF& expected_bounds_rect) {
+    auto temp_window = CreateWindow();
+    temp_window->Show(false);
+
+    Sync();
+
+    auto* mock_surface = server_.GetObject<wl::MockSurface>(
+        temp_window->root_surface()->GetSurfaceId());
+    ASSERT_TRUE(mock_surface);
+
+    ActivateSurface(mock_surface->xdg_surface());
+
+    Sync();
+
+    constexpr uint32_t kBufferId1 = 1;
+    constexpr uint32_t kBufferId2 = 2;
+
+    MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
+                                    temp_window->GetWidget());
+
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                      kBufferId1);
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                      kBufferId2);
+
+    Sync();
+
+    ProcessCreatedBufferResourcesWithExpectation(2u /* expected size */,
+                                                 false /* fail */);
+
+    Sync();
+
+    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+        INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
+        gfx::RectF(temp_window->GetBounds()), gfx::RectF(),
+        temp_window->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
+        gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+        0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
+        gfx::RectF(window_->GetBounds()), gfx::RectF(),
+        temp_window->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
+        gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+        1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
+        bounds_rect, gfx::RectF(), temp_window->GetBounds(), false, 1.0f,
+        gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+    buffer_manager_gpu_->CommitOverlays(temp_window->GetWidget(),
+                                        std::move(overlay_configs));
+
+    Sync();
+
+    // Creates a handle for a subsurface.
+    auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
+    for (auto* mock_params : params_vector) {
+      zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
+                                              mock_params->buffer_resource());
+    }
+
+    Sync();
+
+    EXPECT_EQ(temp_window->wayland_subsurfaces_.size(), 1u);
+    WaylandSubsurface* subsurface =
+        temp_window->wayland_subsurfaces_.begin()->get();
+    DCHECK(subsurface);
+    auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
+        subsurface->wayland_surface()->GetSurfaceId());
+    DCHECK(mock_surface_of_subsurface);
+
+    auto* test_vp = mock_surface_of_subsurface->viewport();
+
+    // The conversion from double to fixed and back is necessary because it
+    // happens during the roundtrip, and it creates significant error.
+    gfx::SizeF expected_size(wl_fixed_to_double(wl_fixed_from_double(
+                                 expected_bounds_rect.size().width())),
+                             wl_fixed_to_double(wl_fixed_from_double(
+                                 expected_bounds_rect.size().height())));
+    EXPECT_EQ(expected_size, test_vp->destination_size());
+
+    mock_surface_of_subsurface->SendFrameCallback();
+    mock_surface->SendFrameCallback();
+
+    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
+                                            kBufferId1, false);
+    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
+                                            kBufferId2, false);
+  }
+};
+
+// Tests viewport destination is set correctly when the augmenter subsurface
+// protocol is not available and then becomes available.
+TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationNonInteger) {
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({21, 18}, {7, 11}), gfx::RectF({21, 18}, {7, 11})},
+      {gfx::RectF({7, 8}, {43, 63}), gfx::RectF({7, 8}, {43, 63})}};
+
+  for (const auto& data : test_data) {
+    ViewportDestinationTestHelper(data[0] /* display_rect */,
+                                  data[1] /* expected_rect */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
+  }
+}
+
+// Tests viewport destination is set correctly when the augmenter subsurface
+// protocol is not available (the destination is rounded), and the protocol is
+// available (the destination is set with floating point precision).
+TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationInteger) {
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({21, 18}, {7.423, 11.854}), gfx::RectF({21, 18}, {8, 12})},
+      {gfx::RectF({7, 8}, {43.562, 63.76}),
+       gfx::RectF({7, 8}, {43.562, 63.76})}};
+
+  for (const auto& data : test_data) {
+    ViewportDestinationTestHelper(data[0] /* display_rect */,
+                                  data[1] /* expected_rect */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
@@ -2292,6 +2434,15 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                              .shell_version = wl::ShellVersion::kStable}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandBufferManagerTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandBufferManagerViewportTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
+                         WaylandBufferManagerViewportTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
 

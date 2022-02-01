@@ -55,6 +55,7 @@ class WaylandSubsurface {
 
   WaylandSurface wayland_surface_;
   wl::Object<wl_subsurface> subsurface_;
+  wl::Object<augmented_sub_surface> augmented_subsurface_;
 
   WaylandConnection* const connection_;
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to

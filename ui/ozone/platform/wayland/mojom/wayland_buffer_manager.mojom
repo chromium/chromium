@@ -109,13 +109,17 @@ interface WaylandBufferManagerGpu {
   // manager is able to create a non-backed solid color wl_buffer. The value of
   // this variable depends on the availability of the surface-augmenter
   // protocol.
+  // |supports_subpixel_accurate_position| indicates whether overlay delegation
+  // is allowed for quads without final rounding on the Wayland side. Otherwise,
+  // the rounding might result in empty size, which is a Wayland protocol error.
   Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
              map<gfx.mojom.BufferFormat,
                  array<uint64>> buffer_formats_with_modifiers,
              bool supports_dma_buf,
              bool supports_viewporter,
              bool supports_acquire_fence,
-             bool supports_non_backed_solid_color_buffers);
+             bool supports_non_backed_solid_color_buffers,
+             bool supports_subpixel_accurate_position);
 
   // Signals about swap completion.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,

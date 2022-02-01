@@ -49,10 +49,24 @@ SurfaceAugmenter::SurfaceAugmenter(surface_augmenter* surface_augmenter,
 
 SurfaceAugmenter::~SurfaceAugmenter() = default;
 
+bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
+  return surface_augmenter_get_version(augmenter_.get()) >=
+         SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
+}
+
 wl::Object<augmented_surface> SurfaceAugmenter::CreateAugmentedSurface(
     wl_surface* surface) {
   return wl::Object<augmented_surface>(
       surface_augmenter_get_augmented_surface(augmenter_.get(), surface));
+}
+
+wl::Object<augmented_sub_surface> SurfaceAugmenter::CreateAugmentedSubSurface(
+    wl_subsurface* subsurface) {
+  if (!SupportsSubpixelAccuratePosition())
+    return {};
+
+  return wl::Object<augmented_sub_surface>(
+      surface_augmenter_get_augmented_subsurface(augmenter_.get(), subsurface));
 }
 
 wl::Object<wl_buffer> SurfaceAugmenter::CreateSolidColorBuffer(

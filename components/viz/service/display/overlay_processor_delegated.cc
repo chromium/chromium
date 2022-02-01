@@ -37,6 +37,8 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/ozone/public/overlay_manager_ozone.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace {
 DBG_FLAG_FBOOL("delegated.fd.usage", usage_every_frame)
@@ -86,7 +88,14 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
     gpu::SharedImageInterface* shared_image_interface)
     : OverlayProcessorOzone(std::move(overlay_candidates),
                             available_strategies,
-                            shared_image_interface) {}
+                            shared_image_interface) {
+  // TODO(msisov, petermcneeley): remove this once Wayland uses only delegated
+  // context. May be null in tests.
+  if (ui::OzonePlatform::GetInstance()->GetOverlayManager())
+    ui::OzonePlatform::GetInstance()
+        ->GetOverlayManager()
+        ->SetContextDelegated();
+}
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
 

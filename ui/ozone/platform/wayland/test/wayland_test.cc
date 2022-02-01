@@ -144,4 +144,9 @@ void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
   SendConfigureEvent(xdg_surface, 0, 0, 1, state.get());
 }
 
+void WaylandTest::InitializeSurfaceAugmenter() {
+  server_.EnsureSurfaceAugmenter();
+  Sync();
+}
+
 }  // namespace ui
