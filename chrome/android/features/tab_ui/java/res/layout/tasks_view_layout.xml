@@ -27,11 +27,9 @@
             android:id="@+id/fake_search_box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:orientation="vertical"
             app:layout_scrollFlags="scroll">
-            <include layout="@layout/fake_search_box_layout"/>
+            <include layout="@layout/tasks_surface_search_box_layout"/>
         </LinearLayout>
         <FrameLayout android:id="@+id/query_tiles_container"
             android:layout_width="match_parent"
