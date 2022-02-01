@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
@@ -40,7 +41,7 @@ class RTCEncodedAudioStreamTransformerDelegate
 
   void SetSourceTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-    WTF::MutexLocker locker(source_task_runner_mutex_);
+    base::AutoLock locker(source_task_runner_lock_);
     source_task_runner_ = std::move(task_runner);
   }
 
@@ -58,7 +59,7 @@ class RTCEncodedAudioStreamTransformerDelegate
 
   void Transform(
       std::unique_ptr<webrtc::TransformableFrameInterface> frame) override {
-    WTF::MutexLocker locker(source_task_runner_mutex_);
+    base::AutoLock locker(source_task_runner_lock_);
     auto audio_frame = base::WrapUnique(
         static_cast<webrtc::TransformableFrameInterface*>(frame.release()));
     PostCrossThreadTask(
@@ -69,9 +70,9 @@ class RTCEncodedAudioStreamTransformerDelegate
   }
 
  private:
-  WTF::Mutex source_task_runner_mutex_;
+  base::Lock source_task_runner_lock_;
   scoped_refptr<base::SingleThreadTaskRunner> source_task_runner_
-      GUARDED_BY(source_task_runner_mutex_);
+      GUARDED_BY(source_task_runner_lock_);
   scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> transformer_broker_;
 };
 
@@ -84,7 +85,7 @@ RTCEncodedAudioStreamTransformer::Broker::Broker(
 void RTCEncodedAudioStreamTransformer::Broker::RegisterTransformedFrameCallback(
     rtc::scoped_refptr<webrtc::TransformedFrameCallback>
         send_frame_to_sink_callback) {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   if (transformer_) {
     transformer_->RegisterTransformedFrameCallback(
         std::move(send_frame_to_sink_callback));
@@ -93,7 +94,7 @@ void RTCEncodedAudioStreamTransformer::Broker::RegisterTransformedFrameCallback(
 
 void RTCEncodedAudioStreamTransformer::Broker::
     UnregisterTransformedFrameCallback() {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   if (transformer_) {
     transformer_->UnregisterTransformedFrameCallback();
   }
@@ -101,7 +102,7 @@ void RTCEncodedAudioStreamTransformer::Broker::
 
 void RTCEncodedAudioStreamTransformer::Broker::TransformFrameOnSourceTaskRunner(
     std::unique_ptr<webrtc::TransformableFrameInterface> frame) {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   if (transformer_) {
     transformer_->TransformFrame(std::move(frame));
   }
@@ -109,14 +110,14 @@ void RTCEncodedAudioStreamTransformer::Broker::TransformFrameOnSourceTaskRunner(
 
 void RTCEncodedAudioStreamTransformer::Broker::SetTransformerCallback(
     TransformerCallback callback) {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   if (transformer_) {
     transformer_->SetTransformerCallback(std::move(callback));
   }
 }
 
 void RTCEncodedAudioStreamTransformer::Broker::ResetTransformerCallback() {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   if (transformer_) {
     transformer_->ResetTransformerCallback();
   }
@@ -124,20 +125,20 @@ void RTCEncodedAudioStreamTransformer::Broker::ResetTransformerCallback() {
 
 void RTCEncodedAudioStreamTransformer::Broker::SetSourceTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   if (transformer_) {
     transformer_->SetSourceTaskRunner(std::move(task_runner));
   }
 }
 
 void RTCEncodedAudioStreamTransformer::Broker::ClearTransformer() {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   transformer_ = nullptr;
 }
 
 void RTCEncodedAudioStreamTransformer::Broker::SendFrameToSink(
     std::unique_ptr<webrtc::TransformableFrameInterface> frame) {
-  WTF::MutexLocker locker(transformer_mutex_);
+  base::AutoLock locker(transformer_lock_);
   if (transformer_) {
     transformer_->SendFrameToSink(std::move(frame));
   }
@@ -158,18 +159,18 @@ RTCEncodedAudioStreamTransformer::~RTCEncodedAudioStreamTransformer() {
 
 void RTCEncodedAudioStreamTransformer::RegisterTransformedFrameCallback(
     rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback) {
-  WTF::MutexLocker locker(sink_mutex_);
+  base::AutoLock locker(sink_lock_);
   send_frame_to_sink_cb_ = callback;
 }
 
 void RTCEncodedAudioStreamTransformer::UnregisterTransformedFrameCallback() {
-  WTF::MutexLocker locker(sink_mutex_);
+  base::AutoLock locker(sink_lock_);
   send_frame_to_sink_cb_ = nullptr;
 }
 
 void RTCEncodedAudioStreamTransformer::TransformFrame(
     std::unique_ptr<webrtc::TransformableFrameInterface> frame) {
-  WTF::MutexLocker locker(source_mutex_);
+  base::AutoLock locker(source_lock_);
   // If no transformer callback has been set, drop the frame.
   if (!transformer_callback_)
     return;
@@ -178,30 +179,30 @@ void RTCEncodedAudioStreamTransformer::TransformFrame(
 
 void RTCEncodedAudioStreamTransformer::SendFrameToSink(
     std::unique_ptr<webrtc::TransformableFrameInterface> frame) {
-  WTF::MutexLocker locker(sink_mutex_);
+  base::AutoLock locker(sink_lock_);
   if (send_frame_to_sink_cb_)
     send_frame_to_sink_cb_->OnTransformedFrame(std::move(frame));
 }
 
 void RTCEncodedAudioStreamTransformer::SetTransformerCallback(
     TransformerCallback callback) {
-  WTF::MutexLocker locker(source_mutex_);
+  base::AutoLock locker(source_lock_);
   DCHECK(!transformer_callback_);
   transformer_callback_ = std::move(callback);
 }
 
 void RTCEncodedAudioStreamTransformer::ResetTransformerCallback() {
-  WTF::MutexLocker locker(source_mutex_);
+  base::AutoLock locker(source_lock_);
   transformer_callback_.Reset();
 }
 
 bool RTCEncodedAudioStreamTransformer::HasTransformerCallback() {
-  WTF::MutexLocker locker(source_mutex_);
+  base::AutoLock locker(source_lock_);
   return !!transformer_callback_;
 }
 
 bool RTCEncodedAudioStreamTransformer::HasTransformedFrameCallback() const {
-  WTF::MutexLocker locker(sink_mutex_);
+  base::AutoLock locker(sink_lock_);
   return !!send_frame_to_sink_cb_;
 }
 

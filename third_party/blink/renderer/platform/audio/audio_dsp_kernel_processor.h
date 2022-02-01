@@ -32,6 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DSP_KERNEL_PROCESSOR_H_
 
 #include <memory>
+
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_processor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -78,7 +80,7 @@ class PLATFORM_EXPORT AudioDSPKernelProcessor : public AudioProcessor {
 
  protected:
   Vector<std::unique_ptr<AudioDSPKernel>> kernels_;
-  mutable Mutex process_lock_;
+  mutable base::Lock process_lock_;
   bool has_just_reset_;
 };
 

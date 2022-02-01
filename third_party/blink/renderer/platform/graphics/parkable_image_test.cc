@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -76,23 +77,23 @@ class ParkableImageBaseTest : public ::testing::Test {
     return pi->impl_->MaybePark();
   }
   static void Unpark(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->impl_->Unpark();
   }
   static void Lock(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->LockData();
   }
   static void Unlock(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->UnlockData();
   }
   static bool is_on_disk(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     return pi->is_on_disk();
   }
   static bool is_locked(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     return pi->impl_->is_locked();
   }
   static bool is_frozen(scoped_refptr<ParkableImage> pi) {
@@ -117,7 +118,7 @@ class ParkableImageBaseTest : public ::testing::Test {
       return false;
     }
 
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->LockData();
 
     auto ro_buffer = pi->impl_->rw_buffer_->MakeROBufferSnapshot();

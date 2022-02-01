@@ -24,6 +24,8 @@
  */
 
 #include <memory>
+
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_dsp_kernel.h"
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_processor.h"
 
@@ -52,7 +54,7 @@ void WaveShaperProcessor::SetCurve(const float* curve_data,
   DCHECK(IsMainThread());
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   if (curve_length == 0 || !curve_data) {
     curve_ = nullptr;
@@ -80,7 +82,7 @@ void WaveShaperProcessor::SetCurve(const float* curve_data,
 
 void WaveShaperProcessor::SetOversample(OverSampleType oversample) {
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   oversample_ = oversample;
 
@@ -102,11 +104,11 @@ void WaveShaperProcessor::Process(const AudioBus* source,
   }
 
   DCHECK_EQ(source->NumberOfChannels(), destination->NumberOfChannels());
-  DCHECK_EQ(source->NumberOfChannels(), kernels_.size());
 
   // The audio thread can't block on this lock, so we call tryLock() instead.
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
+    DCHECK_EQ(source->NumberOfChannels(), kernels_.size());
     // For each channel of our input, process using the corresponding
     // WaveShaperDSPKernel into the output channel.
     for (unsigned i = 0; i < kernels_.size(); ++i) {

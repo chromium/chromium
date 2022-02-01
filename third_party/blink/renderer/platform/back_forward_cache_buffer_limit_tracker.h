@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BACK_FORWARD_CACHE_BUFFER_LIMIT_TRACKER_H_
 
 #include <cstddef>
+
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -21,12 +23,12 @@ class PLATFORM_EXPORT BackForwardCacheBufferLimitTracker {
 
   // Called when a network request buffered an additional `num_bytes` while in
   // back-forward cache. May be called multiple times.
-  void DidBufferBytes(size_t num_bytes) LOCKS_EXCLUDED(mutex_);
+  void DidBufferBytes(size_t num_bytes) LOCKS_EXCLUDED(lock_);
 
   void DidRemoveFrameOrWorkerFromBackForwardCache(size_t total_bytes)
-      LOCKS_EXCLUDED(mutex_);
+      LOCKS_EXCLUDED(lock_);
 
-  bool IsUnderPerProcessBufferLimit() LOCKS_EXCLUDED(mutex_);
+  bool IsUnderPerProcessBufferLimit() LOCKS_EXCLUDED(lock_);
 
   BackForwardCacheBufferLimitTracker(BackForwardCacheBufferLimitTracker&) =
       delete;
@@ -36,13 +38,13 @@ class PLATFORM_EXPORT BackForwardCacheBufferLimitTracker {
 
   const size_t max_buffered_bytes_per_process_;
 
-  Mutex mutex_;
+  base::Lock lock_;
 
   // The total bytes buffered by all network requests in frames or workers while
   // frozen due to back-forward cache. This number gets reset for when the
   // process gets out of the back-forward cache. As this variable is accessed
-  // from frames and workers, this must be protected by `mutex_`.
-  size_t total_bytes_buffered_ GUARDED_BY(mutex_) = 0;
+  // from frames and workers, this must be protected by `lock_`.
+  size_t total_bytes_buffered_ GUARDED_BY(lock_) = 0;
 };
 
 }  // namespace blink

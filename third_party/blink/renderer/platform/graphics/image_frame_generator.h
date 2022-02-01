@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -108,7 +109,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
 
   bool IsMultiFrame() const { return is_multi_frame_; }
   bool DecodeFailed() const {
-    MutexLocker lock(generator_mutex_);
+    base::AutoLock lock(generator_lock_);
     return decode_failed_;
   }
 
@@ -121,18 +122,18 @@ class PLATFORM_EXPORT ImageFrameGenerator final
       SkYUVAPixmapInfo* info);
 
  private:
-  class ClientMutexLocker {
+  class ClientAutoLock {
     STACK_ALLOCATED();
 
    public:
-    ClientMutexLocker(ImageFrameGenerator* generator,
-                      cc::PaintImage::GeneratorClientId client_id);
-    ~ClientMutexLocker();
+    ClientAutoLock(ImageFrameGenerator* generator,
+                   cc::PaintImage::GeneratorClientId client_id);
+    ~ClientAutoLock();
 
    private:
     ImageFrameGenerator* generator_;
     cc::PaintImage::GeneratorClientId client_id_;
-    Mutex* mutex_;
+    base::Lock* lock_;
   };
 
   ImageFrameGenerator(const SkISize& full_size,
@@ -156,25 +157,25 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   const bool is_multi_frame_;
   const Vector<SkISize> supported_sizes_;
 
-  mutable Mutex generator_mutex_;
-  bool decode_failed_ GUARDED_BY(generator_mutex_) = false;
-  bool yuv_decoding_failed_ GUARDED_BY(generator_mutex_) = false;
-  wtf_size_t frame_count_ GUARDED_BY(generator_mutex_) = 0u;
-  Vector<bool> has_alpha_ GUARDED_BY(generator_mutex_);
+  mutable base::Lock generator_lock_;
+  bool decode_failed_ GUARDED_BY(generator_lock_) = false;
+  bool yuv_decoding_failed_ GUARDED_BY(generator_lock_) = false;
+  wtf_size_t frame_count_ GUARDED_BY(generator_lock_) = 0u;
+  Vector<bool> has_alpha_ GUARDED_BY(generator_lock_);
 
-  struct ClientMutex {
+  struct ClientLock {
     int ref_count = 0;
-    Mutex mutex;
+    base::Lock lock;
   };
 
   // Note that it is necessary to use HashMap here to ensure that references
-  // to entries in the map, stored in ClientMutexLocker, remain valid across
+  // to entries in the map, stored in ClientAutoLock, remain valid across
   // insertions into the map.
   HashMap<cc::PaintImage::GeneratorClientId,
-          std::unique_ptr<ClientMutex>,
+          std::unique_ptr<ClientLock>,
           WTF::IntHash<cc::PaintImage::GeneratorClientId>,
           WTF::UnsignedWithZeroKeyHashTraits<cc::PaintImage::GeneratorClientId>>
-      mutex_map_ GUARDED_BY(generator_mutex_);
+      lock_map_ GUARDED_BY(generator_lock_);
 
   std::unique_ptr<ImageDecoderFactory> image_decoder_factory_;
 };

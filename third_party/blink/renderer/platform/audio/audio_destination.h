@@ -31,6 +31,7 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
@@ -191,7 +192,7 @@ class PLATFORM_EXPORT AudioDestination
   AudioCallbackMetricReporter metric_reporter_;
 
   // This protects |device_state_| below.
-  mutable Mutex state_change_lock_;
+  mutable base::Lock state_change_lock_;
 
   // Modified only on the main thread, so it can be read without holding a lock
   // there.

@@ -254,11 +254,11 @@ void AudioDestination::RequestRender(size_t frames_requested,
                "frames_to_render", frames_to_render, "timestamp (s)",
                delay_timestamp);
 
-  MutexTryLocker locker(state_change_lock_);
+  base::AutoTryLock locker(state_change_lock_);
 
   // The state might be changing by ::Stop() call. If the state is locked, do
   // not touch the below.
-  if (!locker.Locked()) {
+  if (!locker.is_acquired()) {
     return;
   }
 
@@ -388,7 +388,7 @@ void AudioDestination::Resume() {
 
 bool AudioDestination::IsPlaying() {
   DCHECK(IsMainThread());
-  MutexLocker locker(state_change_lock_);
+  base::AutoLock locker(state_change_lock_);
   return device_state_ == DeviceState::kRunning;
 }
 
@@ -441,7 +441,7 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
 
 void AudioDestination::SetDeviceState(DeviceState state) {
   DCHECK(IsMainThread());
-  MutexLocker locker(state_change_lock_);
+  base::AutoLock locker(state_change_lock_);
 
   device_state_ = state;
 }

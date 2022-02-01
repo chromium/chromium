@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
@@ -222,7 +223,7 @@ enum class ParkableStringImpl::Status : uint8_t {
 ParkableStringImpl::ParkableMetadata::ParkableMetadata(
     String string,
     std::unique_ptr<SecureDigest> digest)
-    : mutex_(),
+    : lock_(),
       lock_depth_(0),
       state_(State::kUnparked),
       background_task_in_progress_(false),
@@ -304,7 +305,7 @@ void ParkableStringImpl::Lock() {
   if (!may_be_parked())
     return;
 
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   metadata_->lock_depth_ += 1;
   CHECK_NE(metadata_->lock_depth_, 0u);
   // Make young as this is a strong (but not certain) indication that the string
@@ -316,7 +317,7 @@ void ParkableStringImpl::Unlock() {
   if (!may_be_parked())
     return;
 
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   metadata_->lock_depth_ -= 1;
   CHECK_NE(metadata_->lock_depth_, std::numeric_limits<unsigned int>::max());
 
@@ -343,7 +344,7 @@ const String& ParkableStringImpl::ToString() {
   if (!may_be_parked())
     return string_;
 
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   MakeYoung();
   AsanUnpoisonString(string_);
   Unpark();
@@ -377,7 +378,7 @@ size_t ParkableStringImpl::MemoryFootprintForDump() const {
 }
 
 ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   AssertOnValidThread();
   DCHECK(may_be_parked());
   DCHECK(!is_on_disk());
@@ -417,7 +418,7 @@ ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
 }
 
 bool ParkableStringImpl::Park(ParkingMode mode) {
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   AssertOnValidThread();
   DCHECK(may_be_parked());
 
@@ -561,7 +562,7 @@ void ParkableStringImpl::Unpark() {
 String ParkableStringImpl::UnparkInternal() {
   AssertOnValidThread();
   DCHECK(is_parked() || is_on_disk());
-  // Note: No need for |mutex_| to be held, this doesn't touch any member
+  // Note: No need for |lock_| to be held, this doesn't touch any member
   // variable protected by it.
 
   base::ElapsedTimer timer;
@@ -763,7 +764,7 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
     std::unique_ptr<Vector<uint8_t>> compressed,
     base::TimeDelta parking_thread_time) {
   DCHECK(metadata_->background_task_in_progress_);
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   DCHECK_EQ(State::kUnparked, metadata_->state_);
   metadata_->background_task_in_progress_ = false;
 

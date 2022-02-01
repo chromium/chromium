@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -21,12 +22,12 @@ DiskDataAllocator::DiskDataAllocator()
 DiskDataAllocator::~DiskDataAllocator() = default;
 
 bool DiskDataAllocator::may_write() {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return may_write_;
 }
 
 void DiskDataAllocator::set_may_write_for_testing(bool may_write) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   may_write_ = may_write;
 }
 
@@ -108,7 +109,7 @@ std::unique_ptr<DiskDataMetadata> DiskDataAllocator::Write(const void* data,
   DiskDataMetadata chosen_chunk = {0, 0};
 
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     if (!may_write_)
       return nullptr;
 
@@ -119,7 +120,7 @@ std::unique_ptr<DiskDataMetadata> DiskDataAllocator::Write(const void* data,
   const char* data_char = reinterpret_cast<const char*>(data);
   int written = DoWrite(chosen_chunk.start_offset(), data_char, size_int);
 
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   if (size_int != written) {
     // Assume that the error is not transient. This can happen if the disk is
     // full for instance, in which case it is likely better not to try writing
@@ -145,7 +146,7 @@ void DiskDataAllocator::Read(const DiskDataMetadata& metadata, void* data) {
 
 #if DCHECK_IS_ON()
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     auto it = allocated_chunks_.find(metadata.start_offset());
     DCHECK(it != allocated_chunks_.end());
     DCHECK_EQ(metadata.size(), it->second);
@@ -154,7 +155,7 @@ void DiskDataAllocator::Read(const DiskDataMetadata& metadata, void* data) {
 }
 
 void DiskDataAllocator::Discard(std::unique_ptr<DiskDataMetadata> metadata) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK(may_write_ || file_.IsValid());
 
 #if DCHECK_IS_ON()
@@ -190,7 +191,7 @@ void DiskDataAllocator::DoRead(int64_t offset, char* data, int size) {
 }
 
 void DiskDataAllocator::ProvideTemporaryFile(base::File file) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK(IsMainThread());
   DCHECK(!file_.IsValid());
   DCHECK(!may_write_);

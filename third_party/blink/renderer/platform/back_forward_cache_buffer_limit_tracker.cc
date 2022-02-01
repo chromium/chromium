@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 
+#include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -30,7 +31,7 @@ BackForwardCacheBufferLimitTracker::BackForwardCacheBufferLimitTracker()
           kDefaultMaxBufferedBodyBytesPerProcess)) {}
 
 void BackForwardCacheBufferLimitTracker::DidBufferBytes(size_t num_bytes) {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   total_bytes_buffered_ += num_bytes;
   TRACE_EVENT2("loading", "BackForwardCacheBufferLimitTracker::DidBufferBytes",
                "total_bytes_buffered", static_cast<int>(total_bytes_buffered_),
@@ -39,7 +40,7 @@ void BackForwardCacheBufferLimitTracker::DidBufferBytes(size_t num_bytes) {
 
 void BackForwardCacheBufferLimitTracker::
     DidRemoveFrameOrWorkerFromBackForwardCache(size_t total_bytes) {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   DCHECK(total_bytes_buffered_ >= total_bytes);
   total_bytes_buffered_ -= total_bytes;
   TRACE_EVENT2("loading",
@@ -50,7 +51,7 @@ void BackForwardCacheBufferLimitTracker::
 }
 
 bool BackForwardCacheBufferLimitTracker::IsUnderPerProcessBufferLimit() {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   return total_bytes_buffered_ <= max_buffered_bytes_per_process_;
 }
 

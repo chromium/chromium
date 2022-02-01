@@ -35,6 +35,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -178,7 +179,7 @@ class PLATFORM_EXPORT MediaStreamSource final
   ReadyState ready_state_;
   bool requires_consumer_;
   HeapHashSet<WeakMember<Observer>> observers_;
-  Mutex audio_consumers_lock_;
+  base::Lock audio_consumers_lock_;
   HashMap<WebAudioDestinationConsumer*, std::unique_ptr<ConsumerWrapper>>
       audio_consumers_ GUARDED_BY(audio_consumers_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;

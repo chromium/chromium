@@ -24,6 +24,8 @@
  */
 
 #include <memory>
+
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/biquad_dsp_kernel.h"
 #include "third_party/blink/renderer/modules/webaudio/biquad_processor.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -122,8 +124,8 @@ void BiquadProcessor::Process(const AudioBus* source,
   }
 
   // Synchronize with possible dynamic changes to the impulse response.
-  MutexTryLocker try_locker(process_lock_);
-  if (!try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (!try_locker.is_acquired()) {
     // Can't get the lock. We must be in the middle of changing something.
     destination->Zero();
     return;
@@ -183,7 +185,7 @@ void BiquadProcessor::GetFrequencyResponse(int n_frequencies,
     // while we're trying to access them.  Since this is on the main thread, we
     // can wait.  The audio thread will update the coefficients the next time
     // around, it it were blocked.
-    MutexLocker process_locker(process_lock_);
+    base::AutoLock process_locker(process_lock_);
 
     cutoff_frequency = Parameter1().Value();
     q = Parameter2().Value();

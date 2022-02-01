@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_BLOB_URL_NULL_ORIGIN_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_BLOB_URL_NULL_ORIGIN_MAP_H_
 
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -83,7 +84,7 @@ class PLATFORM_EXPORT BlobURLOpaqueOriginNonceMap {
 
   // Returns an opaque origin's nonce keyed with |blob_url| from the map.
   // |blob_url| must have the opaque origin.
-  base::UnguessableToken Get(const KURL& blob_url) LOCKS_EXCLUDED(mutex_);
+  base::UnguessableToken Get(const KURL& blob_url) LOCKS_EXCLUDED(lock_);
 
  private:
   friend class BlobURLNullOriginMap;
@@ -91,17 +92,17 @@ class PLATFORM_EXPORT BlobURLOpaqueOriginNonceMap {
   // Adds a pair of |blob_url| and |origin|'s nonce to the map. |blob_url| and
   // |origin| must have the same opaque origin. Only called from
   // BlobURLNullOriginMap::Add().
-  void Add(const KURL& blob_url, SecurityOrigin* origin) LOCKS_EXCLUDED(mutex_);
+  void Add(const KURL& blob_url, SecurityOrigin* origin) LOCKS_EXCLUDED(lock_);
 
   // Removes an opaque origin's nonce keyed with |blob_url| from the map.
   // |blob_url| must have the opaque origin. Only called from
   // BlobURLNullOriginMap::Remove().
-  void Remove(const KURL& blob_url) LOCKS_EXCLUDED(mutex_);
+  void Remove(const KURL& blob_url) LOCKS_EXCLUDED(lock_);
 
   HashMap<String, base::UnguessableToken> blob_url_opaque_origin_nonce_map_
-      GUARDED_BY(mutex_);
+      GUARDED_BY(lock_);
 
-  Mutex mutex_;
+  base::Lock lock_;
 };
 
 }  // namespace blink

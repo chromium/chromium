@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_MEMORY_PRESSURE_LISTENER_H_
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -55,8 +56,8 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   MemoryPressureListenerRegistry& operator=(
       const MemoryPressureListenerRegistry&) = delete;
 
-  void RegisterThread(Thread*) LOCKS_EXCLUDED(threads_mutex_);
-  void UnregisterThread(Thread*) LOCKS_EXCLUDED(threads_mutex_);
+  void RegisterThread(Thread*) LOCKS_EXCLUDED(threads_lock_);
+  void UnregisterThread(Thread*) LOCKS_EXCLUDED(threads_lock_);
 
   void RegisterClient(MemoryPressureListener*);
   void UnregisterClient(MemoryPressureListener*);
@@ -77,8 +78,8 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   static bool is_low_end_device_;
 
   HeapHashSet<WeakMember<MemoryPressureListener>> clients_;
-  HashSet<Thread*> threads_ GUARDED_BY(threads_mutex_);
-  Mutex threads_mutex_;
+  HashSet<Thread*> threads_ GUARDED_BY(threads_lock_);
+  base::Lock threads_lock_;
 };
 
 }  // namespace blink

@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
@@ -148,7 +149,7 @@ class PLATFORM_EXPORT ParkableStringImpl final
   }
 
   Age age_for_testing() {
-    MutexLocker locker(metadata_->mutex_);
+    base::AutoLock locker(metadata_->lock_);
     return metadata_->age_;
   }
 
@@ -178,21 +179,21 @@ class PLATFORM_EXPORT ParkableStringImpl final
 
   // Doesn't make the string young. May be called from any thread.
   void LockWithoutMakingYoung() {
-    MutexLocker locker(metadata_->mutex_);
+    base::AutoLock locker(metadata_->lock_);
     metadata_->lock_depth_ += 1;
   }
 
-  void MakeYoung() EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_) {
+  void MakeYoung() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_) {
     metadata_->age_ = Age::kYoung;
   }
   // Whether the string is referenced or locked. The return value is valid as
-  // long as |mutex_| is held.
-  Status CurrentStatus() const EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_);
-  bool CanParkNow() const EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_);
+  // long as |lock_| is held.
+  Status CurrentStatus() const EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
+  bool CanParkNow() const EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
   bool ParkInternal(ParkingMode mode)
-      EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_);
-  void Unpark() EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_);
-  String UnparkInternal() EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_);
+      EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
+  void Unpark() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
+  String UnparkInternal() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
 
   void PostBackgroundCompressionTask();
   static void CompressInBackground(std::unique_ptr<BackgroundTaskParams>);
@@ -207,7 +208,7 @@ class PLATFORM_EXPORT ParkableStringImpl final
       std::unique_ptr<Vector<uint8_t>> compressed,
       base::TimeDelta parking_thread_time);
 
-  void PostBackgroundWritingTask() EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_);
+  void PostBackgroundWritingTask() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
   static void WriteToDiskInBackground(std::unique_ptr<BackgroundTaskParams>,
                                       DiskDataAllocator* data_allocator);
   // Called on the main thread after writing is done.
@@ -223,7 +224,7 @@ class PLATFORM_EXPORT ParkableStringImpl final
   void DiscardCompressedData();
 
   int lock_depth_for_testing() {
-    MutexLocker locker_(metadata_->mutex_);
+    base::AutoLock locker_(metadata_->lock_);
     return metadata_->lock_depth_;
   }
 
@@ -233,8 +234,8 @@ class PLATFORM_EXPORT ParkableStringImpl final
     ParkableMetadata(const ParkableMetadata&) = delete;
     ParkableMetadata& operator=(const ParkableMetadata&) = delete;
 
-    Mutex mutex_;
-    unsigned int lock_depth_ GUARDED_BY(mutex_);
+    base::Lock lock_;
+    unsigned int lock_depth_ GUARDED_BY(lock_);
 
     // Main thread only.
     State state_;
@@ -255,7 +256,7 @@ class PLATFORM_EXPORT ParkableStringImpl final
     // Thread safety: it is typically not safe to guard only one part of a
     // bitfield with a mutex, but this is correct here, as the other members are
     // const (and never change).
-    Age age_ : 3 GUARDED_BY(mutex_);
+    Age age_ : 3 GUARDED_BY(lock_);
     const bool is_8bit_ : 1;
     const unsigned length_;
   };

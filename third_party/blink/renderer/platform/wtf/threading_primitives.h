@@ -109,6 +109,8 @@ class WTF_EXPORT MutexBase {
 
 class ThreadCondition;
 
+// Note: Prefer base::Lock to WTF::Mutex. The implementation is the same, this
+// will be removed. crbug.com/1290281.
 class LOCKABLE WTF_EXPORT Mutex {
  public:
   Mutex() = default;

@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "base/rand_util.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
@@ -130,7 +131,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Can be called on any thread.
   bool OnLine() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     DCHECK(state.on_line_initialized);
     return state.on_line;
@@ -140,7 +141,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // whose typical performance is most similar to the measured performance of
   // the network in use.
   WebEffectiveConnectionType EffectiveType() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
     // true once https://crbug.com/728771 is fixed.
@@ -150,7 +151,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // Returns the current HTTP RTT estimate. If the estimate is unavailable, the
   // returned optional value is null.
   absl::optional<base::TimeDelta> HttpRtt() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
     // true once https://crbug.com/728771 is fixed.
@@ -160,7 +161,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // Returns the current transport RTT estimate. If the estimate is unavailable,
   // the returned optional value is null.
   absl::optional<base::TimeDelta> TransportRtt() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     DCHECK(state.on_line_initialized);
     return state.transport_rtt;
@@ -169,7 +170,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // Returns the current throughput estimate (in megabits per second). If the
   // estimate is unavailable, the returned optional value is null.
   absl::optional<double> DownlinkThroughputMbps() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
     // true once https://crbug.com/728771 is fixed.
@@ -180,7 +181,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // The returned value does not account for any holdback experiments that may
   // be enabled.
   bool SaveDataEnabled() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
     // true once https://crbug.com/728771 is fixed.
@@ -191,7 +192,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Can be called on any thread.
   WebConnectionType ConnectionType() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     DCHECK(state.connection_initialized);
     return state.type;
@@ -219,7 +220,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Can be called on any thread.
   double MaxBandwidth() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     const NetworkState& state = has_override_ ? override_ : state_;
     DCHECK(state.connection_initialized);
     return state.max_bandwidth_mbps;
@@ -374,10 +375,10 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // Adding this noise reduces the chances of cross-origin fingerprinting.
   double GetRandomMultiplier(const String& host) const;
 
-  mutable Mutex mutex_;
-  NetworkState state_ GUARDED_BY(mutex_);
-  bool has_override_ GUARDED_BY(mutex_);
-  NetworkState override_ GUARDED_BY(mutex_);
+  mutable base::Lock lock_;
+  NetworkState state_ GUARDED_BY(lock_);
+  bool has_override_ GUARDED_BY(lock_);
+  NetworkState override_ GUARDED_BY(lock_);
 
   ObserverListMap connection_observers_;
   ObserverListMap on_line_state_observers_;

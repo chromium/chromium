@@ -28,6 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -395,7 +396,7 @@ class ThreadedHeapTester : public ThreadedTesterBase {
  protected:
   using GlobalIntWrapperPersistent = CrossThreadPersistent<IntWrapper>;
 
-  Mutex mutex_;
+  base::Lock lock_;
   Vector<std::unique_ptr<GlobalIntWrapperPersistent>> cross_persistents_;
 
   std::unique_ptr<GlobalIntWrapperPersistent> CreateGlobalPersistent(
@@ -405,7 +406,7 @@ class ThreadedHeapTester : public ThreadedTesterBase {
   }
 
   void AddGlobalPersistent() {
-    MutexLocker lock(mutex_);
+    base::AutoLock lock(lock_);
     cross_persistents_.push_back(CreateGlobalPersistent(0x2a2a2a2a));
   }
 

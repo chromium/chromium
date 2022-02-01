@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -62,7 +63,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   TRACE_EVENT2("webaudio", "PushPullFIFO::Push", "this",
                static_cast<void*>(this), "frames", input_bus->length());
 
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Push under lock");
 
   CHECK(input_bus);
@@ -117,7 +118,7 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
   TRACE_EVENT2("webaudio", "PushPullFIFO::Pull", "this",
                static_cast<void*>(this), "frames", frames_requested);
 
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Pull under lock");
 
 #if BUILDFLAG(IS_ANDROID)
@@ -220,7 +221,7 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
   CHECK(output_bus);
   SECURITY_CHECK(frames_requested <= output_bus->length());
 
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   TRACE_EVENT2("webaudio", "PushPullFIFO::PullAndUpdateEarmark (under lock)",
                "pull_count_", pull_count_, "earmark_frames_", earmark_frames_);
 
@@ -305,7 +306,7 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
 }
 
 const PushPullFIFOStateForTest PushPullFIFO::GetStateForTest() {
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   return {length(),     NumberOfChannels(), frames_available_, index_read_,
           index_write_, overflow_count_,    underflow_count_};
 }
