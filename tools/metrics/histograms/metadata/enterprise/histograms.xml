@@ -1119,12 +1119,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentAttestationBased"
-    enum="EnterpriseEnrollmentType" expires_after="2021-12-05">
+    enum="EnterpriseEnrollmentType" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Events related to attestation-based enrollment (Zero-Touch) of Chrome OS
     devices.
+
+    Warning: this histogram was expired from 2021-12-05 to 2022-02-01. Data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1148,7 +1151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitial"
-    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
+    enum="EnterpriseEnrollmentType" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -1159,7 +1162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitialAttestationBased"
-    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
+    enum="EnterpriseEnrollmentType" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -1170,7 +1173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitialManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
+    enum="EnterpriseEnrollmentType" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -1181,17 +1184,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2021-12-05">
+    enum="EnterpriseEnrollmentType" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Events related to manual fallback from attestation-based re-enrollment (Auto
     RE) of Chrome OS devices.
+
+    Warning: this histogram was expired from 2021-12-05 to 2022-02-01. Data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRecovery" enum="EnterpriseEnrollmentType"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

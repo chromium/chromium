@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Enrollment" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Signin" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Supervised" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Update" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaPasswordChangedScreen.UserActions"
-    enum="GaiaPasswordChangedScreenUserAction" expires_after="2022-02-01">
+    enum="GaiaPasswordChangedScreenUserAction" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
-    enum="HttpResponseCode" expires_after="2022-02-01">
+    enum="HttpResponseCode" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2022-02-01">
+    units="%" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.Download" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-10-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.Finalize" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-10-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.Verify" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-10-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -437,7 +437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
