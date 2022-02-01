@@ -17,7 +17,3 @@ pdf_use_skia_override = false
 
 # Disable use of Skia backend, paths only (experimental)
 pdf_use_skia_paths_override = false
-
-# TODO(crbug.com/1188795) Remove when this is no longer required in PDFium.
-# Enable experimental win32 GDI APIs.
-pdf_use_win32_gdi_override = false
