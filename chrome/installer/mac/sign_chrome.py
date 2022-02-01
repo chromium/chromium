@@ -111,7 +111,8 @@ def main():
         dest='skip_brands',
         action='append',
         default=[],
-        help='Causes any distribution whose brand code matches to be skipped.')
+        help='Causes any distribution whose brand code matches to be skipped. '
+        'A value of * matches all brand codes.')
 
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(

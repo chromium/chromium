@@ -889,6 +889,38 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         self.assertEqual(len(copied_files), len(files_to_copy))
         self.assertEqual(set(copied_files), files_to_copy)
 
+    def test_filter_distributions(self, **kwargs):
+        dist1 = model.Distribution()
+        dist2 = model.Distribution(branding_code='MOO')
+        dist3 = model.Distribution(branding_code='ARF')
+        dist4 = model.Distribution(branding_code='MOOF')
+
+        distributions = [dist1, dist2, dist3, dist4]
+
+        # No brand code filters should yield no change to the distribution list.
+        self.assertEqual(distributions,
+                         pipeline._filter_distributions(distributions, []))
+
+        # Filtering a brand code not being built should throw.
+        with self.assertRaises(ValueError):
+            pipeline._filter_distributions(distributions, ['MOOG'])
+
+        # Filtering a specific brand code and all brand codes should throw.
+        with self.assertRaises(ValueError):
+            pipeline._filter_distributions(distributions, ['*', 'MOOF'])
+
+        # Filtering one or more brand codes explicitly should remove them.
+        self.assertEqual([dist1, dist2, dist3],
+                         pipeline._filter_distributions(distributions,
+                                                        ['MOOF']))
+        self.assertEqual([dist1, dist3],
+                         pipeline._filter_distributions(distributions,
+                                                        ['MOO', 'MOOF']))
+
+        # Filtering a '*' should remove all brand coded distributions.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions(distributions, ['*']))
+
 
 @mock.patch.multiple(
     'signing.commands', **{

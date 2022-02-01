@@ -564,6 +564,55 @@ def _intermediate_work_dir_name(dist):
     return '-'.join(customizations)
 
 
+def _filter_distributions(distributions, skip_brands):
+    """Filters |distributions| by whether the distribution has a brand code that
+    is indicated for skipping by |skip_brands|. Returns the filtered
+    distribution list.
+
+    Args:
+        distributions: A list of |model.Distribution| objects.
+        skip_brands: A list of brand code strings. If a distribution has a brand
+            code in this list, or if a distribution has a brand code and
+            |skip_brands| contains *, that distribution will be skipped.
+
+    Returns:
+        The filtered list of |model.Distribution| objects.
+
+    Raises:
+        ValueError: If any value provided in |skip_brands| does not cause at
+            least one distribution to be filtered out.
+        ValueError: If |skip_brands| contains both the wildcard '*' value as
+            well as any other individual values.
+    """
+    # The requirement that all skips should filter at least one distribution is
+    # complicated with a wildcard, because both would match. Simplify things by
+    # allowing either explicitly listed skips, or a wildcard, but not both.
+    if '*' in skip_brands and len(skip_brands) > 1:
+        raise ValueError('It is invalid to both specify skipping all brands '
+                         'with * and also specify individual brands to skip')
+
+    for skip_brand in skip_brands:
+
+        def filter_brand(dist):
+            if not dist.branding_code:
+                return True
+            if dist.branding_code == skip_brand:
+                return False
+            if '*' == skip_brand:
+                return False
+            return True
+
+        new_distributions = list(filter(filter_brand, distributions))
+
+        if len(new_distributions) == len(distributions):
+            raise ValueError('Brand code does not specify a distribution',
+                             skip_brand)
+
+        distributions = new_distributions
+
+    return distributions
+
+
 def sign_all(orig_paths,
              config,
              disable_packaging=False,
@@ -586,7 +635,8 @@ def sign_all(orig_paths,
             will be packaged in the DMG and then the DMG itself will be
             notarized and stapled.
         skip_brands: A list of brand code strings. If a distribution has a brand
-            code in this list, that distribution will be skipped.
+            code in this list, or if a distribution has a brand code and
+            |skip_brands| contains *, that distribution will be skipped.
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
         # First, sign all the distributions and optionally submit the
@@ -594,10 +644,10 @@ def sign_all(orig_paths,
         uuids_to_config = {}
         signed_frameworks = {}
         created_app_bundles = set()
-        for dist in config.distributions:
-            if dist.branding_code in skip_brands:
-                continue
 
+        distributions = _filter_distributions(config.distributions, skip_brands)
+
+        for dist in distributions:
             with commands.WorkDirectory(orig_paths) as paths:
                 dist_config = dist.to_config(config)
                 do_packaging = (dist.package_as_dmg or
@@ -651,10 +701,7 @@ def sign_all(orig_paths,
         # After all apps are optionally notarized, package as required.
         if not disable_packaging:
             uuids_to_package_path = {}
-            for dist in config.distributions:
-                if dist.branding_code in skip_brands:
-                    continue
-
+            for dist in distributions:
                 dist_config = dist.to_config(config)
                 paths = orig_paths.replace_work(
                     os.path.join(
