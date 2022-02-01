@@ -77,6 +77,8 @@ class ApkSpec:
   minimal_apks_path: str = None
   # Proguard mapping path.
   mapping_path: str = None
+  # Path to the .pathmap.txt file for the apk. Used to deobfuscate res/ files.
+  resources_pathmap_path: str = None
   # Name of the apk split when .apks is being analyzed.
   split_name: str = None
   # Path such as: out/Release/size-info/BaseName
@@ -350,7 +352,7 @@ def _CreateDexSymbols(*, apk_spec):
 
 def CreateContainerSymbols(*, container_name, metadata, apk_spec, pak_spec,
                            native_spec, source_directory, output_directory,
-                           resources_pathmap_path, pak_id_map):
+                           pak_id_map):
   raw_symbols = []
   section_sizes = {}
   default_component = apk_spec.default_component if apk_spec else ''
@@ -415,10 +417,7 @@ def CreateContainerSymbols(*, container_name, metadata, apk_spec, pak_spec,
     if apk_spec.analyze_dex:
       add_syms(*_CreateDexSymbols(apk_spec=apk_spec))
     add_syms(*apk.CreateApkOtherSymbols(
-        metadata=metadata,
-        apk_spec=apk_spec,
-        native_spec=native_spec,
-        resources_pathmap_path=resources_pathmap_path))
+        metadata=metadata, apk_spec=apk_spec, native_spec=native_spec))
 
   container = models.Container(name=container_name,
                                metadata=metadata,
@@ -880,6 +879,7 @@ def _ProcessContainerArgs(top_args,
     apk_spec = ApkSpec(apk_path=apk_path,
                        minimal_apks_path=sub_args.minimal_apks_file,
                        mapping_path=mapping_path,
+                       resources_pathmap_path=resources_pathmap_path,
                        split_name=split_name)
     if top_args.output_directory:
       apk_spec.size_info_prefix = os.path.join(top_args.output_directory,
@@ -933,8 +933,7 @@ def _ProcessContainerArgs(top_args,
     native_specs = []
 
   logging.info('Container Params: %r', sub_args.__dict__)
-  return (sub_args, apk_spec, pak_spec, native_specs, container_name,
-          resources_pathmap_path)
+  return sub_args, apk_spec, pak_spec, native_specs, container_name
 
 
 def _IsOnDemand(apk_path):
@@ -1047,8 +1046,8 @@ def Run(top_args, on_config_error):
   pak_id_map = pakfile.PakIdMap()
 
   # Iterate over each container.
-  for (sub_args, apk_spec, pak_spec, native_specs, container_name,
-       resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
+  for (sub_args, apk_spec, pak_spec, native_specs,
+       container_name) in _IterSubArgs(top_args, on_config_error):
     if build_config is None:
       # TODO(agrieve): Move this out of the loop.
       build_config = CreateBuildConfig(sub_args.output_directory,
@@ -1077,7 +1076,6 @@ def Run(top_args, on_config_error):
           native_spec=native_spec,
           source_directory=sub_args.source_directory,
           output_directory=sub_args.output_directory,
-          resources_pathmap_path=resources_pathmap_path,
           pak_id_map=pak_id_map)
       assert raw_symbols, f'Container {container_name} had no symbols.'
 

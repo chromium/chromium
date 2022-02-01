@@ -276,7 +276,6 @@ class IntegrationTest(unittest.TestCase):
               native_spec=native_spec,
               source_directory=_TEST_SOURCE_DIR,
               output_directory=output_directory,
-              resources_pathmap_path=None,
               pak_id_map=pak_id_map)
           raw_symbols_list.append(raw_symbols)
 

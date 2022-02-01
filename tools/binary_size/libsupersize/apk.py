@@ -88,19 +88,13 @@ class _ResourceSourceMapper:
     return ''
 
 
-def CreateApkOtherSymbols(*,
-                          metadata,
-                          apk_spec,
-                          native_spec,
-                          resources_pathmap_path=None):
+def CreateApkOtherSymbols(*, metadata, apk_spec, native_spec):
   """Creates a Container (with sections sizes) and symbols for a SizeInfo.
 
   Args:
     metadata: Metadata dict from CreateMetadata().
     apk_spec: Instance of ApkSpec or None.
     native_spec: Instance of NativeSpec or None.
-    resources_pathmap_path: Path to the pathmap file that maps original
-        resource paths to shortened resource paths.
 
   Returns:
     A tuple of (section_ranges, raw_symbols).
@@ -109,7 +103,8 @@ def CreateApkOtherSymbols(*,
   apk_so_path = native_spec and native_spec.apk_so_path
   res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix,
                                             apk_spec.path_defaults)
-  resource_deobfuscator = _ResourcePathDeobfuscator(resources_pathmap_path)
+  resource_deobfuscator = _ResourcePathDeobfuscator(
+      apk_spec.resources_pathmap_path)
   raw_symbols = []
   zip_info_total = 0
   zipalign_total = 0
