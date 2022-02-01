@@ -56,9 +56,10 @@ interface TestController {
   [MinVersion=5]
   DoesItemExistInShelf@9(string item_id) => (bool exists);
 
-  // Queries whether a window with the given |window_id| exists. |window_id|
-  // should be obtained from PlatformWindow::GetWindowUniqueId(). A typical
-  // format might be: "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
+  // Queries whether a window with the given |window_id| exists and is either
+  // visible or minimized. |window_id| should be obtained from
+  // PlatformWindow::GetWindowUniqueId(). A typical format might be:
+  // "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
   DoesWindowExist@0(string window_id) => (bool exist);
 
   // Causes ash to enter or exit overview mode. The callback is invoked after

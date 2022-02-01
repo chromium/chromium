@@ -98,7 +98,13 @@ void TestControllerAsh::DoesItemExistInShelf(
 void TestControllerAsh::DoesWindowExist(const std::string& window_id,
                                         DoesWindowExistCallback callback) {
   aura::Window* window = GetShellSurfaceWindow(window_id);
-  std::move(callback).Run(window != nullptr);
+  // A window exists if it is either visible or minimized.
+  bool exists = false;
+  if (window) {
+    auto* window_state = ash::WindowState::Get(window);
+    exists = window->IsVisible() || window_state->IsMinimized();
+  }
+  std::move(callback).Run(exists);
 }
 
 void TestControllerAsh::EnterOverviewMode(EnterOverviewModeCallback callback) {
