@@ -128,7 +128,7 @@ VirtualCardEnrollBubbleViews::CreateMainContentView() {
   description_view->SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
 
-  VirtualCardEnrollmentFields* virtual_card_enrollment_fields =
+  const VirtualCardEnrollmentFields* virtual_card_enrollment_fields =
       controller_->GetVirtualCardEnrollmentFields();
   CreditCard* card = virtual_card_enrollment_fields->credit_card.get();
   gfx::Image* card_image = virtual_card_enrollment_fields->card_art_image.get();

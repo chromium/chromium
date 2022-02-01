@@ -78,6 +78,7 @@ class PersonalDataManager;
 class SingleFieldFormFillRouter;
 class StrikeDatabase;
 struct Suggestion;
+struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
@@ -418,6 +419,12 @@ class AutofillClient : public RiskDataLoader {
   // some platforms.
   virtual raw_ptr<VirtualCardEnrollmentManager>
   GetVirtualCardEnrollmentManager();
+
+  // Shows a dialog for the user to enroll in a virtual card.
+  virtual void ShowVirtualCardEnrollDialog(
+      const raw_ptr<VirtualCardEnrollmentFields> virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the list of allowed merchants and BIN ranges for virtual cards.

@@ -153,8 +153,14 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
 }
 
 void VirtualCardEnrollmentManager::ShowVirtualCardEnrollmentBubble() {
-  // TODO(crbug.com/1281695): Link backend components to
-  //  VirtualCardEnrollmentBubble here.
+  autofill_client_->ShowVirtualCardEnrollDialog(
+      &(state_.virtual_card_enrollment_fields),
+      base::BindOnce(
+          &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted() {

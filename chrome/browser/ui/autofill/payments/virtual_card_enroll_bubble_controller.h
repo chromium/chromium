@@ -53,7 +53,7 @@ class VirtualCardEnrollBubbleController {
   virtual std::u16string GetLearnMoreLinkText() const = 0;
 
   // Returns the enrollment fields for the virtual card.
-  virtual VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields()
+  virtual const VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields()
       const = 0;
 
   // Returns the currently active virtual card enroll bubble view. Can be

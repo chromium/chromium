@@ -44,9 +44,17 @@ VirtualCardEnrollBubbleController* VirtualCardEnrollBubbleController::Get(
   return VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents);
 }
 
-void VirtualCardEnrollBubbleControllerImpl::ShowBubble() {
+void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
+    const VirtualCardEnrollmentFields* virtual_card_enrollment_fields,
+    base::OnceClosure accept_virtual_card_callback,
+    base::OnceClosure decline_virtual_card_callback) {
+  // If bubble is already showing for another card, close it.
   if (bubble_view())
-    return;
+    HideBubble();
+
+  virtual_card_enrollment_fields_ = virtual_card_enrollment_fields;
+  accept_virtual_card_callback_ = std::move(accept_virtual_card_callback);
+  decline_virtual_card_callback_ = std::move(decline_virtual_card_callback);
 
   is_user_gesture_ = false;
   Show();
@@ -102,7 +110,7 @@ std::u16string VirtualCardEnrollBubbleControllerImpl::GetLearnMoreLinkText()
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL);
 }
 
-VirtualCardEnrollmentFields*
+const VirtualCardEnrollmentFields*
 VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollmentFields() const {
   return virtual_card_enrollment_fields_.get();
 }
@@ -112,9 +120,19 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollBubbleView() const {
   return bubble_view();
 }
 
-void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton() {}
+void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton() {
+  std::move(accept_virtual_card_callback_).Run();
+  decline_virtual_card_callback_.Reset();
 
-void VirtualCardEnrollBubbleControllerImpl::OnDeclineButton() {}
+  should_show_icon_ = false;
+}
+
+void VirtualCardEnrollBubbleControllerImpl::OnDeclineButton() {
+  std::move(decline_virtual_card_callback_).Run();
+  accept_virtual_card_callback_.Reset();
+
+  should_show_icon_ = false;
+}
 
 void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(const GURL& url) {
   web_contents()->OpenURL(content::OpenURLParams(
@@ -123,7 +141,10 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(const GURL& url) {
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {}
+    PaymentsBubbleClosedReason closed_reason) {
+  set_bubble_view(nullptr);
+  UpdatePageActionIcon();
+}
 
 bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
   return should_show_icon_;

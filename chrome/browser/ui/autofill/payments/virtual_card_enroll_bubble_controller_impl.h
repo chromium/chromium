@@ -26,8 +26,12 @@ class VirtualCardEnrollBubbleControllerImpl
   ~VirtualCardEnrollBubbleControllerImpl() override;
 
   // Displays both the virtual card enroll bubble and its associated omnibox
-  // icon.
-  void ShowBubble();
+  // icon. Sets virtual card enrollment fields as well as the closure for the
+  // accept and decline bubble events.
+  void ShowBubble(
+      const VirtualCardEnrollmentFields* virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback);
 
   // Shows the bubble again if the users clicks the omnibox icon.
   void ReshowBubble();
@@ -38,7 +42,8 @@ class VirtualCardEnrollBubbleControllerImpl
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
   std::u16string GetLearnMoreLinkText() const override;
-  VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields() const override;
+  const VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields()
+      const override;
   AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const override;
 
   void OnAcceptButton() override;
@@ -60,7 +65,7 @@ class VirtualCardEnrollBubbleControllerImpl
       VirtualCardEnrollBubbleControllerImpl>;
 
   // Contains more details regarding the sort of bubble to show the users.
-  std::unique_ptr<VirtualCardEnrollmentFields> virtual_card_enrollment_fields_;
+  raw_ptr<const VirtualCardEnrollmentFields> virtual_card_enrollment_fields_;
 
   // True if the icon should be showing on the webpage
   bool should_show_icon_ = false;
@@ -68,6 +73,12 @@ class VirtualCardEnrollBubbleControllerImpl
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
   bool is_user_gesture_ = false;
+
+  // Closure invoked when the user agrees to enroll in a virtual card.
+  base::OnceClosure accept_virtual_card_callback_;
+
+  // Closure invoked when the user rejects enrolling in a virtual card.
+  base::OnceClosure decline_virtual_card_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
