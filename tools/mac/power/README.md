@@ -56,6 +56,12 @@ root ALL = (ALL) ALL
 <user> ALL = (ALL) NOPASSWD:ALL
 ```
 
+## power_sampler
+
+A compiled binary of power_sampler is required to run power measurements. It can be compiled using this command:
+`autoninja -C out/Release tools/mac/power:power_sampler`
+
+
 ## DTrace
 
 Running benchmark.py in profile mode uses `dtrace` to analyse the chromium processes. By default `dtrace` does not work well with [SIP](https://support.apple.com/en-us/HT204899). Disabling SIP as a whole is not recommended and instead should be done only for dtrace using these steps:
@@ -73,7 +79,7 @@ A tool that allow you to run different browsers under specific usage scenarios a
 * Profile the code that runs and/or is causing wake-ups. (chromium only)
 
 ```
-./benchmark.py --scenarios idle_on_wiki:chrome
+./benchmark.py --scenarios idle_on_wiki:chrome idle_on_wiki:safari
 ./benchmark.py --profile_mode cpu_time --scenarios idle_on_wiki:chromium
 ```
 
