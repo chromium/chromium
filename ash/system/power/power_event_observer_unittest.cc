@@ -386,8 +386,9 @@ TEST_F(PowerEventObserverTest, ImmediateLockAnimations) {
 // Tests that displays will not be considered ready to suspend until the
 // animated wallpaper change finishes (if the wallpaper is being animated to
 // another wallpaper after the screen is locked).
+// Flaky: https://crbug.com/1293178
 TEST_F(PowerEventObserverTest,
-       DisplaysNotReadyForSuspendUntilWallpaperAnimationEnds) {
+       DISABLED_DisplaysNotReadyForSuspendUntilWallpaperAnimationEnds) {
   chromeos::FakePowerManagerClient* client =
       chromeos::FakePowerManagerClient::Get();
   ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
