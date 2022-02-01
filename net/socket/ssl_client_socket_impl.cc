@@ -109,6 +109,7 @@ base::Value NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
                  SSLConnectionStatusToCipherSuite(ssl_info.connection_status));
   dict.SetIntKey("key_exchange_group", ssl_info.key_exchange_group);
   dict.SetIntKey("peer_signature_algorithm", ssl_info.peer_signature_algorithm);
+  dict.SetBoolKey("encrypted_client_hello", ssl_info.encrypted_client_hello);
 
   dict.SetStringKey("next_proto",
                     NextProtoToString(socket->GetNegotiatedProtocol()));
@@ -1851,8 +1852,14 @@ void SSLClientSocketImpl::MessageCallback(int is_write,
             return NetLogSSLMessageParams(!!is_write, buf, len, capture_mode);
           });
       break;
-    default:
-      return;
+    case SSL3_RT_CLIENT_HELLO_INNER:
+      DCHECK(is_write);
+      net_log_.AddEvent(NetLogEventType::SSL_ENCYPTED_CLIENT_HELLO,
+                        [&](NetLogCaptureMode capture_mode) {
+                          return NetLogSSLMessageParams(!!is_write, buf, len,
+                                                        capture_mode);
+                        });
+      break;
   }
 }
 

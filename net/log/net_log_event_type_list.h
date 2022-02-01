@@ -588,6 +588,8 @@ EVENT_TYPE(SSL_ALERT_SENT)
 EVENT_TYPE(SSL_CONFIRM_HANDSHAKE)
 
 // An SSL connection sent or received a handshake message.
+// `SSL_ENCYPTED_CLIENT_HELLO` means the handshake message was not sent over the
+// wire but encrypted with the Encrypted ClientHello (ECH) extension.
 // The following parameters are attached:
 //   {
 //     "type": <The type of the handshake message, as an integer>
@@ -596,6 +598,7 @@ EVENT_TYPE(SSL_CONFIRM_HANDSHAKE)
 //   }
 EVENT_TYPE(SSL_HANDSHAKE_MESSAGE_RECEIVED)
 EVENT_TYPE(SSL_HANDSHAKE_MESSAGE_SENT)
+EVENT_TYPE(SSL_ENCYPTED_CLIENT_HELLO)
 
 // The specified number of bytes were sent on the socket.  Depending on the
 // source of the event, may be logged either once the data is sent, or when it
