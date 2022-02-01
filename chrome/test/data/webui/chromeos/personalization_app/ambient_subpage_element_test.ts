@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://personalization/trusted/ambient/toggle_row.js';
-
 import {AmbientSubpage} from 'chrome://personalization/trusted/ambient/ambient_subpage_element.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 
@@ -34,5 +32,9 @@ export function AmbientSubpageTest() {
         toggleRow!.shadowRoot!.querySelector('cr-toggle') as CrToggleElement;
     assertTrue(!!toggleButton);
     assertFalse(toggleButton!.checked);
+
+    const topicSource =
+        ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
+    assertTrue(!!topicSource);
   });
 }

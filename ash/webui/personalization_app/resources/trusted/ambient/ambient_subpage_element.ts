@@ -7,6 +7,9 @@
  * the ambient mode settings.
  */
 
+import 'chrome://personalization/trusted/ambient/toggle_row.js';
+import 'chrome://personalization/trusted/ambient/topic_source_list.js';
+
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class AmbientSubpage extends PolymerElement {

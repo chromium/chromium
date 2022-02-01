@@ -1,0 +1,29 @@
+<style>
+  #topicSourceTitle {
+    padding-bottom: 16px;
+    padding-top: 16px;
+  }
+
+  topic-source-item {
+    align-items: center;
+    height: 64px;
+  }
+
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+  iron-list > :focus {
+    background-color: var(--cr-focused-item-color);
+  }
+</style>
+
+<h3 id="topicSourceTitle" aria-hidden="true">
+  image source
+</h3>
+
+<iron-list id="topicSourceList" items="[[topicSources]]">
+  <template>
+    <topic-source-item></topic-source-item>
+  </template>
+</iron-list>
