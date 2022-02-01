@@ -211,7 +211,8 @@ class ModernLinker extends Linker {
             Log.i(TAG, "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
                     mRemoteLibInfo.mLoadAddress, mRemoteLibInfo.mLoadSize);
         }
-        getModernLinkerJni().useRelros(mRemoteLibInfo);
+        if (mLocalLibInfo == null) return;
+        getModernLinkerJni().useRelros(mLocalLibInfo.mLoadAddress, mRemoteLibInfo);
         // *Not* closing the RELRO FD after using it because the FD may need to be transferred to
         // another process after this point.
         if (DEBUG) Log.i(TAG, "Immediate RELRO availability: %b", relroAvailableImmediately);
@@ -244,7 +245,7 @@ class ModernLinker extends Linker {
     // GEN_JNI.java) is disabled by the @JniIgnoreNatives.
     interface Natives {
         boolean loadLibrary(String libFilePath, LibInfo libInfo, boolean spawnRelroRegion);
-        boolean useRelros(LibInfo libInfo);
+        boolean useRelros(long localLoadAddress, LibInfo remoteLibInfo);
         int getRelroSharingResult();
     }
 

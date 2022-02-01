@@ -607,10 +607,11 @@ JNI_GENERATOR_EXPORT jboolean
 Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
-    jobject lib_info_obj) {
+    jlong local_load_address,
+    jobject remote_lib_info_obj) {
   LOG_INFO("Entering");
   // Copy the contents from the Java-side LibInfo object.
-  NativeLibInfo incoming_lib_info = {env, lib_info_obj};
+  NativeLibInfo incoming_lib_info = {env, remote_lib_info_obj};
   if (!incoming_lib_info.CopyFromJavaObject()) {
     s_relro_sharing_status = RelroSharingStatus::CORRUPTED_IN_JAVA;
     return false;
@@ -620,7 +621,7 @@ Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeUseRelros(
   // loaded library and later compare with the contents of the
   // |incoming_lib_info|.
   NativeLibInfo lib_info = {nullptr, nullptr};
-  lib_info.set_load_address(incoming_lib_info.load_address());
+  lib_info.set_load_address(static_cast<uintptr_t>(local_load_address));
 
   if (!lib_info.CompareRelroAndReplaceItBy(incoming_lib_info)) {
     return false;
