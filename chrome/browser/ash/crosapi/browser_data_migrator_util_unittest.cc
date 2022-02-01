@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 
+#include <sys/stat.h>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -33,6 +35,25 @@ struct TargetItemComparator {
     return t1.path < t2.path;
   }
 };
+
+// Checks if the file paths point to the same inode.
+bool IsSameFile(const base::FilePath& file1, const base::FilePath& file2) {
+  struct stat st_1;
+  if (stat(file1.value().c_str(), &st_1) == -1) {
+    PLOG(ERROR) << "stat failed";
+    return false;
+  }
+
+  struct stat st_2;
+  if (stat(file2.value().c_str(), &st_2) == -1) {
+    PLOG(ERROR) << "stat failed";
+    return false;
+  }
+
+  // Make sure that they are indeed the same file.
+  return (st_1.st_ino == st_2.st_ino);
+}
+
 }  // namespace
 
 TEST(BrowserDataMigratorUtilTest, NoPathOverlaps) {
@@ -134,12 +155,39 @@ TEST(BrowserDataMigratorUtilTest, RecordUserDataSize) {
   histogram_tester.ExpectBucketCount(uma_name, size / 1024 / 1024, 1);
 }
 
+TEST(BrowserDataMigratorUtilTest, CreateHardLink) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath from_file =
+      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("from_file"));
+  const base::FilePath to_file =
+      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("to_file"));
+  base::WriteFile(from_file, "Hello, World", sizeof("Hello, World"));
+
+  ASSERT_TRUE(CreateHardLink(from_file, to_file));
+
+  EXPECT_TRUE(base::PathExists(to_file));
+
+  // Make sure that they are indeed the same file.
+  EXPECT_TRUE(IsSameFile(from_file, to_file));
+}
+
 TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
+  const base::FilePath copy_from =
+      scoped_temp_dir.GetPath().Append("copy_from");
+
+  const char subdirectory[] = "Subdirectory";
+  const char data_file[] = "data";
+  const char original[] = "original";
+  const char symlink[] = "symlink";
+  const char sensitive[] = "sensitive";
+
   // Setup files/directories as described below.
-  // |- original
+  // |- sensitive/original
   // |- copy_from/
   //     |- data
   //     |- Subdirectory/
@@ -147,17 +195,9 @@ TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
   //         |- Subdirectory/data
   //     |- symlink  /* symlink to original */
 
-  const base::FilePath copy_from =
-      scoped_temp_dir.GetPath().Append("copy_from");
-  const base::FilePath copy_to = scoped_temp_dir.GetPath().Append("copy_to");
-
-  const char subdirectory[] = "Subdirectory";
-  const char data_file[] = "data";
-  const char original[] = "original";
-  const char symlink[] = "symlink";
-
-  ASSERT_TRUE(base::WriteFile(scoped_temp_dir.GetPath().Append(original),
-                              kTextFileContent, kTextFileSize));
+  ASSERT_TRUE(base::WriteFile(
+      scoped_temp_dir.GetPath().Append(sensitive).Append(original),
+      kTextFileContent, kTextFileSize));
   ASSERT_TRUE(base::CreateDirectory(copy_from));
   ASSERT_TRUE(base::CreateDirectory(copy_from.Append(subdirectory)));
   ASSERT_TRUE(base::CreateDirectory(
@@ -169,11 +209,14 @@ TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
   ASSERT_TRUE(base::WriteFile(
       copy_from.Append(subdirectory).Append(subdirectory).Append(data_file),
       kTextFileContent, kTextFileSize));
-  base::CreateSymbolicLink(scoped_temp_dir.GetPath().Append(original),
-                           copy_from.Append(symlink));
+  base::CreateSymbolicLink(
+      scoped_temp_dir.GetPath().Append(sensitive).Append(original),
+      copy_from.Append(symlink));
 
+  // Test `CopyDirectory()`.
   scoped_refptr<CancelFlag> cancelled = base::MakeRefCounted<CancelFlag>();
   FakeMigrationProgressTracker progress_tracker;
+  const base::FilePath copy_to = scoped_temp_dir.GetPath().Append("copy_to");
   ASSERT_TRUE(
       CopyDirectory(copy_from, copy_to, cancelled.get(), &progress_tracker));
 
@@ -188,8 +231,42 @@ TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
   EXPECT_TRUE(base::PathExists(copy_to.Append(subdirectory).Append(data_file)));
   EXPECT_TRUE(base::PathExists(
       copy_to.Append(subdirectory).Append(subdirectory).Append(data_file)));
-  // Make sure that symlink does not get copied.
+  // Make sure that symlink is not copied.
   EXPECT_FALSE(base::PathExists(copy_to.Append(symlink)));
+  EXPECT_FALSE(base::PathExists(copy_to.Append(original)));
+
+  // Test `CopyDirectoryByHardLinks()`.
+  const base::FilePath copy_to_hard =
+      scoped_temp_dir.GetPath().Append("copy_to_hard");
+  ASSERT_TRUE(CopyDirectoryByHardLinks(copy_from, copy_to_hard));
+
+  // Expected `copy_to_hard` structure after `CopyDirectoryByHardLinks()`.
+  // |- copy_to_hard/
+  //     |- data
+  //     |- Subdirectory/
+  //         |- data
+  //         |- Subdirectory/data
+  EXPECT_TRUE(base::PathExists(copy_to_hard));
+  EXPECT_TRUE(base::PathExists(copy_to_hard.Append(data_file)));
+  EXPECT_TRUE(
+      base::PathExists(copy_to_hard.Append(subdirectory).Append(data_file)));
+  EXPECT_TRUE(base::PathExists(copy_to_hard.Append(subdirectory)
+                                   .Append(subdirectory)
+                                   .Append(data_file)));
+  // Make sure that symlink is not copied.
+  EXPECT_FALSE(base::PathExists(copy_to_hard.Append(symlink)));
+  EXPECT_FALSE(base::PathExists(copy_to_hard.Append(original)));
+
+  // Make sure that they are indeed the same file.
+  EXPECT_TRUE(
+      IsSameFile(copy_from.Append(data_file), copy_to_hard.Append(data_file)));
+  EXPECT_TRUE(IsSameFile(copy_from.Append(subdirectory).Append(data_file),
+                         copy_to_hard.Append(subdirectory).Append(data_file)));
+  EXPECT_TRUE(IsSameFile(
+      copy_from.Append(subdirectory).Append(subdirectory).Append(data_file),
+      copy_to_hard.Append(subdirectory)
+          .Append(subdirectory)
+          .Append(data_file)));
 }
 
 class BrowserDataMigratorUtilWithTargetsTest : public ::testing::Test {

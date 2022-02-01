@@ -248,6 +248,19 @@ bool CopyDirectory(const base::FilePath& from_path,
                    CancelFlag* cancel_flag,
                    MigrationProgressTracker* progress_tracker);
 
+// Creates a hard link from `from_file` to `to_file`. Use it on a file and not a
+// directory. Any parent directory of `to_file` should already exist. This will
+// fail if `to_dir` already exists.
+bool CreateHardLink(const base::FilePath& from_file,
+                    const base::FilePath& to_file);
+
+// Copies the content of `from_dir` to `to_dir` recursively similar to
+// `CopyDirectory` while skipping symlinks. Unlike `CopyDirectory` it creates
+// hard links for the files from `from_dir` to `to_dir`. If `to_dir`
+// already exists, then this will fail.
+bool CopyDirectoryByHardLinks(const base::FilePath& from_dir,
+                              const base::FilePath& to_dir);
+
 // Records the sizes of `TargetItem`s.
 void RecordTargetItemSizes(const std::vector<TargetItem>& items);
 

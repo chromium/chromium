@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 
+#include <unistd.h>
+
 #include <algorithm>
 
 #include "base/containers/contains.h"
@@ -275,6 +277,57 @@ bool CopyDirectory(const base::FilePath& from_path,
                          progress_tracker)) {
         return false;
       }
+    }
+  }
+
+  return true;
+}
+
+bool CreateHardLink(const base::FilePath& from_file,
+                    const base::FilePath& to_file) {
+  if (link(from_file.value().c_str(), to_file.value().c_str()) == -1) {
+    // Note that `link(from_file, to_file)` fails if `to_file` already exists.
+    PLOG(ERROR) << "link(" << from_file.value() << ", " << to_file.value()
+                << ") failed.";
+    return false;
+  }
+
+  return true;
+}
+
+bool CopyDirectoryByHardLinks(const base::FilePath& from_dir,
+                              const base::FilePath& to_dir) {
+  if (!base::DirectoryExists(from_dir)) {
+    LOG(ERROR) << "from_dir = " << from_dir.value() << " does not exist.";
+    return false;
+  }
+
+  if (base::PathExists(to_dir)) {
+    LOG(ERROR) << "to_dir = " << to_dir.value() << " already exists.";
+    return false;
+  }
+
+  if (!base::CreateDirectory(to_dir)) {
+    PLOG(ERROR) << "Failed base::CreateDirectory(" << to_dir.value() << ").";
+    return false;
+  }
+
+  base::FileEnumerator enumerator(from_dir, false /* recursive */,
+                                  base::FileEnumerator::FILES |
+                                      base::FileEnumerator::DIRECTORIES |
+                                      base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath entry = enumerator.Next(); !entry.empty();
+       entry = enumerator.Next()) {
+    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
+
+    // Only create hard links for files/dirs and skip other types like symlink
+    // since creating hard links for those might introdue a security risk.
+    if (S_ISREG(info.stat().st_mode)) {
+      if (!CreateHardLink(entry, to_dir.Append(entry.BaseName())))
+        return false;
+    } else if (S_ISDIR(info.stat().st_mode)) {
+      if (!CopyDirectoryByHardLinks(entry, to_dir.Append(entry.BaseName())))
+        return false;
     }
   }
 
