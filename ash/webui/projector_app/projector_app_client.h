@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 
 namespace network {
 namespace mojom {
@@ -28,9 +29,7 @@ namespace ash {
 
 struct NewScreencastPrecondition;
 
-// TODO(b/201468756): pendings screencasts are sorted by created time. Add
-// `created_time` field to PendingScreencast. Screencasts might fail to
-// upload. Add `failed_to_upload` field to PendingScreencast.
+// TODO(b/200179137): Add `failed_to_upload` field to PendingScreencast.
 struct PendingScreencast {
   base::Value ToValue() const;
   bool operator==(const PendingScreencast& rhs) const;
@@ -41,11 +40,14 @@ struct PendingScreencast {
   // The display name of screencast. If `container_dir` is
   // "/root/projector_data/abc", the `name` is "abc".
   std::string name;
-  // The total size of a screencast in bytes, including all media files and
-  // metadata files under `container_dir`.
+  // The total size of a screencast in bytes, including the media file and the
+  // metadata file under `container_dir`.
   int64_t total_size_in_bytes = 0;
   // The bytes have been transferred to drive.
   int64_t bytes_transferred = 0;
+
+  // The media file created time.
+  base::Time created_time;
 };
 
 struct PendingScreencastSetComparator {

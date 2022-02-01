@@ -21,9 +21,6 @@
 namespace {
 
 const char kTestUserEmail[] = "testuser1@gmail.com";
-const char kTestScreencastName[] = "test_pending_screecast";
-const char kTestScreencastPath[] =
-    "/root/projector_data/test_pending_screecast";
 
 const char kTestXhrUrl[] = "https://www.googleapis.com/drive/v3/files/fileID";
 const char kTestXhrUnsupportedUrl[] = "https://www.example.com";
@@ -347,10 +344,13 @@ TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
+  const std::string name = "test_pending_screecast";
+  const std::string path = "/root/projector_data/test_pending_screecast";
+  const base::Time created_time;
   const PendingScreencastSet expectedScreencasts{ash::PendingScreencast{
-      /*container_dir=*/base::FilePath(kTestScreencastPath),
-      /*name=*/kTestScreencastName, /*total_size_in_bytes=*/1,
-      /*bytes_untransferred=*/0}};
+      /*container_dir=*/base::FilePath(path),
+      /*name=*/name, /*total_size_in_bytes=*/1,
+      /*bytes_untransferred=*/0, /*created_time=*/created_time}};
   ON_CALL(mock_app_client(), GetPendingScreencasts())
       .WillByDefault(testing::ReturnRef(expectedScreencasts));
 
@@ -376,7 +376,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
   EXPECT_EQ(list_view.size(), 1u);
 
   const auto& screencast = list_view[0];
-  EXPECT_EQ(*(screencast.FindStringPath("name")), kTestScreencastName);
+  EXPECT_EQ(*(screencast.FindStringPath("name")), name);
+  EXPECT_EQ(*(screencast.FindDoublePath("createdTime")), 0);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {

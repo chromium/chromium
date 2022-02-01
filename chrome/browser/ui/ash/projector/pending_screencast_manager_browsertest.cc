@@ -95,22 +95,15 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
       drivefs::mojom::SyncingStatus& syncing_status) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
-    drive::DriveIntegrationService* service =
-        drive::DriveIntegrationServiceFactory::FindForProfile(
-            browser()->profile());
-    EXPECT_TRUE(service->IsMounted());
-    EXPECT_TRUE(base::PathExists(service->GetMountPointPath()));
-
-    base::FilePath root("/");
-    base::FilePath path(file_path);
-    base::FilePath folder_path(service->GetMountPointPath());
-    root.AppendRelativePath(path.DirName(), &folder_path);
+    base::FilePath relative_file_path(file_path);
+    base::FilePath folder_path =
+        GetDriveFsAbsolutePath(relative_file_path.DirName().value());
 
     // base::CreateDirectory returns 'true' on successful creation, or if the
     // directory already exists.
     EXPECT_TRUE(base::CreateDirectory(folder_path));
 
-    base::File file(folder_path.Append(path.BaseName()),
+    base::File file(folder_path.Append(relative_file_path.BaseName()),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     // Create a buffer whose size is `total_bytes`.
     std::string buffer(total_bytes, 'a');
@@ -121,6 +114,29 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     AddTransferItemEvent(syncing_status, file_path, total_bytes,
                          transferred_bytes);
+  }
+
+  base::Time GetFileCreatedTime(const std::string& relative_file_path) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::File::Info info;
+    return base::GetFileInfo(GetDriveFsAbsolutePath(relative_file_path), &info)
+               ? info.creation_time
+               : base::Time();
+  }
+
+  base::FilePath GetDriveFsAbsolutePath(const std::string& relative_path) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    drive::DriveIntegrationService* service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(
+            browser()->profile());
+    EXPECT_TRUE(service->IsMounted());
+    EXPECT_TRUE(base::PathExists(service->GetMountPointPath()));
+
+    base::FilePath root("/");
+    base::FilePath absolute_path(service->GetMountPointPath());
+    root.AppendRelativePath(base::FilePath(relative_path), &absolute_path);
+    return absolute_path;
   }
 
   void AddTransferItemEvent(drivefs::mojom::SyncingStatus& syncing_status,
@@ -180,6 +196,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   ash::PendingScreencast ps = *(pending_screencasts.begin());
   EXPECT_EQ(ps.container_dir, base::FilePath(kTestScreencastPath));
   EXPECT_EQ(ps.name, kTestScreencastName);
+  EXPECT_EQ(ps.created_time, GetFileCreatedTime(media_file));
 
   // Tests PendingScreencastChangeCallback won't be invoked if pending
   // screencast status doesn't change.

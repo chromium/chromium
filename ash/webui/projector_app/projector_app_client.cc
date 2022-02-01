@@ -13,6 +13,7 @@ namespace {
 
 constexpr char kPendingScreencastName[] = "name";
 constexpr char kPendingScreencastUploadProgress[] = "uploadProgress";
+constexpr char kPendingScreencastCreatedTime[] = "createdTime";
 constexpr int64_t kPendingScreencastDiffThresholdInBytes = 600 * 1024;
 
 ProjectorAppClient* g_instance = nullptr;
@@ -26,6 +27,10 @@ base::Value PendingScreencast::ToValue() const {
                                  static_cast<double>(total_size_in_bytes);
   val.SetKey(kPendingScreencastUploadProgress,
              base::Value(upload_progress * 100));
+  val.SetKey(kPendingScreencastCreatedTime,
+             base::Value(created_time.is_null()
+                             ? 0
+                             : created_time.ToJsTimeIgnoringNull()));
   return val;
 }
 

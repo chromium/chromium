@@ -16,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,10 +26,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
-
-// Returned by GetScreencastContainerSize(const base::FilePath& relative_path)
-// when the given `relative_path` is an invalid screencast container.
-constexpr int64_t kScreencastSizeUnavailable = -1;
 
 constexpr base::FilePath::CharType kMediaExtension[] =
     FILE_PATH_LITERAL(".webm");
@@ -52,31 +49,59 @@ drivefs::DriveFsHost* GetDriveFsHostForActiveProfile() {
   return drivefs_integration ? drivefs_integration->GetDriveFsHost() : nullptr;
 }
 
-// Return the size in bytes of screencast if `absolute_path` is a valid
-// screencast container, otherwise return kScreencastSizeUnavailable. A valid
-// screencast should have at least 1 media file and 1 metadata file. The
-// 'absolute_path' looks like
-// "/{drivefs mounted point}/root/{folder path in drive}".
-int64_t GetScreencastContainerSize(const base::FilePath& absolute_path) {
+// Returns a valid pending screencast from `container_absolute_path`.  A valid
+// screencast should have 1 media file and 1 metadata file. The
+// `container_absolute_path` is the DriveFS absolute path of `container_dir`,
+// for example: container_absolute_path = "/{drivefs mounted
+// point}/root/{$container_dir}";
+absl::optional<ash::PendingScreencast> GetPendingScreencast(
+    const base::FilePath& container_dir,
+    const base::FilePath& container_absolute_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (!base::PathExists(absolute_path))
-    return kScreencastSizeUnavailable;
+  if (!base::PathExists(container_absolute_path))
+    return absl::nullopt;
 
-  int size_of_metadata_files = 0;
-  int size_of_media_files = 0;
-  base::FileEnumerator files(absolute_path, /*recursive=*/false,
+  int64_t total_size_in_bytes = 0;
+  int media_file_count = 0;
+  int metadata_file_count = 0;
+
+  base::Time created_time;
+  std::string media_name;
+
+  base::FileEnumerator files(container_absolute_path, /*recursive=*/false,
                              base::FileEnumerator::FILES);
+
+  // Calculates the size of media file and metadata file, and the created time
+  // of media.
   const std::string metadata_extension = GetMetadataFileExtension();
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
-    if (path.MatchesExtension(GetMetadataFileExtension()))
-      size_of_metadata_files += files.GetInfo().GetSize();
-    else if (path.MatchesExtension(kMediaExtension))
-      size_of_media_files += files.GetInfo().GetSize();
+    if (path.MatchesExtension(metadata_extension)) {
+      total_size_in_bytes += files.GetInfo().GetSize();
+      media_file_count++;
+    } else if (path.MatchesExtension(kMediaExtension)) {
+      base::File::Info info;
+      if (!base::GetFileInfo(path, &info))
+        continue;
+      created_time = info.creation_time;
+      total_size_in_bytes += files.GetInfo().GetSize();
+      media_name = path.BaseName().RemoveExtension().value();
+      metadata_file_count++;
+    }
+
+    // Return null if the screencast is not valid.
+    if (media_file_count > 1 || metadata_file_count > 1)
+      return absl::nullopt;
   }
 
-  return size_of_media_files > 0 && size_of_metadata_files > 0
-             ? size_of_media_files + size_of_metadata_files
-             : kScreencastSizeUnavailable;
+  // Return null if the screencast is not valid.
+  if (media_file_count != 1 || metadata_file_count != 1)
+    return absl::nullopt;
+
+  ash::PendingScreencast pending_screencast{container_dir};
+  pending_screencast.created_time = created_time;
+  pending_screencast.name = media_name;
+  pending_screencast.total_size_in_bytes = total_size_in_bytes;
+  return pending_screencast;
 }
 
 // The `pending_webm_or_projector_events` are new pending ".webm" or
@@ -103,11 +128,6 @@ ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
     // looks like "/root/{folder path in drive}".
     const base::FilePath container_dir =
         base::FilePath(pending_event.path).DirName();
-    ash::PendingScreencast screencast;
-    screencast.container_dir = container_dir;
-    // The display name of the a pending screencast is the name of the container
-    // folder name of this screencast.
-    screencast.name = container_dir.BaseName().value();
 
     // During this loop, items of multiple events might be under the same
     // folder.
@@ -129,12 +149,13 @@ ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
     base::FilePath root("/");
     base::FilePath container_absolute_dir(drivefs_mounted_point);
     root.AppendRelativePath(container_dir, &container_absolute_dir);
-    const int64_t total_size_in_bytes =
-        GetScreencastContainerSize(container_absolute_dir);
-    if (total_size_in_bytes != -1) {
-      screencast.total_size_in_bytes = total_size_in_bytes;
-      screencast.bytes_transferred = pending_event.bytes_transferred;
-      container_to_screencasts[container_dir] = screencast;
+
+    auto new_screencast =
+        GetPendingScreencast(container_dir, container_absolute_dir);
+
+    if (new_screencast) {
+      new_screencast->bytes_transferred = pending_event.bytes_transferred;
+      container_to_screencasts[container_dir] = new_screencast.value();
     }
   }
 
