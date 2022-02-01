@@ -40,6 +40,7 @@
 #include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/os_install/os_install_client.h"
+#include "chromeos/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -134,6 +135,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::MediaAnalyticsClient>(bus);
   InitializeDBusClient<chromeos::MissiveClient>(bus);
   InitializeDBusClient<chromeos::OsInstallClient>(bus);
+  InitializeDBusClient<chromeos::PatchPanelClient>(bus);
   InitializeDBusClient<chromeos::PciguardClient>(bus);
   InitializeDBusClient<chromeos::PermissionBrokerClient>(bus);
   InitializeDBusClient<chromeos::PowerManagerClient>(bus);
@@ -217,6 +219,7 @@ void ShutdownDBus() {
   chromeos::PowerManagerClient::Shutdown();
   chromeos::PermissionBrokerClient::Shutdown();
   chromeos::PciguardClient::Shutdown();
+  chromeos::PatchPanelClient::Shutdown();
   chromeos::OsInstallClient::Shutdown();
   chromeos::MissiveClient::Shutdown();
   chromeos::MediaAnalyticsClient::Shutdown();

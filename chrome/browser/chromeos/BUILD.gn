@@ -274,6 +274,8 @@ source_set("chromeos") {
     "//chromeos/dbus/oobe_config",
     "//chromeos/dbus/oobe_config:proto",
     "//chromeos/dbus/os_install",
+    "//chromeos/dbus/patchpanel",
+    "//chromeos/dbus/patchpanel:patchpanel_proto",
     "//chromeos/dbus/pciguard",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
