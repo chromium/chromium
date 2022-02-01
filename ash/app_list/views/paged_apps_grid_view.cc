@@ -1382,9 +1382,9 @@ int PagedAppsGridView::CalculateMaxRows(int available_height,
     // I.e. min n, with padding as close to max as possible where:
     // n* tile_height + (n - 1) * padding <= available_height
     // padding <= max_padding
-    final_row_count =
-        std::ceil((available_height + kMaxVerticalPaddingBetweenTiles) /
-                  (tile_height + kMaxVerticalPaddingBetweenTiles));
+    final_row_count = std::ceil(
+        static_cast<float>(available_height + kMaxVerticalPaddingBetweenTiles) /
+        (tile_height + kMaxVerticalPaddingBetweenTiles));
   }
   // Unit tests may create artificially small screens resulting in
   // `final_row_count` of 0. Return 1 row to avoid divide-by-zero in layout.

@@ -20,6 +20,7 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -555,7 +556,8 @@ gfx::Size ContentsView::GetSearchBoxSize(AppListState state) const {
   // Reduce the search box size in fullscreen view state when the work area
   // height is less than 600 dip - the goal is to increase the amount of space
   // available to the apps grid.
-  if (GetContentsBounds().height() < kDenseLayoutHeightThreshold) {
+  if (!features::IsProductivityLauncherEnabled() &&
+      GetContentsBounds().height() < kDenseLayoutHeightThreshold) {
     preferred_size.set_height(kSearchBoxHeightForDenseLayout);
   } else {
     preferred_size.set_height(kSearchBoxHeight);

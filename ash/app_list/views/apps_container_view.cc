@@ -1076,6 +1076,8 @@ int AppsContainerView::GetMinTopMarginForAppsGrid(
 }
 
 int AppsContainerView::GetIdealHorizontalMargin() const {
+  if (features::IsProductivityLauncherEnabled())
+    return 24;
   const int available_width = GetContentsBounds().width();
   if (available_width >=
       kAppsGridMarginRatio * GetMinHorizontalMarginForAppsGrid()) {
