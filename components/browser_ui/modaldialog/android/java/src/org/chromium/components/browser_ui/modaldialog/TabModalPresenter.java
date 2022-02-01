@@ -217,7 +217,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
-        mDialogView.setBackgroundResource(org.chromium.ui.R.drawable.dialog_bg_tinted);
+        mDialogView.setBackgroundResource(R.drawable.dialog_bg_no_shadow);
         mDialogContainer.addView(mDialogView, params);
         mDialogContainer.setAlpha(0f);
         mDialogContainer.setVisibility(View.VISIBLE);

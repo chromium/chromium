@@ -3,7 +3,9 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Surface color elevations -->
+    <dimen name="dialog_elevation">@dimen/default_elevation_3</dimen>
     <dimen name="sheet_background_elev">@dimen/default_elevation_4</dimen>
 
     <!-- Chips default measures -->

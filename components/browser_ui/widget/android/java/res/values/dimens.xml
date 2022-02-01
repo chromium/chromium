@@ -10,6 +10,7 @@
     <dimen name="clear_text_button_end_padding">10dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
     <dimen name="card_rounded_corner_radius">16dp</dimen>
+    <dimen name="dialog_corner_radius">24dp</dimen>
     <dimen name="sheet_background_elev">@dimen/default_elevation_0</dimen>
 
     <!-- DualControlLayout -->
@@ -175,4 +176,5 @@
 
     <!-- Surface color elevations -->
     <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
+    <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
 </resources>
