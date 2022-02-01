@@ -98,8 +98,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onEventIfInRange(evt) {
-    if (!DesktopAutomationHandler.announceActions &&
-        evt.eventFrom === 'action') {
+    if (BaseAutomationHandler.disallowEventFromAction(evt)) {
       return;
     }
 

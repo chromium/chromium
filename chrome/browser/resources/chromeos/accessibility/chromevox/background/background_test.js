@@ -743,6 +743,9 @@ TEST_F(
     });
 
 TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', function() {
+  // Undoes the ChromeVoxNextE2E call setting this to true. The doDefault action
+  // should always be read.
+  DesktopAutomationHandler.announceActions = false;
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>start</p>

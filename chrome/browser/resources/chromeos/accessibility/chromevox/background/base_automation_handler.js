@@ -101,10 +101,8 @@ BaseAutomationHandler = class {
 
     // Decide whether to announce and sync this event.
     const prevRange = ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
-    if (!DesktopAutomationHandler.announceActions &&
-        (prevRange && !prevRange.requiresRecovery()) &&
-        evt.eventFrom === 'action' &&
-        !BaseAutomationHandler.allowEventFromAction_(evt.eventFromAction)) {
+    if ((prevRange && !prevRange.requiresRecovery()) &&
+        BaseAutomationHandler.disallowEventFromAction(evt)) {
       return;
     }
 
@@ -125,13 +123,15 @@ BaseAutomationHandler = class {
   }
 
   /**
-   * @param {ActionType} eventFromAction
+   * Returns true if the event contains an action that should not be processed.
+   * @param {!ChromeVoxEvent} evt
    * @return {boolean}
-   * @private
    */
-  static allowEventFromAction_(eventFromAction) {
-    return eventFromAction === ActionType.DO_DEFAULT ||
-        eventFromAction === ActionType.SHOW_CONTEXT_MENU;
+  static disallowEventFromAction(evt) {
+    return !DesktopAutomationHandler.announceActions &&
+        evt.eventFrom === 'action' &&
+        evt.eventFromAction !== ActionType.DO_DEFAULT &&
+        evt.eventFromAction !== ActionType.SHOW_CONTEXT_MENU;
   }
 };
 });  // goog.scope
