@@ -34,9 +34,6 @@ class CONTENT_EXPORT AttributionPolicy {
   uint64_t SanitizeTriggerData(uint64_t trigger_data,
                                CommonSourceInfo::SourceType source_type) const;
 
-  bool IsTriggerDataInRange(uint64_t trigger_data,
-                            CommonSourceInfo::SourceType source_type) const;
-
   // Returns the expiry time for an impression that is clamped to a maximum
   // value of 30 days from |impression_time|.
   base::Time GetExpiryTimeForImpression(

@@ -57,12 +57,6 @@ uint64_t AttributionPolicy::SanitizeTriggerData(
   return trigger_data % cardinality;
 }
 
-bool AttributionPolicy::IsTriggerDataInRange(
-    uint64_t trigger_data,
-    CommonSourceInfo::SourceType source_type) const {
-  return trigger_data < TriggerDataCardinality(source_type);
-}
-
 base::Time AttributionPolicy::GetExpiryTimeForImpression(
     const absl::optional<base::TimeDelta>& declared_expiry,
     base::Time impression_time,

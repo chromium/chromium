@@ -301,34 +301,35 @@ void AttributionHost::RegisterConversion(
 
   const AttributionPolicy& policy = attribution_manager->GetAttributionPolicy();
 
-  if (!policy.IsTriggerDataInRange(conversion->conversion_data,
-                                   CommonSourceInfo::SourceType::kNavigation)) {
-    devtools_instrumentation::ReportAttributionReportingIssue(
-        render_frame_host,
-        devtools_instrumentation::AttributionReportingIssueType::
-            kAttributionTriggerDataTooLarge,
-        conversion->devtools_request_id,
-        base::NumberToString(conversion->conversion_data));
-  }
+  const auto sanitize_trigger_data =
+      [&](const uint64_t unsanitized, CommonSourceInfo::SourceType source_type,
+          devtools_instrumentation::AttributionReportingIssueType issue_type) {
+        const uint64_t sanitized =
+            policy.SanitizeTriggerData(unsanitized, source_type);
 
-  if (!policy.IsTriggerDataInRange(conversion->event_source_trigger_data,
-                                   CommonSourceInfo::SourceType::kEvent)) {
-    devtools_instrumentation::ReportAttributionReportingIssue(
-        render_frame_host,
-        devtools_instrumentation::AttributionReportingIssueType::
-            kAttributionEventSourceTriggerDataTooLarge,
-        conversion->devtools_request_id,
-        base::NumberToString(conversion->event_source_trigger_data));
-  }
+        if (sanitized != unsanitized) {
+          devtools_instrumentation::ReportAttributionReportingIssue(
+              render_frame_host, issue_type, conversion->devtools_request_id,
+              base::NumberToString(unsanitized));
+        }
+
+        return sanitized;
+      };
 
   net::SchemefulSite conversion_destination(main_frame_origin);
 
   StorableTrigger storable_conversion(
-      policy.SanitizeTriggerData(conversion->conversion_data,
-                                 CommonSourceInfo::SourceType::kNavigation),
+      sanitize_trigger_data(
+          conversion->conversion_data,
+          CommonSourceInfo::SourceType::kNavigation,
+          devtools_instrumentation::AttributionReportingIssueType::
+              kAttributionTriggerDataTooLarge),
       std::move(conversion_destination), conversion->reporting_origin,
-      policy.SanitizeTriggerData(conversion->event_source_trigger_data,
-                                 CommonSourceInfo::SourceType::kEvent),
+      sanitize_trigger_data(
+          conversion->event_source_trigger_data,
+          CommonSourceInfo::SourceType::kEvent,
+          devtools_instrumentation::AttributionReportingIssueType::
+              kAttributionEventSourceTriggerDataTooLarge),
       conversion->priority,
       conversion->dedup_key.is_null()
           ? absl::nullopt
