@@ -215,6 +215,12 @@ config("ios_dynamic_flags") {
     "$ios_sdk_path/usr/lib/swift",
     _swift_compatibility_libs_dir,
   ]
+
+  # When building for catalyst, some Swift support libraries are in a
+  # different directory which needs to be added to the search path.
+  if (target_environment == "catalyst") {
+    lib_dirs += [ "$ios_sdk_path/System/iOSSupport/usr/lib/swift" ]
+  }
 }
 
 config("ios_shared_library_flags") {
