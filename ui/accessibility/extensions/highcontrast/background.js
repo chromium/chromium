@@ -55,7 +55,7 @@ function toggleSite(url) {
     scheme = 0;
   } else if (Storage.scheme > 0) {
     scheme = Storage.scheme;
-  }
+  } else {
     scheme = Storage.SCHEME.defaultValue;
   }
   Storage.setSiteScheme(site, scheme);

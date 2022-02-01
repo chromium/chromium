@@ -32,7 +32,6 @@ function update() {
     $('subcontrols').style.display = 'none';
   }
 
-  setRadio('keyaction', Storage.keyAction);
   if (site) {
     const scheme = Storage.getSiteScheme(site);
     setRadio('scheme', scheme);
@@ -60,21 +59,11 @@ function onForget() {
   update();
 }
 
-function onRadioChange(name, value) {
-  switch (name) {
-    case 'keyaction':
-      Storage.keyAction = value;
-      break;
-    case 'apply':
-      Storage.enabled = value;
-      break;
-    case 'scheme':
-      if (site) {
-        Storage.setSiteScheme(site, value);
-      } else {
-        Storage.scheme = value;
-      }
-      break;
+function onSchemeChange(value) {
+  if (site) {
+    Storage.setSiteScheme(site, value);
+  } else {
+    Storage.scheme = value;
   }
   update();
 }
@@ -84,14 +73,14 @@ function onMakeDefault() {
   update();
 }
 
-function addRadioListeners(name) {
-  var radios = document.querySelectorAll('input[name="' + name + '"]');
+function addRadioListeners() {
+  var radios = document.querySelectorAll('input[name="scheme"]');
   for (var i = 0; i < radios.length; i++) {
     radios[i].addEventListener('change', function(evt) {
-      onRadioChange(evt.target.name, evt.target.value);
+      onSchemeChange(evt.target.value);
     }, false);
     radios[i].addEventListener('click', function(evt) {
-      onRadioChange(evt.target.name, evt.target.value);
+      onSchemeChange(evt.target.value);
     }, false);
   }
 }
@@ -104,9 +93,7 @@ function init() {
     elem.innerHTML = chrome.i18n.getMessage(msg);
   }
 
-  addRadioListeners('keyaction');
-  addRadioListeners('apply');
-  addRadioListeners('scheme');
+  addRadioListeners();
   $('toggle').addEventListener('click', onToggle, false);
   $('make_default').addEventListener('click', onMakeDefault, false);
   $('forget').addEventListener('click', onForget, false);

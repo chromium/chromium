@@ -2,19 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @enum {string} */
-const KeyAction = {
-  GLOBAL: 'global',
-  SITE: 'site',
-};
-
 class Storage {
   /** @private */
   constructor() {
     /** @private {boolean} */
     this.enabled_ = Storage.ENABLED.defaultValue;
-    /** @private {!KeyAction} */
-    this.keyAction_ = Storage.KEY_ACTION.defaultValue;
     /** @private {number} */
     this.scheme_ = Storage.SCHEME.defaultValue;
     /** @private {!Object<string, number>} */
@@ -58,16 +50,6 @@ class Storage {
       Storage.ENABLED.reset();
     }
     Storage.instance.store_(Storage.ENABLED);
-  }
-
-  /** @param {!KeyAction} keyAction */
-  static set keyAction(keyAction) {
-    if (Storage.KEY_ACTION.validate(keyAction)) {
-      Storage.instance.keyAction_ = keyAction;
-    } else {
-      Storage.KEY_ACTION.reset();
-    }
-    Storage.instance.store_(Storage.KEY_ACTION);
   }
 
   /** @param {number} scheme */
@@ -125,10 +107,10 @@ class Storage {
    */
   onChange_(changes) {
     for (const value of Storage.ALL_VALUES) {
-      const newValue = changes[value.key].newValue;
-      if (!newValue) {
+      if (!changes[value.key]) {
         continue;
       }
+      const {newValue} = changes[value.key];
 
       if (value.validate(newValue)) {
         value.set(newValue);
@@ -179,16 +161,6 @@ class Storage {
   };
 
   /** @const {!Storage.Value} */
-  static KEY_ACTION = {
-    key: 'keyaction',
-    defaultValue: KeyAction.GLOBAL,
-    validate: (keyAction) => Object.values(KeyAction).includes(keyAction),
-    get: () => Storage.instance.keyAction_,
-    set: (keyAction) => Storage.instance.keyAction_ = keyAction,
-    reset: () => Storage.instance.setKeyAction(Storage.KEY_ACTION.defaultValue),
-  };
-
-  /** @const {!Storage.Value} */
   static SCHEME = {
     key: 'scheme',
     defaultValue: 3,
@@ -217,6 +189,6 @@ class Storage {
 
   /** @const {!Array<!Storage.Value>} */
   static ALL_VALUES = [
-      Storage.ENABLED, Storage.KEY_ACTION, Storage.SCHEME, Storage.SITE_SCHEMES
+      Storage.ENABLED, Storage.SCHEME, Storage.SITE_SCHEMES
   ];
 }
