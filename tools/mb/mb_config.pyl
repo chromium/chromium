@@ -1998,7 +1998,7 @@
 
     # Keep in sync with chromeos_with_codecs_release_trybot.
     'chromeos_with_codecs_release_trybot_code_coverage': [
-      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
+      'chromeos_with_codecs', 'release_trybot', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
