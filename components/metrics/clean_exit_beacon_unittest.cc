@@ -423,8 +423,7 @@ TEST_P(BeaconFileConsistencyTest, BeaconConsistency) {
 // channels as necessary.
 INSTANTIATE_TEST_SUITE_P(All,
                          IgnoredBeaconFileTest,
-                         ::testing::Values(version_info::Channel::DEV,
-                                           version_info::Channel::BETA,
+                         ::testing::Values(version_info::Channel::BETA,
                                            version_info::Channel::STABLE));
 
 // Verify that the beacon file, if any, is ignored on Android.
