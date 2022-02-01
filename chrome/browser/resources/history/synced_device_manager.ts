@@ -14,7 +14,7 @@ import './strings.m.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.js';
 import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -185,22 +185,23 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
 
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
     this.actionMenuModel_ = e.detail.tag;
-    this.$['menu'].get().showAt(e.detail.target);
+    this.$.menu.get().showAt(e.detail.target);
     BrowserService.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.SHOW_SESSION_MENU,
         SyncedTabsHistogram.LIMIT);
   }
 
   private onOpenAllTap_() {
-    const menu = assert(this.$['menu'].getIfExists());
+    const menu = this.$.menu.getIfExists();
+    assert(menu);
     const browserService = BrowserService.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.OPEN_ALL,
         SyncedTabsHistogram.LIMIT);
-    browserService.openForeignSessionAllTabs(
-        assert(this.actionMenuModel_) as string);
+    assert(this.actionMenuModel_);
+    browserService.openForeignSessionAllTabs(this.actionMenuModel_);
     this.actionMenuModel_ = null;
-    menu!.close();
+    menu.close();
   }
 
   private updateFocusGrid_() {
@@ -226,15 +227,16 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 
   private onDeleteSessionTap_() {
-    const menu = assert(this.$['menu'].getIfExists()) as CrActionMenuElement;
+    const menu = this.$.menu.getIfExists();
+    assert(menu);
     const browserService = BrowserService.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HIDE_FOR_NOW,
         SyncedTabsHistogram.LIMIT);
-    browserService.deleteForeignSession(
-        assert(this.actionMenuModel_) as string);
+    assert(this.actionMenuModel_);
+    browserService.deleteForeignSession(this.actionMenuModel_);
     this.actionMenuModel_ = null;
-    menu!.close();
+    menu.close();
   }
 
   private clearDisplayedSyncedDevices_() {

@@ -13,7 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -150,11 +150,11 @@ class HistoryClustersElement extends PolymerElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.callbackRouter_.removeListener(
-        assert(this.onClustersQueryResultListenerId_!));
+    assert(this.onClustersQueryResultListenerId_);
+    this.callbackRouter_.removeListener(this.onClustersQueryResultListenerId_);
     this.onClustersQueryResultListenerId_ = null;
-    this.callbackRouter_.removeListener(
-        assert(this.onVisitsRemovedListenerId_!));
+    assert(this.onVisitsRemovedListenerId_);
+    this.callbackRouter_.removeListener(this.onVisitsRemovedListenerId_);
     this.onVisitsRemovedListenerId_ = null;
   }
 
@@ -212,7 +212,7 @@ class HistoryClustersElement extends PolymerElement {
     }
 
     this.visitsToBeRemoved_ = event.detail;
-    if (assert(this.visitsToBeRemoved_.length) > 1) {
+    if (this.visitsToBeRemoved_.length > 1) {
       this.$.confirmationDialog.get().showModal();
     } else {
       // Bypass the confirmation dialog if removing one visit only.
@@ -341,7 +341,7 @@ class HistoryClustersElement extends PolymerElement {
   private onVisitsRemoved_() {
     // Show the confirmation toast once done removing one visit only; since a
     // confirmation dialog was not shown prior to the action.
-    if (assert(this.visitsToBeRemoved_.length) === 1) {
+    if (this.visitsToBeRemoved_.length === 1) {
       this.$.confirmationToast.get().show();
     }
     this.visitsToBeRemoved_ = [];

@@ -12,7 +12,7 @@ import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_ann
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -356,15 +356,17 @@ export class HistoryListElement extends HistoryListElementBase {
     BrowserService.getInstance().recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
-    const dialog = assert(this.$.dialog.getIfExists());
-    dialog!.close();
+    const dialog = this.$.dialog.getIfExists();
+    assert(dialog);
+    dialog.close();
   }
 
   private onDialogCancelTap_() {
     BrowserService.getInstance().recordAction('CancelRemoveSelected');
 
-    const dialog = assert(this.$.dialog.getIfExists());
-    dialog!.close();
+    const dialog = this.$.dialog.getIfExists();
+    assert(dialog);
+    dialog.close();
   }
 
   /**

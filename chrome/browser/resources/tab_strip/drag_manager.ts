@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {isTabElement, TabElement} from './tab.js';
@@ -344,7 +344,7 @@ class DragSession {
   private updateForTabGroupElement_(event: DragEvent) {
     const tabGroupElement = this.element_ as TabGroupElement;
     const composedPath = event.composedPath() as Element[];
-    if (composedPath.includes(assert(this.element_))) {
+    if (composedPath.includes(this.element_)) {
       // Dragging over itself or a child of itself.
       return;
     }

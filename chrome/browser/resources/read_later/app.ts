@@ -13,7 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './read_later_item.js';
 import './strings.m.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -217,7 +217,6 @@ export class ReadLaterAppElement extends PolymerElement {
         break;
       default:
         assertNotReached();
-        return;
     }
     e.preventDefault();
     e.stopPropagation();

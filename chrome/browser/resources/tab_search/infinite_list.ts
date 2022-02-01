@@ -18,7 +18,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {calculateSplices, html, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -170,7 +170,9 @@ export class InfiniteList extends PolymerElement {
     // determine the correct constructor to use for rendering a given class
     // type.
     templates.forEach(template => {
-      const className = assert(template.dataset['type']!);
+      const type = template.dataset['type'];
+      assert(type);
+      const className = type;
       if (template.dataset['selectable'] !== undefined) {
         this.selectableTypes_.add(className);
       }
@@ -196,7 +198,7 @@ export class InfiniteList extends PolymerElement {
    */
   private createAndInsertDomItem_(index: number) {
     const instance = this.createItemInstance_(index);
-    this.instances_[index] = assert(instance);
+    this.instances_[index] = instance;
     // Offset the insertion index to take into account the template elements
     // that are present in the light DOM.
     this.insertBefore(
@@ -207,7 +209,8 @@ export class InfiniteList extends PolymerElement {
       &HTMLElement {
     const item = this.items[itemIndex]!;
     const instanceConstructor =
-        assert(this.instanceConstructors_.get(item.constructor.name)!);
+        this.instanceConstructors_.get(item.constructor.name);
+    assert(instanceConstructor);
     const itemSelectable = this.isItemSelectable_(item);
     const args = itemSelectable ?
         {item, index: this.selectableIndexToItemIndex_!.invGet(itemIndex)} :
@@ -228,7 +231,8 @@ export class InfiniteList extends PolymerElement {
     // It must always be true that if this logic is invoked, there should be
     // enough DOM items rendered to estimate an item average height. This is
     // ensured by the logic that observes the items array.
-    const domItemCount = assert(this.instances_.length);
+    const domItemCount = this.instances_.length;
+    assert(domItemCount);
     const lastDomItem = this.lastElementChild as HTMLElement;
     return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItemCount;
   }

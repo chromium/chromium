@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {BOOKMARKS_BAR_ID, IncognitoAvailability, ROOT_NODE_ID} from './constants.js';
 import {BookmarkNode, BookmarksPageState, NodeMap, ObjectMap} from './types.js';
@@ -13,10 +13,13 @@ import {BookmarkNode, BookmarksPageState, NodeMap, ObjectMap} from './types.js';
 
 export function getDisplayedList(state: BookmarksPageState): string[] {
   if (isShowingSearch(state)) {
-    return assert(state.search.results!);
+    assert(state.search.results);
+    return state.search.results;
   }
 
-  return assert(state.nodes[state.selectedFolder]!.children!);
+  const children = state.nodes[state.selectedFolder]!.children;
+  assert(children);
+  return children;
 }
 
 export function normalizeNode(treeNode: chrome.bookmarks.BookmarkTreeNode):

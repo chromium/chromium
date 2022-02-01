@@ -6,7 +6,7 @@ import './strings.m.js';
 import './tab.js';
 import './tab_group.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
@@ -404,8 +404,9 @@ export class TabListElement extends CustomElement implements
     const tabGroupElements = this.$all<TabGroupElement>('tabstrip-tab-group');
     this.tabsApi_.getGroupVisualData().then(({data}) => {
       tabGroupElements.forEach(tabGroupElement => {
-        tabGroupElement.updateVisuals(
-            assert(data[tabGroupElement.dataset.groupId!])!);
+        const visualData = data[tabGroupElement.dataset.groupId!];
+        assert(visualData);
+        tabGroupElement.updateVisuals(visualData);
       });
     });
   }

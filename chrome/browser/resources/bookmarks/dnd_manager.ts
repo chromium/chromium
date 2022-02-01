@@ -5,7 +5,7 @@
 import './folder_node.js';
 import './item.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {isTextInputElement} from 'chrome://resources/js/util.m.js';
 
@@ -324,7 +324,7 @@ export class DNDManager {
     let draggedNodes = [];
 
     if (isBookmarkItem(dragElement)) {
-      const displayingItems = assert(getDisplayedList(state));
+      const displayingItems = getDisplayedList(state);
       // TODO(crbug.com/980427): Make this search more time efficient to avoid
       // delay on large amount of bookmark dragging.
       for (const itemId of displayingItems) {
@@ -466,7 +466,8 @@ export class DNDManager {
 
       // Drops between items in the normal list and the sidebar use the drop
       // destination node's parent.
-      parentId = assert(node.parentId!);
+      assert(node.parentId);
+      parentId = node.parentId;
       index = state.nodes[parentId]!.children!.indexOf(node.id);
 
       if (position === DropPosition.BELOW) {
