@@ -2814,6 +2814,9 @@ extern const char kKeyboardBasedDisplayArrangementInSettingsDescription[];
 extern const char kLacrosAvailabilityIgnoreName[];
 extern const char kLacrosAvailabilityIgnoreDescription[];
 
+extern const char kLacrosOnlyName[];
+extern const char kLacrosOnlyDescription[];
+
 extern const char kLacrosPrimaryName[];
 extern const char kLacrosPrimaryDescription[];
 

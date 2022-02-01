@@ -694,6 +694,7 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kLacrosAvailabilityIgnoreInternalName[] =
     "lacros-availability-ignore";
+const char kLacrosOnlyInternalName[] = "lacros-only";
 const char kLacrosPrimaryInternalName[] = "lacros-primary";
 const char kLacrosSupportInternalName[] = "lacros-support";
 const char kLacrosStabilityInternalName[] = "lacros-stability";
@@ -3191,6 +3192,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kLacrosPrimaryInternalName, flag_descriptions::kLacrosPrimaryName,
      flag_descriptions::kLacrosPrimaryDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kLacrosPrimary)},
+    {kLacrosOnlyInternalName, flag_descriptions::kLacrosOnlyName,
+     flag_descriptions::kLacrosOnlyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kLacrosOnly)},
     {kLacrosAvailabilityIgnoreInternalName,
      flag_descriptions::kLacrosAvailabilityIgnoreName,
      flag_descriptions::kLacrosAvailabilityIgnoreDescription, kOsCrOS,
@@ -7948,6 +7952,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kLacrosStabilityInternalName, entry.internal_name)) {
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel);
+  }
+
+  if (!strcmp(kLacrosOnlyInternalName, entry.internal_name)) {
+    return !crosapi::browser_util::IsLacrosOnlyFlagAllowed(channel);
   }
 
   if (!strcmp(kLacrosPrimaryInternalName, entry.internal_name)) {

@@ -4891,6 +4891,11 @@ const char kLacrosAvailabilityIgnoreDescription[] =
     "Makes the lacros-availability policy have no effect. Instead Lacros "
     "availability will be controlled by experiment and/or user flags.";
 
+const char kLacrosOnlyName[] = "Lacros is the only browser";
+const char kLacrosOnlyDescription[] =
+    "Use Lacros-chrome as the only web browser on Chrome OS. "
+    "This flag is ignored if Lacros support or primary is disabled.";
+
 const char kLacrosPrimaryName[] = "Lacros as the primary browser";
 const char kLacrosPrimaryDescription[] =
     "Use Lacros-chrome as the primary web browser on Chrome OS. "

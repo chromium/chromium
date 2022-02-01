@@ -343,6 +343,37 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled(Channel::STABLE));
 }
 
+TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
+  AddRegularUser("user@test.com");
+  { EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled()); }
+
+  // Just enabling LacrosOnly feature is not enough.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(chromeos::features::kLacrosOnly);
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
+  }
+
+  // LacrosSupport only is not enough.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {chromeos::features::kLacrosOnly, chromeos::features::kLacrosSupport},
+        {});
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
+  }
+
+  // All, LacrosOnly, LacrosPrimary and LacrosSupport are needed.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {chromeos::features::kLacrosOnly, chromeos::features::kLacrosPrimary,
+         chromeos::features::kLacrosSupport},
+        {});
+    EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
+  }
+}
+
 TEST_F(LacrosSupportBrowserUtilTest, LacrosPrimaryBrowserByFlags) {
   AddRegularUser("user@test.com");
   { EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser()); }

@@ -207,6 +207,13 @@ bool IsLacrosPrimaryBrowserAllowed(version_info::Channel channel);
 // Returns true if |chromeos::features::kLacrosPrimary| flag is allowed.
 bool IsLacrosPrimaryFlagAllowed(version_info::Channel channel);
 
+// Returns true if the lacros can be used as a only browser
+// for the current session.
+bool IsLacrosOnlyBrowserAllowed(version_info::Channel channel);
+
+// Returns true if |chromeos::features::kLacrosOnly| flag is allowed.
+bool IsLacrosOnlyFlagAllowed(version_info::Channel channel);
+
 // Returns true if Lacros is allowed to launch and show a window. This can
 // return false if the user is using multi-signin, which is mutually exclusive
 // with Lacros.

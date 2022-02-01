@@ -800,6 +800,14 @@ const base::Feature kKeyboardBasedDisplayArrangementInSettings{
     "KeyboardBasedDisplayArrangementInSettings",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables to use lacros-chrome as the only web browser on Chrome OS.
+// This works only when both LacrosSupport and LacrosPrimary below are enabled.
+// NOTE: Use crosapi::browser_util::IsAshWebBrowserEnabled() instead of checking
+// the feature directly. Similar to LacrosSupport and LacrosPrimary,
+// this may not be allowed depending on user types and/or policies.
+const base::Feature kLacrosOnly{"LacrosOnly",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables to use lacros-chrome as a primary web browser on Chrome OS.
 // This works only when LacrosSupport below is enabled.
 // NOTE: Use crosapi::browser_util::IsLacrosPrimary() instead of checking
