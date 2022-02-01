@@ -92,10 +92,13 @@ class CONTENT_EXPORT BrowsingInstance final
   // should contain only cross-origin isolated pages, i.e. pages with
   // cross-origin-opener-policy set to same-origin and
   // cross-origin-embedder-policy set to require-corp, and if so, from which
-  // top level origin.
+  // top level origin. |is_guest| specifies whether this BrowsingInstance will
+  // be used in a <webview> guest; note that this cannot change over the
+  // lifetime of the BrowsingInstance.
   explicit BrowsingInstance(
       BrowserContext* context,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
+      bool is_guest);
 
   ~BrowsingInstance();
 

@@ -289,17 +289,13 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // account.
   scoped_refptr<SiteInstanceImpl> site_instance = creator.GetSiteInstance();
   if (site_instance->IsCrossOriginIsolated()) {
-    if (partition->is_guest()) {
-      site_instance = SiteInstanceImpl::CreateForGuest(
-          partition->browser_context(), partition->GetConfig());
-    } else {
-      site_instance = SiteInstanceImpl::CreateForUrlInfo(
-          partition->browser_context(),
-          UrlInfo(UrlInfoInit(instance.url())
-                      .WithStoragePartitionConfig(partition->GetConfig())
-                      .WithWebExposedIsolationInfo(
-                          WebExposedIsolationInfo::CreateNonIsolated())));
-    }
+    site_instance = SiteInstanceImpl::CreateForUrlInfo(
+        partition->browser_context(),
+        UrlInfo(UrlInfoInit(instance.url())
+                    .WithStoragePartitionConfig(partition->GetConfig())
+                    .WithWebExposedIsolationInfo(
+                        WebExposedIsolationInfo::CreateNonIsolated())),
+        partition->is_guest());
   }
 
   RenderProcessHost* worker_process_host = site_instance->GetProcess();

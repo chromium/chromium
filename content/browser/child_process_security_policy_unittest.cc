@@ -95,8 +95,7 @@ void LockProcessIfNeeded(int process_id,
                          BrowserContext* browser_context,
                          const GURL& url) {
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForUrlInfo(browser_context,
-                                         UrlInfo::CreateForTesting(url));
+      SiteInstanceImpl::CreateForTesting(browser_context, url);
   if (site_instance->RequiresDedicatedProcess() &&
       site_instance->GetSiteInfo().ShouldLockProcessToSite(
           site_instance->GetIsolationContext())) {
@@ -220,7 +219,8 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
                         const url::Origin& origin) {
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
-    return p->IsIsolatedOrigin(IsolationContext(browsing_instance_id, context),
+    return p->IsIsolatedOrigin(IsolationContext(browsing_instance_id, context,
+                                                /*is_guest=*/false),
                                origin, false /* origin_requests_isolation */);
   }
 
@@ -3040,7 +3040,8 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
                          .WithOrigin(foo)
                          .WithOriginIsolationRequest(origin_isolation_request));
     scoped_refptr<SiteInstanceImpl> foo_instance =
-        SiteInstanceImpl::CreateForUrlInfo(&context, url_info);
+        SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
+                                           /*is_guest=*/false);
 
     p->Add(kRendererID, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
@@ -3095,7 +3096,8 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
 
     UrlInfo url_info(UrlInfoInit(foo.GetURL()).WithOrigin(foo));
     scoped_refptr<SiteInstanceImpl> foo_instance =
-        SiteInstanceImpl::CreateForUrlInfo(&context, url_info);
+        SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
+                                           /*is_guest=*/false);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
 
@@ -3167,8 +3169,7 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
   TestBrowserContext context;
   {
     scoped_refptr<SiteInstanceImpl> foo_instance =
-        SiteInstanceImpl::CreateForUrlInfo(&context,
-                                           UrlInfo::CreateForTesting(foo_url));
+        SiteInstanceImpl::CreateForTesting(&context, foo_url);
     // Adds the process with an "allow_any_site" lock.
     // The next two statements are basically AddForTesting(...), but with a
     // BrowsingInstanceId based on `foo_instance` and not pinned to '1'.

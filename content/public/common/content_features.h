@@ -198,6 +198,7 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam;
+CONTENT_EXPORT extern const base::Feature kSiteIsolationForGuests;
 CONTENT_EXPORT extern const base::Feature kDisableProcessReuse;
 CONTENT_EXPORT extern const base::Feature
     kSkipEarlyCommitPendingForCrashedFrame;

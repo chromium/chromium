@@ -131,18 +131,31 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::Create(
     BrowserContext* browser_context) {
   DCHECK(browser_context);
   return base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
-      browser_context, WebExposedIsolationInfo::CreateNonIsolated())));
+      browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
+      /*is_guest=*/false)));
 }
 
 // static
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
     BrowserContext* browser_context,
-    const UrlInfo& url_info) {
+    const UrlInfo& url_info,
+    bool is_guest) {
+  CHECK(!is_guest || url_info.storage_partition_config.has_value());
+
+  if (is_guest && !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    // Guests without site isolation support need to use a SiteInfo with a
+    // special site URL and process lock URL computed in CreateForGuest().
+    return CreateForGuest(browser_context,
+                          url_info.storage_partition_config.value());
+  }
+
   DCHECK(browser_context);
   // This will create a new SiteInstance and BrowsingInstance.
-  scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
-      browser_context, url_info.web_exposed_isolation_info.value_or(
-                           WebExposedIsolationInfo::CreateNonIsolated())));
+  scoped_refptr<BrowsingInstance> instance(
+      new BrowsingInstance(browser_context,
+                           url_info.web_exposed_isolation_info.value_or(
+                               WebExposedIsolationInfo::CreateNonIsolated()),
+                           is_guest));
 
   // Note: The |allow_default_instance| value used here MUST match the value
   // used in DoesSiteForURLMatch().
@@ -160,14 +173,16 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
   DCHECK(url_info.storage_partition_config.has_value());
   scoped_refptr<SiteInstanceImpl> site_instance;
 
-  if (is_guest) {
+  if (is_guest && !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
     site_instance = CreateForGuest(browser_context,
                                    url_info.storage_partition_config.value());
   } else {
     // This will create a new SiteInstance and BrowsingInstance.
-    scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
-        browser_context, url_info.web_exposed_isolation_info.value_or(
-                             WebExposedIsolationInfo::CreateNonIsolated())));
+    scoped_refptr<BrowsingInstance> instance(
+        new BrowsingInstance(browser_context,
+                             url_info.web_exposed_isolation_info.value_or(
+                                 WebExposedIsolationInfo::CreateNonIsolated()),
+                             is_guest));
 
     // We do NOT want to allow the default site instance here because workers
     // need to be kept separate from other sites.
@@ -175,6 +190,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
         url_info, /* allow_default_instance */ false);
   }
   DCHECK(!site_instance->GetSiteInfo().is_error_page());
+  DCHECK_EQ(site_instance->IsGuest(), is_guest);
   site_instance->is_for_service_worker_ = true;
 
   // Attempt to reuse a renderer process if possible. Note that in the
@@ -202,10 +218,10 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
       SiteInfo::CreateForGuest(browser_context, partition_config);
   scoped_refptr<SiteInstanceImpl> site_instance =
       base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
-          browser_context, guest_site_info.web_exposed_isolation_info())));
+          browser_context, guest_site_info.web_exposed_isolation_info(),
+          /*is_guest=*/true)));
 
   site_instance->SetSiteInfoInternal(guest_site_info);
-
   return site_instance;
 }
 
@@ -217,7 +233,8 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
   DCHECK(browser_context);
   // This will create a new SiteInstance and BrowsingInstance.
   scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
-      browser_context, WebExposedIsolationInfo::CreateNonIsolated()));
+      browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
+      /*is_guest=*/false));
   auto site_instance = instance->GetSiteInstanceForURL(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
@@ -231,7 +248,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForTesting(
     const GURL& url) {
   DCHECK(browser_context);
   return SiteInstanceImpl::CreateForUrlInfo(browser_context,
-                                            UrlInfo::CreateForTesting(url));
+                                            UrlInfo::CreateForTesting(url),
+                                            /*is_guest=*/false);
 }
 
 // static
@@ -572,9 +590,10 @@ const SiteInfo& SiteInstanceImpl::GetSiteInfo() {
 
 SiteInfo SiteInstanceImpl::DeriveSiteInfo(const UrlInfo& url_info,
                                           bool is_related) {
-  if (IsGuest()) {
-    // Guests currently must stay in the same SiteInstance no matter what the
-    // information in |url_info| so we return the current SiteInfo.
+  if (IsGuest() && !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    // Guests without site isolation support currently must stay in the same
+    // SiteInstance no matter what the information in |url_info| so we return
+    // the current SiteInfo.
     return site_info_;
   }
 
@@ -596,6 +615,14 @@ SiteInfo SiteInstanceImpl::DeriveSiteInfo(const UrlInfo& url_info,
   // since they're deriving a SiteInfo from this SiteInstance.
   UrlInfo overridden_url_info = url_info;
   overridden_url_info.web_exposed_isolation_info = GetWebExposedIsolationInfo();
+
+  // New SiteInfos created for site-isolated guests should keep the same
+  // StoragePartition.
+  if (IsGuest()) {
+    overridden_url_info.storage_partition_config =
+        GetSiteInfo().storage_partition_config();
+  }
+
   return SiteInfo::Create(GetIsolationContext(), overridden_url_info);
 }
 
@@ -614,9 +641,9 @@ scoped_refptr<SiteInstance> SiteInstanceImpl::GetRelatedSiteInstance(
 
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::GetRelatedSiteInstanceImpl(
     const UrlInfo& url_info) {
-  if (IsGuest()) {
-    // Until guests support site isolation (https://crbug.com/1267977), there
-    // should only be one guest SiteInstance per BrowsingInstance.
+  if (IsGuest() && !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    // Without site isolation in guests, there should only be one guest
+    // SiteInstance per BrowsingInstance.
     return this;
   }
 
@@ -763,7 +790,8 @@ scoped_refptr<SiteInstance> SiteInstance::CreateForURL(
     const GURL& url) {
   DCHECK(browser_context);
   return SiteInstanceImpl::CreateForUrlInfo(browser_context,
-                                            UrlInfo(UrlInfoInit(url)));
+                                            UrlInfo(UrlInfoInit(url)),
+                                            /*is_guest=*/false);
 }
 
 // static
@@ -1219,9 +1247,10 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   process_->SetIsUsed();
 
   if (site_info_.ShouldLockProcessToSite(GetIsolationContext())) {
-    // Sanity check that this won't try to assign an origin lock to a <webview>
-    // process, which can't be locked.
-    CHECK(!process_->IsForGuestsOnly());
+    // Sanity check that this won't try to assign an origin lock to a
+    // non-site-isolated <webview> process, which can't be locked.
+    if (!SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
+      CHECK(!process_->IsForGuestsOnly());
 
     ProcessLock lock_to_set = ProcessLock::FromSiteInfo(GetSiteInfo());
     if (!process_lock.is_locked_to_site()) {

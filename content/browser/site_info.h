@@ -48,6 +48,10 @@ class CONTENT_EXPORT SiteInfo {
       BrowserContext* browser_context,
       const StoragePartitionConfig storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
+
+  // Helper to create a SiteInfo for a <webview> guest.  This helper can be
+  // used for a new guest associated with a specific StoragePartitionConfig
+  // (prior to navigations).
   static SiteInfo CreateForGuest(
       BrowserContext* browser_context,
       const StoragePartitionConfig& partition_config);

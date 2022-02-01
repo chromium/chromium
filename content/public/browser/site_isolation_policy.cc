@@ -219,6 +219,11 @@ bool SiteIsolationPolicy::ShouldPersistIsolatedCOOPSites() {
 }
 
 // static
+bool SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled() {
+  return base::FeatureList::IsEnabled(features::kSiteIsolationForGuests);
+}
+
+// static
 std::string SiteIsolationPolicy::GetIsolatedOriginsFromCommandLine() {
   std::string cmdline_arg =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(

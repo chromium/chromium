@@ -112,6 +112,10 @@ class CONTENT_EXPORT ProcessLock {
     return site_info_.has_value() && site_info_->is_error_page();
   }
 
+  bool is_guest() const {
+    return site_info_.has_value() && site_info_->is_guest();
+  }
+
   // Returns the StoragePartitionConfig that corresponds to the SiteInfo the
   // lock is used with.
   StoragePartitionConfig GetStoragePartitionConfig() const;

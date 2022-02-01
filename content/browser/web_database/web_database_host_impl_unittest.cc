@@ -134,7 +134,8 @@ class WebDatabaseHostImplTest : public ::testing::Test {
 
   void LockProcessToURL(const GURL& url) {
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcessForTesting(
-        IsolationContext(BrowsingInstanceId(1), browser_context()),
+        IsolationContext(BrowsingInstanceId(1), browser_context(),
+                         /*is_guest=*/false),
         process_id(), url);
   }
 

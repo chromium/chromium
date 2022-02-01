@@ -53,7 +53,8 @@ class RecentlyDestroyedHostsTest : public testing::Test {
 TEST_F(RecentlyDestroyedHostsTest,
        RecordMetricIfReusableHostRecentlyDestroyed) {
   const IsolationContext isolation_context(BrowsingInstanceId(1),
-                                           &browser_context_);
+                                           &browser_context_,
+                                           /*is_guest=*/false);
   const ProcessLock process_lock = ProcessLock::Create(
       isolation_context,
       UrlInfo::CreateForTesting(GURL("https://www.google.com"),

@@ -64,18 +64,28 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   SiteInstanceImpl(const SiteInstanceImpl&) = delete;
   SiteInstanceImpl& operator=(const SiteInstanceImpl&) = delete;
 
-  // Methods for creating new SiteInstances. The documentation for these methods
-  // are on the SiteInstance::Create* methods with the same name.
+  // Methods for creating a new SiteInstance in a new BrowsingInstance. The
+  // documentation for these methods are on the SiteInstance::Create* methods
+  // with the same name.
   static scoped_refptr<SiteInstanceImpl> Create(
       BrowserContext* browser_context);
-  // `url_info` contains the GURL for which we want to create a SiteInstance,
-  // along with other state relevant to making process allocation decisions.
-  static scoped_refptr<SiteInstanceImpl> CreateForUrlInfo(
-      BrowserContext* browser_context,
-      const UrlInfo& url_info);
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
       BrowserContext* browser_context,
       const StoragePartitionConfig& partition_config);
+
+  // Similar to above, but creates an appropriate SiteInstance in a new
+  // BrowsingInstance for a particular `url_info`. This is a more generic
+  // version of SiteInstance::CreateForURL(). `url_info` contains the GURL for
+  // which we want to create a SiteInstance, along with other state relevant to
+  // making process allocation decisions. `is_guest` specifies whether the
+  // newly SiteInstance and BrowsingInstance is for a <webview> guest. This is
+  // used in site-isolated guests to support cross-BrowsingInstance navigations
+  // within a guest; when true, the guest's StoragePartition information must
+  // also be provided in `url_info`.
+  static scoped_refptr<SiteInstanceImpl> CreateForUrlInfo(
+      BrowserContext* browser_context,
+      const UrlInfo& url_info,
+      bool is_guest);
 
   // Creates a SiteInstance that will be use for a service worker.
   // `url_info` - The UrlInfo for the service worker. It contains the URL and

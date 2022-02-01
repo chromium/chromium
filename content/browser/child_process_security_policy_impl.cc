@@ -777,7 +777,8 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
     int child_id,
     BrowserContext* browser_context) {
   Add(child_id, browser_context);
-  LockProcess(IsolationContext(BrowsingInstanceId(1), browser_context),
+  LockProcess(IsolationContext(BrowsingInstanceId(1), browser_context,
+                               /*is_guest=*/false),
               child_id,
               ProcessLock::CreateAllowAnySite(
                   StoragePartitionConfig::CreateDefault(browser_context),
@@ -1661,8 +1662,19 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
         // prefaced by its id.
         failure_reason += base::StringPrintf(
             "[BI=%d]", browsing_instance_id.GetUnsafeValue());
+
+        // Use the actual process lock's state to compute `is_guest` for the
+        // expected process lock's `isolation_context`.  Guest status doesn't
+        // currently influence the outcome of this access check, and even if it
+        // did, `url` wouldn't be sufficient to tell whether the request
+        // belongs solely to a guest (or non-guest) process.  Note that a guest
+        // isn't allowed to access data outside of its own StoragePartition,
+        // but this is enforced by other means (e.g., resource access APIs
+        // can't name an alternate StoragePartition).
         IsolationContext isolation_context(browsing_instance_id,
-                                           browser_or_resource_context);
+                                           browser_or_resource_context,
+                                           actual_process_lock.is_guest());
+
         // NOTE: If we're on the IO thread, the call to
         // ProcessLock::Create() below will return a ProcessLock with
         // an (internally) identical site_url, one that does not use effective
@@ -2087,7 +2099,7 @@ bool ChildProcessSecurityPolicyImpl::IsGloballyIsolatedOriginForTesting(
   BrowserOrResourceContext no_browser_context;
   BrowsingInstanceId null_browsing_instance_id;
   IsolationContext isolation_context(null_browsing_instance_id,
-                                     no_browser_context);
+                                     no_browser_context, /*is_guest=*/false);
   return IsIsolatedOrigin(isolation_context, origin, false);
 }
 

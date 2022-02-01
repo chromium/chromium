@@ -124,6 +124,9 @@ std::string ProcessLock::ToString() const {
     if (is_pdf())
       ret += " pdf";
 
+    if (is_guest())
+      ret += " guest";
+
     if (GetWebExposedIsolationInfo().is_isolated()) {
       ret += " cross-origin-isolated";
       if (GetWebExposedIsolationInfo().is_isolated_application())

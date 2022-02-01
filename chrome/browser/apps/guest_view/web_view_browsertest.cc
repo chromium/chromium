@@ -5172,3 +5172,138 @@ IN_PROC_BROWSER_TEST_F(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.webstorePrivate"));
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.dashboardPrivate"));
 }
+
+// This is a base class for tests that enable site isolation in <webview>
+// guests.
+class SitePerProcessWebViewTest : public WebViewTest {
+ public:
+  SitePerProcessWebViewTest() = default;
+  ~SitePerProcessWebViewTest() override = default;
+  SitePerProcessWebViewTest(const SitePerProcessWebViewTest&) = delete;
+  SitePerProcessWebViewTest& operator=(const SitePerProcessWebViewTest&) =
+      delete;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kSiteIsolationForGuests);
+    WebViewTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Checks basic site isolation properties when a <webview> main frame and
+// subframe navigate cross-site.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SimpleNavigations) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+
+  // Ensure the <webview>'s SiteInstance is for a guest.
+  content::RenderFrameHost* main_frame = guest->GetMainFrame();
+  auto original_id = main_frame->GetGlobalId();
+  scoped_refptr<content::SiteInstance> starting_instance =
+      main_frame->GetSiteInstance();
+  EXPECT_TRUE(starting_instance->IsGuest());
+  EXPECT_TRUE(starting_instance->GetProcess()->IsForGuestsOnly());
+  EXPECT_FALSE(starting_instance->GetStoragePartitionConfig().is_default());
+
+  // Navigate <webview> to a cross-site page with a same-site iframe.
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/iframe.html");
+  {
+    content::TestNavigationObserver load_observer(guest);
+    EXPECT_TRUE(
+        ExecuteScript(guest, "location.href = '" + start_url.spec() + "';"));
+    load_observer.Wait();
+  }
+
+  // Expect that the main frame swapped SiteInstances and RenderFrameHosts but
+  // stayed in the same BrowsingInstance and StoragePartition.
+  main_frame = guest->GetMainFrame();
+  EXPECT_TRUE(main_frame->GetSiteInstance()->IsGuest());
+  EXPECT_TRUE(main_frame->GetProcess()->IsForGuestsOnly());
+  EXPECT_NE(main_frame->GetGlobalId(), original_id);
+  EXPECT_NE(starting_instance, main_frame->GetSiteInstance());
+  EXPECT_TRUE(
+      starting_instance->IsRelatedSiteInstance(main_frame->GetSiteInstance()));
+  EXPECT_EQ(starting_instance->GetStoragePartitionConfig(),
+            main_frame->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(starting_instance->GetProcess()->GetStoragePartition(),
+            main_frame->GetProcess()->GetStoragePartition());
+
+  // Ensure the guest SiteInstance reflects the proper site and actually uses
+  // site isolation.
+  EXPECT_EQ("http://a.test/",
+            main_frame->GetSiteInstance()->GetSiteURL().spec());
+  EXPECT_TRUE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
+  EXPECT_TRUE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
+
+  // Navigate <webview> subframe cross-site.  Check that it ends up in a
+  // separate guest SiteInstance and process, but same StoragePartition.
+  const GURL frame_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
+  content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+
+  EXPECT_NE(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
+  EXPECT_NE(main_frame->GetProcess(), subframe->GetProcess());
+  EXPECT_TRUE(subframe->GetSiteInstance()->IsGuest());
+  EXPECT_TRUE(subframe->GetProcess()->IsForGuestsOnly());
+  EXPECT_TRUE(main_frame->GetSiteInstance()->IsRelatedSiteInstance(
+      subframe->GetSiteInstance()));
+  EXPECT_EQ(subframe->GetSiteInstance()->GetStoragePartitionConfig(),
+            main_frame->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(subframe->GetProcess()->GetStoragePartition(),
+            main_frame->GetProcess()->GetStoragePartition());
+  EXPECT_EQ("http://b.test/", subframe->GetSiteInstance()->GetSiteURL().spec());
+  EXPECT_TRUE(subframe->GetSiteInstance()->RequiresDedicatedProcess());
+  EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+}
+
+// Checks that a main frame navigation in a <webview> can swap
+// BrowsingInstances while staying in the same StoragePartition.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+
+  // Navigate <webview> to a page on a.test.
+  const GURL first_url =
+      embedded_test_server()->GetURL("a.test", "/iframe.html");
+  {
+    content::TestNavigationObserver load_observer(guest);
+    EXPECT_TRUE(
+        ExecuteScript(guest, "location.href = '" + first_url.spec() + "';"));
+    load_observer.Wait();
+  }
+  scoped_refptr<content::SiteInstance> first_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(first_instance->IsGuest());
+  EXPECT_TRUE(first_instance->GetProcess()->IsForGuestsOnly());
+
+  // Navigate <webview> to a cross-site page and use a browser-initiated
+  // navigation to force a BrowsingInstance swap.
+  const GURL second_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(guest, second_url));
+  scoped_refptr<content::SiteInstance> second_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+
+  // Ensure that a new unrelated guest SiteInstance was created, and that the
+  // StoragePartition didn't change.
+  EXPECT_TRUE(second_instance->IsGuest());
+  EXPECT_TRUE(second_instance->GetProcess()->IsForGuestsOnly());
+  EXPECT_NE(first_instance, second_instance);
+  EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
+  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
+            second_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(first_instance->GetProcess()->GetStoragePartition(),
+            second_instance->GetProcess()->GetStoragePartition());
+}

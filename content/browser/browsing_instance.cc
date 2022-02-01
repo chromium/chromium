@@ -25,10 +25,12 @@ int BrowsingInstance::next_browsing_instance_id_ = 1;
 
 BrowsingInstance::BrowsingInstance(
     BrowserContext* browser_context,
-    const WebExposedIsolationInfo& web_exposed_isolation_info)
+    const WebExposedIsolationInfo& web_exposed_isolation_info,
+    bool is_guest)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
-          BrowserOrResourceContext(browser_context)),
+          BrowserOrResourceContext(browser_context),
+          is_guest),
       active_contents_count_(0u),
       default_site_instance_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info) {
@@ -117,8 +119,10 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   if (storage_partition_config_.has_value()) {
     // We should only use a single StoragePartition within a BrowsingInstance.
     // If we're attempting to use multiple, something has gone wrong with the
-    // logic at upper layers.
+    // logic at upper layers.  Similarly, whether this StoragePartition is for
+    // a guest should remain constant over a BrowsingInstance's lifetime.
     CHECK_EQ(storage_partition_config_.value(), storage_partition_config);
+    CHECK_EQ(isolation_context_.is_guest(), site_instance->IsGuest());
   } else {
     storage_partition_config_ = storage_partition_config;
   }

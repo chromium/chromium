@@ -39,8 +39,8 @@ class DOMStorageContextWrapperTest : public testing::Test {
     security_policy->AddFutureIsolatedOrigins(
         {test_storage_key1_.origin(), test_storage_key2_.origin()},
         ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
-    IsolationContext isolation_context(BrowsingInstanceId(1),
-                                       &browser_context_);
+    IsolationContext isolation_context(BrowsingInstanceId(1), &browser_context_,
+                                       /*is_guest=*/false);
     security_policy->LockProcessForTesting(
         isolation_context, kTestProcessIdOrigin1,
         test_storage_key1_.origin().GetURL());
