@@ -6,15 +6,12 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "components/pdf/browser/pdf_web_contents_helper_client.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/referrer_type_converters.h"
-#include "pdf/pdf_features.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -121,21 +118,6 @@ void PDFWebContentsHelper::SelectionChanged(const gfx::PointF& left,
 
 void PDFWebContentsHelper::SetPluginCanSave(bool can_save) {
   client_->SetPluginCanSave(&GetWebContents(), can_save);
-}
-
-void PDFWebContentsHelper::GetPdfFindInPage(GetPdfFindInPageCallback callback) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned)) {
-    NOTREACHED();
-    return;
-  }
-
-  if (!find_factory_remote_) {
-    GetWebContents()
-        .GetMainFrame()
-        ->GetRemoteAssociatedInterfaces()
-        ->GetInterface(&find_factory_remote_);
-  }
-  find_factory_remote_->GetPdfFindInPage(std::move(callback));
 }
 
 void PDFWebContentsHelper::DidScroll() {

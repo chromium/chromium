@@ -12,7 +12,6 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -90,7 +89,6 @@ class PDFWebContentsHelper
                         const gfx::PointF& right,
                         int32_t right_height) override;
   void SetPluginCanSave(bool can_save) override;
-  void GetPdfFindInPage(GetPdfFindInPageCallback callback) override;
 
  private:
   friend class content::WebContentsUserData<PDFWebContentsHelper>;
@@ -122,8 +120,6 @@ class PDFWebContentsHelper
   bool has_selection_ = false;
 
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
-
-  mojo::AssociatedRemote<mojom::PdfFindInPageFactory> find_factory_remote_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

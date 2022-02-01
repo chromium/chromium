@@ -933,8 +933,6 @@ void PdfViewWebPlugin::NotifyFindResultsChanged(int total, bool final_result) {
 
 void PdfViewWebPlugin::NotifyFindTickmarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  // TODO(crbug.com/1278476): Clean up `PdfFindInPage::SetTickmarks()` once
-  // plugin frame scrolling is stable.
   container_wrapper_->ReportFindInPageTickmarks(tickmarks);
 }
 

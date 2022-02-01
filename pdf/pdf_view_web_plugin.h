@@ -16,7 +16,6 @@
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_view_plugin_base.h"
@@ -382,9 +381,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Used to access the services provided by the browser.
   // May be unbound in unit tests.
   mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_remote_;
-
-  // Used to access find-in-page interface provided by the PDF extension.
-  mojo::Remote<pdf::mojom::PdfFindInPage> find_remote_;
 
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
 
