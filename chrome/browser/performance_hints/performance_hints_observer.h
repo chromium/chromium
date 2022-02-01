@@ -5,21 +5,13 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_HINTS_PERFORMANCE_HINTS_OBSERVER_H_
 #define CHROME_BROWSER_PERFORMANCE_HINTS_PERFORMANCE_HINTS_OBSERVER_H_
 
-#include <tuple>
-#include <utility>
-#include <vector>
-
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/performance_hints/rewrite_handler.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
-#include "components/optimization_guide/proto/hints.pb.h"
-#include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -27,20 +19,18 @@ class WebContents;
 
 namespace optimization_guide {
 class URLPatternWithWildcards;
+class OptimizationGuideDecider;
 namespace proto {
 class PerformanceHint;
 }  // namespace proto
 }  // namespace optimization_guide
-
-class GURL;
 
 namespace performance_hints {
 
 // Provides an interface to access PerformanceHints for the associated
 // WebContents and links within it.
 class PerformanceHintsObserver
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<PerformanceHintsObserver> {
+    : public content::WebContentsUserData<PerformanceHintsObserver> {
  public:
   ~PerformanceHintsObserver() override;
   PerformanceHintsObserver(const PerformanceHintsObserver&) = delete;
@@ -68,17 +58,6 @@ class PerformanceHintsObserver
   friend class content::WebContentsUserData<PerformanceHintsObserver>;
   friend class PerformanceHintsObserverTest;
 
-  // content::WebContentsObserver.
-  void PrimaryPageChanged(content::Page& page) override;
-
-  // Returns true if the current page supports hints (not an error page,
-  // must be HTTP/HTTPS, etc).
-  bool DoesPageSupportHints();
-
-  // Populates |link_hints_| with performance information for links on the
-  // current page.
-  void PopulateLinkHints();
-
   // SourceLookupStatus represents the result of a querying a single source
   // (page hints or link hints) for performance information. Tracking this
   // separately from the overall HintForURLStatus (below) allows us to determine
@@ -100,6 +79,53 @@ class PerformanceHintsObserver
     kHintFound = 3,
     kMaxValue = kHintFound,
   };
+
+  // Data scoped to a single page. PageData has the same lifetime as the page's
+  // main document.
+  class PageData : public content::PageUserData<PageData> {
+   public:
+    explicit PageData(content::Page& page);
+    PageData(const PageData&) = delete;
+    PageData& operator=(const PageData&) = delete;
+    ~PageData() override;
+
+    void SetLinkHintDecision(
+        optimization_guide::OptimizationGuideDecision decision) {
+      link_hints_decision_ = decision;
+    }
+
+    optimization_guide::OptimizationGuideDecision GetLinkHintDecision() const {
+      return link_hints_decision_;
+    }
+
+    void SetLinkHints(const google::protobuf::RepeatedPtrField<
+                      optimization_guide::proto::PerformanceHint>& link_hints);
+
+    // |url| should be stripped to scheme://host/path.
+    std::tuple<SourceLookupStatus,
+               absl::optional<optimization_guide::proto::PerformanceHint>>
+    GetLinkHintForURL(const GURL& url) const;
+
+    PAGE_USER_DATA_KEY_DECL();
+
+   private:
+    // Link URLs that match |first| should use the Performance hint in |second|.
+    std::vector<std::pair<optimization_guide::URLPatternWithWildcards,
+                          optimization_guide::proto::PerformanceHint>>
+        link_hints_;
+
+    // The fetch status for link hints.
+    optimization_guide::OptimizationGuideDecision link_hints_decision_ =
+        optimization_guide::OptimizationGuideDecision::kUnknown;
+  };
+
+  // Returns true if the current page supports hints (not an error page,
+  // must be HTTP/HTTPS, etc).
+  bool DoesPageSupportHints();
+
+  // Populates |link_hints_| in PageData with performance information for links
+  // on the current page.
+  void PopulateLinkHints(PageData& page_data);
 
   // Attempts to retrieve a PerformanceHint for |url| from the link hints of the
   // current page.
@@ -170,19 +196,6 @@ class PerformanceHintsObserver
   // Initialized in constructor. It may be null if !IsOptimizationHintsEnabled.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
-
-  // The URL of the main frame of the associated WebContents. This is not set if
-  // the current page is an error page.
-  absl::optional<GURL> page_url_;
-
-  // Link URLs that match |first| should use the Performance hint in |second|.
-  std::vector<std::pair<optimization_guide::URLPatternWithWildcards,
-                        optimization_guide::proto::PerformanceHint>>
-      link_hints_;
-
-  // The fetch status for link hints.
-  optimization_guide::OptimizationGuideDecision link_hints_decision_ =
-      optimization_guide::OptimizationGuideDecision::kUnknown;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
