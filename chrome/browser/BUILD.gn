@@ -2446,6 +2446,7 @@ static_library("browser") {
       "//ash/webui/shortcut_customization_ui",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/system_extensions",
+      "//chrome/browser/ash/system_extensions/api/hid",
       "//chrome/browser/ash/system_extensions/api/window_management",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/policy:onc",

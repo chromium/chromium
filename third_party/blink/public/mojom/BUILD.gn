@@ -37,6 +37,7 @@ mojom("mojom_platform") {
     "choosers/date_time_chooser.mojom",
     "choosers/file_chooser.mojom",
     "choosers/popup_menu.mojom",
+    "chromeos/system_extensions/hid/cros_hid.mojom",
     "chromeos/system_extensions/window_management/cros_window_management.mojom",
     "clipboard/clipboard.mojom",
     "close_watcher/close_listener.mojom",

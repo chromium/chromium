@@ -13,7 +13,7 @@ namespace blink {
 ChromeOS::ChromeOS(ExecutionContext* execution_context)
     : window_management_(
           MakeGarbageCollected<CrosWindowManagement>(execution_context)),
-      hid_(MakeGarbageCollected<CrosHID>()) {}
+      hid_(MakeGarbageCollected<CrosHID>(execution_context)) {}
 
 CrosWindowManagement* ChromeOS::windowManagement() {
   return window_management_;
