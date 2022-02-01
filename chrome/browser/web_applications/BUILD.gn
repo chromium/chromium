@@ -636,6 +636,7 @@ source_set("web_applications_browser_tests") {
   deps = [
     ":web_applications",
     ":web_applications_test_support",
+    "adjustments:adjustments_browser_tests",
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",

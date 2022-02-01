@@ -194,6 +194,7 @@
 #include "chrome/browser/apps/platform_apps/browser_context_keyed_service_factories.h"
 #include "chrome/browser/extensions/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
+#include "chrome/browser/web_applications/adjustments/web_app_adjustments.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 #endif
@@ -544,6 +545,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   web_app::WebAppMetricsFactory::GetInstance();
   web_app::WebAppProviderFactory::GetInstance();
+  web_app::WebAppAdjustmentsFactory::GetInstance();
 #endif
   WebDataServiceFactory::GetInstance();
   webrtc_event_logging::WebRtcEventLogManagerKeyedServiceFactory::GetInstance();

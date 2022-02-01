@@ -6,8 +6,6 @@ import("//chrome/common/features.gni")
 
 source_set("app_service") {
   sources = [
-    "link_capturing_migration_manager.cc",
-    "link_capturing_migration_manager.h",
     "web_app_publisher_helper.cc",
     "web_app_publisher_helper.h",
   ]

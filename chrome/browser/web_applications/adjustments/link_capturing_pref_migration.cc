@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/link_capturing_migration_manager.h"
+#include "chrome/browser/web_applications/adjustments/link_capturing_pref_migration.h"
 
 #include "base/task/post_task.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -14,20 +14,16 @@
 
 namespace web_app {
 
-LinkCapturingMigrationManager::LinkCapturingMigrationManager(Profile& profile)
+LinkCapturingPrefMigration::LinkCapturingPrefMigration(Profile& profile)
     : profile_(profile) {
-  // Defer this to be an async operation as we are constructed during
-  // AppServiceProxy's construction and thus cannot read the AppServiceProxy out
-  // of AppServiceProxyFactory yet.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LinkCapturingMigrationManager::ObserveAppRegistryCache,
-                     weak_factory_.GetWeakPtr()));
+  scoped_observation_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(&profile_)
+           ->AppRegistryCache());
 }
 
-LinkCapturingMigrationManager::~LinkCapturingMigrationManager() = default;
+LinkCapturingPrefMigration::~LinkCapturingPrefMigration() = default;
 
-void LinkCapturingMigrationManager::OnAppUpdate(const apps::AppUpdate& update) {
+void LinkCapturingPrefMigration::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppType() != apps::mojom::AppType::kWeb)
     return;
 
@@ -53,22 +49,15 @@ void LinkCapturingMigrationManager::OnAppUpdate(const apps::AppUpdate& update) {
 
     case blink::mojom::CaptureLinks::kNewClient:
     case blink::mojom::CaptureLinks::kExistingClientNavigate:
-      apps::AppServiceProxyFactory::GetInstance()
-          ->GetForProfile(&profile_)
+      apps::AppServiceProxyFactory::GetForProfile(&profile_)
           ->SetSupportedLinksPreference(update.AppId());
       break;
   }
 }
 
-void LinkCapturingMigrationManager::OnAppRegistryCacheWillBeDestroyed(
+void LinkCapturingPrefMigration::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   scoped_observation_.Reset();
-}
-
-void LinkCapturingMigrationManager::ObserveAppRegistryCache() {
-  scoped_observation_.Observe(&apps::AppServiceProxyFactory::GetInstance()
-                                   ->GetForProfile(&profile_)
-                                   ->AppRegistryCache());
 }
 
 }  // namespace web_app

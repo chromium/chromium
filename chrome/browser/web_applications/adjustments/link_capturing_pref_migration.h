@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LINK_CAPTURING_MIGRATION_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LINK_CAPTURING_MIGRATION_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ADJUSTMENTS_LINK_CAPTURING_PREF_MIGRATION_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ADJUSTMENTS_LINK_CAPTURING_PREF_MIGRATION_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -21,10 +21,10 @@ namespace web_app {
 // These web apps are exempt from the user preference opt in model we have now
 // as they would have been installed prior to the opt in model coming into
 // effect.
-class LinkCapturingMigrationManager : public apps::AppRegistryCache::Observer {
+class LinkCapturingPrefMigration : public apps::AppRegistryCache::Observer {
  public:
-  explicit LinkCapturingMigrationManager(Profile& profile);
-  ~LinkCapturingMigrationManager() override;
+  explicit LinkCapturingPrefMigration(Profile& profile);
+  ~LinkCapturingPrefMigration() override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -32,17 +32,15 @@ class LinkCapturingMigrationManager : public apps::AppRegistryCache::Observer {
       apps::AppRegistryCache* cache) override;
 
  private:
-  void ObserveAppRegistryCache();
-
   Profile& profile_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       scoped_observation_{this};
 
-  base::WeakPtrFactory<LinkCapturingMigrationManager> weak_factory_{this};
+  base::WeakPtrFactory<LinkCapturingPrefMigration> weak_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LINK_CAPTURING_MIGRATION_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ADJUSTMENTS_LINK_CAPTURING_PREF_MIGRATION_H_

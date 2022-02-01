@@ -15,10 +15,10 @@
 
 namespace web_app {
 
-class LinkCapturingMigrationManagerBrowserTest : public InProcessBrowserTest {
+class LinkCapturingPrefMigrationBrowserTest : public InProcessBrowserTest {
  public:
-  LinkCapturingMigrationManagerBrowserTest() = default;
-  ~LinkCapturingMigrationManagerBrowserTest() override = default;
+  LinkCapturingPrefMigrationBrowserTest() = default;
+  ~LinkCapturingPrefMigrationBrowserTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -31,7 +31,7 @@ class LinkCapturingMigrationManagerBrowserTest : public InProcessBrowserTest {
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
-IN_PROC_BROWSER_TEST_F(LinkCapturingMigrationManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(LinkCapturingPrefMigrationBrowserTest,
                        MigrateCaptureLinks) {
   Profile* profile = browser()->profile();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);

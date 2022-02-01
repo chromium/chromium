@@ -4444,6 +4444,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/adjustments",
       "//chrome/browser/web_applications/app_service",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/cart:mojo_bindings",
@@ -4491,6 +4492,10 @@ static_library("browser") {
 
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
+
+      # TODO(crbug.com/1292435): Remove once AppServiceProxy is extracted from
+      # //chrome/browser.
+      "//chrome/browser/web_applications/adjustments",
       "//chrome/browser/web_applications/app_service",
     ]
 
