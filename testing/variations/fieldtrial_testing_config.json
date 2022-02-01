@@ -3709,6 +3709,33 @@
             ]
         }
     ],
+    "MacWebContentsOcclusion": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithEnhancedWindowOcclusionDetection",
+                    "params": {
+                        "myparam": "EnhancedWindowOcclusionDetection"
+                    },
+                    "enable_features": [
+                        "MacWebContentsOcclusion"
+                    ]
+                },
+                {
+                    "name": "EnabledWithDisplaySleepAndAppHideDetection",
+                    "params": {
+                        "myparam": "DisplaySleepAndAppHideDetection"
+                    },
+                    "enable_features": [
+                        "MacWebContentsOcclusion"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaFoundationD3D11VideoCapture": [
         {
             "platforms": [
