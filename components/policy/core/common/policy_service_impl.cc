@@ -389,7 +389,8 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // This policy has to be ignored if it comes from a user signed-in profile.
   bool atomic_policy_group_enabled =
       atomic_policy_group_enabled_policy_value &&
-      atomic_policy_group_enabled_policy_value->value()->GetBool() &&
+      atomic_policy_group_enabled_policy_value->value()->GetIfBool().value_or(
+          false) &&
       !(atomic_policy_group_enabled_policy_value->source ==
             POLICY_SOURCE_CLOUD &&
         atomic_policy_group_enabled_policy_value->scope == POLICY_SCOPE_USER);
@@ -402,7 +403,9 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   const bool is_user_affiliated = chrome_policies.IsUserAffiliated();
   const bool is_user_cloud_merging_enabled =
       chrome_policies.GetValue(key::kCloudUserPolicyMerge) &&
-      chrome_policies.GetValue(key::kCloudUserPolicyMerge)->GetBool();
+      chrome_policies.GetValue(key::kCloudUserPolicyMerge)
+          ->GetIfBool()
+          .value_or(false);
   policy_list_merger.SetAllowUserCloudPolicyMerging(
       is_user_affiliated && is_user_cloud_merging_enabled);
   policy_dictionary_merger.SetAllowUserCloudPolicyMerging(
