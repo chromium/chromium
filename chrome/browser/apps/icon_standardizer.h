@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_
 #define CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace gfx {
 class ImageSkia;
+class ImageSkiaRep;
 }  // namespace gfx
 
 namespace apps {
-
 // Takes an icon image and returns a standardized version of that icon. This
 // function consists of the following steps:
 // 1. Check if the original icon is already circle shaped. If it is, then
@@ -21,6 +23,11 @@ namespace apps {
 //    generated icon as the standard icon.
 gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image);
 
+// The same as CreateStandardIconImage but for ImageSkiaRep.
+// Returns nullopt if base_rep was not modified.
+absl::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
+    const gfx::ImageSkiaRep& base_rep,
+    float scale);
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_
