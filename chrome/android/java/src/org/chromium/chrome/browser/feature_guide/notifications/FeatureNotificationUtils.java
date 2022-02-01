@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feature_guide.notifications;
 
 import android.content.Intent;
+import android.text.TextUtils;
 
 import androidx.annotation.StringRes;
 
@@ -13,6 +14,9 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoDeps;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -53,6 +57,7 @@ public final class FeatureNotificationUtils {
      * Helper method to register an IPH show callback for the feature type to show the IPH.
      */
     public static void registerIPHCallback(@FeatureType int featureType, Runnable showIphCallback) {
+        if (!ProfileManager.isInitialized()) return;
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.registerPriorityNotificationHandler(
                 getIPHFeatureForNotificationFeatureType(featureType), showIphCallback);
@@ -62,9 +67,20 @@ public final class FeatureNotificationUtils {
      * Unregisters any IPH callbacks associated with the feature type.
      */
     public static void unregisterIPHCallback(@FeatureType int featureType) {
+        if (!ProfileManager.isInitialized()) return;
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.unregisterPriorityNotificationHandler(
                 getIPHFeatureForNotificationFeatureType(featureType));
+    }
+
+    /**
+     * @return Whether an IPH is currently scheduled to show. This means the user has tapped
+     *         notifications and we are in the process of bringing up the target UI surface.
+     */
+    public static boolean willShowIPH(@FeatureType int featureType) {
+        String iphFeature = getIPHFeatureForNotificationFeatureType(featureType);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        return TextUtils.equals(tracker.getPendingPriorityNotification(), iphFeature);
     }
 
     /* package */ static String getNotificationTitle(@FeatureType int featureType) {
@@ -157,7 +173,8 @@ public final class FeatureNotificationUtils {
     }
 
     private static boolean shouldShowDefaultBrowserPromo() {
-        // TODO(shaktisahu): Check if default browser is already enabled.
-        return false;
+        DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
+        return DefaultBrowserPromoUtils.shouldShowPromo(
+                deps, ContextUtils.getApplicationContext(), true /* ignoreMaxCount */);
     }
 }

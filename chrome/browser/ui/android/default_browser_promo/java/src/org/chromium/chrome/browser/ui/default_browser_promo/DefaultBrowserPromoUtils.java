@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ResolveInfo;
 
 import androidx.annotation.IntDef;
@@ -40,12 +41,14 @@ public class DefaultBrowserPromoUtils {
      *
      * @param activity The context.
      * @param windowAndroid The {@link WindowAndroid} for sending an intent.
+     * @param ignoreMaxCount Whether the promo dialog should be shown irrespective of whether it has
+     *         been shown before
      * @return True if promo dialog will be displayed.
      */
     public static boolean prepareLaunchPromoIfNeeded(
-            Activity activity, WindowAndroid windowAndroid) {
+            Activity activity, WindowAndroid windowAndroid, boolean ignoreMaxCount) {
         DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
-        if (!shouldShowPromo(deps, activity)) return false;
+        if (!shouldShowPromo(deps, activity, ignoreMaxCount)) return false;
         deps.incrementPromoCount();
         deps.recordPromoTime();
         DefaultBrowserPromoManager manager = new DefaultBrowserPromoManager(
@@ -57,7 +60,7 @@ public class DefaultBrowserPromoUtils {
     /**
      * This decides whether the dialog should be promoed.
      * Returns false if any of following criteria is met:
-     *      1. A promo dialog has been displayed before.
+     *      1. A promo dialog has been displayed before, unless {@code ignoreMaxCount} is true.
      *      2. Not enough sessions have been started before.
      *      3. Any chrome, including pre-stable, has been set as default.
      *      4. On Chrome stable while no default browser is set and multiple chrome channels
@@ -66,14 +69,16 @@ public class DefaultBrowserPromoUtils {
      *      6. A browser other than chrome channel is default and default app setting is not
      *         available in the current system.
      */
-    static boolean shouldShowPromo(DefaultBrowserPromoDeps deps, Activity activity) {
-        if (!deps.isFeatureEnabled() || !deps.isRoleAvailable(activity)) {
+    public static boolean shouldShowPromo(
+            DefaultBrowserPromoDeps deps, Context context, boolean ignoreMaxCount) {
+        if (!deps.isFeatureEnabled() || !deps.isRoleAvailable(context)) {
             return false;
         }
         // Criteria 1, 2, 5
-        if (deps.getPromoCount() >= deps.getMaxPromoCount()
-                || deps.getSessionCount() < deps.getMinSessionCount()
-                || deps.getLastPromoInterval() < deps.getMinPromoInterval()) {
+        if (!ignoreMaxCount
+                && (deps.getPromoCount() >= deps.getMaxPromoCount()
+                        || deps.getSessionCount() < deps.getMinSessionCount()
+                        || deps.getLastPromoInterval() < deps.getMinPromoInterval())) {
             return false;
         }
 

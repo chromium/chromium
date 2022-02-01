@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
+import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
+import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -322,6 +324,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     public void onDestroy() {
+        FeatureNotificationUtils.unregisterIPHCallback(FeatureType.DEFAULT_BROWSER);
+
         if (mSystemUiCoordinator != null) mSystemUiCoordinator.destroy();
         if (mEmptyBackgroundViewWrapper != null) mEmptyBackgroundViewWrapper.destroy();
 
@@ -604,7 +608,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
         mReadLaterIPHController = new ReadLaterIPHController(mActivity,
                 getToolbarManager().getMenuButtonView(), mAppMenuCoordinator.getAppMenuHandler());
-        boolean didTriggerPromo = triggerPromo(intentWithEffect);
+
+        boolean didTriggerPromo = FeatureNotificationUtils.willShowIPH(FeatureType.DEFAULT_BROWSER);
+        FeatureNotificationUtils.registerIPHCallback(FeatureType.DEFAULT_BROWSER, () -> {
+            DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
+                    mActivity, mWindowAndroid, true /* ignoreMaxCount */);
+        });
+
+        if (!didTriggerPromo) {
+            didTriggerPromo = triggerPromo(intentWithEffect);
+        }
+
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIPH();
             mReadLaterIPHController.showColdStartIPH();
@@ -902,7 +916,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     SyncConsentActivityLauncherImpl.get(), VersionInfo.getProductMajorVersion())) {
             return true;
         }
-        if (DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(mActivity, mWindowAndroid)) {
+        if (DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
+                    mActivity, mWindowAndroid, false /* ignoreMaxCount */)) {
             return true;
         }
         if (AppLanguagePromoDialog.maybeShowPrompt(mActivity, mModalDialogManagerSupplier,
