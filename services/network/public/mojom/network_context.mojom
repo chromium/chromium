@@ -925,22 +925,22 @@ interface NetworkContext {
   ClearHttpAuthCache(mojo_base.mojom.Time start_time,
                      mojo_base.mojom.Time end_time) => ();
 
-  // Clears all report entries from the reporting cache. Should not be called if
+  // Clears all report entries from the reporting cache. This has no effect if
   // the ENABLE_REPORTING build flag is false.
   //
   // If a non-null |filter| is specified, will clear only entries matching the
   // filter.
   ClearReportingCacheReports(ClearDataFilter? filter) => ();
 
-  // Clears all client entries from the reporting cache. Should not be called if
+  // Clears all client entries from the reporting cache. This has no effect if
   // the ENABLE_REPORTING build flag is false.
   //
   // If a non-null |filter| is specified, will clear only entries matching the
   // filter.
   ClearReportingCacheClients(ClearDataFilter? filter) => ();
 
-  // Clears policy entries from the NetworkErrorLoggingService. Should not be
-  // called if the ENABLE_REPORTING build flag is false.
+  // Clears policy entries from the NetworkErrorLoggingService. This has no
+  // effect if the ENABLE_REPORTING build flag is false.
   //
   // If a non-null |filter| is specified, will clear only entries matching the
   // filter.

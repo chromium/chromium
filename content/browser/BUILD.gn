@@ -1234,6 +1234,8 @@ source_set("browser") {
     "net/network_errors_listing_ui.h",
     "net/network_quality_observer_impl.cc",
     "net/network_quality_observer_impl.h",
+    "net/reporting_service_proxy.cc",
+    "net/reporting_service_proxy.h",
     "network_context_client_base_impl.cc",
     "network_context_client_base_impl.h",
     "network_service_client.cc",
@@ -3032,13 +3034,6 @@ source_set("browser") {
     sources += [
       "hyphenation/hyphenation_impl.cc",
       "hyphenation/hyphenation_impl.h",
-    ]
-  }
-
-  if (enable_reporting) {
-    sources += [
-      "net/reporting_service_proxy.cc",
-      "net/reporting_service_proxy.h",
     ]
   }
 

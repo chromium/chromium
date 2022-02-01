@@ -1146,7 +1146,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       (constants::DATA_TYPE_ISOLATED_ORIGINS | constants::DATA_TYPE_HISTORY))
     browsing_data::RemoveSiteIsolationData(prefs);
 
-#if BUILDFLAG(ENABLE_REPORTING)
   if (remove_mask & constants::DATA_TYPE_HISTORY) {
     network::mojom::NetworkContext* network_context =
         profile_->GetDefaultStoragePartition()->GetNetworkContext();
@@ -1158,7 +1157,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         CreateTaskCompletionClosureForMojo(
             TracingDataType::kNetworkErrorLogging));
   }
-#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 //////////////////////////////////////////////////////////////////////////////
 // DATA_TYPE_WEB_APP_DATA
