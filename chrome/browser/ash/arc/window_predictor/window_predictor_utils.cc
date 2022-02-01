@@ -23,6 +23,11 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
   if (!arc_task_handler)
     return false;
 
+  // Do not launch ghost window and App if it exist in any pending launch
+  // queue.
+  if (arc_task_handler->IsAppPendingRestore(arc_app_id))
+    return false;
+
   auto* arc_app_launch_handler =
       arc_task_handler->window_predictor_arc_app_launch_handler();
   if (!arc_app_launch_handler)

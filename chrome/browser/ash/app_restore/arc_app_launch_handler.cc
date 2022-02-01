@@ -253,6 +253,10 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
   RemoveWindowsForApp(app_id);
 }
 
+bool ArcAppLaunchHandler::IsAppPendingRestore(const std::string& app_id) const {
+  return base::Contains(app_ids_, app_id);
+}
+
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() ||
       update.AppType() != apps::mojom::AppType::kArc) {

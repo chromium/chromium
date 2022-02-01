@@ -72,6 +72,15 @@ AppRestoreArcTaskHandler::~AppRestoreArcTaskHandler() {
     arc_session_manager->RemoveObserver(this);
 }
 
+bool AppRestoreArcTaskHandler::IsAppPendingRestore(
+    const std::string& arc_app_id) const {
+  for (auto& handler : arc_app_launcher_handers_) {
+    if (handler && handler->IsAppPendingRestore(arc_app_id))
+      return true;
+  }
+  return false;
+}
+
 void AppRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
                                              const std::string& package_name,
                                              const std::string& activity,

@@ -47,6 +47,12 @@ class AppRestoreArcTaskHandler : public KeyedService,
   }
 #endif
 
+  // Check if the AppId existed in any arc app launch handler restore queue.
+  // When different launch handler which corresponding to different restore
+  // purpose trying to restore the same ARC app, it will be confusing ARC that
+  // which window info should be applied.
+  bool IsAppPendingRestore(const std::string& arc_app_id) const;
+
   ArcAppLaunchHandler* desks_templates_arc_app_launch_handler() {
     return desks_templates_arc_app_launch_handler_observer_;
   }
