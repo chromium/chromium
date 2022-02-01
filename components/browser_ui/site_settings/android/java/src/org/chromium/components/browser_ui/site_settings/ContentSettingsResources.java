@@ -40,19 +40,17 @@ public class ContentSettingsResources {
      */
     private static class ResourceItem {
         private final int mIcon;
-        private final int mSmallIcon;
         private final int mTitle;
         private final @ContentSettingValues @Nullable Integer mDefaultEnabledValue;
         private final @ContentSettingValues @Nullable Integer mDefaultDisabledValue;
         private final int mEnabledSummary;
         private final int mDisabledSummary;
 
-        ResourceItem(int icon, int smallIcon, int title,
+        ResourceItem(int icon, int title,
                 @ContentSettingValues @Nullable Integer defaultEnabledValue,
                 @ContentSettingValues @Nullable Integer defaultDisabledValue, int enabledSummary,
                 int disabledSummary) {
             mIcon = icon;
-            mSmallIcon = smallIcon;
             mTitle = title;
             mDefaultEnabledValue = defaultEnabledValue;
             mDefaultDisabledValue = defaultDisabledValue;
@@ -62,10 +60,6 @@ public class ContentSettingsResources {
 
         private int getIcon() {
             return mIcon;
-        }
-
-        private int getSmallIcon() {
-            return mSmallIcon;
         }
 
         private int getTitle() {
@@ -97,42 +91,40 @@ public class ContentSettingsResources {
     private static ResourceItem getResourceItem(int contentType) {
         switch (contentType) {
             case ContentSettingsType.ADS:
-                return new ResourceItem(R.drawable.web_asset, /*smallIcon=*/0,
-                        R.string.ads_permission_title, ContentSettingValues.ALLOW,
-                        ContentSettingValues.BLOCK, 0,
+                return new ResourceItem(R.drawable.web_asset, R.string.ads_permission_title,
+                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0,
                         R.string.website_settings_category_ads_blocked);
 
             case ContentSettingsType.AR:
                 return new ResourceItem(R.drawable.gm_filled_cardboard_24,
-                        R.drawable.gm_filled_cardboard_20, R.string.ar_permission_title,
-                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
-                        R.string.website_settings_category_ar_ask,
+                        R.string.ar_permission_title, ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK, R.string.website_settings_category_ar_ask,
                         R.string.website_settings_category_ar_blocked);
 
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
-                return new ResourceItem(R.drawable.infobar_downloading, /*smallIcon=*/0,
+                return new ResourceItem(R.drawable.infobar_downloading,
                         R.string.automatic_downloads_permission_title, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, R.string.website_settings_category_ask, 0);
 
             case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
                 return new ResourceItem(R.drawable.ic_brightness_medium_24dp,
-                        R.drawable.ic_brightness_medium_20dp, R.string.auto_dark_web_content_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
+                        R.string.auto_dark_web_content_title, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
                         R.string.website_settings_category_auto_dark_allowed,
                         R.string.website_settings_category_auto_dark_blocked);
 
             case ContentSettingsType.BACKGROUND_SYNC:
-                return new ResourceItem(R.drawable.permission_background_sync, /*smallIcon=*/0,
+                return new ResourceItem(R.drawable.permission_background_sync,
                         R.string.background_sync_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_allowed_recommended, 0);
 
             case ContentSettingsType.BLUETOOTH_CHOOSER_DATA:
-                return new ResourceItem(R.drawable.settings_bluetooth, /*smallIcon=*/0, 0,
-                        ContentSettingValues.ASK, ContentSettingValues.BLOCK, 0, 0);
+                return new ResourceItem(R.drawable.settings_bluetooth, 0, ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK, 0, 0);
 
             case ContentSettingsType.BLUETOOTH_GUARD:
-                return new ResourceItem(R.drawable.settings_bluetooth, /*smallIcon=*/0,
+                return new ResourceItem(R.drawable.settings_bluetooth,
                         R.string.website_settings_bluetooth, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_bluetooth_ask,
@@ -140,82 +132,78 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.BLUETOOTH_SCANNING:
                 return new ResourceItem(R.drawable.gm_filled_bluetooth_searching_24,
-                        R.drawable.gm_filled_bluetooth_searching_20,
+
                         R.string.website_settings_bluetooth_scanning, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_bluetooth_scanning_ask, 0);
 
             case ContentSettingsType.CLIPBOARD_READ_WRITE:
                 return new ResourceItem(R.drawable.gm_filled_content_paste_24,
-                        R.drawable.gm_filled_content_paste_20, R.string.clipboard_permission_title,
-                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
+                        R.string.clipboard_permission_title, ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
                         R.string.website_settings_category_clipboard_ask,
                         R.string.website_settings_category_clipboard_blocked);
 
             case ContentSettingsType.COOKIES:
-                return new ResourceItem(R.drawable.permission_cookie, /*smallIcon=*/0,
-                        R.string.cookies_title, ContentSettingValues.ALLOW,
-                        ContentSettingValues.BLOCK,
+                return new ResourceItem(R.drawable.permission_cookie, R.string.cookies_title,
+                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
                         R.string.website_settings_category_cookie_allowed, 0);
 
             case ContentSettingsType.REQUEST_DESKTOP_SITE:
-                return new ResourceItem(R.drawable.ic_desktop_windows, /*smallIcon=*/0,
-                        R.string.desktop_site_title, ContentSettingValues.ALLOW,
-                        ContentSettingValues.BLOCK,
+                return new ResourceItem(R.drawable.ic_desktop_windows, R.string.desktop_site_title,
+                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
                         R.string.website_settings_category_desktop_site_allowed,
                         R.string.website_settings_category_desktop_site_blocked);
 
             case ContentSettingsType.GEOLOCATION:
                 return new ResourceItem(R.drawable.gm_filled_location_on_24,
-                        R.drawable.gm_filled_location_on_20,
+
                         R.string.website_settings_device_location, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, R.string.website_settings_category_location_ask,
                         0);
 
             case ContentSettingsType.IDLE_DETECTION:
                 return new ResourceItem(R.drawable.gm_filled_devices_24,
-                        R.drawable.gm_filled_devices_20, R.string.website_settings_idle_detection,
-                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
+                        R.string.website_settings_idle_detection, ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
                         R.string.website_settings_category_idle_detection_ask,
                         R.string.website_settings_category_idle_detection_blocked);
 
             case ContentSettingsType.JAVASCRIPT:
-                return new ResourceItem(R.drawable.permission_javascript, /*smallIcon=*/0,
+                return new ResourceItem(R.drawable.permission_javascript,
                         R.string.javascript_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_javascript_allowed, 0);
 
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return new ResourceItem(R.drawable.gm_filled_videocam_24,
-                        R.drawable.gm_filled_videocam_20, R.string.website_settings_use_camera,
-                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
-                        R.string.website_settings_category_camera_ask, 0);
+                        R.string.website_settings_use_camera, ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK, R.string.website_settings_category_camera_ask,
+                        0);
 
             case ContentSettingsType.MEDIASTREAM_MIC:
-                return new ResourceItem(R.drawable.gm_filled_mic_24, R.drawable.gm_filled_mic_20,
+                return new ResourceItem(R.drawable.gm_filled_mic_24,
                         R.string.website_settings_use_mic, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, R.string.website_settings_category_mic_ask, 0);
 
             case ContentSettingsType.MIDI_SYSEX:
                 return new ResourceItem(R.drawable.gm_filled_piano_24,
-                        R.drawable.gm_filled_piano_20, R.string.midi_sysex_permission_title, null,
-                        null, 0, 0);
+                        R.string.midi_sysex_permission_title, null, null, 0, 0);
 
             case ContentSettingsType.NFC:
-                return new ResourceItem(R.drawable.gm_filled_nfc_24, R.drawable.gm_filled_nfc_20,
-                        R.string.nfc_permission_title, ContentSettingValues.ASK,
-                        ContentSettingValues.BLOCK, R.string.website_settings_category_nfc_ask,
+                return new ResourceItem(R.drawable.gm_filled_nfc_24, R.string.nfc_permission_title,
+                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_nfc_ask,
                         R.string.website_settings_category_nfc_blocked);
 
             case ContentSettingsType.NOTIFICATIONS:
                 return new ResourceItem(R.drawable.gm_filled_notifications_24,
-                        R.drawable.gm_filled_notifications_20,
                         R.string.push_notifications_permission_title, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_notifications_ask, 0);
 
             case ContentSettingsType.POPUPS:
-                return new ResourceItem(R.drawable.permission_popups, /*smallIcon=*/0,
+                return new ResourceItem(R.drawable.permission_popups,
                         R.string.popup_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK, 0,
                         R.string.website_settings_category_popups_redirects_blocked);
@@ -223,7 +211,7 @@ public class ContentSettingsResources {
             // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
             // If 3-state becomes more common we should update localMaps to support it better.
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
-                return new ResourceItem(R.drawable.permission_protected_media, /*smallIcon=*/0,
+                return new ResourceItem(R.drawable.permission_protected_media,
                         R.string.protected_content, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, 0, 0);
 
@@ -248,33 +236,31 @@ public class ContentSettingsResources {
                     // FeatureList.setTestFeatures() with a map that should not need to contain
                     // DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES.
                 }
-                return new ResourceItem(R.drawable.settings_sensors, /*smallIcon=*/0,
-                        sensorsPermissionTitle, ContentSettingValues.ALLOW,
-                        ContentSettingValues.BLOCK, sensorsAllowedDescription,
-                        sensorsBlockedDescription);
+                return new ResourceItem(R.drawable.settings_sensors, sensorsPermissionTitle,
+                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
+                        sensorsAllowedDescription, sensorsBlockedDescription);
 
             case ContentSettingsType.SOUND:
-                return new ResourceItem(R.drawable.ic_volume_up_grey600_24dp, /*smallIcon=*/0,
+                return new ResourceItem(R.drawable.ic_volume_up_grey600_24dp,
                         R.string.sound_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_sound_allowed,
                         R.string.website_settings_category_sound_blocked);
 
             case ContentSettingsType.USB_CHOOSER_DATA:
-                return new ResourceItem(R.drawable.gm_filled_usb_24, R.drawable.gm_filled_usb_20, 0,
-                        ContentSettingValues.ASK, ContentSettingValues.BLOCK, 0, 0);
+                return new ResourceItem(R.drawable.gm_filled_usb_24, 0, ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK, 0, 0);
 
             case ContentSettingsType.USB_GUARD:
-                return new ResourceItem(R.drawable.gm_filled_usb_24, R.drawable.gm_filled_usb_20,
-                        R.string.website_settings_usb, ContentSettingValues.ASK,
-                        ContentSettingValues.BLOCK, R.string.website_settings_category_usb_ask,
+                return new ResourceItem(R.drawable.gm_filled_usb_24, R.string.website_settings_usb,
+                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_usb_ask,
                         R.string.website_settings_category_usb_blocked);
 
             case ContentSettingsType.VR:
                 return new ResourceItem(R.drawable.gm_filled_cardboard_24,
-                        R.drawable.gm_filled_cardboard_20, R.string.vr_permission_title,
-                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
-                        R.string.website_settings_category_vr_ask,
+                        R.string.vr_permission_title, ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK, R.string.website_settings_category_vr_ask,
                         R.string.website_settings_category_vr_blocked);
         }
         assert false; // NOTREACHED
@@ -286,18 +272,6 @@ public class ContentSettingsResources {
      */
     public static int getIcon(int contentType) {
         return getResourceItem(contentType).getIcon();
-    }
-
-    /**
-     * Returns the resource id of the 20dp icon for a content type.
-     * Might fall back to a 24dp icon if 20dp is not available.
-     */
-    public static int getSmallIcon(int contentType) {
-        int icon = getResourceItem(contentType).getSmallIcon();
-        if (icon == 0) {
-            icon = getResourceItem(contentType).getIcon();
-        }
-        return icon;
     }
 
     /**
@@ -321,7 +295,7 @@ public class ContentSettingsResources {
     }
 
     /**
-     * Returns a blue 20dp permission icon.
+     * Returns a blue 24dp permission icon.
      *
      * @param context The Context for this drawable.
      * @param contentSettingsType The ContentSettingsType for this drawable. Returns null if the
@@ -329,15 +303,14 @@ public class ContentSettingsResources {
      * @param value The ContentSettingValues for this drawable. If ContentSettingValues.BLOCK, the
      *         returned icon will have a strike through it.
      * @param isIncognito Whether this icon should use the incognito color scheme.
-     * @return A blue 20dp {@link Drawable} for this content setting.
+     * @return A blue 24dp {@link Drawable} for this content setting.
      */
     public static Drawable getIconForOmnibox(Context context,
             @ContentSettingsType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value, boolean isIncognito) {
         int color = isIncognito ? R.color.default_icon_color_blue_light
                                 : R.color.default_icon_color_accent1_tint_list;
-        Drawable icon =
-                SettingsUtils.getTintedIcon(context, getSmallIcon(contentSettingsType), color);
+        Drawable icon = SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType), color);
         if (value != null && value == ContentSettingValues.BLOCK) {
             return getBlockedSquareIcon(context.getResources(), icon);
         }
