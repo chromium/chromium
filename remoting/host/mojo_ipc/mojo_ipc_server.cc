@@ -116,6 +116,11 @@ void MojoIpcServerBase::OnIpcDisconnected() {
 
 void MojoIpcServerBase::OnServerEndpointCreated(
     mojo::PlatformChannelServerEndpoint endpoint) {
+  if (!server_started_) {
+    // A server endpoint might be created on |io_sequence_| after StopServer()
+    // is called, which should be ignored.
+    return;
+  }
   if (on_invitation_sent_callback_for_testing_) {
     on_invitation_sent_callback_for_testing_.Run();
   }

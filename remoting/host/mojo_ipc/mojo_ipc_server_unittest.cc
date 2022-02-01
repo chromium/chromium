@@ -186,8 +186,7 @@ TEST_F(MojoIpcServerTest, DeleteMojoServer_RemoteDisconnected) {
   disconnect_run_loop.Run();
 }
 
-// Flaky: https://crbug.com/1291059.
-TEST_F(MojoIpcServerTest, DISABLED_StopServer_RemoteDisconnected) {
+TEST_F(MojoIpcServerTest, StopServer_RemoteDisconnected) {
   mojo::IsolatedConnection client_connection;
   auto echo_remote = ConnectAndCreateEchoRemote(client_connection);
   SendEchoAndVerifyResponse(echo_remote);
