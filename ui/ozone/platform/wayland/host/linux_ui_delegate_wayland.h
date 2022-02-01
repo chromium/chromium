@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_LINUX_UI_DELEGATE_WAYLAND_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_LINUX_UI_DELEGATE_WAYLAND_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -22,9 +23,16 @@ class LinuxUiDelegateWayland : public LinuxUiDelegate {
   bool ExportWindowHandle(
       gfx::AcceleratedWidget parent,
       base::OnceCallback<void(const std::string&)> callback) override;
+  bool ExportWindowHandle(
+      gfx::AcceleratedWidget window_id,
+      base::OnceCallback<void(std::string)> callback) override;
 
  private:
+  void OnHandleForward(base::OnceCallback<void(std::string)> callback,
+                       const std::string& handle);
+
   WaylandConnection* const connection_;
+  base::WeakPtrFactory<LinuxUiDelegateWayland> weak_factory_{this};
 };
 
 }  // namespace ui

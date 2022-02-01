@@ -14,7 +14,8 @@ namespace ui {
 // CreateSelectFileDialog function declared here to return native file dialogs.
 class SHELL_DIALOGS_EXPORT ShellDialogLinux {
  public:
-  virtual ~ShellDialogLinux() {}
+  ShellDialogLinux();
+  virtual ~ShellDialogLinux();
 
   // Sets the dynamically loaded singleton that draws the desktop native
   // UI. This pointer is not owned, and if this method is called a second time,
@@ -27,6 +28,9 @@ class SHELL_DIALOGS_EXPORT ShellDialogLinux {
   // Can return NULL, in case no toolkit has been set. (For example, if we're
   // running with the "--ash" flag.)
   static const ShellDialogLinux* instance();
+
+  // Should be called before the first call to CreateSelectFileDialog.
+  void Initialize();
 
   // Returns a native file selection dialog.
   virtual SelectFileDialog* CreateSelectFileDialog(

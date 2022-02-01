@@ -1,7 +1,5 @@
 include_rules = [
   "+chrome/browser/themes/theme_properties.h",
-  "+components/dbus/thread_linux",
-  "+dbus",
   "+printing",
   "+third_party/skia",
   "+ui/aura",
