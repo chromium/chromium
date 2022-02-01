@@ -58,8 +58,7 @@ class ClientDelegate : public ImeClientDelegate {
 DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
   auto* decoder = ImeDecoder::GetInstance();
 
-  if (decoder->GetStatus() != ImeDecoder::Status::kSuccess ||
-      !decoder->GetEntryPoints().is_ready) {
+  if (decoder->GetStatus() != ImeDecoder::Status::kSuccess) {
     LOG(WARNING) << "DecoderEngine INIT INCOMPLETE.";
     return;
   }

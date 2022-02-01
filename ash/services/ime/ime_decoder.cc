@@ -57,7 +57,6 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
   if (g_fake_decoder_entry_points_for_testing) {
     entry_points_ = *g_fake_decoder_entry_points_for_testing;
     status_ = Status::kSuccess;
-    entry_points_.is_ready = true;
     return;
   }
 
@@ -97,7 +96,6 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
     status_ = Status::kFunctionMissing;
     return;
   }
-  entry_points_.is_ready = true;
 
   // Optional function pointer.
   SetImeEngineLoggerFn logger_setter = reinterpret_cast<SetImeEngineLoggerFn>(
