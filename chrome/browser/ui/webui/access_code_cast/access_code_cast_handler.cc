@@ -308,6 +308,19 @@ void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
     }
   }
 
+  // If there is already a route for this sink_id, then terminate the existing
+  // route before starting a new one.
+  auto routes = media_router_->GetCurrentRoutes();
+  auto route_it = std::find_if(routes.begin(), routes.end(),
+                               [this](const MediaRoute& route) {
+                                 return route.media_sink_id() == *sink_id_;
+                               });
+  const MediaRoute* current_route =
+      route_it == routes.end() ? nullptr : &*route_it;
+  if (current_route) {
+    media_router_->TerminateRoute(current_route->media_route_id());
+  }
+
   media_router_->CreateRoute(
       params->source_id, sink_id_.value(), params->origin, web_contents_,
       base::BindOnce(&AccessCodeCastHandler::OnRouteResponse,
