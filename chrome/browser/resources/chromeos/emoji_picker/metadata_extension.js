@@ -25,6 +25,7 @@ export const V2_SUBCATEGORY_TABS = [
   {
     name: 'Recently Used',
     icon: 'emoji_picker:schedule',
+    category: 'emoji',
     groupId: 'history',
     active: false,
     disabled: true,
@@ -101,6 +102,15 @@ export const V2_SUBCATEGORY_TABS = [
     groupId: '8',
     active: false,
     disabled: false
+  },
+  {
+    name: 'Recently Used',
+    icon: 'emoji_picker:schedule',
+    category: 'emoticon',
+    groupId: 'emoticon-history',
+    active: false,
+    disabled: true,
+    pagination: 1
   },
   {
     name: 'Classic',

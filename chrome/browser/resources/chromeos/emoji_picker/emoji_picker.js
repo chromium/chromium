@@ -146,6 +146,8 @@ export class EmojiPicker extends PolymerElement {
       emojiHistory: {type: Object},
       /** @private {!EmojiGroup} */
       emoticonHistory: {type: Object},
+      /** @private {number} */
+      pagination: {type: Number, value: 1, observer: 'onPaginationChanged'},
       /** @private {string} */
       search: {type: String, value: '', observer: 'onSearchChanged'},
       /** @private {boolean} */
@@ -201,9 +203,6 @@ export class EmojiPicker extends PolymerElement {
     /** @private {boolean} */
     this.groupTabsMoving = false;
 
-    /** @private {number} */
-    this.pagination = 1;
-
     this.addEventListener(
         GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
     this.addEventListener(
@@ -225,7 +224,7 @@ export class EmojiPicker extends PolymerElement {
    */
   filterGroupTabByPagination(pageNumber) {
     return function(tab) {
-      return tab.pagination === pageNumber && tab.groupId !== 'history';
+      return tab.pagination === pageNumber && !tab.groupId.includes('history');
     };
   }
 
@@ -428,16 +427,12 @@ export class EmojiPicker extends PolymerElement {
       this.groupTabsMoving = true;
       this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
     } else {
-      // Left chevron has the same margin as the text subcategory button.
-      const chevronMargin = V2_TAB_BUTTON_MARGIN;
-      const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
       const maxPagination = this.getPaginationArray(this.emojiGroupTabs).pop();
       this.pagination = Math.min(this.pagination + 1, maxPagination);
+
       const nextTab =
           this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
       this.scrollToGroup(nextTab.groupId);
-      this.$.tabs.scrollLeft =
-          (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
       this.groupTabsMoving = true;
     }
   }
@@ -453,16 +448,11 @@ export class EmojiPicker extends PolymerElement {
         this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
       }
     } else {
-      // Left chevron has the same margin as the text subcategory button.
-      const chevronMargin = V2_TAB_BUTTON_MARGIN;
-      const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
       this.pagination = Math.max(this.pagination - 1, 1);
+
       const nextTab =
           this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
       this.scrollToGroup(nextTab.groupId);
-      this.$.tabs.scrollLeft = this.pagination === 1 ?
-          0 :
-          (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
       this.groupTabsMoving = true;
     }
   }
@@ -538,8 +528,6 @@ export class EmojiPicker extends PolymerElement {
     if (this.search)
       return;
 
-    this.updateChevrons();
-
     // get bounding rect of scrollable emoji region.
     const thisRect = this.$.groups.getBoundingClientRect();
 
@@ -553,6 +541,9 @@ export class EmojiPicker extends PolymerElement {
         el => el.getBoundingClientRect().bottom - thisRect.top >= 10);
 
     const activeGroupId = activeGroup ? activeGroup.dataset.group : 'history';
+
+    this.set('pagination', this.getPaginationFromGroupId(activeGroupId));
+    this.updateChevrons();
 
     let index = 0;
     // set active to true for selected group and false for others.
@@ -626,7 +617,7 @@ export class EmojiPicker extends PolymerElement {
           const currentTab = subcategoryTabs[index];
           this.$.bar.style.left = `${
               currentTab.offsetLeft - EMOJI_PICKER_SIDE_PADDING -
-              this.$.tabs.scrollLeft}px`;
+              this.calculateTabScrollLeftPosition(this.pagination)}px`;
           this.$.bar.style.width =
               `${subcategoryTabs[index].clientWidth - barInlineGap * 2}px`;
         } else {
@@ -749,15 +740,25 @@ export class EmojiPicker extends PolymerElement {
    */
   onCategoryChanged(newCategoryName) {
     if (this.v2Enabled) {
-      const historyTab = Object.assign(this.emojiGroupTabs[0], {pagination: 1});
       const categoryTabs =
           V2_SUBCATEGORY_TABS.filter(tab => tab.category === newCategoryName);
-      this.set('emojiGroupTabs', [historyTab, ...categoryTabs]);
+      this.set('emojiGroupTabs', categoryTabs);
       this.set('pagination', 1);
       this.updateChevrons();
-      this.scrollToGroup(this.emojiGroupTabs[1].groupId);
+      this.scrollToGroup(this.emojiGroupTabs[0].groupId);
       this.updateActiveGroup(true);
       this.$.tabs.scrollLeft = 0;
+    }
+  }
+
+  /**
+   * Trigger when pagination changes
+   * @param {number} newPage
+   */
+  onPaginationChanged(newPage) {
+    if (this.v2Enabled) {
+      // Left chevron has the same margin as the text subcategory button.
+      this.$.tabs.scrollLeft = this.calculateTabScrollLeftPosition(newPage);
     }
   }
 
@@ -812,8 +813,33 @@ export class EmojiPicker extends PolymerElement {
    */
   getDataGroupIndex(category, offsetIndex) {
     const firstTabByCategory = V2_SUBCATEGORY_TABS.find(
-        tab => tab.category === category && tab.groupId !== 'history');
+        tab => tab.category === category && !tab.groupId.includes('history'));
     return parseInt(firstTabByCategory.groupId, 10) + offsetIndex;
+  }
+
+  /**
+   * @param {string} groupId
+   * @returns {number}
+   * @throws Thrown when no tab with id that matches the given groupId is found.
+   */
+  getPaginationFromGroupId(groupId) {
+    const tab = V2_SUBCATEGORY_TABS.find((tab) => tab.groupId === groupId);
+    if (tab) {
+      return tab.pagination;
+    } else {
+      throw new Error('Tab not found.');
+    }
+  }
+
+  /**
+   * @param {number} page
+   * @returns {number}
+   */
+  calculateTabScrollLeftPosition(page) {
+    const chevronMargin = V2_TAB_BUTTON_MARGIN;
+    const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
+    return (page === 1) ? 0 :
+                          (page - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
   }
 }
 

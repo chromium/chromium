@@ -160,7 +160,7 @@ suite('emoji-picker-extension', () => {
         emoticonCategoryButton.click();
         flush();
         const emoticonHistoryTab = findInEmojiPicker(
-            '.pagination [data-group=history]', 'cr-icon-button');
+            '.pagination [data-group=emoticon-history]', 'cr-icon-button');
         assertTrue(emoticonHistoryTab.disabled);
       });
 
@@ -217,4 +217,43 @@ suite('emoji-picker-extension', () => {
             recentEmoticonGroup.shadowRoot.querySelectorAll('.emoticon-button');
         assertEquals(1, recentlyUsedEmoticons.length);
       });
+
+  test(
+      'Scrolling to an emoticon group should activate the corresponding ' +
+          'subcategory tab.',
+      async () => {
+        // TODO(b/216103506): Remove emoticon button click
+        const emoticonCategoryButton = findInEmojiPicker(
+            'emoji-search', 'emoji-category-button:last-of-type',
+            'cr-icon-button');
+        emoticonCategoryButton.click();
+        await flush();
+
+        const emoticonTestGroupId = '10';
+        const emoticonTabButton = findInEmojiPicker(
+            `.tab[data-group='${emoticonTestGroupId}']`, 'cr-button');
+        emojiPicker.scrollToGroup(emoticonTestGroupId);
+
+        await waitForCondition(
+            () => isGroupButtonActive(emoticonTabButton),
+            'The tab where the group is scrolled to failed to become active');
+      });
+
+  test('Scrolling to an emoticon group should update chevrons.', async () => {
+    const emoticonCategoryButton = findInEmojiPicker(
+        'emoji-search', 'emoji-category-button:last-of-type', 'cr-icon-button');
+    const leftChevron = findInEmojiPicker('#left-chevron');
+    const rightChevron = findInEmojiPicker('#right-chevron');
+    const emoticonTestGroupId = '15';
+
+    // TODO(b/216103506): Remove emoticon button click
+    emoticonCategoryButton.click();
+    await flush();
+
+    emojiPicker.scrollToGroup(emoticonTestGroupId);
+    // when scrolling to the next page, the chevron display needs to be updated.
+    await waitForCondition(
+        () => leftChevron.style.display === 'flex' &&
+            rightChevron.style.display === 'flex');
+  });
 });
