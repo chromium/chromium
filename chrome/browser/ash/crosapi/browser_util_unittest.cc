@@ -109,6 +109,18 @@ class LacrosSupportBrowserUtilTest : public BrowserUtilTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(hidehiko): Replace with ScopedTestingLocalState.
+class ScopedLocalState {
+ public:
+  explicit ScopedLocalState(PrefService* local_state) {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(local_state);
+  }
+
+  ~ScopedLocalState() {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+  }
+};
+
 TEST_F(LacrosSupportBrowserUtilTest, LacrosEnabledByFlag) {
   AddRegularUser("user@test.com");
 
@@ -124,7 +136,8 @@ TEST_F(LacrosSupportBrowserUtilTest, LacrosEnabledByFlag) {
 TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
   // This sets `g_browser_process->local_state()` which activates the check
   // `IsProfileMigrationCompletedForUser()` inside `IsLacrosEnabled()`.
-  TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
+  ScopedLocalState scoped_local_state(&pref_service_);
+
   // Note that disabling lacros is only enabled for Googlers at the moment.
   // TODO(crbug.com/1266669): Once profile migration is enabled for
   // non-googlers, add a @test.com account instead.
@@ -135,7 +148,8 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
 
   // Lacros is now enabled for profile migration to happen.
-  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(user));
+  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+      user, browser_util::PolicyInitState::kAfterInit));
   // Since profile migration hasn't been marked as completed, this returns
   // false.
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
@@ -144,9 +158,30 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
                                                     user->username_hash());
 
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
+}
 
-  // Clean up Local State.
-  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolocyInit) {
+  // This sets `g_browser_process->local_state()` which activates the check
+  // `IsProfileMigrationCompletedForUser()` inside `IsLacrosEnabled()`.
+  ScopedLocalState scoped_local_state(&pref_service_);
+
+  // Add an user.
+  AddRegularUser("user@test.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+
+  // Lacros is not enabled yet for profile migration to happen.
+  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
+      user, browser_util::PolicyInitState::kBeforeInit));
+
+  // Sets command line flag to emulate the situation where the Chrome
+  // restart happens.
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  cmdline->AppendSwitchASCII(browser_util::kLacrosAvailabilityPolicySwitch,
+                             browser_util::kLacrosAvailabilityPolicySideBySide);
+
+  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+      user, browser_util::PolicyInitState::kBeforeInit));
 }
 
 TEST_F(BrowserUtilTest, LacrosGoogleRollout) {

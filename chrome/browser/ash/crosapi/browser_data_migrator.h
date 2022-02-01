@@ -17,6 +17,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/version.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -329,8 +330,10 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // terminates ash-chrome. It returns true if the D-Bus call to the
   // session_manager is made and successful. The return value of true means that
   // `chrome::AttemptRestart()` has been called.
-  static bool MaybeRestartToMigrate(const AccountId& account_id,
-                                    const std::string& user_id_hash);
+  static bool MaybeRestartToMigrate(
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      crosapi::browser_util::PolicyInitState policy_init_state);
 
   // `BrowserDataMigrator` methods.
   void Migrate() override;

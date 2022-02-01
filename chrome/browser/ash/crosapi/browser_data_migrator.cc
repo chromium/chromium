@@ -86,7 +86,8 @@ int64_t BrowserDataMigratorImpl::TargetInfo::TotalDirSize() const {
 // static
 bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     const AccountId& account_id,
-    const std::string& user_id_hash) {
+    const std::string& user_id_hash,
+    crosapi::browser_util::PolicyInitState policy_init_state) {
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove this
   // log message.
   LOG(WARNING) << "MaybeRestartToMigrate() is called.";
@@ -139,7 +140,8 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
   if (!user)
     return false;
   // Check if lacros is enabled. If not immediately return.
-  if (!crosapi::browser_util::IsLacrosEnabledForMigration(user)) {
+  if (!crosapi::browser_util::IsLacrosEnabledForMigration(user,
+                                                          policy_init_state)) {
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING)

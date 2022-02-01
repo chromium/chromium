@@ -935,8 +935,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     std::string user_id_hash =
         parsed_command_line().GetSwitchValueASCII(switches::kLoginProfile);
 
-    if (BrowserDataMigratorImpl::MaybeRestartToMigrate(account_id,
-                                                       user_id_hash)) {
+    if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
+            account_id, user_id_hash,
+            crosapi::browser_util::PolicyInitState::kBeforeInit)) {
       LOG(WARNING) << "Restarting chrome to run profile migration.";
       return;
     }

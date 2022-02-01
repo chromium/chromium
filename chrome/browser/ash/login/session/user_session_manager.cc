@@ -2191,7 +2191,8 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (ash::BrowserDataMigratorImpl::MaybeRestartToMigrate(
-          user->GetAccountId(), user->username_hash())) {
+          user->GetAccountId(), user->username_hash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";
     return;
   }
