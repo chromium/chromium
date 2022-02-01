@@ -10,6 +10,8 @@ assert(is_chromeos)
 
 source_set("login_screen") {
   sources = [
+    "login/login_api.cc",
+    "login/login_api.h",
     "login_state/login_state_api.cc",
     "login_state/login_state_api.h",
     "login_state/session_state_changed_event_dispatcher.cc",
@@ -36,6 +38,7 @@ source_set("login_screen") {
   }
 }
 
+# TODO(jityao, b/215502706): Move tests back into chrome/test/BUILD.gn.
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

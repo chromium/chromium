@@ -108,6 +108,8 @@ source_set("crosapi") {
     "lacros_availability_policy_observer.h",
     "local_printer_ash.cc",
     "local_printer_ash.h",
+    "login_ash.cc",
+    "login_ash.h",
     "login_state_ash.cc",
     "login_state_ash.h",
     "message_center_ash.cc",

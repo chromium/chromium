@@ -1,0 +1,65 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This API allows Lacros to call the chrome.login extension API.
+[Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
+interface Login {
+  // Launches a managed guest session if one is set up via the admin console.
+  // If there are several managed guest sessions set up, it will launch the
+  // first available one.
+  // If a password is provided, the Managed Guest Session will be lockable and
+  // can be unlocked by providing the same password to
+  // |UnlockManagedGuestSession()|.
+  LaunchManagedGuestSession@0(string? password) => (string? error);
+
+  // Exits the current session. If |data_for_next_login_attempt| is provided,
+  // stores data which can be read by |FetchDataForNextLoginAttempt()|.
+  ExitCurrentSession@1(string? data_for_next_login_attempt) => (string? error);
+
+  // Reads the |data_for_next_login_attempt| set by |ExitCurrentSession()|.
+  // Clears the previously stored data after reading so it can only be read
+  // once.
+  FetchDataForNextLoginAttempt@2() => (string data);
+
+  // Locks a managed guest session if it was launched with a password from
+  // |LaunchManagedGuestSession()|.
+  LockManagedGuestSession@3() => (string? error);
+
+  // Unlocks a managed guest session which was launched by
+  // |LaunchManagedGuestSession()| with a password. The session will unlock if
+  // |password| matches the one provided to |LaunchManagedGuestSession()|.
+  UnlockManagedGuestSession@4(string password) => (string? error);
+
+  // Starts a ChromeOS Managed Guest Session which will host the shared user
+  // sessions. An initial shared session is entered with |password| as the
+  // password. When this shared session is locked, it can only be unlocked by
+  // calling |UnlockSharedSession()| with the same password.
+  LaunchSharedManagedGuestSession@5(string password) => (string? error);
+
+  // Enters the shared session with the given password. If the session is
+  // locked, it can only be unlocked by calling |UnlockSharedSession()| with
+  // the same password.
+  // Fails if  there is already a shared session running. Can only be called
+  // from the lock screen.
+  EnterSharedSession@6(string password) => (string? error);
+
+  // Unlocks the shared session with the provided password. Fails if the
+  // password does not match the one provided to
+  // |LaunchSharedManagedGuestSession()| or |EnterSharedSession()|.
+  // Fails if  there is no existing shared session. Can only be called from the
+  // lock screen.
+  UnlockSharedSession@7(string password) => (string? error);
+
+  // Ends the shared session. Security- and privacy-sensitive data in the
+  // session will be cleaned up on a best effort basis.
+  // Can be called from both the lock screen or in session.
+  // Fails if there is no existing shared session.
+  EndSharedSession@8() => (string? error);
+
+  // Sets data for the next login attempt. The data can be retrieved by
+  // calling |FetchDataForNextLoginAttempt()|.
+  SetDataForNextLoginAttempt@9(string data_for_next_login_attempt) => ();
+};

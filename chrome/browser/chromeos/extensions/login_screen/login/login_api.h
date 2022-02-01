@@ -5,41 +5,35 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_LOGIN_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_LOGIN_API_H_
 
-#include "components/prefs/pref_registry_simple.h"
+#include "chromeos/crosapi/mojom/login.mojom.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
-namespace login_api {
+class ExtensionFunctionWithOptionalErrorResult : public ExtensionFunction {
+ protected:
+  ~ExtensionFunctionWithOptionalErrorResult() override;
 
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+  void OnResult(const absl::optional<std::string>& error);
+};
 
-}  // namespace login_api
+class ExtensionFunctionWithStringResult : public ExtensionFunction {
+ protected:
+  ~ExtensionFunctionWithStringResult() override;
 
-namespace login_api_errors {
+  void OnResult(const std::string& result);
+};
 
-extern const char kAlreadyActiveSession[];
-extern const char kLoginScreenIsNotActive[];
-extern const char kAnotherLoginAttemptInProgress[];
-extern const char kNoManagedGuestSessionAccounts[];
-extern const char kNoLockableManagedGuestSession[];
-extern const char kSessionIsNotActive[];
-extern const char kNoUnlockableManagedGuestSession[];
-extern const char kSessionIsNotLocked[];
-extern const char kAnotherUnlockAttemptInProgress[];
-extern const char kAuthenticationFailed[];
-extern const char kSharedMGSAlreadyLaunched[];
-extern const char kNoSharedMGSFound[];
-extern const char kSharedSessionIsNotActive[];
-extern const char kSharedSessionAlreadyLaunched[];
-extern const char kScryptFailure[];
-extern const char kCleanupInProgress[];
-extern const char kUnlockFailure[];
-extern const char kDeviceRestrictedManagedGuestSessionNotEnabled[];
+class ExtensionFunctionWithVoidResult : public ExtensionFunction {
+ protected:
+  ~ExtensionFunctionWithVoidResult() override;
 
-}  // namespace login_api_errors
+  void OnResult();
+};
 
-class LoginLaunchManagedGuestSessionFunction : public ExtensionFunction {
+class LoginLaunchManagedGuestSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginLaunchManagedGuestSessionFunction();
 
@@ -59,7 +53,8 @@ class LoginLaunchManagedGuestSessionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class LoginExitCurrentSessionFunction : public ExtensionFunction {
+class LoginExitCurrentSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginExitCurrentSessionFunction();
 
@@ -79,7 +74,8 @@ class LoginExitCurrentSessionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class LoginFetchDataForNextLoginAttemptFunction : public ExtensionFunction {
+class LoginFetchDataForNextLoginAttemptFunction
+    : public ExtensionFunctionWithStringResult {
  public:
   LoginFetchDataForNextLoginAttemptFunction();
 
@@ -99,7 +95,8 @@ class LoginFetchDataForNextLoginAttemptFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class LoginLockManagedGuestSessionFunction : public ExtensionFunction {
+class LoginLockManagedGuestSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginLockManagedGuestSessionFunction();
 
@@ -119,7 +116,8 @@ class LoginLockManagedGuestSessionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class LoginUnlockManagedGuestSessionFunction : public ExtensionFunction {
+class LoginUnlockManagedGuestSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginUnlockManagedGuestSessionFunction();
 
@@ -137,12 +135,10 @@ class LoginUnlockManagedGuestSessionFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  void OnAuthenticationComplete(bool success);
 };
 
-class LoginLaunchSharedManagedGuestSessionFunction : public ExtensionFunction {
+class LoginLaunchSharedManagedGuestSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginLaunchSharedManagedGuestSessionFunction();
 
@@ -162,7 +158,8 @@ class LoginLaunchSharedManagedGuestSessionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class LoginEnterSharedSessionFunction : public ExtensionFunction {
+class LoginEnterSharedSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginEnterSharedSessionFunction();
 
@@ -180,12 +177,10 @@ class LoginEnterSharedSessionFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  void OnEnterSharedSessionComplete(absl::optional<std::string> error);
 };
 
-class LoginUnlockSharedSessionFunction : public ExtensionFunction {
+class LoginUnlockSharedSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginUnlockSharedSessionFunction();
 
@@ -203,12 +198,10 @@ class LoginUnlockSharedSessionFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  void OnUnlockSharedSessionComplete(absl::optional<std::string> error);
 };
 
-class LoginEndSharedSessionFunction : public ExtensionFunction {
+class LoginEndSharedSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
  public:
   LoginEndSharedSessionFunction();
 
@@ -224,12 +217,10 @@ class LoginEndSharedSessionFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  void OnEndSharedSessionComplete(absl::optional<std::string> error);
 };
 
-class LoginSetDataForNextLoginAttemptFunction : public ExtensionFunction {
+class LoginSetDataForNextLoginAttemptFunction
+    : public ExtensionFunctionWithVoidResult {
  public:
   LoginSetDataForNextLoginAttemptFunction();
 

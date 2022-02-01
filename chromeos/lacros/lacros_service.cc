@@ -43,6 +43,7 @@
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/crosapi/mojom/login.mojom.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
@@ -294,6 +295,8 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::LocalPrinter,
                   &crosapi::mojom::Crosapi::BindLocalPrinter,
                   Crosapi::MethodMinVersions::kBindLocalPrinterMinVersion>();
+  ConstructRemote<crosapi::mojom::Login, &crosapi::mojom::Crosapi::BindLogin,
+                  Crosapi::MethodMinVersions::kBindLoginMinVersion>();
   ConstructRemote<crosapi::mojom::LoginState,
                   &crosapi::mojom::Crosapi::BindLoginState,
                   Crosapi::MethodMinVersions::kBindLoginStateMinVersion>();
