@@ -7,14 +7,10 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Time;
-class TimeDelta;
-}  // namespace base
 
 namespace content {
 
@@ -22,9 +18,7 @@ namespace content {
 // storing, and sending impressions and conversions.
 class CONTENT_EXPORT AttributionPolicy {
  public:
-  // |debug_mode| indicates whether the API is currently running in a mode where
-  // it should not use noise.
-  explicit AttributionPolicy(bool debug_mode = false);
+  AttributionPolicy();
   AttributionPolicy(const AttributionPolicy& other) = delete;
   AttributionPolicy& operator=(const AttributionPolicy& other) = delete;
   AttributionPolicy(AttributionPolicy&& other) = delete;
@@ -48,41 +42,6 @@ class CONTENT_EXPORT AttributionPolicy {
   // guaranteed to be positive.
   absl::optional<base::TimeDelta> GetFailedReportDelay(
       int failed_send_attempts) const;
-
-  class CONTENT_EXPORT AttributionMode {
-   public:
-    explicit AttributionMode(
-        CommonSourceInfo::AttributionLogic logic,
-        absl::optional<uint64_t> fake_trigger_data = absl::nullopt);
-
-    ~AttributionMode();
-
-    AttributionMode(const AttributionMode&);
-    AttributionMode(AttributionMode&&);
-
-    AttributionMode& operator=(const AttributionMode&);
-    AttributionMode& operator=(AttributionMode&&);
-
-    CommonSourceInfo::AttributionLogic logic() const { return logic_; }
-
-    // `absl::nullopt` when `logic()` is not `AttributionLogic::kFalsely`.
-    absl::optional<uint64_t> fake_trigger_data() const {
-      return fake_trigger_data_;
-    }
-
-   private:
-    CommonSourceInfo::AttributionLogic logic_;
-    absl::optional<uint64_t> fake_trigger_data_;
-  };
-
-  // Selects how to handle the given source type; may involve RNG or other
-  // dynamic criteria.
-  AttributionMode GetAttributionMode(
-      CommonSourceInfo::SourceType source_type) const;
-
- private:
-  // Whether the API is running in debug mode. No noise or delay should be used.
-  const bool debug_mode_;
 };
 
 }  // namespace content

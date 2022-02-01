@@ -33,18 +33,6 @@ class CONTENT_EXPORT CommonSourceInfo {
     kMaxValue = kEvent,
   };
 
-  // Denotes the attribution logic for an impression.
-  enum class AttributionLogic {
-    // Never send a report for this impression even if it gets attributed.
-    kNever = 0,
-    // Attribute the impression truthfully.
-    kTruthfully = 1,
-    // The browser generates a fake conversion for the source, causing a report
-    // to always be sent for it.
-    kFalsely = 2,
-    kMaxValue = kFalsely,
-  };
-
   CommonSourceInfo(uint64_t source_event_id,
                    url::Origin impression_origin,
                    url::Origin conversion_origin,
@@ -52,8 +40,7 @@ class CONTENT_EXPORT CommonSourceInfo {
                    base::Time impression_time,
                    base::Time expiry_time,
                    SourceType source_type,
-                   int64_t priority,
-                   AttributionLogic attribution_logic);
+                   int64_t priority);
 
   ~CommonSourceInfo();
 
@@ -79,8 +66,6 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   int64_t priority() const { return priority_; }
 
-  AttributionLogic attribution_logic() const { return attribution_logic_; }
-
   // Returns the schemeful site of |conversion_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
@@ -102,7 +87,6 @@ class CONTENT_EXPORT CommonSourceInfo {
   base::Time expiry_time_;
   SourceType source_type_;
   int64_t priority_;
-  AttributionLogic attribution_logic_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

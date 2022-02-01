@@ -7,46 +7,15 @@
 #include <math.h>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/rand_util.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 
 namespace content {
 
-namespace {
-
-using AttributionLogic = ::content::CommonSourceInfo::AttributionLogic;
-using AttributionMode = ::content::AttributionPolicy::AttributionMode;
-
-uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type) {
-  switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      return 8;
-    case CommonSourceInfo::SourceType::kEvent:
-      return 2;
-  }
-}
-
-}  // namespace
-
-AttributionMode::AttributionMode(AttributionLogic logic,
-                                 absl::optional<uint64_t> fake_trigger_data)
-    : logic_(logic), fake_trigger_data_(fake_trigger_data) {
-  DCHECK_EQ(logic_ == AttributionLogic::kFalsely,
-            fake_trigger_data_.has_value());
-}
-
-AttributionMode::~AttributionMode() = default;
-
-AttributionMode::AttributionMode(const AttributionMode&) = default;
-AttributionMode::AttributionMode(AttributionMode&&) = default;
-
-AttributionMode& AttributionMode::operator=(const AttributionMode&) = default;
-AttributionMode& AttributionMode::operator=(AttributionMode&&) = default;
-
-AttributionPolicy::AttributionPolicy(bool debug_mode)
-    : debug_mode_(debug_mode) {}
+AttributionPolicy::AttributionPolicy() = default;
 
 AttributionPolicy::~AttributionPolicy() = default;
 
@@ -89,36 +58,6 @@ absl::optional<base::TimeDelta> AttributionPolicy::GetFailedReportDelay(
     return absl::nullopt;
 
   return kInitialReportDelay * pow(kDelayFactor, failed_send_attempts - 1);
-}
-
-AttributionPolicy::AttributionMode AttributionPolicy::GetAttributionMode(
-    CommonSourceInfo::SourceType source_type) const {
-  if (debug_mode_)
-    return AttributionMode(AttributionLogic::kTruthfully);
-
-  double randomized_response_probability;
-
-  // TODO(apaseltiner): Pick non-zero probabilities.
-  switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      randomized_response_probability = 0;
-      break;
-    case CommonSourceInfo::SourceType::kEvent:
-      randomized_response_probability = 0;
-      break;
-  }
-
-  if (base::RandDouble() < randomized_response_probability) {
-    // The 0 value is reserved for `kNever`, so we add 1 here and subtract it
-    // later.
-    uint64_t r = base::RandGenerator(1 + TriggerDataCardinality(source_type));
-    if (r == 0)
-      return AttributionMode(AttributionLogic::kNever);
-
-    return AttributionMode(AttributionLogic::kFalsely, r - 1);
-  }
-
-  return AttributionMode(AttributionLogic::kTruthfully);
 }
 
 }  // namespace content

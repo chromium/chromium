@@ -28,9 +28,25 @@ CONTENT_EXPORT int BinomialCoefficient(int n, int k);
 CONTENT_EXPORT std::vector<int> GetKCombinationAtIndex(int combination_index,
                                                        int k);
 
-// Returns the index of every star in a uniformly random sampled "stars and
-// bars" sequence given by `num_stars` and `num_bars`.
-CONTENT_EXPORT std::vector<int> SampleStarsAndBars(int num_stars, int num_bars);
+// Returns the number of possible sequences of "stars and bars" sequences
+// https://en.wikipedia.org/wiki/Stars_and_bars_(combinatorics),
+// which is equivalent to (num_stars + num_bars choose num_stars).
+CONTENT_EXPORT int GetNumberOfStarsAndBarsSequences(int num_stars,
+                                                    int num_bars);
+
+// Returns a vector of the indices of every star in the stars and bars sequence
+// indexed by `sequence_index`. The indexing technique uses the k-combination
+// utility documented above.
+CONTENT_EXPORT std::vector<int> GetStarIndices(int num_stars,
+                                               int num_bars,
+                                               int sequence_index);
+
+// From a vector with the index of every star in a stars and bars sequence,
+// returns a vector which, for every star, counts the number of bars preceding
+// it. Assumes `star_indices` is in descending order. Output is also sorted
+// in descending order.
+CONTENT_EXPORT std::vector<int> GetBarsPrecedingEachStar(
+    std::vector<int> star_indices);
 
 }  // namespace content
 

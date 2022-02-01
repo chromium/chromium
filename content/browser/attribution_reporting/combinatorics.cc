@@ -4,9 +4,11 @@
 
 #include "content/browser/attribution_reporting/combinatorics.h"
 
+#include <functional>
+
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
-#include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 
 namespace content {
 
@@ -116,11 +118,29 @@ std::vector<int> GetKCombinationAtIndex(int combination_index, int k) {
   }
 }
 
-std::vector<int> SampleStarsAndBars(int num_stars, int num_bars) {
-  const int num_combinations =
-      BinomialCoefficient(num_stars + num_bars, num_stars);
-  const int index = base::RandInt(0, num_combinations - 1);
-  return GetKCombinationAtIndex(index, num_stars);
+int GetNumberOfStarsAndBarsSequences(int num_stars, int num_bars) {
+  return BinomialCoefficient(num_stars + num_bars, num_stars);
+}
+
+std::vector<int> GetStarIndices(int num_stars,
+                                int num_bars,
+                                int sequence_index) {
+  DCHECK_LT(sequence_index,
+            GetNumberOfStarsAndBarsSequences(num_stars, num_bars));
+  return GetKCombinationAtIndex(sequence_index, num_stars);
+}
+
+std::vector<int> GetBarsPrecedingEachStar(std::vector<int> out) {
+  DCHECK(base::ranges::is_sorted(out, std::greater{}));
+
+  for (size_t i = 0u; i < out.size(); i++) {
+    int star_index = out[i];
+
+    // There are `star_index` prior positions in the sequence, and `i` prior
+    // stars, so there are `star_index` - `i` prior bars.
+    out[i] = star_index - (out.size() - 1 - i);
+  }
+  return out;
 }
 
 }  // namespace content

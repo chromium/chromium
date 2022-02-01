@@ -7,7 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -126,67 +125,44 @@ TEST(CombinatoricsTest, GetKCombination_MatchesDefinition) {
   }
 }
 
-TEST(CombinatoricsTest, SampleStarsAndBars_MatchesExpectedDistribution) {
-  const int kNumStars = 2;
-  const int kNumBars = 3;
-  const int kNumSamples = 100000;
+TEST(CombinatoricsTest, GetNumberOfStarsAndBarsSequences) {
+  EXPECT_EQ(3,
+            GetNumberOfStarsAndBarsSequences(/*num_stars=*/1, /*num_bars=*/2));
 
-  base::flat_map<std::vector<int>, int> star_bar_counts;
-  for (int i = 0; i < kNumSamples; i++) {
-    std::vector<int> stars_and_bars = SampleStarsAndBars(kNumStars, kNumBars);
-    star_bar_counts[stars_and_bars]++;
+  EXPECT_EQ(2925,
+            GetNumberOfStarsAndBarsSequences(/*num_stars=*/3, /*num_bars=*/24));
+}
+
+TEST(CombinatoricsTest, GetStarIndices) {
+  const struct {
+    int num_stars;
+    int num_bars;
+    int sequence_index;
+    std::vector<int> expected;
+  } kTestCases[] = {
+      {1, 2, 2, {2}},
+      {3, 24, 23, {6, 3, 0}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(GetStarIndices(test_case.num_stars, test_case.num_bars,
+                             test_case.sequence_index),
+              test_case.expected);
   }
+}
 
-  // This is the coupon collector problem (see
-  // https://en.wikipedia.org/wiki/Coupon_collector%27s_problem).
-  // For n possible results:
-  //
-  // the expected number of trials needed to see all possible results is equal
-  // to n * Sum_{i = 1,..,n} 1/i.
-  //
-  // The variance of the number of trials is equal to
-  // Sum_{i = 1,.., n} (1 - p_i) / p_i^2,
-  // where p_i = (n - i + 1) / n.
-  //
-  // The probability that t trials are not enough to see all possible results is
-  // at most n^{-t/(n*ln(n)) + 1}.
-  //
-  // For the parameter setting in this test, n = 10, so the mean is ~ 29 and the
-  // standard deviation is ~ 11.2.
-  // Moreover, the probability that not all of the 10 states are seen after  t =
-  // kNumSamples = 100000 trials is at most 10^{-4341}, which is 0 for all
-  // practical purposes. So the following test should always pass.
-  int expected_num_combinations =
-      BinomialCoefficient(kNumStars + kNumBars, kNumStars);
-  EXPECT_EQ(static_cast<int>(star_bar_counts.size()),
-            expected_num_combinations);
+TEST(CombinatoricsTest, GetBarsPrecedingEachStar) {
+  const struct {
+    std::vector<int> star_indices;
+    std::vector<int> expected;
+  } kTestCases[] = {
+      {{2}, {2}},
+      {{6, 3, 0}, {4, 2, 0}},
+  };
 
-  // For any of the n possible results, the expected number times it is seen is
-  // equal to 1/n.
-  // Moreover, for any possible result, the probability that it is seen more
-  // than (1+alpha)*t/n times is at most
-  // p_high = exp(- D(1/n + alpha/n || 1/n) * t).
-  //
-  // The probability that it is seen less than (1-alpha)*t/n times is at most
-  // p_low = exp(-D(1/n - alpha/n || 1/n) * t,
-  //
-  // where D( x || y) = x * ln(x/y) + (1-x) * ln( (1-x) / (1-y) ).
-  // See
-  // https://en.wikipedia.org/wiki/Chernoff_bound#Additive_form_(absolute_error)
-  // for details.
-  //
-  // Thus, the probability that the number of occurrences of one of the results
-  // deviates from its expectation by alpha*t/n is at most
-  // n * (p_high + p_low).
-  //
-  // For the parameter setting in this test, where n = 10, alpha = 0.05, and t =
-  // 100000, this probability is at most 0.000019. So the following test should
-  // pass with probability close to 1.
-  int expected_counts =
-      kNumSamples / static_cast<double>(expected_num_combinations);
-  for (const auto& star_bar_count : star_bar_counts) {
-    const double abs_error = expected_counts * .05;
-    EXPECT_NEAR(star_bar_count.second, expected_counts, abs_error);
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(GetBarsPrecedingEachStar(test_case.star_indices),
+              test_case.expected);
   }
 }
 

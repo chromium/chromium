@@ -4,22 +4,55 @@
 
 #include "content/browser/attribution_reporting/attribution_utils.h"
 
-#include <vector>
-
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 
 namespace content {
 
-base::Time ComputeReportTime(const CommonSourceInfo& source,
-                             base::Time trigger_time) {
+namespace {
+
+constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
+
+base::span<const base::TimeDelta> EarlyDeadlines(
+    CommonSourceInfo::SourceType source_type) {
+  static constexpr base::TimeDelta kEarlyDeadlinesNavigation[] = {
+      base::Days(2) - kWindowDeadlineOffset,
+      base::Days(7) - kWindowDeadlineOffset,
+  };
+
+  switch (source_type) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      return kEarlyDeadlinesNavigation;
+    case CommonSourceInfo::SourceType::kEvent:
+      return base::span<const base::TimeDelta>();
+  }
+}
+
+base::TimeDelta ExpiryDeadline(const CommonSourceInfo& source) {
   base::TimeDelta expiry_deadline =
       source.expiry_time() - source.impression_time();
 
   constexpr base::TimeDelta kMinExpiryDeadline = base::Days(2);
   if (expiry_deadline < kMinExpiryDeadline)
     expiry_deadline = kMinExpiryDeadline;
+
+  return expiry_deadline;
+}
+
+base::Time ReportTimeFromDeadline(base::Time impression_time,
+                                  base::TimeDelta deadline) {
+  // Valid conversion reports should always have a valid reporting deadline.
+  DCHECK(!deadline.is_zero());
+  return impression_time + deadline + kWindowDeadlineOffset;
+}
+
+}  // namespace
+
+base::Time ComputeReportTime(const CommonSourceInfo& source,
+                             base::Time trigger_time) {
+  base::TimeDelta expiry_deadline = ExpiryDeadline(source);
 
   // After the initial impression, a schedule of reporting windows and deadlines
   // associated with that impression begins. The time between impression time
@@ -38,24 +71,11 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
   //
   // Note that only navigation (not event) sources have early reporting
   // deadlines.
-  constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
-
-  std::vector<base::TimeDelta> early_deadlines;
-  switch (source.source_type()) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      early_deadlines = {base::Days(2) - kWindowDeadlineOffset,
-                         base::Days(7) - kWindowDeadlineOffset};
-      break;
-    case CommonSourceInfo::SourceType::kEvent:
-      early_deadlines = {};
-      break;
-  }
-
   base::TimeDelta deadline_to_use = expiry_deadline;
 
   // Given a conversion that happened at `trigger_time`, find the first
   // applicable reporting window this conversion should be reported at.
-  for (base::TimeDelta early_deadline : early_deadlines) {
+  for (base::TimeDelta early_deadline : EarlyDeadlines(source.source_type())) {
     // If this window is valid for the conversion, use it.
     // |trigger_time| is roughly ~now.
     if (source.impression_time() + early_deadline >= trigger_time &&
@@ -65,10 +85,37 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
     }
   }
 
-  // Valid conversion reports should always have a valid reporting deadline.
-  DCHECK(!deadline_to_use.is_zero());
+  return ReportTimeFromDeadline(source.impression_time(), deadline_to_use);
+}
 
-  return source.impression_time() + deadline_to_use + kWindowDeadlineOffset;
+int NumReportWindows(CommonSourceInfo::SourceType source_type) {
+  // Add 1 for the expiry deadline.
+  return 1 + EarlyDeadlines(source_type).size();
+}
+
+base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
+                              int window_index) {
+  DCHECK_GE(window_index, 0);
+  DCHECK_LT(window_index, NumReportWindows(source.source_type()));
+
+  base::span<const base::TimeDelta> early_deadlines =
+      EarlyDeadlines(source.source_type());
+
+  base::TimeDelta deadline =
+      static_cast<size_t>(window_index) < early_deadlines.size()
+          ? early_deadlines[window_index]
+          : ExpiryDeadline(source);
+
+  return ReportTimeFromDeadline(source.impression_time(), deadline);
+}
+
+uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type) {
+  switch (source_type) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      return 8;
+    case CommonSourceInfo::SourceType::kEvent:
+      return 2;
+  }
 }
 
 }  // namespace content

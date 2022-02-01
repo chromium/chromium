@@ -8,8 +8,12 @@
 
 namespace content {
 
-StoredSource::StoredSource(CommonSourceInfo common_info, Id source_id)
-    : common_info_(std::move(common_info)), source_id_(source_id) {}
+StoredSource::StoredSource(CommonSourceInfo common_info,
+                           AttributionLogic attribution_logic,
+                           Id source_id)
+    : common_info_(std::move(common_info)),
+      attribution_logic_(attribution_logic),
+      source_id_(source_id) {}
 
 StoredSource::~StoredSource() = default;
 

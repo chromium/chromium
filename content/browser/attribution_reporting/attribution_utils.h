@@ -5,18 +5,28 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_UTILS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_UTILS_H_
 
+#include <stdint.h>
+
+#include "content/browser/attribution_reporting/common_source_info.h"
+
 namespace base {
 class Time;
 }  // namespace base
 
 namespace content {
 
-class CommonSourceInfo;
-
 // Calculates the report time for a conversion associated with a given
 // source.
 base::Time ComputeReportTime(const CommonSourceInfo& source,
                              base::Time trigger_time);
+
+// Returns the number of report windows for the given source type.
+int NumReportWindows(CommonSourceInfo::SourceType source_type);
+
+// Calculates the report time for a given source and window index.
+base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);
+
+uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type);
 
 }  // namespace content
 

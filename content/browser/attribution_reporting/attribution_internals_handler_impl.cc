@@ -43,8 +43,7 @@ mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
     const StoredSource& source,
     absl::optional<DeactivatedSource::Reason> deactivation_reason) {
   auto attributability = Attributability::kAttributable;
-  if (source.common_info().attribution_logic() ==
-      CommonSourceInfo::AttributionLogic::kNever) {
+  if (source.attribution_logic() == StoredSource::AttributionLogic::kNever) {
     attributability = Attributability::kNoised;
   } else if (deactivation_reason.has_value()) {
     switch (*deactivation_reason) {
@@ -98,8 +97,8 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
       /*report_time=*/report.report_time().ToJsTime(), data->priority,
       report.ReportBody(/*pretty_print=*/true),
       /*attributed_truthfully=*/
-      report.source().common_info().attribution_logic() ==
-          CommonSourceInfo::AttributionLogic::kTruthfully,
+      report.source().attribution_logic() ==
+          StoredSource::AttributionLogic::kTruthfully,
       status, http_response_code);
 }
 

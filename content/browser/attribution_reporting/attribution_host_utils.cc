@@ -59,18 +59,14 @@ VerifyResult VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
     return VerifyResult{.allowed = true, .stored = false};
   }
 
-  const AttributionPolicy& policy = attribution_manager.GetAttributionPolicy();
-  AttributionPolicy::AttributionMode mode =
-      policy.GetAttributionMode(source_type);
   StorableSource storable_impression(
       // Impression data doesn't need to be sanitized.
-      CommonSourceInfo(impression.impression_data, impression_origin,
-                       impression.conversion_destination, reporting_origin,
-                       impression_time,
-                       policy.GetExpiryTimeForImpression(
-                           impression.expiry, impression_time, source_type),
-                       source_type, impression.priority, mode.logic()),
-      mode.fake_trigger_data());
+      CommonSourceInfo(
+          impression.impression_data, impression_origin,
+          impression.conversion_destination, reporting_origin, impression_time,
+          attribution_manager.GetAttributionPolicy().GetExpiryTimeForImpression(
+              impression.expiry, impression_time, source_type),
+          source_type, impression.priority));
 
   attribution_manager.HandleSource(std::move(storable_impression));
   return VerifyResult{.allowed = true, .stored = true};

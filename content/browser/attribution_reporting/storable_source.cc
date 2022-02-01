@@ -8,10 +8,8 @@
 
 namespace content {
 
-StorableSource::StorableSource(CommonSourceInfo common_info,
-                               absl::optional<uint64_t> fake_trigger_data)
-    : common_info_(std::move(common_info)),
-      fake_trigger_data_(fake_trigger_data) {}
+StorableSource::StorableSource(CommonSourceInfo common_info)
+    : common_info_(std::move(common_info)) {}
 
 StorableSource::~StorableSource() = default;
 

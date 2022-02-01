@@ -834,10 +834,11 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest, NeverAttributeImpression_ReportNotStored) {
   delegate()->set_max_attributions_per_source(1);
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetAttributionLogic(CommonSourceInfo::AttributionLogic::kNever)
-          .Build());
+
+  delegate()->set_randomized_response(
+      std::vector<AttributionStorage::Delegate::FakeReport>{});
+  storage()->StoreSource(SourceBuilder().Build());
+  delegate()->set_randomized_response(absl::nullopt);
 
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
             MaybeCreateAndStoreReport(DefaultTrigger()));
@@ -849,11 +850,11 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_ReportNotStored) {
 
 TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
   delegate()->set_max_attributions_per_source(1);
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceEventId(3)
-          .SetAttributionLogic(CommonSourceInfo::AttributionLogic::kNever)
-          .Build());
+
+  delegate()->set_randomized_response(
+      std::vector<AttributionStorage::Delegate::FakeReport>{});
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
+  delegate()->set_randomized_response(absl::nullopt);
 
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
             MaybeCreateAndStoreReport(DefaultTrigger()));
@@ -877,11 +878,10 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
       .max_contributions_per_window = 1,
   });
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceEventId(5)
-          .SetAttributionLogic(CommonSourceInfo::AttributionLogic::kNever)
-          .Build());
+  delegate()->set_randomized_response(
+      std::vector<AttributionStorage::Delegate::FakeReport>{});
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
+  delegate()->set_randomized_response(absl::nullopt);
 
   const auto conversion = DefaultTrigger();
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
@@ -912,10 +912,10 @@ TEST_F(AttributionStorageTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetAttributionLogic(CommonSourceInfo::AttributionLogic::kNever)
-          .Build());
+  delegate()->set_randomized_response(
+      std::vector<AttributionStorage::Delegate::FakeReport>{});
+  storage()->StoreSource(SourceBuilder().Build());
+  delegate()->set_randomized_response(absl::nullopt);
 
   const auto conversion = DefaultTrigger();
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
@@ -1104,19 +1104,26 @@ TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
 TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   delegate()->set_max_attributions_per_source(1);
 
+  const base::Time fake_report_time =
+      base::Time::Now() + base::Milliseconds(kReportTime);
+
   SourceBuilder builder;
   builder.SetSourceEventId(4)
       .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-      .SetPriority(100)
-      .SetAttributionLogic(CommonSourceInfo::AttributionLogic::kFalsely)
-      .SetFakeTriggerData(7);
+      .SetPriority(100);
+  delegate()->set_randomized_response(
+      std::vector<AttributionStorage::Delegate::FakeReport>{
+          {.trigger_data = 7, .report_time = fake_report_time}});
   storage()->StoreSource(builder.Build());
+  delegate()->set_randomized_response(absl::nullopt);
 
   const AttributionReport expected_report =
-      ReportBuilder(builder.BuildStored())
+      ReportBuilder(
+          builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+              .BuildStored())
           .SetTriggerData(7)
           .SetTriggerTime(base::Time::Now())
-          .SetReportTime(base::Time::Now() + base::Milliseconds(kReportTime))
+          .SetReportTime(fake_report_time)
           .Build();
 
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));

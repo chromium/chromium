@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -17,7 +18,6 @@
 
 namespace base {
 class GUID;
-class Time;
 }  // namespace base
 
 namespace url {
@@ -55,6 +55,17 @@ class AttributionStorage {
       base::TimeDelta min;
       base::TimeDelta max;
     };
+
+    struct FakeReport {
+      uint64_t trigger_data;
+      base::Time report_time;
+    };
+
+    // Corresponds to `StoredSource::AttributionLogic` as follows:
+    // `absl::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
+    // empty vector -> `StoredSource::AttributionLogic::kNever`
+    // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
+    using RandomizedResponse = absl::optional<std::vector<FakeReport>>;
 
     virtual ~Delegate() = default;
 
@@ -121,6 +132,9 @@ class AttributionStorage {
     // ordering on their conversion metadata bits.
     virtual void ShuffleReports(
         std::vector<AttributionReport>& reports) const = 0;
+
+    virtual RandomizedResponse GetRandomizedResponse(
+        const CommonSourceInfo& source) const = 0;
   };
 
   struct CONTENT_EXPORT DeactivatedSource {

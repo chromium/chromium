@@ -11,15 +11,6 @@
 
 namespace content {
 
-namespace {
-
-const CommonSourceInfo::SourceType kSourceTypes[] = {
-    CommonSourceInfo::SourceType::kNavigation,
-    CommonSourceInfo::SourceType::kEvent,
-};
-
-}  // namespace
-
 TEST(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
   AttributionPolicy policy;
 

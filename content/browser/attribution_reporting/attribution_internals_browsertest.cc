@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillByDefault(InvokeCallback<std::vector<StoredSource>>(
           {SourceBuilder(now)
                .SetSourceEventId(std::numeric_limits<uint64_t>::max())
-               .SetAttributionLogic(CommonSourceInfo::AttributionLogic::kNever)
+               .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
                .BuildStored(),
            SourceBuilder(now + base::Hours(1))
                .SetSourceType(CommonSourceInfo::SourceType::kEvent)
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                SourceBuilder(now)
                    .SetSourceType(CommonSourceInfo::SourceType::kEvent)
                    .SetAttributionLogic(
-                       CommonSourceInfo::AttributionLogic::kFalsely)
+                       StoredSource::AttributionLogic::kFalsely)
                    .BuildStored())
                .SetReportTime(now)
                .SetPriority(13)

@@ -41,6 +41,11 @@ class StorableTrigger;
 
 struct AggregatableAttribution;
 
+const CommonSourceInfo::SourceType kSourceTypes[] = {
+    CommonSourceInfo::SourceType::kNavigation,
+    CommonSourceInfo::SourceType::kEvent,
+};
+
 class MockAttributionReportingContentBrowserClient
     : public TestContentBrowserClient {
  public:
@@ -98,6 +103,8 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) const override;
+  RandomizedResponse GetRandomizedResponse(
+      const CommonSourceInfo& source) const override;
 
   void set_max_attributions_per_source(int max) {
     max_attributions_per_source_ = max;
@@ -136,6 +143,10 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
     reverse_reports_on_shuffle_ = reverse;
   }
 
+  void set_randomized_response(RandomizedResponse randomized_response) {
+    randomized_response_ = std::move(randomized_response);
+  }
+
  private:
   int max_attributions_per_source_ = INT_MAX;
   int max_sources_per_origin_ = INT_MAX;
@@ -157,6 +168,8 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   // If true, `ShuffleReports()` reverses the reports to allow testing the
   // proper call from `AttributionStorage::GetAttributionsToReport()`.
   bool reverse_reports_on_shuffle_ = false;
+
+  RandomizedResponse randomized_response_ = absl::nullopt;
 };
 
 // Test manager provider which can be used to inject a fake AttributionManager.
@@ -248,9 +261,7 @@ class SourceBuilder {
   SourceBuilder& SetPriority(int64_t priority);
 
   SourceBuilder& SetAttributionLogic(
-      CommonSourceInfo::AttributionLogic attribution_logic);
-
-  SourceBuilder& SetFakeTriggerData(absl::optional<uint64_t> fake_trigger_data);
+      StoredSource::AttributionLogic attribution_logic);
 
   SourceBuilder& SetSourceId(StoredSource::Id source_id);
 
@@ -260,9 +271,9 @@ class SourceBuilder {
 
   StoredSource BuildStored() const;
 
- private:
   CommonSourceInfo BuildCommonInfo() const;
 
+ private:
   uint64_t source_event_id_ = 123;
   base::Time impression_time_;
   base::TimeDelta expiry_;
@@ -272,9 +283,8 @@ class SourceBuilder {
   CommonSourceInfo::SourceType source_type_ =
       CommonSourceInfo::SourceType::kNavigation;
   int64_t priority_ = 0;
-  CommonSourceInfo::AttributionLogic attribution_logic_ =
-      CommonSourceInfo::AttributionLogic::kTruthfully;
-  absl::optional<uint64_t> fake_trigger_data_;
+  StoredSource::AttributionLogic attribution_logic_ =
+      StoredSource::AttributionLogic::kTruthfully;
   StoredSource::Id source_id_;
   std::vector<int64_t> dedup_keys_;
 };
@@ -349,6 +359,12 @@ class ReportBuilder {
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
 
+bool operator==(const AttributionStorage::Delegate::FakeReport& a,
+                const AttributionStorage::Delegate::FakeReport& b);
+
+bool operator<(const AttributionStorage::Delegate::FakeReport& a,
+               const AttributionStorage::Delegate::FakeReport& b);
+
 bool operator==(const StorableSource& a, const StorableSource& b);
 
 bool operator==(const StoredSource& a, const StoredSource& b);
@@ -386,6 +402,9 @@ std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion);
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionStorage::Delegate::FakeReport&);
+
 std::ostream& operator<<(std::ostream& out, const StorableSource& source);
 
 std::ostream& operator<<(std::ostream& out, const StoredSource& source);
@@ -411,7 +430,7 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status);
 std::ostream& operator<<(std::ostream& out, const SendResult& info);
 
 std::ostream& operator<<(std::ostream& out,
-                         CommonSourceInfo::AttributionLogic attribution_logic);
+                         StoredSource::AttributionLogic attribution_logic);
 
 std::ostream& operator<<(
     std::ostream& out,

@@ -19,6 +19,10 @@
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
 
+namespace base {
+class GUID;
+}  // namespace base
+
 namespace sql {
 class Database;
 class Statement;
@@ -174,7 +178,12 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool HasCapacityForUniqueDestinationLimitForPendingSource(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool StoreReport(const AttributionReport& report)
+  [[nodiscard]] bool StoreReport(StoredSource::Id source_id,
+                                 uint64_t trigger_data,
+                                 base::Time trigger_time,
+                                 base::Time report_time,
+                                 int64_t priority,
+                                 const base::GUID& external_report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is

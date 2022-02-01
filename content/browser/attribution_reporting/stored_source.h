@@ -20,7 +20,19 @@ class CONTENT_EXPORT StoredSource {
  public:
   using Id = base::StrongAlias<StoredSource, int64_t>;
 
-  StoredSource(CommonSourceInfo common_info, Id source_id);
+  enum class AttributionLogic {
+    // Never send a report for this source even if it gets attributed.
+    kNever = 0,
+    // Attribute the source truthfully.
+    kTruthfully = 1,
+    // The browser generates fake reports for the source.
+    kFalsely = 2,
+    kMaxValue = kFalsely,
+  };
+
+  StoredSource(CommonSourceInfo common_info,
+               AttributionLogic attribution_logic,
+               Id source_id);
 
   ~StoredSource();
 
@@ -32,6 +44,8 @@ class CONTENT_EXPORT StoredSource {
 
   const CommonSourceInfo& common_info() const { return common_info_; }
 
+  AttributionLogic attribution_logic() const { return attribution_logic_; }
+
   Id source_id() const { return source_id_; }
 
   const std::vector<int64_t>& dedup_keys() const { return dedup_keys_; }
@@ -42,6 +56,8 @@ class CONTENT_EXPORT StoredSource {
 
  private:
   CommonSourceInfo common_info_;
+
+  AttributionLogic attribution_logic_;
 
   Id source_id_;
 

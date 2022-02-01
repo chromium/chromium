@@ -159,8 +159,6 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::make_unique<AttributionStorageDelegateImpl>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kConversionsDebugMode)))),
-      attribution_policy_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kConversionsDebugMode)),
       special_storage_policy_(std::move(special_storage_policy)),
       network_sender_(std::move(network_sender)),
       weak_factory_(this) {

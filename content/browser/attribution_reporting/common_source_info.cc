@@ -16,8 +16,7 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
                                    base::Time impression_time,
                                    base::Time expiry_time,
                                    SourceType source_type,
-                                   int64_t priority,
-                                   AttributionLogic attribution_logic)
+                                   int64_t priority)
     : source_event_id_(source_event_id),
       impression_origin_(std::move(impression_origin)),
       conversion_origin_(std::move(conversion_origin)),
@@ -25,8 +24,7 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
       impression_time_(impression_time),
       expiry_time_(expiry_time),
       source_type_(source_type),
-      priority_(priority),
-      attribution_logic_(attribution_logic) {
+      priority_(priority) {
   // 30 days is the max allowed expiry for an impression.
   DCHECK_GE(base::Days(30), expiry_time - impression_time);
   // The impression must expire strictly after it occurred.

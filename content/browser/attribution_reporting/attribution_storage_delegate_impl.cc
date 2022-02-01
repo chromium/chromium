@@ -4,10 +4,14 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 
+#include <cstdlib>
+
+#include "base/check_op.h"
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
+#include "content/browser/attribution_reporting/combinatorics.h"
 
 namespace content {
 
@@ -110,6 +114,89 @@ void AttributionStorageDelegateImpl::ShuffleReports(
     std::vector<AttributionReport>& reports) const {
   if (!debug_mode_)
     base::RandomShuffle(reports.begin(), reports.end());
+}
+
+AttributionStorage::Delegate::RandomizedResponse
+AttributionStorageDelegateImpl::GetRandomizedResponse(
+    const CommonSourceInfo& source) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (debug_mode_)
+    return absl::nullopt;
+
+  double randomized_response_probability;
+
+  // TODO(apaseltiner): Pick non-zero probabilities.
+  switch (source.source_type()) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      randomized_response_probability = 0;
+      break;
+    case CommonSourceInfo::SourceType::kEvent:
+      randomized_response_probability = 0;
+      break;
+  }
+
+  if (base::RandDouble() < randomized_response_probability)
+    return GetRandomFakeReports(source);
+
+  return absl::nullopt;
+}
+
+std::vector<AttributionStorage::Delegate::FakeReport>
+AttributionStorageDelegateImpl::GetRandomFakeReports(
+    const CommonSourceInfo& source) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const int num_combinations = GetNumberOfStarsAndBarsSequences(
+      /*num_stars=*/GetMaxAttributionsPerSource(source.source_type()),
+      /*num_bars=*/TriggerDataCardinality(source.source_type()) *
+          NumReportWindows(source.source_type()));
+
+  // Subtract 1 because `base::RandInt()` is inclusive.
+  const int sequence_index = base::RandInt(0, num_combinations - 1);
+
+  return GetFakeReportsForSequenceIndex(source, sequence_index);
+}
+
+std::vector<AttributionStorage::Delegate::FakeReport>
+AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
+    const CommonSourceInfo& source,
+    int random_stars_and_bars_sequence_index) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const int trigger_data_cardinality =
+      TriggerDataCardinality(source.source_type());
+
+  const std::vector<int> bars_preceding_each_star =
+      GetBarsPrecedingEachStar(GetStarIndices(
+          /*num_stars=*/GetMaxAttributionsPerSource(source.source_type()),
+          /*num_bars=*/trigger_data_cardinality *
+              NumReportWindows(source.source_type()),
+          /*sequence_index=*/random_stars_and_bars_sequence_index));
+
+  std::vector<FakeReport> fake_reports;
+
+  // an output state is uniquely determined by an ordering of c stars and w*d
+  // bars, where:
+  // w = the number of reporting windows
+  // c = the maximum number of reports for a source
+  // d = the trigger data cardinality for a source
+  for (int num_bars : bars_preceding_each_star) {
+    if (num_bars == 0)
+      continue;
+
+    auto result = std::div(num_bars - 1, trigger_data_cardinality);
+
+    const int trigger_data = result.rem;
+    DCHECK_GE(trigger_data, 0);
+    DCHECK_LT(trigger_data, trigger_data_cardinality);
+
+    fake_reports.push_back({
+        .trigger_data = static_cast<uint64_t>(trigger_data),
+        .report_time = ReportTimeAtWindow(source, /*window_index=*/result.quot),
+    });
+  }
+  return fake_reports;
 }
 
 }  // namespace content
