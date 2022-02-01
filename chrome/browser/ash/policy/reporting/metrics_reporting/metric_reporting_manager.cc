@@ -74,7 +74,7 @@ base::TimeDelta GetDefaulEventCheckingRate(base::TimeDelta default_rate) {
 
 // static
 const base::Feature MetricReportingManager::kEnableNetworkTelemetryReporting{
-    "EnableNetworkTelemetryReporting", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableNetworkTelemetryReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) {
   const user_manager::User* const user =
