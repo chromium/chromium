@@ -29,7 +29,7 @@ namespace viz {
 // sent from the browser process.
 //
 // For more information on the feature, please see the explainer:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
     : public gfx::mojom::DelegatedInkPointRenderer {
  public:

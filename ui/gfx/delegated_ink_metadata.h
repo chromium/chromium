@@ -20,7 +20,7 @@ namespace gfx {
 // end of what was already rendered.
 //
 // Explainer for the feature:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class GFX_EXPORT DelegatedInkMetadata {
  public:
   DelegatedInkMetadata() = default;

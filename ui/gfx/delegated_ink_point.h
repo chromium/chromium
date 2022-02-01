@@ -29,7 +29,7 @@ class DelegatedInkPointDataView;
 // the screen, connected to the end of the already rendered ink stroke.
 //
 // Explainer for the feature:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class GFX_EXPORT DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
