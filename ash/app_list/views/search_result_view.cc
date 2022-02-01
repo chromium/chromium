@@ -365,25 +365,55 @@ void SearchResultView::StyleLabel(views::Label* label,
                                   const SearchResult::Tags& tags) {
   // Reset font weight styling for label.
   label->ApplyBaselineTextStyle();
-  // Apply font weight styles.
-  bool is_url = false;
+  auto color_tag = SearchResult::Tag::NONE;
   for (const auto& tag : tags) {
-    bool has_url_tag = (tag.styles & SearchResult::Tag::URL);
+    // Each label only supports one type of color tag. `color_tag` should only
+    // be set once.
+    if (tag.styles & SearchResult::Tag::URL) {
+      DCHECK(color_tag == SearchResult::Tag::NONE ||
+             color_tag == SearchResult::Tag::URL);
+      color_tag = SearchResult::Tag::URL;
+    }
+    if (tag.styles & SearchResult::Tag::GREEN) {
+      DCHECK(color_tag == SearchResult::Tag::NONE ||
+             color_tag == SearchResult::Tag::GREEN);
+      color_tag = SearchResult::Tag::GREEN;
+    }
+    if (tag.styles & SearchResult::Tag::RED) {
+      DCHECK(color_tag == SearchResult::Tag::NONE ||
+             color_tag == SearchResult::Tag::RED);
+      color_tag = SearchResult::Tag::RED;
+    }
+
     bool has_match_tag = (tag.styles & SearchResult::Tag::MATCH);
-    is_url = has_url_tag || is_url;
     if (has_match_tag) {
       label->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
     }
   }
-  // Apply font color styles.
-  label->SetEnabledColor(
-      is_url
-          ? AppListColorProvider::Get()->GetTextColorURL()
-          : is_title_label
-                ? AppListColorProvider::Get()->GetSearchBoxTextColor(
-                      kDeprecatedSearchBoxTextDefaultColor)
-                : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                      kDeprecatedSearchBoxTextDefaultColor));
+
+  switch (color_tag) {
+    case SearchResult::Tag::NONE:
+    case SearchResult::Tag::DIM:
+    case SearchResult::Tag::MATCH:
+      label->SetEnabledColor(
+          is_title_label
+              ? AppListColorProvider::Get()->GetSearchBoxTextColor(
+                    kDeprecatedSearchBoxTextDefaultColor)
+              : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+                    kDeprecatedSearchBoxTextDefaultColor));
+      break;
+    case SearchResult::Tag::URL:
+      label->SetEnabledColor(AppListColorProvider::Get()->GetTextColorURL());
+      break;
+    case SearchResult::Tag::GREEN:
+      label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPositive));
+      break;
+    case SearchResult::Tag::RED:
+      label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorAlert));
+      break;
+  }
 }
 
 void SearchResultView::StyleTitleLabel() {
