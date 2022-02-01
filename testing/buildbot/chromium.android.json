@@ -11765,6 +11765,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
           "--timeout-scale=2.0"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",

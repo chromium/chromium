@@ -931,6 +931,10 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
+        # TODO(https://crbug.com/1285975) Remove experiment and enable on
+        # trybot once the device offline issue is resolved.
+        'ci_only': True,
+        'experiment_percentage': 100,
       },
       'android-12-x64-fyi-rel': {
         'args': [
