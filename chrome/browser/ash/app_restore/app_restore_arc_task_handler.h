@@ -18,6 +18,7 @@ class Profile;
 namespace ash {
 namespace full_restore {
 class ArcWindowHandler;
+class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }  // namespace full_restore
 
 namespace app_restore {
@@ -78,9 +79,11 @@ class AppRestoreArcTaskHandler : public KeyedService,
   // Invoked when ChromeShelfController is created.
   void OnShelfReady();
 
- private:
   // KeyedService:
   void Shutdown() override;
+
+ private:
+  friend class ash::full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};

@@ -117,6 +117,7 @@ void AppRestoreArcTaskHandler::OnAppConnectionClosed() {
 
 void AppRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {
   arc_prefs_observer_.Reset();
+  Shutdown();
 }
 
 void AppRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
@@ -139,6 +140,10 @@ void AppRestoreArcTaskHandler::Shutdown() {
   for (auto& handler : arc_app_launcher_handers_) {
     handler.reset();
   }
+  desks_templates_arc_app_launch_handler_observer_ = nullptr;
+  full_restore_arc_app_launch_handler_observer_ = nullptr;
+  window_predictor_arc_app_launch_handler_observer_ = nullptr;
+
   window_handler_.reset();
 }
 
