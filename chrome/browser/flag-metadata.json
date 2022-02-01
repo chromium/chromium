@@ -4051,11 +4051,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "nearby-keep-alive-fix",
-    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "nearby-sharing-arc",
     "owners": [ "phshah", "alanding", "cros-sharesheet@google.com", "arc-app-dev@google.com" ],
     "expiry_milestone": 99
