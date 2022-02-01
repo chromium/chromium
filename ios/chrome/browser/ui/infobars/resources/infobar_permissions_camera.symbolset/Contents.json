@@ -1,0 +1,12 @@
+{
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "symbols" : [
+    {
+      "filename" : "infobar_permissions_camera.svg",
+      "idiom" : "universal"
+    }
+  ]
+}
