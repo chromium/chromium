@@ -230,6 +230,7 @@ const char* kBlocklistExtensions[] = {
     "GL_NV_bindless_texture",
     "GL_NV_texture_barrier",
     "GL_OES_sample_shading",
+    "GL_EXT_draw_instanced",
 };
 
 }  // anonymous namespace
