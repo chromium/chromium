@@ -79,6 +79,15 @@ class MobileFriendlinessCheckerTest : public testing::Test {
     helper->Resize(gfx::Size(kDeviceWidth, kDeviceHeight));
     helper->GetWebView()->GetPage()->SetDefaultPageScaleLimits(kMinimumZoom,
                                                                kMaximumZoom);
+    // Model Chrome text auto-sizing more accurately.
+    helper->GetWebView()->GetPage()->GetSettings().SetTextAutosizingEnabled(
+        true);
+    helper->GetWebView()
+        ->GetPage()
+        ->GetSettings()
+        .SetShrinksViewportContentToFit(true);
+    helper->GetWebView()->GetPage()->GetSettings().SetViewportStyle(
+        mojom::blink::ViewportStyle::kMobile);
     return helper;
   }
 
@@ -551,6 +560,46 @@ TEST_F(MobileFriendlinessCheckerTest,
                                     /*device_scale=*/2.0);
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
   EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 100);
+}
+
+// This test shows that text will grow with text-size-adjust: auto in a
+// fixed-width table.
+TEST_F(MobileFriendlinessCheckerTest, FixedWidthTableTextSizeAdjustAuto) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body>
+    <table width="800">
+      <tr><td style="font-size: 12px; text-size-adjust: auto">
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+      </td></tr>
+    </table>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.small_text_ratio, 0);
+}
+
+// This test shows that text remains small with text-size-adjust: none in a
+// fixed-width table.
+TEST_F(MobileFriendlinessCheckerTest, FixedWidthTableTextSizeAdjustNone) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body>
+    <table width="800">
+      <tr><td style="font-size: 12px; text-size-adjust: none">
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+      </td></tr>
+    </table>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, TextNarrow) {
