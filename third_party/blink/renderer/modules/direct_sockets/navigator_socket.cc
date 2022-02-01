@@ -36,6 +36,30 @@ namespace {
 constexpr char kPermissionDeniedHistogramName[] =
     "DirectSockets.PermissionDeniedFailures";
 
+bool CheckKeepAliveOptionsValidity(const TCPSocketOptions* options,
+                                   ExceptionState& exception_state) {
+  if (options->hasKeepAlive() && options->keepAlive()) {
+    if (!options->hasKeepAliveDelay()) {
+      exception_state.ThrowTypeError(
+          "keepAliveDelay must be set when keepAlive = true.");
+      return false;
+    }
+    if (base::Milliseconds(options->keepAliveDelay()) < base::Seconds(1)) {
+      exception_state.ThrowTypeError(
+          "keepAliveDelay must be no less than one second.");
+      return false;
+    }
+  } else {
+    if (options->hasKeepAliveDelay()) {
+      exception_state.ThrowTypeError(
+          "keepAliveDelay must not be set when keepAlive = "
+          "false or missing.");
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 const char NavigatorSocket::kSupplementName[] = "NavigatorSocket";
@@ -145,6 +169,9 @@ mojom::blink::DirectSocketOptionsPtr NavigatorSocket::CreateSocketOptions(
       if (tcp_options->hasNoDelay()) {
         socket_options->no_delay = tcp_options->noDelay();
       }
+      if (!CheckKeepAliveOptionsValidity(tcp_options, exception_state)) {
+        return {};
+      }
       if (tcp_options->hasKeepAlive()) {
         socket_options->keep_alive_options =
             network::mojom::blink::TCPKeepAliveOptions::New(
@@ -164,8 +191,8 @@ mojom::blink::DirectSocketOptionsPtr NavigatorSocket::CreateSocketOptions(
       }
       if (has_full_remote_address && has_full_local_address) {
         exception_state.ThrowTypeError(
-            "Both remote address and local address specified -- please choose "
-            "only one.");
+            "Both remote address and local address specified -- please "
+            "choose only one.");
         return {};
       }
     }

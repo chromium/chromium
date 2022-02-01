@@ -516,6 +516,48 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_KeepAliveOptionsDelayMissingOnKeepAliveTrue) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script =
+      "openTcp({remoteAddress: '127.0.0.1', remotePort: 228, keepAlive: true})";
+
+  const std::string expected_result =
+      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
+      "'Navigator': keepAliveDelay must be set when keepAlive = true.";
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_KeepAliveOptionsDelayLessThanASecond) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script =
+      "openTcp({remoteAddress: '127.0.0.1', remotePort: 228, keepAlive: true, "
+      "keepAliveDelay: 950})";
+
+  const std::string expected_result =
+      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
+      "'Navigator': keepAliveDelay must be no less than one second.";
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_KeepAliveOptionsDelaySetOnKeepAliveFalse) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script =
+      "openTcp({remoteAddress: '127.0.0.1', remotePort: 228, keepAlive: false, "
+      "keepAliveDelay: 10_000})";
+
+  const std::string expected_result =
+      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
+      "'Navigator': keepAliveDelay must not be set when keepAlive = false or "
+      "missing.";
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
                        OpenTcp_RestrictedByEnterprisePolicies) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
