@@ -161,7 +161,7 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
 bool operator==(const CredentialWithPassword& lhs,
                 const CredentialWithPassword& rhs) {
   return lhs.signon_realm == rhs.signon_realm && lhs.username == rhs.username &&
-         lhs.create_time == rhs.create_time &&
+         lhs.create_time == rhs.create_time && lhs.is_muted == rhs.is_muted &&
          lhs.insecure_type == rhs.insecure_type && lhs.password == rhs.password;
 }
 
@@ -170,7 +170,7 @@ std::ostream& operator<<(std::ostream& out,
   return out << "{ signon_realm: " << credential.signon_realm
              << ", username: " << credential.username
              << ", create_time: " << credential.create_time
-             << ", insecure_type: "
+             << ", is_muted: " << credential.is_muted << ", insecure_type: "
              << static_cast<int>(credential.insecure_type)
              << ", password: " << credential.password << " }";
 }
@@ -763,7 +763,7 @@ TEST_F(InsecureCredentialsManagerTest,
       password,
       InsecureCredentialTypeFlags::kCredentialLeaked |
           InsecureCredentialTypeFlags::kCredentialPhished,
-      true);
+      false);
 
   EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
 
