@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 
+#include <cmath>
+
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -29,7 +31,7 @@
 
 namespace blink {
 
-static constexpr int kSmallFontThreshold = 9;
+static constexpr int kSmallFontThresholdInDips = 9;
 static constexpr int kTimeBudgetExceeded = -2;
 
 // Values of maximum-scale smaller than this threshold will be considered to
@@ -506,7 +508,7 @@ void MobileFriendlinessChecker::NotifyInvalidatePaint(
     double actual_font_size =
         style.FontSize() * initial_scale / viewport_scalar;
     double area = text->PhysicalAreaSize();
-    if (actual_font_size < kSmallFontThreshold)
+    if (std::round(actual_font_size) < kSmallFontThresholdInDips)
       text_area_sizes_.small_font_area += area;
 
     text_area_sizes_.total_text_area += area;
