@@ -1233,8 +1233,8 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
   // TODO(crbug.com/929111): This should be factored out into a separate class
   // that dispatches deletions to the proper places.
   if (web_history) {
-    delete_directive_handler_->CreateDeleteDirectives(std::set<int64_t>(),
-                                                      begin_time, end_time);
+    delete_directive_handler_->CreateTimeRangeDeleteDirective(begin_time,
+                                                              end_time);
 
     // Attempt online deletion from the history server, but ignore the result.
     // Deletion directives ensure that the results will eventually be deleted.
