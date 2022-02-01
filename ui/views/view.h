@@ -621,6 +621,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Transformations -----------------------------------------------------------
 
   // Methods for setting transformations for a view (e.g. rotation, scaling).
+  // Care should be taken not to transform a view in such a way that its bounds
+  // lie outside those of its parent, or else the default ViewTargeterDelegate
+  // implementation will not pass mouse events to the view.
 
   gfx::Transform GetTransform() const;
 
