@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/auth_factor_model.h"
 #include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_user_view.h"
@@ -103,8 +104,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     views::Button* challenge_response_button();
     views::Label* challenge_response_label();
     LoginAuthFactorsView* auth_factors_view() const;
+    AuthFactorModel* fingerprint_auth_factor_model() const;
     bool HasAuthMethod(AuthMethods auth_method) const;
     const std::u16string& GetDisabledAuthMessageContent() const;
+    void SetFingerprintState(FingerprintState state) const;
 
    private:
     LoginAuthUserView* const view_;

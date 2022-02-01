@@ -16,7 +16,7 @@ class AuthIconView;
 // lock screen.
 class FingerprintAuthFactorModel : public AuthFactorModel {
  public:
-  FingerprintAuthFactorModel();
+  explicit FingerprintAuthFactorModel(FingerprintState state);
   FingerprintAuthFactorModel(FingerprintAuthFactorModel&) = delete;
   FingerprintAuthFactorModel& operator=(FingerprintAuthFactorModel&) = delete;
   ~FingerprintAuthFactorModel() override;
@@ -40,9 +40,11 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
   void DoHandleErrorTimeout() override;
   void UpdateIcon(AuthIconView* icon) override;
 
-  FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
+  FingerprintState state_;
   absl::optional<bool> auth_result_;
 
+  // TODO(b/216691052): Change the name of this to be more clear that this is
+  // an override on top of |state_|.
   bool available_ = true;
 };
 

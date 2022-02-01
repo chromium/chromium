@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/login/mock_login_screen_client.h"
+#include "ash/login/ui/auth_factor_model.h"
+#include "ash/login/ui/fingerprint_auth_factor_model.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_pin_input_view.h"
 #include "ash/login/ui/login_pin_view.h"
@@ -79,24 +81,7 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
   void SetUp() override {
     LoginTestBase::SetUp();
     SetUpFeatures();
-    user_ = CreateUser("user@domain.com");
-
-    LoginAuthUserView::Callbacks auth_callbacks;
-    auth_callbacks.on_auth = base::DoNothing();
-    auth_callbacks.on_easy_unlock_icon_hovered = base::DoNothing();
-    auth_callbacks.on_easy_unlock_icon_tapped =
-        views::Button::PressedCallback();
-    auth_callbacks.on_tap = base::DoNothing();
-    auth_callbacks.on_remove_warning_shown = base::DoNothing();
-    auth_callbacks.on_remove = base::DoNothing();
-    view_ = new LoginAuthUserView(user_, auth_callbacks);
-
-    // We proxy |view_| inside of |container_| so we can control layout.
-    container_ = new views::View();
-    container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(view_);
-    SetWidget(CreateWidgetWithContent(container_));
+    InitializeViewForUser(CreateUser("user@domain.com"));
   }
 
   void SetUpFeatures() {
@@ -140,6 +125,26 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
     EXPECT_EQ(test.password_view()->GetVisible(), visibility.password);
     EXPECT_EQ(test.pin_input_view()->GetVisible(), visibility.pin_input);
     EXPECT_EQ(test.pin_password_toggle()->GetVisible(), visibility.toggle);
+  }
+
+  void InitializeViewForUser(LoginUserInfo user) {
+    user_ = user;
+    LoginAuthUserView::Callbacks auth_callbacks;
+    auth_callbacks.on_auth = base::DoNothing();
+    auth_callbacks.on_easy_unlock_icon_hovered = base::DoNothing();
+    auth_callbacks.on_easy_unlock_icon_tapped =
+        views::Button::PressedCallback();
+    auth_callbacks.on_tap = base::DoNothing();
+    auth_callbacks.on_remove_warning_shown = base::DoNothing();
+    auth_callbacks.on_remove = base::DoNothing();
+    view_ = new LoginAuthUserView(user_, auth_callbacks);
+
+    // We proxy |view_| inside of |container_| so we can control layout.
+    container_ = new views::View();
+    container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+    container_->AddChildView(view_);
+    SetWidget(CreateWidgetWithContent(container_));
   }
 
   // Initialized by test parameter in `SetUpFeatures`
@@ -520,5 +525,52 @@ INSTANTIATE_TEST_SUITE_P(LoginAuthUserViewTests,
                          LoginAuthUserViewUnittest,
                          testing::Bool(),  // PIN autosubmit feature
                          LoginAuthUserViewUnittest::ParamInfoToString);
+
+/**
+ * This subclass is a test fixture for tests validating logic with auth factors
+ * with the kSmartLockUIRevamp feature flag enabled. The test requires passing
+ * a custom user object per test to initialize the view to test.
+ */
+class LoginAuthUserViewAuthFactorsUnittest : public LoginAuthUserViewUnittest {
+ public:
+  LoginAuthUserViewAuthFactorsUnittest(
+      const LoginAuthUserViewAuthFactorsUnittest&) = delete;
+  LoginAuthUserViewAuthFactorsUnittest& operator=(
+      const LoginAuthUserViewAuthFactorsUnittest&) = delete;
+
+ protected:
+  LoginAuthUserViewAuthFactorsUnittest() = default;
+  ~LoginAuthUserViewAuthFactorsUnittest() override = default;
+
+  void SetUp() override {
+    LoginTestBase::SetUp();
+    feature_list_.InitWithFeatures({chromeos::features::kSmartLockUIRevamp},
+                                   {});
+  }
+};
+
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, ShowFingerprintIfAvailable) {
+  auto user = CreateUser("user@domain.com");
+  user.fingerprint_state = FingerprintState::AVAILABLE_DEFAULT;
+  InitializeViewForUser(user);
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  LoginAuthUserView::TestApi auth_test(view_);
+  AuthFactorModel* fingerprint_auth_factor =
+      auth_test.fingerprint_auth_factor_model();
+  EXPECT_EQ(fingerprint_auth_factor->GetAuthFactorState(),
+            AuthFactorModel::AuthFactorState::kReady);
+}
+
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, NotShowFingerprintIfUnavaialble) {
+  auto user = CreateUser("user@domain.com");
+  user.fingerprint_state = FingerprintState::UNAVAILABLE;
+  InitializeViewForUser(user);
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  LoginAuthUserView::TestApi auth_test(view_);
+  AuthFactorModel* fingerprint_auth_factor =
+      auth_test.fingerprint_auth_factor_model();
+  EXPECT_EQ(fingerprint_auth_factor->GetAuthFactorState(),
+            AuthFactorModel::AuthFactorState::kUnavailable);
+}
 
 }  // namespace ash

@@ -1017,8 +1017,18 @@ LoginAuthFactorsView* LoginAuthUserView::TestApi::auth_factors_view() const {
   return view_->auth_factors_view_;
 }
 
+AuthFactorModel* LoginAuthUserView::TestApi::fingerprint_auth_factor_model()
+    const {
+  return view_->fingerprint_auth_factor_model_;
+}
+
 bool LoginAuthUserView::TestApi::HasAuthMethod(AuthMethods auth_method) const {
   return view_->HasAuthMethod(auth_method);
+}
+
+void LoginAuthUserView::TestApi::SetFingerprintState(
+    FingerprintState state) const {
+  return view_->SetFingerprintState(state);
 }
 
 const std::u16string&
@@ -1133,7 +1143,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   std::unique_ptr<LoginAuthFactorsView> auth_factors_view;
   if (smart_lock_ui_revamp_enabled_) {
     auto fingerprint_auth_factor_model =
-        std::make_unique<FingerprintAuthFactorModel>();
+        std::make_unique<FingerprintAuthFactorModel>(user.fingerprint_state);
     fingerprint_auth_factor_model_ = fingerprint_auth_factor_model.get();
     auto smart_lock_auth_factor_model =
         std::make_unique<SmartLockAuthFactorModel>(base::BindRepeating(

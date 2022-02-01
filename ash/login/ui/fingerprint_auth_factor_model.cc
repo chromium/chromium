@@ -23,7 +23,8 @@ constexpr int kFingerprintFailedAnimationNumFrames = 45;
 
 }  // namespace
 
-FingerprintAuthFactorModel::FingerprintAuthFactorModel() = default;
+FingerprintAuthFactorModel::FingerprintAuthFactorModel(FingerprintState state)
+    : state_(state) {}
 
 FingerprintAuthFactorModel::~FingerprintAuthFactorModel() = default;
 
