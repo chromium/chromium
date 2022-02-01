@@ -182,7 +182,7 @@ void UDPWritableStreamWrapper::OnSend(int32_t result) {
   }
 }
 
-void UDPWritableStreamWrapper::Close() {
+void UDPWritableStreamWrapper::Dispose() {
   if (send_resolver_) {
     send_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "Failed to send data."));

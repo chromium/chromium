@@ -28,7 +28,7 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
     : public GarbageCollected<UDPWritableStreamWrapper>,
       public ActiveScriptWrappable<UDPWritableStreamWrapper>,
       public ExecutionContextClient {
-  USING_PRE_FINALIZER(UDPWritableStreamWrapper, Close);
+  USING_PRE_FINALIZER(UDPWritableStreamWrapper, Dispose);
 
  public:
   UDPWritableStreamWrapper(ScriptState* script_state,
@@ -42,7 +42,7 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
   void Trace(Visitor*) const override;
 
   // Called before destruction of the StreamWrapper.
-  void Close();
+  void Dispose();
 
  private:
   class UnderlyingSink;
