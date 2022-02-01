@@ -52,6 +52,18 @@
       #attributePromptMessage {
         color: black;
       }
+
+      #enterpriseExplanation {
+        margin-top: 8px;
+      }
+      #enterpriseIcon {
+        flex-shrink: 0;
+        margin-inline-end: 8px;
+      }
+      #enterpriseIconText {
+        line-height: 24px;
+        vertical-align: middle;
+      }
     </style>
     <!-- OAUTH GAIA DIALOG -->
     <gaia-dialog id="step-signin" class="flex" for-step="signin"
@@ -165,6 +177,13 @@
       <div slot="subtitle" class="self-start" hidden="[[isMeet_]]">
         <div hidden="[[isEmpty_(domainManager_)]]">
           [[successText_(locale, deviceName_, domainManager_)]]
+        </div>
+        <div id="enterpriseExplanation" class="flex layout horizontal">
+          <iron-icon id="enterpriseIcon" icon="oobe-24:domain"></iron-icon>
+          <div id="enterpriseIconText">
+            [[i18nDynamic(locale,
+                          'oauthEnrollSuccessEnterpriseIconExplanation')]]
+          </div>
         </div>
       </div>
       <div slot="content" class="flex layout vertical center center-justified">

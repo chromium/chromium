@@ -2892,6 +2892,9 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_TITLE" desc="Title of the screen to be shown once enterprise enrollment completes.">
     Enterprise enrollment complete
   </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_ENTERPRISE_ICON_EXPLANATION" desc="Title of the screen to be shown once enterprise enrollment completes.">
+    You will see this Managed icon when a setting or feature is managed by your administrator.
+  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS" desc="Success message to be shown once enterprise enrollment completes.">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has successfully been enrolled for enterprise management.
   </message>
