@@ -851,10 +851,10 @@ void UiController::SetCreditCard(
       CREDIT_CARD_EVENT, event_type);
   DCHECK(!collect_user_data_options_->billing_address_name.empty());
   GetUserModel()->SetSelectedCreditCard(std::move(card), GetUserData());
-  execution_delegate_->NotifyUserDataChange(UserData::FieldChange::CARD);
   SetProfile(collect_user_data_options_->billing_address_name,
              UserData::FieldChange::BILLING_ADDRESS,
              std::move(billing_profile));
+  execution_delegate_->NotifyUserDataChange(UserData::FieldChange::CARD);
 }
 
 void UiController::SetProfile(
