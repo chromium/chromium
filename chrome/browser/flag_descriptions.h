@@ -448,6 +448,9 @@ extern const char kEnablePreconnectToSearchDescription[];
 extern const char kEnableRawDrawName[];
 extern const char kEnableRawDrawDescription[];
 
+extern const char kEnableDelegatedCompositingName[];
+extern const char kEnableDelegatedCompositingDescription[];
+
 extern const char kEnableRemovingAllThirdPartyCookiesName[];
 extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
 

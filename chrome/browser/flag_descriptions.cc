@@ -759,6 +759,10 @@ const char kEnableRawDrawName[] = "Enable raw draw";
 const char kEnableRawDrawDescription[] =
     "When enabled, web content will be rastered on output surface directly.";
 
+const char kEnableDelegatedCompositingName[] = "Enable delegated compositing";
+const char kEnableDelegatedCompositingDescription[] =
+    "When enabled and applicable, the act of compositing is delegated to Ash.";
+
 const char kEnableRemovingAllThirdPartyCookiesName[] =
     "Enable removing SameSite=None cookies";
 const char kEnableRemovingAllThirdPartyCookiesDescription[] =
