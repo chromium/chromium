@@ -847,6 +847,10 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
+  // Wait for the response to settle.
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "processShowResponse();"));
+
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::SPEC_DONE_UPDATING,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
@@ -898,6 +902,10 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
+  // Wait for the response to settle.
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "processShowResponse();"));
+
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::SPEC_DONE_UPDATING,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
@@ -945,6 +953,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(IsPayButtonEnabled());
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // Wait for the response to settle.
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "processShowResponse();"));
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::SPEC_DONE_UPDATING,

@@ -138,6 +138,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestRetryBasicCardDisabledTest,
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
+  // Wait for the response to settle.
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "processShowResponse();"));
+
   // Confirm that only one payment app is available for retry().
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::SPEC_DONE_UPDATING,

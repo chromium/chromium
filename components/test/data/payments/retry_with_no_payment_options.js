@@ -4,30 +4,43 @@
  * found in the LICENSE file.
  */
 
+var gShowPromise = null;
 var gPaymentResponse = null;
-var gValidationErrors = null;
 
 /**
  * Launches the PaymentRequest UI
+ *
+ * Legacy entry-point for basic-card tests; to be removed.
  */
 function buy() { // eslint-disable-line no-unused-vars
-  buyWithMethods([{supportedMethods: 'basic-card'}]);
+  var options = {};
+  getPaymentResponse(options)
+      .then(function(response) {
+        gPaymentResponse = response;
+      });
 }
 
 /**
- * Launches the PaymentRequest UI
+ * Launches the PaymentRequest UI. The promise from show() is saved into
+ * gShowPromise; call processShowResponse after you are done interacting with
+ * the UI.
+ *
  * @param {sequence<PaymentMethodData>} methodData An array of payment method
  *        objects.
  */
-function buyWithMethods(methodData) {
+function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
   var options = {};
-  getPaymentResponseWithMethod(options, methodData).then(function(response) {
-    if (gValidationErrors != null) {
-      // retry() has been called before PaymentResponse promise resolved.
-      response.retry(gValidationErrors);
-    }
-    gPaymentResponse = response;
-  });
+  gShowPromise = getPaymentResponseWithMethod(options, methodData);
+}
+
+/**
+ * Waits for the outstanding gShowPromise to resolve, and then saves the
+ * response as gPaymentResponse and sets the response as the HTML body text for
+ * test consumption.
+ */
+async function processShowResponse() { // eslint-disable-line no-unused-vars
+  gPaymentResponse = await gShowPromise;
+  print(JSON.stringify(gPaymentResponse, undefined, 2));
 }
 
 /**
@@ -37,8 +50,6 @@ function buyWithMethods(methodData) {
  */
 function retry(validationErrors) { // eslint-disable-line no-unused-vars
   if (gPaymentResponse == null) {
-    // retry() has been called before PaymentResponse promise resolved.
-    gValidationErrors = validationErrors;
     return;
   }
 

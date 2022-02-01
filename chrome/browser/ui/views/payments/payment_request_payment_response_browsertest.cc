@@ -317,6 +317,63 @@ IN_PROC_BROWSER_TEST_F(
                       "\"payerPhone\": \"+16502111111\""});
 }
 
+// Tests that the PaymentResponse contains all the correct contact details
+// when user changes the selected contact information after retry() called once.
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestPaymentResponseAllContactDetailsBasicCardDisabledTest,
+    RetryWithPayerErrors_HasSameValueButDifferentErrorsShown) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_retry_with_payer_errors.html");
+
+  autofill::AutofillProfile contact = autofill::test::GetFullProfile();
+  contact.set_use_count(1000);
+  AddAutofillProfile(contact);
+
+  autofill::AutofillProfile contact2 = autofill::test::GetFullProfile2();
+  AddAutofillProfile(contact2);
+
+  // Show a Payment Request.
+  InvokePaymentRequestUIWithJs(
+      content::JsReplace("buyWithMethods([{supportedMethods:$1}"
+                         ", {supportedMethods:$2}]);",
+                         a_method_name, b_method_name));
+
+  // Click on pay.
+  EXPECT_TRUE(IsPayButtonEnabled());
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "processShowResponse();"));
+  ExpectBodyContains({"\"payerName\": \"John H. Doe\"",
+                      "\"payerEmail\": \"johndoe@hades.com\"",
+                      "\"payerPhone\": \"+16502111111\""});
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::SPEC_DONE_UPDATING,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION});
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "retry({});"));
+
+  // Select "contact2" profile
+  OpenContactInfoScreen();
+  views::View* list_view = dialog_view()->GetViewByID(
+      static_cast<int>(DialogViewID::CONTACT_INFO_SHEET_LIST_VIEW));
+  DCHECK(list_view);
+  ClickOnDialogViewAndWait(list_view->children()[1]);
+
+  ExpectBodyContains({"\"payerName\": \"Jane A. Smith\"",
+                      "\"payerEmail\": \"jsmith@example.com\"",
+                      "\"payerPhone\": \"+13105557889\""});
+}
+
 class PaymentRequestPaymentResponseOneContactDetailTest
     : public PaymentRequestBrowserTestBase {
  public:
