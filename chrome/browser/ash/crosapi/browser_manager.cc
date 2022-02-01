@@ -147,19 +147,6 @@ constexpr char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
 constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
-// To be sure the lacros is running with neutral priority
-class ThreadPriorityDelegate : public base::LaunchOptions::PreExecDelegate {
- public:
-  void RunAsyncSafe() override {
-    // TODO(crbug.com/1289736): Currently, this is causing some deadlock issue.
-    // It looks like inside the function, we seem to call async unsafe API.
-    // For the mitigation, disabling this temporarily.
-    // We should revisit here, and see the impact of performance.
-    // base::PlatformThread::SetCurrentThreadPriority(
-    //   base::ThreadPriority::NORMAL);
-  }
-};
-
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
 }
