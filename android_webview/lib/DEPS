@@ -4,7 +4,6 @@ include_rules = [
   "+components/crash/core",
   "+components/safe_browsing/android",
   "+components/spellcheck/common",
-  "+components/translate/core/common",
   "+components/viz/common",
   "+content/public",
   "+device/base/features.h",
