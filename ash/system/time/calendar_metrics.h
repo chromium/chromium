@@ -10,7 +10,7 @@ class Event;
 }  // namespace ui
 
 namespace ash {
-
+namespace calendar_metrics {
 // The different hosts which hold components allowing a user to open the
 // calendar. These are used in histograms, do not remove/renumber entries. If
 // you're adding to this enum with the intention that it will be logged, update
@@ -27,6 +27,13 @@ enum class CalendarViewShowSource {
 void RecordCalendarShowMetrics(CalendarViewShowSource show_source,
                                const ui::Event& event);
 
+void RecordCalendarDateCellActivated(const ui::Event& event);
+
+void RecordMonthArrowButtonActivated(bool up, const ui::Event& event);
+
+void RecordEventListItemActivated(const ui::Event& event);
+
+}  // namespace calendar_metrics
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TIME_CALENDAR_METRICS_H_

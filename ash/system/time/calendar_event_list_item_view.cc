@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
@@ -160,6 +161,9 @@ void CalendarEventListItemView::OnThemeChanged() {
 
 bool CalendarEventListItemView::PerformAction(const ui::Event& event) {
   DCHECK(event_url_.is_empty() || event_url_.is_valid());
+
+  calendar_metrics::RecordEventListItemActivated(event);
+
   GURL finalized_url;
   bool opened_pwa = false;
   Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(

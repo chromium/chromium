@@ -505,17 +505,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Calendar.ShowSource.{ViewShowSource}"
-    enum="CalendarViewShowMethod" expires_after="2022-11-10">
+    enum="CalendarEventSource" expires_after="2022-11-10">
   <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
-    Recorded when the calendar view is shown from the {ViewShowSource} tap,
-    click, or key press.
+    Recorded when the calendar view is shown from the {ViewShowSource}.
   </summary>
   <token key="ViewShowSource">
     <variant name="Accelerator" summary="accelerator"/>
     <variant name="DateView" summary="date view in quick settings"/>
     <variant name="TimeView" summary="time view in the status area"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Calendar.{CalendarChildView}.Activated"
+    enum="CalendarEventSource" expires_after="2022-11-10">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>Recorded when the {CalendarChildView} is activated.</summary>
+  <token key="CalendarChildView">
+    <variant name="DateCell" summary="date cell"/>
+    <variant name="EventListItem" summary="event list item"/>
+    <variant name="MonthDownArrowButton" summary="month down arrow"/>
+    <variant name="MonthUpArrowButton" summary="month up arrow"/>
   </token>
 </histogram>
 

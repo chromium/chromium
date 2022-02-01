@@ -11,6 +11,10 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace ash {
 
 // Renders a Calendar date cell. Pass in `true` as `is_grayed_out_date` if
@@ -58,6 +62,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
  private:
   // For unit tests.
   friend class CalendarMonthViewTest;
+
+  // Callback called when this view is activated.
+  void OnDateCellActivated(const ui::Event& event);
 
   // Computes the position of the indicator that our day has events.
   gfx::Point GetEventsPresentIndicatorCenterPosition();

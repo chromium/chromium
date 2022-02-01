@@ -9,6 +9,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/time/calendar_event_list_view.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -270,13 +271,13 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   tri_view->AddView(TriView::Container::START, header_);
 
   down_button_ = new IconButton(
-      base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
-                          base::Unretained(this), /*is_scrolling_up=*/false),
+      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
+                          base::Unretained(this), /*up=*/false),
       IconButton::Type::kSmallFloating, &vector_icons::kCaretDownIcon,
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION);
   up_button_ = new IconButton(
-      base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
-                          base::Unretained(this), /*is_scrolling_up=*/true),
+      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
+                          base::Unretained(this), /*up=*/true),
       IconButton::Type::kSmallFloating, &vector_icons::kCaretUpIcon,
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION);
 
@@ -1211,6 +1212,12 @@ void CalendarView::OnContentsScrolled() {
                  next_month_->y() + next_month_->height() - kPrepareEndOfView) {
     ScrollDownOneMonth();
   }
+}
+
+void CalendarView::OnMonthArrowButtonActivated(bool up,
+                                               const ui::Event& event) {
+  calendar_metrics::RecordMonthArrowButtonActivated(up, event);
+  ScrollOneMonthWithAnimation(up);
 }
 
 void CalendarView::AdjustDateCellVoxBounds() {

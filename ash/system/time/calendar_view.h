@@ -19,6 +19,10 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
 
 class Label;
@@ -176,6 +180,10 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
 
   // ScrollView callback.
   void OnContentsScrolled();
+
+  // Callback passed to `up_button_` and `down_button_`, activated on button
+  // activation.
+  void OnMonthArrowButtonActivated(bool up, const ui::Event& event);
 
   // Adjusts the Chrome Vox box position for date cells in the scroll view.
   void AdjustDateCellVoxBounds();

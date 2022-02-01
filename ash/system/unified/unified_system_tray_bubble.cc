@@ -153,7 +153,7 @@ void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
 }
 
 void UnifiedSystemTrayBubble::ShowCalendarView(
-    CalendarViewShowSource show_source,
+    calendar_metrics::CalendarViewShowSource show_source,
     const ui::Event& event) {
   if (!bubble_widget_)
     return;

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/bind.h"
@@ -20,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -78,17 +80,11 @@ CalendarDateCellView::CalendarDateCellView(
     base::Time date,
     bool is_grayed_out_date,
     int row_index)
-    : views::LabelButton(
-          views::Button::PressedCallback(
-              is_grayed_out_date
-                  ? base::DoNothing()
-                  : base::BindRepeating(
-                        &CalendarViewController::ShowEventListView,
-                        base::Unretained(calendar_view_controller),
-                        date,
-                        row_index)),
-          base::TimeFormatWithPattern(date, "d"),
-          CONTEXT_CALENDAR_DATE),
+    : views::LabelButton(views::Button::PressedCallback(base::BindRepeating(
+                             &CalendarDateCellView::OnDateCellActivated,
+                             base::Unretained(this))),
+                         base::TimeFormatWithPattern(date, "d"),
+                         CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
       row_index_(row_index),
@@ -269,6 +265,14 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
 void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
   views::LabelButton::PaintButtonContents(canvas);
   MaybeDrawEventsIndicator(canvas);
+}
+
+void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
+  if (grayed_out_)
+    return;
+
+  calendar_metrics::RecordCalendarDateCellActivated(event);
+  calendar_view_controller_->ShowEventListView(date_, row_index_);
 }
 
 CalendarMonthView::CalendarMonthView(

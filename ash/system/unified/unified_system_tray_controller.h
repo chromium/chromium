@@ -115,7 +115,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Show the detailed view of media controls. Called from the view.
   void ShowMediaControlsDetailedView();
   // Show the detailed view of Calendar. Called from the view.
-  void ShowCalendarView(CalendarViewShowSource show_source,
+  void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
                         const ui::Event& event);
 
   // If you want to add a new detailed view, add here.

@@ -11,13 +11,15 @@
 
 namespace ash {
 
+namespace calendar_metrics {
+
 namespace {
 
-// The different ways in which a CalendarViewShowSource can be activated. These
-// are used in histograms, do not remove/renumber entries. If you're adding to
-// this enum with the intention that it will be logged, update the
-// CalendarViewShowMethod listing in enums.xml.
-enum class CalendarViewShowMethod {
+// The event types CalendarView is interested in. These are used in histograms,
+// do not remove/renumber entries. If you're adding to this enum with the
+// intention that it will be logged, update the CalendarEventSource listing in
+// enums.xml.
+enum class CalendarEventSource {
   kInvalid = 0,
   kTap = 1,
   kClick = 2,
@@ -27,6 +29,30 @@ enum class CalendarViewShowMethod {
 };
 
 constexpr char kCalendarViewShowSourcePrefix[] = "Ash.Calendar.ShowSource.";
+constexpr char kCalendarDateCellActivated[] = "Ash.Calendar.DateCell.Activated";
+constexpr char kCalendarEventListItemActivated[] =
+    "Ash.Calendar.EventListItem.Activated";
+constexpr char kCalendarMonthDownArrowButtonActivated[] =
+    "Ash.Calendar.MonthDownArrowButton.Activated";
+constexpr char kCalendarMonthUpArrowButtonActivated[] =
+    "Ash.Calendar.MonthUpArrowButton.Activated";
+
+CalendarEventSource GetEventType(const ui::Event& event) {
+  if (event.IsGestureEvent())
+    return CalendarEventSource::kTap;
+
+  if (event.IsMouseEvent())
+    return CalendarEventSource::kClick;
+
+  if (event.IsKeyEvent())
+    return CalendarEventSource::kKeyboard;
+
+  if (event.IsTouchEvent())
+    return CalendarEventSource::kStylus;
+
+  NOTREACHED();
+  return CalendarEventSource::kInvalid;
+}
 
 }  // namespace
 
@@ -46,22 +72,25 @@ void RecordCalendarShowMetrics(CalendarViewShowSource show_source,
       break;
   }
 
-  if (event.IsGestureEvent()) {
-    base::UmaHistogramEnumeration(histogram_name, CalendarViewShowMethod::kTap);
-  } else if (event.IsMouseEvent()) {
-    base::UmaHistogramEnumeration(histogram_name,
-                                  CalendarViewShowMethod::kClick);
-  } else if (event.IsKeyEvent()) {
-    base::UmaHistogramEnumeration(histogram_name,
-                                  CalendarViewShowMethod::kKeyboard);
-  } else if (event.IsTouchEvent()) {
-    base::UmaHistogramEnumeration(histogram_name,
-                                  CalendarViewShowMethod::kStylus);
-  } else {
-    base::UmaHistogramEnumeration(histogram_name,
-                                  CalendarViewShowMethod::kInvalid);
-    NOTREACHED();
-  }
+  base::UmaHistogramEnumeration(histogram_name, GetEventType(event));
 }
+
+void RecordCalendarDateCellActivated(const ui::Event& event) {
+  base::UmaHistogramEnumeration(kCalendarDateCellActivated,
+                                GetEventType(event));
+}
+
+void RecordMonthArrowButtonActivated(bool up, const ui::Event& event) {
+  base::UmaHistogramEnumeration(up ? kCalendarMonthUpArrowButtonActivated
+                                   : kCalendarMonthDownArrowButtonActivated,
+                                GetEventType(event));
+}
+
+void RecordEventListItemActivated(const ui::Event& event) {
+  base::UmaHistogramEnumeration(kCalendarEventListItemActivated,
+                                GetEventType(event));
+}
+
+}  // namespace calendar_metrics
 
 }  // namespace ash

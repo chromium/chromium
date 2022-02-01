@@ -79,7 +79,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   void ShowAudioDetailedView();
 
   // Show calendar view.
-  void ShowCalendarView(CalendarViewShowSource show_source,
+  void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
                         const ui::Event& event);
 
   // Show network settings detailed view.
