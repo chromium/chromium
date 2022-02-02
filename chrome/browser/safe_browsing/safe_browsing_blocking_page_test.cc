@@ -2613,6 +2613,28 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                                DelayedWarningEvent::kDownloadCancelled, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
+                       InteractionAfterNonCommittingNavigation_Interstitial) {
+  base::HistogramTester histograms;
+  NavigateAndAssertNoInterstitial();
+
+  const GURL url_204 = embedded_test_server()->GetURL("/page204.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_204));
+  AssertNoInterstitial(browser(), false);
+
+  EXPECT_TRUE(TypeAndWaitForInterstitial(browser()));
+
+  // Navigate away to "flush" the metrics.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histograms.ExpectTotalCount(kDelayedWarningsHistogram, 2);
+  histograms.ExpectBucketCount(kDelayedWarningsHistogram,
+                               DelayedWarningEvent::kPageLoaded, 1);
+  histograms.ExpectBucketCount(kDelayedWarningsHistogram,
+                               DelayedWarningEvent::kWarningShownOnKeypress, 1);
+}
+
 // This test navigates to a page with password form and submits a password. The
 // warning should be delayed, the "Save Password" bubble should not be shown,
 // and a histogram entry for the password save should be recorded.

@@ -169,6 +169,8 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
     content::NavigationHandle* handle) {
   // Remove the observer on a top frame navigation to another page. The user is
   // now on another page so we don't need to wait for an interaction.
+  // Note that the check for HasCommitted() occurs later in this method as we
+  // want to handle downloads first.
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
     return;
   }
@@ -194,6 +196,11 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
   // ignore this cancelled navigation.
   if (handle->IsDownload()) {
     RecordUMA(DelayedWarningEvent::kDownloadCancelled);
+    return;
+  }
+  // Now ignore other kinds of navigations that don't commit (e.g. 204 response
+  // codes), since the page doesn't change.
+  if (!handle->HasCommitted()) {
     return;
   }
   Detach();
