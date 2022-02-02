@@ -395,7 +395,7 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedNoResults) {
   search_service()->SearchRecentlyClosed(
       kWebState1Title,
       base::BindOnce(
-          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
+          ^(std::vector<TabsSearchService::RecentlyClosedItemPair> results) {
             ASSERT_EQ(0ul, results.size());
             results_received = true;
           }));
@@ -415,7 +415,7 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedNoMatch) {
   search_service()->SearchRecentlyClosed(
       kSearchQueryMatchesNone,
       base::BindOnce(
-          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
+          ^(std::vector<TabsSearchService::RecentlyClosedItemPair> results) {
             ASSERT_EQ(0ul, results.size());
             results_received = true;
           }));
@@ -434,13 +434,15 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitle) {
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
       kWebState1Title,
-      base::BindOnce(
-          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
-            ASSERT_EQ(1ul, results.size());
-            EXPECT_EQ(kWebState1Url, results.front().virtual_url().spec());
-            EXPECT_EQ(kWebState1Title, results.front().title());
-            results_received = true;
-          }));
+      base::BindOnce(^(
+          std::vector<TabsSearchService::RecentlyClosedItemPair> results) {
+        ASSERT_EQ(1ul, results.size());
+        const sessions::SerializedNavigationEntry& first_navigation_entry =
+            results.front().second;
+        EXPECT_EQ(kWebState1Url, first_navigation_entry.virtual_url().spec());
+        EXPECT_EQ(kWebState1Title, first_navigation_entry.title());
+        results_received = true;
+      }));
 
   ASSERT_TRUE(results_received);
 }
@@ -456,14 +458,17 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchURL) {
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
       kWebState1ParamValue,
-      base::BindOnce(
-          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
-            ASSERT_EQ(1ul, results.size());
-            EXPECT_EQ(kWebState1Url, results.front().virtual_url().spec());
-            EXPECT_EQ(kWebState1Title, results.front().title());
+      base::BindOnce(^(
+          std::vector<TabsSearchService::RecentlyClosedItemPair> results) {
+        ASSERT_EQ(1ul, results.size());
+        const sessions::SerializedNavigationEntry& first_navigation_entry =
+            results.front().second;
 
-            results_received = true;
-          }));
+        EXPECT_EQ(kWebState1Url, first_navigation_entry.virtual_url().spec());
+        EXPECT_EQ(kWebState1Title, first_navigation_entry.title());
+
+        results_received = true;
+      }));
 
   ASSERT_TRUE(results_received);
 }
@@ -480,15 +485,21 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitleAllClosed) {
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
       kSearchQueryMatchesAll,
-      base::BindOnce(
-          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
-            ASSERT_EQ(2ul, results.size());
-            EXPECT_EQ(kWebState1Url, results.front().virtual_url().spec());
-            EXPECT_EQ(kWebState1Title, results.front().title());
-            EXPECT_EQ(kWebState2Url, results.back().virtual_url().spec());
-            EXPECT_EQ(kWebState2Title, results.back().title());
-            results_received = true;
-          }));
+      base::BindOnce(^(
+          std::vector<TabsSearchService::RecentlyClosedItemPair> results) {
+        ASSERT_EQ(2ul, results.size());
+
+        const sessions::SerializedNavigationEntry& first_navigation_entry =
+            results.front().second;
+        EXPECT_EQ(kWebState1Url, first_navigation_entry.virtual_url().spec());
+        EXPECT_EQ(kWebState1Title, first_navigation_entry.title());
+
+        const sessions::SerializedNavigationEntry& last_navigation_entry =
+            results.back().second;
+        EXPECT_EQ(kWebState2Url, last_navigation_entry.virtual_url().spec());
+        EXPECT_EQ(kWebState2Title, last_navigation_entry.title());
+        results_received = true;
+      }));
 
   ASSERT_TRUE(results_received);
 }

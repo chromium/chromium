@@ -60,17 +60,18 @@ void TabsSearchService::SearchIncognito(
 
 void TabsSearchService::SearchRecentlyClosed(
     const std::u16string& term,
-    base::OnceCallback<void(
-        std::vector<const sessions::SerializedNavigationEntry>)> completion) {
+    base::OnceCallback<void(std::vector<RecentlyClosedItemPair>)> completion) {
   FixedPatternStringSearchIgnoringCaseAndAccents query_search(term);
 
-  std::vector<const sessions::SerializedNavigationEntry> results;
+  std::vector<RecentlyClosedItemPair> results;
   sessions::TabRestoreService* restore_service =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state_);
   for (auto iter = restore_service->entries().begin();
        iter != restore_service->entries().end(); ++iter) {
     const sessions::TabRestoreService::Entry* entry = iter->get();
     DCHECK(entry);
+    // Only TAB type is handled.
+    // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
     DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
     const sessions::TabRestoreService::Tab* tab =
         static_cast<const sessions::TabRestoreService::Tab*>(entry);
@@ -82,7 +83,8 @@ void TabsSearchService::SearchRecentlyClosed(
         query_search.Search(
             base::UTF8ToUTF16(navigationEntry.virtual_url().spec()),
             /*match_index=*/nullptr, nullptr)) {
-      results.push_back(navigationEntry);
+      RecentlyClosedItemPair matching_item = {entry->id, navigationEntry};
+      results.push_back(matching_item);
     }
   }
 
@@ -91,38 +93,51 @@ void TabsSearchService::SearchRecentlyClosed(
 
 void TabsSearchService::SearchRemoteTabs(
     const std::u16string& term,
-    base::OnceCallback<void(std::vector<synced_sessions::DistantTab*>)>
+    base::OnceCallback<void(std::unique_ptr<synced_sessions::SyncedSessions>,
+                            std::vector<synced_sessions::DistantTabsSet>)>
         completion) {
-  std::vector<synced_sessions::DistantTab*> results;
+  std::vector<synced_sessions::DistantTabsSet> results;
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state_);
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // There must be a primary account for synced sessions to be available.
-    std::move(completion).Run(results);
+    std::move(completion).Run(nullptr, results);
     return;
   }
 
   FixedPatternStringSearchIgnoringCaseAndAccents query_search(term);
   sync_sessions::SessionSyncService* sync_service =
       SessionSyncServiceFactory::GetForBrowserState(browser_state_);
-  synced_sessions::SyncedSessions synced_sessions(sync_service);
 
-  for (size_t s = 0; s < synced_sessions.GetSessionCount(); s++) {
+  auto synced_sessions =
+      std::make_unique<synced_sessions::SyncedSessions>(sync_service);
+
+  for (size_t s = 0; s < synced_sessions->GetSessionCount(); s++) {
     const synced_sessions::DistantSession* session =
-        synced_sessions.GetSession(s);
+        synced_sessions->GetSession(s);
+
+    synced_sessions::DistantTabsSet distant_tabs;
+    distant_tabs.session_tag = session->tag;
+
+    std::vector<synced_sessions::DistantTab*> tabs;
     for (auto&& distant_tab : session->tabs) {
       if (query_search.Search(distant_tab->title, /*match_index=*/nullptr,
                               /*match_length=*/nullptr) ||
           query_search.Search(
               base::UTF8ToUTF16(distant_tab->virtual_url.spec()),
               /*match_index=*/nullptr, nullptr)) {
-        results.push_back(distant_tab.get());
+        tabs.push_back(distant_tab.get());
       }
+    }
+    distant_tabs.filtered_tabs = tabs;
+
+    if (tabs.size() > 0) {
+      results.push_back(distant_tabs);
     }
   }
 
-  std::move(completion).Run(results);
+  std::move(completion).Run(std::move(synced_sessions), results);
 }
 
 void TabsSearchService::SearchHistory(

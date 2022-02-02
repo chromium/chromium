@@ -1848,8 +1848,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       // data.
       break;
     case TabGridPageRemoteTabs:
-      // TODO(crbug.com/1287190): Use the search text for the search and reload
-      // data.
+      [self.remoteTabsViewController searchTextChanged:searchText];
       break;
   }
 }

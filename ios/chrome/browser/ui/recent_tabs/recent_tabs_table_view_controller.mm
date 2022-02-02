@@ -13,6 +13,7 @@
 #import "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -31,6 +32,8 @@
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/tabs_search/tabs_search_service.h"
+#import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
@@ -49,6 +52,7 @@
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
@@ -119,6 +123,11 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 // Section index for recently closed tabs.
 const int kRecentlyClosedTabsSectionIndex = 0;
 
+// A pair representing a single recently closed item. The |TableViewURLItem| is
+// used to display the item and the |SessionID| is used to restore the item if
+// selected by the user.
+typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
+
 }  // namespace
 
 @interface ListModelCollapsedSceneSessionMediator : ListModelCollapsedMediator
@@ -134,6 +143,9 @@ const int kRecentlyClosedTabsSectionIndex = 0;
                                              TableViewURLDragDataSource,
                                              UIContextMenuInteractionDelegate,
                                              UIGestureRecognizerDelegate> {
+  // The displayed recently closed tabs.
+  std::vector<RecentlyClosedTableViewItemPair> _recentlyClosedItems;
+
   // The instance which owns the DistantTabs to display.
   std::unique_ptr<synced_sessions::SyncedSessions> _syncedSessions;
   // The displayed sessions and tabs. The sessions and tabs are owned by
@@ -159,6 +171,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 @property(nonatomic, readonly) WebStateList* webStateList;
 // Handler for URL drag interactions.
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
+// Search term for filtering displayed items.
+@property(nonatomic, copy) NSString* searchTerm;
 @end
 
 @implementation RecentTabsTableViewController : ChromeTableViewController
@@ -350,23 +364,41 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (void)addRecentlyClosedTabItems {
   if (!self.tabRestoreService)
     return;
-  for (auto iter = self.tabRestoreService->entries().begin();
-       iter != self.tabRestoreService->entries().end(); ++iter) {
-    const sessions::TabRestoreService::Entry* entry = iter->get();
-    DCHECK(entry);
-    DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
-    const sessions::TabRestoreService::Tab* tab =
-        static_cast<const sessions::TabRestoreService::Tab*>(entry);
-    const sessions::SerializedNavigationEntry& navigationEntry =
-        tab->navigations[tab->current_navigation_index];
 
-    // Configure and add the Item.
-    TableViewURLItem* recentlyClosedTab =
-        [[TableViewURLItem alloc] initWithType:ItemTypeRecentlyClosed];
-    recentlyClosedTab.title = base::SysUTF16ToNSString(navigationEntry.title());
-    recentlyClosedTab.URL =
-        [[CrURL alloc] initWithGURL:navigationEntry.virtual_url()];
-    [self.tableViewModel addItem:recentlyClosedTab
+  if (!IsTabsSearchEnabled() || !self.searchTerm.length) {
+    // A manual item refresh is necessary when tab search is disabled or when
+    // there is no search term.
+
+    std::vector<RecentlyClosedTableViewItemPair> recentlyClosedItems;
+    for (auto iter = self.tabRestoreService->entries().begin();
+         iter != self.tabRestoreService->entries().end(); ++iter) {
+      const sessions::TabRestoreService::Entry* entry = iter->get();
+      DCHECK(entry);
+      // Only TAB type is handled.
+      // TODO(crbug.com/1056596) : Support WINDOW restoration under
+      // multi-window.
+      DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
+
+      const sessions::TabRestoreService::Tab* tab =
+          static_cast<const sessions::TabRestoreService::Tab*>(entry);
+      const sessions::SerializedNavigationEntry& navigationEntry =
+          tab->navigations[tab->current_navigation_index];
+
+      TableViewURLItem* recentlyClosedTab =
+          [[TableViewURLItem alloc] initWithType:ItemTypeRecentlyClosed];
+      recentlyClosedTab.title =
+          base::SysUTF16ToNSString(navigationEntry.title());
+      recentlyClosedTab.URL =
+          [[CrURL alloc] initWithGURL:navigationEntry.virtual_url()];
+
+      RecentlyClosedTableViewItemPair item(entry->id, recentlyClosedTab);
+      recentlyClosedItems.push_back(item);
+    }
+    _recentlyClosedItems = recentlyClosedItems;
+  }
+
+  for (const RecentlyClosedTableViewItemPair& item : _recentlyClosedItems) {
+    [self.tableViewModel addItem:item.second
          toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
   }
 }
@@ -736,6 +768,78 @@ const int kRecentlyClosedTabsSectionIndex = 0;
       }];
 }
 
+- (void)searchTextChanged:(NSString*)searchTerm {
+  DCHECK(IsTabsSearchEnabled());
+
+  self.searchTerm = searchTerm;
+
+  if (self.preventUpdates)
+    return;
+
+  TabsSearchService* search_service =
+      TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+  __weak RecentTabsTableViewController* weakSelf = self;
+  const std::u16string& search_terms =
+      base::SysNSStringToUTF16(self.searchTerm);
+
+  search_service->SearchRecentlyClosed(
+      search_terms,
+      base::BindOnce(^(
+          std::vector<TabsSearchService::RecentlyClosedItemPair> results) {
+        RecentTabsTableViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        std::vector<RecentlyClosedTableViewItemPair> matchedItems;
+        for (TabsSearchService::RecentlyClosedItemPair item_pair : results) {
+          const sessions::SerializedNavigationEntry& navigationEntry =
+              item_pair.second;
+
+          TableViewURLItem* recentlyClosedTab =
+              [[TableViewURLItem alloc] initWithType:ItemTypeRecentlyClosed];
+          recentlyClosedTab.title =
+              base::SysUTF16ToNSString(navigationEntry.title());
+          recentlyClosedTab.URL =
+              [[CrURL alloc] initWithGURL:navigationEntry.virtual_url()];
+
+          RecentlyClosedTableViewItemPair item(item_pair.first,
+                                               recentlyClosedTab);
+          matchedItems.push_back(item);
+        }
+
+        [strongSelf setRecentlyClosedItems:matchedItems];
+      }));
+
+  search_service->SearchRemoteTabs(
+      search_terms,
+      base::BindOnce(^(
+          std::unique_ptr<synced_sessions::SyncedSessions> synced_sessions,
+          std::vector<synced_sessions::DistantTabsSet> matching_distant_tabs) {
+        [weakSelf setSyncedSessions:std::move(synced_sessions)
+                 distantSessionTabs:matching_distant_tabs];
+      }));
+
+  [self loadModel];
+  [self.tableView reloadData];
+}
+
+// Helper to set the distant tabs to be displayed. The tabs referenced in
+// |displayedTabs| must be owned by |syncedSessions|.
+- (void)setSyncedSessions:
+            (std::unique_ptr<synced_sessions::SyncedSessions>)syncedSessions
+       distantSessionTabs:
+           (std::vector<synced_sessions::DistantTabsSet>)displayedTabs {
+  _syncedSessions = std::move(syncedSessions);
+  _displayedTabs = displayedTabs;
+}
+
+// Helper to set the recently closed items vector.
+- (void)setRecentlyClosedItems:
+    (std::vector<RecentlyClosedTableViewItemPair>)recentlyClosedItems {
+  _recentlyClosedItems = recentlyClosedItems;
+}
+
 // Helper for removeSessionAtTableSectionWithIdentifier
 - (void)removeSection:(NSInteger)sectionIdentifier
     forSessionWithTag:(std::string)sessionTag {
@@ -785,20 +889,27 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     return;
   }
 
-  sync_sessions::SessionSyncService* syncService =
-      SessionSyncServiceFactory::GetForBrowserState(self.browserState);
-  _syncedSessions =
-      std::make_unique<synced_sessions::SyncedSessions>(syncService);
+  if (!IsTabsSearchEnabled() || !self.searchTerm.length) {
+    // A manual item refresh is necessary when tab search is disabled or there
+    // is no search term.
+    sync_sessions::SessionSyncService* syncService =
+        SessionSyncServiceFactory::GetForBrowserState(self.browserState);
+    auto syncedSessions =
+        std::make_unique<synced_sessions::SyncedSessions>(syncService);
 
-  // Reset |_displayedTabs| to contain all sessions and tabs.
-  _displayedTabs = std::vector<synced_sessions::DistantTabsSet>();
-  for (size_t s = 0; s < _syncedSessions->GetSessionCount(); s++) {
-    const synced_sessions::DistantSession* session =
-        _syncedSessions->GetSession(s);
+    std::vector<synced_sessions::DistantTabsSet> displayedTabs;
+    for (size_t s = 0; s < syncedSessions->GetSessionCount(); s++) {
+      const synced_sessions::DistantSession* session =
+          syncedSessions->GetSession(s);
 
-    synced_sessions::DistantTabsSet distant_tabs;
-    distant_tabs.session_tag = session->tag;
-    _displayedTabs.push_back(distant_tabs);
+      synced_sessions::DistantTabsSet distant_tabs;
+      distant_tabs.session_tag = session->tag;
+      displayedTabs.push_back(distant_tabs);
+    }
+
+    // Reset |_displayedTabs| to contain all sessions and tabs.
+    [self setSyncedSessions:std::move(syncedSessions)
+         distantSessionTabs:displayedTabs];
   }
 
   if (!self.preventUpdates) {
@@ -863,9 +974,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
       [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemTypeSelected) {
     case ItemTypeRecentlyClosed:
-      [self
-          openTabWithTabRestoreEntry:[self
-                                         tabRestoreEntryAtIndexPath:indexPath]];
+      [self openTabWithTabRestoreEntryId:
+                [self tabRestoreEntryIdAtIndexPath:indexPath]];
       break;
     case ItemTypeSessionTabData:
       [self
@@ -1046,28 +1156,18 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (NSInteger)numberOfRecentlyClosedTabs {
   if (!self.tabRestoreService)
     return 0;
-  return base::checked_cast<NSInteger>(
-      self.tabRestoreService->entries().size());
+  return _recentlyClosedItems.size();
 }
 
-- (const sessions::TabRestoreService::Entry*)tabRestoreEntryAtIndexPath:
-    (NSIndexPath*)indexPath {
+- (const SessionID)tabRestoreEntryIdAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_EQ([self.tableViewModel sectionIdentifierForSection:indexPath.section],
             SectionIdentifierRecentlyClosedTabs);
   NSInteger index = indexPath.row;
   DCHECK_LE(index, [self numberOfRecentlyClosedTabs]);
   if (!self.tabRestoreService)
-    return nullptr;
+    return SessionID::InvalidValue();
 
-  // Advance the entry iterator to the correct index.
-  // Note that std:list<> can only be accessed sequentially, which is
-  // suboptimal when using Cocoa table APIs. This list doesn't appear
-  // to get very long, so it probably won't matter for perf.
-  sessions::TabRestoreService::Entries::const_iterator iter =
-      self.tabRestoreService->entries().begin();
-  std::advance(iter, index);
-  CHECK(*iter);
-  return iter->get();
+  return _recentlyClosedItems[index].first;
 }
 
 // Retrieves favicon from FaviconLoader and sets image in URLCell.
@@ -1247,8 +1347,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
-- (void)openTabWithTabRestoreEntry:
-    (const sessions::TabRestoreService::Entry*)entry {
+- (void)openTabWithTabRestoreEntryId:(const SessionID)entry_id {
   // It is reasonable to ignore this request if a modal UI is already showing
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
@@ -1256,9 +1355,6 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   if (self.presentedViewController)
     return;
 
-  // Only TAB type is handled.
-  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
-  DCHECK_EQ(entry->type, sessions::TabRestoreService::TAB);
   base::RecordAction(
       base::UserMetricsAction("MobileRecentTabManagerRecentTabOpened"));
   new_tab_page_uma::RecordAction(
@@ -1271,7 +1367,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   WindowOpenDisposition disposition =
       self.isIncognito ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                        : self.restoredTabDisposition;
-  RestoreTab(entry->id, disposition, self.browser);
+  RestoreTab(entry_id, disposition, self.browser);
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 

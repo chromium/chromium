@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
 
@@ -23,7 +24,8 @@ class SerializedNavigationEntry;
 }  // namespace sessions
 
 namespace synced_sessions {
-struct DistantTab;
+struct DistantTabsSet;
+class SyncedSessions;
 }  // namespace synced_sessions
 
 namespace web {
@@ -51,17 +53,25 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
       const std::u16string& term,
       base::OnceCallback<void(std::vector<web::WebState*>)> completion);
 
+  // A pair representing a recently closed item. The |SessionID| can be used to
+  // restore the item and is safe to store without lifetime concerns. The
+  // |SerializedNavigationEntry| describes the visible navigation in order to
+  // present the results to the user.
+  typedef std::pair<SessionID, const sessions::SerializedNavigationEntry>
+      RecentlyClosedItemPair;
   // Searches through recently closed tabs within |browser_state| in the same
   // manner as |Search|.
   void SearchRecentlyClosed(
       const std::u16string& term,
-      base::OnceCallback<void(
-          std::vector<const sessions::SerializedNavigationEntry>)> completion);
+      base::OnceCallback<void(std::vector<RecentlyClosedItemPair>)> completion);
 
-  // Searches through Remote Tabs for tabs matching |term|.
+  // Searches through Remote Tabs for tabs matching |term|. The matching tabs
+  // returned in the vector are owned by the SyncedSessions instance passed to
+  // the callback.
   void SearchRemoteTabs(
       const std::u16string& term,
-      base::OnceCallback<void(std::vector<synced_sessions::DistantTab*>)>
+      base::OnceCallback<void(std::unique_ptr<synced_sessions::SyncedSessions>,
+                              std::vector<synced_sessions::DistantTabsSet>)>
           completion);
 
   // Searches through synced history for the count of history results matching

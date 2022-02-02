@@ -65,6 +65,9 @@ class DistantSession;
 // |sectionIdentifier|.
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
+// Updates the displayed results with those which match |searchTerm|.
+- (void)searchTextChanged:(NSString*)searchTerm;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_RECENT_TABS_TABLE_VIEW_CONTROLLER_H_
