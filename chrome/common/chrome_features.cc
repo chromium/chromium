@@ -330,7 +330,8 @@ const base::Feature kDesktopPWAsTabStripSettings{
 const base::Feature kDesktopPWAsWebBundles{"DesktopPWAsWebBundles",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
 // Serves web app settings at chrome://app-settings/<app-id>.
 const base::Feature kDesktopPWAsWebAppSettingsPage{
     "DesktopPWAsWebAppSettingsPage", base::FEATURE_DISABLED_BY_DEFAULT};

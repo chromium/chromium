@@ -195,7 +195,8 @@ void ShowBrowserSigninOrSettings(Browser* browser,
                                  signin_metrics::AccessPoint access_point);
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
 // Show chrome://app-settings/<app-id> page.
 void ShowWebAppSettings(Browser* browser, const std::string& app_id);
 #endif

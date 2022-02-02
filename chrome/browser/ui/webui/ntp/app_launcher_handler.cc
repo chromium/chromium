@@ -291,7 +291,8 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
           : kRunOnOsLoginModeWindowed;
   value->SetString("runOnOsLoginMode", runOnOsLoginModeString);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
   // Show settings instead of App info for locally installed web apps.
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
       is_locally_installed) {
@@ -1013,7 +1014,8 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
     if (base::FeatureList::IsEnabled(
             features::kDesktopPWAsWebAppSettingsPage)) {
       chrome::ShowWebAppSettings(

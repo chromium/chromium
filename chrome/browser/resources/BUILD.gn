@@ -81,7 +81,7 @@ group("resources") {
     public_deps += [ "browser_switch:resources" ]
   }
 
-  if (is_win || is_mac || is_linux) {
+  if (is_win || is_mac || is_linux || is_fuchsia) {
     public_deps += [ "app_settings:resources" ]
   }
 
