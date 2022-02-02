@@ -48,26 +48,23 @@ class NavigateReaction final : public ScriptFunction::Callable {
   static void React(ScriptState* script_state,
                     ScriptPromise promise,
                     AppHistoryApiNavigation* navigation,
-                    AppHistoryTransition* transition,
                     AbortSignal* signal,
                     ReactType react_type) {
     promise.Then(MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, transition, signal,
+                                       navigation, signal,
                                        ResolveType::kFulfill, react_type)),
                  MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, transition, signal,
-                                       ResolveType::kReject, react_type)));
+                                       navigation, signal, ResolveType::kReject,
+                                       react_type)));
   }
 
   NavigateReaction(AppHistoryApiNavigation* navigation,
-                   AppHistoryTransition* transition,
                    AbortSignal* signal,
                    ResolveType resolve_type,
                    ReactType react_type)
       : navigation_(navigation),
-        transition_(transition),
         signal_(signal),
         resolve_type_(resolve_type),
         react_type_(react_type) {}
@@ -75,7 +72,6 @@ class NavigateReaction final : public ScriptFunction::Callable {
   void Trace(Visitor* visitor) const final {
     ScriptFunction::Callable::Trace(visitor);
     visitor->Trace(navigation_);
-    visitor->Trace(transition_);
     visitor->Trace(signal_);
   }
 
@@ -88,18 +84,11 @@ class NavigateReaction final : public ScriptFunction::Callable {
 
     AppHistory* app_history = AppHistory::appHistory(*window);
     app_history->ongoing_navigation_signal_ = nullptr;
-    if (resolve_type_ == ResolveType::kFulfill) {
-      if (navigation_) {
-        navigation_->ResolveFinishedPromise();
-      }
-      app_history->DispatchEvent(
-          *Event::Create(event_type_names::kNavigatesuccess));
-    } else {
-      app_history->RejectPromiseAndFireNavigateErrorEvent(navigation_, value);
-    }
 
-    if (app_history->transition() == transition_) {
-      app_history->transition_ = nullptr;
+    if (resolve_type_ == ResolveType::kFulfill) {
+      app_history->ResolvePromisesAndFireNavigateSuccessEvent(navigation_);
+    } else {
+      app_history->RejectPromisesAndFireNavigateErrorEvent(navigation_, value);
     }
 
     if (react_type_ == ReactType::kTransitionWhile && window->GetFrame()) {
@@ -114,7 +103,6 @@ class NavigateReaction final : public ScriptFunction::Callable {
 
  private:
   Member<AppHistoryApiNavigation> navigation_;
-  Member<AppHistoryTransition> transition_;
   Member<AbortSignal> signal_;
   ResolveType resolve_type_;
   ReactType react_type_;
@@ -683,8 +671,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   auto promise_list = navigate_event->GetNavigationActionPromisesList();
   if (!promise_list.IsEmpty()) {
-    transition_ =
-        MakeGarbageCollected<AppHistoryTransition>(navigation_type, current());
+    transition_ = MakeGarbageCollected<AppHistoryTransition>(
+        script_state, navigation_type, current());
     // In order to handle fragment cases (especially browser-initiated ones)
     // correctly, we need state that only DocumentLoader holds. Defer to
     // DocumentLoader to run the url and history update steps for the fragment
@@ -719,7 +707,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
     NavigateReaction::React(
         script_state, ScriptPromise::All(script_state, tweaked_promise_list),
-        ongoing_navigation_, transition_, navigate_event->signal(), react_type);
+        ongoing_navigation_, navigate_event->signal(), react_type);
   } else if (ongoing_navigation_) {
     // The spec assumes it's ok to leave a promise permanently unresolved, but
     // ScriptPromiseResolver requires either resolution or explicit detach.
@@ -758,12 +746,9 @@ void AppHistory::InformAboutCanceledNavigation() {
   }
 }
 
-void AppHistory::RejectPromiseAndFireNavigateErrorEvent(
+void AppHistory::RejectPromisesAndFireNavigateErrorEvent(
     AppHistoryApiNavigation* navigation,
     ScriptValue value) {
-  if (navigation)
-    navigation->RejectFinishedPromise(value);
-
   auto* isolate = GetSupplementable()->GetIsolate();
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
@@ -774,6 +759,27 @@ void AppHistory::RejectPromiseAndFireNavigateErrorEvent(
       &DOMWrapperWorld::MainWorld());
   event->SetType(event_type_names::kNavigateerror);
   DispatchEvent(*event);
+
+  if (navigation)
+    navigation->RejectFinishedPromise(value);
+
+  if (transition_) {
+    transition_->RejectFinishedPromise(value);
+    transition_ = nullptr;
+  }
+}
+
+void AppHistory::ResolvePromisesAndFireNavigateSuccessEvent(
+    AppHistoryApiNavigation* navigation) {
+  DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
+
+  if (navigation)
+    navigation->ResolveFinishedPromise();
+
+  if (transition_) {
+    transition_->ResolveFinishedPromise();
+    transition_ = nullptr;
+  }
 }
 
 void AppHistory::CleanupApiNavigation(AppHistoryApiNavigation& navigation) {
@@ -793,17 +799,18 @@ void AppHistory::FinalizeWithAbortedNavigationError(
     ongoing_navigate_event_->preventDefault();
     ongoing_navigate_event_ = nullptr;
   }
+
+  ScriptValue error = ScriptValue::From(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                         "Navigation was aborted"));
+
   if (ongoing_navigation_signal_) {
-    ongoing_navigation_signal_->SignalAbort(script_state);
+    ongoing_navigation_signal_->SignalAbort(script_state, error);
     ongoing_navigation_signal_ = nullptr;
   }
 
-  RejectPromiseAndFireNavigateErrorEvent(
-      navigation,
-      ScriptValue::From(script_state, MakeGarbageCollected<DOMException>(
-                                          DOMExceptionCode::kAbortError,
-                                          "Navigation was aborted")));
-  transition_ = nullptr;
+  RejectPromisesAndFireNavigateErrorEvent(navigation, error);
 }
 
 int AppHistory::GetIndexFor(AppHistoryEntry* entry) {

@@ -293,6 +293,7 @@ interface AppHistoryNavigateEvent : Event
     method transitionWhile
 interface AppHistoryTransition
     attribute @@toStringTag
+    getter finished
     getter from
     getter navigationType
     method constructor
