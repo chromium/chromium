@@ -386,6 +386,8 @@ void SearchControllerImplNew::Publish() {
     }
   }
 
+  // TODO(crbug.com/1258415): Refactor this lambda to be a method on the Scoring
+  // struct.
   std::sort(
       all_results.begin(), all_results.end(),
       [&](const ChromeSearchResult* a, const ChromeSearchResult* b) {
@@ -425,6 +427,9 @@ void SearchControllerImplNew::Publish() {
           // This happens before sorting on display_score, as a trade-off
           // between ranking accuracy and UX pop-in mitigation.
           return a->scoring().burnin_iteration < b->scoring().burnin_iteration;
+        } else if (a->scoring().continue_rank != -1 ||
+                   b->scoring().continue_rank != -1) {
+          return a->scoring().continue_rank > b->scoring().continue_rank;
         } else {
           // Lastly, sort by display score.
           return a->display_score() > b->display_score();

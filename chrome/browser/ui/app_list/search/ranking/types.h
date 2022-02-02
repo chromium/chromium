@@ -23,13 +23,20 @@ using ProviderType = ash::AppListSearchResultType;
 // incrementally updated by rankers as needed. Generally, each ranker should
 // control one score.
 struct Scoring {
+  // = Members used to compute the display score of a result ===================
   bool filter = false;
-  // The rank (0, 1, 2, ...) of this result within the Best Match collection of
-  // results, or -1 if this result is not a Best Match.
-  int best_match_rank = -1;
-  double normalized_relevance = 0.0f;
+  double normalized_relevance = 0.0;
   double ftrl_result_score = 0.0;
+  // Used only for results in the Continue section. Continue results are first
+  // ordered by |continue_rank|, and then by their display score. -1 indicates
+  // this is unset.
+  int continue_rank = -1;
 
+  // = Members used for sorting in SearchController ============================
+  // The rank (0, 1, 2, ...) of this result within
+  // the Best Match collection of results, or -1 if this result is not a Best
+  // Match.
+  int best_match_rank = -1;
   // A counter for the burn-in iteration number, where 0 signifies the
   // pre-burn-in state, and 1 and above signify the post-burn-in state.
   // Incremented during the post-burn-in period each time a provider

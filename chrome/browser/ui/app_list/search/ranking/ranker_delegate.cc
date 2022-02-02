@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/answer_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/best_match_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/continue_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/query_highlighter.h"
@@ -68,6 +69,7 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   // change their scores.
   AddRanker(std::make_unique<QueryHighlighter>());
   AddRanker(std::make_unique<AnswerRanker>());
+  AddRanker(std::make_unique<ContinueRanker>());
   AddRanker(std::make_unique<FilteringRanker>());
   AddRanker(std::make_unique<RemovedResultsRanker>(
       PersistentProto<RemovedResultsProto>(

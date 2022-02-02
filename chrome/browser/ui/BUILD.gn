@@ -1993,6 +1993,8 @@ static_library("ui") {
       "app_list/search/ranking/best_match_ranker.cc",
       "app_list/search/ranking/best_match_ranker.h",
       "app_list/search/ranking/constants.h",
+      "app_list/search/ranking/continue_ranker.cc",
+      "app_list/search/ranking/continue_ranker.h",
       "app_list/search/ranking/filtering_ranker.cc",
       "app_list/search/ranking/filtering_ranker.h",
       "app_list/search/ranking/ftrl_ranker.cc",
