@@ -789,6 +789,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSingleCellContentSuggestionsName,
      flag_descriptions::kSingleCellContentSuggestionsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSingleCellContentSuggestions)},
+    {"content-suggestions-header-migration",
+     flag_descriptions::kContentSuggestionsHeaderMigrationName,
+     flag_descriptions::kContentSuggestionsHeaderMigrationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContentSuggestionsHeaderMigration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

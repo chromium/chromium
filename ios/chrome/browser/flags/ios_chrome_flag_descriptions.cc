@@ -77,6 +77,12 @@ const char kCommercePriceTrackingName[] = "Price Tracking";
 const char kCommercePriceTrackingDescription[] =
     "Allows users to track product prices through Chrome.";
 
+const char kContentSuggestionsHeaderMigrationName[] =
+    "Content Suggestions header migration";
+const char kContentSuggestionsHeaderMigrationDescription[] =
+    "When enabled, the Content Suggestions header will be logically moved to "
+    "the Discover feed ScrollView";
+
 const char kContextMenuActionsRefreshName[] = "Context menu actions refresh";
 const char kContextMenuActionsRefreshDescription[] =
     "When enabled, context menu actions are updated";

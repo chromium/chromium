@@ -68,6 +68,11 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kCommercePriceTrackingName[];
 extern const char kCommercePriceTrackingDescription[];
 
+// Title and description for the flag that moves the Content Suggestions header
+// to the Discover feed ScrollView.
+extern const char kContentSuggestionsHeaderMigrationName[];
+extern const char kContentSuggestionsHeaderMigrationDescription[];
+
 // Title and description for the flag to enable context menu actions refresh.
 extern const char kContextMenuActionsRefreshName[];
 extern const char kContextMenuActionsRefreshDescription[];

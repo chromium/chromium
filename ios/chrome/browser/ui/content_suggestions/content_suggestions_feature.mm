@@ -19,6 +19,10 @@ const base::Feature kSingleNtp{"SingleNTP", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSingleCellContentSuggestions{
     "SingleCellContentSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature disabled by default.
+const base::Feature kContentSuggestionsHeaderMigration{
+    "ContentSuggestionsHeaderMigration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -33,4 +37,8 @@ bool IsSingleNtpEnabled() {
 
 bool IsSingleCellContentSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kSingleCellContentSuggestions);
+}
+
+bool IsContentSuggestionsHeaderMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kContentSuggestionsHeaderMigration);
 }
