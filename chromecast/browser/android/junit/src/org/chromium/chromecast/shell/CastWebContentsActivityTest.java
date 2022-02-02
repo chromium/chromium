@@ -5,18 +5,23 @@
 package org.chromium.chromecast.shell;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.Window;
 import android.view.WindowManager;
 
 import org.junit.Assert;
@@ -257,5 +262,50 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create().start().resume();
         mActivity.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
         Assert.assertFalse(mShadowActivity.isFinishing());
+    }
+
+    @Test
+    public void testDispatchTouchEventWithTouchDisabled() {
+        CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
+        when(surfaceHelper.isTouchInputEnabled()).thenReturn(false);
+        mActivity.setSurfaceHelperForTesting(surfaceHelper);
+        mActivityLifecycle.create().start().resume();
+        MotionEvent event = mock(MotionEvent.class);
+        assertFalse(mActivity.dispatchTouchEvent(event));
+    }
+
+    @Test
+    public void testDispatchTouchEventWithTouchEnabled() {
+        CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
+        when(surfaceHelper.isTouchInputEnabled()).thenReturn(true);
+        mActivity.setSurfaceHelperForTesting(surfaceHelper);
+        Window window = mock(Window.class);
+        MotionEvent event = mock(MotionEvent.class);
+        when(event.getAction()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(window.superDispatchTouchEvent(event)).thenReturn(true);
+        mActivityLifecycle.create().start().resume();
+        mShadowActivity.setWindow(window);
+        assertTrue(mActivity.dispatchTouchEvent(event));
+    }
+
+    @Test
+    public void testDispatchTouchEventWithTouchEnabledButWindowDoesNotHandleIt() {
+        CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
+        when(surfaceHelper.isTouchInputEnabled()).thenReturn(true);
+        mActivity.setSurfaceHelperForTesting(surfaceHelper);
+        Window window = mock(Window.class);
+        MotionEvent event = mock(MotionEvent.class);
+        when(event.getAction()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(window.superDispatchTouchEvent(event)).thenReturn(false);
+        mActivityLifecycle.create().start().resume();
+        mShadowActivity.setWindow(window);
+        assertFalse(mActivity.dispatchTouchEvent(event));
+    }
+
+    @Test
+    public void testDispatchTouchEventWithNoSurfaceHelper() {
+        mActivityLifecycle.create().start().resume();
+        MotionEvent event = mock(MotionEvent.class);
+        assertFalse(mActivity.dispatchTouchEvent(event));
     }
 }
