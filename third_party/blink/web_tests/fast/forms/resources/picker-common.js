@@ -8,7 +8,13 @@ function popupOpenCallbackWrapper() {
     popupWindow.removeEventListener("didOpenPicker", popupOpenCallbackWrapper);
     // We need some delay.  Without it, testRunner.notifyDone() freezes.
     // See crbug.com/562311.
-    setTimeout(popupOpenCallback, 20);
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          popupOpenCallback();
+        });
+      });
+    }, 20);
 }
 
 function waitUntilClosing(callback) {
@@ -133,7 +139,13 @@ function setPopupOpenCallback(callback) {
     if (popupWindow.didOpenPicker) {
         // We need some delay.  Without it, testRunner.notifyDone() freezes.
         // See crbug.com/562311.
-        setTimeout(popupOpenCallback, 20);
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              popupOpenCallback();
+            });
+          });
+        }, 20);
         return;
     }
     try {
