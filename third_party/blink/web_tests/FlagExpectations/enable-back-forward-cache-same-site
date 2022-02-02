@@ -1,6 +1,0 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
-# tags: [ Release Debug ]
-# results: [ Timeout Crash Pass Failure Slow Skip ]
-
-# TODO(peria): Make these tests work with same-site browsing instance swap.
-crbug.com/1136383 http/tests/inspector-protocol/network/interception-download.js [ Failure ]

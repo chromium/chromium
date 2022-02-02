@@ -10066,131 +10066,6 @@
       "all"
     ]
   },
-  "linux-bfcache-rel": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "bf_cache_browser_tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test": "browser_tests",
-        "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "bf_cache_content_browsertests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "bf_cache_content_unittests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test": "content_unittests",
-        "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "bf_cache_unit_tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test": "unit_tests",
-        "test_id_prefix": "ninja://chrome/test:unit_tests/"
-      }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--num-retries=3",
-          "--flag-specific=enable-back-forward-cache-same-site",
-          "--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html"
-        ],
-        "isolate_name": "blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test_id_prefix": "ninja://:blink_web_tests/"
-      }
-    ]
-  },
   "linux-bionic-rel": {
     "gtest_tests": [
       {
@@ -12140,6 +12015,130 @@
   "linux-gcc-rel": {
     "additional_compile_targets": [
       "empty_main"
+    ]
+  },
+  "linux-no-bfcache-rel": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--disable-features=BackForwardCache"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "bf_cache_browser_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--disable-features=BackForwardCache"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "bf_cache_content_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
+          "--disable-features=BackForwardCache"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "bf_cache_content_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
+          "--disable-features=BackForwardCache",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "bf_cache_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--flag-specific=disable-bfcache"
+        ],
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      }
     ]
   },
   "linux-trusty-rel": {

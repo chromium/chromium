@@ -357,7 +357,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-bfcache-rel",
+    name = "linux-no-bfcache-rel",
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
