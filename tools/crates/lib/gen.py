@@ -306,6 +306,15 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                 " '{}', " "found '{}', did you mean '{}'?".format(
                     dep, version, epoch)
 
+            # Verify that a crate is only listed once.
+            for other_toml_key in [k for k in TOML_DEPS_KEYS if k != toml_key]:
+                if other_toml_key not in toml_3p:
+                    continue
+                assert not dep in toml_3p[other_toml_key], \
+                    "A crate may only appear in one section of " \
+                    "third_party.toml, but '{}' appears more than " \
+                    "once.".format(dep)
+
     # For every crate in third_party, we will generate a patch to redirect
     # crates.io to that directory, so that if we have local changes to the
     # Cargo.toml files, running `cargo tree` will see them. To do this we
@@ -366,15 +375,15 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                                 cargo.CrateUsage.FOR_BUILDRS,
                                 True,
                                 depth=1)
-        if args.with_tests:
-            last_printed = common.print_same_line(
-                "Collecting top-level dev-dependencies.", last_printed)
-            _collect_deps_for_crate(args,
-                                    cargo_toml_path,
-                                    build_data_set,
-                                    cargo.CrateUsage.FOR_TESTS,
-                                    True,
-                                    depth=1)
+
+        last_printed = common.print_same_line(
+            "Collecting top-level dev-dependencies.", last_printed)
+        _collect_deps_for_crate(args,
+                                cargo_toml_path,
+                                build_data_set,
+                                cargo.CrateUsage.FOR_TESTS,
+                                True,
+                                depth=1)
 
     # Now we have enough to build our first-party code, from prebuilts of the
     # dependencies. But we don't have enough to build each dependency. We have
@@ -427,7 +436,11 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                                                crate_key=crate_key,
                                                depth=1)
             crate_keys_left.update(new_keys)
-            if args.with_tests:
+            find_test_deps = args.with_tests
+            with build_data_set.for_tests.per_crate(crate_key) as per_crate:
+                if per_crate.for_first_party:
+                    find_test_deps = True
+            if find_test_deps:
                 new_keys = _collect_deps_for_crate(args,
                                                    tmp_cargo_toml_path,
                                                    build_data_set,
@@ -741,9 +754,14 @@ def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
     dep_features = m.group("features").split(",") if m.group("features") else []
     dep_isprocmacro = bool(m.group("isprocmacro"))
 
-    parse_ext = is_third_party_toml and dep_name in cargo_toml["dependencies"]
+    parse_ext_key = None
+    if is_third_party_toml:
+        parse_ext_key = "dependencies" if dep_name in cargo_toml.get(
+            "dependencies",
+            {}) else "dev-dependencies" if dep_name in cargo_toml.get(
+                "dev-dependencies", {}) else None
 
-    if not parse_ext:
+    if not parse_ext_key:
         # Extensions from third_party.toml that aren't in normal Cargo.toml,
         # these are the defaults for stuff outside of third_party.toml.
         for_first_party_code = False
@@ -753,7 +771,7 @@ def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
         build_script_outputs = set()
         # Usually the dependency value is just a version number, but if it
         # is a dict, then it can declare values for extensions.
-        extensions = cargo_toml["dependencies"][dep_name]
+        extensions = cargo_toml[parse_ext_key][dep_name]
         if type(extensions) is dict:
             build_script_outputs = set(
                 extensions.get("build-script-outputs", build_script_outputs))
@@ -918,8 +936,9 @@ def _collect_deps_for_crate(args: argparse.Namespace,
     # the dependency graph for each.
     first = True
     for output_type in cargo.CrateBuildOutput:
-        if output_type == cargo.CrateBuildOutput.TESTS and not args.with_tests:
-            continue
+        if output_type == cargo.CrateBuildOutput.TESTS:
+            if not args.with_tests and not is_third_party_toml:
+                continue
         for target_arch in arch_specific.archs_to_test():
             if is_third_party_toml:
                 # For the root third_party.toml crate, nothing can depend on it,

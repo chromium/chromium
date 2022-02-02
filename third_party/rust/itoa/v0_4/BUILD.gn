@@ -14,9 +14,8 @@ cargo_crate("lib") {
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
 
-  # Unit tests skipped. Generate with --with-tests to include them
+  # Unit tests skipped. Generate with --with-tests to include them.
   skip_unit_tests = true
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
-  features = [ "std" ]
 }

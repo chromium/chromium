@@ -81,7 +81,7 @@ import("//build/rust/cargo_crate.gni")
 
 # Comment on the skip_unit_tests field in BUILD.gn file output.
 GN_TESTS_COMMENT = \
-"""# Unit tests skipped. Generate with --with-tests to include them"""
+"""# Unit tests skipped. Generate with --with-tests to include them."""
 
 # Comment on the visibility field in BUILD.gn file output.
 GN_VISIBILITY_COMMENT = \

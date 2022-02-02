@@ -190,6 +190,67 @@ allow-first-party-usage = false
             is_for_first_party_code=False)
         self.assertEqual(r, d)
 
+    def test_third_party_toml_dev_deps(self):
+        args = self.make_args()
+        THIRD_PARTY_TOML = """
+[dependencies]
+# Nothing. We're testing dev-dependencies here.
+
+[dev-dependencies]
+cxxbridge-macro = "1"
+
+# This dependency has an extension, and is default-visible to first-party code.
+[dev-dependencies.link-cplusplus]
+build-script-outputs = [ "src/link.rs", "src/cplusplus.rs" ]
+
+# This dependency is not visible to first-party code thanks to the extension.
+[dev-dependencies.syn]
+allow-first-party-usage = false
+"""
+
+        # Here we are simulating parsing our special third_party.toml file, so
+        # we need to present the contents of that file to the
+        # _parse_cargo_tree_dependency_line() function, in order for it to look
+        # for extensions.
+        toml_content = toml.loads(THIRD_PARTY_TOML)
+
+        line = "├── cxxbridge-macro v1.0.56 (proc-macro)"
+        r = gen._parse_cargo_tree_dependency_line(args, toml_content, True,
+                                                  line)
+        d = gen.CargoTreeDependency(
+            cargo.CrateKey("cxxbridge-macro", "1.0.56"),
+            full_version="1.0.56",
+            is_proc_macro=True,
+            # Deps from third_party.toml are visible to first-party code by
+            # default.
+            is_for_first_party_code=True)
+        self.assertEqual(r, d)
+
+        line = "├── link-cplusplus v1.0.5 default"
+        r = gen._parse_cargo_tree_dependency_line(args, toml_content, True,
+                                                  line)
+        d = gen.CargoTreeDependency(
+            cargo.CrateKey("link-cplusplus", "1.0.5"),
+            full_version="1.0.5",
+            features=["default"],
+            is_for_first_party_code=True,
+            # link-cplusplus has build script outputs listed in our
+            # third_party.toml.
+            build_script_outputs={"src/link.rs", "src/cplusplus.rs"})
+        self.assertEqual(r, d)
+
+        line = "└── syn v1.0.81 clone-impls,default"
+        r = gen._parse_cargo_tree_dependency_line(args, toml_content, True,
+                                                  line)
+        d = gen.CargoTreeDependency(
+            cargo.CrateKey("syn", "1.0.81"),
+            full_version="1.0.81",
+            features=["clone-impls", "default"],
+            # Deps from third_party.toml are visible to first-party code unless
+            # they opt out explicitly, which our syn dependency has done.
+            is_for_first_party_code=False)
+        self.assertEqual(r, d)
+
     def test_get_archs_third_party_toml(self):
         crate_key = None  # For third_party.toml there's none.
         usage_data = None  # For third_party.toml there's none.
