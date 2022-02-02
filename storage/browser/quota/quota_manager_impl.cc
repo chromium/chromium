@@ -725,8 +725,9 @@ class QuotaManagerImpl::BucketDataDeleter {
         callback_(std::move(callback)),
         completion_closure_(std::move(completion_closure)) {
     DCHECK(manager_);
-    DCHECK(callback_);
-    DCHECK(completion_closure_);
+    // TODO(crbug/1292216): Convert back into DCHECKS one issue is resolved.
+    CHECK(callback_);
+    CHECK(completion_closure_);
   }
 
   ~BucketDataDeleter() {
@@ -806,6 +807,8 @@ class QuotaManagerImpl::BucketDataDeleter {
 
   void FinishDeletion() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // TODO(crbug/1292216): Convert back into DCHECKS one issue is resolved.
+    CHECK_EQ(remaining_clients_, 0u);
 
     // Only remove the bucket from the database if we didn't skip any client
     // types.
@@ -827,8 +830,9 @@ class QuotaManagerImpl::BucketDataDeleter {
 
   void Complete(bool success) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(callback_);
-    DCHECK(completion_closure_);
+    // TODO(crbug/1292216): Convert back into DCHECKS one issue is resolved.
+    CHECK(callback_);
+    CHECK(completion_closure_);
 
     std::move(callback_).Run(
         success ? blink::mojom::QuotaStatusCode::kOk
