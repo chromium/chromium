@@ -45,7 +45,7 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">‏המנהל של פרופיל העבודה יכול להסיר נתוני Chromium שמופקים בזמן השימוש בפרופיל (כמו יצירת סימניות, היסטוריה, סיסמאות והגדרות נוספות). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">‏כדי להחיל עדכון זה, יש להפעיל מחדש את Chromium OS.</translation>
-<translation id="2614883797045469742">‏הגדרות ברירת המחדל מתאימות לרוב האנשים, אבל יש לך אפשרות להתאים אותן אישית, בהתאם לאופן השימוש שלך ב-Chromium</translation>
+<translation id="2614883797045469742">‏הגדרות ברירת המחדל מתאימות לרוב האנשים, אבל יש לך אפשרות להתאים אותן לאופן השימוש שלך ב-Chromium</translation>
 <translation id="2648074677641340862">‏במהלך ההתקנה ארעה שגיאה של מערכת ההפעלה. יש להוריד שוב את Chromium.</translation>
 <translation id="2661879430930417727">‏אם משתפים מכשיר, חברים ובני משפחה יכולים לגלוש בנפרד ולהגדיר את Chromium בדיוק כפי שהם רוצים</translation>
 <translation id="2711502716910134313">‏כרטיסייה של Chromium</translation>
@@ -211,7 +211,7 @@
 <translation id="6990124437352146030">‏Chromium זקוק להרשאת גישה למיקרופון בשביל האתר הזה</translation>
 <translation id="705851970750939768">‏יש לעדכן את Chromium‏</translation>
 <translation id="7067091210845072982">‏אם אין לתמונה תיאור מועיל, Chromium ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google.</translation>
-<translation id="7147279922647361552">‏התאמה אישית של כמה מהבחירות החשובות ביותר לגבי פרטיות ב-Chromium</translation>
+<translation id="7147279922647361552">‏התאמה אישית של כמה מהאפשרויות החשובות ביותר הקשורות לפרטיות ב-Chromium</translation>
 <translation id="718435575166326686">‏נדרשת הרשאת גישה למצלמה ב-Chromium עבור האתר הזה</translation>
 <translation id="7196312274710523067">‏לא ניתן היה להפעיל את Chromium. יש לנסות שוב.</translation>
 <translation id="7197677400338048821">‏Chromium לא יכול לבדוק את הסיסמאות שלך. יש לנסות שוב בעוד 24 שעות.</translation>
