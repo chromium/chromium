@@ -196,6 +196,9 @@ class PLATFORM_EXPORT AudioDestination
   // Modified only on the main thread, so it can be read without holding a lock
   // there.
   DeviceState device_state_;
+
+  // Collect the device latency matric only from the initial callback.
+  bool is_latency_metric_collected_ = false;
 };
 
 }  // namespace blink

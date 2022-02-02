@@ -150,6 +150,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioDestination.HardwareOutputLatency" units="ms"
+    expires_after="2022-06-30">
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The latency reported from the audio hardware. This number can be dynamic at
+    runtime but the metric is collected only once at the first platform audio
+    callback after an AudioContext is created.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.Autoplay" enum="WebAudioAutoplayStatus"
     expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
