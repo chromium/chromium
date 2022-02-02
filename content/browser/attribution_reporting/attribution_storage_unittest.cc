@@ -24,9 +24,9 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +84,7 @@ class AttributionStorageTest : public testing::Test {
   // Given a |conversion|, returns the expected conversion report properties at
   // the current timestamp.
   AttributionReport GetExpectedReport(const StoredSource& source,
-                                      const StorableTrigger& conversion) {
+                                      const AttributionTrigger& conversion) {
     return ReportBuilder(source)
         .SetTriggerData(conversion.trigger_data())
         .SetTriggerTime(base::Time::Now())
@@ -95,7 +95,7 @@ class AttributionStorageTest : public testing::Test {
   }
 
   CreateReportStatus MaybeCreateAndStoreReport(
-      const StorableTrigger& conversion) {
+      const AttributionTrigger& conversion) {
     return storage_->MaybeCreateAndStoreReport(conversion).status();
   }
 

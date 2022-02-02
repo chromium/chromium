@@ -39,7 +39,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/shader_cache_factory.h"

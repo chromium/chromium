@@ -20,10 +20,10 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -234,13 +234,13 @@ void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
           weak_factory_.GetWeakPtr()));
 }
 
-void AttributionManagerImpl::HandleTrigger(StorableTrigger trigger) {
+void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
   GetContentClient()->browser()->FlushBackgroundAttributions(
       base::BindOnce(&AttributionManagerImpl::HandleTriggerInternal,
                      weak_factory_.GetWeakPtr(), std::move(trigger)));
 }
 
-void AttributionManagerImpl::HandleTriggerInternal(StorableTrigger trigger) {
+void AttributionManagerImpl::HandleTriggerInternal(AttributionTrigger trigger) {
   attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
       .WithArgs(std::move(trigger))
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_TRIGGER_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_TRIGGER_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_
 
 #include <stdint.h>
 
@@ -16,23 +16,23 @@ namespace content {
 
 // Struct which represents a conversion registration event that was observed in
 // the renderer and is now being used by the browser process.
-class CONTENT_EXPORT StorableTrigger {
+class CONTENT_EXPORT AttributionTrigger {
  public:
   // Should only be created with values that the browser process has already
   // validated. At creation time, |trigger_data_| should already be stripped
   // to a lower entropy. |conversion_destination| should be filled by a
   // navigation origin known by the browser process.
-  StorableTrigger(uint64_t trigger_data,
-                  net::SchemefulSite conversion_destination,
-                  url::Origin reporting_origin,
-                  uint64_t event_source_trigger_data,
-                  int64_t priority,
-                  absl::optional<int64_t> dedup_key);
-  StorableTrigger(const StorableTrigger& other);
-  StorableTrigger& operator=(const StorableTrigger& other);
-  StorableTrigger(StorableTrigger&& other);
-  StorableTrigger& operator=(StorableTrigger&& other);
-  ~StorableTrigger();
+  AttributionTrigger(uint64_t trigger_data,
+                     net::SchemefulSite conversion_destination,
+                     url::Origin reporting_origin,
+                     uint64_t event_source_trigger_data,
+                     int64_t priority,
+                     absl::optional<int64_t> dedup_key);
+  AttributionTrigger(const AttributionTrigger& other);
+  AttributionTrigger& operator=(const AttributionTrigger& other);
+  AttributionTrigger(AttributionTrigger&& other);
+  AttributionTrigger& operator=(AttributionTrigger&& other);
+  ~AttributionTrigger();
 
   uint64_t trigger_data() const { return trigger_data_; }
 
@@ -40,9 +40,7 @@ class CONTENT_EXPORT StorableTrigger {
     return conversion_destination_;
   }
 
-  const url::Origin& reporting_origin() const {
-    return reporting_origin_;
-  }
+  const url::Origin& reporting_origin() const { return reporting_origin_; }
 
   uint64_t event_source_trigger_data() const {
     return event_source_trigger_data_;
@@ -50,9 +48,7 @@ class CONTENT_EXPORT StorableTrigger {
 
   int64_t priority() const { return priority_; }
 
-  const absl::optional<int64_t>& dedup_key() const {
-    return dedup_key_;
-  }
+  const absl::optional<int64_t>& dedup_key() const { return dedup_key_; }
 
  private:
   // Data associated with trigger.
@@ -81,4 +77,4 @@ class CONTENT_EXPORT StorableTrigger {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_TRIGGER_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_

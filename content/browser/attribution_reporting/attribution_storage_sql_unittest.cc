@@ -17,8 +17,8 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -92,7 +92,7 @@ class AttributionStorageSqlTest : public testing::Test {
   }
 
   CreateReportStatus MaybeCreateAndStoreReport(
-      const StorableTrigger& conversion) {
+      const AttributionTrigger& conversion) {
     return storage_->MaybeCreateAndStoreReport(conversion).status();
   }
 

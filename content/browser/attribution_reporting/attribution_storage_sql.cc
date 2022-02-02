@@ -21,10 +21,10 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
@@ -583,7 +583,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
 }
 
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
-    const StorableTrigger& trigger) {
+    const AttributionTrigger& trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We don't bother creating the DB here if it doesn't exist, because it's not
   // possible for there to be a matching source if there's no DB.

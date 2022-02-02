@@ -252,7 +252,7 @@ StoredSource SourceBuilder::BuildStored() const {
   return source;
 }
 
-StorableTrigger DefaultTrigger() {
+AttributionTrigger DefaultTrigger() {
   return TriggerBuilder().Build();
 }
 
@@ -296,10 +296,10 @@ TriggerBuilder& TriggerBuilder::SetDedupKey(absl::optional<int64_t> dedup_key) {
   return *this;
 }
 
-StorableTrigger TriggerBuilder::Build() const {
-  return StorableTrigger(trigger_data_, conversion_destination_,
-                         reporting_origin_, event_source_trigger_data_,
-                         priority_, dedup_key_);
+AttributionTrigger TriggerBuilder::Build() const {
+  return AttributionTrigger(trigger_data_, conversion_destination_,
+                            reporting_origin_, event_source_trigger_data_,
+                            priority_, dedup_key_);
 }
 
 ReportBuilder::ReportBuilder(StoredSource source)
@@ -540,7 +540,8 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion) {
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionTrigger& conversion) {
   return out << "{trigger_data=" << conversion.trigger_data()
              << ",conversion_destination="
              << conversion.conversion_destination().Serialize()

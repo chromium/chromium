@@ -85,7 +85,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const StorableSource& source,
       int deactivated_source_return_limit = -1) override;
   CreateReportResult MaybeCreateAndStoreReport(
-      const StorableTrigger& trigger) override;
+      const AttributionTrigger& trigger) override;
   std::vector<AttributionReport> GetAttributionsToReport(
       base::Time max_report_time,
       int limit = -1) override;

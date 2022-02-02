@@ -23,7 +23,7 @@ class Origin;
 namespace content {
 
 class AttributionPolicy;
-class StorableTrigger;
+class AttributionTrigger;
 class StorableSource;
 class StoredSource;
 class WebContents;
@@ -78,7 +78,7 @@ class AttributionManager {
 
   // Process a newly registered trigger. Will create and log any new
   // reports to storage.
-  virtual void HandleTrigger(StorableTrigger trigger) = 0;
+  virtual void HandleTrigger(AttributionTrigger trigger) = 0;
 
   // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.

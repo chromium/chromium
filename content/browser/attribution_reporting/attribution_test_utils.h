@@ -22,11 +22,11 @@
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/schemeful_site.h"
@@ -37,7 +37,7 @@
 namespace content {
 
 class HistogramContribution;
-class StorableTrigger;
+class AttributionTrigger;
 
 struct AggregatableAttribution;
 
@@ -193,7 +193,7 @@ class MockAttributionManager : public AttributionManager {
   // AttributionManager:
   MOCK_METHOD(void, HandleSource, (StorableSource source), (override));
 
-  MOCK_METHOD(void, HandleTrigger, (StorableTrigger trigger), (override));
+  MOCK_METHOD(void, HandleTrigger, (AttributionTrigger trigger), (override));
 
   MOCK_METHOD(void,
               GetActiveSourcesForWebUI,
@@ -289,12 +289,12 @@ class SourceBuilder {
   std::vector<int64_t> dedup_keys_;
 };
 
-// Returns a StorableTrigger with default data which matches the default
+// Returns a AttributionTrigger with default data which matches the default
 // impressions created by SourceBuilder.
-StorableTrigger DefaultTrigger();
+AttributionTrigger DefaultTrigger();
 
-// Helper class to construct a StorableTrigger for tests using default data.
-// StorableTrigger members are not mutable after construction requiring a
+// Helper class to construct a AttributionTrigger for tests using default data.
+// AttributionTrigger members are not mutable after construction requiring a
 // builder pattern.
 class TriggerBuilder {
  public:
@@ -314,7 +314,7 @@ class TriggerBuilder {
 
   TriggerBuilder& SetDedupKey(absl::optional<int64_t> dedup_key);
 
-  StorableTrigger Build() const;
+  AttributionTrigger Build() const;
 
  private:
   uint64_t trigger_data_ = 111;
@@ -398,7 +398,8 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          CommonSourceInfo::SourceType source_type);
 
-std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion);
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionTrigger& conversion);
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 

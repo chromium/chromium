@@ -27,7 +27,7 @@ class Origin;
 namespace content {
 
 class StorableSource;
-class StorableTrigger;
+class AttributionTrigger;
 
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
@@ -256,7 +256,7 @@ class AttributionStorage {
   // new associated report. Only active sources will receive new attributions.
   // Returns whether a new report has been scheduled/added to storage.
   virtual CreateReportResult MaybeCreateAndStoreReport(
-      const StorableTrigger& trigger) = 0;
+      const AttributionTrigger& trigger) = 0;
 
   // Returns all of the reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
