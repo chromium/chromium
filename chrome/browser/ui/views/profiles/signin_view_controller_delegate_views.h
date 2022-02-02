@@ -80,9 +80,6 @@ class SigninViewControllerDelegateViews
 #endif
 
   // views::DialogDelegateView:
-  views::View* GetContentsView() override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
   bool ShouldShowCloseButton() const override;
 
   // SigninViewControllerDelegate:
@@ -138,18 +135,13 @@ class SigninViewControllerDelegateViews
   // Displays the modal dialog.
   void DisplayModal();
 
-  // This instance of `SigninViewControllerDelegateViews` is initially
-  // self-owned and then passes ownership of itself and the content view to
-  // `modal_signin_widget_` and becomes owned by the view hierarchy.
-  std::unique_ptr<views::WebView> owned_content_view_;
-
   // If the widget is non-null, then it owns the
   // `SigninViewControllerDelegateViews` and the content view.
   raw_ptr<views::Widget> modal_signin_widget_ = nullptr;
 
+  const raw_ptr<views::WebView> content_view_;
   raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<Browser> browser_;
-  raw_ptr<views::WebView> content_view_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
 };

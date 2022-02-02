@@ -34,6 +34,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -144,30 +145,15 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
 }
 #endif
 
-views::View* SigninViewControllerDelegateViews::GetContentsView() {
-  return content_view_;
-}
-
-views::Widget* SigninViewControllerDelegateViews::GetWidget() {
-  return content_view_->GetWidget();
-}
-
-const views::Widget* SigninViewControllerDelegateViews::GetWidget() const {
-  return content_view_->GetWidget();
-}
-
 bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
   return should_show_close_button_;
 }
 
 void SigninViewControllerDelegateViews::CloseModalSignin() {
   NotifyModalDialogClosed();
-  // Either `modal_signin_widget_` or `owned_content_view_` is nullptr.
   if (modal_signin_widget_) {
-    DCHECK(!owned_content_view_);
     modal_signin_widget_->Close();
   } else {
-    DCHECK(owned_content_view_);
     delete this;
   }
 }
@@ -242,18 +228,18 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     ui::ModalType dialog_modal_type,
     bool wait_for_size,
     bool should_show_close_button)
-    : owned_content_view_(std::move(content_view)),
-      web_contents_(owned_content_view_->GetWebContents()),
+    : content_view_(content_view.get()),
+      web_contents_(content_view->GetWebContents()),
       browser_(browser),
-      content_view_(owned_content_view_.get()),
       should_show_close_button_(should_show_close_button) {
   DCHECK(web_contents_);
   DCHECK(browser_);
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
       << "A tab must be active to present the sign-in modal dialog.";
-  DCHECK(owned_content_view_);
   DCHECK(content_view_);
 
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  AddChildView(std::move(content_view));
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   web_contents_->SetDelegate(this);
@@ -312,9 +298,8 @@ void SigninViewControllerDelegateViews::DisplayModal() {
   if (!host_web_contents)
     return;
 
-  // Ownership of this and the content view is transferred to the view
-  // hierarchy, through `modal_signin_widget_`.
-  owned_content_view_.release();
+  // Ownership of `this` is transferred to the view hierarchy, through
+  // `modal_signin_widget_`.
 
   gfx::NativeWindow window = host_web_contents->GetTopLevelNativeWindow();
   switch (GetModalType()) {
