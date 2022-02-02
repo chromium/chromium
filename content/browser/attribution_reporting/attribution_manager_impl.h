@@ -129,6 +129,7 @@ class CONTENT_EXPORT AttributionManagerImpl
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+      std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
       std::unique_ptr<NetworkSender> network_sender);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:

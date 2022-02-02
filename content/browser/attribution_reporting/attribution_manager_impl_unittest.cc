@@ -101,6 +101,17 @@ constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
 // Give impressions a sufficiently long expiry.
 constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 
+// Uses the behavior of the real delegate other than disabling randomized
+// responses, in order to prevent test flakiness.
+class NoRandomizedResponseStorageDelegate
+    : public AttributionStorageDelegateImpl {
+ public:
+  RandomizedResponse GetRandomizedResponse(
+      const CommonSourceInfo& source) const override {
+    return absl::nullopt;
+  }
+};
+
 class MockNetworkSender : public AttributionManagerImpl::NetworkSender {
  public:
   // AttributionManagerImpl::NetworkSender:
@@ -167,6 +178,7 @@ class AttributionManagerImplTest : public testing::Test {
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()),
         dir_.GetPath(), mock_storage_policy_,
+        std::make_unique<NoRandomizedResponseStorageDelegate>(),
         absl::WrapUnique(network_sender_.get())));
   }
 

@@ -125,16 +125,16 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     return absl::nullopt;
 
   double randomized_response_probability;
-
-  // TODO(apaseltiner): Pick non-zero probabilities.
   switch (source.source_type()) {
     case CommonSourceInfo::SourceType::kNavigation:
-      randomized_response_probability = 0;
+      randomized_response_probability = .0024;
       break;
     case CommonSourceInfo::SourceType::kEvent:
-      randomized_response_probability = 0;
+      randomized_response_probability = .0000025;
       break;
   }
+  DCHECK_GE(randomized_response_probability, 0);
+  DCHECK_LE(randomized_response_probability, 1);
 
   if (base::RandDouble() < randomized_response_probability)
     return GetRandomFakeReports(source);

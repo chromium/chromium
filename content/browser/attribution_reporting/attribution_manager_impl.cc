@@ -145,20 +145,22 @@ AttributionManagerImpl::AttributionManagerImpl(
           storage_partition,
           user_data_directory,
           std::move(special_storage_policy),
+          std::make_unique<AttributionStorageDelegateImpl>(
+              base::CommandLine::ForCurrentProcess()->HasSwitch(
+                  switches::kConversionsDebugMode)),
           std::make_unique<AttributionNetworkSenderImpl>(storage_partition)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+    std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
     std::unique_ptr<NetworkSender> network_sender)
     : storage_partition_(storage_partition),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
           user_data_directory,
-          std::make_unique<AttributionStorageDelegateImpl>(
-              base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kConversionsDebugMode)))),
+          std::move(storage_delegate))),
       special_storage_policy_(std::move(special_storage_policy)),
       network_sender_(std::move(network_sender)),
       weak_factory_(this) {
