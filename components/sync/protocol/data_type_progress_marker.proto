@@ -41,12 +41,8 @@ message DataTypeProgressMarker {
   // items ever sent to the client.  Servers shouldn't do this.)
   optional bytes token = 2;
 
-  // Clients that previously downloaded updates synced using the timestamp based
-  // progress tracking mechanism, but which wish to switch over to the opaque
-  // token mechanism can set this field in a GetUpdatesMessage.  The server
-  // will perform a get updates operation as normal from the indicated
-  // timestamp, and return only an opaque progress token.
-  optional int64 timestamp_token_for_migration = 3 [deprecated = true];
+  reserved 3;
+  reserved "timestamp_token_for_migration";
 
   // An opaque-to-the-client string of bytes, received through a notification,
   // that the server may interpret as a hint about the location of the latest
