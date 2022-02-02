@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -44,6 +45,7 @@ import java.util.Set;
 /** Unit tests for the ChildConnectionAllocator class. */
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ChildConnectionAllocatorTest {
     private static final String TEST_PACKAGE_NAME = "org.chromium.allocator_test";
 
