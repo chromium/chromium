@@ -17,7 +17,7 @@
   }
 
   .space {
-    height: 48px;
+    height: 32px;
   }
 
   .text-button:not(:focus) {
@@ -67,7 +67,7 @@
     <cr-button on-click="close" class="cancel-button">$i18n{close}</cr-button>
     <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
       disabled="[[castButtonDisabled(accessCode, canCast)]]">
-      $i18n{cast}
+      $i18n{submit}
     </cr-button>
     <cr-button id="backButton" on-click="switchToCodeInput"
       class="action-button">

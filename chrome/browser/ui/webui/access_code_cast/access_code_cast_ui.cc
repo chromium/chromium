@@ -120,8 +120,8 @@ void AccessCodeCastDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
-  const int kDefaultWidth = 480;
-  const int kDefaultHeight = 341;
+  const int kDefaultWidth = 448;
+  const int kDefaultHeight = 271;
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
@@ -204,6 +204,7 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       {"errorPermission", IDS_ACCESS_CODE_CAST_ERROR_PERMISSION},
       {"errorTooManyRequests", IDS_ACCESS_CODE_CAST_ERROR_TOO_MANY_REQUESTS},
       {"errorUnknown", IDS_ACCESS_CODE_CAST_ERROR_UNKNOWN},
+      {"submit", IDS_ACCESS_CODE_CAST_SUBMIT},
       {"useCamera", IDS_ACCESS_CODE_CAST_USE_CAMERA},
   };
 
