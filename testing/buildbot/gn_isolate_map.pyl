@@ -304,6 +304,7 @@
     "type": "console_test_launcher",
   },
   "browser_tests": {
+    # TODO(crbug.com/1293351): remove this.
     "python3": False,
     "label": "//chrome/test:browser_tests",
     "type": "windowed_test_launcher",
@@ -729,7 +730,6 @@
     "type": "console_test_launcher",
   },
   "crashpad_tests": {
-    "python3": False,
     "label": "//third_party/crashpad/crashpad:crashpad_tests",
     "type": "console_test_launcher",
   },
@@ -969,7 +969,6 @@
     "type": "console_test_launcher",
   },
   "headless_browsertests": {
-    "python3": False,
     "label": "//headless:headless_browsertests",
     "type": "console_test_launcher",
   },
@@ -1558,7 +1557,6 @@
     "type": "additional_compile_target",
   },
   "remoting_unittests": {
-    "python3": False,
     "label": "//remoting:remoting_unittests",
     "type": "console_test_launcher",
   },
@@ -1643,7 +1641,6 @@
     "type": "console_test_launcher",
   },
   "services_unittests": {
-    "python3": False,
     "label": "//services:services_unittests",
     "type": "windowed_test_launcher",
   },
@@ -1886,7 +1883,6 @@
     "type": "windowed_test_launcher",
   },
   "unit_tests": {
-    "python3": False,
     "label": "//chrome/test:unit_tests",
     "type": "windowed_test_launcher",
   },
@@ -2151,7 +2147,6 @@
     ],
   },
   "zlib_unittests": {
-    "python3": False,
     "label": "//third_party/zlib:zlib_unittests",
     "type": "console_test_launcher",
   },
