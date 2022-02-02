@@ -104,7 +104,7 @@
           'has_native_resultdb_integration',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_browser_integration_tests',
+          'gtest_tests': 'chromeos_device_gtests',
           'isolated_scripts': 'chromeos_remote_device_isolated_tests',
         },
         'swarming': {
@@ -168,9 +168,11 @@
         'mixins': [
           'has_native_resultdb_integration',
         ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_only_gtests',
-        },
+        # TODO(crbug.com/1293222): Restore after octopus capacity has been
+        # returned.
+        #'test_suites': {
+        #  'gtest_tests': 'chromeos_device_only_gtests',
+        #},
         'swarming': {
           'dimension_sets': [
             {
