@@ -13,7 +13,6 @@
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
-class GURL;
 class Profile;
 
 namespace content {
@@ -134,7 +133,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // Returns true if the given page access command is enabled in the menu.
   bool IsPageAccessCommandEnabled(const Extension& extension,
-                                  const GURL& url,
                                   int command_id) const;
 
   void HandlePageAccessCommand(int command_id,

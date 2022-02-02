@@ -1326,14 +1326,8 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessWithActiveTab) {
   const Entries kOnAllSites = Entries::PAGE_ACCESS_RUN_ON_ALL_SITES;
   const Entries kLearnMore = Entries::PAGE_ACCESS_LEARN_MORE;
 
-  // Add an extension that has activeTab. Note: we add permission for b.com so
-  // that the extension is seen as affectable by the runtime host permissions
-  // feature; otherwise the page access menu entry is omitted entirely.
-  // TODO(devlin): Should we change that?
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension")
-          .AddPermissions({"activeTab", "http://b.com/*"})
-          .Build();
+      ExtensionBuilder("extension").AddPermissions({"activeTab"}).Build();
   InitializeAndAddExtension(*extension);
 
   AddTab(GURL("https://a.com"));

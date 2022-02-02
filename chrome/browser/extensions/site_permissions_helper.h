@@ -44,10 +44,15 @@ class SitePermissionsHelper {
   const SitePermissionsHelper& operator=(const SitePermissionsHelper&) = delete;
   ~SitePermissionsHelper();
 
-  // Returns the current site access pointed by `web_contents` for `extension`.
+  // Returns the site access for `extension` in the current site pointed
+  // by `web_contents`. Moreover, this can only be called if the user can
+  // configure site access for the extension (which excludes things like policy
+  // extensions). Otherwie, it DCHECK's.
   SiteAccess GetCurrentSiteAccess(const Extension& extension,
                                   content::WebContents* web_contents) const;
-  // Returns the site interaction pointed by `web_contents` for `extension`.
+
+  // Returns the site interaction for `extension` in the current site pointed by
+  // `web_contents`.
   SiteInteraction GetSiteInteraction(const Extension& extension,
                                      content::WebContents* web_contents) const;
 
@@ -58,12 +63,17 @@ class SitePermissionsHelper {
                         content::WebContents* web_contents,
                         SitePermissionsHelper::SiteAccess new_access);
 
+  // Returns whether `site_access` option can be selected for `extension` in
+  // `url`.
+  bool CanSelectSiteAccess(const Extension& extension,
+                           const GURL& gurl,
+                           SiteAccess site_access) const;
+
   // Returns whether the `extension` has been blocked on the given
   // `web_contents`.
   bool HasBeenBlocked(const Extension& extension,
                       content::WebContents* web_contents) const;
 
- private:
   // Returns true if this extension uses the activeTab permission and would
   // probably be able to to access the given `url`. The actual checks when an
   // activeTab extension tries to run are a little more complicated and can be
@@ -74,6 +84,7 @@ class SitePermissionsHelper {
   bool HasActiveTabAndCanAccess(const Extension& extension,
                                 const GURL& url) const;
 
+ private:
   raw_ptr<Profile> profile_;
 };
 

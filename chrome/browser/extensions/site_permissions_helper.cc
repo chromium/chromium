@@ -88,6 +88,47 @@ void SitePermissionsHelper::UpdateSiteAccess(
   runner->HandlePageAccessModified(&extension, current_access, new_access);
 }
 
+bool SitePermissionsHelper::CanSelectSiteAccess(const Extension& extension,
+                                                const GURL& url,
+                                                SiteAccess site_access) const {
+  // Extensions cannot run on sites restricted to them (ever), so no type of
+  // site access is selectable.
+  if (extension.permissions_data()->IsRestrictedUrl(url, /*error=*/nullptr))
+    return false;
+
+  // The "on click" option is enabled if the extension has active tab,
+  // regardless of its granted host permissions.
+  if (site_access == SitePermissionsHelper::SiteAccess::kOnClick &&
+      HasActiveTabAndCanAccess(extension, url))
+    return true;
+
+  ScriptingPermissionsModifier modifier(profile_,
+                                        base::WrapRefCounted(&extension));
+  if (!modifier.CanAffectExtension())
+    return false;
+
+  ScriptingPermissionsModifier::SiteAccess current_access =
+      modifier.GetSiteAccess(url);
+  switch (site_access) {
+    case SitePermissionsHelper::SiteAccess::kOnClick:
+      // The "on click" option is only enabled if the extension has active tab,
+      // previously handled, or wants to always run on the site without user
+      // interaction.
+      return current_access.has_site_access ||
+             current_access.withheld_site_access;
+    case SitePermissionsHelper::SiteAccess::kOnSite:
+      // The "on site" option is only enabled if the extension wants to
+      // always run on the site without user interaction.
+      return current_access.has_site_access ||
+             current_access.withheld_site_access;
+    case SitePermissionsHelper::SiteAccess::kOnAllSites:
+      // The "on all sites" option is only enabled if the extension wants to be
+      // able to run everywhere.
+      return current_access.has_all_sites_access ||
+             current_access.withheld_all_sites_access;
+  }
+}
+
 bool SitePermissionsHelper::HasBeenBlocked(
     const Extension& extension,
     content::WebContents* web_contents) const {
