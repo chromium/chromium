@@ -3049,6 +3049,15 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     return;
   }
 
+  // All children are removed from the flow thread automatically eventually (via
+  // WillBeRemovedFromTree()), but that's a bit too late for us. The code
+  // section right below here might merge and remove anonymous blocks, and there
+  // may be column spanners inside an inline in these anonymous blocks. If these
+  // move around without telling the flow thread right away, it will get
+  // confused and crash.
+  if (UNLIKELY(old_child->IsInsideFlowThread()))
+    old_child->RemoveFromLayoutFlowThread();
+
   // If this child is a block, and if our previous and next siblings are both
   // anonymous blocks with inline content, then we can go ahead and fold the
   // inline content back together. If only one of the siblings is such an

@@ -1205,6 +1205,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetIsInsideFlowThread(inside_flow_thread);
   }
 
+  // Remove this object and all descendants from the containing
+  // LayoutFlowThread.
+  void RemoveFromLayoutFlowThread();
+
   // FIXME: Until all SVG layoutObjects can be subclasses of
   // LayoutSVGModelObject we have to add SVG layoutObject methods to
   // LayoutObject with an NOTREACHED() default implementation.
@@ -3655,10 +3659,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     bitfields_.SetEverHadLayout(true);
   }
-
-  // Remove this object and all descendants from the containing
-  // LayoutFlowThread.
-  void RemoveFromLayoutFlowThread();
 
   // See LocalVisualRect().
   virtual PhysicalRect LocalVisualRectIgnoringVisibility() const;
