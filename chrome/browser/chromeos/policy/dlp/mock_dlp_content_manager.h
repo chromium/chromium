@@ -24,6 +24,10 @@ class MockDlpContentManager : public DlpContentManager {
               (content::WebContents*),
               (override));
   MOCK_METHOD(void, OnVisibilityChanged, (content::WebContents*), (override));
+  MOCK_METHOD(bool,
+              IsScreenshotApiRestricted,
+              (content::WebContents*),
+              (override));
   MOCK_METHOD(void,
               CheckScreenShareRestriction,
               (const content::DesktopMediaID&,

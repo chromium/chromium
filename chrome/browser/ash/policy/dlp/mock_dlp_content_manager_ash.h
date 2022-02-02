@@ -27,10 +27,6 @@ class MockDlpContentManagerAsh : public DlpContentManagerAsh {
               (const));
   MOCK_METHOD(void, OnVisibilityChanged, (content::WebContents*));
   MOCK_METHOD(bool,
-              IsScreenshotApiRestricted,
-              (const ScreenshotArea& area),
-              (override));
-  MOCK_METHOD(bool,
               IsScreenCaptureRestricted,
               (const content::DesktopMediaID& media_id),
               (override));

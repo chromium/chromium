@@ -25,8 +25,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-struct ScreenshotArea;
-
 namespace aura {
 class Window;
 }  // namespace aura
@@ -63,9 +61,6 @@ class DlpContentManagerAsh : public DlpContentManager,
   // Returns which restrictions are applied to the WebContents which are
   // currently visible.
   DlpContentRestrictionSet GetOnScreenPresentRestrictions() const;
-
-  // Returns whether screenshots should be restricted for extensions API.
-  virtual bool IsScreenshotApiRestricted(const ScreenshotArea& area);
 
   // Checks whether screenshots of |area| are restricted or not advised.
   // Depending on the result, calls |callback| and passes an indicator whether

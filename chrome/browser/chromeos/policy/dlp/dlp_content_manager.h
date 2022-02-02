@@ -55,6 +55,9 @@ class DlpContentManager : public DlpContentObserver {
   void CheckPrintingRestriction(content::WebContents* web_contents,
                                 OnDlpRestrictionCheckedCallback callback);
 
+  // Returns whether screenshots should be restricted for extensions API.
+  virtual bool IsScreenshotApiRestricted(content::WebContents* web_contents);
+
   // Checks whether screen sharing of content from the |media_id| source with
   // application |application_name| is restricted or not advised. Depending on
   // the result, calls |callback| and passes an indicator whether to proceed or

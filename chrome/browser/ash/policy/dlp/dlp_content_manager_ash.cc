@@ -100,21 +100,6 @@ DlpContentRestrictionSet DlpContentManagerAsh::GetOnScreenPresentRestrictions()
   return on_screen_restrictions_;
 }
 
-bool DlpContentManagerAsh::IsScreenshotApiRestricted(
-    const ScreenshotArea& area) {
-  const ConfidentialContentsInfo info =
-      GetAreaConfidentialContentsInfo(area, DlpContentRestriction::kScreenshot);
-  MaybeReportEvent(info.restriction_info,
-                   DlpRulesManager::Restriction::kScreenshot);
-  if (IsWarn(info.restriction_info))
-    ReportWarningEvent(info.restriction_info.url,
-                       DlpRulesManager::Restriction::kScreenshot);
-  DlpBooleanHistogram(dlp::kScreenshotBlockedUMA,
-                      IsBlocked(info.restriction_info));
-  // TODO(crbug.com/1252736): Properly handle WARN for screenshots API.
-  return IsBlocked(info.restriction_info) || IsWarn(info.restriction_info);
-}
-
 void DlpContentManagerAsh::CheckScreenshotRestriction(
     const ScreenshotArea& area,
     ash::OnCaptureModeDlpRestrictionChecked callback) {

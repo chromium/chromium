@@ -75,14 +75,16 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
 #include "components/user_manager/user_manager.h"
 #else
 #include "extensions/browser/updater/null_extension_cache.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #endif
 
 namespace extensions {
@@ -587,11 +589,11 @@ bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
 
 bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
     content::WebContents* web_contents) const {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
-  return policy::DlpContentManagerAsh::Get()->IsScreenshotApiRestricted(
-      ScreenshotArea::CreateForWindow(web_contents->GetNativeView()));
+  return policy::DlpContentManager::Get()->IsScreenshotApiRestricted(
+      web_contents);
 #endif
 }
 

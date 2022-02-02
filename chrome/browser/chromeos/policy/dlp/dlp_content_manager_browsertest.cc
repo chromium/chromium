@@ -165,6 +165,129 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
               DlpRulesManager::Level::kBlock, 0u);
 }
 
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
+  SetupReporting();
+  DlpContentManager* manager = helper_->GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 0u);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenshotRestricted);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 1u);
+
+  web_contents->WasHidden();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 2);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 2u);
+
+  web_contents->WasShown();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 3u);
+
+  helper_->DestroyWebContents(web_contents);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 3u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
+  SetupReporting();
+  DlpContentManager* manager = helper_->GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 0u);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenshotWarned);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 1u);
+
+  web_contents->WasHidden();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 2u);
+
+  web_contents->WasShown();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 3u);
+
+  helper_->DestroyWebContents(web_contents);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 3u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
+  SetupReporting();
+  DlpContentManager* manager = helper_->GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 0u);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenshotReported);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 1u);
+
+  web_contents->WasHidden();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 2u);
+
+  web_contents->WasShown();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 3u);
+
+  helper_->DestroyWebContents(web_contents);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 4);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 3u);
+}
+
 class DlpContentManagerReportingBrowserTest
     : public DlpContentManagerBrowserTest {
  public:

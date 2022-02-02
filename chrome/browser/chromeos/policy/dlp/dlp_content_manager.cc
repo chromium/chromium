@@ -123,6 +123,20 @@ void DlpContentManager::CheckPrintingRestriction(
   std::move(callback).Run(true);
 }
 
+bool DlpContentManager::IsScreenshotApiRestricted(
+    content::WebContents* web_contents) {
+  const RestrictionLevelAndUrl restriction_info =
+      GetConfidentialRestrictions(web_contents)
+          .GetRestrictionLevelAndUrl(DlpContentRestriction::kScreenshot);
+  MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kScreenshot);
+  if (IsWarn(restriction_info))
+    ReportWarningEvent(restriction_info.url,
+                       DlpRulesManager::Restriction::kScreenshot);
+  DlpBooleanHistogram(dlp::kScreenshotBlockedUMA, IsBlocked(restriction_info));
+  // TODO(crbug.com/1252736): Properly handle WARN for screenshots API.
+  return IsBlocked(restriction_info) || IsWarn(restriction_info);
+}
+
 void DlpContentManager::SetReportingManagerForTesting(
     DlpReportingManager* reporting_manager) {
   DCHECK(!reporting_manager_);
