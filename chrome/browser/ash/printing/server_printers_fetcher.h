@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 
 class GURL;
 class Profile;

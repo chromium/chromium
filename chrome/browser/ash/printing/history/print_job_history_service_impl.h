@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_IMPL_H_
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_IMPL_H_
 
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 #include "chrome/browser/ash/printing/history/print_job_history_cleaner.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 
 class PrefService;
 

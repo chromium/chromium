@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/chromeos/printing/print_server.h"
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/print_server.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

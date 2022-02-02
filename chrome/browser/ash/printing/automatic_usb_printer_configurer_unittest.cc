@@ -10,9 +10,9 @@
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/printers_map.h"
+#include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
-#include "chrome/browser/chromeos/printing/printers_map.h"
-#include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

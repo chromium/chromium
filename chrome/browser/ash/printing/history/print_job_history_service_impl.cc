@@ -8,8 +8,8 @@
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info_proto_conversions.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
 #include "chrome/browser/printing/print_job.h"
 #include "components/prefs/pref_service.h"
 

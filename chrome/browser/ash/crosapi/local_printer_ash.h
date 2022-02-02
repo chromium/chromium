@@ -10,9 +10,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
-#include "chrome/browser/chromeos/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

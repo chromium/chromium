@@ -58,7 +58,7 @@ dialog as available targets for printing.
 
 ### CupsPrintersManager
 
-Defined in `chome/browser/chromeos/printing/cups_printers_manager.[cc|h]`.
+Defined in `chome/browser/ash/printing/cups_printers_manager.[cc|h]`.
 
 The `CupsPrintersManager` class is the top-level object responsible for
 providing information about available printers of all 4 types to all consumers.
@@ -121,7 +121,7 @@ This responsibility is given to  `CupsPrintersManager`.
 
 ### PrinterDetectors
 
-Defined in `chome/browser/chromeos/printing/printer_detector.h` `PrinterDetector`
+Defined in `chome/browser/ash/printing/printer_detector.h` `PrinterDetector`
 provides an interface implemented by subsystems that can automatically detect
 the existence of printers.
 

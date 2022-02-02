@@ -59,7 +59,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 #if BUILDFLAG(IS_CHROMEOS)
   // An enumeration of components where print jobs can come from. The order of
   // these enums must match that of
-  // chrome/browser/chromeos/printing/history/print_job_info.proto.
+  // chrome/browser/ash/printing/history/print_job_info.proto.
   using Source = crosapi::mojom::PrintJob::Source;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

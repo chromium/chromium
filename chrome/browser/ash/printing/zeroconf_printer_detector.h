@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 
 namespace ash {

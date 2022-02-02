@@ -9,8 +9,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ash/printing/printers_map.h"
 #include "chrome/browser/ash/printing/printing_stubs.h"
-#include "chrome/browser/chromeos/printing/printers_map.h"
 #include "chromeos/printing/cups_printer_status.h"
 
 namespace chromeos {

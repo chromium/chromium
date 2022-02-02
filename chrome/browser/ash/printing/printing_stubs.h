@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/printer_configurer.h"
+#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

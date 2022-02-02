@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 

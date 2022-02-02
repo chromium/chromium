@@ -10,8 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/chromeos/printing/print_servers_manager.h"
-#include "chrome/browser/chromeos/printing/printer_installation_manager.h"
+#include "chrome/browser/ash/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/printer_installation_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
 #include "components/keyed_service/core/keyed_service.h"

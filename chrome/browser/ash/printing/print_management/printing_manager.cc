@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/print_management/print_job_info_mojom_conversions.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

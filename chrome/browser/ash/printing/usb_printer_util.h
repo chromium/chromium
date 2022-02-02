@@ -7,7 +7,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_
 #define CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_
 
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
 

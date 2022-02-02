@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/synchronization/lock.h"
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/metrics_proto/printer_event.pb.h"
 

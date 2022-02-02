@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 
 class Profile;
 

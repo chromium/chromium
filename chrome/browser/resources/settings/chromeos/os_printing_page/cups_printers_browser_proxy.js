@@ -82,7 +82,7 @@ export let PrinterPpdMakeModel;
 /**
  *  @enum {number}
  *  These values must be kept in sync with the PrinterSetupResult enum in
- *  chrome/browser/chromeos/printing/printer_configurer.h.
+ *  chrome/browser/ash/printing/printer_configurer.h.
  */
 export const PrinterSetupResult = {
   FATAL_ERROR: 0,
