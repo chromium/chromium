@@ -1696,6 +1696,7 @@ static_library("ui") {
       "//chrome/browser/image_editor",
       "//chrome/browser/media/router",
       "//chrome/browser/media/router/discovery:discovery",
+      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service_factory",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/new_tab_page/modules/drive:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/photos:mojo_bindings",

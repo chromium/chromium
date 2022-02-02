@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
@@ -129,6 +130,10 @@ void AccessCodeCastHandler::AddSink(
     const std::string& access_code,
     access_code_cast::mojom::CastDiscoveryMethod discovery_method,
     AddSinkCallback callback) {
+  // Lazily init an AccessCodeCastService to ensure its creation if
+  // feature/policy was turned after profile was initialized.
+  AccessCodeCastSinkServiceFactory::GetForProfile(profile_);
+
   add_sink_callback_ = std::move(callback);
 
   discovery_server_interface_ =

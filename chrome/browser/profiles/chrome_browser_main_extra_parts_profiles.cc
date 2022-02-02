@@ -105,6 +105,7 @@
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -145,6 +146,7 @@
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profiles/profile_theme_update_service_factory.h"
@@ -382,6 +384,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   media_router::ChromeLocalPresentationManagerFactory::GetInstance();
   media_router::ChromeMediaRouterFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI))
+    media_router::AccessCodeCastSinkServiceFactory::GetInstance();
   media_router::MediaRouterUIServiceFactory::GetInstance();
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

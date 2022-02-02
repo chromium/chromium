@@ -47,6 +47,10 @@ class MockCastMediaSinkServiceImpl : public CastMediaSinkServiceImpl {
   MOCK_METHOD2(OpenChannels,
                void(const std::vector<MediaSinkInternal>& cast_sinks,
                     CastMediaSinkServiceImpl::SinkSource sink_source));
+  MOCK_METHOD(void,
+              DisconnectAndRemoveSink,
+              (const MediaSinkInternal& sink),
+              (override));
 
   OnSinksDiscoveredCallback sinks_discovered_cb() {
     return sinks_discovered_cb_;

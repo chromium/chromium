@@ -114,7 +114,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // Closes the Cast Channel to the sink, and removes the sink from the sink
   // service.
-  void DisconnectAndRemoveSink(const MediaSinkInternal& sink);
+  virtual void DisconnectAndRemoveSink(const MediaSinkInternal& sink);
 
  private:
   friend class CastMediaSinkServiceImplTest;

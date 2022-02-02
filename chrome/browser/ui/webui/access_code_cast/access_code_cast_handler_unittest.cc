@@ -13,7 +13,6 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_test_helpers.h"
-#include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -76,10 +75,6 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
         mock_cast_socket_service_(
             new cast_channel::MockCastSocketService(mock_time_task_runner_)),
         message_handler_(mock_cast_socket_service_.get()),
-        session_tracker_(
-            new CastSessionTracker(&dual_media_sink_service_,
-                                   &message_handler_,
-                                   mock_cast_socket_service_->task_runner())),
         mock_cast_media_sink_service_impl_(
             new MockCastMediaSinkServiceImpl(mock_sink_discovered_cb_.Get(),
                                              mock_cast_socket_service_.get(),
@@ -292,7 +287,6 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
       mock_cast_socket_service_;
 
   NiceMock<cast_channel::MockCastMessageHandler> message_handler_;
-  std::unique_ptr<media_router::CastSessionTracker> session_tracker_;
   std::unique_ptr<StrictMock<MockPage>> page_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
