@@ -247,6 +247,7 @@ public final class EditUrlSuggestionUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @FlakyTest(message = "https://crbug.com/1289843")
     public void testCopyButtonPress() {
         verifyCopyButtonPress(/* isIncognito */ false);
     }
