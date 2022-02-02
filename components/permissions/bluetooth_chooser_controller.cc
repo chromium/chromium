@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,12 +80,16 @@ bool BluetoothChooserController::IsPaired(size_t index) const {
 }
 
 std::u16string BluetoothChooserController::GetOption(size_t index) const {
-  DCHECK_LT(index, devices_.size());
+  // Change these back to DCHECKs once https://crbug.com/1292234 is resolved.
+  if (index >= devices_.size())
+    base::debug::DumpWithoutCrashing();
   const std::string& device_id = devices_[index].id;
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
-  DCHECK(device_name_it != device_id_to_name_map_.end());
+  if (device_name_it == device_id_to_name_map_.end())
+    base::debug::DumpWithoutCrashing();
   const auto& it = device_name_counts_.find(device_name_it->second);
-  DCHECK(it != device_name_counts_.end());
+  if (it == device_name_counts_.end())
+    base::debug::DumpWithoutCrashing();
   return it->second == 1
              ? device_name_it->second
              : l10n_util::GetStringFUTF16(
