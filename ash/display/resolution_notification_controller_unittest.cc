@@ -189,7 +189,7 @@ class ResolutionNotificationControllerTest
 };
 
 // Basic behaviors and verifies it doesn't cause crashes.
-TEST_P(ResolutionNotificationControllerTest, Basic) {
+TEST_P(ResolutionNotificationControllerTest, DISABLED_Basic) {
   UpdateDisplay("400x300#400x300%57|300x200%58,300x250#300x250%60|300x200%59");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
@@ -413,7 +413,7 @@ TEST_P(ResolutionNotificationControllerTest, MultipleResolutionChange) {
   EXPECT_EQ(58.0f, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, Fallback) {
+TEST_P(ResolutionNotificationControllerTest, DISABLED_Fallback) {
   UpdateDisplay(
       "400x300#400x300%56|300x200%57,"
       "350x250#350x250%60|220x210%60|300x200%60");
