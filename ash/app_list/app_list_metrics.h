@@ -19,6 +19,11 @@ class SearchResult;
 // fullscreen. Exposed in this header because it is recorded in multiple files.
 ASH_EXPORT extern const char kAppListPeekingToFullscreenHistogram[];
 
+// UMA histograms that record app list reorder animation smoothness. Exposed
+// in this header because it is needed in tests.
+ASH_EXPORT extern const char kClamshellReorderAnimationSmoothnessHistogram[];
+ASH_EXPORT extern const char kTabletReorderAnimationSmoothnessHistogram[];
+
 // The different ways to create a new page in the apps grid. These values are
 // written to logs. New enum values can be added, but existing enums must never
 // be renumbered or deleted and reused.
@@ -271,6 +276,8 @@ ASH_EXPORT void ReportPaginationSmoothness(bool is_tablet_mode, int smoothness);
 
 ASH_EXPORT void ReportCardifiedSmoothness(bool is_entering_cardified,
                                           int smoothness);
+
+void ReportReorderAnimationSmoothness(bool in_tablet, int smoothness);
 
 }  // namespace ash
 

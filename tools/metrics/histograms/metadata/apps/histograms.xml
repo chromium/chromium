@@ -1842,6 +1842,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.Launcher.ProductivityReorderAnimationSmoothness{TabletOrClamshell}"
+    units="%" expires_after="2022-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Emitted when the app list reorder animation completes. Reports the
+    smoothness of this animation. 100% represents the ideally smooth 60 frames
+    per second.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Duration" units="ms"
     expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>

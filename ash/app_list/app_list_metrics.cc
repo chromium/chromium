@@ -114,6 +114,11 @@ constexpr char kAppListAppLaunchedHomecherAllApps[] =
 constexpr char kAppListAppLaunchedHomecherSearch[] =
     "Apps.AppListAppLaunchedV2.HomecherSearch";
 
+constexpr char kClamshellReorderAnimationSmoothnessHistogram[] =
+    "Apps.Launcher.ProductivityReorderAnimationSmoothness.ClamshellMode";
+constexpr char kTabletReorderAnimationSmoothnessHistogram[] =
+    "Apps.Launcher.ProductivityReorderAnimationSmoothness.TabletMode";
+
 // The prefix for all the variants that track how long the app list is kept
 // open by open method. Suffix is decided in `GetAppListOpenMethod`
 constexpr char kAppListOpenTimePrefix[] = "Apps.AppListOpenTime.";
@@ -469,6 +474,17 @@ void ReportCardifiedSmoothness(bool is_entering_cardified, int smoothness) {
   } else {
     UMA_HISTOGRAM_PERCENTAGE(kCardifiedStateAnimationSmoothnessExit,
                              smoothness);
+  }
+}
+
+// Reports reorder animation smoothness.
+void ReportReorderAnimationSmoothness(bool in_tablet, int smoothness) {
+  if (in_tablet) {
+    base::UmaHistogramPercentage(kTabletReorderAnimationSmoothnessHistogram,
+                                 smoothness);
+  } else {
+    base::UmaHistogramPercentage(kClamshellReorderAnimationSmoothnessHistogram,
+                                 smoothness);
   }
 }
 

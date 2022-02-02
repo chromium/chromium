@@ -1892,6 +1892,11 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
   bounds_animator_->Cancel();
 
   reorder_animation_status_ = ReorderAnimationStatus::kFadeOutAnimation;
+  reorder_animation_tracker_.emplace(
+      layer()->GetCompositor()->RequestNewThroughputTracker());
+  reorder_animation_tracker_->Start(metrics_util::ForSmoothness(
+      base::BindRepeating(&ReportReorderAnimationSmoothness, IsTabletMode())));
+
   const absl::optional<VisibleItemIndexRange> range =
       GetVisibleItemIndexRange();
 
@@ -2881,10 +2886,15 @@ void AppsGridView::OnFadeOutAnimationEnded(
   callback_from_caller.Run(aborted);
 
   // When the fade out animation is abortted, the fade in animation should not
-  // run. Hence, the reorder animation ends.
+  // run. Hence, the reorder animation ends. The aborted animation's smoothness
+  // is not reported.
   if (aborted) {
     reorder_animation_status_ = ReorderAnimationStatus::kEmpty;
     MaybeRunFrontReorderAnimationCallbackForTest(/*aborted=*/true);
+
+    // Reset `reorder_animation_tracker_` without calling Stop() because the
+    // aborted animation's smoothness is not reported.
+    reorder_animation_tracker_.reset();
   }
 }
 
@@ -2894,6 +2904,11 @@ void AppsGridView::OnFadeInAnimationEnded(bool aborted) {
     layer()->SetOpacity(1.f);
 
   reorder_animation_status_ = ReorderAnimationStatus::kEmpty;
+
+  // Do not report the smoothness data for the aborted animation.
+  if (!aborted)
+    reorder_animation_tracker_->Stop();
+  reorder_animation_tracker_.reset();
 
   // Clean app list items' layers.
   OnBoundsAnimatorDone(nullptr);

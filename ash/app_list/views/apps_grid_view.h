@@ -25,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model_observer.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/animation_abort_handle.h"
@@ -1005,6 +1006,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // position changes is disabled. It is set to be false when we only care about
   // app list items' final positions instead of animation process.
   bool enable_item_move_animation_ = true;
+
+  // Tracks the reorder animation triggered by the sort order change.
+  absl::optional<ui::ThroughputTracker> reorder_animation_tracker_;
 
   // A queue of callbacks that run at the end of reordering animation (i.e. the
   // end of the fade in animation). Each callback carries a boolean parameter to

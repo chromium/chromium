@@ -12,11 +12,14 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "content/public/test/browser_test.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -567,11 +570,21 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingClamshell) {
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
 
+  base::HistogramTester histograms;
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListPageMenu,
                                    AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Wait for one additional frame so that the metric data is collected.
+  ui::Compositor* compositor =
+      app_list_test_api_.GetTopLevelAppsGridView()->layer()->GetCompositor();
+  base::IgnoreResult(
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+
+  histograms.ExpectTotalCount(
+      ash::kClamshellReorderAnimationSmoothnessHistogram, 1);
 
   // Ensure that the reorder undo toast's bounds update.
   app_list_test_api_.GetTopLevelAppsGridView()
@@ -591,6 +604,14 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingClamshell) {
   event_generator_->ClickLeftButton();
 
   WaitForReorderAnimation();
+
+  // Wait for the metric data to be collected.
+  base::IgnoreResult(
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+
+  // Smoothness of the reorder animation triggered by undo button is recorded.
+  histograms.ExpectTotalCount(
+      ash::kClamshellReorderAnimationSmoothnessHistogram, 2);
 
   // Verify that the default app order is recovered.
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
@@ -613,6 +634,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
 
+  base::HistogramTester histograms;
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListNonFolderItemMenu,
                                    AnimationTargetStatus::kCompleted);
@@ -621,6 +643,15 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
 
   // The toast should be visible.
   EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+
+  // Wait for one additional frame so that the metric data is collected.
+  ui::Compositor* compositor =
+      app_list_test_api_.GetTopLevelAppsGridView()->layer()->GetCompositor();
+  base::IgnoreResult(
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+
+  histograms.ExpectTotalCount(ash::kTabletReorderAnimationSmoothnessHistogram,
+                              1);
 
   // Register a callback for the reorder animation triggered by the undo button.
   RegisterReorderAnimationDoneCallback(AnimationTargetStatus::kCompleted);
@@ -640,6 +671,14 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
 
   // The toast should be hidden.
   EXPECT_FALSE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+
+  // Wait for the metric data to be collected.
+  base::IgnoreResult(
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+
+  // Smoothness of the reorder animation triggered by undo button is recorded.
+  histograms.ExpectTotalCount(ash::kTabletReorderAnimationSmoothnessHistogram,
+                              2);
 }
 
 // Verify that installing an app under color sort works as expected.
