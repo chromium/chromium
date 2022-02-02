@@ -180,6 +180,14 @@ ci.builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/sources/android-31.yaml",
             },
             {
+                "sdk_package_name": "system-images;android-19;google_apis;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-19/google_apis/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-22;google_apis;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-22/google_apis/x86.yaml",
+            },
+            {
                 "sdk_package_name": "system-images;android-23;google_apis;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-23/google_apis/x86.yaml",
             },
