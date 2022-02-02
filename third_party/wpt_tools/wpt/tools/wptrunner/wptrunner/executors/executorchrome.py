@@ -3,10 +3,9 @@ import traceback
 
 from urllib.parse import urljoin
 
-from .base import WdspecProtocol, WdspecExecutor, get_pages
+from .base import get_pages
 from .executorwebdriver import WebDriverProtocol, WebDriverRefTestExecutor, WebDriverRun
 from .protocol import PrintProtocolPart
-from ..webdriver_server import ChromeDriverServer
 
 here = os.path.dirname(__file__)
 
@@ -111,11 +110,3 @@ class ChromeDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
                 screenshots[i] = screenshot.split(",", 1)[1]
 
         return screenshots
-
-
-class ChromeDriverWdspecProtocol(WdspecProtocol):
-    server_cls = ChromeDriverServer
-
-
-class ChromeDriverWdspecExecutor(WdspecExecutor):
-    protocol_cls = ChromeDriverWdspecProtocol

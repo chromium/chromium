@@ -20,7 +20,6 @@ from .base import (CallbackHandler,
                    TestharnessExecutor,
                    TimedRunner,
                    WdspecExecutor,
-                   WdspecProtocol,
                    get_pages,
                    strip_server)
 from .protocol import (ActionSequenceProtocolPart,
@@ -1132,34 +1131,6 @@ class InternalRefTestImplementation(RefTestImplementation):
             self.logger.warning(traceback.format_exc())
 
 
-class GeckoDriverProtocol(WdspecProtocol):
-    server_cls = None  # To avoid circular imports we set this at runtime
-
-
-class MarionetteWdspecExecutor(WdspecExecutor):
-    protocol_cls = GeckoDriverProtocol
-
-    def __init__(self, logger, browser, server_config, webdriver_binary,
-                 webdriver_args, timeout_multiplier=1, capabilities=None,
-                 debug_info=None, environ=None, stackfix_dir=None,
-                 symbols_path=None, leak_report_file=None, asan=False,
-                 group_metadata=None, browser_settings=None, **kwargs):
-
-        from ..browsers.firefox import GeckoDriverServer
-        super().__init__(logger, browser, server_config, webdriver_binary,
-                         webdriver_args, timeout_multiplier=timeout_multiplier,
-                         capabilities=capabilities, debug_info=debug_info,
-                         environ=environ, **kwargs)
-        self.protocol_cls.server_cls = GeckoDriverServer
-        self.output_handler_kwargs = {"stackfix_dir": stackfix_dir,
-                                      "symbols_path": symbols_path,
-                                      "asan": asan,
-                                      "leak_report_file": leak_report_file}
-        self.output_handler_start_kwargs = {"group_metadata": group_metadata}
-        self.output_handler_start_kwargs.update(browser_settings)
-
-
-
 class MarionetteCrashtestExecutor(CrashtestExecutor):
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  debug_info=None, capabilities=None, debug=False,
@@ -1293,3 +1264,15 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
                 screenshots[i] = screenshot.split(",", 1)[1]
 
         return screenshots
+
+
+class MarionetteWdspecExecutor(WdspecExecutor):
+    def __init__(self, logger, browser, *args, **kwargs):
+        super().__init__(logger, browser, *args, **kwargs)
+
+        args = self.capabilities["moz:firefoxOptions"].setdefault("args", [])
+        args.extend(["--profile", self.browser.profile])
+
+        for option in ["androidPackage", "androidDeviceSerial", "env"]:
+            if hasattr(browser, option):
+                self.capabilities["moz:firefoxOptions"][option] = getattr(browser, option)

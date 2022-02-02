@@ -3,18 +3,17 @@ from .base import require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from .chrome import executor_kwargs as chrome_executor_kwargs
 from .chrome_android import ChromeAndroidBrowserBase
+from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor)  # noqa: F401
-from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401
 
 
 __wptrunner__ = {"product": "android_webview",
                  "check_args": "check_args",
-                 "browser": {None: "SystemWebViewShell",
-                             "wdspec": "NullBrowser"},
+                 "browser": "SystemWebViewShell",
                  "executor": {"testharness": "WebDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
-                              "wdspec": "ChromeDriverWdspecExecutor"},
+                              "wdspec": "WdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -88,8 +87,8 @@ class SystemWebViewShell(ChromeAndroidBrowserBase):
                  symbols_path=None):
         """Creates a new representation of Chrome.  The `binary` argument gives
         the browser binary to use for testing."""
-        super(SystemWebViewShell, self).__init__(logger,
-                webdriver_binary, remote_queue, device_serial,
-                webdriver_args, stackwalk_binary, symbols_path)
+        super().__init__(logger,
+                         webdriver_binary, remote_queue, device_serial,
+                         webdriver_args, stackwalk_binary, symbols_path)
         self.binary = binary
         self.wptserver_ports = _wptserve_ports

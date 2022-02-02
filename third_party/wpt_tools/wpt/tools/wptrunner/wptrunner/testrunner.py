@@ -198,7 +198,7 @@ class BrowserManager(object):
                 self.init_timer.start()
             self.logger.debug("Starting browser with settings %r" % self.browser_settings)
             self.browser.start(group_metadata=group_metadata, **self.browser_settings)
-            self.browser_pid = self.browser.pid()
+            self.browser_pid = self.browser.pid
         except Exception:
             self.logger.warning("Failure during init %s" % traceback.format_exc())
             if self.init_timer is not None:

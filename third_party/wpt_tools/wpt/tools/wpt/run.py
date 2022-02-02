@@ -177,9 +177,10 @@ class BrowserSetup(object):
             return self.browser.install(self.venv.path, channel)
 
     def install_requirements(self):
-        if not self.venv.skip_virtualenv_setup:
+        if not self.venv.skip_virtualenv_setup and self.browser.requirements:
             self.venv.install_requirements(os.path.join(
                 wpt_root, "tools", "wptrunner", self.browser.requirements))
+
 
     def setup(self, kwargs):
         self.setup_kwargs(kwargs)
