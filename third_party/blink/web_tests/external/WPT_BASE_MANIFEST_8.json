@@ -3480,6 +3480,13 @@
         null,
         {}
        ]
+      ],
+      "effect-on-marquee-parent-crash.html": [
+       "2948d6b66e85c16010df25e70755312b824e0c0c",
+       [
+        null,
+        {}
+       ]
       ]
      }
     },
@@ -276566,6 +276573,22 @@
       []
      ]
     },
+    "fetching": {
+     "support": {
+      "echo-css.py": [
+       "bbfd3f07c0b15f711d5cf9f0bfba348d8e1736a1",
+       []
+      ],
+      "echo-headers.py": [
+       "9feb6f91a467e3466bf19b1b058d4713310ede59",
+       []
+      ],
+      "echo-helper.js": [
+       "15bec650333d7c65b87cec797e9c168488a28546",
+       []
+      ]
+     }
+    },
     "filter-effects": {
      "DIR_METADATA": [
       "3bd51be2ecdace0a79f51401df6803cb4d0d8beb",
@@ -385163,6 +385186,15 @@
       ]
      ]
     },
+    "fetching": {
+     "fetch-resources.sub.html": [
+      "03c3e346f1c372014ebf0468e38cb0f3061e99f0",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "filter-effects": {
      "animation": {
       "backdrop-filter-interpolation-001.html": [
@@ -466891,7 +466923,7 @@
      ]
     ],
     "inert-node-is-uneditable.tentative.html": [
-     "6da2379fad42972d4839129c8db0bed7bbd2adec",
+     "23182b937cde52e8d55a88dbc8b440219d07f34f",
      [
       null,
       {
