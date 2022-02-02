@@ -90,6 +90,15 @@ bool IsCallbackFunctionRunnableIgnoringPause(
                                             IgnorePause::kIgnore);
 }
 
+void ExceptionToRejectPromiseScope::ConvertExceptionToRejectPromise() {
+  // As exceptions must always be created in the current realm, reject
+  // promises must also be created in the current realm while regular promises
+  // are created in the relevant realm of the context object.
+  ScriptState* script_state = ScriptState::ForCurrentRealm(info_);
+  V8SetReturnValue(
+      info_, ScriptPromise::Reject(script_state, exception_state_).V8Value());
+}
+
 namespace bindings {
 
 void SetupIDLInterfaceTemplate(
