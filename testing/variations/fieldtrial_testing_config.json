@@ -1984,30 +1984,6 @@
             ]
         }
     ],
-    "ContextMenuShopWithGoogleLens": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithTextShopImageWithGoogleLens",
-                    "params": {
-                        "disableOnIncognito": "true",
-                        "logUkm": "true",
-                        "minAgsaVersionNameForShopping": "11.17"
-                    },
-                    "enable_features": [
-                        "ContextMenuEnableLensShoppingAllowlist",
-                        "ContextMenuShopWithGoogleLens"
-                    ],
-                    "disable_features": [
-                        "ContextMenuSearchAndShopWithGoogleLens"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSEnforceSystemAecNsAgc": [
         {
             "platforms": [
