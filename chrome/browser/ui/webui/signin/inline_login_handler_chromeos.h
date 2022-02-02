@@ -60,6 +60,7 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
       const base::flat_set<account_manager::Account>& arc_accounts);
   void MakeAvailableInArcAndCloseDialog(base::Value::ConstListView args);
   void HandleSkipWelcomePage(const base::ListValue* args);
+  void OpenGuestWindowAndCloseDialog(base::Value::ConstListView args);
 
   base::RepeatingClosure close_dialog_closure_;
   base::WeakPtrFactory<InlineLoginHandlerChromeOS> weak_factory_{this};

@@ -87,6 +87,9 @@ export class InlineLoginBrowserProxy {
    */
   getAccountsNotAvailableInArc() {}
 
+  /** Send 'openGuestWindow' message to the handler */
+  openGuestWindow() {}
+
   /**
    * @return {?string} JSON-encoded dialog arguments.
    */
@@ -155,6 +158,11 @@ export class InlineLoginBrowserProxyImpl {
   /** @override */
   makeAvailableInArc(account) {
     chrome.send('makeAvailableInArc', [account]);
+  }
+
+  /** @override */
+  openGuestWindow() {
+    chrome.send('openGuestWindow');
   }
 
   /** @override */

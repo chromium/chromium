@@ -57,9 +57,17 @@ Polymer({
               'click',
               () => this.dispatchEvent(new CustomEvent('opened-new-window')));
         });
-    const incognitoLink = this.$$('#incognitoLink');
-    if (incognitoLink) {
-      incognitoLink.addEventListener('click', () => this.openIncognitoLink_());
+    if (this.isArcAccountRestrictionsEnabled_) {
+      const guestModeLink = this.$$('#guestModeLink');
+      if (guestModeLink) {
+        guestModeLink.addEventListener('click', () => this.openGuestLink_());
+      }
+    } else {
+      const incognitoLink = this.$$('#incognitoLink');
+      if (incognitoLink) {
+        incognitoLink.addEventListener(
+            'click', () => this.openIncognitoLink_());
+      }
     }
   },
 
@@ -109,6 +117,12 @@ Polymer({
   /** @private */
   openIncognitoLink_() {
     InlineLoginBrowserProxyImpl.getInstance().showIncognito();
-    this.dispatchEvent(new CustomEvent('opened-new-window'));
+    // `showIncognito` will close the dialog.
+  },
+
+  /** @private */
+  openGuestLink_() {
+    InlineLoginBrowserProxyImpl.getInstance().openGuestWindow();
+    // `openGuestWindow` will close the dialog.
   },
 });

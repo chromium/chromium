@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -253,6 +254,11 @@ void InlineLoginHandlerChromeOS::RegisterMessages() {
       "skipWelcomePage",
       base::BindRepeating(&InlineLoginHandlerChromeOS::HandleSkipWelcomePage,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openGuestWindow",
+      base::BindRepeating(
+          &InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog,
+          base::Unretained(this)));
 }
 
 void InlineLoginHandlerChromeOS::SetExtraInitParams(
@@ -459,6 +465,12 @@ void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
   const bool skip = list[0].GetBool();
   Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
       chromeos::prefs::kShouldSkipInlineLoginWelcomePage, skip);
+}
+
+void InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog(
+    base::Value::ConstListView args) {
+  crosapi::BrowserManager::Get()->NewGuestWindow();
+  close_dialog_closure_.Run();
 }
 
 }  // namespace chromeos

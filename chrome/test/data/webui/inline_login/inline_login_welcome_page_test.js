@@ -193,6 +193,9 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     await testBrowserProxy.whenCalled('dialogClose');
 
     inlineLoginComponent.$$('welcome-page-app').$$('#appsSettingsLink').click();
-    return testBrowserProxy.whenCalled('dialogClose');
+    await testBrowserProxy.whenCalled('dialogClose');
+
+    inlineLoginComponent.$$('welcome-page-app').$$('#guestModeLink').click();
+    return testBrowserProxy.whenCalled('openGuestWindow');
   });
 });

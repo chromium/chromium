@@ -90,6 +90,7 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
       'skipWelcomePage',
       'getAccountsNotAvailableInArc',
       'makeAvailableInArc',
+      'openGuestWindow',
       'getDialogArguments',
       // </if>
     ]);
@@ -181,6 +182,11 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
   /** @override */
   makeAvailableInArc(account) {
     this.methodCalled('makeAvailableInArc', account);
+  }
+
+  /** @override */
+  openGuestWindow() {
+    this.methodCalled('openGuestWindow');
   }
 
   /** @override */
