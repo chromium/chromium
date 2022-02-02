@@ -80,7 +80,26 @@ SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor color) {
   return bitmap;
 }
 
+// Creates a SkImage filled with magenta and a 30x40 green rectangle.
+sk_sp<SkImage> MakeSkImage(const gfx::Size& size,
+                           sk_sp<SkColorSpace> color_space = nullptr) {
+  SkBitmap bitmap;
+  bitmap.allocPixelsFlags(
+      SkImageInfo::MakeN32Premul(size.width(), size.height(), color_space),
+      SkBitmap::kZeroPixels_AllocFlag);
+
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  canvas.drawColor(SK_ColorMAGENTA);
+  SkPaint green;
+  green.setColor(SK_ColorGREEN);
+  canvas.drawRect(SkRect::MakeXYWH(10, 20, 30, 40), green);
+
+  return SkImage::MakeFromBitmap(bitmap);
+}
+
 constexpr size_t kCacheLimitBytes = 1024 * 1024;
+constexpr PaintFlags::FilterQuality kDefaultFilterQuality =
+    PaintFlags::FilterQuality::kNone;
 
 class OopPixelTest : public testing::Test,
                      public gpu::raster::GrShaderCache::Client {
@@ -321,13 +340,6 @@ class OopPixelTest : public testing::Test,
 
   SkBitmap RasterExpectedBitmap(
       scoped_refptr<DisplayItemList> display_item_list,
-      const gfx::Size& playback_size) {
-    RasterOptions options(playback_size);
-    return RasterExpectedBitmap(display_item_list, options);
-  }
-
-  SkBitmap RasterExpectedBitmap(
-      scoped_refptr<DisplayItemList> display_item_list,
       const RasterOptions& options) {
     viz::TestInProcessContextProvider::ScopedRasterContextLock lock(
         gles2_context_provider_.get());
@@ -423,7 +435,7 @@ class OopPixelTest : public testing::Test,
   }
 
  protected:
-  enum { kWorkingSetSize = 64 * 1024 * 1024 };
+  static constexpr size_t kWorkingSetSize = 64 * 1024 * 1024;
   scoped_refptr<viz::TestInProcessContextProvider> raster_context_provider_;
   scoped_refptr<viz::TestInProcessContextProvider> gles2_context_provider_;
   std::unique_ptr<GpuImageDecodeCache> gpu_image_cache_;
@@ -433,21 +445,6 @@ class OopPixelTest : public testing::Test,
   int color_space_id_ = 0;
   gpu::raster::GrShaderCache gr_shader_cache_;
   gpu::GpuProcessActivityFlags activity_flags_;
-};
-
-class OopImagePixelTest : public OopPixelTest,
-                          public ::testing::WithParamInterface<bool> {
- public:
-  bool UseTooLargeImage() { return GetParam(); }
-  PaintFlags::FilterQuality FilterQuality() {
-    return PaintFlags::FilterQuality::kNone;
-  }
-
-  gfx::Size GetImageSize() {
-    const int kMaxSize = 20000;
-    DCHECK_GT(kMaxSize, gles2_context_provider_->GrContext()->maxTextureSize());
-    return UseTooLargeImage() ? gfx::Size(10, kMaxSize) : gfx::Size(10, 10);
-  }
 };
 
 class OopClearPixelTest : public OopPixelTest,
@@ -578,25 +575,10 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
   ExpectEquals(actual, expected);
 }
 
-TEST_P(OopImagePixelTest, DrawImage) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
+TEST_F(OopPixelTest, DrawImage) {
+  constexpr gfx::Rect rect(100, 100);
 
-  gfx::Rect rect(10, 10);
-  gfx::Size image_size = GetImageSize();
-
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
-      SkBitmap::kZeroPixels_AllocFlag);
-
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size());
   const PaintImage::Id kSomeId = 32;
   auto builder =
       PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
@@ -605,7 +587,7 @@ TEST_P(OopImagePixelTest, DrawImage) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
 
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
@@ -616,25 +598,10 @@ TEST_P(OopImagePixelTest, DrawImage) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image.png"));
 }
 
-TEST_P(OopImagePixelTest, DrawImageScaled) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
+TEST_F(OopPixelTest, DrawImageScaled) {
+  constexpr gfx::Rect rect(100, 100);
 
-  gfx::Rect rect(10, 10);
-  gfx::Size image_size = GetImageSize();
-
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
-      SkBitmap::kZeroPixels_AllocFlag);
-
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size());
   auto builder = PaintImageBuilder::WithDefault().set_image(image, 0).set_id(
       PaintImage::GetNextId());
   auto paint_image = builder.TakePaintImage();
@@ -643,36 +610,20 @@ TEST_P(OopImagePixelTest, DrawImageScaled) {
   display_item_list->StartPaint();
   display_item_list->push<ScaleOp>(0.5f, 0.5f);
   SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
   auto actual = Raster(display_item_list, rect.size());
-  auto expected = RasterExpectedBitmap(display_item_list, rect.size());
-  ExpectEquals(actual, expected);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image_scaled.png"));
 }
 
-TEST_P(OopImagePixelTest, DrawImageShaderScaled) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
+TEST_F(OopPixelTest, DrawImageShaderScaled) {
+  constexpr gfx::Rect rect(100, 100);
 
-  gfx::Rect rect(10, 10);
-  gfx::Size image_size = GetImageSize();
-
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
-      SkBitmap::kZeroPixels_AllocFlag);
-
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size());
   auto builder = PaintImageBuilder::WithDefault().set_image(image, 0).set_id(
       PaintImage::GetNextId());
   auto paint_image = builder.TakePaintImage();
@@ -684,41 +635,25 @@ TEST_P(OopImagePixelTest, DrawImageShaderScaled) {
   display_item_list->push<ScaleOp>(0.5f, 0.5f);
   PaintFlags flags;
   flags.setShader(paint_image_shader);
-  flags.setFilterQuality(FilterQuality());
+  flags.setFilterQuality(kDefaultFilterQuality);
   display_item_list->push<DrawRectOp>(gfx::RectToSkRect(rect), flags);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
   auto actual = Raster(display_item_list, rect.size());
-  auto expected = RasterExpectedBitmap(display_item_list, rect.size());
-  ExpectEquals(actual, expected);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image_shader_scaled.png"));
 }
 
-TEST_P(OopImagePixelTest, DrawRecordShaderWithImageScaled) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
+TEST_F(OopPixelTest, DrawRecordShaderWithImageScaled) {
+  constexpr gfx::Rect rect(100, 100);
 
-  gfx::Rect rect(10, 10);
-  gfx::Size image_size = GetImageSize();
-
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
-      SkBitmap::kZeroPixels_AllocFlag);
-
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size());
   auto builder = PaintImageBuilder::WithDefault().set_image(image, 0).set_id(
       PaintImage::GetNextId());
   auto paint_image = builder.TakePaintImage();
   auto paint_record = sk_make_sp<PaintOpBuffer>();
   SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
   paint_record->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling, nullptr);
   auto paint_record_shader = PaintShader::MakePaintRecord(
       paint_record, gfx::RectToSkRect(rect), SkTileMode::kRepeat,
@@ -729,21 +664,16 @@ TEST_P(OopImagePixelTest, DrawRecordShaderWithImageScaled) {
   display_item_list->push<ScaleOp>(0.5f, 0.5f);
   PaintFlags raster_flags;
   raster_flags.setShader(paint_record_shader);
-  raster_flags.setFilterQuality(FilterQuality());
+  raster_flags.setFilterQuality(kDefaultFilterQuality);
   display_item_list->push<DrawRectOp>(gfx::RectToSkRect(rect), raster_flags);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
   auto actual = Raster(display_item_list, rect.size());
-  // Set the shader has animated images so gpu also goes through cc's image
-  // upload stack, instead of using skia.
-  RasterOptions expected_options(rect.size());
-  expected_options.shader_with_animated_images = paint_record_shader.get();
-  auto expected = RasterExpectedBitmap(display_item_list, expected_options);
-  ExpectEquals(actual, expected);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_record_shader.png"));
 }
 
-TEST_F(OopImagePixelTest, DrawRecordShaderTranslatedTileRect) {
+TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
   auto paint_record = sk_make_sp<PaintOpBuffer>();
 
   // Arbitrary offsets.  The DrawRectOp inside the PaintShader draws
@@ -786,29 +716,13 @@ TEST_F(OopImagePixelTest, DrawRecordShaderTranslatedTileRect) {
   display_item_list->Finalize();
 
   auto actual = Raster(display_item_list, output_size);
-  auto expected = RasterExpectedBitmap(display_item_list, output_size);
-  ExpectEquals(actual, expected);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_record_shader_tiled.png"));
 }
 
-TEST_P(OopImagePixelTest, DrawImageWithTargetColorSpace) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
+TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
+  constexpr gfx::Rect rect(100, 100);
 
-  gfx::Rect rect(10, 10);
-  gfx::Size image_size = GetImageSize();
-
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
-      SkBitmap::kZeroPixels_AllocFlag);
-
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size());
   const PaintImage::Id kSomeId = 32;
   auto builder =
       PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
@@ -817,7 +731,7 @@ TEST_P(OopImagePixelTest, DrawImageWithTargetColorSpace) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -827,34 +741,27 @@ TEST_P(OopImagePixelTest, DrawImageWithTargetColorSpace) {
   options.color_space = gfx::ColorSpace::CreateDisplayP3D65();
 
   auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android has slight differences in color.
+  FuzzyPixelOffByOneComparator comparator(/*discard_alpha=*/false);
+#else
+  ExactPixelComparator comparator(/*discard_alpha=*/false);
+#endif
+
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_image_target_color_space.png"),
+               comparator);
 
   // Verify some conversion occurred here and that actual != bitmap.
   EXPECT_NE(actual.getColor(0, 0), SK_ColorMAGENTA);
 }
 
-TEST_P(OopImagePixelTest, DrawImageWithSourceColorSpace) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
-
-  gfx::Rect rect(10, 10);
-  gfx::Size image_size = GetImageSize();
+TEST_F(OopPixelTest, DrawImageWithSourceColorSpace) {
+  constexpr gfx::Rect rect(100, 100);
 
   auto color_space = gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace();
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height(),
-                                 color_space),
-      SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size(), color_space);
   const PaintImage::Id kSomeId = 32;
   auto builder =
       PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
@@ -864,7 +771,7 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceColorSpace) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -873,34 +780,25 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceColorSpace) {
   RasterOptions options(rect.size());
 
   auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
 
-  // Colors get converted when being drawn to the bitmap.
-  EXPECT_NE(bitmap.getColor(0, 0), SK_ColorMAGENTA);
+#if BUILDFLAG(IS_ANDROID)
+  // Android has slight differences in color.
+  FuzzyPixelOffByOneComparator comparator(/*discard_alpha=*/false);
+#else
+  ExactPixelComparator comparator(/*discard_alpha=*/false);
+#endif
+
+  ExpectEquals(actual,
+               FILE_PATH_LITERAL("oop_draw_image_source_color_space.png"),
+               comparator);
 }
 
-TEST_P(OopImagePixelTest, DrawImageWithSourceAndTargetColorSpace) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
+TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
+  constexpr gfx::Rect rect(100, 100);
 
-  gfx::Rect rect(10, 10);
-
-  gfx::Size image_size = GetImageSize();
   auto color_space = gfx::ColorSpace::CreateXYZD50().ToSkColorSpace();
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height(),
-                                 color_space),
-      SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size(), color_space);
   const PaintImage::Id kSomeId = 32;
   auto builder =
       PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
@@ -910,7 +808,7 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceAndTargetColorSpace) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -920,29 +818,22 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceAndTargetColorSpace) {
   options.color_space = gfx::ColorSpace::CreateDisplayP3D65();
 
   auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android has slight differences in color.
+  FuzzyPixelOffByOneComparator comparator(/*discard_alpha=*/false);
+#else
+  ExactPixelComparator comparator(/*discard_alpha=*/false);
+#endif
+
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image_both_color_space.png"),
+               comparator);
 }
 
-TEST_P(OopImagePixelTest, DrawImageWithSetMatrix) {
-  SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
-                                  UseTooLargeImage(), FilterQuality()));
+TEST_F(OopPixelTest, DrawImageWithSetMatrix) {
+  constexpr gfx::Rect rect(100, 100);
 
-  gfx::Rect rect(10, 10);
-  gfx::Size image_size = GetImageSize();
-
-  SkBitmap bitmap;
-  bitmap.allocPixelsFlags(
-      SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
-      SkBitmap::kZeroPixels_AllocFlag);
-
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
-  SkPaint green;
-  green.setColor(SK_ColorGREEN);
-  canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
-
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = MakeSkImage(rect.size());
   const PaintImage::Id kSomeId = 32;
   auto builder =
       PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
@@ -951,7 +842,7 @@ TEST_P(OopImagePixelTest, DrawImageWithSetMatrix) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
   display_item_list->push<SetMatrixOp>(SkM44::Scale(0.5f, 0.5f));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
@@ -959,10 +850,7 @@ TEST_P(OopImagePixelTest, DrawImageWithSetMatrix) {
   display_item_list->Finalize();
 
   auto actual = Raster(display_item_list, rect.size());
-  auto expected = RasterExpectedBitmap(display_item_list, rect.size());
-  ExpectEquals(actual, expected);
-
-  EXPECT_EQ(actual.getColor(0, 0), SK_ColorMAGENTA);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image_matrix.png"));
 }
 
 namespace {
@@ -1081,7 +969,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1104,7 +992,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
     canvas.drawRect(SkRect::MakeXYWH(0, 6, 9, 2), green);
   }
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
@@ -1217,7 +1105,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1238,7 +1126,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
     canvas.drawRect(SkRect::MakeXYWH(0, 0, 1, 10), green);
   }
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
@@ -1272,7 +1160,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1293,7 +1181,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
     canvas.drawRect(SkRect::MakeXYWH(2, 0, 2, 10), green);
   }
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
@@ -1326,7 +1214,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1348,7 +1236,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
     canvas.drawRect(SkRect::MakeXYWH(0, 0, 10, 1), green);
   }
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
@@ -1382,7 +1270,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1404,7 +1292,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
     canvas.drawRect(SkRect::MakeXYWH(0, 4, 10, 2), green);
   }
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingOpaqueInternal) {
@@ -2437,7 +2325,6 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
                FILE_PATH_LITERAL("oop_record_shader_max_texture_size.png"));
 }
 
-INSTANTIATE_TEST_SUITE_P(P, OopImagePixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
 
