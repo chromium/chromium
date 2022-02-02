@@ -3517,7 +3517,8 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "ash_unittests",
         "test_id_prefix": "ninja://ash:ash_unittests/"
@@ -5381,7 +5382,8 @@
               "os": "Ubuntu-16.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "ash_unittests",
         "test_id_prefix": "ninja://ash:ash_unittests/"

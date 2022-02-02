@@ -4311,7 +4311,11 @@
     'linux_chromeos_specific_gtests': {
       # Chrome OS only.
       'ash_components_unittests': {},
-      'ash_unittests': {},
+      'ash_unittests': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
       'ash_webui_unittests': {},
       'aura_unittests': {},
       'chromeos_components_unittests': {},

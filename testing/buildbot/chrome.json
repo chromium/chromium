@@ -2222,7 +2222,8 @@
               "ssd": "0"
             }
           ],
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "ash_unittests",
         "test_id_prefix": "ninja://ash:ash_unittests/"
