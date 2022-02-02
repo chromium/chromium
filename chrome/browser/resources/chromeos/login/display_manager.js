@@ -216,14 +216,6 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Sets the hint for calculating OOBE dialog inner padding.
-     * @param {OobeTypes.DialogPaddingMode} mode
-     */
-    setDialogPaddingMode(mode) {
-      document.documentElement.setAttribute('dialog-padding', mode);
-    }
-
-    /**
      * Toggles background of main body between transparency and solid.
      * @param {boolean} solid Whether to show a solid background.
      */

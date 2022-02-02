@@ -135,16 +135,6 @@ OobeTypes.RecommendedAppsExpectedAppData;
 OobeTypes.RecommendedAppsSelectionEventData;
 
 /**
- * Specifies the mechanism for calculating oobe-dialog inner padding.
- * @enum {string}
- */
-OobeTypes.DialogPaddingMode = {
-  AUTO: 'auto',
-  NARROW: 'narrow',
-  WIDE: 'wide',
-};
-
-/**
  * Fatal Error Codes from SignInFatalErrorScreen
  * @enum {number}
  */

@@ -182,14 +182,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Sets the hint for calculating OOBE dialog margins.
-     * @param {OobeTypes.DialogPaddingMode} mode
-     */
-    static setDialogPaddingMode(mode) {
-      Oobe.getInstance().setDialogPaddingMode(mode);
-    }
-
-    /**
      * Sets the number of users on the views login screen.
      * @param {number} userCount The number of users.
      */

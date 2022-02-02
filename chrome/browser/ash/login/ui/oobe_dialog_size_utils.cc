@@ -12,7 +12,6 @@
 namespace ash {
 namespace {
 
-constexpr int kDialogHeightForWidePadding = 640;
 constexpr double kEightPrecent = 0.08;
 
 }  // namespace
@@ -60,8 +59,7 @@ gfx::Size CalculateOobeDialogSizeForPrimaryDisplay() {
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
                                bool is_horizontal,
-                               gfx::Rect* result,
-                               OobeDialogPaddingMode* result_padding) {
+                               gfx::Rect* result) {
   // Area to position dialog.
   *result = host_bounds;
   result->Inset(0, 0, 0, shelf_height);
@@ -69,14 +67,6 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
   // Center dialog within an available area.
   result->ClampToCenteredSize(
       CalculateOobeDialogSize(host_bounds.size(), shelf_height, is_horizontal));
-  if (!result_padding)
-    return;
-  if ((result->width() >= kMaxDialogSize.width()) &&
-      (result->height() >= kDialogHeightForWidePadding)) {
-    *result_padding = OobeDialogPaddingMode::PADDING_WIDE;
-  } else {
-    *result_padding = OobeDialogPaddingMode::PADDING_NARROW;
-  }
 }
 
 }  // namespace ash
