@@ -375,7 +375,8 @@ inline bool NeedsLegacyBlockFragmentation(const Element& element,
   if (style.IsDisplayInlineType())
     return false;
 
-  if (style.IsDisplayTableType())
+  if (style.IsDisplayTableType() &&
+      !RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled())
     return true;
 
   if (style.IsDisplayGridBox() &&

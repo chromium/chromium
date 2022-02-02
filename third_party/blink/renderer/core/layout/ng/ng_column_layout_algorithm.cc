@@ -315,6 +315,11 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
 #endif
   }
 
+  // TODO(mstensho): We need to do more here (vertical alignment, for instance),
+  // if this is a table cell.
+  if (ConstraintSpace().IsTableCell())
+    container_builder_.SetIsTableNGPart();
+
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
