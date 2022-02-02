@@ -248,6 +248,21 @@ TEST_F(RetroactivePairingDetectorTest, DevicedPaired_FastPair) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
+TEST_F(RetroactivePairingDetectorTest,
+       DevicedPaired_FastPair_BluetoothEventFiresFirst) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+
+  EXPECT_FALSE(retroactive_pair_found_);
+}
+
 TEST_F(RetroactivePairingDetectorTest, DeviceUnpaired) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
