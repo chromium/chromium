@@ -3411,6 +3411,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "full-user-agent",
+    "owners": [ "victortan", "abeyad"],
+    "expiry_milestone": 113
+  },
+  {
     "name": "fullscreen-viewport-adjustment-experiment",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     // Needed for manual testing of fallback flow on iOS.
