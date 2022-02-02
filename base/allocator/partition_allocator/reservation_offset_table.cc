@@ -4,8 +4,7 @@
 
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 ReservationOffsetTable::_ReservationOffsetTable
@@ -15,5 +14,4 @@ ReservationOffsetTable::_ReservationOffsetTable
     ReservationOffsetTable::reservation_offset_table_;
 #endif
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

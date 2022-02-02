@@ -19,8 +19,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 static constexpr uint16_t kOffsetTagNotAllocated =
     std::numeric_limits<uint16_t>::max();
@@ -247,7 +246,23 @@ ALWAYS_INLINE bool IsManagedByNormalBucketsOrDirectMap(uintptr_t address) {
   return *offset_ptr != kOffsetTagNotAllocated;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::GetDirectMapReservationStart;
+using ::partition_alloc::internal::GetReservationOffsetTable;
+using ::partition_alloc::internal::GetReservationOffsetTableEnd;
+using ::partition_alloc::internal::IsManagedByDirectMap;
+using ::partition_alloc::internal::IsManagedByNormalBuckets;
+using ::partition_alloc::internal::IsManagedByNormalBucketsOrDirectMap;
+using ::partition_alloc::internal::IsReservationStart;
+using ::partition_alloc::internal::kOffsetTagNormalBuckets;
+using ::partition_alloc::internal::kOffsetTagNotAllocated;
+using ::partition_alloc::internal::ReservationOffsetPointer;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_RESERVATION_OFFSET_TABLE_H_

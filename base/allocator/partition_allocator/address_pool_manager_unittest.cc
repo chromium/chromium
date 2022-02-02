@@ -12,8 +12,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 
@@ -240,7 +239,7 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
   for (size_t i = 0; i < kAllocCount; ++i) {
     uintptr_t address = addrs[i];
     size_t num_pages =
-        bits::AlignUp(
+        base::bits::AlignUp(
             kNumPages[i] *
                 AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap,
             kSuperPageSize) /
@@ -321,5 +320,4 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

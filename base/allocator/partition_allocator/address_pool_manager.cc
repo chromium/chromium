@@ -23,8 +23,7 @@
 #include <sys/mman.h>
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -130,7 +129,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
   total_bits_ = length / kSuperPageSize;
   PA_CHECK(total_bits_ <= kMaxSuperPagesInPool);
 
-  PartitionAutoLock scoped_lock(lock_);
+  ScopedGuard scoped_lock(lock_);
   alloc_bitset_.reset();
   bit_hint_ = 0;
 }
@@ -145,7 +144,7 @@ void AddressPoolManager::Pool::Reset() {
 
 void AddressPoolManager::Pool::GetUsedSuperPages(
     std::bitset<kMaxSuperPagesInPool>& used) {
-  PartitionAutoLock scoped_lock(lock_);
+  ScopedGuard scoped_lock(lock_);
 
   PA_DCHECK(IsInitialized());
   used = alloc_bitset_;
@@ -157,7 +156,7 @@ uintptr_t AddressPoolManager::Pool::GetBaseAddress() {
 }
 
 uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
-  PartitionAutoLock scoped_lock(lock_);
+  ScopedGuard scoped_lock(lock_);
 
   PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
   const size_t need_bits = requested_size >> kSuperPageShift;
@@ -212,7 +211,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
 
 bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
                                                size_t requested_size) {
-  PartitionAutoLock scoped_lock(lock_);
+  ScopedGuard scoped_lock(lock_);
   PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
   const size_t begin_bit = (address - address_begin_) / kSuperPageSize;
@@ -234,7 +233,7 @@ bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
 }
 
 void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
-  PartitionAutoLock scoped_lock(lock_);
+  ScopedGuard scoped_lock(lock_);
 
   PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(free_size & kSuperPageOffsetMask));
@@ -319,7 +318,7 @@ void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
 void AddressPoolManager::MarkUsed(pool_handle handle,
                                   uintptr_t address,
                                   size_t length) {
-  PartitionAutoLock scoped_lock(AddressPoolManagerBitmap::GetLock());
+  ScopedGuard scoped_lock(AddressPoolManagerBitmap::GetLock());
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (handle == kBRPPoolHandle) {
@@ -373,7 +372,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   // IsManagedByDirectMap(address), because many tests test this function using
   // small allocations.
 
-  PartitionAutoLock scoped_lock(AddressPoolManagerBitmap::GetLock());
+  ScopedGuard scoped_lock(AddressPoolManagerBitmap::GetLock());
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (handle == kBRPPoolHandle) {
@@ -404,7 +403,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
 }
 
 void AddressPoolManager::ResetForTesting() {
-  PartitionAutoLock guard(AddressPoolManagerBitmap::GetLock());
+  ScopedGuard guard(AddressPoolManagerBitmap::GetLock());
   AddressPoolManagerBitmap::regular_pool_bits_.reset();
   AddressPoolManagerBitmap::brp_pool_bits_.reset();
 }
@@ -414,5 +413,4 @@ void AddressPoolManager::ResetForTesting() {
 AddressPoolManager::AddressPoolManager() = default;
 AddressPoolManager::~AddressPoolManager() = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

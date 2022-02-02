@@ -24,12 +24,12 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-namespace base {
-
-namespace internal {
-
 // The feature is not applicable to 32-bit address space.
 #if defined(PA_HAS_64_BITS_POINTERS)
+
+namespace partition_alloc {
+
+namespace internal {
 
 // Reserves address space for PartitionAllocator.
 class BASE_EXPORT PartitionAddressSpace {
@@ -174,10 +174,10 @@ class BASE_EXPORT PartitionAddressSpace {
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
-  static_assert(bits::IsPowerOfTwo(kRegularPoolSize) &&
-                    bits::IsPowerOfTwo(kBRPPoolSize) &&
-                    bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
-                    bits::IsPowerOfTwo(kConfigurablePoolMinSize),
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
+                    base::bits::IsPowerOfTwo(kBRPPoolSize) &&
+                    base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
+                    base::bits::IsPowerOfTwo(kConfigurablePoolMinSize),
                 "Each pool size should be a power of two.");
 
   // Masks used to easy determine belonging to a pool.
@@ -255,11 +255,8 @@ ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
   return PartitionAddressSpace::OffsetInBRPPool(address);
 }
 
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
-
 }  // namespace internal
 
-#if defined(PA_HAS_64_BITS_POINTERS)
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
@@ -292,8 +289,30 @@ ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
 ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
   return internal::PartitionAddressSpace::IsConfigurablePoolInitialized();
 }
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+
+}  // namespace partition_alloc
+
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::IsConfigurablePoolAvailable;
+using ::partition_alloc::IsManagedByPartitionAlloc;
+using ::partition_alloc::IsManagedByPartitionAllocBRPPool;
+using ::partition_alloc::IsManagedByPartitionAllocConfigurablePool;
+using ::partition_alloc::IsManagedByPartitionAllocRegularPool;
+
+namespace internal {
+
+using ::partition_alloc::internal::GetPool;
+using ::partition_alloc::internal::GetPoolAndOffset;
+using ::partition_alloc::internal::OffsetInBRPPool;
+using ::partition_alloc::internal::PartitionAddressSpace;
+
+}  // namespace internal
 
 }  // namespace base
+
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_

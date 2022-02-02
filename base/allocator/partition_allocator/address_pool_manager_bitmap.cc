@@ -9,16 +9,15 @@
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
-PartitionLock g_lock;
+Lock g_lock;
 
 }  // namespace
 
-PartitionLock& AddressPoolManagerBitmap::GetLock() {
+Lock& AddressPoolManagerBitmap::GetLock() {
   return g_lock;
 }
 
@@ -37,7 +36,7 @@ std::array<std::atomic_uint32_t,
     AddressPoolManagerBitmap::super_page_refcount_map_;
 #endif
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-}  // namespace internal
-}  // namespace base
+
+}  // namespace partition_alloc::internal
 
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
