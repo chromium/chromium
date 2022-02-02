@@ -124,6 +124,8 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
   // binary, force the selection.
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   if (cmdline->HasSwitch(browser_util::kLacrosSelectionSwitch)) {
+    // TODO(crbug.com/1293250): We should check the version compatibility here,
+    // too.
     auto value =
         cmdline->GetSwitchValueASCII(browser_util::kLacrosSelectionSwitch);
     if (value == browser_util::kLacrosSelectionRootfs) {
@@ -169,13 +171,15 @@ void BrowserLoader::OnLoadSelectionMountStateful(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
-  if (error != component_updater::CrOSComponentManager::Error::NONE ||
-      path.empty()) {
-    LOG(WARNING) << "Error loading lacros component image: "
-                 << static_cast<int>(error);
-    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful);
-    return;
-  }
+  bool is_stateful_lacros_available =
+      error == component_updater::CrOSComponentManager::Error::NONE &&
+      !path.empty();
+  LOG_IF(WARNING, !is_stateful_lacros_available)
+      << "Error loading lacros component image: " << static_cast<int>(error)
+      << ", " << path;
+
+  // Continue to check Lacros version, even if it fails to see stateful
+  // lacros version.
 
   // Proceed to compare the lacros-chrome binary versions in case rootfs
   // lacros-chrome binary is newer than stateful lacros-chrome binary.
@@ -184,43 +188,78 @@ void BrowserLoader::OnLoadSelectionMountStateful(
       base::BindOnce(&browser_util::GetRootfsLacrosVersionMayBlock,
                      base::FilePath(kRootfsLacrosPath).Append(kLacrosMetadata)),
       base::BindOnce(&BrowserLoader::OnLoadVersionSelection,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), is_stateful_lacros_available,
+                     std::move(callback)));
 }
 
 void BrowserLoader::OnLoadVersionSelection(
+    bool is_stateful_lacros_available,
     LoadCompletionCallback callback,
     base::Version rootfs_lacros_version) {
   // Compare the rootfs vs stateful lacros-chrome binary versions.
   // If the rootfs lacros-chrome is greater than or equal to the stateful
   // lacros-chrome version, prioritize using the rootfs lacros-chrome and let
   // stateful lacros-chrome update in the background.
-  if (rootfs_lacros_version.IsValid()) {
+  // TODO(crbug.com/1293250): Clean up the code. Currently, minimizing the risk
+  // for the cherry-pick is prioritized, so the code is more complex than it
+  // should be.
+  base::Version stateful_lacros_version;
+  if (is_stateful_lacros_available) {
     const auto lacros_component_name =
         base::UTF8ToUTF16(base::StringPiece(GetLacrosComponentName()));
+    LOG(WARNING) << "Looking for: " << lacros_component_name;
     for (const auto& component_info :
          component_update_service_->GetComponents()) {
-      if (component_info.name != lacros_component_name)
-        continue;
-      LOG(WARNING) << "Comparing lacros versions: "
-                   << "rootfs (" << rootfs_lacros_version.GetString() << "), "
-                   << "stateful " << lacros_component_name << " ("
-                   << component_info.version.GetString() << ")";
-      if (component_info.version <= rootfs_lacros_version) {
-        LOG(WARNING)
-            << "Stateful lacros version is older or same as the one in rootfs, "
-            << "proceeding to use rootfs lacros.";
-        LoadRootfsLacros(std::move(callback));
-        LoadStatefulLacros({});
-        return;
+      if (component_info.name == lacros_component_name) {
+        // There should be at most one entry, so we immediately breaks the
+        // iteration.
+        stateful_lacros_version = component_info.version;
+        break;
       }
-      // Break out to use stateful lacros-chrome.
-      LOG(WARNING)
-          << "Stateful lacros version is newer than the one in rootfs, "
-          << "procceding to use stateful lacros.";
+    }
+  }
+
+  LOG(WARNING) << "Lacros candidates: rootfs=" << rootfs_lacros_version
+               << ", stateful=" << stateful_lacros_version;
+  if (!rootfs_lacros_version.IsValid() && !stateful_lacros_version.IsValid()) {
+    // Neither rootfs lacros nor stateful lacros are available.
+    // Returning an empty file path to notify error.
+    LOG(ERROR) << "No lacros is available";
+    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful);
+    return;
+  }
+
+  LacrosSelection selection;
+  if (rootfs_lacros_version.IsValid() && stateful_lacros_version.IsValid()) {
+    selection = rootfs_lacros_version < stateful_lacros_version
+                    ? LacrosSelection::kStateful
+                    : LacrosSelection::kRootfs;
+  } else if (rootfs_lacros_version.IsValid()) {
+    selection = LacrosSelection::kRootfs;
+  } else {
+    DCHECK(stateful_lacros_version.IsValid());
+    selection = LacrosSelection::kStateful;
+  }
+
+  // Selected lacros may be older than the one which was running in a previous
+  // sessions, accidentally. For experiment, now we intentionally ignore
+  // the case and forcibly load the selected one, which is the best we could do
+  // at this moment.
+  // TODO(crbug.com/1293250): Check the condition and report it via UMA stats.
+
+  switch (selection) {
+    case LacrosSelection::kRootfs: {
+      LOG(WARNING) << "rootfs lacros is selected";
+      LoadRootfsLacros(std::move(callback));
+      LoadStatefulLacros({});
+      break;
+    }
+    case LacrosSelection::kStateful: {
+      LOG(WARNING) << "stateful lacros is selected";
+      LoadStatefulLacros(std::move(callback));
       break;
     }
   }
-  LoadStatefulLacros(std::move(callback));
 }
 
 void BrowserLoader::LoadStatefulLacros(LoadCompletionCallback callback) {

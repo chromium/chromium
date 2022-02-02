@@ -51,8 +51,14 @@ class BrowserLoader {
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
                            OnLoadSelectionQuicklyChooseRootfs);
-  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadVersionSelectionStateful);
-  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadVersionSelectionRootfs);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadVersionSelectionNeitherIsAvailable);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadVersionSelectionStatefulIsUnavailable);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadVersionSelectionRootfsIsUnavailable);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadVersionSelectionRootfsIsNewer);
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
                            OnLoadVersionSelectionRootfsIsOlder);
 
@@ -77,7 +83,8 @@ class BrowserLoader {
   // Called to determine which lacros to load based on version (rootfs vs
   // stateful).
   void LoadVersionSelection(LoadCompletionCallback callback);
-  void OnLoadVersionSelection(LoadCompletionCallback callback,
+  void OnLoadVersionSelection(bool is_stateful_lacros_available,
+                              LoadCompletionCallback callback,
                               base::Version rootfs_lacros_version);
 
   // Called on the completion of loading.
