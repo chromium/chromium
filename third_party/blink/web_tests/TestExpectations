@@ -3198,7 +3198,6 @@ crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac11-arm64 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-content/quotes-030.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip Timeout ]
@@ -3497,9 +3496,7 @@ crbug.com/626703 [ Mac11 ] external/wpt/pointerevents/pointerevent_contextmenu_i
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
 crbug.com/626703 external/wpt/editing/run/forwarddelete.html?6001-last [ Failure ]
 crbug.com/626703 external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
-crbug.com/626703 [ Mac10.13 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/scheduler/post-task-without-signals.any.serviceworker.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/scheduler/post-task-without-signals.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/scheduler/tentative/current-task-signal.any.serviceworker.html [ Crash ]
@@ -3517,7 +3514,6 @@ crbug.com/626703 external/wpt/html/browsers/browsing-the-web/navigating-across-d
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-mouseup.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/a-user-click-during-pageshow.html [ Timeout ]
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/a-user-click-during-load.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-content/content-none-root-columns.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-content/content-none-root-ruby.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-content/content-none-root-grid.html [ Failure ]
@@ -3548,8 +3544,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/density-size-correction/image-set-003.ht
 crbug.com/626703 [ Win ] external/wpt/density-size-correction/image-set-003.html [ Failure ]
 crbug.com/626703 external/wpt/infrastructure/assumptions/non-local-ports.sub.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-audio.https.html [ Crash ]
-crbug.com/626703 [ Mac11 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yeswithparams-subdomain.sub.https.html [ Failure Timeout ]
@@ -6459,7 +6453,6 @@ crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
-crbug.com/1208173 [ Mac10.14 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 
 # Fix to unblock wpt-importer
 crbug.com/1209223 [ Mac ] external/wpt/url/a-element.html [ Pass Timeout ]
@@ -6905,7 +6898,6 @@ crbug.com/1239161 external/wpt/html/semantics/links/links-created-by-a-and-area-
 crbug.com/1234315 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-and-overflow-hidden.https.html [ Failure Timeout ]
 
 # Sheriff 2021-08-20
-crbug.com/1241778 [ Mac10.13 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Pass Timeout ]
 crbug.com/1194498 http/tests/misc/iframe-script-modify-attr.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-08-23
