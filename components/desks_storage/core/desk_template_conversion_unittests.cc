@@ -14,12 +14,12 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace desks_storage {
@@ -92,7 +92,7 @@ class DeskTemplateConversionTest : public testing::Test {
     deltas.push_back(MakeApp(kProgressiveAppid.c_str(), "Test PWA App",
                              apps::mojom::AppType::kWeb));
     // chromeAppId returns kExtension in the real Apps cache.
-    deltas.push_back(MakeApp(extension_misc::kChromeAppId, "Chrome Browser",
+    deltas.push_back(MakeApp(app_constants::kChromeAppId, "Chrome Browser",
                              apps::mojom::AppType::kChromeApp));
     deltas.push_back(MakeApp(kChromeAppId.c_str(), "Test Chrome App",
                              apps::mojom::AppType::kChromeApp));
@@ -136,16 +136,16 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
 
   EXPECT_TRUE(rd != nullptr);
   EXPECT_EQ(rd->app_id_to_launch_list().size(), 1UL);
-  EXPECT_NE(rd->app_id_to_launch_list().find(extension_misc::kChromeAppId),
+  EXPECT_NE(rd->app_id_to_launch_list().find(app_constants::kChromeAppId),
             rd->app_id_to_launch_list().end());
 
   const app_restore::AppRestoreData* ard =
-      rd->GetAppRestoreData(extension_misc::kChromeAppId, 0);
+      rd->GetAppRestoreData(app_constants::kChromeAppId, 0);
   EXPECT_TRUE(ard != nullptr);
   EXPECT_TRUE(ard->display_id.has_value());
   EXPECT_EQ(ard->display_id.value(), 100L);
   std::unique_ptr<app_restore::AppLaunchInfo> ali =
-      ard->GetAppLaunchInfo(extension_misc::kChromeAppId, 0);
+      ard->GetAppLaunchInfo(app_constants::kChromeAppId, 0);
   std::unique_ptr<app_restore::WindowInfo> wi = ard->GetWindowInfo();
   EXPECT_TRUE(ali != nullptr);
   EXPECT_TRUE(wi != nullptr);

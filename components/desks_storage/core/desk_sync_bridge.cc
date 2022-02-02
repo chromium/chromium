@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
@@ -33,7 +34,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
@@ -128,7 +128,7 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
       return std::string();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow:
       // Browser app has a known app ID.
-      return std::string(extension_misc::kChromeAppId);
+      return std::string(app_constants::kChromeAppId);
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
       return app.app().chrome_app().app_id();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kProgressWebApp:
@@ -355,7 +355,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
   // See definition components/services/app_service/public/mojom/types.mojom
   switch (app_type) {
     case apps::mojom::AppType::kWeb: {
-      if (extension_misc::kChromeAppId == app_id) {
+      if (app_constants::kChromeAppId == app_id) {
         // Chrome Browser Window.
         BrowserAppWindow* browser_app_window =
             out_app->mutable_app()->mutable_browser_app_window();
@@ -470,7 +470,7 @@ void FillWorkspaceDeskSpecifics(
       // The apps cache returns kChromeApp for browser windows, therefore we
       // short circuit the cache retrieval if we get the browser ID.
       const apps::mojom::AppType app_type =
-          app_id == extension_misc::kChromeAppId
+          app_id == app_constants::kChromeAppId
               ? apps::mojom::AppType::kWeb
               : apps_cache->GetAppType(app_id);
 

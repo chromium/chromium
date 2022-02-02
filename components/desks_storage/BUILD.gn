@@ -23,12 +23,12 @@ static_library("desks_storage") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//components/app_constants",
     "//components/app_restore",
     "//components/sync",
     "//components/sync/model",
     "//components/sync/protocol",
     "//components/version_info:channel",
-    "//extensions/common:common_constants",
     "//third_party/re2",
     "//ui/gfx/geometry",
   ]
@@ -51,8 +51,8 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//components/app_constants",
     "//components/sync:test_support",
-    "//extensions/common:common_constants",
     "//testing/gtest",
   ]
 }

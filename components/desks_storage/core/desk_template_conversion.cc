@@ -10,11 +10,11 @@
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -95,7 +95,7 @@ std::string GetJsonAppId(const base::Value& app) {
 
   if (app_type == kAppTypeBrowser) {
     // Browser app has a known app ID.
-    return std::string(extension_misc::kChromeAppId);
+    return std::string(app_constants::kChromeAppId);
   } else if (app_type == kAppTypeChrome || app_type == kAppTypeProgressiveWeb) {
     // Read the provided app ID
     std::string app_id;
@@ -361,14 +361,14 @@ base::Value ConvertURLsToBrowserAppTabValues(const std::vector<GURL>& urls) {
 
 std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
                               const std::string& app_id) {
-  const apps::mojom::AppType app_type = app_id == extension_misc::kChromeAppId
+  const apps::mojom::AppType app_type = app_id == app_constants::kChromeAppId
                                             ? apps::mojom::AppType::kWeb
                                             : apps_cache->GetAppType(app_id);
 
   switch (app_type) {
     case apps::mojom::AppType::kWeb:
-      return app_id == extension_misc::kChromeAppId ? kAppTypeBrowser
-                                                    : kAppTypeProgressiveWeb;
+      return app_id == app_constants::kChromeAppId ? kAppTypeBrowser
+                                                   : kAppTypeProgressiveWeb;
     case apps::mojom::AppType::kChromeApp:
       return kAppTypeChrome;
     default:

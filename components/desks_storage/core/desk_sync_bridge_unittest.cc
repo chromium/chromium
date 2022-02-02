@@ -19,6 +19,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
@@ -32,7 +33,6 @@
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
 #include "components/sync/test/model/test_matchers.h"
-#include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -215,7 +215,7 @@ std::unique_ptr<ash::DeskTemplate> CreateTemplateWithBrowserFromScratch(
 
   auto restore_data = std::make_unique<app_restore::RestoreData>();
   auto browser_info = std::make_unique<app_restore::AppLaunchInfo>(
-      extension_misc::kChromeAppId, kBrowserWindowId);
+      app_constants::kChromeAppId, kBrowserWindowId);
   browser_info->urls = {GURL(base::StringPrintf(kTestUrlFormat, 1)),
                         GURL(base::StringPrintf(kTestUrlFormat, 2))};
 
@@ -338,7 +338,7 @@ class DeskSyncBridgeTest : public testing::Test {
     deltas.push_back(
         MakeApp(kTestPwaAppId, "Test PWA App", apps::mojom::AppType::kWeb));
     // chromeAppId returns kExtension in the real Apps cache.
-    deltas.push_back(MakeApp(extension_misc::kChromeAppId, "Chrome Browser",
+    deltas.push_back(MakeApp(app_constants::kChromeAppId, "Chrome Browser",
                              apps::mojom::AppType::kChromeApp));
     deltas.push_back(MakeApp(kTestChromeAppId, "Test Chrome App",
                              apps::mojom::AppType::kChromeApp));
