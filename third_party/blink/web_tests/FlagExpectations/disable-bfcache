@@ -1,0 +1,13 @@
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
+# tags: [ Release Debug ]
+# results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# Following tests expect that back/forward cache is enabled.
+external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Skip ]
+external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Skip ]
+virtual/bfcache/http/tests/inspector-protocol/bfcache/bfcache-auto-attach.js [ Skip ]
+virtual/bfcache/http/tests/inspector-protocol/bfcache/bfcache-document-updated.js [ Skip ]
+virtual/bfcache/http/tests/inspector-protocol/bfcache/bfcache-request-basic.js [ Skip ]
+virtual/bfcache/http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-blocklisted-features-same-site.js [ Skip ]
+virtual/bfcache/http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-blocklisted-features.js [ Skip ]
+virtual/bfcache/http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-disabled-for-render-frame-host.js [ Skip ]

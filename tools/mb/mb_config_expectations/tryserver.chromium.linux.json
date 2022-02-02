@@ -450,16 +450,6 @@
       "use_goma": true
     }
   },
-  "linux-bfcache-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
   "linux-bionic-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
@@ -680,6 +670,16 @@
       "mbi_mode": "per_site_instance",
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_goma": true
+    }
+  },
+  "linux-no-bfcache-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
       "use_goma": true
     }
   },

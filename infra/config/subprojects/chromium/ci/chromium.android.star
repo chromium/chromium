@@ -259,7 +259,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-bfcache-rel",
+    name = "android-no-bfcache-rel",
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
