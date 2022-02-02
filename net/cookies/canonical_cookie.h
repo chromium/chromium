@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
