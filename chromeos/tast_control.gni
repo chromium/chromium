@@ -133,6 +133,10 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/217362120
   "security.SELinuxFilesARC.vm",
+
+  # b/217100326
+  "arc.SettingsBridge",
+  "arc.SettingsBridge.vm",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
