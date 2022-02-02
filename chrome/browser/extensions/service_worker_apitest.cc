@@ -2634,6 +2634,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
       mojom::APIPermissionID::kStorage));
 }
 
+// Tests that loading a component MV3 extension succeeds.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, Component) {
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/component", {},
+                       {.load_as_component = true}))
+      << message_;
+}
+
 // Tests that an extension's service worker can't be used to relax the extension
 // CSP.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
