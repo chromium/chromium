@@ -10760,16 +10760,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.VideoCapture.MaxFrameDropExceeded"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="VideoDecodeStatsDBOperations" separator=".">
-  <suffix name="Clear" label="Remove all keys"/>
-  <suffix name="Initialize" label="Initialize the DB."/>
-  <suffix name="Read" label="Read an entry from the DB"/>
-  <suffix name="Validate" label="Check for DB entry corruption"/>
-  <suffix name="Write" label="Write an entry to the DB"/>
-  <affected-histogram name="Media.VideoDecodeStatsDB.OpSuccess"/>
-  <affected-histogram name="Media.VideoDecodeStatsDB.OpTiming"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="VideoFrameRateRange" separator=".">
   <suffix name="24fps" label="24 fps"/>
   <suffix name="25fps" label="25 fps"/>

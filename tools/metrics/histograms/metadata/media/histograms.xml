@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DbOperation">
+  <variant name="Clear" summary="Remove all keys from the DB"/>
+  <variant name="Initialize" summary="Initialize the DB."/>
+  <variant name="Read" summary="Read an entry from the DB"/>
+  <variant name="Validate" summary="Check for DB entry corruption"/>
+  <variant name="Write" summary="Write an entry to the DB"/>
+</variants>
+
 <variants name="EmeApi">
   <variant name="CloseSession"/>
   <variant name="GenerateRequest"/>
@@ -4797,31 +4805,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.VideoDecodeStatsDB.OpSuccess"
+<histogram name="Media.VideoDecodeStatsDB.OpSuccess.{DbOperation}"
     enum="BooleanSuccess" expires_after="never">
 <!-- expires-never: MediaCapabilities DB health metric. -->
 
-<!-- Name completed by histogram_suffixes name="VideoDecodeStatsDBOperations" -->
-
   <owner>chcunningham@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Indicates whether we were successful performing some database operation. See
-    suffix VideoDecodeStatsDBOperations.
+    Indicates whether we were successful performing the operation to
+    {DbOperation}. Recorded once the operation completes.
   </summary>
+  <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
-<histogram name="Media.VideoDecodeStatsDB.OpTiming" units="microseconds"
-    expires_after="never">
+<histogram name="Media.VideoDecodeStatsDB.OpTiming.{DbOperation}"
+    units="microseconds" expires_after="never">
 <!-- expires-never: MediaCapabilities DB health metric. -->
-
-<!-- Name completed by histogram_suffixes name="VideoDecodeStatsDBOperations" -->
 
   <owner>chcunningham@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Indicates duration of time performing some database operation.
+    Indicates duration of time performing the operation to {DbOperation}.
+    Recorded once the operation completes or times out. Reported for all users
+    regardless of clock resolution.
   </summary>
+  <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
 <histogram name="Media.VideoFrameSubmitter" units="ms" expires_after="never">
@@ -5046,6 +5054,33 @@ chromium-metrics-reviews@google.com.
     media playback. Multiple WebMediaPlayer instances can together accumulate
     watch time faster than real time.
   </summary>
+</histogram>
+
+<histogram name="Media.WebrtcVideoStatsDB.OpSuccess.{DbOperation}"
+    enum="BooleanSuccess" expires_after="never">
+<!-- expires-never: WebRTC MediaCapabilities DB health metric. -->
+
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Indicates whether we were successful performing the operation to
+    {DbOperation}. Recorded once the operation completes.
+  </summary>
+  <token key="DbOperation" variants="DbOperation"/>
+</histogram>
+
+<histogram name="Media.WebrtcVideoStatsDB.OpTiming.{DbOperation}"
+    units="microseconds" expires_after="never">
+<!-- expires-never: WebRTC MediaCapabilities DB health metric. -->
+
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Indicates duration of time performing the operation to {DbOperation}.
+    Recorded once the operation completes or times out. Reported for all users
+    regardless of clock resolution.
+  </summary>
+  <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
 <histogram name="Media.YouTube.TimeToBufferAv" units="ms" expires_after="M85">

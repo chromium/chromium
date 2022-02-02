@@ -99,6 +99,8 @@ chromium-metrics-reviews@google.com.
       summary="Database for video tutorials (deprecated)."/>
   <variant name="VideoTutorialsV2Database"
       summary="Database for video tutorials."/>
+  <variant name="WebrtcVideoStatsDB"
+      summary="Database for Webrtc video stats."/>
 </variants>
 
 <histogram name="LevelDB.ApproximateMemTableMemoryUse.{LevelDBClient}"

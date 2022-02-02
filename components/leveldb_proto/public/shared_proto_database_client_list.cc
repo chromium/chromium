@@ -108,6 +108,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "CouponDatabase";
     case ProtoDbType::PAGE_ENTITY_METADATA_STORE:
       return "PageEntityMetadataDatabase";
+    case ProtoDbType::WEBRTC_VIDEO_STATS_DB:
+      return "WebrtcVideoStatsDB";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();
