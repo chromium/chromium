@@ -878,7 +878,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        ScreenShareWarnedDuringAllowed) {
-  helper_->EnableScreenShareWarningMode();
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
@@ -927,7 +926,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        ScreenShareWarnedDuringCanceled) {
-  helper_->EnableScreenShareWarningMode();
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
@@ -975,7 +973,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        ScreenShareWarnedFromLacrosDuringAllowed) {
-  helper_->EnableScreenShareWarningMode();
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
@@ -1114,7 +1111,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                        TabScreenShareWarnedAllowed) {
-  helper_->EnableScreenShareWarningMode();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetMockDlpWarnNotifier(/*should_proceed=*/true);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
@@ -1139,7 +1135,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                        TabScreenShareWarnedCancelled) {
-  helper_->EnableScreenShareWarningMode();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetMockDlpWarnNotifier(/*should_proceed=*/false);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);

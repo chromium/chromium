@@ -44,8 +44,6 @@ class DlpContentManagerTestHelper {
 
   bool HasAnyContentCached() const;
 
-  void EnableScreenShareWarningMode();
-
   int ActiveWarningDialogsCount() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

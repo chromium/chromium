@@ -84,11 +84,6 @@ bool DlpContentManagerTestHelper::HasAnyContentCached() const {
   return manager_->user_allowed_contents_cache_.GetSizeForTesting() != 0;
 }
 
-void DlpContentManagerTestHelper::EnableScreenShareWarningMode() {
-  DCHECK(manager_);
-  manager_->SetIsScreenShareWarningModeEnabledForTesting(/*is_enabled=*/true);
-}
-
 int DlpContentManagerTestHelper::ActiveWarningDialogsCount() const {
   DCHECK(manager_);
   return manager_->warn_notifier_->ActiveWarningDialogsCountForTesting();
