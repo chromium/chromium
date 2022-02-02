@@ -16,6 +16,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
@@ -170,6 +172,45 @@ std::string NoticeUmaName(const StreamType& stream_type,
                        uma_base_name, ".", normalized_key});
 }
 
+UserSettingsOnStart GetUserSettingsOnStart(
+    bool isEnabledByEnterprisePolicy,
+    bool isFeedVisible,
+    bool isSignedIn,
+    const feedstore::Metadata& metadata) {
+  if (!isEnabledByEnterprisePolicy)
+    return UserSettingsOnStart::kFeedNotEnabledByPolicy;
+  if (!isFeedVisible) {
+    if (isSignedIn)
+      return UserSettingsOnStart::kFeedNotVisibleSignedIn;
+    return UserSettingsOnStart::kFeedNotVisibleSignedOut;
+  }
+  if (!isSignedIn)
+    return UserSettingsOnStart::kSignedOut;
+
+  const base::Time now = base::Time::Now();
+  bool has_recent_data = false;
+  for (const feedstore::Metadata::StreamMetadata& stream_meta :
+       metadata.stream_metadata()) {
+    base::TimeDelta delta = now - feedstore::FromTimestampMillis(
+                                      stream_meta.last_fetch_time_millis());
+    if (delta >= base::TimeDelta() && delta <= kUserSettingsMaxAge)
+      has_recent_data = true;
+  }
+
+  if (!has_recent_data)
+    return UserSettingsOnStart::kSignedInNoRecentData;
+
+  if (metadata.web_and_app_activity_enabled()) {
+    if (metadata.discover_personalization_enabled())
+      return UserSettingsOnStart::kSignedInWaaOnDpOn;
+    return UserSettingsOnStart::kSignedInWaaOnDpOff;
+  } else {
+    if (metadata.discover_personalization_enabled())
+      return UserSettingsOnStart::kSignedInWaaOffDpOn;
+    return UserSettingsOnStart::kSignedInWaaOffDpOff;
+  }
+}
+
 }  // namespace
 
 MetricsReporter::SurfaceWaiting::SurfaceWaiting() = default;
@@ -199,6 +240,17 @@ MetricsReporter::~MetricsReporter() {
 
 void MetricsReporter::Initialize(Delegate* delegate) {
   delegate_ = delegate;
+}
+
+void MetricsReporter::OnMetadataInitialized(
+    bool isEnabledByEnterprisePolicy,
+    bool isFeedVisible,
+    bool isSignedIn,
+    const feedstore::Metadata& metadata) {
+  base::UmaHistogramEnumeration(
+      "ContentSuggestions.Feed.UserSettingsOnStart",
+      GetUserSettingsOnStart(isEnabledByEnterprisePolicy, isFeedVisible,
+                             isSignedIn, metadata));
 }
 
 void MetricsReporter::OnEnterBackground() {

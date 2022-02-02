@@ -236,6 +236,10 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
     }
   }
   metadata_populated_ = true;
+  metrics_reporter_->OnMetadataInitialized(IsFeedEnabledByEnterprisePolicy(),
+                                           IsArticlesListVisible(),
+                                           IsSignedIn(), metadata_);
+
   web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
 
   for (const feedstore::StreamData& stream_data :

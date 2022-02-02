@@ -377,6 +377,10 @@ RefreshResponseData TranslateWireResponse(
       feed_response->feed_response_metadata().event_id().time_usec() * 1'000;
   response_data.server_response_sent_timestamp_ns =
       feed_response->feed_response_metadata().response_time_ms() * 1'000'000;
+  response_data.web_and_app_activity_enabled =
+      chrome_response_metadata.web_and_app_activity_enabled();
+  response_data.discover_personalization_enabled =
+      chrome_response_metadata.discover_personalization_enabled();
 
   return response_data;
 }

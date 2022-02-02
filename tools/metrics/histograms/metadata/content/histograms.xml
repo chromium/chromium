@@ -1140,6 +1140,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.UserSettingsOnStart"
+    enum="FeedUserSettingsOnStart" expires_after="2022-03-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The state of some account settings that affect Feed users. Reported once at
+    startup (to a single bucket), for all users. Note that this histogram uses
+    data cached from the last time the Feed was fetched. Android only.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.VisibilityLoggingEnabled"
     enum="Boolean" expires_after="2023-03-01">
   <owner>freedjm@google.com</owner>

@@ -118,6 +118,12 @@ message Metadata {
   repeated StreamMetadata stream_metadata = 5;
   // The GAIA ID associated with the store.
   string gaia = 6;
+  // Whether WAA is enabled for this user, as reported by the last FeedQuery
+  // response.
+  bool web_and_app_activity_enabled = 7;
+  // Whether personalization is enabled for Discover, as reported by the last
+  // FeedQuery response.
+  bool discover_personalization_enabled = 8;
 }
 
 // A set of StreamStructures that should be applied to a stream.

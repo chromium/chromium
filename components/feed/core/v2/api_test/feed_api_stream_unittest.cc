@@ -2569,8 +2569,48 @@ TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabled) {
 
   // Re-create the feed, and verify ClearAll isn't called again.
   on_clear_all.Clear();
+  base::HistogramTester histograms;
   CreateStream();
   EXPECT_FALSE(on_clear_all.called());
+  histograms.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kFeedNotEnabledByPolicy,
+                                1);
+}
+
+TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOnDpOff) {
+  // Fetch a feed, so that there's stored data.
+  {
+    RefreshResponseData response;
+    response.model_update_request = MakeTypicalInitialModelState();
+    response.web_and_app_activity_enabled = true;
+    response_translator_.InjectResponse(std::move(response));
+  }
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Simulate a Chrome restart.
+  base::HistogramTester histograms;
+  CreateStream();
+  histograms.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInWaaOnDpOff, 1);
+}
+
+TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOffDpOn) {
+  // Fetch a feed, so that there's stored data.
+  {
+    RefreshResponseData response;
+    response.model_update_request = MakeTypicalInitialModelState();
+    response.discover_personalization_enabled = true;
+    response_translator_.InjectResponse(std::move(response));
+  }
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Simulate a Chrome restart.
+  base::HistogramTester histograms;
+  CreateStream();
+  histograms.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInWaaOffDpOn, 1);
 }
 
 TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {

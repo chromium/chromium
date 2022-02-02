@@ -19,7 +19,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
+namespace feedstore {
+class Metadata;
+}
+
 namespace feed {
+// If cached user setting info is older than this, it will not be reported.
+constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 // Reports UMA metrics for feed.
 // Note this is inherited only for testing.
@@ -45,6 +51,11 @@ class MetricsReporter {
 
   // Two-step initialization, required for circular dependency.
   void Initialize(Delegate* delegate);
+
+  void OnMetadataInitialized(bool isEnabledByEnterprisePolicy,
+                             bool isFeedVisible,
+                             bool isSignedIn,
+                             const feedstore::Metadata& metadata);
 
   // User interactions. See |FeedApi| for definitions.
 

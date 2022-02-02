@@ -37466,6 +37466,26 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
+<enum name="FeedUserSettingsOnStart">
+  <int value="0" label="The Feed is disabled by enterprise policy"/>
+  <int value="1" label="The user is signed out, and has disabled the Feed."/>
+  <int value="2" label="The user is signed in, and has disabled the Feed."/>
+  <int value="3" label="Feed enabled, user signed out"/>
+  <int value="4"
+      label="Feed enabled, user signed in, WAA on, Discover Personalization
+             on"/>
+  <int value="5"
+      label="Feed enabled, user signed in, WAA on, Discover Personalization
+             off"/>
+  <int value="6"
+      label="Feed enabled, user signed in, WAA off, Discover Personalization
+             on"/>
+  <int value="7"
+      label="Feed enabled, user signed in, WAA off, Discover Personalization
+             off"/>
+  <int value="8" label="Feed enabled, user signed in, no recent Feed data"/>
+</enum>
+
 <enum name="FeedVideoInitializationError">
   <int value="0" label="Client library update required."/>
   <int value="1" label="Developer key invalid."/>

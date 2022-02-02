@@ -400,8 +400,12 @@ void LoadStreamTask::ProcessNetworkResponse(
                                          fetched_content_has_notice_card);
   MetricsReporter::NoticeCardFulfilled(fetched_content_has_notice_card);
 
-  auto updated_metadata = stream_.GetMetadata();
+  feedstore::Metadata updated_metadata = stream_.GetMetadata();
   SetLastFetchTime(updated_metadata, options_.stream_type, base::Time::Now());
+  updated_metadata.set_web_and_app_activity_enabled(
+      response_data.web_and_app_activity_enabled);
+  updated_metadata.set_discover_personalization_enabled(
+      response_data.discover_personalization_enabled);
   feedstore::MaybeUpdateSessionId(updated_metadata, response_data.session_id);
   if (response_data.content_lifetime) {
     feedstore::SetContentLifetime(updated_metadata, options_.stream_type,

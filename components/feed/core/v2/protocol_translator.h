@@ -81,6 +81,9 @@ struct RefreshResponseData {
   // each other but not to client timestamps.
   int64_t server_request_received_timestamp_ns;
   int64_t server_response_sent_timestamp_ns;
+
+  bool web_and_app_activity_enabled = false;
+  bool discover_personalization_enabled = false;
 };
 
 absl::optional<feedstore::DataOperation> TranslateDataOperation(

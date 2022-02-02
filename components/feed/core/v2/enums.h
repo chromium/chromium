@@ -155,6 +155,33 @@ enum class NoticeAcknowledgementPath {
   kMaxValue = kViaDismissal,
 };
 
+// This must be kept in sync with FeedUserSettingsOnStart in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Reports last known state of user settings which affect Feed content.
+// This includes WAA (whether activity is recorded), and DP (whether
+// Discover personalization is enabled).
+enum class UserSettingsOnStart {
+  // The Feed is disabled by enterprise policy.
+  kFeedNotEnabledByPolicy = 0,
+  // The Feed is enabled by enterprise policy, but the user has hidden and
+  // disabled the Feed, so other user settings beyond sign-in status are not
+  // available.
+  kFeedNotVisibleSignedOut = 1,
+  kFeedNotVisibleSignedIn = 2,
+  // The Feed is enabled, the user is not signed in.
+  kSignedOut = 3,
+  // The Feed is enabled, the user is signed in, and setting states are known.
+  kSignedInWaaOnDpOn = 4,
+  kSignedInWaaOnDpOff = 5,
+  kSignedInWaaOffDpOn = 6,
+  kSignedInWaaOffDpOff = 7,
+  // The Feed is enabled, but there is no recent Feed data, so user settings
+  // state is unknown.
+  kSignedInNoRecentData = 8,
+  kMaxValue = kSignedInNoRecentData,
+};
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_ENUMS_H_
