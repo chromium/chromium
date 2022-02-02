@@ -29,6 +29,7 @@ generate_grd("build_grdp") {
       "chromeos/multidevice_setup/all_set_2x_dark.svg",
       "chromeos/multidevice_setup/all_set_2x_light.svg",
       "chromeos/cellular_setup/sim_detect_error.svg",
+      "chromeos/cellular_setup/sim_detect_error_dark.svg",
       "chromeos/cellular_setup/error_1x.png",
       "chromeos/cellular_setup/error_2x.png",
       "chromeos/cellular_setup/final_page_success_1x.png",
