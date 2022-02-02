@@ -14,6 +14,7 @@
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/permissions/permissions_client.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -27,7 +28,8 @@ class PermissionPromptAndroid;
 // alternative ui to the mini infobar.
 class NotificationBlockedMessageDelegate
     : public NotificationBlockedDialogController::Delegate,
-      public permissions::PermissionsClient::PermissionMessageDelegate {
+      public permissions::PermissionsClient::PermissionMessageDelegate,
+      public content::WebContentsObserver {
  public:
   // Delegate to mock out the |PermissionPromptAndroid| for testing.
   class Delegate {
@@ -39,7 +41,6 @@ class NotificationBlockedMessageDelegate
     virtual void Accept();
     virtual void Deny();
     virtual void Closing();
-    virtual bool IsPromptDestroyed();
     virtual bool ShouldUseQuietUI();
     virtual absl::optional<permissions::PermissionUiSelector::QuietUiReason>
     ReasonForUsingQuietUi();
@@ -57,7 +58,12 @@ class NotificationBlockedMessageDelegate
   void OnContinueBlocking() override;
   void OnAllowForThisSite() override;
   void OnLearnMoreClicked() override;
+  void OnOpenedSettings() override;
   void OnDialogDismissed() override;
+
+  // content::WebContentsObserver implementation.
+  void OnWebContentsFocused(
+      content::RenderWidgetHost* render_widget_host) override;
 
  private:
   friend class NotificationBlockedMessageDelegateAndroidTest;
@@ -68,10 +74,15 @@ class NotificationBlockedMessageDelegate
 
   void DismissInternal();
 
+  // `message_` and `dialog_controller_` can not be alive at the same moment,
+  // since message ui and dialog ui won't show together.
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<NotificationBlockedDialogController> dialog_controller_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<Delegate> delegate_;
+
+  // Whether we should re-show the dialog to users when users return to the tab.
+  bool should_reshow_dialog_on_focus_ = false;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_NOTIFICATION_BLOCKED_MESSAGE_DELEGATE_ANDROID_H_

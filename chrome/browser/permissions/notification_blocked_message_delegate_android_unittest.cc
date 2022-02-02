@@ -25,7 +25,6 @@ class MockDelegate : public NotificationBlockedMessageDelegate::Delegate {
   MOCK_METHOD(void, Deny, (), (override));
 
   MOCK_METHOD(void, Closing, (), (override));
-  MOCK_METHOD(bool, IsPromptDestroyed, (), (override));
 
   MOCK_METHOD(bool, ShouldUseQuietUI, (), (override));
   MOCK_METHOD(absl::optional<QuietUiReason>,
@@ -114,8 +113,6 @@ void NotificationBlockedMessageDelegateAndroidTest::TearDown() {
 
 TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByTimeout) {
   auto delegate = GetMockDelegate();
-  EXPECT_CALL(*delegate, IsPromptDestroyed)
-      .WillRepeatedly(testing::Return(false));
 
   EXPECT_CALL(*delegate, Closing);
   EXPECT_CALL(*delegate, Accept).Times(0);
@@ -130,8 +127,6 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByTimeout) {
 
 TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByPrimaryAction) {
   auto delegate = GetMockDelegate();
-  EXPECT_CALL(*delegate, IsPromptDestroyed)
-      .WillRepeatedly(testing::Return(false));
   EXPECT_CALL(*delegate, ShouldUseQuietUI)
       .WillRepeatedly(testing::Return(true));
 
@@ -147,27 +142,8 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByPrimaryAction) {
 }
 
 TEST_F(NotificationBlockedMessageDelegateAndroidTest,
-       DismissByPrimaryActionWhenPromptDestroyed) {
-  auto delegate = GetMockDelegate();
-  EXPECT_CALL(*delegate, IsPromptDestroyed)
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*delegate, ShouldUseQuietUI)
-      .WillRepeatedly(testing::Return(true));
-
-  EXPECT_CALL(*delegate, Closing).Times(0);
-  EXPECT_CALL(*delegate, Accept).Times(0);
-  EXPECT_CALL(*delegate, Deny).Times(0);
-
-  ExpectEnqueued();
-  ShowMessage(std::move(delegate));
-  TriggerPrimaryAction();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-TEST_F(NotificationBlockedMessageDelegateAndroidTest,
        DismissByDialogDismissed) {
   auto delegate = GetMockDelegate();
-  EXPECT_CALL(*delegate, IsPromptDestroyed).WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate, ShouldUseQuietUI)
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*delegate, ReasonForUsingQuietUi)
@@ -183,6 +159,6 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest,
   ShowMessage(std::move(delegate));
 
   TriggerManageClick();
+  TriggerDismiss(messages::DismissReason::SECONDARY_ACTION);
   TriggerDialogDismiss();
-  TriggerDismiss(messages::DismissReason::UNKNOWN);
 }
