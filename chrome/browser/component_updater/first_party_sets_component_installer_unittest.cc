@@ -108,12 +108,16 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
       base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
           component_install_dir_.GetPath())));
 
+  base::RunLoop run_loop;
   FirstPartySetsComponentInstallerPolicy(
-      base::BindRepeating([](base::File) { CHECK(false); }))
+      base::BindLambdaForTesting([&](base::File file) {
+        EXPECT_FALSE(file.IsValid());
+        run_loop.Quit();
+      }))
       .ComponentReady(base::Version(), component_install_dir_.GetPath(),
                       base::Value(base::Value::Type::DICTIONARY));
 
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
@@ -187,7 +191,7 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
 
   // Install the component, which should be ignored.
   base::ScopedTempDir install_dir;
-  CHECK(install_dir.CreateUniqueTempDirUnderPath(
+  ASSERT_TRUE(install_dir.CreateUniqueTempDirUnderPath(
       component_install_dir_.GetPath()));
   ASSERT_TRUE(
       base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
@@ -210,9 +214,11 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
   const std::string sets_v2 = "first party sets v2";
 
   base::ScopedTempDir dir_v1;
-  CHECK(dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  ASSERT_TRUE(
+      dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
   base::ScopedTempDir dir_v2;
-  CHECK(dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  ASSERT_TRUE(
+      dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
 
   int callback_calls = 0;
   FirstPartySetsComponentInstallerPolicy policy(
@@ -297,9 +303,11 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
   const std::string sets_v2 = "first party sets v2";
 
   base::ScopedTempDir dir_v1;
-  CHECK(dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  ASSERT_TRUE(
+      dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
   base::ScopedTempDir dir_v2;
-  CHECK(dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  ASSERT_TRUE(
+      dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
 
   FirstPartySetsComponentInstallerPolicy policy(
       base::BindLambdaForTesting([&](base::File file) {
