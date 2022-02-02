@@ -5406,6 +5406,9 @@ const ComputedStyle* Element::EnsureComputedStyle(
   // the V8 heap.
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
 
+  StyleEngine::InEnsureComputedStyleScope ensure_scope(
+      GetDocument().GetStyleEngine());
+
   if (PseudoElement* element = GetPseudoElement(pseudo_element_specifier))
     return element->EnsureComputedStyle();
 
