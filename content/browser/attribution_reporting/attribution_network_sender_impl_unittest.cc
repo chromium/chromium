@@ -132,12 +132,14 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
   } kTestCases[] = {
       {CommonSourceInfo::SourceType::kNavigation,
        R"({"attribution_destination":"https://conversion.test",)"
+       R"("randomized_trigger_rate":0.0024,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5"})"},
       {CommonSourceInfo::SourceType::kEvent,
        R"({"attribution_destination":"https://conversion.test",)"
+       R"("randomized_trigger_rate":0.0000025,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"event",)"

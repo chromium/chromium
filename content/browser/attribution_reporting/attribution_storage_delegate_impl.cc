@@ -124,19 +124,11 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
   if (debug_mode_)
     return absl::nullopt;
 
-  double randomized_response_probability;
-  switch (source.source_type()) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      randomized_response_probability = .0024;
-      break;
-    case CommonSourceInfo::SourceType::kEvent:
-      randomized_response_probability = .0000025;
-      break;
-  }
-  DCHECK_GE(randomized_response_probability, 0);
-  DCHECK_LE(randomized_response_probability, 1);
+  double randomized_trigger_rate = RandomizedTriggerRate(source.source_type());
+  DCHECK_GE(randomized_trigger_rate, 0);
+  DCHECK_LE(randomized_trigger_rate, 1);
 
-  if (base::RandDouble() < randomized_response_probability)
+  if (base::RandDouble() < randomized_trigger_rate)
     return GetRandomFakeReports(source);
 
   return absl::nullopt;

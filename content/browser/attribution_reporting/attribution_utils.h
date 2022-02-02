@@ -28,6 +28,8 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);
 
 uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type);
 
+double RandomizedTriggerRate(CommonSourceInfo::SourceType source_type);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_UTILS_H_

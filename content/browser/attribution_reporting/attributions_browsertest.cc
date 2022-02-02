@@ -117,6 +117,8 @@ struct ExpectedReportWaiter {
     EXPECT_TRUE(report_id);
     EXPECT_TRUE(base::GUID::ParseLowercase(*report_id).is_valid());
 
+    EXPECT_TRUE(body.FindDoubleKey("randomized_trigger_rate"));
+
     // Clear the port as it is assigned by the EmbeddedTestServer at runtime.
     replace_host.SetPortStr("");
 
