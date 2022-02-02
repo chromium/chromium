@@ -204,20 +204,23 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   // Successfully processed all JWKs in the set. Now check if "type" is
   // specified.
   base::Value* value = NULL;
-  std::string session_type_id;
   if (!dictionary->Get(kTypeTag, &value)) {
     // Not specified, so use the default type.
     *session_type = CdmSessionType::kTemporary;
-  } else if (!value->GetAsString(&session_type_id)) {
-    DVLOG(1) << "Invalid '" << kTypeTag << "' value";
-    return false;
-  } else if (session_type_id == kTemporarySession) {
-    *session_type = CdmSessionType::kTemporary;
-  } else if (session_type_id == kPersistentLicenseSession) {
-    *session_type = CdmSessionType::kPersistentLicense;
   } else {
-    DVLOG(1) << "Invalid '" << kTypeTag << "' value: " << session_type_id;
-    return false;
+    if (!value->is_string()) {
+      DVLOG(1) << "Invalid '" << kTypeTag << "' value";
+      return false;
+    }
+    const std::string session_type_id = value->GetString();
+    if (session_type_id == kTemporarySession) {
+      *session_type = CdmSessionType::kTemporary;
+    } else if (session_type_id == kPersistentLicenseSession) {
+      *session_type = CdmSessionType::kPersistentLicense;
+    } else {
+      DVLOG(1) << "Invalid '" << kTypeTag << "' value: " << session_type_id;
+      return false;
+    }
   }
 
   // All done.
