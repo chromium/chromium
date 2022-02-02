@@ -9,6 +9,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -114,6 +115,13 @@ base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
     const base::RepeatingCallback<void(Args...)>& callback) {
   return base::BindRepeating(&PostAsyncTaskRepeatedly<Args...>, impl_on_gpu,
                              callback);
+}
+
+void FailedSkiaFlush(base::StringPiece msg) {
+  static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+      "sk_flush_failed", base::debug::CrashKeySize::Size64);
+  base::debug::SetCrashKeyString(kCrashKey, msg);
+  LOG(ERROR) << msg;
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -464,7 +472,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores_empty)) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "output_sk_surface()->flush() failed.";
+      FailedSkiaFlush("output_sk_surface()->flush() failed.");
       return;
     }
   }
@@ -585,7 +593,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "offscreen.surface()->flush() failed.";
+      FailedSkiaFlush("offscreen.surface()->flush() failed.");
       return;
     }
     bool sync_cpu =
@@ -768,7 +776,7 @@ bool SkiaOutputSurfaceImplOnGpu::RenderSurface(
   if (flush_result != GrSemaphoresSubmitted::kYes &&
       !(begin_semaphores.empty() && end_semaphores.empty())) {
     // TODO(penghuang): handle vulkan device lost.
-    DLOG(ERROR) << "dest_surface->flush() failed.";
+    FailedSkiaFlush("dest_surface->flush() failed.");
     return false;
   }
 
@@ -1023,7 +1031,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     if (flush_result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "plane_surfaces[i]->flush() failed for i=" << i;
+      FailedSkiaFlush("plane_surfaces[i]->flush()");
       return;
     }
   }
@@ -1252,7 +1260,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     if (flush_result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "surface->flush() failed.";
+      FailedSkiaFlush("surface->flush() failed.");
       return;
     }
   }
