@@ -74,10 +74,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
       base::WeakPtr<mojom::URLLoaderClient> sync_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
-  // Called by URLLoaders created by this factory each time before a request is
-  // sent.
-  void OnBeforeURLRequest();
-
   mojom::DevToolsObserver* GetDevToolsObserver() const;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const;
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()

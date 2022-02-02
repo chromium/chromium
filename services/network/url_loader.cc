@@ -1778,11 +1778,6 @@ mojom::LoadInfoPtr URLLoader::CreateLoadInfo() {
   return load_info;
 }
 
-void URLLoader::OnBeforeURLRequest() {
-  if (url_loader_factory_)
-    return url_loader_factory_->OnBeforeURLRequest();
-}
-
 net::LoadState URLLoader::GetLoadState() const {
   return url_request_->GetLoadState().state;
 }

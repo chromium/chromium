@@ -218,6 +218,8 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     return;
   }
 
+  MaybeStartUpdateLoadInfoTimer();
+
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_factory;
   if (url_request.trust_token_params) {
     trust_token_factory = std::make_unique<TrustTokenRequestHelperFactory>(
@@ -369,10 +371,6 @@ void URLLoaderFactory::UpdateLoadInfo() {
                            base::Unretained(this)));
     waiting_on_load_state_ack_ = true;
   }
-}
-
-void URLLoaderFactory::OnBeforeURLRequest() {
-  MaybeStartUpdateLoadInfoTimer();
 }
 
 }  // namespace network

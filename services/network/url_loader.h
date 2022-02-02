@@ -217,8 +217,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
       const;
 
-  void OnBeforeURLRequest();
-
   // mojom::AuthChallengeResponder:
   void OnAuthCredentials(
       const absl::optional<net::AuthCredentials>& credentials) override;

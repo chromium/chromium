@@ -92,8 +92,6 @@ int NetworkServiceNetworkDelegate::OnBeforeURLRequest(
   if (!loader)
     return net::OK;
 
-  loader->OnBeforeURLRequest();
-
   NetworkService* network_service = network_context_->network_service();
   if (network_service) {
     loader->SetEnableReportingRawHeaders(network_service->HasRawHeadersAccess(
