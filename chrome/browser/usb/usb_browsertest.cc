@@ -20,6 +20,7 @@
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "chrome/browser/usb/web_usb_service_impl.h"
+#include "chrome/browser/web_applications/test/isolated_app_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -32,6 +33,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -147,6 +150,26 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;
   std::unique_ptr<WebUsbChooser> usb_chooser_;
 };
+
+scoped_refptr<device::FakeUsbDeviceInfo> CreateSmartCardDevice() {
+  auto alternate_setting = device::mojom::UsbAlternateInterfaceInfo::New();
+  alternate_setting->alternate_setting = 0;
+  alternate_setting->class_code = 0x0B;  // Smart Card
+
+  auto interface = device::mojom::UsbInterfaceInfo::New();
+  interface->interface_number = 0;
+  interface->alternates.push_back(std::move(alternate_setting));
+
+  auto config = device::mojom::UsbConfigurationInfo::New();
+  config->configuration_value = 1;
+  config->interfaces.push_back(std::move(interface));
+
+  std::vector<device::mojom::UsbConfigurationInfoPtr> configs;
+  configs.push_back(std::move(config));
+
+  return base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0x4321, 0x8765, "ACME", "Frobinator", "ABCDEF", std::move(configs));
+}
 
 class WebUsbTest : public InProcessBrowserTest {
  public:
@@ -425,23 +448,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbChromeAppTest, AllowProtectedInterfaces) {
       LoadExtension(dir.UnpackedPath());
 
   // Configure the test device.
-  auto alternate_setting = device::mojom::UsbAlternateInterfaceInfo::New();
-  alternate_setting->alternate_setting = 0;
-  alternate_setting->class_code = 0x0B;  // Smart Card
-
-  auto interface = device::mojom::UsbInterfaceInfo::New();
-  interface->interface_number = 0;
-  interface->alternates.push_back(std::move(alternate_setting));
-
-  auto config = device::mojom::UsbConfigurationInfo::New();
-  config->configuration_value = 1;
-  config->interfaces.push_back(std::move(interface));
-
-  std::vector<device::mojom::UsbConfigurationInfoPtr> configs;
-  configs.push_back(std::move(config));
-
-  auto fake_device_info = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
-      0x4321, 0x8765, "ACME", "Frobinator", "ABCDEF", std::move(configs));
+  auto fake_device_info = CreateSmartCardDevice();
   auto device_info = device_manager().AddDevice(fake_device_info);
   GetChooserContext()->GrantDevicePermission(extension->origin(), *device_info);
 
@@ -451,5 +458,65 @@ IN_PROC_BROWSER_TEST_F(WebUsbChromeAppTest, AllowProtectedInterfaces) {
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+class IsolatedAppUsbBrowserTest
+    : public web_app::IsolatedAppBrowserTestHarness {
+ public:
+  IsolatedAppUsbBrowserTest() = default;
+  ~IsolatedAppUsbBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    IsolatedAppBrowserTestHarness::SetUpOnMainThread();
+
+    mojo::PendingRemote<device::mojom::UsbDeviceManager> remote;
+    device_manager_.AddReceiver(remote.InitWithNewPipeAndPassReceiver());
+    chooser_context()->SetDeviceManagerForTesting(std::move(remote));
+  }
+
+ protected:
+  UsbChooserContext* chooser_context() {
+    return UsbChooserContextFactory::GetForProfile(profile());
+  }
+  device::FakeUsbDeviceManager& device_manager() { return device_manager_; }
+
+ private:
+  device::FakeUsbDeviceManager device_manager_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedAppUsbBrowserTest, ClaimInterface) {
+  auto* non_app_frame = ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("/banners/isolated/simple.html"));
+
+  const char kAppHost[] = "app.com";
+  web_app::AppId app_id = InstallIsolatedApp(kAppHost);
+  auto* app_frame = OpenApp(app_id);
+
+  auto fake_device_info = CreateSmartCardDevice();
+  auto device_info = device_manager().AddDevice(std::move(fake_device_info));
+  chooser_context()->GrantDevicePermission(
+      non_app_frame->GetLastCommittedOrigin(), *device_info);
+  chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
+                                           *device_info);
+
+  EXPECT_EQ("SecurityError", EvalJs(non_app_frame, R"((async () => {
+    const devices = await navigator.usb.getDevices();
+    const device = devices[0];
+    await device.open();
+    await device.selectConfiguration(1);
+    try {
+      await device.claimInterface(0);
+    } catch (e) {
+      return e.name;
+    }
+  })();)"));
+
+  EXPECT_TRUE(ExecJs(app_frame, R"((async () => {
+    const devices = await navigator.usb.getDevices();
+    const device = devices[0];
+    await device.open();
+    await device.selectConfiguration(1);
+    await device.claimInterface(0);
+  })();)"));
+}
 
 }  // namespace

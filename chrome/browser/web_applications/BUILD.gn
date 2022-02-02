@@ -424,6 +424,8 @@ source_set("web_applications_test_support") {
     "test/fake_web_app_registry_controller.h",
     "test/fake_web_app_ui_manager.cc",
     "test/fake_web_app_ui_manager.h",
+    "test/isolated_app_test_utils.cc",
+    "test/isolated_app_test_utils.h",
     "test/mock_file_utils_wrapper.cc",
     "test/mock_file_utils_wrapper.h",
     "test/mock_os_integration_manager.cc",

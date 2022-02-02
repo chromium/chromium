@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/test/isolated_app_test_utils.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -172,55 +173,14 @@ class ServiceWorkerVersionStoppedRunningWaiter
 };
 }  // namespace
 
-class IsolatedAppBrowserTest : public WebAppControllerBrowserTest {
+class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
  public:
-  IsolatedAppBrowserTest()
-      : scoped_feature_list_(blink::features::kWebAppEnableIsolatedStorage) {}
-
+  IsolatedAppBrowserTest() = default;
   IsolatedAppBrowserTest(const IsolatedAppBrowserTest&) = delete;
   IsolatedAppBrowserTest& operator=(const IsolatedAppBrowserTest&) = delete;
   ~IsolatedAppBrowserTest() override = default;
 
  protected:
-  AppId InstallIsolatedApp(const std::string& host) {
-    GURL app_url = https_server()->GetURL(host,
-                                          "/banners/manifest_test_page.html"
-                                          "?manifest=manifest_isolated.json");
-    return InstallIsolatedApp(app_url);
-  }
-
-  AppId InstallIsolatedApp(const GURL& app_url) {
-    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    return test::InstallPwaForCurrentUrl(browser());
-  }
-
-  content::RenderFrameHost* OpenApp(const AppId& app_id) {
-    WebAppRegistrar& registrar =
-        WebAppProvider::GetForWebApps(profile())->registrar();
-    const WebApp* app = registrar.GetAppById(app_id);
-    EXPECT_TRUE(app);
-    Browser* app_window = Browser::Create(Browser::CreateParams::CreateForApp(
-        GenerateApplicationNameFromAppId(app->app_id()),
-        /*trusted_source=*/true, gfx::Rect(), profile(),
-        /*user_gesture=*/true));
-    return NavigateToURLInNewTab(app_window, app->start_url());
-  }
-
-  content::RenderFrameHost* NavigateToURLInNewTab(
-      Browser* window,
-      const GURL& url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB) {
-    auto new_contents = content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
-    window->tab_strip_model()->AppendWebContents(std::move(new_contents),
-                                                 /*foreground=*/true);
-    return ui_test_utils::NavigateToURLWithDisposition(
-        window, url, disposition,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  }
-
   content::StoragePartition* default_storage_partition() {
     return browser()->profile()->GetDefaultStoragePartition();
   }
@@ -235,9 +195,6 @@ class IsolatedAppBrowserTest : public WebAppControllerBrowserTest {
     EXPECT_TRUE(browser);
     return browser;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
