@@ -10,15 +10,12 @@
     RuntimeEnabled=DirectSockets,
     DirectSocketEnabled
 ] interface UDPSocket {
-  // TODO(crbug.com/1119620): Add support for receiving
-  // TODO(crbug.com/1119620): Add measurement
-
   [RaisesException, CallWith=ScriptState, Measure]
   Promise<void> close();
 
-  readonly attribute DOMString remoteAddress;
-  readonly attribute unsigned short remotePort;
-  readonly attribute unsigned short localPort;
-  readonly attribute ReadableStream readable;
-  readonly attribute WritableStream writable;
+  [Measure] readonly attribute DOMString remoteAddress;
+  [Measure] readonly attribute unsigned short remotePort;
+  [Measure] readonly attribute unsigned short localPort;
+  [Measure] readonly attribute ReadableStream readable;
+  [Measure] readonly attribute WritableStream writable;
 };

@@ -36989,6 +36989,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4151" label="ClientHintsUAWoW64"/>
   <int value="4152" label="FetchSetCookieInRequestGuardedHeaders"/>
   <int value="4153" label="V8Window_RequestPictureInPictureWindow_Method"/>
+  <int value="4154" label="V8UDPSocket_LocalPort_AttributeGetter"/>
+  <int value="4155" label="V8UDPSocket_Readable_AttributeGetter"/>
+  <int value="4156" label="V8UDPSocket_RemoteAddress_AttributeGetter"/>
+  <int value="4157" label="V8UDPSocket_RemotePort_AttributeGetter"/>
+  <int value="4158" label="V8UDPSocket_Writable_AttributeGetter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

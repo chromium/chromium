@@ -3472,6 +3472,11 @@ enum WebFeature {
   kClientHintsUAWoW64 = 4151,
   kFetchSetCookieInRequestGuardedHeaders = 4152,
   kV8Window_RequestPictureInPictureWindow_Method = 4153,
+  kV8UDPSocket_LocalPort_AttributeGetter = 4154,
+  kV8UDPSocket_Readable_AttributeGetter = 4155,
+  kV8UDPSocket_RemoteAddress_AttributeGetter = 4156,
+  kV8UDPSocket_RemotePort_AttributeGetter = 4157,
+  kV8UDPSocket_Writable_AttributeGetter = 4158,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
