@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:gravity="center"
+    android:gravity="start"
     android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
     android:minHeight="@dimen/account_selection_sheet_title_height"
     android:layout_marginBottom="@dimen/account_selection_sheet_title_margin_bottom"/>
