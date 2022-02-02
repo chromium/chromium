@@ -23,21 +23,18 @@
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment"
         android:title="@string/privacy_sandbox_ad_personalization_title"
         android:summary="@string/privacy_sandbox_ad_personalization_summary"
-        android:icon="@drawable/permission_cookie"
-        app:iconTint="@macro/default_icon_color" />
+        android:icon="@drawable/gm_ads_click_24"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment"
         android:title="@string/privacy_sandbox_ad_measurement_title"
         android:summary="@string/privacy_sandbox_ad_measurement_summary"
-        android:icon="@drawable/permission_cookie"
-        app:iconTint="@macro/default_icon_color" />
+        android:icon="@drawable/gm_insert_chart_24"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.SpamFraudFragment"
         android:title="@string/privacy_sandbox_spam_fraud_title"
         android:summary="@string/privacy_sandbox_spam_fraud_summary"
-        android:icon="@drawable/permission_cookie"
-        app:iconTint="@macro/default_icon_color" />
+        android:icon="@drawable/ic_spam_reduction_24dp" />
 
 </PreferenceScreen>
