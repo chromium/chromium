@@ -291,8 +291,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   void OpenDialog(ui::SelectFileDialog::Type dialog_type,
                   const base::FilePath& file_path,
                   const gfx::NativeWindow& owning_window,
-                  const std::string& additional_message,
-                  const bool check_js_errors = false) {
+                  const std::string& additional_message) {
     if (GetParam().tablet_mode) {
       ash::ShellTestApi().SetTabletModeEnabledForTest(true);
     }
@@ -329,11 +328,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     // Dialog should be running now.
     ASSERT_TRUE(dialog_->IsRunning(owning_window));
 
-    if (check_js_errors) {
-      // TODO(895703): Files app currently has errors during this call. Work
-      // out why and either fix or remove this code.
-      ASSERT_NO_FATAL_FAILURE(CheckJavascriptErrors());
-    }
+    ASSERT_NO_FATAL_FAILURE(CheckJavascriptErrors());
   }
 
   bool OpenDialogIsResizable() const {

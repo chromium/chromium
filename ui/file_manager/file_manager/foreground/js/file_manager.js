@@ -1430,7 +1430,11 @@ export class FileManager extends EventTarget {
           }
         }
       } catch (error) {
-        console.warn(error.stack || error);
+        // If `selectionURL` doesn't exist we just don't select it, thus we
+        // don't need to log the failure.
+        if (error.name !== 'NotFoundError') {
+          console.warn(error.stack || error);
+        }
       }
     }
 
@@ -1534,9 +1538,15 @@ export class FileManager extends EventTarget {
                 this.launchParams_.targetName, {}, resolve, reject);
           });
         } catch (error2) {
-          // Failed to resolve as either file or directory.
-          console.warn(error1.stack || error1);
-          console.warn(error2.stack || error2);
+          // If `targetName` doesn't exist we just don't select it, thus we
+          // don't need to log the failure.
+          if (error1.name !== 'NotFoundError') {
+            console.warn(error1.stack || error1);
+            console.log(error1);
+          }
+          if (error2.name !== 'NotFoundError') {
+            console.warn(error2.stack || error2);
+          }
         }
       }
     }
