@@ -6761,9 +6761,6 @@ crbug.com/1216587 [ Mac11-arm64 ] accessibility/scroll-window-sends-notification
 # Now also flakily timing-out.
 crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
 
-# Sheriff 2021-07-02
-crbug.com/1226112 http/tests/text-autosizing/narrow-iframe.html [ Failure Pass ]
-
 # Sheriff 2021-07-05
 crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
@@ -7573,7 +7570,6 @@ crbug.com/1291246 [ Mac ] virtual/system-color-picker-appearance/fast/forms/colo
 crbug.com/1291488 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTCPeerConnection-addMultipleTracks.html [ Skip ]
 
 # Sheriff 2022-01-28
-crbug.com/1248386 http/tests/text-autosizing/wide-iframe.html [ Failure Pass Timeout ]
 crbug.com/1287563 [ Linux ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation-stress-glare-linear.https.html [ Crash Failure Pass ]
 
 # Now flaky due to a timing issue.
