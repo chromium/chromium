@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/ios/device_util.h"
 #include "base/ios/ios_util.h"
@@ -36,12 +35,10 @@
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "net/base/mac/url_conversions.h"
-#include "skia/ext/skia_utils_ios.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,25 +46,6 @@
 #endif
 
 using base::UserMetricsAction;
-
-namespace {
-
-// The color of the https when there is an error.
-UIColor* ErrorTextColor() {
-  return skia::UIColorFromSkColor(gfx::kGoogleRed700);
-}
-
-// The color of the https when there is not an error.
-UIColor* SecureTextColor() {
-  return skia::UIColorFromSkColor(gfx::kGoogleGreen700);
-}
-
-// The color of the https when highlighted in incognito.
-UIColor* IncognitoSecureTextColor() {
-  return [UIColor colorWithWhite:(255 / 255.0) alpha:1.0];
-}
-
-}  // namespace
 
 #pragma mark - OminboxViewIOS
 
@@ -86,7 +64,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
       left_image_consumer_(left_image_consumer),
       omnibox_focuser_(omnibox_focuser),
       ignore_popup_updates_(false),
-      attributing_display_string_(nil),
       popup_provider_(nullptr) {
   DCHECK(field_);
 
@@ -231,12 +208,10 @@ void OmniboxViewIOS::SetWindowTextAndCaretPos(const std::u16string& text,
                                               bool notify_text_changed) {
   // Do not call SetUserText() here, as the user has not triggered this change.
   // Instead, set the field's text directly.
-  // Set the field_ value before calling ApplyTextAttributes(), because that
-  // internally calls model()->CurrentTextIsUrl(), which uses the text in the
-  // field_.
   [field_ setText:base::SysUTF16ToNSString(text)];
 
-  NSAttributedString* as = ApplyTextAttributes(text);
+  NSAttributedString* as = [[NSMutableAttributedString alloc]
+      initWithString:base::SysUTF16ToNSString(text)];
   [field_ setText:as userTextLength:[as length]];
 
   if (update_popup)
@@ -309,7 +284,8 @@ void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
   if (display_text == GetText())
     return;
 
-  NSAttributedString* as = ApplyTextAttributes(display_text);
+  NSAttributedString* as = [[NSMutableAttributedString alloc]
+      initWithString:base::SysUTF16ToNSString(display_text)];
   // TODO(crbug.com/1062446): This `user_text_length` calculation  isn't
   //  accurate when there's prefix autocompletion. This should be addressed
   //  before we experiment with prefix autocompletion on iOS.
@@ -654,36 +630,6 @@ void OmniboxViewIOS::WillPaste() {
   [field_ exitPreEditState];
 }
 
-// static
-UIColor* OmniboxViewIOS::GetSecureTextColor(
-    security_state::SecurityLevel security_level,
-    bool in_dark_mode) {
-  if (security_level == security_state::SECURE) {
-    return in_dark_mode ? IncognitoSecureTextColor() : SecureTextColor();
-  }
-
-  // Don't color strikethrough in dark mode. See https://crbug.com/635004#c6
-  if (security_level == security_state::DANGEROUS && !in_dark_mode)
-    return ErrorTextColor();
-
-  return nil;
-}
-
-NSAttributedString* OmniboxViewIOS::ApplyTextAttributes(
-    const std::u16string& text) {
-  NSMutableAttributedString* as = [[NSMutableAttributedString alloc]
-      initWithString:base::SysUTF16ToNSString(text)];
-  // Cache a pointer to the attributed string to allow the superclass'
-  // virtual method invocations to add attributes.
-  DCHECK(attributing_display_string_ == nil);
-  base::AutoReset<NSMutableAttributedString*> resetter(
-      &attributing_display_string_, as);
-  if (model())
-    UpdateTextStyle(text, model()->CurrentTextIsURL(),
-                    AutocompleteSchemeClassifierImpl());
-  return as;
-}
-
 void OmniboxViewIOS::UpdateAppearance() {
   // If Siri is thinking, treat that as user input being in progress.  It is
   // unsafe to modify the text field while voice entry is pending.
@@ -695,8 +641,9 @@ void OmniboxViewIOS::UpdateAppearance() {
     // Even if the change wasn't "user visible" to the model, it still may be
     // necessary to re-color to the URL string.  Only do this if the omnibox is
     // not currently focused.
-    NSAttributedString* as =
-        ApplyTextAttributes(model()->GetPermanentDisplayText());
+    NSAttributedString* as = [[NSMutableAttributedString alloc]
+        initWithString:base::SysUTF16ToNSString(
+                           model()->GetPermanentDisplayText())];
     [field_ setText:as userTextLength:[as length]];
   }
 }
