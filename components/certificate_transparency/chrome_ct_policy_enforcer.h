@@ -24,7 +24,7 @@ struct COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) OperatorHistoryEntry {
   std::string current_operator_;
   // Vector of previous operators (if any) for the log, represented as pairs of
   // operator name and time when they stopped operating the log.
-  std::vector<std::pair<std::string, base::TimeDelta>> previous_operators_;
+  std::vector<std::pair<std::string, base::Time>> previous_operators_;
 
   OperatorHistoryEntry();
   ~OperatorHistoryEntry();
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // arguments were generated.  Both lists of logs must be sorted by log ID.
   ChromeCTPolicyEnforcer(
       base::Time log_list_date,
-      std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+      std::vector<std::pair<std::string, base::Time>> disqualified_logs,
       std::vector<std::string> operated_by_google_logs,
       std::map<std::string, OperatorHistoryEntry> log_operator_history);
 
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // list of log IDs operated by Google
   void UpdateCTLogList(
       base::Time update_time,
-      std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+      std::vector<std::pair<std::string, base::Time>> disqualified_logs,
       std::vector<std::string> operated_by_google_logs,
       std::map<std::string, OperatorHistoryEntry> log_operator_history);
 
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   const std::vector<std::string>& operated_by_google_logs_for_testing() {
     return operated_by_google_logs_;
   }
-  const std::vector<std::pair<std::string, base::TimeDelta>>&
+  const std::vector<std::pair<std::string, base::Time>>&
   disqualified_logs_for_testing() {
     return disqualified_logs_;
   }
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   std::string GetOperatorForLog(std::string log_id, base::Time timestamp) const;
 
   // Map of SHA-256(SPKI) to log disqualification date.
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs_;
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs_;
 
   // List of SHA-256(SPKI) for logs operated by Google.
   std::vector<std::string> operated_by_google_logs_;

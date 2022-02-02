@@ -30,7 +30,7 @@ def _write_disqualified_log_info_struct_definition(f):
       "  // SCTs embedded in pre-certificates after this date should not"
       " count\n"
       "  // towards any uniqueness/freshness requirements.\n"
-      "  const base::TimeDelta disqualification_date;\n"
+      "  const base::Time disqualification_date;\n"
       "};\n\n")
 
 
@@ -141,7 +141,7 @@ def _to_disqualified_loginfo_struct(log, index):
   s += ",\n"
   s += _to_loginfo_struct(log, index)
   s += ",\n"
-  s += '     base::Seconds(%d)' % (
+  s += '     base::Time::FromTimeT(%d)' % (
       _timestamp_to_timedelta_since_unixepoch(
           log["state"]["retired"]["timestamp"]))
   s += '}'
@@ -167,8 +167,9 @@ def _to_previous_operators_struct(log, index):
                                   _timestamp_to_timedelta_since_unixepoch(
                                       x["end_time"])):
       s += '\n        {"%s", ' % (_escape_c_string(operator_switch["name"]))
-      s += 'base::Seconds(%d)},' % _timestamp_to_timedelta_since_unixepoch(
-          operator_switch["end_time"])
+      s += (
+          'base::Time::FromTimeT(%d)},' %
+          _timestamp_to_timedelta_since_unixepoch(operator_switch["end_time"]))
     s += '};\n'
   return s
 
@@ -210,8 +211,8 @@ def _is_log_once_or_currently_qualified(log):
 def _generate_log_list_timestamp(timestamp):
   s = ""
   s += "// The time at which this log list was last updated.\n";
-  s += "const base::TimeDelta kLogListTimestamp = "
-  s += 'base::Seconds(%d);\n\n' % (
+  s += "const base::Time kLogListTimestamp = "
+  s += 'base::Time::FromTimeT(%d);\n\n' % (
       _timestamp_to_timedelta_since_unixepoch(timestamp))
   return s
 

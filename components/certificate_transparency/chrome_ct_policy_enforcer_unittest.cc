@@ -484,7 +484,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, &scts);
 
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
   chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                           operated_by_google_logs,
@@ -517,7 +517,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
                            2, &scts);
 
   // Clear the log list and set the last updated time to more than 10 weeks ago.
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
   chrome_policy_enforcer->UpdateCTLogList(
@@ -554,16 +554,14 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
   const char kModifiedGoogleAviatorLogID[] =
       "\x68\xf6\x98\xf8\x1f\x64\x82\xbe\x3a\x8c\xee\xb9\x28\x1d\x4c\xfc\x71\x51"
       "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\x4f\xf4";
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
   base::Time past_disqualification = base::Time::Now() - base::Hours(1);
   base::Time future_disqualification = base::Time::Now() + base::Hours(1);
-  disqualified_logs.emplace_back(
-      kModifiedGoogleAviatorLogID,
-      future_disqualification - base::Time::UnixEpoch());
-  disqualified_logs.emplace_back(
-      kGoogleAviatorLogID, past_disqualification - base::Time::UnixEpoch());
+  disqualified_logs.emplace_back(kModifiedGoogleAviatorLogID,
+                                 future_disqualification);
+  disqualified_logs.emplace_back(kGoogleAviatorLogID, past_disqualification);
   chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                           operated_by_google_logs,
                                           log_operator_history);
@@ -586,12 +584,11 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
   const char kModifiedGoogleAviatorLogID[] =
       "\x68\xf6\x98\xf8\x1f\x64\x82\xbe\x3a\x8c\xee\xb9\x28\x1d\x4c\xfc\x71\x51"
       "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\x4f\xf4";
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
-  disqualified_logs.emplace_back(
-      kModifiedGoogleAviatorLogID,
-      base::Time::Now() - base::Days(1) - base::Time::UnixEpoch());
+  disqualified_logs.emplace_back(kModifiedGoogleAviatorLogID,
+                                 base::Time::Now() - base::Days(1));
   chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                           operated_by_google_logs,
                                           log_operator_history);
@@ -610,14 +607,13 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
 
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs = {google_log_id_};
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
 
-  // Set all the log operators for these SCTs as disqualiied, with a timestamp
+  // Set all the log operators for these SCTs as disqualified, with a timestamp
   // one hour from now.
-  base::TimeDelta retirement_time =
-      base::Time::Now() + base::Hours(1) - base::Time::UnixEpoch();
+  base::Time retirement_time = base::Time::Now() + base::Hours(1);
   // This mirrors how FillListWithSCTsOfOrigin generates log ids.
   disqualified_logs.emplace_back(google_log_id_, retirement_time);
   for (size_t i = 1; i < 5; ++i) {
@@ -644,14 +640,13 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
 
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs = {google_log_id_};
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
 
   // Set all the log operators for these SCTs as disqualiied, with a timestamp
   // one hour ago.
-  base::TimeDelta retirement_time =
-      base::Time::Now() - base::Hours(1) - base::Time::UnixEpoch();
+  base::Time retirement_time = base::Time::Now() - base::Hours(1);
   // This mirrors how FillListWithSCTsOfOrigin generates log ids.
   disqualified_logs.emplace_back(google_log_id_, retirement_time);
   for (size_t i = 1; i < 5; ++i) {
@@ -884,8 +879,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
   // Set the previous operator of one of the logs to a different one, with an
   // end time after the SCT timestamp.
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
-      "Different Operator",
-      scts[1]->timestamp + base::Seconds(1) - base::Time::UnixEpoch());
+      "Different Operator", scts[1]->timestamp + base::Seconds(1));
   chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
@@ -910,8 +904,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
   // Set the previous operator of one of the logs to the same as the other log,
   // with an end time after the SCT timestamp.
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
-      "Operator 0",
-      scts[1]->timestamp + base::Seconds(1) - base::Time::UnixEpoch());
+      "Operator 0", scts[1]->timestamp + base::Seconds(1));
   chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
@@ -935,11 +928,9 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, MultipleOperatorSwitches) {
   // Set multiple previous operators, the first should be ignored since it
   // stopped operating before the SCT timestamp.
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
-      "Different Operator",
-      scts[1]->timestamp - base::Seconds(1) - base::Time::UnixEpoch());
+      "Different Operator", scts[1]->timestamp - base::Seconds(1));
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
-      "Operator 0",
-      scts[1]->timestamp + base::Seconds(1) - base::Time::UnixEpoch());
+      "Operator 0", scts[1]->timestamp + base::Seconds(1));
   chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
@@ -964,11 +955,9 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
   // Set multiple previous operators, all of them should be ignored since they
   // all stopped operating before the SCT timestamp.
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
-      "Different Operator",
-      scts[1]->timestamp - base::Seconds(2) - base::Time::UnixEpoch());
+      "Different Operator", scts[1]->timestamp - base::Seconds(2));
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
-      "Yet Another Different Operator",
-      scts[1]->timestamp - base::Seconds(1) - base::Time::UnixEpoch());
+      "Yet Another Different Operator", scts[1]->timestamp - base::Seconds(1));
   chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,

@@ -114,7 +114,7 @@ OperatorHistoryEntry::OperatorHistoryEntry(const OperatorHistoryEntry& other) =
 
 ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
     base::Time log_list_date,
-    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+    std::vector<std::pair<std::string, base::Time>> disqualified_logs,
     std::vector<std::string> operated_by_google_logs,
     std::map<std::string, OperatorHistoryEntry> log_operator_history)
     : disqualified_logs_(std::move(disqualified_logs)),
@@ -152,7 +152,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
 
 void ChromeCTPolicyEnforcer::UpdateCTLogList(
     base::Time update_time,
-    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+    std::vector<std::pair<std::string, base::Time>> disqualified_logs,
     std::vector<std::string> operated_by_google_logs,
     std::map<std::string, OperatorHistoryEntry> log_operator_history) {
   log_list_date_ = update_time;
@@ -172,7 +172,7 @@ bool ChromeCTPolicyEnforcer::IsLogDisqualified(
   if (p == std::end(disqualified_logs_) || p->first != log_id) {
     return false;
   }
-  *disqualification_date = base::Time::UnixEpoch() + p->second;
+  *disqualification_date = p->second;
   if (base::Time::Now() < *disqualification_date) {
     return false;
   }
@@ -421,7 +421,7 @@ std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
   DCHECK(log_operator_history_.find(log_id) != log_operator_history_.end());
   OperatorHistoryEntry log_history = log_operator_history_.at(log_id);
   for (auto operator_entry : log_history.previous_operators_) {
-    if (timestamp - base::Time::UnixEpoch() < operator_entry.second)
+    if (timestamp < operator_entry.second)
       return operator_entry.first;
   }
   // Either the log has only ever had one operator, or the timestamp is after

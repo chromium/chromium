@@ -6192,7 +6192,7 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     log_info->public_key = std::string(4, 0x41 + static_cast<char>(i));
     log_info->name = std::string(4, 0x41 + static_cast<char>(i));
     log_info->operated_by_google = false;
-    log_info->disqualified_at = base::Seconds(i);
+    log_info->disqualified_at = base::Time::FromTimeT(i);
     log_info->current_operator = "Not Google Either";
 
     log_list_mojo.push_back(std::move(log_info));
@@ -6229,12 +6229,14 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
       ::testing::UnorderedElementsAreArray({crypto::SHA256HashString("1111"),
                                             crypto::SHA256HashString("3333"),
                                             crypto::SHA256HashString("5555")}));
-  EXPECT_THAT(
-      policy_enforcer->disqualified_logs_for_testing(),
-      ::testing::UnorderedElementsAre(
-          ::testing::Pair(crypto::SHA256HashString("AAAA"), base::Seconds(0)),
-          ::testing::Pair(crypto::SHA256HashString("BBBB"), base::Seconds(1)),
-          ::testing::Pair(crypto::SHA256HashString("CCCC"), base::Seconds(2))));
+  EXPECT_THAT(policy_enforcer->disqualified_logs_for_testing(),
+              ::testing::UnorderedElementsAre(
+                  ::testing::Pair(crypto::SHA256HashString("AAAA"),
+                                  base::Time::FromTimeT(0)),
+                  ::testing::Pair(crypto::SHA256HashString("BBBB"),
+                                  base::Time::FromTimeT(1)),
+                  ::testing::Pair(crypto::SHA256HashString("CCCC"),
+                                  base::Time::FromTimeT(2))));
 
   std::map<std::string, certificate_transparency::OperatorHistoryEntry>
       operator_history = policy_enforcer->operator_history_for_testing();
@@ -6275,7 +6277,7 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfigWithOperatorSwitches) {
     network::mojom::PreviousOperatorEntryPtr previous_operator =
         network::mojom::PreviousOperatorEntry::New();
     previous_operator->name = "Operator " + base::NumberToString(i);
-    previous_operator->end_time = base::Seconds(i);
+    previous_operator->end_time = base::Time::FromTimeT(i);
     log_info->previous_operators.push_back(std::move(previous_operator));
   }
   log_list_mojo.push_back(std::move(log_info));
@@ -6314,9 +6316,10 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfigWithOperatorSwitches) {
       "Changed Operator");
   EXPECT_THAT(
       operator_history[crypto::SHA256HashString("AAAA")].previous_operators_,
-      ::testing::ElementsAre(::testing::Pair("Operator 0", base::Seconds(0)),
-                             ::testing::Pair("Operator 1", base::Seconds(1)),
-                             ::testing::Pair("Operator 2", base::Seconds(2))));
+      ::testing::ElementsAre(
+          ::testing::Pair("Operator 0", base::Time::FromTimeT(0)),
+          ::testing::Pair("Operator 1", base::Time::FromTimeT(1)),
+          ::testing::Pair("Operator 2", base::Time::FromTimeT(2))));
 }
 #endif
 

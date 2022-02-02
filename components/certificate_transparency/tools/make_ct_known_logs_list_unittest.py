@@ -207,7 +207,7 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
         '\\x7a\\x9c\\xb4\\x10\\xff\\x61\\xf2\\x00\\x15\\xad",\n    {"\\x61'
         '\\x62\\x63",\n     3,\n     "Test Description"'
         ',\n     "",\n     nullptr, 0},\n     '
-        "base::Seconds(1551083574)}")
+        "base::Time::FromTimeT(1551083574)}")
 
     self.assertEqual(
         make_ct_known_logs_list._to_disqualified_loginfo_struct(log, 1),
@@ -266,8 +266,8 @@ class LogListTimestampGenerationTest(unittest.TestCase):
     iso_timestamp = "2021-08-09T00:00:00Z"
     expected_generated_timestamp = (
         '// The time at which this log list was last updated.\n'
-        'const base::TimeDelta kLogListTimestamp = '
-        'base::Seconds(1628467200);\n\n')
+        'const base::Time kLogListTimestamp = '
+        'base::Time::FromTimeT(1628467200);\n\n')
 
     self.assertEqual(
         make_ct_known_logs_list._generate_log_list_timestamp(iso_timestamp),
@@ -291,9 +291,9 @@ class LogListPreviousOperatorsTest(unittest.TestCase):
          ]
     }
     expected_previous_operator_info = (
-        'const PreviousOperatorEntry kPreviousOperators1[] = {\n        {'
-        '"test123456", base::Seconds(1514764800)},\n        {"test123", '
-        'base::Seconds(1609459200)},};\n')
+        'const PreviousOperatorEntry kPreviousOperators1[] = {\n'
+        '        {"test123456", base::Time::FromTimeT(1514764800)},\n'
+        '        {"test123", base::Time::FromTimeT(1609459200)},};\n')
     self.assertEqual(
         make_ct_known_logs_list._to_previous_operators_struct(log, 1),
         expected_previous_operator_info)

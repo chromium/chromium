@@ -20,7 +20,7 @@ struct PreviousOperatorEntry {
   const char* const name;
   // Time when the operator stopped operating this log, expressed as a TimeDelta
   // from the Unix Epoch.
-  const base::TimeDelta end_time;
+  const base::Time end_time;
 };
 
 struct CTLogInfo {
@@ -63,7 +63,7 @@ std::vector<std::string> GetLogsOperatedByGoogle();
 // date should not be trusted, nor contribute to any uniqueness or freshness
 // requirements.
 COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
-std::vector<std::pair<std::string, base::TimeDelta>> GetDisqualifiedLogs();
+std::vector<std::pair<std::string, base::Time>> GetDisqualifiedLogs();
 
 }  // namespace certificate_transparency
 

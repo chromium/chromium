@@ -196,7 +196,8 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
           previous_operator->name = it->name();
           // We use the next element's start time as the current element end
           // time.
-          base::TimeDelta end_time =
+          base::Time end_time =
+              base::Time::UnixEpoch() +
               base::Seconds((it + 1)->operator_start().seconds()) +
               base::Nanoseconds((it + 1)->operator_start().nanos());
           previous_operator->end_time = end_time;
@@ -215,7 +216,8 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
         // Note: RETIRED is a terminal state for the log, so other states do not
         // need to be checked, because once RETIRED, the state will never
         // change.
-        base::TimeDelta retired_since =
+        base::Time retired_since =
+            base::Time::UnixEpoch() +
             base::Seconds(log.state()[0].state_start().seconds()) +
             base::Nanoseconds(log.state()[0].state_start().nanos());
         log_ptr->disqualified_at = retired_since;
