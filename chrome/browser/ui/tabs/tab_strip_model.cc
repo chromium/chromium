@@ -32,7 +32,10 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -46,6 +49,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -56,6 +60,7 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/range/range.h"
@@ -1915,7 +1920,19 @@ TabStripSelectionChange TabStripModel::SetSelection(
 
   if (!triggered_by_other_operation &&
       (selection.active_tab_changed() || selection.selection_changed())) {
-    if (selection.active_tab_changed()) {
+    // Show the in-product help dialog pointing users to the tab mute button if
+    // the user backgrounds an audible tab.
+    if (selection.active_tab_changed() &&
+        base::FeatureList::IsEnabled(media::kEnableTabMuting)) {
+      if (selection.old_contents &&
+          selection.old_contents->IsCurrentlyAudible()) {
+        Browser* browser =
+            chrome::FindBrowserWithWebContents(selection.old_contents);
+        DCHECK(browser);
+        browser->window()->MaybeShowFeaturePromo(
+            feature_engagement::kIPHTabAudioMutingFeature);
+      }
+
       auto now = base::TimeTicks::Now();
       if (selection.new_contents) {
         auto input_event_timestamp =

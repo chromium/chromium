@@ -91,6 +91,15 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
       IDS_LIVE_CAPTION_PROMO, IDS_LIVE_CAPTION_PROMO_SCREENREADER,
       FeaturePromoSpecification::AcceleratorInfo()));
 
+  // kIPHTabAudioMutingFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHTabAudioMutingFeature,
+          kTabAlertIndicatorButtonElementId, IDS_TAB_AUDIO_MUTING_PROMO,
+          IDS_LIVE_CAPTION_PROMO_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopCenter)));
+
   // kIPHGMCCastStartStopFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHGMCCastStartStopFeature, kMediaButtonElementId,

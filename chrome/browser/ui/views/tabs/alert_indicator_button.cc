@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
@@ -26,6 +27,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/metrics.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -143,9 +145,8 @@ AlertIndicatorButton::AlertIndicatorButton(Tab* parent_tab)
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_MUTE_TAB));
-  // Disable animations of hover state change, to be consistent with the
-  // behavior of the tab close button.
-  // set_animate_on_state_change(false);
+
+  SetProperty(views::kElementIdentifierKey, kTabAlertIndicatorButtonElementId);
 }
 
 AlertIndicatorButton::~AlertIndicatorButton() = default;

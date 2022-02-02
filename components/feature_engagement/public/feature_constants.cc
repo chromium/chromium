@@ -33,6 +33,8 @@ const base::Feature kIPHGMCCastStartStopFeature{
     "IPH_GMCCastStartStop", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHLiveCaptionFeature{"IPH_LiveCaption",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHTabAudioMutingFeature{"IPH_TabAudioMuting",
+                                              base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHPasswordsAccountStorageFeature{
     "IPH_PasswordsAccountStorage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHReadingListDiscoveryFeature{
