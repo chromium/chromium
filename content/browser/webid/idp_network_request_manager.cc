@@ -125,9 +125,13 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   resource_request->site_for_cookies = site_for_cookies;
   if (send_referrer) {
     resource_request->referrer = initiator.GetURL();
-    resource_request->referrer_policy =
-        net::ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+    // Since referrer_policy only affects redirects and we disable redirects
+    // below, we don't need to set referrer_policy here.
   }
+  // TODO(cbiesinger): Not following redirects is important for security because
+  // this bypasses CORB. Ensure there is a test added.
+  // https://crbug.com/1155312.
+  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kRequestBodyContentType);
 
@@ -846,7 +850,7 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
     // Since referrer_policy only affects redirects and we disable redirects
     // below, we don't need to set referrer_policy here.
   }
-  // TODO(kenrb): Not following redirects is important for security because
+  // TODO(cbiesinger): Not following redirects is important for security because
   // this bypasses CORB. Ensure there is a test added.
   // https://crbug.com/1155312.
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
