@@ -177,6 +177,12 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
   GetPasswordAutofillAgent()->FillIntoFocusedField(is_password, credential);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void ContentPasswordManagerDriver::TriggerFormSubmission() {
+  GetPasswordAutofillAgent()->TriggerFormSubmission();
+}
+#endif
+
 void ContentPasswordManagerDriver::PreviewSuggestion(
     const std::u16string& username,
     const std::u16string& password) {

@@ -117,6 +117,10 @@ interface PasswordAutofillAgent {
   // Indicates whether the virtual keyboard should be shown instead.
   TouchToFillClosed(bool show_virtual_keyboard);
 
+  // Triggers a form submission on the last interacted element.
+  [EnableIf=is_android]
+  TriggerFormSubmission();
+
   // Annotate password related (username, password) DOM input elements with
   // corresponding HTML attributes. It is used only for debugging.
   AnnotateFieldsWithParsingResult(ParsingResult parsing_result);

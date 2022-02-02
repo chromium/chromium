@@ -139,6 +139,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void TouchToFillClosed(bool show_virtual_keyboard) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;
+#if BUILDFLAG(IS_ANDROID)
+  void TriggerFormSubmission() override;
+#endif
 
   // FormTracker::Observer
   void OnProvisionallySaveForm(const blink::WebFormElement& form,

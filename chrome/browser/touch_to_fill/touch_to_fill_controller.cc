@@ -183,8 +183,13 @@ void TouchToFillController::FillCredential(const UiCredential& credential) {
       credential.is_affiliation_based_match().value());
   driver_->TouchToFillClosed(ShowVirtualKeyboard(false));
 
-  std::exchange(driver_, nullptr)
-      ->FillSuggestion(credential.username(), credential.password());
+  driver_->FillSuggestion(credential.username(), credential.password());
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kTouchToFillPasswordSubmission)) {
+    driver_->TriggerFormSubmission();
+  }
+  driver_ = nullptr;
 
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
                                 TouchToFillOutcome::kCredentialFilled);
