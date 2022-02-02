@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -178,6 +179,18 @@ policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
       connector->device_management_service();
   service->ScheduleInitialization(0);
   return service;
+}
+
+enum class AutoEnrollmentControllerTimeoutReport {
+  kTimeoutCancelled = 0,
+  kTimeoutFRE,
+  kTimeout,
+  kMaxValue = kTimeout,
+};
+
+void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
+  base::UmaHistogramEnumeration("Enterprise.AutoEnrollmentControllerTimeout",
+                                report);
 }
 
 }  // namespace
@@ -678,6 +691,8 @@ void AutoEnrollmentController::UpdateState(
     case policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
     case policy::AUTO_ENROLLMENT_STATE_DISABLED:
       safeguard_timer_.Stop();
+      ReportTimeoutUMA(
+          AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
       break;
   }
 
@@ -771,7 +786,6 @@ void AutoEnrollmentController::Timeout() {
   // TODO(igorcov): Investigate the remaining causes of hitting timeout and
   // potentially either remove the timeout altogether or enforce FRE in the
   // REQUIRED case as well.
-  // TODO(mnissler): Add UMA to track results of auto-enrollment checks.
   if (client_start_weak_factory_.HasWeakPtrs() &&
       GetFRERequirement() != FRERequirement::kExplicitlyRequired) {
     // If the callbacks to check ownership status or state keys are still
@@ -779,12 +793,14 @@ void AutoEnrollmentController::Timeout() {
     // retrying anything, need to fix that bug.
     LOG(ERROR) << "Failed to start auto-enrollment check, fix the code!";
     UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+    ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeout);
   } else {
     // This can actually happen in some cases, for example when state key
     // generation is waiting for time sync or the server just doesn't reply and
     // keeps the connection open.
     LOG(ERROR) << "AutoEnrollmentClient didn't complete within time limit.";
     UpdateState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+    ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutFRE);
   }
 
   // Reset state.

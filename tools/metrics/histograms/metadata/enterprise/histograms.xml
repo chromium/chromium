@@ -133,6 +133,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Enterprise.AutoEnrollmentControllerTimeout"
+    enum="EnterpriseAutoEnrollmentControllerTimeoutReport"
+    expires_after="2023-01-01">
+  <owner>vsavu@google.com</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Count the number of timeouts and successes for AutoEnrollmentController.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.AutoEnrollmentExtraTime{EnterpriseAutoEnrollmentType}"
     units="ms" expires_after="2021-03-01">
