@@ -47,6 +47,14 @@ export function firmwareUpdateDialogTest() {
     return flushTasks();
   }
 
+  /**
+   * @suppress {visibility}
+   * @param {boolean} inflight
+   */
+  function setIsInitiallyInflight(inflight) {
+    updateDialogElement.isInitiallyInflight_ = inflight;
+  }
+
   test('DialogStateUpdatesCorrectly', async () => {
     // Start update.
     await setInstallationProgress(1, UpdateState.kUpdating);
@@ -157,5 +165,23 @@ export function firmwareUpdateDialogTest() {
     // No percentage progress bar.
     assertFalse(
         !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
+  });
+
+  test('ProgressBarAppears', async () => {
+    // Simulate update inflight, but restarting. Idle state during inflight
+    // is equivalent as a restart phase.
+    setIsInitiallyInflight(/*inflight=*/ true);
+    await flushTasks();
+    await setInstallationProgress(0, UpdateState.kIdle);
+    assertTrue(
+        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar'));
+
+    // Set inflight to false, expect no progress bar.
+    setIsInitiallyInflight(/*inflight=*/ false);
+    await flushTasks();
+    assertFalse(!!updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar'));
   });
 }

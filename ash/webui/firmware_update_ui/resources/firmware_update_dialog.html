@@ -40,7 +40,9 @@
         [[dialogContent.body]]
       </div>
     </div>
-    <div slot="footer" hidden$="[[!shouldShowProgressBar_(installationProgress.state)]]">
+    <div slot="footer"
+        hidden$="[[!shouldShowProgressBar_(installationProgress.*,
+                   isInitiallyInflight_)]]">
       <label id="progress" class="firmware-dialog-installing-font">
         [[dialogContent.footer]]
       </label>

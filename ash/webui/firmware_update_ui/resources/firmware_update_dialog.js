@@ -116,6 +116,11 @@ export class FirmwareUpdateDialogElement extends
    * @param {!InstallationProgress} update
    */
   onStatusChanged(update) {
+    if (update.state === UpdateState.kSuccess ||
+        update.state === UpdateState.kFailed) {
+      // Install is completed, reset inflight state.
+      this.isInitiallyInflight_ = false;
+    }
     this.installationProgress = update;
   }
 
@@ -225,7 +230,8 @@ export class FirmwareUpdateDialogElement extends
    * @return {boolean}
    */
   shouldShowProgressBar_() {
-    return this.isUpdateInProgress_() || this.isDeviceRestarting_();
+    return this.isUpdateInProgress_() || this.isDeviceRestarting_() ||
+        this.isInitiallyInflight_;
   }
   /**
    * @protected
