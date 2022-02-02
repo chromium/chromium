@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.omnibox;
 
 import android.app.Activity;
 
+import androidx.annotation.DrawableRes;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -84,5 +86,30 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 break;
         }
         return;
+    }
+
+    @Override
+    public @DrawableRes int getPedalIcon(@OmniboxPedalType int omniboxActionType) {
+        switch (omniboxActionType) {
+            case OmniboxPedalType.CLEAR_BROWSING_DATA:
+            case OmniboxPedalType.MANAGE_PASSWORDS:
+            case OmniboxPedalType.UPDATE_CREDIT_CARD:
+            case OmniboxPedalType.LAUNCH_INCOGNITO:
+            case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
+            case OmniboxPedalType.MANAGE_SITE_SETTINGS:
+            case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
+            case OmniboxPedalType.VIEW_CHROME_HISTORY:
+            case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
+                return R.drawable.fre_product_logo;
+            case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
+                return R.drawable.ic_dino;
+            default:
+                // Please confirm the icon for the new pedals in
+                // chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc, if the new pedals use
+                // a spicial icon.
+                assert false : "New pedals need to confirm the icon and add the list above.";
+                break;
+        }
+        return R.drawable.fre_product_logo;
     }
 }

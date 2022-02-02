@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
@@ -25,19 +25,24 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A class that handles model and view creation for the pedal omnibox suggestion.
  */
 public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
-    private final SuggestionHost mSuggestionHost;
+    private final @NonNull OmniboxPedalDelegate mOmniboxPedalDelegate;
 
     /**
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
+     * @param editingTextProvider A means of accessing the text in the omnibox.
+     * @param iconBridgeSupplier A means of accessing the large icon bridge.
+     * @param bookmarkBridgeSupplier A means of accessing the bookmark information.
+     * @param omniboxPedalDelegate A delegate that will responsible for pedals.
      */
     public PedalSuggestionProcessor(@NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
             @NonNull Supplier<LargeIconBridge> iconBridgeSupplier,
-            @NonNull BookmarkState bookmarkState) {
+            @NonNull BookmarkState bookmarkState,
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         super(context, suggestionHost, editingTextProvider, iconBridgeSupplier, bookmarkState);
-        mSuggestionHost = suggestionHost;
+        mOmniboxPedalDelegate = omniboxPedalDelegate;
     }
 
     @Override
@@ -71,7 +76,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
         model.set(PedalSuggestionViewProperties.PEDAL, omniboxPedal);
         model.set(PedalSuggestionViewProperties.PEDAL_ICON, getPedalIcon(omniboxPedal));
         model.set(PedalSuggestionViewProperties.ON_PEDAL_CLICK,
-                v -> mSuggestionHost.onPedalClicked(omniboxPedal.getID()));
+                v -> mOmniboxPedalDelegate.executeAction(omniboxPedal.getID()));
     }
 
     /**
@@ -82,6 +87,6 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @DrawableRes
     int getPedalIcon(@NonNull OmniboxPedal omniboxPedal) {
-        return R.drawable.ic_google_round;
+        return mOmniboxPedalDelegate.getPedalIcon(omniboxPedal.getID());
     }
 }

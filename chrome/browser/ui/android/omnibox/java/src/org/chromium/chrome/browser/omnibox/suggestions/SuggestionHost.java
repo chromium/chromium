@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.url.GURL;
 
@@ -44,13 +43,6 @@ public interface SuggestionHost {
      * @param position The position of the suggestion on the list.
      */
     void onSwitchToTab(@NonNull AutocompleteMatch suggestion, int position);
-
-    /**
-     * Triggered when the user selects a pedal.
-     *
-     * @param omniboxPedalType The type of the clicked pedal.
-     */
-    void onPedalClicked(@OmniboxPedalType int omniboxPedalType);
 
     /**
      * Toggle expanded state of suggestion items belonging to specific group.

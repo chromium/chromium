@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import androidx.annotation.DrawableRes;
+
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 
 /**
- * An interface for handling click event on Omnibox Pedals.
+ * An interface for handling interactions for Omnibox Pedals.
  */
 public interface OmniboxPedalDelegate {
     /**
@@ -16,4 +18,13 @@ public interface OmniboxPedalDelegate {
      * @param omniboxActionType the {@link OmniboxActionType} related to the clicked pedal.
      */
     void executeAction(@OmniboxPedalType int omniboxActionType);
+
+    /**
+     * Call this method when request the pedal's icon.
+     *
+     * @param omniboxActionType the {@link OmniboxActionType} for the request pedal.
+     * @return The icon's resource id.
+     */
+    @DrawableRes
+    int getPedalIcon(@OmniboxPedalType int omniboxActionType);
 }
