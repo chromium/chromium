@@ -38,7 +38,6 @@ class EasyUnlockNotificationController;
 // profiles.
 class EasyUnlockServiceRegular
     : public EasyUnlockService,
-      public proximity_auth::ScreenlockBridge::Observer,
       public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
@@ -112,7 +111,7 @@ class EasyUnlockServiceRegular
       const std::set<std::string>& public_keys_before_sync,
       const std::set<std::string>& public_keys_after_sync);
 
-  // proximity_auth::ScreenlockBridge::Observer implementation:
+  // EasyUnlockService:
   void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
                            screen_type) override;
   void OnScreenDidUnlock(

@@ -50,7 +50,8 @@ namespace ash {
 
 enum class SmartLockState;
 
-class EasyUnlockService : public KeyedService {
+class EasyUnlockService : public KeyedService,
+                          public proximity_auth::ScreenlockBridge::Observer {
  public:
   enum Type { TYPE_REGULAR, TYPE_SIGNIN };
 
@@ -196,8 +197,16 @@ class EasyUnlockService : public KeyedService {
   // definitively.
   virtual void OnUserEnteredPassword();
 
-  // KeyedService override:
+  // KeyedService:
   void Shutdown() override;
+
+  // proximity_auth::ScreenlockBridge::Observer:
+  void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
+                           screen_type) override;
+  void OnScreenDidUnlock(
+      proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type)
+      override = 0;
+  void OnFocusedUserChanged(const AccountId& account_id) override = 0;
 
   // Exposes the profile to which the service is attached to subclasses.
   Profile* profile() const { return profile_; }

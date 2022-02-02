@@ -173,6 +173,8 @@ void EasyUnlockService::ResetLocalStateForUser(const AccountId& account_id) {
 }
 
 void EasyUnlockService::Initialize() {
+  proximity_auth::ScreenlockBridge::Get()->AddObserver(this);
+
   InitializeInternal();
 }
 
@@ -504,11 +506,18 @@ void EasyUnlockService::Shutdown() {
 
   ShutdownInternal();
 
+  proximity_auth::ScreenlockBridge::Get()->RemoveObserver(this);
+
   ResetSmartLockState();
   proximity_auth_system_.reset();
   power_monitor_.reset();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void EasyUnlockService::OnScreenDidLock(
+    proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
+  // TODO(b/216832183): Show initial Smart Lock state to prevent UI jank.
 }
 
 void EasyUnlockService::UpdateAppState() {

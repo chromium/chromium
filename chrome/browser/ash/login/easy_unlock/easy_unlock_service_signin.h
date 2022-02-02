@@ -28,9 +28,7 @@ namespace ash {
 class EasyUnlockChallengeWrapper;
 
 // EasyUnlockService instance that should be used for signin profile.
-class EasyUnlockServiceSignin
-    : public EasyUnlockService,
-      public proximity_auth::ScreenlockBridge::Observer {
+class EasyUnlockServiceSignin : public EasyUnlockService {
  public:
   EasyUnlockServiceSignin(
       Profile* profile,
@@ -103,7 +101,7 @@ class EasyUnlockServiceSignin
   bool IsChromeOSLoginEnabled() const override;
   void OnSuspendDoneInternal() override;
 
-  // proximity_auth::ScreenlockBridge::Observer implementation:
+  // EasyUnlockService:
   void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
                            screen_type) override;
   void OnScreenDidUnlock(

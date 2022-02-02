@@ -362,16 +362,12 @@ void EasyUnlockServiceRegular::InitializeInternal() {
   multidevice_setup_client_->AddObserver(this);
   StartFeatureUsageMetrics();
 
-  proximity_auth::ScreenlockBridge::Get()->AddObserver(this);
-
   LoadRemoteDevices();
 }
 
 void EasyUnlockServiceRegular::ShutdownInternal() {
   pref_manager_.reset();
   notification_controller_.reset();
-
-  proximity_auth::ScreenlockBridge::Get()->RemoveObserver(this);
 
   registrar_.RemoveAll();
 
@@ -508,6 +504,8 @@ void EasyUnlockServiceRegular::ShowNotificationIfNewDevicePresent(
 
 void EasyUnlockServiceRegular::OnScreenDidLock(
     proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
+  EasyUnlockService::OnScreenDidLock(screen_type);
+
   set_will_authenticate_using_easy_unlock(false);
   lock_screen_last_shown_timestamp_ = base::TimeTicks::Now();
 }
