@@ -136,6 +136,20 @@ export class SettingsSecurityPageElement extends
         }
       },
 
+      // <if expr="is_win">
+      enableSecurityKeysPhonesSubpage_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          // The phones subpage is linked from the security keys subpage, if
+          // it exists. Thus the phones subpage is only linked from this page
+          // if the security keys subpage is disabled.
+          return !loadTimeData.getBoolean('enableSecurityKeysSubpage') &&
+              loadTimeData.getBoolean('enableSecurityKeysPhonesSubpage');
+        }
+      },
+      // </if>
+
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -277,6 +291,12 @@ export class SettingsSecurityPageElement extends
   private onSecurityKeysClick_() {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
   }
+
+  // <if expr="is_win">
+  private onManagePhonesClick_() {
+    Router.getInstance().navigateTo(routes.SECURITY_KEYS_PHONES);
+  }
+  // </if>
 
   private onSafeBrowsingExtendedReportingChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(

@@ -182,6 +182,17 @@
           on-click="onSecurityKeysClick_"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
+
+<if expr="is_win">
+    <template is="dom-if" if="[[enableSecurityKeysPhonesSubpage_]]">
+        <cr-link-row
+          id="security-keys-phones-subpage-trigger"
+          label="$i18n{securityKeysPhonesManage}"
+          sub-label="$i18n{securityKeysPhonesManageDesc}"
+          on-click="onManagePhonesClick_"></cr-link-row>
+    </template>
+</if>
+
 <if expr="use_nss_certs or is_win or is_macosx">
     <cr-link-row id="manageCertificates"
         class="hr"
