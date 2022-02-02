@@ -141,15 +141,16 @@ void LayerTreeLifecycle::AdvanceTo(LifecycleState next_state) {
 }
 
 LayerTreeImpl::LayerTreeImpl(
-    LayerTreeHostImpl* host_impl,
+    LayerTreeHostImpl& host_impl,
     scoped_refptr<SyncedScale> page_scale_factor,
     scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
     scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
     scoped_refptr<SyncedElasticOverscroll> elastic_overscroll)
-    : host_impl_(host_impl),
+    : host_impl_(&host_impl),
       source_frame_number_(-1),
       is_first_frame_after_commit_tracker_(-1),
       hud_layer_(nullptr),
+      property_trees_(host_impl),
       background_color_(0),
       last_scrolled_scroll_node_index_(kInvalidPropertyNodeId),
       page_scale_factor_(page_scale_factor),

@@ -148,7 +148,8 @@ struct CC_EXPORT CommitState {
 };
 
 struct CC_EXPORT ThreadUnsafeCommitState {
-  explicit ThreadUnsafeCommitState(MutatorHost* mh);
+  ThreadUnsafeCommitState(MutatorHost* mh,
+                          const ProtectedSequenceSynchronizer& synchronizer);
   ~ThreadUnsafeCommitState();
 
   // TODO(szager/vmpstr): These methods are to support range-based 'for' loops,

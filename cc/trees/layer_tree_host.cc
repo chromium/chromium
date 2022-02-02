@@ -144,7 +144,7 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       scheduling_client_(params.scheduling_client),
       rendering_stats_instrumentation_(RenderingStatsInstrumentation::Create()),
       pending_commit_state_(std::make_unique<CommitState>()),
-      thread_unsafe_commit_state_(params.mutator_host),
+      thread_unsafe_commit_state_(params.mutator_host, *this),
       settings_(*params.settings),
       id_(s_layer_tree_host_sequence_number.GetNext() + 1),
       task_graph_runner_(params.task_graph_runner),
@@ -299,9 +299,8 @@ bool LayerTreeHost::IsImplThread() const {
 }
 
 bool LayerTreeHost::IsOwnerThread() const {
-  return !task_runner_provider_->MainThreadTaskRunner() ||
-         task_runner_provider_->MainThreadTaskRunner()
-             ->RunsTasksInCurrentSequence();
+  return task_runner_provider_->MainThreadTaskRunner()
+      ->RunsTasksInCurrentSequence();
 }
 
 bool LayerTreeHost::InProtectedSequence() const {

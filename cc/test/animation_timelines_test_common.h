@@ -114,9 +114,6 @@ class TestHostClient : public MutatorHostClient {
 
   void ClearMutatedProperties();
 
-  bool IsOwnerThread() const override;
-  bool InProtectedSequence() const override;
-  void WaitForProtectedSequenceCompletion() const override {}
   bool IsElementInPropertyTrees(ElementId element_id,
                                 ElementListType list_type) const override;
 
@@ -166,6 +163,10 @@ class TestHostClient : public MutatorHostClient {
       PaintWorkletInput::PropertyValue property_value) override {}
 
   bool RunsOnCurrentThread() const override;
+
+  bool IsOwnerThread() const override;
+  bool InProtectedSequence() const override;
+  void WaitForProtectedSequenceCompletion() const override;
 
   bool mutators_need_commit() const { return mutators_need_commit_; }
   void set_mutators_need_commit(bool need) { mutators_need_commit_ = need; }

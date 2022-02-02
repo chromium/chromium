@@ -105,7 +105,7 @@ class CC_EXPORT LayerTreeImpl {
   // layer to consider it as jittering.
   enum : int { kFixedPointHitsThreshold = 3 };
   LayerTreeImpl(
-      LayerTreeHostImpl* host_impl,
+      LayerTreeHostImpl& host_impl,
       scoped_refptr<SyncedScale> page_scale_factor,
       scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
       scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,

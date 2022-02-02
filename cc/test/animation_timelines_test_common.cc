@@ -76,7 +76,8 @@ float TestLayer::invert() const {
 
 TestHostClient::TestHostClient(ThreadInstance thread_instance)
     : host_(AnimationHost::CreateForTesting(thread_instance)),
-      mutators_need_commit_(false) {
+      mutators_need_commit_(false),
+      property_trees_(*this) {
   host_->SetMutatorHostClient(this);
 }
 
@@ -97,6 +98,7 @@ bool TestHostClient::IsOwnerThread() const {
 bool TestHostClient::InProtectedSequence() const {
   return false;
 }
+void TestHostClient::WaitForProtectedSequenceCompletion() const {}
 
 bool TestHostClient::IsElementInPropertyTrees(ElementId element_id,
                                               ElementListType list_type) const {

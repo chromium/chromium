@@ -444,7 +444,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   // LTHI always has an active tree.
   active_tree_ = std::make_unique<LayerTreeImpl>(
-      this, new SyncedScale, new SyncedBrowserControls,
+      *this, new SyncedScale, new SyncedBrowserControls,
       new SyncedBrowserControls, new SyncedElasticOverscroll);
   active_tree_->property_trees()->set_is_active(true);
 
@@ -1770,7 +1770,7 @@ void LayerTreeHostImpl::ResetTreesForTesting() {
   if (active_tree_)
     active_tree_->DetachLayers();
   active_tree_ = std::make_unique<LayerTreeImpl>(
-      this, active_tree()->page_scale_factor(),
+      *this, active_tree()->page_scale_factor(),
       active_tree()->top_controls_shown_ratio(),
       active_tree()->bottom_controls_shown_ratio(),
       active_tree()->elastic_overscroll());
@@ -3268,7 +3268,7 @@ void LayerTreeHostImpl::CreatePendingTree() {
     recycle_tree_.swap(pending_tree_);
   } else {
     pending_tree_ = std::make_unique<LayerTreeImpl>(
-        this, active_tree()->page_scale_factor(),
+        *this, active_tree()->page_scale_factor(),
         active_tree()->top_controls_shown_ratio(),
         active_tree()->bottom_controls_shown_ratio(),
         active_tree()->elastic_overscroll());
@@ -4849,16 +4849,25 @@ void LayerTreeHostImpl::NotifyLatencyInfoSwapPromiseMonitors() {
     monitor->OnSetNeedsRedrawOnImpl();
 }
 
-// These ProtectedSequenceSynchronizer methods are only called in relation to
-// data owned by mutator_host_. These data are never used by a "non-owner"
-// thread, and hence have no protected sequence.
 bool LayerTreeHostImpl::IsOwnerThread() const {
-  DCHECK(task_runner_provider_->IsImplThread());
-  return true;
+  bool result;
+  if (task_runner_provider_->ImplThreadTaskRunner()) {
+    result = task_runner_provider_->ImplThreadTaskRunner()
+                 ->RunsTasksInCurrentSequence();
+  } else {
+    result = task_runner_provider_->MainThreadTaskRunner()
+                 ->RunsTasksInCurrentSequence();
+    // There's no impl thread, and we're not on the main thread; where are we?
+    DCHECK(result);
+  }
+  return result;
 }
+
+// LayerTreeHostImpl has no "protected sequence" (yet).
 bool LayerTreeHostImpl::InProtectedSequence() const {
   return false;
 }
+
 void LayerTreeHostImpl::WaitForProtectedSequenceCompletion() const {}
 
 bool LayerTreeHostImpl::IsElementInPropertyTrees(

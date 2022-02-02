@@ -120,7 +120,7 @@ class AnimationHostPerfTest : public testing::Test {
   }
 
   void DoTest(const std::string& test_name) {
-    PropertyTrees property_trees;
+    PropertyTrees property_trees(*host());
     timer_.Reset();
     do {
       // Invalidate dirty flags.

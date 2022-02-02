@@ -1038,8 +1038,11 @@ void SingleThreadProxy::DoBeginMainFrame(
     // The impl-side scroll deltas may be manipulated directly via the
     // InputHandler on the UI thread and the scale deltas may change when they
     // are clamped on the impl thread.
-    std::unique_ptr<CompositorCommitData> commit_data =
-        host_impl_->ProcessCompositorDeltas();
+    std::unique_ptr<CompositorCommitData> commit_data;
+    {
+      DebugScopedSetImplThread impl(task_runner_provider_);
+      commit_data = host_impl_->ProcessCompositorDeltas();
+    }
     layer_tree_host_->ApplyCompositorChanges(commit_data.get());
     did_apply_compositor_deltas_ = true;
   }

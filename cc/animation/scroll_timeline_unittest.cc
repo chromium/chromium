@@ -84,10 +84,14 @@ double ToDouble(absl::optional<base::TimeTicks> time_ticks) {
 
 }  // namespace
 
-class ScrollTimelineTest : public ::testing::Test {
+class ScrollTimelineTest : public ::testing::Test,
+                           public ProtectedSequenceSynchronizer {
  public:
   ScrollTimelineTest()
-      : scroller_id_(1), container_size_(100, 100), content_size_(500, 500) {
+      : property_trees_(*this),
+        scroller_id_(1),
+        container_size_(100, 100),
+        content_size_(500, 500) {
     // For simplicity we make the property_tree main thread; this avoids the
     // need to deal with the synced scroll offset code.
     property_trees_.set_is_main_thread(true);
@@ -105,6 +109,11 @@ class ScrollTimelineTest : public ::testing::Test {
   ElementId scroller_id() const { return scroller_id_; }
   gfx::Size container_size() const { return container_size_; }
   gfx::Size content_size() const { return content_size_; }
+
+  // ProtectedSequenceSynchronizer implementation
+  bool IsOwnerThread() const override { return true; }
+  bool InProtectedSequence() const override { return false; }
+  void WaitForProtectedSequenceCompletion() const override {}
 
  private:
   PropertyTrees property_trees_;
@@ -257,8 +266,8 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
 // had a few crashes caused by assuming that the id would be available in the
 // active tree before the activation happened; see http://crbug.com/853231
 TEST_F(ScrollTimelineTest, ActiveTimeIsSetOnlyAfterPromotion) {
-  PropertyTrees pending_tree;
-  PropertyTrees active_tree;
+  PropertyTrees pending_tree(*this);
+  PropertyTrees active_tree(*this);
 
   pending_tree.set_is_active(false);
   active_tree.set_is_active(true);

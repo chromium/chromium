@@ -134,7 +134,7 @@ class CC_EXPORT PropertyTree {
   }
 
  protected:
-  PropertyTree();
+  explicit PropertyTree(PropertyTrees* property_trees);
   std::vector<T> nodes_;
 
  private:
@@ -157,7 +157,7 @@ struct StickyPositionNodeData;
 
 class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
  public:
-  TransformTree();
+  explicit TransformTree(PropertyTrees* property_trees = nullptr);
 
   // These C++ special member functions cannot be implicit inline because
   // they are exported by CC_EXPORT. They will be instantiated in every
@@ -307,6 +307,7 @@ struct StickyPositionNodeData {
 
 class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
  public:
+  explicit ClipTree(PropertyTrees* property_trees = nullptr);
 #if DCHECK_IS_ON()
   bool operator==(const ClipTree& other) const;
 #endif
@@ -317,7 +318,7 @@ class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
 
 class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
  public:
-  EffectTree();
+  explicit EffectTree(PropertyTrees* property_trees = nullptr);
   ~EffectTree();
 
   EffectTree& operator=(const EffectTree& from);
@@ -444,7 +445,7 @@ class ScrollCallbacks {
 
 class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
  public:
-  ScrollTree();
+  explicit ScrollTree(PropertyTrees* property_trees = nullptr);
   ~ScrollTree();
 
   ScrollTree& operator=(const ScrollTree& from);
@@ -653,8 +654,12 @@ struct PropertyTreesCachedData {
 
 class CC_EXPORT PropertyTrees final {
  public:
-  PropertyTrees();
+  explicit PropertyTrees(const ProtectedSequenceSynchronizer& synchronizer);
   PropertyTrees(const PropertyTrees& other) = delete;
+  void* operator new(size_t) = delete;
+  void* operator new(size_t, void*) = delete;
+  void* operator new[](size_t) = delete;
+  void* operator new[](size_t, void*) = delete;
   ~PropertyTrees();
 
   PropertyTrees& operator=(const PropertyTrees& from);
@@ -663,33 +668,59 @@ class CC_EXPORT PropertyTrees final {
   bool operator==(const PropertyTrees& other) const;
 #endif
 
-  const ClipTree& clip_tree() const { return clip_tree_; }
-  ClipTree& clip_tree_mutable() { return clip_tree_; }
-  const EffectTree& effect_tree() const { return effect_tree_; }
-  EffectTree& effect_tree_mutable() { return effect_tree_; }
-  const ScrollTree& scroll_tree() const { return scroll_tree_; }
-  ScrollTree& scroll_tree_mutable() { return scroll_tree_; }
-  const TransformTree& transform_tree() const { return transform_tree_; }
-  TransformTree& transform_tree_mutable() { return transform_tree_; }
+  const ProtectedSequenceSynchronizer& synchronizer() const {
+    return synchronizer_;
+  }
 
-  void set_needs_rebuild(bool value) { needs_rebuild_ = value; }
-  bool needs_rebuild() const { return needs_rebuild_; }
+  const ClipTree& clip_tree() const { return clip_tree_.Read(synchronizer()); }
+  ClipTree& clip_tree_mutable() { return clip_tree_.Write(synchronizer()); }
+  const EffectTree& effect_tree() const {
+    return effect_tree_.Read(synchronizer());
+  }
+  EffectTree& effect_tree_mutable() {
+    return effect_tree_.Write(synchronizer());
+  }
+  const ScrollTree& scroll_tree() const {
+    return scroll_tree_.Read(synchronizer());
+  }
+  ScrollTree& scroll_tree_mutable() {
+    return scroll_tree_.Write(synchronizer());
+  }
+  const TransformTree& transform_tree() const {
+    return transform_tree_.Read(synchronizer());
+  }
+  TransformTree& transform_tree_mutable() {
+    return transform_tree_.Write(synchronizer());
+  }
 
-  void set_changed(bool value) { changed_ = value; }
-  bool changed() const { return changed_; }
+  void set_needs_rebuild(bool value) {
+    needs_rebuild_.Write(synchronizer()) = value;
+  }
+  bool needs_rebuild() const { return needs_rebuild_.Read(synchronizer()); }
 
-  void set_full_tree_damaged(bool value) { full_tree_damaged_ = value; }
-  bool full_tree_damaged() const { return full_tree_damaged_; }
+  void set_changed(bool value) { changed_.Write(synchronizer()) = value; }
+  bool changed() const { return changed_.Read(synchronizer()); }
 
-  void set_is_main_thread(bool value) { is_main_thread_ = value; }
-  bool is_main_thread() const { return is_main_thread_; }
+  void set_full_tree_damaged(bool value) {
+    full_tree_damaged_.Write(synchronizer()) = value;
+  }
+  bool full_tree_damaged() const {
+    return full_tree_damaged_.Read(synchronizer());
+  }
 
-  void set_is_active(bool value) { is_active_ = value; }
-  bool is_active() const { return is_active_; }
+  void set_is_main_thread(bool value) {
+    is_main_thread_.Write(synchronizer()) = value;
+  }
+  bool is_main_thread() const { return is_main_thread_.Read(synchronizer()); }
 
-  void set_sequence_number(int n) { sequence_number_ = n; }
-  void increment_sequence_number() { sequence_number_++; }
-  int sequence_number() const { return sequence_number_; }
+  void set_is_active(bool value) { is_active_.Write(synchronizer()) = value; }
+  bool is_active() const { return is_active_.Read(synchronizer()); }
+
+  void set_sequence_number(int n) {
+    sequence_number_.Write(synchronizer()) = n;
+  }
+  void increment_sequence_number() { sequence_number_.Write(synchronizer())++; }
+  int sequence_number() const { return sequence_number_.Read(synchronizer()); }
 
   void clear();
 
@@ -708,7 +739,7 @@ class CC_EXPORT PropertyTrees final {
   void ResetAllChangeTracking();
 
   gfx::Vector2dF inner_viewport_container_bounds_delta() const {
-    return inner_viewport_container_bounds_delta_;
+    return inner_viewport_container_bounds_delta_.Read(synchronizer());
   }
   gfx::Vector2dF inner_viewport_scroll_bounds_delta() const {
     // Inner viewport scroll bounds are always the same as outer viewport
@@ -716,7 +747,7 @@ class CC_EXPORT PropertyTrees final {
     return outer_viewport_container_bounds_delta();
   }
   gfx::Vector2dF outer_viewport_container_bounds_delta() const {
-    return outer_viewport_container_bounds_delta_;
+    return outer_viewport_container_bounds_delta_.Read(synchronizer());
   }
 
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
@@ -750,30 +781,34 @@ class CC_EXPORT PropertyTrees final {
   bool HasElement(ElementId element_id) const;
 
  private:
-  TransformTree transform_tree_;
-  EffectTree effect_tree_;
-  ClipTree clip_tree_;
-  ScrollTree scroll_tree_;
+  const ProtectedSequenceSynchronizer& synchronizer_;
 
-  bool needs_rebuild_ = true;
+  ProtectedSequenceWritable<TransformTree> transform_tree_;
+  ProtectedSequenceWritable<EffectTree> effect_tree_;
+  ProtectedSequenceReadable<ClipTree> clip_tree_;
+  ProtectedSequenceReadable<ScrollTree> scroll_tree_;
+
+  ProtectedSequenceWritable<bool> needs_rebuild_;
   // Change tracking done on property trees needs to be preserved across commits
   // (when they are not rebuild). We cache a global bool which stores whether
   // we did any change tracking so that we can skip copying the change status
   // between property trees when this bool is false.
-  bool changed_ = false;
+  ProtectedSequenceWritable<bool> changed_;
   // We cache a global bool for full tree damages to avoid walking the entire
   // tree.
   // TODO(jaydasika): Changes to transform and effects that damage the entire
   // tree should be tracked by this bool. Currently, they are tracked by the
   // individual nodes.
-  bool full_tree_damaged_ = false;
-  bool is_main_thread_ = true;
-  bool is_active_ = false;
+  ProtectedSequenceWritable<bool> full_tree_damaged_;
+  ProtectedSequenceReadable<bool> is_main_thread_;
+  ProtectedSequenceReadable<bool> is_active_;
 
-  int sequence_number_ = 0;
+  ProtectedSequenceReadable<int> sequence_number_;
 
-  gfx::Vector2dF inner_viewport_container_bounds_delta_;
-  gfx::Vector2dF outer_viewport_container_bounds_delta_;
+  ProtectedSequenceReadable<gfx::Vector2dF>
+      inner_viewport_container_bounds_delta_;
+  ProtectedSequenceReadable<gfx::Vector2dF>
+      outer_viewport_container_bounds_delta_;
 
   const AnimationScaleData& GetAnimationScaleData(int transform_id);
 
@@ -782,7 +817,8 @@ class CC_EXPORT PropertyTrees final {
   DrawTransformData& FetchDrawTransformsDataFromCache(int transform_id,
                                                       int effect_id) const;
 
-  // This can be mutable because it isn't copied by operator=();
+  // This can be mutable and not wrapped in ProtectedSequence* because it isn't
+  // copied by operator=().
   mutable PropertyTreesCachedData cached_data_;
 };
 

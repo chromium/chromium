@@ -56,8 +56,10 @@ EventListenerProperties CommitState::GetEventListenerProperties(
   return event_listener_properties[static_cast<size_t>(listener_class)];
 }
 
-ThreadUnsafeCommitState::ThreadUnsafeCommitState(MutatorHost* mh)
-    : mutator_host(mh) {}
+ThreadUnsafeCommitState::ThreadUnsafeCommitState(
+    MutatorHost* mh,
+    const ProtectedSequenceSynchronizer& synchronizer)
+    : mutator_host(mh), property_trees(synchronizer) {}
 
 ThreadUnsafeCommitState::~ThreadUnsafeCommitState() = default;
 

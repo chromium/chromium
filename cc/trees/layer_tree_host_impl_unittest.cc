@@ -1470,7 +1470,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
   // Create the pending tree containing only the root layer.
   CreatePendingTree();
-  PropertyTrees pending_property_trees;
+  PropertyTrees pending_property_trees(*host_impl_);
   pending_property_trees.set_sequence_number(
       host_impl_->active_tree()->property_trees()->sequence_number() + 1);
   host_impl_->pending_tree()->SetPropertyTrees(pending_property_trees);

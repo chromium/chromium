@@ -30,7 +30,8 @@
 namespace cc {
 
 template <typename T>
-PropertyTree<T>::PropertyTree() : needs_update_(false) {
+PropertyTree<T>::PropertyTree(PropertyTrees* property_trees)
+    : needs_update_(false), property_trees_(property_trees) {
   nodes_.push_back(T());
   back()->id = kRootPropertyNodeId;
   back()->parent_id = kInvalidPropertyNodeId;
@@ -52,8 +53,9 @@ PropertyTree<T>& PropertyTree<T>::operator=(const PropertyTree<T>&) = default;
                                     !state.potentially_animating[property]) || \
                                    needs_rebuild))
 
-TransformTree::TransformTree()
-    : page_scale_factor_(1.f),
+TransformTree::TransformTree(PropertyTrees* property_trees)
+    : PropertyTree<TransformNode>(property_trees),
+      page_scale_factor_(1.f),
       device_scale_factor_(1.f),
       device_transform_scale_factor_(1.f) {
   cached_data_.push_back(TransformCachedNodeData());
@@ -82,7 +84,7 @@ void PropertyTree<T>::clear() {
   element_id_to_node_index_.clear();
 
 #if DCHECK_IS_ON()
-  PropertyTree<T> tree;
+  PropertyTree<T> tree(nullptr);
   DCHECK(tree == *this);
 #endif
 }
@@ -686,7 +688,8 @@ StickyPositionNodeData& TransformTree::EnsureStickyPositionData(int node_id) {
   return sticky_position_data_[node->sticky_position_constraint_id];
 }
 
-EffectTree::EffectTree() {
+EffectTree::EffectTree(PropertyTrees* property_trees)
+    : PropertyTree<EffectNode>(property_trees) {
   render_surfaces_.push_back(nullptr);
 }
 
@@ -1179,6 +1182,9 @@ bool EffectTree::HitTestMayBeAffectedByMask(int effect_id) const {
   return false;
 }
 
+ClipTree::ClipTree(PropertyTrees* property_trees)
+    : PropertyTree<ClipNode>(property_trees) {}
+
 void ClipTree::SetViewportClip(gfx::RectF viewport_rect) {
   if (size() < 2)
     return;
@@ -1220,8 +1226,9 @@ bool EffectTree::operator==(const EffectTree& other) const {
 }
 #endif
 
-ScrollTree::ScrollTree()
-    : currently_scrolling_node_id_(kInvalidPropertyNodeId),
+ScrollTree::ScrollTree(PropertyTrees* property_trees)
+    : PropertyTree<ScrollNode>(property_trees),
+      currently_scrolling_node_id_(kInvalidPropertyNodeId),
       scroll_offset_map_(ScrollTree::ScrollOffsetMap()) {}
 
 ScrollTree::~ScrollTree() = default;
@@ -1747,12 +1754,18 @@ PropertyTreesCachedData::PropertyTreesCachedData()
 
 PropertyTreesCachedData::~PropertyTreesCachedData() = default;
 
-PropertyTrees::PropertyTrees() {
-  transform_tree_mutable().SetPropertyTrees(this);
-  effect_tree_mutable().SetPropertyTrees(this);
-  clip_tree_mutable().SetPropertyTrees(this);
-  scroll_tree_mutable().SetPropertyTrees(this);
-}
+PropertyTrees::PropertyTrees(const ProtectedSequenceSynchronizer& synchronizer)
+    : synchronizer_(synchronizer),
+      transform_tree_(this),
+      effect_tree_(this),
+      clip_tree_(this),
+      scroll_tree_(this),
+      needs_rebuild_(true),
+      changed_(false),
+      full_tree_damaged_(false),
+      is_main_thread_(true),
+      is_active_(false),
+      sequence_number_(0) {}
 
 PropertyTrees::~PropertyTrees() = default;
 
@@ -1806,7 +1819,7 @@ void PropertyTrees::clear() {
   increment_sequence_number();
 
 #if DCHECK_IS_ON()
-  PropertyTrees tree;
+  PropertyTrees tree(synchronizer());
   tree.transform_tree_mutable() = transform_tree();
   tree.effect_tree_mutable() = effect_tree();
   tree.clip_tree_mutable() = clip_tree();
@@ -1825,7 +1838,7 @@ void PropertyTrees::SetInnerViewportContainerBoundsDelta(
   if (inner_viewport_container_bounds_delta() == bounds_delta)
     return;
 
-  inner_viewport_container_bounds_delta_ = bounds_delta;
+  inner_viewport_container_bounds_delta_.Write(synchronizer()) = bounds_delta;
 }
 
 void PropertyTrees::SetOuterViewportContainerBoundsDelta(
@@ -1833,7 +1846,7 @@ void PropertyTrees::SetOuterViewportContainerBoundsDelta(
   if (outer_viewport_container_bounds_delta() == bounds_delta)
     return;
 
-  outer_viewport_container_bounds_delta_ = bounds_delta;
+  outer_viewport_container_bounds_delta_.Write(synchronizer()) = bounds_delta;
   transform_tree_mutable().UpdateOuterViewportContainerBoundsDelta();
 }
 
