@@ -24,7 +24,6 @@ class GURL;
 class WebOmniboxEditController;
 struct AutocompleteMatch;
 @class OmniboxTextFieldIOS;
-@class OmniboxTextFieldPasteDelegate;
 @protocol OmniboxCommands;
 
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
@@ -198,7 +197,6 @@ class OmniboxViewIOS : public OmniboxView,
 
   OmniboxTextFieldIOS* field_;
 
-  OmniboxTextFieldPasteDelegate* paste_delegate_;
   WebOmniboxEditController* controller_;  // weak, owns us
   __weak id<OmniboxLeftImageConsumer> left_image_consumer_;
   // Focuser, used to transition the location bar to focused/defocused state as

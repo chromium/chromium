@@ -26,7 +26,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #include "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
-#include "ios/chrome/browser/ui/omnibox/omnibox_text_field_paste_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -66,9 +65,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
       ignore_popup_updates_(false),
       popup_provider_(nullptr) {
   DCHECK(field_);
-
-  paste_delegate_ = [[OmniboxTextFieldPasteDelegate alloc] init];
-  [field_ setPasteDelegate:paste_delegate_];
 }
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;

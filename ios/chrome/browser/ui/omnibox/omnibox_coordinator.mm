@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#include "ios/chrome/browser/ui/omnibox/omnibox_text_field_paste_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #include "ios/chrome/browser/ui/omnibox/omnibox_view_controller.h"
 #include "ios/chrome/browser/ui/omnibox/omnibox_view_ios.h"
@@ -55,6 +56,9 @@
 
 // The mediator for the omnibox.
 @property(nonatomic, strong) OmniboxMediator* mediator;
+
+// The paste delegate for the omnibox that prevents multipasting.
+@property(nonatomic, strong) OmniboxTextFieldPasteDelegate* pasteDelegate;
 
 @end
 
@@ -100,6 +104,8 @@
   _editView = std::make_unique<OmniboxViewIOS>(
       self.textField, self.editController, self.mediator,
       self.browser->GetBrowserState(), focuser);
+  self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
+  [self.textField setPasteDelegate:self.pasteDelegate];
 
   self.viewController.textChangeDelegate = _editView.get();
 
