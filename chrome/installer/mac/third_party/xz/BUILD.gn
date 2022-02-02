@@ -129,7 +129,6 @@ source_set("common") {
     ":common_config",
     ":compress_config",
     ":decompress_config",
-    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -216,7 +215,6 @@ source_set("decompress") {
   configs += [
     ":common_config",
     ":decompress_config",
-    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -260,7 +258,6 @@ source_set("compress") {
   configs += [
     ":common_config",
     ":compress_config",
-    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -330,7 +327,6 @@ shared_library("lzma_decompress") {
   configs += [
     ":common_config",
     ":decompress_config",
-    "//chrome/installer/mac:fat_binary_config",
   ]
 
   public_configs = [ ":lzma_decompress_config" ]
@@ -363,7 +359,6 @@ executable("xz") {
     ":common_config",
     ":decompress_config",
     ":compress_config",
-    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -403,7 +398,6 @@ executable("xzdec") {
   configs += [
     ":common_config",
     ":decompress_config",
-    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
