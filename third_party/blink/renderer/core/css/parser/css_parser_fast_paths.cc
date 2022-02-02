@@ -490,7 +490,7 @@ static bool ParsePercentage(const CharacterType*& string,
     return false;
   }
 
-  if (*current != '%')
+  if (current == end || *current != '%')
     return false;
 
   ++current;

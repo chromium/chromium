@@ -364,6 +364,10 @@ TEST(CSSParserFastPathsTest, ParseHSLInvalid) {
   // Junk after percentage.
   EXPECT_EQ(nullptr, CSSParserFastPaths::ParseColor(
                          "hsl(0.2, 50% foo, 20% 0.3)", kHTMLStandardMode));
+
+  // Stopping right before an expected %.
+  EXPECT_EQ(nullptr,
+            CSSParserFastPaths::ParseColor("hsl(9,0.6", kHTMLStandardMode));
 }
 
 TEST(CSSParserFastPathsTest, IsValidKeywordPropertyAndValueOverflowClip) {
