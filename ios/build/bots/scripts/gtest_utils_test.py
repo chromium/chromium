@@ -19,6 +19,7 @@ FAILURES = [
 FAILS_FAILURES = ['SomeOtherTest.FAILS_Bar']
 FLAKY_FAILURES = ['SomeOtherTest.FLAKY_Baz']
 
+CRASH_MESSAGE = ['Oops, this test crashed!']
 TIMEOUT_MESSAGE = 'Killed (timed out).'
 
 RELOAD_ERRORS = (r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
@@ -608,7 +609,11 @@ class TestGTestLogParserTests(unittest.TestCase):
     self.assertEqual(0, parser.FlakyTests())
 
     test_name = 'HunspellTest.Crashes'
-    self.assertEqual('\n'.join(['%s: ' % test_name, 'Did not complete.']),
+    expected_log_lines = [
+        'Did not complete.',
+        'Potential test logs from crash until the end of test program:'
+    ] + CRASH_MESSAGE
+    self.assertEqual('\n'.join(['%s: ' % test_name] + expected_log_lines),
                      '\n'.join(parser.FailureDescription(test_name)))
     self.assertEqual(['UNKNOWN'], parser.TriesForTest(test_name))
 
@@ -619,7 +624,8 @@ class TestGTestLogParserTests(unittest.TestCase):
       covered = False
       if result.name == 'HunspellTest.Crashes':
         covered = True
-        self.assertEqual('\n'.join(['Did not complete.']), result.test_log)
+        self.assertEqual('\n'.join(expected_log_lines), result.test_log)
+        self.assertEqual(TestStatus.CRASH, result.status)
     self.assertTrue(covered)
 
   def testGTestLogParserSharing(self):
@@ -746,7 +752,11 @@ class TestGTestLogParserTests(unittest.TestCase):
     self.assertEqual(0, parser.FlakyTests())
 
     test_name = 'HunspellTest.Crashes'
-    self.assertEqual('\n'.join(['%s: ' % test_name, 'Did not complete.']),
+    expected_log_lines = [
+        'Did not complete.',
+        'Potential test logs from crash until the end of test program:'
+    ] + CRASH_MESSAGE
+    self.assertEqual('\n'.join(['%s: ' % test_name] + expected_log_lines),
                      '\n'.join(parser.FailureDescription(test_name)))
     self.assertEqual(['UNKNOWN'], parser.TriesForTest(test_name))
 
@@ -757,7 +767,8 @@ class TestGTestLogParserTests(unittest.TestCase):
       covered = False
       if result.name == 'HunspellTest.Crashes':
         covered = True
-        self.assertEqual('\n'.join(['Did not complete.']), result.test_log)
+        self.assertEqual('\n'.join(expected_log_lines), result.test_log)
+        self.assertEqual(TestStatus.CRASH, result.status)
     self.assertTrue(covered)
 
   def testGTestLogParserMixedStdout(self):

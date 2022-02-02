@@ -21,6 +21,8 @@ TEST_SKIPPED_LABEL = 'SKIPPED'
 TEST_TIMEOUT_LABEL = 'TIMEOUT'
 TEST_WARNING_LABEL = 'WARNING'
 
+DID_NOT_COMPLETE = 'Did not complete.'
+
 
 class GTestResult(object):
   """A result of gtest.
@@ -126,13 +128,13 @@ class GTestResult(object):
     for test, log_lines in self._failed_tests.items():
       # A test with no output would have crashed. No output is replaced
       # by the GTestLogParser by a sentence indicating non-completion.
-      if 'Did not complete.' in log_lines:
+      if DID_NOT_COMPLETE in log_lines:
         self._crashed = True
         self._crashed_test = test
 
     # A test marked as flaky may also have crashed the app.
     for test, log_lines in self._flaked_tests.items():
-      if 'Did not complete.' in log_lines:
+      if DID_NOT_COMPLETE in log_lines:
         self._crashed = True
         self._crashed_test = test
 
@@ -337,9 +339,17 @@ class GTestLogParser(object):
     Called at the end to add unfinished tests and crash status for
         self._result_collection.
     """
+    # Remaining logs after crash before exit.
+    raw_remaining_logs = self._failure_description
     for test in self.RunningTests():
+      self._test_status[test][1].extend(
+          ['Potential test logs from crash until the end of test program:'])
+      self._test_status[test][1].extend(raw_remaining_logs)
       self._result_collection.add_test_result(
-          TestResult(test, TestStatus.CRASH, test_log='Did not complete.'))
+          TestResult(
+              test,
+              TestStatus.CRASH,
+              test_log='\n'.join(self._test_status[test][1])))
       self._result_collection.crashed = True
 
     if not self.completed:
@@ -468,7 +478,7 @@ class GTestLogParser(object):
                   TestStatus.ABORT,
                   test_log='\n'.join(self._failure_description)))
       test_name = results.group(1)
-      self._test_status[test_name] = ('started', ['Did not complete.'])
+      self._test_status[test_name] = ('started', [DID_NOT_COMPLETE])
       self._current_test = test_name
       if self.retrying_failed:
         self._failure_description = self._test_status[test_name][1]
