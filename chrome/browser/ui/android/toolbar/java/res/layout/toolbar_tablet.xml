@@ -73,31 +73,11 @@
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarButton"
+            android:paddingStart="8dp"
+            android:layout_gravity="top"
             android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             android:visibility="gone" />
 
-        <org.chromium.chrome.browser.toolbar.menu_button.MenuButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/menu_button_wrapper" >
-
-            <org.chromium.ui.widget.ChromeImageButton
-                android:id="@+id/menu_button"
-                style="@style/ToolbarMenuButtonTablet"
-                android:src="@drawable/ic_more_vert_24dp"
-                android:contentDescription="@string/accessibility_toolbar_btn_menu"
-                android:layout_gravity="center"
-                app:tint="@color/default_icon_color_tint_list" />
-
-            <ImageView
-                android:id="@+id/menu_badge"
-                style="@style/ToolbarMenuButtonTablet"
-                android:src="@drawable/badge_update_dark"
-                tools:ignore="ContentDescription"
-                android:importantForAccessibility="no"
-                android:layout_gravity="center"
-                android:visibility="invisible" />
-
-        </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
+        <include layout="@layout/menu_button"/>
     </LinearLayout>
 </org.chromium.chrome.browser.toolbar.top.ToolbarTablet>
