@@ -920,8 +920,14 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that adds an ad interest" translateable="false">
         Add interest?
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was added" translateable="false">
+        Interest added
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest" translateable="false">
         Remove interest?
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was removed" translateable="false">
+        Interest removed
       </message>
        <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_TITLE" desc="Title of the settings page to configure interests that were removed from ad personalization." translateable="false">
         Interests you removed

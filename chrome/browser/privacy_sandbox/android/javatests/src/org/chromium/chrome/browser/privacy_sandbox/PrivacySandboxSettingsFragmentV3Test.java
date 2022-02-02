@@ -159,6 +159,8 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         clickImageButtonNextToText("Foo");
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), not(hasItem("Foo")));
         assertThat(PrivacySandboxBridge.getBlockedTopics(), hasItem("Foo"));
+        onView(withText(R.string.privacy_sandbox_remove_interest_snackbar))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -182,6 +184,8 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         clickImageButtonNextToText("BlockedFoo");
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), hasItem("BlockedFoo"));
         assertThat(PrivacySandboxBridge.getBlockedTopics(), not(hasItem("BlockedFoo")));
+        onView(withText(R.string.privacy_sandbox_add_interest_snackbar))
+                .check(matches(isDisplayed()));
     }
 
     @Test

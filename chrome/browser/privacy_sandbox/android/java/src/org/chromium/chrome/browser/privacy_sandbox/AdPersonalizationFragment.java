@@ -15,6 +15,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.ImageButtonPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -29,9 +31,15 @@ public class AdPersonalizationFragment
     private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
     private static final String REMOVE_TOPICS_PREFERENCE = "removed_topics";
 
+    private SnackbarManager mSnackbarManager;
+
     private PreferenceCategory mTopicsCategory;
     private Preference mEmptyTopicsPreference;
     private Preference mRemoveTopicsPreference;
+
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
+    }
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -91,6 +99,9 @@ public class AdPersonalizationFragment
         if (preference instanceof ImageButtonPreference) {
             blockTopic(preference.getTitle().toString());
             mTopicsCategory.removePreference(preference);
+            mSnackbarManager.showSnackbar(Snackbar.make(
+                    getResources().getString(R.string.privacy_sandbox_remove_interest_snackbar),
+                    null, Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
         }
         return true;
     }

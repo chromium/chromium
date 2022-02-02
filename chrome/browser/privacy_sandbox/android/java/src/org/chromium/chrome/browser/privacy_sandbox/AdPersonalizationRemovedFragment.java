@@ -15,10 +15,10 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.ImageButtonPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-
-import java.util.List;
 
 /**
  * Settings fragment for privacy sandbox settings.
@@ -28,6 +28,11 @@ public class AdPersonalizationRemovedFragment
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
 
     private PreferenceCategory mTopicsCategory;
+    private SnackbarManager mSnackbarManager;
+
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
+    }
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -40,7 +45,7 @@ public class AdPersonalizationRemovedFragment
         mTopicsCategory = findPreference(TOPICS_CATEGORY_PREFERENCE);
         assert mTopicsCategory != null;
 
-        for (String interest : getBlockedTopics()) {
+        for (String interest : PrivacySandboxBridge.getBlockedTopics()) {
             ImageButtonPreference interestPreference = new ImageButtonPreference(getContext());
             interestPreference.setTitle(interest);
             interestPreference.setImage(
@@ -60,10 +65,6 @@ public class AdPersonalizationRemovedFragment
         return view;
     }
 
-    private List<String> getBlockedTopics() {
-        return PrivacySandboxBridge.getBlockedTopics();
-    }
-
     private void allowTopic(String topic) {
         PrivacySandboxBridge.setTopicAllowed(topic, true);
     }
@@ -73,6 +74,9 @@ public class AdPersonalizationRemovedFragment
         if (preference instanceof ImageButtonPreference) {
             allowTopic(preference.getTitle().toString());
             mTopicsCategory.removePreference(preference);
+            mSnackbarManager.showSnackbar(Snackbar.make(
+                    getResources().getString(R.string.privacy_sandbox_add_interest_snackbar), null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST));
         }
         return true;
     }
