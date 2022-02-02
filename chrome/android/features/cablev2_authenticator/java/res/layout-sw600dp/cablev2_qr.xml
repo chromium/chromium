@@ -66,12 +66,14 @@
       <CheckBox
           a:id="@+id/qr_link"
           a:checked="true"
+          a:contentDescription="@string/cablev2_qr_remember"
           a:layout_width="wrap_content"
           a:layout_height="wrap_content" />
 
       <TextView
           a:layout_width="wrap_content"
           a:layout_height="wrap_content"
+          a:importantForAccessibility="no"
           style="@style/TextAppearance.TextMedium.Primary"
           a:text="@string/cablev2_qr_remember" />
     </LinearLayout>
