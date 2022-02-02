@@ -26,6 +26,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -101,8 +102,7 @@ void SyncConfirmationHandler::HandleGoToSettings(const base::ListValue* args) {
 
 void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1263553): Remove once unconsented profiles are supported.
-  NOTIMPLEMENTED() << "Unconsented profiles are not supported yet";
+  DCHECK(base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
 #endif
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);

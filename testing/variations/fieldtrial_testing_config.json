@@ -3672,6 +3672,21 @@
             ]
         }
     ],
+    "LacrosNonSyncingProfiles": [
+        {
+            "platforms": [
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LacrosNonSyncingProfiles"
+                    ]
+                }
+            ]
+        }
+    ],
     "LightweightReactions": [
         {
             "platforms": [

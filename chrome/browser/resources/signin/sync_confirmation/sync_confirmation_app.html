@@ -23,18 +23,12 @@
     width: 100%;
   }
 
-<if expr="not lacros">
-  /* The settings button is right next to the action button on Lacros. */
-  .action-container #settingsButton {
-    left: var(--action-container-padding);
+  /* The settings button is at the start of the line (opposite to other buttons)
+     when sync is optional. */
+  .sync-optional #settingsButton {
+    inset-inline-start: var(--action-container-padding);
     position: absolute;
   }
-
-  :host-context([dir='rtl']) .action-container #settingsButton {
-    left: auto;
-    right: var(--action-container-padding);
-  }
-</if>
 
   /* Old design */
   #illustration-container {
@@ -266,7 +260,7 @@
     <div id="old-footer" class="message-container secondary">
       $i18n{syncConfirmationSettingsInfo}
     </div>
-    <div class="action-container">
+    <div class$="action-container [[isSyncForcedClass_]]">
       <cr-button class="action-button" id="confirmButton"
           on-click="onConfirm_" consent-confirmation autofocus>
         $i18n{syncConfirmationConfirmLabel}
@@ -277,11 +271,9 @@
           $i18n{syncConfirmationSettingsLabel}
         </cr-button>
       </if>
-      <if expr="not lacros">
-        <cr-button id="cancelButton" on-click="onUndo_">
-          $i18n{syncConfirmationUndoLabel}
-        </cr-button>
-      </if>
+      <cr-button id="cancelButton" on-click="onUndo_" hidden="[[syncForced_]]">
+        $i18n{syncConfirmationUndoLabel}
+      </cr-button>
       <if expr="not is_macosx and not is_linux">
         <cr-button id="settingsButton" on-click="onGoToSettings_"
             consent-confirmation>
@@ -316,7 +308,7 @@
         <span consent-description>$i18n{syncConfirmationSyncInfoDesc}</span>.
       </div>
     </div>
-    <div id="buttonsContainer" class="action-container">
+    <div id="buttonsContainer" class$="action-container [[syncOptionalClass_]]">
       <cr-button class="action-button" id="confirmButton"
           on-click="onConfirm_" consent-confirmation>
         $i18n{syncConfirmationConfirmLabel}
@@ -327,11 +319,9 @@
           $i18n{syncConfirmationSettingsLabel}
         </cr-button>
       </if>
-      <if expr="not lacros">
-        <cr-button id="notNowButton" on-click="onUndo_">
-          $i18n{syncConfirmationUndoLabel}
-        </cr-button>
-      </if>
+      <cr-button id="notNowButton" on-click="onUndo_" hidden="[[syncForced_]]">
+        $i18n{syncConfirmationUndoLabel}
+      </cr-button>
       <if expr="not is_macosx and not is_linux">
         <cr-button id="settingsButton" on-click="onGoToSettings_"
             consent-confirmation>

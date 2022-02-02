@@ -351,38 +351,17 @@ class TurnSyncOnHelperTest : public testing::Test {
   }
 
   void SetExpectationsForSyncAborted() {
-// TODO(crbug.com/1263553): Get rid of the lacros special casing once sync
-// disabled is fully supported on lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
-                SetSelectedTypes(/*sync_everything=*/false,
-                                 /*types=*/syncer::UserSelectableTypeSet()));
-    EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
-                SetFirstSetupComplete(
-                    syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
-#else
     EXPECT_CALL(
         *GetMockSyncService()->GetMockUserSettings(),
         SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW))
         .Times(0);
-#endif
   }
 
   void CheckSyncAborted(bool has_primary_account) {
-// TODO(crbug.com/1263553): Get rid of the lacros special casing once sync
-// disabled is fully supported on lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Disabling all data types is asserted in
-    // `SetExpectationsForSyncAborted()`.
-    EXPECT_TRUE(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-    EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
-#else
     EXPECT_FALSE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
     EXPECT_EQ(has_primary_account,
               identity_manager()->HasAccountWithRefreshToken(account_id()));
-#endif
   }
 
   void CheckDelegateCalls() {

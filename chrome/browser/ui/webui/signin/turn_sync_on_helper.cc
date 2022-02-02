@@ -597,21 +597,6 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       break;
     }
     case LoginUIService::ABORT_SYNC: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(crbug.com/1263553): Support truly disabling sync on lacros. Before
-      // this is done, all data types get disabled, instead. This is only
-      // exposed to tests as the "No" button is hidden until the full support is
-      // implemented.
-      syncer::SyncService* sync_service = GetSyncService();
-      if (sync_service) {
-        sync_service->GetUserSettings()->SetSelectedTypes(
-            /*sync_everything=*/false,
-            /*types=*/{});
-        sync_service->GetUserSettings()->SetFirstSetupComplete(
-            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-      }
-      break;
-#else
       auto* primary_account_mutator =
           identity_manager_->GetPrimaryAccountMutator();
       DCHECK(primary_account_mutator);
@@ -620,7 +605,6 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
           signin_metrics::SignoutDelete::kIgnoreMetric);
       AbortAndDelete();
       return;
-#endif
     }
     // No explicit action when the ui gets closed. If the embedder wants the
     // helper to abort sync in this case, it must redirect this action to
@@ -669,8 +653,12 @@ void TurnSyncOnHelper::AttachToProfile() {
 }
 
 void TurnSyncOnHelper::AbortAndDelete() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(https://crbug.com/1260291): Implement or make sure this is
+    // unreachable on lacros.
+    NOTIMPLEMENTED() << "REMOVE_ACCOUNT mode is not supported on lacros";
+#endif
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
         ->ShutdownUserCloudPolicyManager();
     // Revoke the token, and the AccountReconcilor and/or the Gaia server will
@@ -681,11 +669,6 @@ void TurnSyncOnHelper::AbortAndDelete() {
         signin_metrics::SourceForRefreshTokenOperation::
             kTurnOnSyncHelper_Abort);
   }
-#else
-  // TODO(https://crbug.com/1260291): Implement on Lacros.
-  NOTIMPLEMENTED()
-      << "Profiles without accounts are not yet supported on lacros.";
-#endif
 
   delete this;
 }
