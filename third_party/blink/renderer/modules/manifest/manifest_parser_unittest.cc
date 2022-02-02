@@ -2152,20 +2152,22 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
               "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
-                "image/png": [
-                  {}
-                ]
+                "image/png": 3
               }
             }
           ]
         })");
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'accept' file extension ignored, type string expected.",
-              errors()[0]);
-    EXPECT_EQ(1u, manifest->file_handlers.size());
+    ASSERT_EQ(2u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'accept' type ignored. File extensions must be type array or "
+        "type string.",
+        errors()[0]);
+    EXPECT_EQ("FileHandler ignored. Property 'accept' is invalid.",
+              errors()[1]);
+    EXPECT_EQ(0u, manifest->file_handlers.size());
   }
 
-  // Entry with an empty list of extensions is valid.
+  // Entry with an empty list of extensions is not valid.
   {
     auto& manifest = ParseManifest(
         R"({
@@ -2180,17 +2182,10 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
             }
           ]
         })");
-    auto& file_handlers = manifest->file_handlers;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, file_handlers.size());
-
-    EXPECT_EQ("name", file_handlers[0]->name);
-    EXPECT_EQ("http://foo.com/foo.jpg",
-              file_handlers[0]->icons[0]->src.GetString());
-    EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
-    ASSERT_TRUE(file_handlers[0]->accept.Contains("image/png"));
-    EXPECT_EQ(0u, file_handlers[0]->accept.find("image/png")->value.size());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("FileHandler ignored. Property 'accept' is invalid.",
+              errors()[0]);
+    EXPECT_EQ(0u, manifest->file_handlers.size());
   }
 
   // Extensions that do not start with a '.' are invalid.
@@ -2212,18 +2207,13 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
         })");
     auto& file_handlers = manifest->file_handlers;
 
-    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(2u, GetErrorCount());
     EXPECT_EQ(
         "property 'accept' file extension ignored, must start with a '.'.",
         errors()[0]);
-    ASSERT_EQ(1u, file_handlers.size());
-
-    EXPECT_EQ("name", file_handlers[0]->name);
-    EXPECT_EQ("http://foo.com/foo.jpg",
-              file_handlers[0]->icons[0]->src.GetString());
-    EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
-    ASSERT_TRUE(file_handlers[0]->accept.Contains("image/png"));
-    EXPECT_EQ(0u, file_handlers[0]->accept.find("image/png")->value.size());
+    EXPECT_EQ("FileHandler ignored. Property 'accept' is invalid.",
+              errors()[1]);
+    ASSERT_EQ(0u, file_handlers.size());
   }
 
   // Invalid MIME types and those with parameters are stripped.
@@ -2413,6 +2403,69 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     ASSERT_TRUE(file_handlers[1]->accept.Contains("text/csv"));
     ASSERT_EQ(1u, file_handlers[1]->accept.find("text/csv")->value.size());
     EXPECT_EQ(".csv", file_handlers[1]->accept.find("text/csv")->value[0]);
+  }
+
+  // file_handlers limits the total number of file extensions. Everything after
+  // and including the file handler that hits the extension limit
+  {
+    ManifestParser::SetFileHandlerExtensionLimitForTesting(5);
+    auto& manifest = ParseManifest(
+        R"({
+          "file_handlers": [
+            {
+              "name": "Raw",
+              "action": "/raw",
+              "accept": {
+                "text/csv": ".csv"
+              }
+            },
+            {
+              "name": "Graph",
+              "action": "/graph",
+              "accept": {
+                "text/svg+xml": [
+                  ".graph1",
+                  ".graph2",
+                  ".graph3",
+                  ".graph4",
+                  ".graph5",
+                  ".graph6"
+                ]
+              }
+            },
+            {
+              "name": "Data",
+              "action": "/data",
+              "accept": {
+                "text/plain": [
+                  ".data"
+                ]
+              }
+            }
+          ]
+        })");
+    auto& file_handlers = manifest->file_handlers;
+
+    ASSERT_EQ(2u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'accept': too many total file extensions, ignoring "
+        "extensions starting from \".graph5\"",
+        errors()[0]);
+    EXPECT_EQ("FileHandler ignored. Property 'accept' is invalid.",
+              errors()[1]);
+
+    ASSERT_EQ(2u, file_handlers.size());
+
+    EXPECT_EQ("Raw", file_handlers[0]->name);
+    EXPECT_EQ(1u, file_handlers[0]->accept.find("text/csv")->value.size());
+
+    EXPECT_EQ("Graph", file_handlers[1]->name);
+    auto accept_map = file_handlers[1]->accept.find("text/svg+xml")->value;
+    ASSERT_EQ(4u, accept_map.size());
+    EXPECT_TRUE(accept_map.Contains(".graph1"));
+    EXPECT_TRUE(accept_map.Contains(".graph2"));
+    EXPECT_TRUE(accept_map.Contains(".graph3"));
+    EXPECT_TRUE(accept_map.Contains(".graph4"));
   }
 }
 

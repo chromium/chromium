@@ -42,6 +42,8 @@ class MODULES_EXPORT ManifestParser {
 
   ~ManifestParser();
 
+  static void SetFileHandlerExtensionLimitForTesting(int limit);
+
   // Parse the Manifest from a string using following:
   // https://w3c.github.io/manifest/#processing
   bool Parse();
@@ -473,6 +475,10 @@ class MODULES_EXPORT ManifestParser {
   KURL manifest_url_;
   KURL document_url_;
   const FeatureContext* feature_context_;
+
+  // The total number of file extensions seen so far while parsing
+  // `file_handlers` `accept` entries.
+  int total_file_handler_extension_count_ = 0;
 
   bool failed_;
   mojom::blink::ManifestPtr manifest_;

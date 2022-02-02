@@ -37,6 +37,11 @@ static constexpr char kUrlHandlerWildcardPrefix[] = "%2A.";
 static wtf_size_t kMaxUrlHandlersSize = 10;
 static wtf_size_t kMaxOriginLength = 2000;
 
+// The max number of file extensions an app can handle via the File Handling
+// API.
+const int kFileHandlerExtensionLimit = 300;
+int g_file_handler_extension_limit_for_testing = 0;
+
 bool IsValidMimeType(const String& mime_type) {
   if (mime_type.StartsWith('.'))
     return true;
@@ -102,7 +107,14 @@ ManifestParser::ManifestParser(const String& data,
 
 ManifestParser::~ManifestParser() {}
 
+// static
+void ManifestParser::SetFileHandlerExtensionLimitForTesting(int limit) {
+  g_file_handler_extension_limit_for_testing = limit;
+}
+
 bool ManifestParser::Parse() {
+  DCHECK(!manifest_);
+
   JSONParseError error;
   bool has_comments = false;
   std::unique_ptr<JSONValue> root = ParseJSON(data_, &error, &has_comments);
@@ -1052,6 +1064,13 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
   if (!accept)
     return result;
 
+  const int kExtensionLimit = g_file_handler_extension_limit_for_testing > 0
+                                  ? g_file_handler_extension_limit_for_testing
+                                  : kFileHandlerExtensionLimit;
+  if (total_file_handler_extension_count_ > kExtensionLimit) {
+    return result;
+  }
+
   for (wtf_size_t i = 0; i < accept->size(); ++i) {
     JSONObject::Entry entry = accept->at(i);
 
@@ -1092,7 +1111,23 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
       continue;
     }
 
-    result.Set(mimetype, std::move(extensions));
+    total_file_handler_extension_count_ += extensions.size();
+    int extension_overflow =
+        total_file_handler_extension_count_ - kExtensionLimit;
+    if (extension_overflow > 0) {
+      auto* erase_iter = extensions.end() - extension_overflow;
+      AddErrorInfo(
+          "property 'accept': too many total file extensions, ignoring "
+          "extensions starting from \"" +
+          *erase_iter + "\"");
+      extensions.erase(erase_iter, extensions.end());
+    }
+
+    if (!extensions.IsEmpty())
+      result.Set(mimetype, std::move(extensions));
+
+    if (extension_overflow > 0)
+      break;
   }
 
   return result;
