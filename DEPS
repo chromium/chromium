@@ -1694,7 +1694,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '89f20c5e69574ffbede2d89e18b4dba71bf9c1f2',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '608e381b4d770d58d13fab8e2fd068f6e62d0950',
+    Var('webrtc_git') + '/src.git' + '@' + 'ffcf7381e8ee3fb1c0f4e9bdd0e5d4b0d895819e',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
