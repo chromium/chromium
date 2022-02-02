@@ -16,6 +16,7 @@
 namespace enterprise_connectors {
 
 namespace {
+
 const char kNonce[] = "nonce";
 const char kFakeDMToken[] = "fake-browser-dm-token";
 const char kFakeDmServerUrl[] =
@@ -23,6 +24,18 @@ const char kFakeDmServerUrl[] =
     "management_service?retry=false&agent=Chrome+1.2.3(456)&apptype=Chrome&"
     "critical=true&deviceid=fake-client-id&devicetype=2&platform=Test%7CUnit%"
     "7C1.2.3&request=browser_public_key_upload";
+
+void CheckCommandArgs(const std::vector<std::string>& args) {
+  std::string token_base64;
+  base::Base64Encode(kFakeDMToken, &token_base64);
+  std::string nonce_base64;
+  base::Base64Encode(kFakeDMToken, &token_base64);
+  base::Base64Encode(kNonce, &nonce_base64);
+  EXPECT_EQ(token_base64, args[0]);
+  EXPECT_EQ(kFakeDmServerUrl, args[1]);
+  EXPECT_EQ(nonce_base64, args[2]);
+}
+
 }  // namespace
 
 class WinKeyRotationCommandTest : public testing::Test {
@@ -41,11 +54,7 @@ TEST_F(WinKeyRotationCommandTest, RotateSuccess) {
   WinKeyRotationCommand command([](const wchar_t* command,
                                    const std::vector<std::string>& args,
                                    DWORD* return_code) {
-    std::string token_base64;
-    base::Base64Encode(kFakeDMToken, &token_base64);
-    EXPECT_EQ(token_base64, args[0]);
-    EXPECT_EQ(kFakeDmServerUrl, args[1]);
-    EXPECT_EQ(kNonce, args[2]);
+    CheckCommandArgs(args);
     *return_code = installer::ROTATE_DTKEY_SUCCESS;
     return S_OK;
   });
@@ -71,11 +80,7 @@ TEST_F(WinKeyRotationCommandTest, RotateFailure) {
   WinKeyRotationCommand command([](const wchar_t* command,
                                    const std::vector<std::string>& args,
                                    DWORD* return_code) {
-    std::string token_base64;
-    base::Base64Encode(kFakeDMToken, &token_base64);
-    EXPECT_EQ(token_base64, args[0]);
-    EXPECT_EQ(kFakeDmServerUrl, args[1]);
-    EXPECT_EQ(kNonce, args[2]);
+    CheckCommandArgs(args);
     *return_code = installer::ROTATE_DTKEY_FAILED;
     return S_OK;
   });
@@ -101,11 +106,7 @@ TEST_F(WinKeyRotationCommandTest, RotateTimeout) {
   WinKeyRotationCommand command([](const wchar_t* command,
                                    const std::vector<std::string>& args,
                                    DWORD* return_code) {
-    std::string token_base64;
-    base::Base64Encode(kFakeDMToken, &token_base64);
-    EXPECT_EQ(token_base64, args[0]);
-    EXPECT_EQ(kFakeDmServerUrl, args[1]);
-    EXPECT_EQ(kNonce, args[2]);
+    CheckCommandArgs(args);
     // Not setting return_code.
     return E_ABORT;
   });
@@ -131,11 +132,7 @@ TEST_F(WinKeyRotationCommandTest, GoogleUpdateIssue) {
   WinKeyRotationCommand command([](const wchar_t* command,
                                    const std::vector<std::string>& args,
                                    DWORD* return_code) {
-    std::string token_base64;
-    base::Base64Encode(kFakeDMToken, &token_base64);
-    EXPECT_EQ(token_base64, args[0]);
-    EXPECT_EQ(kFakeDmServerUrl, args[1]);
-    EXPECT_EQ(kNonce, args[2]);
+    CheckCommandArgs(args);
     // Not setting return_code.
     return WinKeyRotationCommand::GOOPDATE_E_APP_USING_EXTERNAL_UPDATER;
   });
@@ -162,11 +159,7 @@ TEST_F(WinKeyRotationCommandTest, GeneralFailure) {
   WinKeyRotationCommand command([](const wchar_t* command,
                                    const std::vector<std::string>& args,
                                    DWORD* return_code) {
-    std::string token_base64;
-    base::Base64Encode(kFakeDMToken, &token_base64);
-    EXPECT_EQ(token_base64, args[0]);
-    EXPECT_EQ(kFakeDmServerUrl, args[1]);
-    EXPECT_EQ(kNonce, args[2]);
+    CheckCommandArgs(args);
     // Not setting return_code.
     return E_FAIL;
   });

@@ -168,6 +168,8 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
              bool waiting_enabled) {
             std::string token_base64;
             base::Base64Encode(params.dm_token, &token_base64);
+            std::string nonce_base64;
+            base::Base64Encode(params.nonce, &nonce_base64);
 
             DWORD return_code = installer::ROTATE_DTKEY_FAILED;
 
@@ -178,7 +180,7 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
             for (int i = 0; i < 10; ++i) {
               hr = run_elevated_command(
                   installer::kCmdRotateDeviceTrustKey,
-                  {token_base64, params.dm_server_url, params.nonce},
+                  {token_base64, params.dm_server_url, nonce_base64},
                   &return_code);
               if (hr != GOOPDATE_E_APP_USING_EXTERNAL_UPDATER)
                 break;
