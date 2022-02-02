@@ -12060,6 +12060,13 @@ be describing additional metrics about the same event.
       The length of time, in ms, between when the notification was triggered and
       when it was closed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TimeUntilFirstClick">
     <summary>
