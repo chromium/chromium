@@ -37,6 +37,7 @@ group("polymer3_elements") {
     ":parental_handoff_module",
     ":pin_setup_module",
     ":recommend_apps_module",
+    ":recommend_apps_old_module",
     ":saml_confirm_password_module",
     ":signin_fatal_error_module",
     ":sync_consent_module",
@@ -85,6 +86,7 @@ js_type_check("closure_compile_module_local") {
     ":parental_handoff.m",
     ":pin_setup.m",
     ":recommend_apps.m",
+    ":recommend_apps_old.m",
     ":saml_confirm_password.m",
     ":signin_fatal_error.m",
     ":sync_consent.m",
@@ -99,9 +101,7 @@ js_type_check("closure_compile_module_local") {
 js_type_check("closure_compile_module_multidevice_setup") {
   is_polymer3 = true
   closure_flags = default_closure_args
-  deps = [
-    ":multidevice_setup.m",
-  ]
+  deps = [ ":multidevice_setup.m" ]
 }
 
 ###############################
@@ -365,9 +365,9 @@ js_library("marketing_opt_in.m") {
 js_library("multidevice_setup.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/multidevice_setup.m.js" ]
   deps = [
-    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -484,21 +484,35 @@ js_library("pin_setup.m") {
   extra_deps = [ ":pin_setup_module" ]
 }
 
+js_library("recommend_apps_old.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps_old.m.js" ]
+  deps = [
+    "../../components:oobe_types.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  externs_list = [ "$externs_path/webview_tag.js" ]
+  extra_deps = [ ":recommend_apps_old_module" ]
+}
+
 js_library("recommend_apps.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.m.js" ]
   deps = [
-     "../../components:oobe_types.m",
-     "../../components/behaviors:login_screen_behavior.m",
-     "../../components/behaviors:multi_step_behavior.m",
-     "../../components/behaviors:oobe_dialog_host_behavior.m",
-     "../../components/behaviors:oobe_i18n_behavior.m",
-     "../../components/buttons:oobe_text_button.m",
-     "../../components/dialogs:oobe_adaptive_dialog.m",
-     "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components:oobe_types.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
   ]
-  externs_list = [
-    "$externs_path/webview_tag.js",
-  ]
+  externs_list = [ "$externs_path/webview_tag.js" ]
   extra_deps = [ ":recommend_apps_module" ]
 }
 
@@ -780,6 +794,14 @@ polymer_modulizer("parental_handoff") {
 polymer_modulizer("pin_setup") {
   js_file = "pin_setup.js"
   html_file = "pin_setup.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("recommend_apps_old") {
+  js_file = "recommend_apps_old.js"
+  html_file = "recommend_apps_old.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

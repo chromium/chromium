@@ -34,6 +34,8 @@ import 'chrome://oobe/screens/common/os_install.m.js';
 import 'chrome://oobe/screens/common/os_trial.m.js';
 import 'chrome://oobe/screens/common/parental_handoff.m.js';
 import 'chrome://oobe/screens/common/pin_setup.m.js';
+// TODO(crbug.com/1261902): Remove.
+import 'chrome://oobe/screens/common/recommend_apps_old.m.js';
 import 'chrome://oobe/screens/common/recommend_apps.m.js';
 import 'chrome://oobe/screens/common/saml_confirm_password.m.js';
 import 'chrome://oobe/screens/common/signin_fatal_error.m.js';

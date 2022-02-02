@@ -248,17 +248,18 @@ void HandleArcTermsOfServiceScreen() {
 // HandleArcTermsOfServiceScreen.
 void HandleRecommendAppsScreen() {
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: Switched to 'recommend-apps' screen.";
+  LOG(INFO)
+      << "OobeInteractiveUITest: Switched to 'recommend-apps-old' screen.";
 
   EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
-      .CreateVisibilityWaiter(true, {"recommend-apps", "appsDialog"})
+      .CreateVisibilityWaiter(true, {"recommend-apps-old", "appsDialog"})
       ->Wait();
 
-  test::OobeJS().ExpectPathDisplayed(true, {"recommend-apps", "appView"});
+  test::OobeJS().ExpectPathDisplayed(true, {"recommend-apps-old", "appView"});
 
   std::string toggle_apps_script = base::StringPrintf(
       "(function() {"
@@ -276,7 +277,7 @@ void HandleRecommendAppsScreen() {
       "test.package");
 
   const std::string webview_path =
-      test::GetOobeElementPath({"recommend-apps", "appView"});
+      test::GetOobeElementPath({"recommend-apps-old", "appView"});
   const std::string script = base::StringPrintf(
       "(function() {"
       "  var toggleApp = function() {"
@@ -298,12 +299,12 @@ void HandleRecommendAppsScreen() {
   EXPECT_TRUE(result);
 
   const std::initializer_list<base::StringPiece> install_button = {
-      "recommend-apps", "installButton"};
+      "recommend-apps-old", "installButton"};
   test::OobeJS().CreateEnabledWaiter(true, install_button)->Wait();
   test::OobeJS().TapOnPath(install_button);
 
   OobeScreenExitWaiter(RecommendAppsScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: 'recommend-apps' screen done.";
+  LOG(INFO) << "OobeInteractiveUITest: 'recommend-apps-old' screen done.";
 }
 
 // Waits for AppDownloadingScreen to be shown, clicks 'Continue' button, and

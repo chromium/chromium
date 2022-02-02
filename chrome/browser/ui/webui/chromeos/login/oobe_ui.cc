@@ -161,7 +161,11 @@ constexpr char kKeyboardUtilsForInjectionPath[] =
 constexpr char kLoginJSPath[] = "login.js";
 constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
-constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
+// TODO(crbug.com/1261902): Remove.
+constexpr char kRecommendAppOldListViewJSPath[] =
+    "recommend_app_old_list_view.js";
+// TODO(crbug.com/1198865): Uncomment once feature flag switch is enabled.
+// constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
@@ -214,8 +218,8 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kArcPlaystoreLogoPath,
                           IDR_ARC_SUPPORT_PLAYSTORE_LOGO);
 
-  source->AddResourcePath(kRecommendAppListViewJSPath,
-                          IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_JS);
+  source->AddResourcePath(kRecommendAppOldListViewJSPath,
+                          IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_JS);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kArcAppDownloadingVideoPath,
                           IDR_OOBE_ARC_APPS_DOWNLOADING_VIDEO);

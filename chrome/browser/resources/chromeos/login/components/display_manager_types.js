@@ -83,6 +83,8 @@ DisplayManagerScreenAttributes.resetAllowed;
 'ad-password-change';
 /* #export */ const SCREEN_SYNC_CONSENT = 'sync-consent';
 /* #export */ const SCREEN_FINGERPRINT_SETUP = 'fingerprint-setup';
+// TODO(crbug.com/1261902): Remove.
+/* #export */ const SCREEN_RECOMMEND_APPS_OLD = 'recommend-apps-old';
 /* #export */ const SCREEN_RECOMMEND_APPS = 'recommend-apps';
 /* #export */ const SCREEN_APP_DOWNLOADING = 'app-downloading';
 /* #export */ const SCREEN_PIN_SETUP = 'pin-setup';

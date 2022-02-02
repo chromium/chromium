@@ -41,9 +41,9 @@
 namespace ash {
 namespace {
 
-const test::UIPath webview_ui_path = {"recommend-apps", "appView"};
-const test::UIPath install_button = {"recommend-apps", "installButton"};
-const test::UIPath skip_button = {"recommend-apps", "skipButton"};
+const test::UIPath webview_ui_path = {"recommend-apps-old", "appView"};
+const test::UIPath install_button = {"recommend-apps-old", "installButton"};
+const test::UIPath skip_button = {"recommend-apps-old", "skipButton"};
 
 struct FakeAppInfo {
  public:
@@ -150,17 +150,17 @@ class RecommendAppsScreenTest : public OobeBaseTest {
   void ExpectLoadingStep() {
     // Wait for loading screen.
     test::OobeJS()
-        .CreateVisibilityWaiter(true, {"recommend-apps", "loadingDialog"})
+        .CreateVisibilityWaiter(true, {"recommend-apps-old", "loadingDialog"})
         ->Wait();
 
-    test::OobeJS().ExpectHiddenPath({"recommend-apps", "appsDialog"});
+    test::OobeJS().ExpectHiddenPath({"recommend-apps-old", "appsDialog"});
   }
 
   void ExpectAppSelectionStep() {
     test::OobeJS()
-        .CreateVisibilityWaiter(true, {"recommend-apps", "appsDialog"})
+        .CreateVisibilityWaiter(true, {"recommend-apps-old", "appsDialog"})
         ->Wait();
-    test::OobeJS().ExpectHiddenPath({"recommend-apps", "loadingDialog"});
+    test::OobeJS().ExpectHiddenPath({"recommend-apps-old", "loadingDialog"});
   }
 
   bool WaitForAppListSize(const std::string& webview_path, int app_count) {

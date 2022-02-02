@@ -19,7 +19,7 @@ namespace chromeos {
 // WebUI representation.
 class RecommendAppsScreenView {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"recommend-apps"};
+  constexpr static StaticOobeScreenId kScreenId{"recommend-apps-old"};
 
   virtual ~RecommendAppsScreenView() = default;
 

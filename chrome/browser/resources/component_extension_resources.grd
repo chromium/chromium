@@ -94,7 +94,11 @@
         <include name="IDR_ARC_SUPPORT_ICON_192" file="chromeos/arc_support/icon/192.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_ERROER_IMAGE" file="chromeos/arc_support/images/error_image.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_HEADER" file="chromeos/arc_support/images/header.png" type="BINDATA" />
+        <!-- TODO(crbug.com/1261902): Remove. -->
+        <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_JS" file="chromeos/arc_support/recommend_app_old_list_view.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_JS" file="chromeos/arc_support/recommend_app_list_view.js" type="BINDATA" />
+        <!-- TODO(crbug.com/1261902): Remove. -->
+        <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML" file="chromeos/arc_support/recommend_app_old_list_view.html" type="chrome_html" flattenhtml="true" />
         <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML" file="chromeos/arc_support/recommend_app_list_view.html" type="chrome_html" flattenhtml="true" />
       </if>
       <include name="IDR_CRYPTOTOKEN_UTIL_JS" file="cryptotoken/util.js" type="BINDATA" />

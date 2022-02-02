@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    :root {
+      color: #333;
+      font-family: 'Google Sans', Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 400; /* roboto-regular */
+    }
+
+    body {
+      margin: 0;
+    }
+
+    #recommend-apps-container {
+      box-sizing: border-box;
+      display: flex;
+      flex-flow: row wrap;
+      gap: 16px;
+      overflow: hidden;
+      padding: 2px;
+    }
+
+    #recommend-apps-container .item {
+      display: flex;
+      flex: 0 0 calc((100% - 32px) / 3); /* This size allows <= 3 items in a row */
+      flex-flow: row nowrap;
+      float: left;
+      max-width: 280px;
+      min-width: 156px;
+      position: relative;
+      user-select: none;
+    }
+
+    #recommend-apps-container .item .image-picker {
+      background: url(images/ic_checkmark.svg) no-repeat;
+      display: none;
+      flex-shrink: 0;
+      transform: translate(-32px, 8px);
+      width: 24px;
+    }
+
+    #recommend-apps-container .item.checked .image-picker {
+      display: block;
+    }
+
+    #recommend-apps-container .item .chip {
+      border-radius: 8px;
+      box-shadow:
+          1px 1px 4px rgba(60, 64, 67, 0.30),
+          1px 2px 4px 1px rgba(60, 64, 67, 0.15);
+      flex-shrink: 0;
+      height: 160px;
+      position: relative;
+      width: 100%;
+      --x: 0;
+      --y: 0;
+    }
+
+    #recommend-apps-container .item .chip .chip-content-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+    }
+
+    #recommend-apps-container .item .chip:focus,
+    #recommend-apps-container .item .chip .chip-content-container:focus {
+      outline: none;
+    }
+
+    #recommend-apps-container .item .chip:focus > .chip-content-container {
+      outline: 2px solid rgba(26, 115, 232, 0.5);
+    }
+
+    @keyframes ripple {
+      30% {
+        transform: scale(7);
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    #recommend-apps-container .item .chip .chip-content-container .ripple {
+      animation: ripple 1s forwards;
+      background: rgba(32, 33, 36, 0.14);
+      border-radius: 50%;
+      height: 100px;
+      margin-inline-start: calc(var(--x) * 1px);
+      margin-top: calc(var(--y) * 1px);
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 100px;
+    }
+
+    #recommend-apps-container .item .chip:active {
+      box-shadow:
+          0 1px 2px 0 rgba(60, 64, 67, 0.30),
+          0 3px 6px 2px rgba(60, 64, 67, 0.15);
+    }
+
+    img.app-icon {
+      height: 48px;
+      margin-bottom: 20px;
+      margin-inline: auto;
+      margin-top: 32px;
+      vertical-align: middle;
+      width: 48px;
+    }
+
+    span.app-title {
+      color: rgb(32, 33, 36);
+      display: inline-block;
+      font-size: 13px;
+      line-height: 20px;
+      margin-bottom: 20px;
+      margin-inline: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-top"></div>
+  <div id="recommend-apps-container"></div>
+  <div id="scroll-bottom"></div>
+</body>
+</html>

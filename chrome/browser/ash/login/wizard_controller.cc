@@ -291,7 +291,8 @@ constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {chromeos::ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
     {chromeos::EnrollmentScreenView::kScreenId, "enroll"},
     {chromeos::WelcomeView::kScreenId, "network"},
-    {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};
+    {chromeos::TermsOfServiceScreenView::kScreenId, "tos"},
+    {chromeos::RecommendAppsScreenView::kScreenId, "recommend-apps"}};
 
 void RecordUMAHistogramForOOBEStepShownStatus(
     OobeScreenId screen,
