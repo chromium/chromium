@@ -246,15 +246,30 @@ void LocalTranslator::TranslateOpenVPN() {
 }
 
 void LocalTranslator::TranslateIPsec() {
-  SetClientCertProperties(client_cert::CONFIG_TYPE_IPSEC, onc_object_,
-                          shill_dictionary_);
+  const auto ike_version = onc_object_->FindIntKey(::onc::ipsec::kIKEVersion);
+  if (ike_version.has_value() && ike_version.value() == 2) {
+    // The translation table set in this object is for L2TP/IPsec, so we do the
+    // copy manually.
+    CopyFieldFromONCToShill(::onc::ipsec::kAuthenticationType,
+                            shill::kIKEv2AuthenticationTypeProperty);
+    CopyFieldFromONCToShill(::onc::ipsec::kPSK, shill::kIKEv2PskProperty);
+    CopyFieldFromONCToShill(::onc::ipsec::kServerCAPEMs,
+                            shill::kIKEv2CaCertPemProperty);
+    CopyFieldFromONCToShill(::onc::ipsec::kLocalIdentity,
+                            shill::kIKEv2LocalIdentityProperty);
+    CopyFieldFromONCToShill(::onc::ipsec::kRemoteIdentity,
+                            shill::kIKEv2RemoteIdentityProperty);
+  } else {
+    // For L2TP/IPsec.
+    SetClientCertProperties(client_cert::CONFIG_TYPE_IPSEC, onc_object_,
+                            shill_dictionary_);
+    CopyFieldsAccordingToSignature();
+  }
 
   // SaveCredentials needs special handling when translating from Shill -> ONC
   // so handle it explicitly here.
   CopyFieldFromONCToShill(::onc::vpn::kSaveCredentials,
                           shill::kSaveCredentialsProperty);
-
-  CopyFieldsAccordingToSignature();
 }
 
 void LocalTranslator::TranslateL2TP() {

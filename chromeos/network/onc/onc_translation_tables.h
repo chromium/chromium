@@ -46,11 +46,19 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kRoamingStateTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kOpenVpnCompressionAlgorithmTable[];
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const StringTranslationEntry kIKEv2AuthenticationTypeTable[];
 
 // A separate translation table for cellular properties that are stored in a
 // Shill Device instead of a Service. The |shill_property_name| entries
 // reference Device properties, not Service properties.
 extern const FieldTranslationEntry kCellularDeviceTable[];
+
+// A separate translation table for IPsec properties that need to be mapped to
+// an IKEv2 VPN service, while the default one for IPsec (|ipsec_fields| defined
+// in the .cc file) is for the L2TP/IPsec VPN services. Only used in the
+// shill-to-onc translation but not the opposite direction.
+extern const FieldTranslationEntry kIPsecIKEv2Table[];
 
 const FieldTranslationEntry* GetFieldTranslationTable(
     const OncValueSignature& onc_signature);

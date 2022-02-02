@@ -135,6 +135,14 @@ class ShillToONCTranslator {
   void TranslateEap();
 
   // Creates an ONC object from |dictionary| according to the signature
+  // associated to |onc_field_name| and |field_translation_table|, and adds it
+  // to |onc_object_| at |onc_field_name|.
+  void TranslateAndAddNestedObject(
+      const std::string& onc_field_name,
+      const base::Value& dictionary,
+      const FieldTranslationEntry* field_translation_table);
+
+  // Creates an ONC object from |dictionary| according to the signature
   // associated to |onc_field_name| and adds it to |onc_object_| at
   // |onc_field_name|.
   void TranslateAndAddNestedObject(const std::string& onc_field_name,
@@ -317,6 +325,16 @@ void ShillToONCTranslator::TranslateOpenVPN() {
 
 void ShillToONCTranslator::TranslateIPsec() {
   CopyPropertiesAccordingToSignature();
+
+  if (field_translation_table_ == kIPsecIKEv2Table) {
+    // This is an IKEv2 VPN service.
+    TranslateWithTableAndSet(shill::kIKEv2AuthenticationTypeProperty,
+                             kIKEv2AuthenticationTypeTable,
+                             ::onc::ipsec::kAuthenticationType);
+    return;
+  }
+
+  // This is an L2TP/IPsec VPN service.
   if (shill_dictionary_->FindKey(shill::kL2tpIpsecXauthUserProperty))
     TranslateAndAddNestedObject(::onc::ipsec::kXAUTH);
 
@@ -386,6 +404,10 @@ void ShillToONCTranslator::TranslateVPN() {
   if (onc_provider_type == ::onc::vpn::kTypeL2TP_IPsec) {
     TranslateAndAddNestedObject(::onc::vpn::kIPsec, *provider);
     TranslateAndAddNestedObject(::onc::vpn::kL2TP, *provider);
+    provider_type_dictionary = ::onc::vpn::kIPsec;
+  } else if (shill_provider_type == shill::kProviderIKEv2) {
+    TranslateAndAddNestedObject(::onc::vpn::kIPsec, *provider,
+                                kIPsecIKEv2Table);
     provider_type_dictionary = ::onc::vpn::kIPsec;
   } else {
     TranslateAndAddNestedObject(onc_provider_type, *provider);
@@ -784,9 +806,24 @@ void ShillToONCTranslator::TranslateAndAddNestedObject(
     NET_LOG(ERROR) << "Unable to find signature for field: " << onc_field_name;
     return;
   }
-  ShillToONCTranslator nested_translator(dictionary, onc_source_,
-                                         *field_signature->value_signature,
-                                         network_state_);
+  TranslateAndAddNestedObject(
+      onc_field_name, dictionary,
+      GetFieldTranslationTable(*field_signature->value_signature));
+}
+
+void ShillToONCTranslator::TranslateAndAddNestedObject(
+    const std::string& onc_field_name,
+    const base::Value& dictionary,
+    const FieldTranslationEntry* field_translation_table) {
+  const OncFieldSignature* field_signature =
+      GetFieldSignature(*onc_signature_, onc_field_name);
+  if (!field_signature) {
+    NET_LOG(ERROR) << "Unable to find signature for field: " << onc_field_name;
+    return;
+  }
+  ShillToONCTranslator nested_translator(
+      dictionary, onc_source_, *field_signature->value_signature,
+      field_translation_table, network_state_);
   base::Value nested_object = nested_translator.CreateTranslatedONCObject();
   if (nested_object.DictEmpty())
     return;

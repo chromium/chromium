@@ -43,6 +43,7 @@ const FieldTranslationEntry eap_fields[] = {
      shill::kEapUseProactiveKeyCachingProperty},
     {nullptr}};
 
+// This group of fields are for L2TP/IPsec, see |kIPsecIKEv2Table| for IKEv2.
 const FieldTranslationEntry ipsec_fields[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::ipsec::kAuthenticationType, shill::kL2tpIpsecAuthenticationType
@@ -343,6 +344,7 @@ const StringTranslationEntry kNetworkTypeTable[] = {
     {nullptr}};
 
 const StringTranslationEntry kVPNTypeTable[] = {
+    {::onc::vpn::kIPsec, shill::kProviderIKEv2},
     {::onc::vpn::kTypeL2TP_IPsec, shill::kProviderL2tpIpsec},
     {::onc::vpn::kOpenVPN, shill::kProviderOpenVpn},
     {::onc::vpn::kWireGuard, shill::kProviderWireGuard},
@@ -418,6 +420,12 @@ const StringTranslationEntry kOpenVpnCompressionAlgorithmTable[] = {
     {::onc::openvpn_compression_algorithm::kLzo, shill::kOpenVPNCompressLzo},
     {nullptr}};
 
+const StringTranslationEntry kIKEv2AuthenticationTypeTable[] = {
+    {::onc::ipsec::kPSK, shill::kIKEv2AuthenticationTypePSK},
+    {::onc::ipsec::kCert, shill::kIKEv2AuthenticationTypeCert},
+    {::onc::ipsec::kEAP, shill::kIKEv2AuthenticationTypeEAP},
+    {nullptr}};
+
 // This must contain only Shill Device properties and no Service properties.
 // For Service properties see cellular_fields.
 const FieldTranslationEntry kCellularDeviceTable[] = {
@@ -442,6 +450,13 @@ const FieldTranslationEntry kCellularDeviceTable[] = {
     // { ::onc::cellular::kSIMLockStatus, shill::kSIMLockStatusProperty},
     {::onc::cellular::kSIMPresent, shill::kSIMPresentProperty},
     {::onc::cellular::kSupportNetworkScan, shill::kSupportNetworkScanProperty},
+    {nullptr}};
+
+const FieldTranslationEntry kIPsecIKEv2Table[] = {
+    {::onc::ipsec::kPSK, shill::kIKEv2PskProperty},
+    {::onc::ipsec::kServerCAPEMs, shill::kIKEv2CaCertPemProperty},
+    {::onc::ipsec::kLocalIdentity, shill::kIKEv2LocalIdentityProperty},
+    {::onc::ipsec::kRemoteIdentity, shill::kIKEv2RemoteIdentityProperty},
     {nullptr}};
 
 const FieldTranslationEntry* GetFieldTranslationTable(
