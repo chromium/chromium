@@ -10,13 +10,16 @@
 
 namespace extensions {
 
+// TODO(https://crbug.com/1231802): Cover with unit tests.
+
 // Converts a `PublicKeyCredentialCreationOptions` into a `base::Value`, which
 // can be JSON serialized and included in an
 // `webAuthenticationProxy.onCreateRequest` event.
 //
 // The output conforms to the WebAuthn `PublicKeyCredentialCreationOptions`
-// dictionary IDL, but with all ArrayBuffer-valued attributes represented as
-// base64URL-encoded strings instead.
+// dictionary IDL, but with all ArrayBuffer and BufferSource attributes
+// represented as base64url-encoded strings instead. The `timeout` field is
+// omitted.
 // (https://w3c.github.io/webauthn/#dictdef-publickeycredentialcreationoptions)
 //
 // TODO(crbug.com/1231802): Reference serialization method once available. Also
@@ -24,17 +27,44 @@ namespace extensions {
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options);
 
-// Converts a `base::Value` encoding a WebAuthn
-// `PublicKeyCredential` instance into an equivalent
-// `MakeCredentialAuthenticatorResponse`.
+// Converts a `PublicKeyCredentialRequestOptions` into a `base::Value`, which
+// can be JSON serialized and included in an
+// `webAuthenticationProxy.onGetRequest` event.
 //
-// The input is expected to be a JSON-serialized `PublicKeyCredential` in which
-// ArrayBuffer-valued attributes are replaced by base64URL-encoded strings.
+// The output conforms to the WebAuthn `PublicKeyCredentialRequestOptions`
+// dictionary IDL, but with all ArrayBuffer and BufferSource attributes
+// represented as base64url-encoded strings instead. The `timeout` field is
+// omitted.
+// (https://w3c.github.io/webauthn/#dictdef-publickeycredentialrequestoptions)
 //
 // TODO(crbug.com/1231802): Reference serialization method once available. Also
 // update the IDL docs at that point.
-blink::mojom::MakeCredentialAuthenticatorResponsePtr FromValue(
-    const base::Value& value);
+base::Value ToValue(
+    const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options);
+
+// Converts a `base::Value` encoding a `PublicKeyCredential` instance from a
+// WebAuthn `get()` request into a `MakeCredentialAuthenticatorResponse`.
+//
+// The input is expected to be a JSON-serialized `PublicKeyCredential` in which
+// ArrayBuffer-valued attributes are replaced by base64url-encoded strings. The
+// `response` value must be a an `AuthenticatorAttestationResponse`.
+//
+// TODO(crbug.com/1231802): Reference serialization method once available. Also
+// update the IDL docs at that point.
+blink::mojom::MakeCredentialAuthenticatorResponsePtr
+MakeCredentialResponseFromValue(const base::Value& value);
+
+// Converts a `base::Value` encoding a `PublicKeyCredential` instance from a
+// WebAuthn `get()` request into a `GetAssertionAuthenticatorResponse`.
+//
+// The input is expected to be a JSON-serialized `PublicKeyCredential` in which
+// ArrayBuffer-valued attributes are replaced by base64url-encoded strings. The
+// `response` value must be a an `AuthenticatorAssertionResponse`.
+//
+// TODO(crbug.com/1231802): Reference serialization method once available. Also
+// update the IDL docs at that point.
+blink::mojom::GetAssertionAuthenticatorResponsePtr
+GetAssertionResponseFromValue(const base::Value& value);
 
 }  // namespace extensions
 

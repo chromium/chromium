@@ -92,18 +92,58 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
         R"((async () => {
               let abort = new AbortController();
               let createPromise = navigator.credentials.create({publicKey: {
-                rp: {'id': 'a.test', 'name': 'A'},
-                challenge: new ArrayBuffer(),
-                user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
-                pubKeyCredParams: [],
-              },
-              signal: abort.signal});
+                  rp: {'id': 'a.test', 'name': 'A'},
+                  challenge: new ArrayBuffer(),
+                  user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
+                  pubKeyCredParams: [],
+                },
+                signal: abort.signal});
               abort.abort();
               let err = await createPromise;
               return err;
             })();)";
     return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            kMakeCredentialJs)
+               .error.find("AbortError") >= 0;
+  }
+
+  content::EvalJsResult NavigateAndCallGetAssertion() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+    }
+    constexpr char kGetAssertionJs[] =
+        R"((async () => {
+              let credential = await navigator.credentials.get({publicKey: {
+                challenge: new ArrayBuffer(),
+                rpId: 'a.test',
+              }});
+              return credential.id;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kGetAssertionJs);
+  }
+
+  bool NavigateAndCallGetAssertionThenCancel() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+      return false;
+    }
+    constexpr char kGetAssertionJs[] =
+        R"((async () => {
+              let abort = new AbortController();
+              let getPromise = navigator.credentials.get({publicKey: {
+                  challenge: new ArrayBuffer(),
+                  rpId: 'a.test',
+                },
+                signal: abort.signal});
+              abort.abort();
+              let err = await getPromise;
+              return err;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kGetAssertionJs)
                .error.find("AbortError") >= 0;
   }
 
@@ -244,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialError) {
       "AbortError",
       "NotReadableError",
       "SecurityError",
+      // clang-format on
   };
   for (auto* error_name : kDomErrorNames) {
     ASSERT_TRUE(error_listener.WaitUntilSatisfied());
@@ -289,6 +330,90 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialCancel) {
 
   ExtensionTestMessageListener request_listener("request", true);
   EXPECT_TRUE(NavigateAndCallMakeCredentialThenCancel());
+  ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+  request_listener.Reply("");
+
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertion) {
+  SetJsTestName("getAssertion");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  EXPECT_EQ(NavigateAndCallGetAssertion().ExtractString(), kTestCredentialId);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionError) {
+  SetJsTestName("getAssertionError");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener request_listener("nextRequest", false);
+  ExtensionTestMessageListener error_listener("nextError", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+
+  // The JS side listens for DOMError names to pass to completeCreateRequest().
+  // The DOMError observed by the client-side JS that made the WebAuthn request
+  // should match.
+  constexpr const char* kDomErrorNames[] = {
+      // clang-format off
+      "NotAllowedError",
+      "InvalidStateError",
+      "OperationError",
+      "NotSupportedError",
+      "AbortError",
+      "NotReadableError",
+      "SecurityError",
+      // clang-format on
+  };
+  for (auto* error_name : kDomErrorNames) {
+    ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+    error_listener.Reply(error_name);
+    error_listener.Reset();
+    ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+    request_listener.Reset();
+    // `TEST_ERROR_MESSAGE` in `main/test.js`.
+    constexpr char kErrorMessage[] = "test error message";
+    EXPECT_THAT(NavigateAndCallGetAssertion(),
+                IsJsErrorWithMessage(error_name, kErrorMessage));
+  }
+
+  // Tell the JS side to stop expecting more errors and end the test.
+  ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+  error_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
+                       GetAssertionResolvesOnDetach) {
+  SetJsTestName("getAssertionResolvesOnDetach");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Call getAssertion() and tell the extension that there is a result. The
+  // extension never resolves the request but detaches itself.
+  EXPECT_THAT(NavigateAndCallGetAssertion(), IsJsError("AbortError"));
+  ready_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionCancel) {
+  SetJsTestName("getAssertionCancel");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener request_listener("request", true);
+  EXPECT_TRUE(NavigateAndCallGetAssertionThenCancel());
   ASSERT_TRUE(request_listener.WaitUntilSatisfied());
   request_listener.Reply("");
 

@@ -18,6 +18,7 @@
 #include "device/fido/public_key_credential_params.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -38,6 +39,52 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
 bool Base64UrlDecode(base::StringPiece input, std::string* output) {
   return base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, output);
+}
+
+// Base64url-decodes the value of `key` from `dict`. Returns `nullopt` if the
+// key isn't present or decoding failed.
+absl::optional<std::string> Base64UrlDecodeStringKey(const base::Value& dict,
+                                                     const std::string& key) {
+  const std::string* b64url_data = dict.FindStringKey(key);
+  if (!b64url_data) {
+    return absl::nullopt;
+  }
+  std::string decoded;
+  if (!Base64UrlDecode(*b64url_data, &decoded)) {
+    return absl::nullopt;
+  }
+  return decoded;
+}
+
+// Like `Base64UrlDecodeStringKey()` attempts to find and base64-decode the
+// value of `key` in `dict`. However, the value may also be of
+// `base::Value::Type::NONE`. Returns true on success and the decoded result if
+// the value was a string. Returns `{false, absl::nullopt}` if the key wasn't
+// found or if decoding the string failed.
+//
+// This is useful for extracting attributes that are defined as nullable
+// ArrayBuffers in the WebIDL since the JS `null` value maps to
+// `base::Value::Type::NONE`.
+std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeNullableStringKey(
+    const base::Value& dict,
+    const std::string& key) {
+  const base::Value* value = dict.FindKey(key);
+  if (!value || (!value->is_string() && !value->is_none())) {
+    return {false, absl::nullopt};
+  }
+  if (value->is_none()) {
+    return {true, absl::nullopt};
+  }
+  DCHECK(value->is_string());
+  const std::string* b64url_data = dict.FindStringKey(key);
+  if (!b64url_data) {
+    return {false, absl::nullopt};
+  }
+  std::string decoded;
+  if (!Base64UrlDecode(*b64url_data, &decoded)) {
+    return {false, absl::nullopt};
+  }
+  return {true, decoded};
 }
 
 std::vector<uint8_t> ToByteVector(const std::string& in) {
@@ -171,11 +218,13 @@ absl::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
 }
 
 absl::optional<device::AuthenticatorAttachment>
-AuthenticatorAttachmentFromValue(const base::Value& value) {
+NullableAuthenticatorAttachmentFromValue(const base::Value& value) {
   if (!value.is_none() && !value.is_string()) {
     return absl::nullopt;
   }
   if (value.is_none()) {
+    // PublicKeyCredential.authenticatorAttachment can be `null`, which is
+    // equivalent to `AuthenticatorAttachment::kAny`.
     return device::AuthenticatorAttachment::kAny;
   }
   const std::string& attachment_name = value.GetString();
@@ -220,8 +269,28 @@ base::Value ToValue(
   return value;
 }
 
-blink::mojom::MakeCredentialAuthenticatorResponsePtr FromValue(
-    const base::Value& value) {
+base::Value ToValue(
+    const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetStringKey("challenge", Base64UrlEncode(options->challenge));
+  value.SetStringKey("rpId", options->relying_party_id);
+
+  std::vector<base::Value> allow_credentials;
+  for (const device::PublicKeyCredentialDescriptor& descriptor :
+       options->allow_credentials) {
+    allow_credentials.push_back(ToValue(descriptor));
+  }
+  value.SetKey("allowCredentials", base::Value(std::move(allow_credentials)));
+
+  value.SetKey("userVerification", ToValue(options->user_verification));
+
+  // TODO(https://crbug.com/1231802): Serialize extensions.
+
+  return value;
+}
+
+blink::mojom::MakeCredentialAuthenticatorResponsePtr
+MakeCredentialResponseFromValue(const base::Value& value) {
   if (!value.is_dict()) {
     return nullptr;
   }
@@ -239,15 +308,11 @@ blink::mojom::MakeCredentialAuthenticatorResponsePtr FromValue(
     return nullptr;
   }
   response->info->id = *id;
-  const std::string* raw_id_b64url = value.FindStringKey("rawId");
-  if (!id) {
+  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(value, "rawId");
+  if (!raw_id) {
     return nullptr;
   }
-  std::string raw_id_string;
-  if (!Base64UrlDecode(*raw_id_b64url, &raw_id_string)) {
-    return nullptr;
-  }
-  response->info->raw_id = ToByteVector(raw_id_string);
+  response->info->raw_id = ToByteVector(*raw_id);
 
   const base::Value* authenticator_attachment_value =
       value.FindKey("authenticatorAttachment");
@@ -255,7 +320,7 @@ blink::mojom::MakeCredentialAuthenticatorResponsePtr FromValue(
     return nullptr;
   }
   absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
-      AuthenticatorAttachmentFromValue(*authenticator_attachment_value);
+      NullableAuthenticatorAttachmentFromValue(*authenticator_attachment_value);
   if (!authenticator_attachment) {
     return nullptr;
   }
@@ -266,28 +331,20 @@ blink::mojom::MakeCredentialAuthenticatorResponsePtr FromValue(
     return nullptr;
   }
 
-  const std::string* client_data_json_b64url =
-      response_dict->FindStringKey("clientDataJSON");
-  if (!client_data_json_b64url) {
+  absl::optional<std::string> client_data_json =
+      Base64UrlDecodeStringKey(*response_dict, "clientDataJSON");
+  if (!client_data_json) {
     return nullptr;
   }
-  std::string client_data_json;
-  if (!Base64UrlDecode(*client_data_json_b64url, &client_data_json)) {
-    return nullptr;
-  }
-  response->info->client_data_json = ToByteVector(client_data_json);
+  response->info->client_data_json = ToByteVector(*client_data_json);
 
-  const std::string* attestation_object_b64url =
-      response_dict->FindStringKey("attestationObject");
-  if (!attestation_object_b64url) {
-    return nullptr;
-  }
-  std::string attestation_object_bytes;
-  if (!Base64UrlDecode(*attestation_object_b64url, &attestation_object_bytes)) {
+  absl::optional<std::string> attestation_object_bytes =
+      Base64UrlDecodeStringKey(*response_dict, "attestationObject");
+  if (!attestation_object_bytes) {
     return nullptr;
   }
   absl::optional<cbor::Value> attestation_object_cbor = cbor::Reader::Read(
-      base::as_bytes(base::make_span(attestation_object_bytes)));
+      base::as_bytes(base::make_span(*attestation_object_bytes)));
   if (!attestation_object_cbor) {
     return nullptr;
   }
@@ -296,7 +353,7 @@ blink::mojom::MakeCredentialAuthenticatorResponsePtr FromValue(
   if (!attestation_object) {
     return nullptr;
   }
-  response->attestation_object = ToByteVector(attestation_object_bytes);
+  response->attestation_object = ToByteVector(*attestation_object_bytes);
   response->info->authenticator_data =
       attestation_object->authenticator_data().SerializeToByteArray();
 
@@ -315,6 +372,81 @@ blink::mojom::MakeCredentialAuthenticatorResponsePtr FromValue(
 
   // TODO(https://crbug.com/1231802): Parse getClientExtensionResults().
 
+  return response;
+}
+
+blink::mojom::GetAssertionAuthenticatorResponsePtr
+GetAssertionResponseFromValue(const base::Value& value) {
+  if (!value.is_dict()) {
+    return nullptr;
+  }
+
+  const std::string* type = value.FindStringKey("type");
+  if (!type || *type != device::kPublicKey) {
+    return nullptr;
+  }
+
+  auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
+  response->info = blink::mojom::CommonCredentialInfo::New();
+
+  const std::string* id = value.FindStringKey("id");
+  if (!id) {
+    return nullptr;
+  }
+  response->info->id = *id;
+  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(value, "rawId");
+  if (!raw_id) {
+    return nullptr;
+  }
+  response->info->raw_id = ToByteVector(*raw_id);
+
+  const base::Value* authenticator_attachment_value =
+      value.FindKey("authenticatorAttachment");
+  if (!authenticator_attachment_value) {
+    return nullptr;
+  }
+  absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
+      NullableAuthenticatorAttachmentFromValue(*authenticator_attachment_value);
+  if (!authenticator_attachment) {
+    return nullptr;
+  }
+  response->authenticator_attachment = *authenticator_attachment;
+
+  const base::Value* response_dict = value.FindDictKey("response");
+  if (!response_dict) {
+    return nullptr;
+  }
+
+  absl::optional<std::string> client_data_json =
+      Base64UrlDecodeStringKey(*response_dict, "clientDataJSON");
+  if (!client_data_json) {
+    return nullptr;
+  }
+  response->info->client_data_json = ToByteVector(*client_data_json);
+
+  absl::optional<std::string> authenticator_data =
+      Base64UrlDecodeStringKey(*response_dict, "authenticatorData");
+  if (!authenticator_data) {
+    return nullptr;
+  }
+  response->info->authenticator_data = ToByteVector(*authenticator_data);
+
+  absl::optional<std::string> signature =
+      Base64UrlDecodeStringKey(*response_dict, "signature");
+  if (!signature) {
+    return nullptr;
+  }
+  response->signature = ToByteVector(*signature);
+
+  // userHandle is non-optional but nullable.
+  auto [ok, opt_user_handle] =
+      Base64UrlDecodeNullableStringKey(*response_dict, "userHandle");
+  if (!ok) {
+    return nullptr;
+  }
+  if (opt_user_handle) {
+    response->user_handle = ToByteVector(*opt_user_handle);
+  }
   return response;
 }
 

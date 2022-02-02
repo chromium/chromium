@@ -26,6 +26,14 @@ class WebAuthenticationRequestProxy {
       blink::mojom::WebAuthnDOMExceptionDetailsPtr,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr)>;
 
+  // GetCallback is the response callback type for `SignalCreateRequest`. It
+  // is invoked with the status and optional response that resulted from the
+  // proxied request.
+  using GetCallback = base::OnceCallback<void(
+      RequestId,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr)>;
+
   // IsUvpaaCallback is the response callback type for `SignalIsUvpaaRequest`.
   // It is invoked with the result of the proxied request.
   using IsUvpaaCallback = base::OnceCallback<void(bool is_available)>;
@@ -41,6 +49,12 @@ class WebAuthenticationRequestProxy {
   virtual RequestId SignalCreateRequest(
       const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options,
       CreateCallback callback) = 0;
+
+  // SignalGetRequest is invoked when a Web Authentication API
+  // `navigator.credentials.get()` request occurs.
+  virtual RequestId SignalGetRequest(
+      const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options,
+      GetCallback callback) = 0;
 
   // SignalIsUvpaaRequest is invoked when a
   // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() (aka

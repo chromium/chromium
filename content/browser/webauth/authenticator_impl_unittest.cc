@@ -118,6 +118,7 @@ using blink::mojom::AuthenticatorTransport;
 using blink::mojom::CableAuthentication;
 using blink::mojom::CableAuthenticationPtr;
 using blink::mojom::CommonCredentialInfo;
+using blink::mojom::GetAssertionAuthenticatorResponse;
 using blink::mojom::GetAssertionAuthenticatorResponsePtr;
 using blink::mojom::MakeCredentialAuthenticatorResponse;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
@@ -1693,19 +1694,26 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     bool is_uvpaa = true;
 
     // Whether the request to SignalCreateRequest() should succeed.
-    bool make_credential_success = true;
+    bool request_success = true;
 
-    // If `make_credential_success` is false, the name of the DOMError to be
+    // If `request_success` is false, the name of the DOMError to be
     // returned.
-    std::string make_credential_error_name = "NotAllowedError";
+    std::string request_error_name = "NotAllowedError";
 
-    // If `make_credential_success` is true, the fake response to be returned.
+    // If `request_success` is true, the fake response to be returned for an
+    // onCreateRequest event.
     blink::mojom::MakeCredentialAuthenticatorResponsePtr
         make_credential_response = nullptr;
+
+    // If `request_success` is true, the fake response to be returned for an
+    // onGetRequest event.
+    blink::mojom::GetAssertionAuthenticatorResponsePtr get_assertion_response =
+        nullptr;
   };
 
   struct CallCounts {
     size_t signal_create_request;
+    size_t signal_get_request;
     size_t signal_is_uvpaa_request;
     size_t cancel_request;
   };
@@ -1735,6 +1743,19 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     return current_request_id_;
   }
 
+  RequestId SignalGetRequest(
+      const PublicKeyCredentialRequestOptionsPtr& options,
+      GetCallback callback) override {
+    current_request_id_++;
+    call_counts_.signal_get_request++;
+    pending_get_callback_ = std::move(callback);
+    if (config_.resolve_callbacks) {
+      RunPendingGetCallback();
+      return current_request_id_;
+    }
+    return current_request_id_;
+  }
+
   RequestId SignalIsUvpaaRequest(IsUvpaaCallback callback) override {
     DCHECK(!HasPendingRequest());
 
@@ -1756,19 +1777,38 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     if (pending_create_callback_) {
       pending_create_callback_.Reset();
     }
+    if (pending_get_callback_) {
+      pending_get_callback_.Reset();
+    }
   }
 
   void RunPendingCreateCallback() {
     DCHECK(pending_create_callback_);
     auto callback =
-        config_.make_credential_success
+        config_.request_success
             ? base::BindOnce(std::move(pending_create_callback_),
                              current_request_id_, nullptr,
                              config_.make_credential_response.Clone())
             : base::BindOnce(std::move(pending_create_callback_),
                              current_request_id_,
                              WebAuthnDOMExceptionDetails::New(
-                                 config_.make_credential_error_name, "message"),
+                                 config_.request_error_name, "message"),
+                             nullptr);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
+  }
+
+  void RunPendingGetCallback() {
+    DCHECK(pending_get_callback_);
+    auto callback =
+        config_.request_success
+            ? base::BindOnce(std::move(pending_get_callback_),
+                             current_request_id_, nullptr,
+                             config_.get_assertion_response.Clone())
+            : base::BindOnce(std::move(pending_create_callback_),
+                             current_request_id_,
+                             WebAuthnDOMExceptionDetails::New(
+                                 config_.request_error_name, "message"),
                              nullptr);
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      std::move(callback));
@@ -1780,7 +1820,8 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
   }
 
   bool HasPendingRequest() {
-    return pending_create_callback_ || pending_is_uvpaa_callback_;
+    return pending_create_callback_ || pending_get_callback_ ||
+           pending_is_uvpaa_callback_;
   }
 
  private:
@@ -1789,6 +1830,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
   RequestId current_request_id_ = 0;
   CreateCallback pending_create_callback_;
+  GetCallback pending_get_callback_;
   IsUvpaaCallback pending_is_uvpaa_callback_;
 };
 
@@ -8366,7 +8408,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
-  request_proxy().config().make_credential_success = true;
+  request_proxy().config().request_success = true;
   request_proxy().config().make_credential_response =
       MakeCredentialAuthenticatorResponse::New();
   request_proxy().config().make_credential_response->info =
@@ -8383,7 +8425,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
 
 // Verify requests with an attached proxy run RP ID checks.
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
-  request_proxy().config().make_credential_success = true;
+  request_proxy().config().request_success = true;
   request_proxy().config().make_credential_response =
       MakeCredentialAuthenticatorResponse::New();
   request_proxy().config().make_credential_response->info =
@@ -8411,7 +8453,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
   request_proxy().config().resolve_callbacks = false;
-  request_proxy().config().make_credential_success = true;
+  request_proxy().config().request_success = true;
   request_proxy().config().make_credential_response =
       MakeCredentialAuthenticatorResponse::New();
   request_proxy().config().make_credential_response->info =
@@ -8423,6 +8465,70 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
 
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
   EXPECT_EQ(request_proxy().call_counts().signal_create_request, 1u);
+  EXPECT_EQ(request_proxy().call_counts().cancel_request, 1u);
+
+  // Proxy should not hold a pending request after cancellation.
+  EXPECT_FALSE(request_proxy().HasPendingRequest());
+}
+
+TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertion) {
+  request_proxy().config().request_success = true;
+  request_proxy().config().get_assertion_response =
+      GetAssertionAuthenticatorResponse::New();
+  request_proxy().config().get_assertion_response->info =
+      CommonCredentialInfo::New();
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  GetAssertionResult result =
+      AuthenticatorGetAssertion(GetTestPublicKeyCredentialRequestOptions());
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(request_proxy().call_counts().signal_get_request, 1u);
+  EXPECT_EQ(request_proxy().call_counts().cancel_request, 0u);
+}
+
+// Verify requests with an attached proxy run RP ID checks.
+TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionOriginAndRpIds) {
+  request_proxy().config().request_success = true;
+  request_proxy().config().get_assertion_response =
+      GetAssertionAuthenticatorResponse::New();
+  request_proxy().config().get_assertion_response->info =
+      CommonCredentialInfo::New();
+
+  for (const OriginClaimedAuthorityPair& test_case :
+       kInvalidRelyingPartyTestCases) {
+    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
+                 std::string(test_case.origin));
+
+    NavigateAndCommit(GURL(test_case.origin));
+    ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
+                    ->MaybeGetRequestProxy(main_rfh()->GetBrowserContext())
+                    ->IsActive());
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->relying_party_id = test_case.claimed_authority;
+
+    EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+              test_case.expected_status);
+    EXPECT_EQ(request_proxy().call_counts().signal_get_request, 0u);
+  }
+}
+
+TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertion_Timeout) {
+  request_proxy().config().resolve_callbacks = false;
+  request_proxy().config().request_success = true;
+  request_proxy().config().get_assertion_response =
+      GetAssertionAuthenticatorResponse::New();
+  request_proxy().config().get_assertion_response->info =
+      CommonCredentialInfo::New();
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  GetAssertionResult result = AuthenticatorGetAssertionAndWaitForTimeout(
+      GetTestPublicKeyCredentialRequestOptions());
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_EQ(request_proxy().call_counts().signal_get_request, 1u);
   EXPECT_EQ(request_proxy().call_counts().cancel_request, 1u);
 
   // Proxy should not hold a pending request after cancellation.

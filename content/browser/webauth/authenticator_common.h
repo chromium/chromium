@@ -243,6 +243,11 @@ class CONTENT_EXPORT AuthenticatorCommon {
       blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr response);
 
+  void OnGetAssertionProxyResponse(
+      WebAuthenticationRequestProxy::RequestId request_id,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr response);
+
   const GlobalRenderFrameHostId render_frame_host_id_;
   bool has_pending_request_ = false;
   std::unique_ptr<device::FidoRequestHandlerBase> request_handler_;
@@ -279,8 +284,9 @@ class CONTENT_EXPORT AuthenticatorCommon {
 
   base::flat_set<RequestExtension> requested_extensions_;
 
+  // The request ID of a pending proxied MakeCredential or GetAssertion request.
   absl::optional<WebAuthenticationRequestProxy::RequestId>
-      request_proxy_make_credential_id_;
+      pending_proxied_request_id_;
 
   base::WeakPtrFactory<AuthenticatorCommon> weak_factory_{this};
 };

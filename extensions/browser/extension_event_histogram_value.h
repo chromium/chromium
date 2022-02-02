@@ -507,6 +507,7 @@ enum HistogramValue {
   INPUT_METHOD_PRIVATE_ON_TOUCH = 485,
   WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST = 486,
   WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED = 487,
+  WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST = 488,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -29763,6 +29763,7 @@ Called by update_extension_histograms.py.-->
   <int value="485" label="INPUT_METHOD_PRIVATE_ON_TOUCH"/>
   <int value="486" label="WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST"/>
   <int value="487" label="WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED"/>
+  <int value="488" label="WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -31461,6 +31462,7 @@ Called by update_extension_histograms.py.-->
   <int value="1619" label="AUTOTESTPRIVATE_STARTARC"/>
   <int value="1620" label="AUTOTESTPRIVATE_STOPARC"/>
   <int value="1621" label="PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL"/>
+  <int value="1622" label="WEB_AUTHENTICATION_PROXY_COMPLETE_GET_REQUEST"/>
 </enum>
 
 <enum name="ExtensionIconState">
