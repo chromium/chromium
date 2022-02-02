@@ -54270,6 +54270,7 @@ from previous Chrome versions.
   <int value="202966815" label="SettingsAppNotificationSettings:enabled"/>
   <int value="203239167" label="ImprovedGeoLanguageData:enabled"/>
   <int value="203776499" label="enable-virtual-keyboard-overscroll"/>
+  <int value="207326879" label="NearbySharingReceiveWifiCredentials:enabled"/>
   <int value="207907053"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:enabled"/>
   <int value="208186067" label="ArcCompatSnapFeature:disabled"/>
@@ -56046,6 +56047,7 @@ from previous Chrome versions.
   <int value="1469407485" label="disable-accelerated-2d-canvas"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
   <int value="1473157145" label="EcheSWAResizing:enabled"/>
+  <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
   <int value="1473838479" label="EnableVirtualKeyboardMdUi:disabled"/>
   <int value="1473967338" label="OmniboxShortBookmarkSuggestions:enabled"/>
   <int value="1474433736" label="NtpRealboxTailSuggest:enabled"/>
