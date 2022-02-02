@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
-import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -97,19 +96,6 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     }
 
     /**
-     * Setup pedals base on the suggestion.
-     *
-     * @param model Property model to update.
-     * @param omniboxPedal OmniboxPedal for the suggestion.
-     */
-    protected void setPedal(PropertyModel model, @NonNull OmniboxPedal omniboxPedal) {
-        model.set(BaseSuggestionViewProperties.ON_PEDAL_CLICK,
-                () -> mSuggestionHost.onPedalClicked(omniboxPedal.getID()));
-
-        model.set(BaseSuggestionViewProperties.PEDAL, omniboxPedal);
-    }
-
-    /**
      * Setup action icon base on the suggestion, either show query build arrow or switch to tab.
      *
      * @param model Property model to update.
@@ -171,9 +157,6 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
         setCustomActions(model, null);
-        if (suggestion.getOmniboxPedal() != null) {
-            setPedal(model, suggestion.getOmniboxPedal());
-        }
     }
 
     /**

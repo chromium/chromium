@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
 
@@ -24,7 +27,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
-import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,6 +34,7 @@ import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
+import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionView;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
@@ -41,12 +44,13 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
 /**
@@ -59,13 +63,11 @@ public class OmniboxPedalsTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private OmniboxTestUtils mOmniboxUtils;
-    private OmniboxPedalDelegate mOmniboxPedalDelegate;
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         mOmniboxUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
-        mOmniboxPedalDelegate = new OmniboxPedalDelegateImpl(mActivityTestRule.getActivity());
     }
 
     /**
@@ -81,7 +83,8 @@ public class OmniboxPedalsTest {
         WaitForFocusHelper.acquireFocusForView(urlBar);
         mOmniboxUtils.requestFocus();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { urlBar.setText(text); });
+        mOmniboxUtils.typeText(text, false);
+        mOmniboxUtils.checkSuggestionsShown();
     }
 
     /**
@@ -95,7 +98,6 @@ public class OmniboxPedalsTest {
     private AutocompleteMatch findOmniboxPedalSuggestion(
             LocationBarLayout locationBarLayout, @OmniboxPedalType int pedalType) {
         ThreadUtils.assertOnUiThread();
-
         AutocompleteCoordinator coordinator = locationBarLayout.getAutocompleteCoordinator();
         // Find the first matching suggestion.
         for (int i = 0; i < coordinator.getSuggestionCount(); ++i) {
@@ -110,11 +112,12 @@ public class OmniboxPedalsTest {
 
     private void clickOnPedal(
             LocationBarLayout locationBarLayout, @OmniboxPedalType int omniboxPedalType) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AutocompleteMatch matchSuggestion =
-                    findOmniboxPedalSuggestion(locationBarLayout, omniboxPedalType);
-            mOmniboxPedalDelegate.executeAction(matchSuggestion.getOmniboxPedal().getID());
-        });
+        SuggestionInfo<PedalSuggestionView> info =
+                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        CriteriaHelper.pollUiThread(() -> {
+            TestTouchUtils.performClickOnMainSync(
+                    InstrumentationRegistry.getInstrumentation(), info.view.getPedalChipView());
+        }, DEFAULT_MAX_TIME_TO_POLL * 5, DEFAULT_POLLING_INTERVAL);
     }
 
     /**
