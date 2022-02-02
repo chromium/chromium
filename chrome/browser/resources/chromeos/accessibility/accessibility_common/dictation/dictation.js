@@ -488,7 +488,7 @@ export class Dictation {
     MetricsUtils.recordMacroFailed(macro);
 
     this.interimText_ = '';
-    // TODO(crbug.com/1252037): Finalize string and internationalization.
+    // TODO(crbug.com/1288964): Finalize string and internationalization.
     this.inputController_.showBubble({
       icon: IconType.MACRO_FAIL,
       text: `Failed to run command: ${transcript}`

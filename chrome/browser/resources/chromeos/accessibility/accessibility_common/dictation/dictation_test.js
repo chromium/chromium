@@ -359,7 +359,6 @@ SYNC_TEST_F(
         this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(command, false);
         // Nothing is added to composition text when commands UI is enabled.
         assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-        // TODO(crbug.com/1252037): Check UI shows correct command info.
 
         if (command !== this.commandStrings.LIST_COMMANDS) {
           // LIST_COMMANDS opens a new tab and ends Dictation. Skip this.

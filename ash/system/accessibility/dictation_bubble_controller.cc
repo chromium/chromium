@@ -82,8 +82,6 @@ void DictationBubbleController::MaybeInitialize() {
       CollisionDetectionUtils::RelativePriority::kDictationBubble);
 }
 
-// TODO(crbug.com/1252037): Fix issue where bubble is shown behind current
-// Chrome tab.
 void DictationBubbleController::Update(
     DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text,

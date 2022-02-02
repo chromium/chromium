@@ -1145,8 +1145,8 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, CutCopyPaste) {
 }
 
 // Ensures that a metric is recorded when a macro succeeds.
-// TODO(1247299): Add a test to ensure that a metric is recorded when a macro
-// fails.
+// TODO(crbug.com/1288964): Add a test to ensure that a metric is recorded when
+// a macro fails.
 IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
   base::HistogramTester histogram_tester_;
   SendFinalSpeechResultAndWaitForTextAreaValue(
