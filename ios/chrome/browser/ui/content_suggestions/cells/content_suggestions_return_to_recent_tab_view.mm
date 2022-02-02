@@ -28,7 +28,6 @@ const CGFloat kIconWidth = 32.0f;
   if (self) {
     [self.layer
         setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
-    self.backgroundColor = [UIColor colorNamed:kGrey100Color];
     [self.layer setBorderWidth:kContentViewBorderWidth];
     self.layer.cornerRadius = kContentViewCornerRadius;
     self.layer.masksToBounds = YES;

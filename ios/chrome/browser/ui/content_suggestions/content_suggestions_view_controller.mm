@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -476,7 +478,43 @@ const CGFloat kCardBorderRadius = 11;
                                                atIndex:index];
   } else if ([sender.view isKindOfClass:[ContentSuggestionsReturnToRecentTabView
                                             class]]) {
-    [self.suggestionCommandHandler openMostRecentTab];
+    ContentSuggestionsReturnToRecentTabView* returnToRecentTabView =
+        static_cast<ContentSuggestionsReturnToRecentTabView*>(sender.view);
+    __weak ContentSuggestionsReturnToRecentTabView* weakRecentTabView =
+        returnToRecentTabView;
+    UIGestureRecognizerState state = sender.state;
+    if (state == UIGestureRecognizerStateChanged ||
+        state == UIGestureRecognizerStateCancelled) {
+      // Do nothing if isn't a gesture start or end.
+      // If the gesture was cancelled by the system, then reset the background
+      // color since UIGestureRecognizerStateEnded will not be received.
+      if (state == UIGestureRecognizerStateCancelled) {
+        returnToRecentTabView.backgroundColor = [UIColor clearColor];
+      }
+      return;
+    }
+    BOOL touchBegan = state == UIGestureRecognizerStateBegan;
+    [UIView transitionWithView:returnToRecentTabView
+                      duration:ios::material::kDuration8
+                       options:UIViewAnimationOptionCurveEaseInOut
+                    animations:^{
+                      weakRecentTabView.backgroundColor =
+                          touchBegan ? [UIColor colorNamed:kGrey100Color]
+                                     : [UIColor clearColor];
+                    }
+                    completion:nil];
+    if (state == UIGestureRecognizerStateEnded) {
+      CGPoint point = [sender locationInView:returnToRecentTabView];
+      if (point.x < 0 || point.y < 0 ||
+          point.x > kReturnToRecentTabSize.width ||
+          point.y > kReturnToRecentTabSize.height) {
+        // Reset the highlighted state and do nothing if the gesture ended
+        // outside of the tile.
+        returnToRecentTabView.backgroundColor = [UIColor clearColor];
+        return;
+      }
+      [self.suggestionCommandHandler openMostRecentTab];
+    }
   } else if ([sender.view
                  isKindOfClass:[ContentSuggestionsWhatsNewView class]]) {
     [self.suggestionCommandHandler handlePromoTapped];

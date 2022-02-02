@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,9 +27,9 @@
 // List of all UITapGestureRecognizers created for the Most Visisted tiles.
 @property(nonatomic, strong)
     NSMutableArray<UITapGestureRecognizer*>* mostVisitedTapRecognizers;
-// The UITapGestureRecognizer for the Return To Recent Tab tile.
+// The UILongPressGestureRecognizer for the Return To Recent Tab tile.
 @property(nonatomic, strong)
-    UITapGestureRecognizer* returnToRecentTabTapRecognizer;
+    UILongPressGestureRecognizer* returnToRecentTabTapRecognizer;
 // The UITapGestureRecognizer for the NTP promo view.
 @property(nonatomic, strong) UITapGestureRecognizer* promoTapRecognizer;
 
@@ -55,9 +56,11 @@
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile =
         [[ContentSuggestionsReturnToRecentTabView alloc]
             initWithConfiguration:self.returnToRecentItem];
-    self.returnToRecentTabTapRecognizer = [[UITapGestureRecognizer alloc]
+    self.returnToRecentTabTapRecognizer = [[UILongPressGestureRecognizer alloc]
         initWithTarget:self.tapTarget
                 action:@selector(contentSuggestionsElementTapped:)];
+    self.returnToRecentTabTapRecognizer.minimumPressDuration =
+        ios::material::kDuration8;
     [returnToRecentTabTile
         addGestureRecognizer:self.returnToRecentTabTapRecognizer];
     self.returnToRecentTabTapRecognizer.enabled = YES;
