@@ -283,7 +283,6 @@ class WebTransport::DatagramUnderlyingSource final
     waiting_for_datagrams_ = false;
     canceled_ = true;
     DiscardQueue();
-    Controller()->NoteHasBeenCanceled();
 
     return ScriptPromise::CastUndefined(script_state);
   }
