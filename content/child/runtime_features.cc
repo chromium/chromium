@@ -196,8 +196,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
       blinkFeatureToBaseFeatureMapping[] =
   { {wf::EnableAccessibilityAriaVirtualContent,
      features::kEnableAccessibilityAriaVirtualContent},
-    {wf::EnableAccessibilityExposeDisplayNone,
-     features::kEnableAccessibilityExposeDisplayNone},
     {wf::EnableAccessibilityExposeHTMLElement,
      features::kEnableAccessibilityExposeHTMLElement},
     {wf::EnableAccessibilityExposeIgnoredNodes,

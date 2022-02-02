@@ -109,11 +109,6 @@ void DumpAccessibilityTestBase::SetUp() {
 void DumpAccessibilityTestBase::ChooseFeatures(
     std::vector<base::Feature>* enabled_features,
     std::vector<base::Feature>* disabled_features) {
-
-  // Enable exposing "display: none" nodes to the browser process for testing.
-  enabled_features->emplace_back(
-      features::kEnableAccessibilityExposeDisplayNone);
-
   // For the best test coverage during development of this feature, enable the
   // code that expposes document markers on AXInlineTextBox objects and the
   // corresponding code in AXPosition on the browser that collects those

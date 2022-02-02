@@ -20,12 +20,6 @@ AX_BASE_EXPORT extern const base::Feature
 // property.
 AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
 
-AX_BASE_EXPORT extern const base::Feature kEnableAccessibilityExposeDisplayNone;
-
-// Returns true if "display: none" nodes should be exposed to the
-// browser process AXTree.
-AX_BASE_EXPORT bool IsAccessibilityExposeDisplayNoneEnabled();
-
 AX_BASE_EXPORT extern const base::Feature kEnableAccessibilityExposeHTMLElement;
 
 // Returns true if the <html> element should be exposed to the

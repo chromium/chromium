@@ -23,15 +23,6 @@ bool IsAccessibilityAriaVirtualContentEnabled() {
       ::features::kEnableAccessibilityAriaVirtualContent);
 }
 
-// Enable exposing "display: none" nodes to the browser process AXTree
-const base::Feature kEnableAccessibilityExposeDisplayNone{
-    "AccessibilityExposeDisplayNone", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsAccessibilityExposeDisplayNoneEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityExposeDisplayNone);
-}
-
 // Enable exposing the <html> element to the browser process AXTree
 // (as an ignored node).
 const base::Feature kEnableAccessibilityExposeHTMLElement{

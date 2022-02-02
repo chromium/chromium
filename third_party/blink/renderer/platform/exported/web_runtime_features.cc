@@ -118,10 +118,6 @@ void WebRuntimeFeatures::EnableAccessibilityAriaVirtualContent(bool enable) {
   RuntimeEnabledFeatures::SetAccessibilityAriaVirtualContentEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableAccessibilityExposeDisplayNone(bool enable) {
-  RuntimeEnabledFeatures::SetAccessibilityExposeDisplayNoneEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(bool enable) {
   RuntimeEnabledFeatures::SetAccessibilityExposeHTMLElementEnabled(enable);
 }
