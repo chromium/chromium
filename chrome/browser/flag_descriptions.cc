@@ -5471,7 +5471,21 @@ const char kCleanUndecryptablePasswordsLinuxName[] =
 const char kCleanUndecryptablePasswordsLinuxDescription[] =
     "Deletes the undecryptable passwords from the local database to enable "
     "syncing all passwords during the initial sync.";
+const char kForcePasswordInitialSyncWhenDecryptionFailsName[] =
+    "Force initial sync to clean local undecryptable passwords during startup";
+const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[] =
+    "During startup checks if there are undecryptable passwords in the local "
+    "storage and requests initial sync.";
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+const char kSkipUndecryptablePasswordsName[] =
+    "Skip undecryptable passwords to use the available decryptable "
+    "passwords.";
+const char kSkipUndecryptablePasswordsDescription[] =
+    "Makes the decryptable passwords available in the password manager when "
+    "there are undecryptable ones.";
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 // Feature flags --------------------------------------------------------------
 

@@ -3918,7 +3918,24 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCleanUndecryptablePasswordsLinuxDescription, kOsLinux,
      FEATURE_VALUE_TYPE(
          password_manager::features::kSyncUndecryptablePasswordsLinux)},
-#endif
+
+    {"force-password-initial-sync-when-decryption-fails",
+     flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsName,
+     flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsDescription,
+     kOsLinux,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kForceInitialSyncWhenDecryptionFails)},
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+    {"skip-undecryptable-passwords",
+     flag_descriptions::kSkipUndecryptablePasswordsName,
+     flag_descriptions::kSkipUndecryptablePasswordsDescription,
+     kOsLinux | kOsMac,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kSkipUndecryptablePasswords)},
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_VR)
     {"webxr-incubations", flag_descriptions::kWebXrIncubationsName,

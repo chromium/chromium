@@ -53325,6 +53325,7 @@ from previous Chrome versions.
   <int value="-498740735" label="ArcUsbHost:disabled"/>
   <int value="-498463128" label="MacSystemShareMenu:enabled"/>
   <int value="-498412005" label="EnableDrDc:disabled"/>
+  <int value="-497571337" label="SkipUndecryptablePasswords:enabled"/>
   <int value="-496989565"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:disabled"/>
   <int value="-496119023" label="WebXR:enabled"/>
@@ -54349,6 +54350,7 @@ from previous Chrome versions.
   <int value="272631627" label="BookmarkAppsMac:enabled"/>
   <int value="273489120" label="CrostiniDiskResizing:disabled"/>
   <int value="274103741" label="enable-ntp-popular-sites"/>
+  <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
   <int value="277483398" label="ClipboardHistory:disabled"/>
   <int value="277565405" label="ContextualSearchDefinitions:disabled"/>
   <int value="278756320" label="disable-app-list-app-info"/>
@@ -54882,6 +54884,7 @@ from previous Chrome versions.
   <int value="638865852" label="UsePreferredIntervalForVideo:disabled"/>
   <int value="640174751" label="AndroidMultipleDisplay:enabled"/>
   <int value="642037198" label="SoleIntegration:disabled"/>
+  <int value="642601306" label="ForceInitialSyncWhenDecryptionFails:enabled"/>
   <int value="642678255" label="ExoGamepadVibration:disabled"/>
   <int value="643068614"
       label="CrossOriginOpenerPolicyAccessReporting:enabled"/>
@@ -56287,6 +56290,7 @@ from previous Chrome versions.
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
   <int value="1660772828" label="NtpModulesDragAndDrop:enabled"/>
   <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
+  <int value="1661870048" label="SkipUndecryptablePasswords:disabled"/>
   <int value="1661925474" label="silent-debugger-extension-api"/>
   <int value="1662466302" label="NtpRealboxUseGoogleGIcon:enabled"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>

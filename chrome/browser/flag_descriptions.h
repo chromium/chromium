@@ -3157,7 +3157,15 @@ extern const char kOzonePlatformHintDescription[];
 
 extern const char kCleanUndecryptablePasswordsLinuxName[];
 extern const char kCleanUndecryptablePasswordsLinuxDescription[];
+
+extern const char kForcePasswordInitialSyncWhenDecryptionFailsName[];
+extern const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[];
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+extern const char kSkipUndecryptablePasswordsName[];
+extern const char kSkipUndecryptablePasswordsDescription[];
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 // Feature flags --------------------------------------------------------------
 

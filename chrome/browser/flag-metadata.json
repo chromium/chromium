@@ -763,7 +763,7 @@
   {
     "name": "clean-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 102
   },
   {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
@@ -3330,6 +3330,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "force-password-initial-sync-when-decryption-fails",
+    "owners": [ "derinel@google.com", "mamir" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "force-show-continue-section",
     "owners":["anasalazar@chromium.org", "gzadina@google.com"],
     "expiry_milestone": 101
@@ -5310,6 +5315,11 @@
     "name": "site-isolation-trial-opt-out",
     "owners": [ "site-isolation-dev", "alexmos", "creis", "lukasza" ],
     "expiry_milestone": 100
+  },
+  {
+    "name": "skip-undecryptable-passwords",
+    "owners": [ "derinel@google.com", "mamir" ],
+    "expiry_milestone": 102
   },
   {
     "name": "smart-lock-ui-revamp",
