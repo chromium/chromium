@@ -3928,6 +3928,21 @@
             ]
         }
     ],
+    "NearbyShareBackgroundScanningPower": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NearbySharingBackgroundScanning"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkServiceDedicatedThread": [
         {
             "platforms": [
