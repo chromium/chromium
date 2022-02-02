@@ -19,10 +19,6 @@
     color: red;
   }
 
-  #rsuCodeLengthLabel {
-    float: right;
-  }
-
   #inputContainer {
     width: 275px;
   }
@@ -40,13 +36,11 @@
       <span inner-h-t-m-l="[[rsuInstructionsText_]]"></span>
     </div>
     <div id="inputContainer">
-      <div id="inputValidationLabel">
-        [[i18n('rsuCodeLabelText')]]
-        <span id="rsuCodeLengthLabel">[[rsuCodeLengthLabel_]]</span>
-      </div>
+      <div id="inputValidationLabel">[[i18n('rsuCodeLabelText')]]</div>
       <cr-input
           id="rsuCode"
           value="{{rsuCode_}}"
+          maxlength="[[rsuCodeExpectedLength_]]"
           pattern="[[rsuCodeValidationRegex_]]"
           invalid="{{rsuCodeInvalid_}}"
           auto-validate

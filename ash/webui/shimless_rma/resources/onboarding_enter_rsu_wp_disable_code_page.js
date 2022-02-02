@@ -21,6 +21,9 @@ const QR_CODE_PADDING = 4 * QR_CODE_TILE_SIZE;
 // Styling for filled tiles in the QR code.
 const QR_CODE_FILL_STYLE = '#000000';
 
+// The number of characters in an RSU code.
+const RSU_CODE_EXPECTED_LENGTH = 8;
+
 /**
  * @fileoverview
  * 'onboarding-enter-rsu-wp-disable-code-page' asks the user for the RSU disable
@@ -80,6 +83,13 @@ export class OnboardingEnterRsuWpDisableCodePage extends
       },
 
       /** @protected */
+      rsuCodeExpectedLength_: {
+        type: Number,
+        value: RSU_CODE_EXPECTED_LENGTH,
+        readOnly: true,
+      },
+
+      /** @protected */
       rsuInstructionsText_: {
         type: String,
         value: '',
@@ -104,12 +114,6 @@ export class OnboardingEnterRsuWpDisableCodePage extends
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-      },
-
-      /** @protected */
-      rsuCodeLengthLabel_: {
-        type: String,
-        computed: 'computeRsuCodeLengthLabel_(rsuCode_)',
       },
     };
   }
@@ -171,7 +175,7 @@ export class OnboardingEnterRsuWpDisableCodePage extends
    * @private
    */
   rsuCodeIsPlausible_() {
-    return !!this.rsuCode_ && this.rsuCode_.length == 8;
+    return !!this.rsuCode_ && this.rsuCode_.length === RSU_CODE_EXPECTED_LENGTH;
   }
 
   /**
@@ -231,14 +235,6 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   /** @private */
   closeDialog_() {
     this.shadowRoot.querySelector('#rsuChallengeDialog').close();
-  }
-
-  /**
-   * @return {string}
-   * @private
-   */
-  computeRsuCodeLengthLabel_() {
-    return this.rsuCode_.length + '/8';
   }
 }
 
