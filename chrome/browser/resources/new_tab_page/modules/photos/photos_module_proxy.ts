@@ -10,20 +10,16 @@ import {PhotosHandler, PhotosHandlerRemote} from '../../photos.mojom-webui.js';
  * and receiving the browser response.
  */
 
-/** @type {?PhotosHandlerRemote} */
-let handler = null;
+let handler: PhotosHandlerRemote|null = null;
 
 export class PhotosProxy {
-  /** @return {!PhotosHandlerRemote} */
-  static getHandler() {
+  static getHandler(): PhotosHandlerRemote {
     return handler || (handler = PhotosHandler.getRemote());
   }
 
-  /** @param {!PhotosHandlerRemote} newHandler */
-  static setHandler(newHandler) {
+  static setHandler(newHandler: PhotosHandlerRemote) {
     handler = newHandler;
   }
 
-  /** @private */
-  constructor() {}
+  private constructor() {}
 }

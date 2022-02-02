@@ -10,20 +10,16 @@ import {CartHandler, CartHandlerRemote} from '../../chrome_cart.mojom-webui.js';
  * browser and receiving the browser response.
  */
 
-/** @type {?CartHandlerRemote} */
-let handler = null;
+let handler: CartHandlerRemote|null = null;
 
 export class ChromeCartProxy {
-  /** @return {!CartHandlerRemote} */
-  static getHandler() {
+  static getHandler(): CartHandlerRemote {
     return handler || (handler = CartHandler.getRemote());
   }
 
-  /** @param {!CartHandlerRemote} newHandler */
-  static setHandler(newHandler) {
+  static setHandler(newHandler: CartHandlerRemote) {
     handler = newHandler;
   }
 
-  /** @private */
-  constructor() {}
+  private constructor() {}
 }

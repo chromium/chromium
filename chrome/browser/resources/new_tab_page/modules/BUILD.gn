@@ -36,10 +36,6 @@ js_library("module_descriptors") {
   deps = [
     ":module_descriptor",
     "..:i18n_setup",
-    "cart:module",
-    "drive:module",
-    "photos:module",
-    "task_module:module",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   if (!is_official_build) {
@@ -62,6 +58,7 @@ js_library("module_header") {
   deps = [
     "..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
   ]
 }
 
@@ -118,10 +115,10 @@ preprocess_if_expr("preprocess") {
     "module_descriptor.js",
     "module_descriptors.js",
     "module_registry.js",
-    "task_module/task_module_handler_proxy.js",
-    "cart/chrome_cart_proxy.js",
-    "drive/drive_module_proxy.js",
-    "photos/photos_module_proxy.js",
+    "task_module/task_module_handler_proxy.ts",
+    "cart/chrome_cart_proxy.ts",
+    "drive/drive_module_proxy.ts",
+    "photos/photos_module_proxy.ts",
   ]
   if (!is_official_build) {
     in_files += [ "dummy_v2/foo_proxy.js" ]
@@ -138,13 +135,13 @@ preprocess_if_expr("preprocess_gen") {
     "module_wrapper.js",
     "modules.js",
     "info_dialog.js",
-    "task_module/module.js",
+    "task_module/module.ts",
     "recipes_v2/module.ts",
-    "cart/module.js",
+    "cart/module.ts",
     "cart_v2/module.ts",
-    "drive/module.js",
+    "drive/module.ts",
     "drive_v2/module.ts",
-    "photos/module.js",
+    "photos/module.ts",
   ]
   if (!is_official_build) {
     in_files += [ "dummy_v2/module.js" ]

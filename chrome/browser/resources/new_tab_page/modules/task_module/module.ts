@@ -7,56 +7,52 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
-import {Task, TaskModuleType} from '../../task_module.mojom-webui.js';
+import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
+import {RelatedSearch, Task, TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {TaskModuleHandlerProxy} from './task_module_handler_proxy.js';
 
+interface TaskModuleElement {
+  $: {
+    infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
+  };
+}
+
 /**
  * Implements the UI of a task module. This module shows a currently active task
  * search journey and provides a way for the user to continue that search
  * journey.
- * @polymer
- * @extends {PolymerElement}
  */
-class TaskModuleElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+class TaskModuleElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-task-module';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {!TaskModuleType} */
       taskModuleType: {
         type: Number,
         observer: 'onTaskModuleTypeChange_',
       },
 
-      /** @type {!Task} */
       task: Object,
 
-      /** @private {string} */
       title_: {
         type: String,
         computed: 'computeTitle_(taskModuleType, task)',
       },
 
-      /** @private {string} */
       dismissName_: {
         type: String,
         computed: 'computeDismissName_(taskModuleType, task)',
       },
 
-      /** @private {string} */
       disableName_: {
         type: String,
         computed: 'computeDisableName_(taskModuleType)',
@@ -64,17 +60,15 @@ class TaskModuleElement extends mixinBehaviors
     };
   }
 
-  constructor() {
-    super();
-    /** @type {IntersectionObserver} */
-    this.intersectionObserver_ = null;
-  }
+  taskModuleType: TaskModuleType;
+  task: Task;
+  private title_: string;
+  private dismissName_: string;
+  private disableName_: string;
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeTitle_() {
+  private intersectionObserver_: IntersectionObserver|null = null;
+
+  private computeTitle_(): string {
     switch (this.taskModuleType) {
       case TaskModuleType.kRecipe:
         return loadTimeData.getString('modulesRecipeTasksSentence');
@@ -85,11 +79,7 @@ class TaskModuleElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeDismissName_() {
+  private computeDismissName_(): string {
     switch (this.taskModuleType) {
       case TaskModuleType.kRecipe:
         return loadTimeData.getString('modulesRecipeTasksLowerThese');
@@ -100,11 +90,7 @@ class TaskModuleElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeDisableName_() {
+  private computeDisableName_(): string {
     switch (this.taskModuleType) {
       case TaskModuleType.kRecipe:
         return loadTimeData.getString('modulesRecipeTasksLower');
@@ -115,24 +101,15 @@ class TaskModuleElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isRecipe_() {
+  private isRecipe_(): boolean {
     return this.taskModuleType === TaskModuleType.kRecipe;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isShopping_() {
+  private isShopping_(): boolean {
     return this.taskModuleType === TaskModuleType.kShopping;
   }
 
-  /** @private */
-  onTaskModuleTypeChange_() {
+  private onTaskModuleTypeChange_() {
     switch (this.taskModuleType) {
       case TaskModuleType.kRecipe:
         this.toggleAttribute('recipe');
@@ -143,36 +120,25 @@ class TaskModuleElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onTaskItemClick_(e) {
-    const index = this.$.taskItemsRepeat.indexForElement(e.target);
+  private onTaskItemClick_(e: DomRepeatEvent<TaskItem>) {
+    const index = e.model.index;
     TaskModuleHandlerProxy.getHandler().onTaskItemClicked(
         this.taskModuleType, index);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onPillClick_(e) {
-    const index = this.$.relatedSearchesRepeat.indexForElement(e.target);
+  private onPillClick_(e: DomRepeatEvent<RelatedSearch>) {
+    const index = e.model.index;
     TaskModuleHandlerProxy.getHandler().onRelatedSearchClicked(
         this.taskModuleType, index);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  onInfoButtonClick_() {
-    /** @type {InfoDialogElement} */ (this.$.infoDialogRender.get())
-        .showModal();
+  private onInfoButtonClick_() {
+    this.$.infoDialogRender.get().showModal();
   }
 
-  /** @private */
-  onDismissButtonClick_() {
+  private onDismissButtonClick_() {
     TaskModuleHandlerProxy.getHandler().dismissTask(
         this.taskModuleType, this.task.name);
     let taskName = '';
@@ -194,8 +160,7 @@ class TaskModuleElement extends mixinBehaviors
     }));
   }
 
-  /** @private */
-  onDisableButtonClick_() {
+  private onDisableButtonClick_() {
     this.dispatchEvent(new CustomEvent('disable-module', {
       bubbles: true,
       composed: true,
@@ -206,18 +171,16 @@ class TaskModuleElement extends mixinBehaviors
     }));
   }
 
-  /** @private */
-  onRestore_() {
+  private onRestore_() {
     TaskModuleHandlerProxy.getHandler().restoreTask(
         this.taskModuleType, this.task.name);
   }
 
-  /** @private */
-  onDomChange_() {
+  private onDomChange_() {
     if (!this.intersectionObserver_) {
       this.intersectionObserver_ = new IntersectionObserver(entries => {
         entries.forEach(({intersectionRatio, target}) => {
-          target.style.visibility =
+          (target as HTMLElement).style.visibility =
               intersectionRatio < 1 ? 'hidden' : 'visible';
         });
         this.dispatchEvent(new Event('visibility-update'));
@@ -225,15 +188,19 @@ class TaskModuleElement extends mixinBehaviors
     } else {
       this.intersectionObserver_.disconnect();
     }
-    this.shadowRoot.querySelectorAll('.task-item, .pill')
-        .forEach(el => this.intersectionObserver_.observe(el));
+    this.shadowRoot!.querySelectorAll('.task-item, .pill')
+        .forEach(el => this.intersectionObserver_!.observe(el));
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
 customElements.define(TaskModuleElement.is, TaskModuleElement);
 
-/** @return {!Promise<?HTMLElement>} */
-async function createModule(taskModuleType) {
+async function createModule(taskModuleType: TaskModuleType):
+    Promise<HTMLElement|null> {
   const {task} =
       await TaskModuleHandlerProxy.getHandler().getPrimaryTask(taskModuleType);
   if (!task) {
@@ -245,14 +212,12 @@ async function createModule(taskModuleType) {
   return element;
 }
 
-/** @type {!ModuleDescriptor} */
-export const recipeTasksDescriptor = new ModuleDescriptor(
+export const recipeTasksDescriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
     /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
     createModule.bind(null, TaskModuleType.kRecipe));
 
-/** @type {!ModuleDescriptor} */
-export const shoppingTasksDescriptor = new ModuleDescriptor(
+export const shoppingTasksDescriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'shopping_tasks',
     /*name=*/ loadTimeData.getString('modulesShoppingTasksSentence'),
     createModule.bind(null, TaskModuleType.kShopping));

@@ -10,20 +10,16 @@ import {DriveHandler, DriveHandlerRemote} from '../../drive.mojom-webui.js';
  * and receiving the browser response.
  */
 
-/** @type {?DriveHandlerRemote} */
-let handler = null;
+let handler: DriveHandlerRemote|null = null;
 
 export class DriveProxy {
-  /** @return {!DriveHandlerRemote} */
-  static getHandler() {
+  static getHandler(): DriveHandlerRemote {
     return handler || (handler = DriveHandler.getRemote());
   }
 
-  /** @param {!DriveHandlerRemote} newHandler */
-  static setHandler(newHandler) {
+  static setHandler(newHandler: DriveHandlerRemote) {
     handler = newHandler;
   }
 
-  /** @private */
-  constructor() {}
+  private constructor() {}
 }

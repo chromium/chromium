@@ -7,12 +7,11 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './mini_page.js';
 import './iframe.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CollectionImage, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {RepeaterEvent} from './utils_ts.js';
 
 /** Element that lets the user configure the background. */
 export class CustomizeBackgroundsElement extends I18nMixin
@@ -98,7 +97,7 @@ export class CustomizeBackgroundsElement extends I18nMixin
         '';
   }
 
-  private onCollectionClick_(e: RepeaterEvent<BackgroundCollection>) {
+  private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {
     this.selectedCollection = e.model.item;
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kBackgroundsCollectionOpened);
@@ -123,7 +122,7 @@ export class CustomizeBackgroundsElement extends I18nMixin
     this.pageHandler_.setNoBackgroundImage();
   }
 
-  private onImageClick_(e: RepeaterEvent<CollectionImage>) {
+  private onImageClick_(e: DomRepeatEvent<CollectionImage>) {
     const image = e.model.item;
     if (this.theme.isCustomBackground &&
         this.theme.backgroundImage!.url.url !== image.imageUrl.url) {

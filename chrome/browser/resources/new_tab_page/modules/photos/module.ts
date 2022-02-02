@@ -6,9 +6,10 @@ import '../module_header.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence} from '../../metrics_utils.js';
 import {Memory} from '../../photos.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
@@ -20,100 +21,79 @@ import {PhotosProxy} from './photos_module_proxy.js';
  * List of possible OptIn status. This enum must match with the numbering for
  * NtpPhotosModuleOptInStatus in histogram/enums.xml. These values are persisted
  * to logs. Entries should not be renumbered, removed or reused.
- * @enum {number}
  */
-const OptInStatus = {
-  kHardOptOut: 0,
-  kOptIn: 1,
-  kSoftOptOut: 2,
-};
+enum OptInStatus {
+  kHardOptOut = 0,
+  kOptIn = 1,
+  kSoftOptOut = 2,
+}
 
-/** @param {!OptInStatus} optInStatus */
-function recordOptInStatus(optInStatus) {
+function recordOptInStatus(optInStatus: OptInStatus) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.Photos.UserOptIn', optInStatus,
       Object.keys(OptInStatus).length);
 }
 
-/**
- * The Photos module, which serves Memories for the current user.
- * @polymer
- * @extends {PolymerElement}
- */
-class PhotosModuleElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+interface PhotosModuleElement {
+  $: {
+    infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
+  };
+}
+
+/** The Photos module, which serves Memories for the current user.  */
+class PhotosModuleElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-photos-module';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {Array<!Memory>} */
       memories: Array,
 
-      /** @type {boolean} */
       showOptInScreen: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /** @type {boolean} */
       showSoftOptOutButton: Boolean,
 
-      /**
-       * @type {boolean}
-       * @private
-       */
       showExploreMore_:
           {type: Boolean, computed: 'computeShowExploreMore_(memories)'},
 
-      /**
-       * @type {string}
-       * @private
-       */
       headerChipText_:
-          {type: Boolean, computed: 'computeHeaderChipText_(showOptInScreen)'},
+          {type: String, computed: 'computeHeaderChipText_(showOptInScreen)'},
     };
   }
 
-  /** @override */
+  memories: Memory[];
+  showOptInScreen: boolean;
+  showSoftOptOutButton: boolean;
+  private showExploreMore_: boolean;
+  private headerChipText_: string;
+
   ready() {
     super.ready();
-    this.addEventListener('detect-impression', e => {
+    this.addEventListener('detect-impression', () => {
       chrome.metricsPrivate.recordBoolean(
           'NewTabPage.Photos.ModuleShown', this.showOptInScreen);
     });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowExploreMore_() {
+  private computeShowExploreMore_(): boolean {
     return this.memories.length === 1;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeHeaderChipText_() {
+  private computeHeaderChipText_(): string {
     return this.showOptInScreen ? loadTimeData.getString('modulesPhotosNew') :
                                   '';
   }
 
-  /** @private */
-  onInfoButtonClick_() {
-    /** @type {InfoDialogElement} */ (this.$.infoDialogRender.get())
-        .showModal();
+  private onInfoButtonClick_() {
+    this.$.infoDialogRender.get().showModal();
   }
 
-  /** @private */
-  onDismissButtonClick_() {
+  private onDismissButtonClick_() {
     PhotosProxy.getHandler().dismissModule();
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
@@ -125,8 +105,7 @@ class PhotosModuleElement extends mixinBehaviors
     }));
   }
 
-  /** @private */
-  onSoftOptOutClick_() {
+  private onSoftOptOutClick_() {
     recordOptInStatus(OptInStatus.kSoftOptOut);
     PhotosProxy.getHandler().softOptOut();
     this.dispatchEvent(new CustomEvent('dismiss-module', {
@@ -139,8 +118,7 @@ class PhotosModuleElement extends mixinBehaviors
     }));
   }
 
-  /** @private */
-  onDisableButtonClick_() {
+  private onDisableButtonClick_() {
     this.dispatchEvent(new CustomEvent('disable-module', {
       bubbles: true,
       composed: true,
@@ -152,44 +130,33 @@ class PhotosModuleElement extends mixinBehaviors
     }));
   }
 
-  /** @private */
-  onImageLoadError_() {
+  private onImageLoadError_() {
     chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.ImageLoad', false);
   }
 
-  /** @private */
-  onImageLoadSuccess_() {
+  private onImageLoadSuccess_() {
     chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.ImageLoad', true);
   }
 
-  /** @private */
-  onOptInClick_() {
+  private onOptInClick_() {
     recordOptInStatus(OptInStatus.kOptIn);
     PhotosProxy.getHandler().onUserOptIn(true);
     this.showOptInScreen = false;
   }
 
-  /** @private */
-  onOptOutClick_() {
+  private onOptOutClick_() {
     recordOptInStatus(OptInStatus.kHardOptOut);
     PhotosProxy.getHandler().onUserOptIn(false);
     // Disable the module when user opt out.
     this.onDisableButtonClick_();
   }
 
-  /** @private */
-  onMemoryClick_() {
+  private onMemoryClick_() {
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
     PhotosProxy.getHandler().onMemoryOpen();
   }
 
-  /**
-   * @param {string} url
-   * @param {number} numMemories
-   * @return {string}
-   * @private
-   */
-  resizeImageUrl_(url, numMemories) {
+  private resizeImageUrl_(url: string, numMemories: number): string {
     // We request image dimensions related to the layout.
     let imgSize = '=w168-h164-p-k-rw-no';
     if (numMemories < 3) {
@@ -197,14 +164,15 @@ class PhotosModuleElement extends mixinBehaviors
     }
     return url.replace('?', imgSize + '?');
   }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
 }
 
 customElements.define(PhotosModuleElement.is, PhotosModuleElement);
 
-/**
- * @return {!Promise<?PhotosModuleElement>}
- */
-async function createPhotosElement() {
+async function createPhotosElement(): Promise<PhotosModuleElement|null> {
   const {memories} = await PhotosProxy.getHandler().getMemories();
   const {showOptInScreen} =
       await PhotosProxy.getHandler().shouldShowOptInScreen();
@@ -221,8 +189,7 @@ async function createPhotosElement() {
   return element;
 }
 
-/** @type {!ModuleDescriptor} */
-export const photosDescriptor = new ModuleDescriptor(
+export const photosDescriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'photos',
     /*name=*/ loadTimeData.getString('modulesPhotosSentence'),
     createPhotosElement);

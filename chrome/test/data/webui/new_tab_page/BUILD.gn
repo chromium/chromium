@@ -48,18 +48,9 @@ js_type_check("closure_compile") {
     "modules:module_registry_test",
     "modules:module_wrapper_test",
     "modules:modules_test",
-    "modules/cart:module_test",
-    "modules/cart_v2:module_test",
-    "modules/drive:module_test",
-    "modules/drive_v2:module_test",
-    "modules/recipes_v2:module_test",
-    "modules/task_module:module_test",
   ]
   if (!is_official_build) {
-    deps += [
-      "modules/dummy_v2:module_test",
-      "modules/photos:module_test",
-    ]
+    deps += [ "modules/dummy_v2:module_test" ]
   }
 }
 

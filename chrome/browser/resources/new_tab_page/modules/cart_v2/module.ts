@@ -12,11 +12,10 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MerchantCart} from '../../chrome_cart.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
-import {RepeaterEvent} from '../../utils_ts.js';
 import {ChromeCartProxy} from '../cart/chrome_cart_proxy.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
@@ -123,17 +122,16 @@ class ChromeCartModuleElement extends I18nMixin
     return length === 1;
   }
 
-  private onCartMenuButtonClick_(e: RepeaterEvent<MerchantCart>) {
+  private onCartMenuButtonClick_(e: DomRepeatEvent<MerchantCart>) {
     e.preventDefault();
     e.stopPropagation();
-    const target = e.target as HTMLElement;
     this.currentMenuIndex_ = e.model.index;
     const merchant = this.cartItems[this.currentMenuIndex_].merchant;
     this.cartMenuHideItem_ =
         loadTimeData.getStringF('modulesCartCartMenuHideMerchant', merchant);
     this.cartMenuRemoveItem_ =
         loadTimeData.getStringF('modulesCartCartMenuRemoveMerchant', merchant);
-    this.$.cartActionMenu.showAt(target);
+    this.$.cartActionMenu.showAt(e.target as HTMLElement);
   }
 
   private async onCartHide_() {

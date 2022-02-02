@@ -9,20 +9,16 @@ import {TaskModuleHandler, TaskModuleHandlerRemote} from '../../task_module.mojo
  * interface used for retrieving a shopping task for a task module.
  */
 
-/** @type {?TaskModuleHandlerRemote} */
-let handler = null;
+let handler: TaskModuleHandlerRemote|null = null;
 
 export class TaskModuleHandlerProxy {
-  /** @return {!TaskModuleHandlerRemote} */
-  static getHandler() {
+  static getHandler(): TaskModuleHandlerRemote {
     return handler || (handler = TaskModuleHandler.getRemote());
   }
 
-  /** @param {!TaskModuleHandlerRemote} newHandler */
-  static setHandler(newHandler) {
+  static setHandler(newHandler: TaskModuleHandlerRemote) {
     handler = newHandler;
   }
 
-  /** @private */
-  constructor() {}
+  private constructor() {}
 }

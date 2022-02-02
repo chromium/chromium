@@ -6,11 +6,10 @@ import '../module_header.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {File} from '../../drive.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
-import {RepeaterEvent} from '../../utils_ts.js';
 import {DriveProxy} from '../drive/drive_module_proxy.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
@@ -56,7 +55,7 @@ class DriveModuleElement extends I18nMixin
     this.dispatchEvent(disableEvent);
   }
 
-  private onFileClick_(e: RepeaterEvent<File>) {
+  private onFileClick_(e: DomRepeatEvent<File>) {
     const clickFileEvent = new Event('usage', {composed: true});
     this.dispatchEvent(clickFileEvent);
     chrome.metricsPrivate.recordSmallCount(
