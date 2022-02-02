@@ -1238,8 +1238,16 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_WebContentsHasFocus) {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
+// Test is highly flaky on Windows.  https://crbug.com/1082010
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WindowDotPrintShouldBringUpPrintPreview \
+  DISABLED_WindowDotPrintShouldBringUpPrintPreview
+#else
+#define MAYBE_WindowDotPrintShouldBringUpPrintPreview \
+  WindowDotPrintShouldBringUpPrintPreview
+#endif
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
-                       WindowDotPrintShouldBringUpPrintPreview) {
+                       MAYBE_WindowDotPrintShouldBringUpPrintPreview) {
   ScopedPreviewTestDelegate preview_delegate;
   ASSERT_TRUE(RunExtensionTest("platform_apps/print_api",
                                {.launch_as_platform_app = true}))
