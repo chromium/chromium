@@ -299,6 +299,37 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
       BorealisGetDiskInfoResult::kSuccess, 1);
 }
 
+TEST_F(BorealisDiskManagerTest, GetDiskInfoReservesExpandableSpaceForBuffer) {
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/1 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(3 * kGiB);
+          }));
+
+  DiskInfoCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_TRUE(response_or_error);
+            // Buffer is undersized so 0 space is available
+            EXPECT_EQ(response_or_error.Value().available_bytes, 0);
+            // 3GB of expandable space less 1GB of headroom and less 1GB (needed
+            // to regenerate the buffer) leaves 1GB free.
+            EXPECT_EQ(response_or_error.Value().expandable_bytes, 1 * kGiB);
+            EXPECT_EQ(response_or_error.Value().disk_size, 20 * kGiB);
+          }));
+  disk_manager_->GetDiskInfo(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientGetDiskInfoResultHistogram,
+      BorealisGetDiskInfoResult::kSuccess, 1);
+}
+
 TEST_F(BorealisDiskManagerTest,
        GetDiskInfoReturns0AvailableSpaceForSparseDisks) {
   EXPECT_CALL(*free_space_provider_, Get(_))
@@ -1072,6 +1103,54 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceConvertsSparseDiskToFixed) {
           }));
   disk_manager_->ReleaseSpace(1 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessfullyRegeneratesBuffer) {
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/1 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(5 * kGiB);
+          }));
+
+  vm_tools::concierge::ResizeDiskImageResponse disk_response;
+  disk_response.set_status(
+      vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/23 * kGiB,
+                /*available_space=*/4 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(2 * kGiB);
+          }));
+
+  RequestDeltaCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
+            EXPECT_TRUE(response_or_error);
+            // Though the disk size and total available space has increased
+            // by 3GB, the space available for the client has only increased
+            // by 2GB.
+            EXPECT_EQ(response_or_error.Value(), 2 * kGiB);
+          }));
+  disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kSuccess, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
