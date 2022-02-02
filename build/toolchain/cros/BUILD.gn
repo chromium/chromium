@@ -7,171 +7,70 @@ import("//build/config/sysroot.gni")
 import("//build/toolchain/cros_toolchain.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
+declare_args() {
+  # If set, build lacros with Chromium's toolchain instead of with Chrome OS's.
+  # TODO(thakis): Set this to `= chromeos_is_browser_only` once that works.
+  lacros_use_chromium_toolchain = false
+}
+
 # This is mostly identical to gcc_toolchain, but handles relativizing toolchain
 # paths. This is needed for CrOS since these paths often change based on the
 # environment. For example, cxx is a relative path picked up on $PATH in the
 # chroot. But in Simple Chrome, cxx is a system-absolute path.
 template("cros_toolchain") {
-  gcc_toolchain(target_name) {
-    forward_variables_from(invoker, "*")
+  if (lacros_use_chromium_toolchain) {
+    clang_toolchain(target_name) {
+      forward_variables_from(invoker, "*")
+    }
+  } else {
+    gcc_toolchain(target_name) {
+      forward_variables_from(invoker, "*")
 
-    # CrOS's target toolchain wrapper prefers to invoke gomacc itself, so pass
-    # it the gomacc path via cmd-line arg. Otherwise, for both CrOS's host
-    # wrapper (used in the ebuild) and Chrome's clang (used in Simple Chrome),
-    # prepend gomacc like normal.
-    if (use_goma && toolchain_args.needs_gomacc_path_arg) {
-      extra_cppflags += " --gomacc-path $goma_dir/gomacc"
-    }
-    if (use_remoteexec && toolchain_args.needs_gomacc_path_arg) {
-      extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
-    }
+      toolchain_args.cc_wrapper = ""
+      toolchain_args.clang_use_chrome_plugins = false
 
-    # Relativize path if compiler is specified such that not to lookup from
-    # $PATH and cc/cxx does not contain additional flags.
-    if (cc != get_path_info(cc, "file") && string_replace(cc, " ", "") == cc) {
-      cc = rebase_path(cc, root_build_dir)
-    }
-    if (cxx != get_path_info(cxx, "file") &&
-        string_replace(cxx, " ", "") == cxx) {
-      cxx = rebase_path(cxx, root_build_dir)
-    }
-    if (ar != get_path_info(ar, "file") && string_replace(ar, " ", "") == ar) {
-      ar = rebase_path(ar, root_build_dir)
-    }
-    if (ld != get_path_info(ld, "file") && string_replace(ld, " ", "") == ld) {
-      ld = rebase_path(ld, root_build_dir)
+      # CrOS's target toolchain wrapper prefers to invoke gomacc itself, so pass
+      # it the gomacc path via cmd-line arg. Otherwise, for both CrOS's host
+      # wrapper (used in the ebuild) and Chrome's clang (used in Simple Chrome),
+      # prepend gomacc like normal.
+      if (use_goma && toolchain_args.needs_gomacc_path_arg) {
+        extra_cppflags += " --gomacc-path $goma_dir/gomacc"
+      }
+      if (use_remoteexec && toolchain_args.needs_gomacc_path_arg) {
+        extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
+      }
+
+      # Relativize path if compiler is specified such that not to lookup from
+      # $PATH and cc/cxx does not contain additional flags.
+      if (cc != get_path_info(cc, "file") &&
+          string_replace(cc, " ", "") == cc) {
+        cc = rebase_path(cc, root_build_dir)
+      }
+      if (cxx != get_path_info(cxx, "file") &&
+          string_replace(cxx, " ", "") == cxx) {
+        cxx = rebase_path(cxx, root_build_dir)
+      }
+      if (ar != get_path_info(ar, "file") &&
+          string_replace(ar, " ", "") == ar) {
+        ar = rebase_path(ar, root_build_dir)
+      }
+      if (ld != get_path_info(ld, "file") &&
+          string_replace(ld, " ", "") == ld) {
+        ld = rebase_path(ld, root_build_dir)
+      }
     }
   }
 }
 
 # This is the normal toolchain for most targets.
 cros_toolchain("target") {
-  ar = cros_target_ar
-  cc = cros_target_cc
-  cxx = cros_target_cxx
-  ld = cros_target_ld
-
-  if (cros_target_nm != "") {
-    nm = cros_target_nm
-  }
-  if (cros_target_readelf != "") {
-    readelf = cros_target_readelf
-  }
-  extra_cflags = cros_target_extra_cflags
-  extra_cppflags = cros_target_extra_cppflags
-  extra_cxxflags = cros_target_extra_cxxflags
-  extra_ldflags = cros_target_extra_ldflags
-
   toolchain_args = {
-    cc_wrapper = ""
-    needs_gomacc_path_arg = true
-    clang_use_chrome_plugins = false
     current_cpu = target_cpu
     current_os = "chromeos"
     sysroot = target_sysroot
   }
-}
 
-# This is a special toolchain needed just for the nacl_bootstrap target in
-# //native_client/src/trusted/service_runtime/linux. It is identical
-# to ":target" except that it forces use_debug_fission, use_gold, and
-# use_sysroot off, and allows the user to set different sets of extra flags.
-cros_toolchain("nacl_bootstrap") {
-  ar = cros_target_ar
-  cc = cros_target_cc
-  cxx = cros_target_cxx
-  ld = cros_target_ld
-
-  if (cros_target_nm != "") {
-    nm = cros_target_nm
-  }
-  if (cros_target_readelf != "") {
-    readelf = cros_target_readelf
-  }
-  extra_cflags = cros_nacl_bootstrap_extra_cflags
-  extra_cppflags = cros_nacl_bootstrap_extra_cppflags
-  extra_cxxflags = cros_nacl_bootstrap_extra_cxxflags
-  extra_ldflags = cros_nacl_bootstrap_extra_ldflags
-
-  toolchain_args = {
-    cc_wrapper = ""
-    needs_gomacc_path_arg = true
-    clang_use_chrome_plugins = false
-    current_cpu = target_cpu
-    current_os = "chromeos"
-    use_debug_fission = false
-    use_gold = false
-    use_sysroot = false
-  }
-}
-
-cros_toolchain("host") {
-  # These are args for the template.
-  ar = cros_host_ar
-  cc = cros_host_cc
-  cxx = cros_host_cxx
-  ld = cros_host_ld
-
-  if (cros_host_nm != "") {
-    nm = cros_host_nm
-  }
-  if (cros_host_readelf != "") {
-    readelf = cros_host_readelf
-  }
-  extra_cflags = cros_host_extra_cflags
-  extra_cppflags = cros_host_extra_cppflags
-  extra_cxxflags = cros_host_extra_cxxflags
-  extra_ldflags = cros_host_extra_ldflags
-
-  toolchain_args = {
-    cc_wrapper = ""
-    needs_gomacc_path_arg = false
-    clang_use_chrome_plugins = false
-    current_cpu = host_cpu
-    current_os = "linux"
-    sysroot = cros_host_sysroot
-  }
-}
-
-cros_toolchain("v8_snapshot") {
-  # These are args for the template.
-  ar = cros_v8_snapshot_ar
-  cc = cros_v8_snapshot_cc
-  cxx = cros_v8_snapshot_cxx
-  ld = cros_v8_snapshot_ld
-
-  if (cros_v8_snapshot_nm != "") {
-    nm = cros_v8_snapshot_nm
-  }
-  if (cros_v8_snapshot_readelf != "") {
-    readelf = cros_v8_snapshot_readelf
-  }
-  extra_cflags = cros_v8_snapshot_extra_cflags
-  extra_cppflags = cros_v8_snapshot_extra_cppflags
-  extra_cxxflags = cros_v8_snapshot_extra_cxxflags
-  extra_ldflags = cros_v8_snapshot_extra_ldflags
-
-  toolchain_args = {
-    cc_wrapper = ""
-    needs_gomacc_path_arg = false
-    clang_use_chrome_plugins = false
-    if (target_cpu == "x86" || target_cpu == "arm" || target_cpu == "mipsel") {
-      current_cpu = "x86"
-    } else {
-      current_cpu = "x64"
-    }
-    v8_current_cpu = v8_target_cpu
-    current_os = "linux"
-    sysroot = cros_v8_snapshot_sysroot
-  }
-}
-
-# This toolchain is used when we want to build Lacros using alternate toolchain.
-# To use this, you need to set gn arg 'also_build_lacros_chrome_for_architecture'.
-# See build/config/chromeos/ui_mode.gni
-if (also_build_lacros_chrome_for_architecture != "") {
-  cros_toolchain("lacros_clang") {
-    # These are args for the template.
+  if (!lacros_use_chromium_toolchain) {
     ar = cros_target_ar
     cc = cros_target_cc
     cxx = cros_target_cxx
@@ -188,6 +87,112 @@ if (also_build_lacros_chrome_for_architecture != "") {
     extra_cxxflags = cros_target_extra_cxxflags
     extra_ldflags = cros_target_extra_ldflags
 
+    toolchain_args.needs_gomacc_path_arg = true
+  }
+}
+
+# This is a special toolchain needed just for the nacl_bootstrap target in
+# //native_client/src/trusted/service_runtime/linux. It is identical
+# to ":target" except that it forces use_debug_fission, use_gold, and
+# use_sysroot off, and allows the user to set different sets of extra flags.
+cros_toolchain("nacl_bootstrap") {
+  toolchain_args = {
+    current_cpu = target_cpu
+    current_os = "chromeos"
+    use_debug_fission = false
+    use_gold = false
+    use_sysroot = false
+  }
+
+  if (!lacros_use_chromium_toolchain) {
+    ar = cros_target_ar
+    cc = cros_target_cc
+    cxx = cros_target_cxx
+    ld = cros_target_ld
+
+    if (cros_target_nm != "") {
+      nm = cros_target_nm
+    }
+    if (cros_target_readelf != "") {
+      readelf = cros_target_readelf
+    }
+    extra_cflags = cros_nacl_bootstrap_extra_cflags
+    extra_cppflags = cros_nacl_bootstrap_extra_cppflags
+    extra_cxxflags = cros_nacl_bootstrap_extra_cxxflags
+    extra_ldflags = cros_nacl_bootstrap_extra_ldflags
+
+    toolchain_args.needs_gomacc_path_arg = true
+  }
+}
+
+cros_toolchain("host") {
+  toolchain_args = {
+    current_cpu = host_cpu
+    current_os = "linux"
+    sysroot = cros_host_sysroot
+  }
+
+  if (!lacros_use_chromium_toolchain) {
+    # These are args for the template.
+    ar = cros_host_ar
+    cc = cros_host_cc
+    cxx = cros_host_cxx
+    ld = cros_host_ld
+
+    if (cros_host_nm != "") {
+      nm = cros_host_nm
+    }
+    if (cros_host_readelf != "") {
+      readelf = cros_host_readelf
+    }
+    extra_cflags = cros_host_extra_cflags
+    extra_cppflags = cros_host_extra_cppflags
+    extra_cxxflags = cros_host_extra_cxxflags
+    extra_ldflags = cros_host_extra_ldflags
+
+    toolchain_args.needs_gomacc_path_arg = false
+  }
+}
+
+cros_toolchain("v8_snapshot") {
+  toolchain_args = {
+    if (target_cpu == "x86" || target_cpu == "arm" || target_cpu == "mipsel") {
+      current_cpu = "x86"
+    } else {
+      current_cpu = "x64"
+    }
+    v8_current_cpu = v8_target_cpu
+    current_os = "linux"
+    sysroot = cros_v8_snapshot_sysroot
+  }
+
+  if (!lacros_use_chromium_toolchain) {
+    # These are args for the template.
+    ar = cros_v8_snapshot_ar
+    cc = cros_v8_snapshot_cc
+    cxx = cros_v8_snapshot_cxx
+    ld = cros_v8_snapshot_ld
+
+    if (cros_v8_snapshot_nm != "") {
+      nm = cros_v8_snapshot_nm
+    }
+    if (cros_v8_snapshot_readelf != "") {
+      readelf = cros_v8_snapshot_readelf
+    }
+    extra_cflags = cros_v8_snapshot_extra_cflags
+    extra_cppflags = cros_v8_snapshot_extra_cppflags
+    extra_cxxflags = cros_v8_snapshot_extra_cxxflags
+    extra_ldflags = cros_v8_snapshot_extra_ldflags
+
+    toolchain_args.needs_gomacc_path_arg = false
+  }
+}
+
+# This toolchain is used when we want to build Lacros using alternate toolchain.
+# To use this, you need to set gn arg 'also_build_lacros_chrome_for_architecture'.
+# See build/config/chromeos/ui_mode.gni
+if (also_build_lacros_chrome_for_architecture != "") {
+  cros_toolchain("lacros_clang") {
     toolchain_args = {
       if (also_build_lacros_chrome_for_architecture == "amd64") {
         forward_variables_from(
@@ -213,9 +218,26 @@ if (also_build_lacros_chrome_for_architecture != "") {
       chromeos_is_browser_only = true
       use_clang_coverage = false
       cros_host_sysroot = "//build/linux/debian_sid_amd64-sysroot"
-      cc_wrapper = ""
-      needs_gomacc_path_arg = true
-      clang_use_chrome_plugins = false
+    }
+    if (!lacros_use_chromium_toolchain) {
+      # These are args for the template.
+      ar = cros_target_ar
+      cc = cros_target_cc
+      cxx = cros_target_cxx
+      ld = cros_target_ld
+
+      if (cros_target_nm != "") {
+        nm = cros_target_nm
+      }
+      if (cros_target_readelf != "") {
+        readelf = cros_target_readelf
+      }
+      extra_cflags = cros_target_extra_cflags
+      extra_cppflags = cros_target_extra_cppflags
+      extra_cxxflags = cros_target_extra_cxxflags
+      extra_ldflags = cros_target_extra_ldflags
+
+      toolchain_args.needs_gomacc_path_arg = true
     }
   }
 }
