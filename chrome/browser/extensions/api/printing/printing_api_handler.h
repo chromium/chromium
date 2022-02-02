@@ -98,11 +98,6 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // Returns the current instance for |browser_context|.
   static PrintingAPIHandler* Get(content::BrowserContext* browser_context);
 
-  // Print jobs should be registered before OnPrintJobUpdate() is called.
-  void RegisterPrintJob(const std::string& printer_id,
-                        int job_id,
-                        const std::string& extension_id);
-
   // crosapi::mojom::PrintJobObserver:
   void OnPrintJobUpdate(const std::string& printer_id,
                         unsigned int job_id,
