@@ -2,33 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {navigation, Page} from 'chrome://extensions/extensions.js';
+import 'chrome://extensions/extensions.js';
 
+import {ExtensionsManagerElement, navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 
-window.extension_manager_tests = {};
-extension_manager_tests.suiteName = 'ExtensionManagerTest';
-/** @enum {string} */
-extension_manager_tests.TestNames = {
-  UrlNavigationToActivityLogSuccess:
-      'url navigation to activity log with flag set',
+const extension_manager_tests = {
+  suiteName: 'ExtensionManagerTest',
+  TestNames: {
+    UrlNavigationToActivityLogSuccess:
+        'url navigation to activity log with flag set',
+  },
 };
 
-function getDataByName(list, name) {
-  return assert(list.find(function(el) {
-    return el.name === name;
-  }));
-}
+Object.assign(window, {extension_manager_tests});
 
 suite(extension_manager_tests.suiteName, function() {
-  /** @type {Manager} */
-  let manager;
+  let manager: ExtensionsManagerElement;
 
-  /** @param {string} viewElement */
-  function assertViewActive(tagName) {
+  function assertViewActive(tagName: string) {
     assertTrue(!!manager.$.viewManager.querySelector(`${tagName}.active`));
   }
 
@@ -53,7 +49,7 @@ suite(extension_manager_tests.suiteName, function() {
       assert(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogSuccess),
       function() {
-        expectTrue(manager.showActivityLog);
+        assertTrue(manager.showActivityLog);
 
         // Try to open activity log with a valid ID.
         navigation.navigateTo({

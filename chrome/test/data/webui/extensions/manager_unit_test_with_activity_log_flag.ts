@@ -8,25 +8,27 @@
  * chrome.developerPrivate API.
  */
 
-import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
+import 'chrome://extensions/extensions.js';
+
+import {ExtensionsManagerElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
 
-window.extension_manager_unit_tests = {};
-extension_manager_unit_tests.suiteName = 'ExtensionManagerUnitTest';
-/** @enum {string} */
-extension_manager_unit_tests.TestNames = {
-  UpdateFromActivityLog: 'update from activity log',
+const extension_manager_unit_tests = {
+  suiteName: 'ExtensionManagerUnitTest',
+  TestNames: {
+    UpdateFromActivityLog: 'update from activity log',
+  },
 };
 
-suite(extension_manager_unit_tests.suiteName, function() {
-  /** @type {Manager} */
-  let manager;
+Object.assign(window, {extension_manager_unit_tests});
 
-  /** @type {TestService} */
-  let service;
+suite(extension_manager_unit_tests.suiteName, function() {
+  let manager: ExtensionsManagerElement;
+  let service: TestService;
 
   const testActivities = {activities: []};
 
@@ -49,9 +51,9 @@ suite(extension_manager_unit_tests.suiteName, function() {
 
   /**
    * Trigger an event that indicates that an extension was installed.
-   * @param {!chrome.developerPrivate.ExtensionInfo} info
    */
-  function simulateExtensionInstall(info) {
+  function simulateExtensionInstall(
+      info: chrome.developerPrivate.ExtensionInfo) {
     service.itemStateChangedTarget.callListeners({
       event_type: chrome.developerPrivate.EventType.INSTALLED,
       extensionInfo: info,
@@ -70,16 +72,16 @@ suite(extension_manager_unit_tests.suiteName, function() {
         });
         simulateExtensionInstall(secondExtension);
 
-        expectTrue(manager.showActivityLog);
+        assertTrue(manager.showActivityLog);
         navigation.navigateTo({
           page: Page.ACTIVITY_LOG,
           extensionId: extension.id,
         });
 
         const activityLog =
-            manager.shadowRoot.querySelector('extensions-activity-log');
+            manager.shadowRoot!.querySelector('extensions-activity-log');
         assertTrue(!!activityLog);  // View should now be present.
-        expectEquals(extension.id, activityLog.extensionInfo.id);
+        assertEquals(extension.id, activityLog.extensionInfo.id);
 
         // Test that updates to different extensions does not change which
         // extension the activity log points to. Regression test for
@@ -89,6 +91,6 @@ suite(extension_manager_unit_tests.suiteName, function() {
           extensionInfo: secondExtension,
         });
 
-        expectEquals(extension.id, activityLog.extensionInfo.id);
+        assertEquals(extension.id, activityLog.extensionInfo.id);
       });
 });
