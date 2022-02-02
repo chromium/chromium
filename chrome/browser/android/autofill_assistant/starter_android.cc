@@ -61,7 +61,7 @@ void StarterAndroid::Attach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
 
 void StarterAndroid::Detach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
   java_object_ = nullptr;
-  dependencies_ = nullptr;
+  java_dependencies_ = nullptr;
   starter_.reset();
 }
 
@@ -70,8 +70,7 @@ StarterAndroid::CreateTriggerScriptUiDelegate() {
   CreateJavaDependenciesIfNecessary();
   return std::make_unique<TriggerScriptBridgeAndroid>(
       base::android::AttachCurrentThread(),
-      GetWebContents().GetJavaWebContents(),
-      dependencies_->GetJavaDependencies());
+      GetWebContents().GetJavaWebContents(), java_dependencies_);
 }
 
 std::unique_ptr<ServiceRequestSender>
@@ -127,7 +126,7 @@ void StarterAndroid::OnInteractabilityChanged(
 void StarterAndroid::OnActivityAttachmentChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  dependencies_ = nullptr;
+  java_dependencies_ = nullptr;
   if (!starter_) {
     return;
   }
@@ -184,7 +183,7 @@ void StarterAndroid::ShowOnboarding(
 }
 
 void StarterAndroid::HideOnboarding() {
-  if (!dependencies_) {
+  if (!java_dependencies_) {
     return;
   }
   Java_Starter_hideOnboarding(base::android::AttachCurrentThread(),
@@ -244,7 +243,7 @@ bool StarterAndroid::GetIsTabCreatedByGSA() const {
 }
 
 void StarterAndroid::CreateJavaDependenciesIfNecessary() {
-  if (dependencies_) {
+  if (java_dependencies_) {
     return;
   }
 
@@ -257,12 +256,7 @@ void StarterAndroid::CreateJavaDependenciesIfNecessary() {
     return;
   }
 
-  ScopedJavaGlobalRef<jobject> jdependencies =
-      ScopedJavaGlobalRef<jobject>(*array.begin());
-  if (!jdependencies.is_null()) {
-    dependencies_ = Dependencies::CreateFromJavaDependencies(jdependencies);
-  }
-
+  java_dependencies_ = *array.begin();
   java_onboarding_helper_ = *(++array.begin());
 }
 
@@ -291,8 +285,7 @@ void StarterAndroid::StartRegularScript(
     std::unique_ptr<TriggerContext> trigger_context,
     const absl::optional<TriggerScriptProto>& trigger_script) {
   CreateJavaDependenciesIfNecessary();
-  ClientAndroid::CreateForWebContents(&GetWebContents(),
-                                      std::move(dependencies_));
+  ClientAndroid::CreateForWebContents(&GetWebContents(), java_dependencies_);
   auto* client_android = ClientAndroid::FromWebContents(&GetWebContents());
   DCHECK(client_android);
 

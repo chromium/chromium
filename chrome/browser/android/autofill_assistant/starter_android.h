@@ -121,9 +121,9 @@ class StarterAndroid : public StarterPlatformDelegate,
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   std::unique_ptr<Starter> starter_;
-  std::unique_ptr<Dependencies> dependencies_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  base::android::ScopedJavaGlobalRef<jobject> java_dependencies_;
   base::android::ScopedJavaGlobalRef<jobject> java_onboarding_helper_;
   std::unique_ptr<WebsiteLoginManager> website_login_manager_;
   base::OnceCallback<void(Metrics::FeatureModuleInstallation result)>

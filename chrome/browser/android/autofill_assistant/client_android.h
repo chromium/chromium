@@ -156,8 +156,9 @@ class ClientAndroid : public Client,
  private:
   friend class content::WebContentsUserData<ClientAndroid>;
 
-  explicit ClientAndroid(content::WebContents* web_contents,
-                         std::unique_ptr<Dependencies> dependencies);
+  explicit ClientAndroid(
+      content::WebContents* web_contents,
+      const base::android::ScopedJavaGlobalRef<jobject>& jdependencies);
 
   void CreateController(
       std::unique_ptr<Service> service,
@@ -181,12 +182,13 @@ class ClientAndroid : public Client,
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
+  const std::unique_ptr<const Dependencies> dependencies_;
+  const base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
+
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   std::unique_ptr<Controller> controller_;
   std::unique_ptr<UiController> ui_controller_;
   mutable std::unique_ptr<WebsiteLoginManager> website_login_manager_;
-
-  const std::unique_ptr<Dependencies> dependencies_;
 
   // True if Start() was called. This turns on the tracking of dropouts.
   bool started_ = false;

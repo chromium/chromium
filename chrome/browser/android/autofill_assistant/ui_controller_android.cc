@@ -29,7 +29,6 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantOverlayModel_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantPlaceholdersConfiguration_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantUiController_jni.h"
-#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantDependencies_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
@@ -277,9 +276,7 @@ UiControllerAndroid::UiControllerAndroid(
       form_delegate_(this),
       generic_ui_delegate_(this),
       bottom_bar_delegate_(this),
-      jstatic_dependencies_(
-          Java_AssistantDependencies_getStaticDependencies(env,
-                                                           jdependencies)) {
+      dependencies_(Dependencies::CreateFromJavaDependencies(jdependencies)) {
   java_object_ = Java_AutofillAssistantUiController_Constructor(
       env, reinterpret_cast<intptr_t>(this), jdependencies,
       /* allowTabSwitching= */
@@ -1172,7 +1169,7 @@ void UiControllerAndroid::HideKeyboardIfFocusNotOnText() {
 }
 
 ScopedJavaGlobalRef<jobject> UiControllerAndroid::GetInfoPageUtil() const {
-  return Dependencies::CreateInfoPageUtil(jstatic_dependencies_);
+  return dependencies_->CreateInfoPageUtil();
 }
 
 void UiControllerAndroid::OnCollectUserDataOptionsChanged(

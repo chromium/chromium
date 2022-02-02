@@ -20,21 +20,14 @@ namespace autofill_assistant {
 // and dependencies to the starter.
 class Dependencies {
  public:
-  static std::unique_ptr<Dependencies> CreateFromJavaDependencies(
-      base::android::ScopedJavaGlobalRef<jobject> jdependencies);
-
   static std::unique_ptr<Dependencies> CreateFromJavaStaticDependencies(
-      base::android::ScopedJavaGlobalRef<jobject> jstatic_dependencies);
+      const base::android::JavaRef<jobject>& jstatic_dependencies);
+
+  static std::unique_ptr<Dependencies> CreateFromJavaDependencies(
+      const base::android::JavaRef<jobject>& jdependencies);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaStaticDependencies() const;
-  // Might not be null during initiation in starter_android.
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaDependencies() const;
-
-  void SetJavaDependencies(base::android::ScopedJavaGlobalRef<jobject>);
-
-  static base::android::ScopedJavaGlobalRef<jobject> CreateInfoPageUtil(
-      const base::android::ScopedJavaGlobalRef<jobject>& jstatic_dependencies);
-
+  base::android::ScopedJavaGlobalRef<jobject> CreateInfoPageUtil() const;
   base::android::ScopedJavaGlobalRef<jobject> CreateAccessTokenUtil() const;
 
   virtual ~Dependencies();
@@ -57,8 +50,6 @@ class Dependencies {
 
  private:
   const base::android::ScopedJavaGlobalRef<jobject> jstatic_dependencies_;
-  // Might be null during initiation in starter_android.
-  base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
 };
 
 }  // namespace autofill_assistant

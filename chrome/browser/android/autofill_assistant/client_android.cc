@@ -69,11 +69,8 @@ JNI_AutofillAssistantClient_CreateForWebContents(
     const JavaParamRef<jobject>& jweb_contents,
     const JavaParamRef<jobject>& jdependencies) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  std::unique_ptr<Dependencies> dependencies =
-      Dependencies::CreateFromJavaDependencies(
-          ScopedJavaGlobalRef<jobject>(jdependencies));
-
-  ClientAndroid::CreateForWebContents(web_contents, std::move(dependencies));
+  ClientAndroid::CreateForWebContents(
+      web_contents, ScopedJavaGlobalRef<jobject>(jdependencies));
   return ClientAndroid::FromWebContents(web_contents)->GetJavaObject();
 }
 
@@ -101,13 +98,14 @@ static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
 }
 
 ClientAndroid::ClientAndroid(content::WebContents* web_contents,
-                             std::unique_ptr<Dependencies> dependencies)
+                             const ScopedJavaGlobalRef<jobject>& jdependencies)
     : content::WebContentsUserData<ClientAndroid>(*web_contents),
+      dependencies_(Dependencies::CreateFromJavaDependencies(jdependencies)),
+      jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this),
-          dependencies->CreateAccessTokenUtil())),
-      dependencies_(std::move(dependencies)) {}
+          dependencies_->CreateAccessTokenUtil())) {}
 
 ClientAndroid::~ClientAndroid() {
   if (controller_ != nullptr && started_) {
@@ -422,7 +420,7 @@ std::string ClientAndroid::GetDebugContext() {
 base::android::ScopedJavaGlobalRef<jobject> ClientAndroid::GetDependencies(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return dependencies_->GetJavaDependencies();
+  return jdependencies_;
 }
 
 int ClientAndroid::FindDirectAction(const std::string& action_name) {
@@ -451,8 +449,7 @@ void ClientAndroid::AttachUI(
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   if (!ui_controller_android_) {
     ui_controller_android_ = UiControllerAndroid::CreateFromWebContents(
-        GetWebContents(), dependencies_->GetJavaDependencies(),
-        joverlay_coordinator);
+        GetWebContents(), jdependencies_, joverlay_coordinator);
     if (!ui_controller_android_) {
       // The activity is not or not yet in a mode where attaching the UI is
       // possible.
@@ -581,7 +578,7 @@ DeviceContext ClientAndroid::GetDeviceContext() const {
 
 bool ClientAndroid::IsAccessibilityEnabled() const {
   return Java_AutofillAssistantClient_isAccessibilityEnabled(
-      AttachCurrentThread(), dependencies_->GetJavaDependencies());
+      AttachCurrentThread(), jdependencies_);
 }
 
 bool ClientAndroid::IsSpokenFeedbackAccessibilityServiceEnabled() const {
