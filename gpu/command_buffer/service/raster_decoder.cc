@@ -919,8 +919,8 @@ class RasterDecoderImpl final : public RasterDecoder,
   // Number of commands remaining to be processed in DoCommands().
   int commands_to_process_ = 0;
 
-  bool supports_gpu_raster_ = false;
-  bool supports_oop_raster_ = false;
+  bool gpu_raster_enabled_ = false;
+  bool use_gpu_raster_ = false;
   bool supports_oop_canvas_ = false;
   bool use_passthrough_ = false;
   bool use_ddl_ = false;
@@ -1088,7 +1088,7 @@ RasterDecoderImpl::RasterDecoderImpl(
       disable_legacy_mailbox_(
           shared_image_manager &&
           shared_image_manager->display_context_on_another_thread()),
-      supports_gpu_raster_(
+      gpu_raster_enabled_(
           gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
           kGpuFeatureStatusEnabled),
       supports_oop_canvas_(
@@ -1167,16 +1167,15 @@ ContextResult RasterDecoderImpl::Initialize(
   query_manager_ = std::make_unique<RasterQueryManager>(shared_context_state_);
 
   if (attrib_helper.enable_oop_rasterization) {
-    if (!features().chromium_raster_transport) {
-      LOG(ERROR) << "ContextResult::kFatalFailure: "
-                    "chromium_raster_transport not present";
+    if (!gpu_raster_enabled_) {
+      LOG(ERROR) << "ContextResult::kFatalFailure: GPU raster is disabled";
       Destroy(true);
       return ContextResult::kFatalFailure;
     }
 
-    supports_oop_raster_ = !!shared_context_state_->gr_context();
-    if (supports_oop_raster_)
-      paint_cache_ = std::make_unique<cc::ServicePaintCache>();
+    DCHECK(gr_context());
+    use_gpu_raster_ = true;
+    paint_cache_ = std::make_unique<cc::ServicePaintCache>();
     use_ddl_ = gpu_preferences_.enable_oop_rasterization_ddl;
   }
 
@@ -1190,7 +1189,7 @@ void RasterDecoderImpl::Destroy(bool have_context) {
   DCHECK(!have_context || shared_context_state_->context()->IsCurrent(nullptr));
 
   if (have_context) {
-    if (supports_oop_raster_) {
+    if (use_gpu_raster_) {
       transfer_cache()->DeleteAllEntriesForDecoder(raster_decoder_id_);
     }
 
@@ -1281,8 +1280,8 @@ gl::GLSurface* RasterDecoderImpl::GetGLSurface() {
 Capabilities RasterDecoderImpl::GetCapabilities() {
   // TODO(enne): reconcile this with gles2_cmd_decoder's capability settings.
   Capabilities caps;
-  caps.gpu_rasterization = supports_gpu_raster_;
-  caps.supports_oop_raster = supports_oop_raster_;
+  caps.gpu_rasterization = use_gpu_raster_;
+  caps.supports_oop_raster = use_gpu_raster_;
   caps.gpu_memory_buffer_formats =
       feature_info()->feature_flags().gpu_memory_buffer_formats;
   caps.texture_target_exception_list =
@@ -1657,7 +1656,7 @@ error::Error RasterDecoderImpl::DoCommandsImpl(unsigned int num_commands,
                << GetCommandName(command);
   }
 
-  if (supports_oop_raster_)
+  if (use_gpu_raster_)
     client()->ScheduleGrContextCleanup();
 
   return result;
@@ -3473,7 +3472,7 @@ class TransferCacheDeserializeHelperImpl final
 void RasterDecoderImpl::DeletePaintCacheTextBlobsINTERNALHelper(
     GLsizei n,
     const volatile GLuint* paint_cache_ids) {
-  if (!supports_oop_raster_) {
+  if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
                        "glDeletePaintCacheEntriesINTERNAL",
                        "No chromium raster support");
@@ -3486,7 +3485,7 @@ void RasterDecoderImpl::DeletePaintCacheTextBlobsINTERNALHelper(
 void RasterDecoderImpl::DeletePaintCachePathsINTERNALHelper(
     GLsizei n,
     const volatile GLuint* paint_cache_ids) {
-  if (!supports_oop_raster_) {
+  if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
                        "glDeletePaintCacheEntriesINTERNAL",
                        "No chromium raster support");
@@ -3497,7 +3496,7 @@ void RasterDecoderImpl::DeletePaintCachePathsINTERNALHelper(
 }
 
 void RasterDecoderImpl::DoClearPaintCacheINTERNAL() {
-  if (!supports_oop_raster_) {
+  if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glClearPaintCacheINTERNAL",
                        "No chromium raster support");
     return;
@@ -3516,9 +3515,9 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
   // commands between BeginRaster and EndRaster will not flush).
   FlushToWorkAroundMacCrashes();
 
-  if (!gr_context() || !supports_oop_raster_) {
+  if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                       "chromium_raster_transport not enabled via attribs");
+                       "No chromium raster support");
     return;
   }
   if (sk_surface_) {
@@ -3692,6 +3691,12 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
                                          GLuint font_shm_size) {
   TRACE_EVENT1("gpu", "RasterDecoderImpl::DoRasterCHROMIUM", "raster_id",
                ++raster_chromium_id_);
+
+  if (!use_gpu_raster_) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glRasterCHROMIUM",
+                       "No chromium raster support");
+    return;
+  }
 
   if (!sk_surface_ && !scoped_shared_image_raster_write_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glRasterCHROMIUM",
@@ -3878,7 +3883,7 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
     GLuint data_shm_id,
     GLuint data_shm_offset,
     GLuint data_size) {
-  if (!supports_oop_raster_) {
+  if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE, "glCreateTransferCacheEntryINTERNAL",
         "Attempt to use OOP transfer cache on a context without OOP raster.");
@@ -3945,7 +3950,7 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
 void RasterDecoderImpl::DoUnlockTransferCacheEntryINTERNAL(
     GLuint raw_entry_type,
     GLuint entry_id) {
-  if (!supports_oop_raster_) {
+  if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE, "glUnlockTransferCacheEntryINTERNAL",
         "Attempt to use OOP transfer cache on a context without OOP raster.");
@@ -3971,7 +3976,7 @@ void RasterDecoderImpl::DoUnlockTransferCacheEntryINTERNAL(
 void RasterDecoderImpl::DoDeleteTransferCacheEntryINTERNAL(
     GLuint raw_entry_type,
     GLuint entry_id) {
-  if (!supports_oop_raster_) {
+  if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE, "glDeleteTransferCacheEntryINTERNAL",
         "Attempt to use OOP transfer cache on a context without OOP raster.");
