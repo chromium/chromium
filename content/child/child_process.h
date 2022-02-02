@@ -59,12 +59,12 @@ class CONTENT_EXPORT ChildProcess {
 
   // We need to stop the IO thread here instead of just flushing it, so that it
   // can no longer post tasks back to the main thread.
-  void StopIOThreadForTesting() { io_thread_.Stop(); }
+  void StopIOThreadForTesting() { io_thread_->Stop(); }
 
   base::SingleThreadTaskRunner* io_task_runner() {
-    return io_thread_.task_runner().get();
+    return io_thread_->task_runner().get();
   }
-  base::PlatformThreadId io_thread_id() { return io_thread_.GetThreadId(); }
+  base::PlatformThreadId io_thread_id() { return io_thread_->GetThreadId(); }
 
   // A global event object that is signalled when the main thread's message
   // loop exits.  This gives background threads a way to observe the main
@@ -97,7 +97,7 @@ class CONTENT_EXPORT ChildProcess {
   base::WaitableEvent shutdown_event_;
 
   // The thread that handles IO events.
-  base::Thread io_thread_;
+  std::unique_ptr<base::Thread> io_thread_;
 
   // NOTE: make sure that main_thread_ is listed after shutdown_event_, since
   // it depends on it (indirectly through IPC::SyncChannel).  Same for

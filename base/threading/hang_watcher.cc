@@ -59,7 +59,7 @@ std::atomic<bool> g_keep_monitoring{true};
 // encountered on each call to Monitor().
 void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
                                  int count) {
-  // In the case of unique threads like the IO or UI thread a count does
+  // In the case of unique threads like the IO or UI/Main thread a count does
   // not make sense.
   const bool any_thread_hung = count >= 1;
 
@@ -90,8 +90,27 @@ void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
       break;
 
     case HangWatcher::ProcessType::kGPUProcess:
-    case HangWatcher::ProcessType::kRendererProcess:
       // Not recorded for now.
+      break;
+
+    case HangWatcher::ProcessType::kRendererProcess:
+      switch (thread_type) {
+        case HangWatcher::ThreadType::kIOThread:
+          UMA_HISTOGRAM_BOOLEAN(
+              "HangWatcher.IsThreadHung.RendererProcess."
+              "IOThread",
+              any_thread_hung);
+          break;
+        case HangWatcher::ThreadType::kMainThread:
+          UMA_HISTOGRAM_BOOLEAN(
+              "HangWatcher.IsThreadHung.RendererProcess."
+              "MainThread",
+              any_thread_hung);
+          break;
+        case HangWatcher::ThreadType::kThreadPoolThread:
+          // Not recorded for now.
+          break;
+      }
       break;
   }
 }

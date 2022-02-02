@@ -13,6 +13,7 @@
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
@@ -39,6 +40,24 @@ namespace content {
 namespace {
 base::LazyInstance<base::ThreadLocalPointer<ChildProcess>>::DestructorAtExit
     g_lazy_child_process_tls = LAZY_INSTANCE_INITIALIZER;
+
+class ChildIOThread : public base::Thread {
+ public:
+  ChildIOThread() : base::Thread("Chrome_ChildIOThread") {}
+  ChildIOThread(const ChildIOThread&) = delete;
+  ChildIOThread(ChildIOThread&&) = delete;
+  ChildIOThread& operator=(const ChildIOThread&) = delete;
+  ChildIOThread& operator=(ChildIOThread&&) = delete;
+
+  void Run(base::RunLoop* run_loop) override {
+    base::ScopedClosureRunner unregister_thread_closure;
+    if (base::HangWatcher::IsIOThreadHangWatchingEnabled()) {
+      unregister_thread_closure = base::HangWatcher::RegisterThread(
+          base::HangWatcher::ThreadType::kIOThread);
+    }
+    base::Thread::Run(run_loop);
+  }
+};
 }
 
 ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
@@ -48,7 +67,7 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
     : ref_count_(0),
       shutdown_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
-      io_thread_("Chrome_ChildIOThread") {
+      io_thread_(std::make_unique<ChildIOThread>()) {
   DCHECK(!g_lazy_child_process_tls.Pointer()->Get());
   g_lazy_child_process_tls.Pointer()->Set(this);
 
@@ -109,7 +128,7 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
     thread_options.priority = base::ThreadPriority::DISPLAY;
   }
 #endif
-  CHECK(io_thread_.StartWithOptions(std::move(thread_options)));
+  CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
 }
 
 ChildProcess::~ChildProcess() {
@@ -133,7 +152,8 @@ ChildProcess::~ChildProcess() {
   }
 
   g_lazy_child_process_tls.Pointer()->Set(nullptr);
-  io_thread_.Stop();
+  io_thread_->Stop();
+  io_thread_.reset();
 
   if (initialized_thread_pool_) {
     DCHECK(base::ThreadPoolInstance::Get());
