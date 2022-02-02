@@ -83,6 +83,8 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
     ProcessGetRemoteState(std::move(response));
   } else if (type == kCreateMessageType) {
     ProcessCreate(request, std::move(response));
+  } else if (type == kGetMessageType) {
+    ProcessGet(request, std::move(response));
   } else if (type == kCancelMessageType) {
     ProcessCancel(request, std::move(response));
   } else {
@@ -141,58 +143,57 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
 
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (!EnsureIpcConnection()) {
-    // TODO(yuweih): See if this is the right error to use here.
-    response.SetKey(kWebAuthnErrorKey, CreateWebAuthnExceptionDetailsDict(
-                                           "InvalidStateError",
-                                           "Failed to connect to IPC server."));
-    SendMessageToClient(std::move(response));
+  if (!ConnectIpcOrSendError(response)) {
     return;
   }
-
-  // navigator.credentials.create() throws NotSupportedError if it is called
-  // with unexpected parameters.
-
-  const base::Value* message_id = request.FindKey(kMessageId);
+  const base::Value* message_id = FindMessageIdOrSendError(response);
   if (!message_id) {
-    response.SetKey(
-        kWebAuthnErrorKey,
-        CreateWebAuthnExceptionDetailsDict(
-            "NotSupportedError", "Message ID not found in create request."));
-    SendMessageToClient(std::move(response));
     return;
   }
-
   const std::string* request_data =
-      request.FindStringKey(kCreateRequestDataKey);
+      FindRequestDataOrSendError(request, kCreateRequestDataKey, response);
   if (!request_data) {
-    response.SetKey(
-        kWebAuthnErrorKey,
-        CreateWebAuthnExceptionDetailsDict(
-            "NotSupportedError", "Request data not found in create request."));
-    SendMessageToClient(std::move(response));
     return;
   }
-
-  mojo::PendingRemote<mojom::WebAuthnRequestCanceller>
-      pending_request_canceller;
-  auto request_canceller_receiver =
-      pending_request_canceller.InitWithNewPipeAndPassReceiver();
-  id_to_request_canceller_.emplace(
-      message_id->Clone(),
-      request_cancellers_.Add(std::move(pending_request_canceller)));
 
   remote_->Create(
-      *request_data, std::move(request_canceller_receiver),
+      *request_data, AddRequestCanceller(message_id->Clone()),
       base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnCreateResponse,
                      base::Unretained(this), std::move(response)));
+}
+
+void RemoteWebAuthnNativeMessagingHost::ProcessGet(const base::Value& request,
+                                                   base::Value response) {
+  // Get request: {id: string, type: 'get', requestData: string}
+  // Get response: {
+  //   id: string, type: 'getResponse', responseData?: string,
+  //   error?: {name: string, message: string}}
+
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (!ConnectIpcOrSendError(response)) {
+    return;
+  }
+  const base::Value* message_id = FindMessageIdOrSendError(response);
+  if (!message_id) {
+    return;
+  }
+  const std::string* request_data =
+      FindRequestDataOrSendError(request, kGetRequestDataKey, response);
+  if (!request_data) {
+    return;
+  }
+
+  remote_->Get(*request_data, AddRequestCanceller(message_id->Clone()),
+               base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnGetResponse,
+                              base::Unretained(this), std::move(response)));
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
     const base::Value& request,
     base::Value response) {
   // Cancel request: {id: string, type: 'cancel'}
-  // Create response:
+  // Cancel response:
   //   {id: string, type: 'cancelResponse', wasCanceled: boolean}
 
   if (!EnsureIpcConnection()) {
@@ -299,6 +300,39 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
   SendMessageToClient(std::move(response));
 }
 
+void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
+    base::Value response,
+    mojom::WebAuthnGetResponsePtr remote_response) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  // If |remote_response| is null, it means that the remote get() call has
+  // yielded `null`, which is still a valid response according to the spec. In
+  // this case we just send back an empty get response.
+  if (!remote_response.is_null()) {
+    switch (remote_response->which()) {
+      case mojom::WebAuthnGetResponse::Tag::kErrorDetails:
+        response.SetKey(
+            kWebAuthnErrorKey,
+            MojoErrorToErrorDict(remote_response->get_error_details()));
+        break;
+      case mojom::WebAuthnGetResponse::Tag::kResponseData:
+        response.SetStringKey(kGetResponseDataKey,
+                              remote_response->get_response_data());
+        break;
+      default:
+        NOTREACHED() << "Unexpected get response tag: "
+                     << static_cast<uint32_t>(remote_response->which());
+    }
+  }
+
+  const base::Value* message_id = response.FindKey(kMessageId);
+  if (message_id) {
+    RemoveRequestCancellerByMessageId(*message_id);
+  }
+
+  SendMessageToClient(std::move(response));
+}
+
 void RemoteWebAuthnNativeMessagingHost::OnCancelResponse(base::Value response,
                                                          bool was_canceled) {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -372,6 +406,65 @@ void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
     return;
   }
   client_->PostMessageFromNativeHost(message_json);
+}
+
+bool RemoteWebAuthnNativeMessagingHost::ConnectIpcOrSendError(
+    base::Value& response) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (EnsureIpcConnection()) {
+    return true;
+  }
+  // TODO(yuweih): See if this is the right error to use here.
+  response.SetKey(kWebAuthnErrorKey,
+                  CreateWebAuthnExceptionDetailsDict(
+                      "InvalidStateError", "Failed to connect to IPC server."));
+  SendMessageToClient(std::move(response));
+  return false;
+}
+
+const base::Value* RemoteWebAuthnNativeMessagingHost::FindMessageIdOrSendError(
+    base::Value& response) {
+  const base::Value* message_id = response.FindKey(kMessageId);
+  if (message_id) {
+    return message_id;
+  }
+  response.SetKey(kWebAuthnErrorKey,
+                  CreateWebAuthnExceptionDetailsDict(
+                      "NotSupportedError", "Message ID not found in request."));
+  SendMessageToClient(std::move(response));
+  return nullptr;
+}
+
+const std::string*
+RemoteWebAuthnNativeMessagingHost::FindRequestDataOrSendError(
+    const base::Value& request,
+    const std::string& request_data_key,
+    base::Value& response) {
+  const std::string* request_data = request.FindStringKey(request_data_key);
+  if (request_data) {
+    return request_data;
+  }
+  response.SetKey(
+      kWebAuthnErrorKey,
+      CreateWebAuthnExceptionDetailsDict(
+          "NotSupportedError", "Request data not found in the request."));
+  SendMessageToClient(std::move(response));
+  return nullptr;
+}
+
+mojo::PendingReceiver<mojom::WebAuthnRequestCanceller>
+RemoteWebAuthnNativeMessagingHost::AddRequestCanceller(base::Value message_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  mojo::PendingRemote<mojom::WebAuthnRequestCanceller>
+      pending_request_canceller;
+  auto request_canceller_receiver =
+      pending_request_canceller.InitWithNewPipeAndPassReceiver();
+  id_to_request_canceller_.emplace(
+      std::move(message_id),
+      request_cancellers_.Add(std::move(pending_request_canceller)));
+  return request_canceller_receiver;
 }
 
 void RemoteWebAuthnNativeMessagingHost::RemoveRequestCancellerByMessageId(

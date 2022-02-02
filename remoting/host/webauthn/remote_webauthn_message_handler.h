@@ -24,6 +24,7 @@ namespace remoting {
 namespace protocol {
 class RemoteWebAuthn_CancelResponse;
 class RemoteWebAuthn_CreateResponse;
+class RemoteWebAuthn_GetResponse;
 class RemoteWebAuthn_IsUvpaaResponse;
 }  // namespace protocol
 
@@ -51,6 +52,10 @@ class RemoteWebAuthnMessageHandler final
       const std::string& request_data,
       mojo::PendingReceiver<mojom::WebAuthnRequestCanceller> request_canceller,
       CreateCallback callback) override;
+  void Get(
+      const std::string& request_data,
+      mojo::PendingReceiver<mojom::WebAuthnRequestCanceller> request_canceller,
+      GetCallback callback) override;
 
   // mojom::WebAuthnRequestCanceller implementation.
   void Cancel(CancelCallback callback) override;
@@ -75,12 +80,17 @@ class RemoteWebAuthnMessageHandler final
   void OnCreateResponse(
       uint64_t id,
       const protocol::RemoteWebAuthn_CreateResponse& response);
+  void OnGetResponse(uint64_t id,
+                     const protocol::RemoteWebAuthn_GetResponse& response);
   void OnCancelResponse(
       uint64_t id,
       const protocol::RemoteWebAuthn_CancelResponse& response);
 
   uint64_t AssignNextMessageId();
 
+  void AddRequestCanceller(
+      uint64_t message_id,
+      mojo::PendingReceiver<mojom::WebAuthnRequestCanceller> request_canceller);
   void RemoveRequestCancellerByMessageId(uint64_t message_id);
   void OnRequestCancellerDisconnected();
 
@@ -94,6 +104,7 @@ class RemoteWebAuthnMessageHandler final
       is_uvpaa_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   CallbackMap<CreateCallback> create_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  CallbackMap<GetCallback> get_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   CallbackMap<CancelCallback> cancel_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
