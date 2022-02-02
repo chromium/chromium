@@ -267,6 +267,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     // TODO(crbug.com/1100993): Web Bluetooth is not yet supported on WebView.
     features.DisableIfNotSet(::features::kWebBluetooth);
+
+    // TODO(crbug.com/933055): WebUSB is not yet supported on WebView.
+    features.DisableIfNotSet(::features::kWebUsb);
   }
 
   android_webview::RegisterPathProvider();
