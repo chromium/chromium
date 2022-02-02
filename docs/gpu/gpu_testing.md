@@ -246,6 +246,43 @@ for documentation on setting this up.
 
 [Cloud Storage Credentials]: gpu_testing_bot_details.md#Cloud-storage-credentials
 
+### Bisecting ChromeOS Failures Locally
+
+Failures that occur on the ChromeOS amd64-generic configuration are easy to
+reproduce due to the VM being readily available for use, but doing so requires
+some additional steps to the bisect process. The following are steps that can be
+followed using two terminals and the [Simple Chrome SDK] to bisect a ChromeOS
+failure.
+
+1. Terminal 1: Start the bisect as normal `git bisect start`
+   `git bisect good <good_revision>` `git bisect bad <bad_revision>`
+1. Terminal 1: Sync to the revision that git spits out
+   `gclient sync -r src@<revision>`
+1. Terminal 2: Enter the Simple Chrome SDK
+   `cros chrome-sdk --board amd64-generic-vm --log-level info --download-vm --clear-sdk-cache`
+1. Terminal 2: Compile the relevant target (probably the GPU integration tests)
+   `autoninja -C out_amd64-generic-vm/Release/ telemetry_gpu_integration_test`
+1. Terminal 2: Start the VM `cros_vm --start`
+1. Terminal 2: Deploy the Chrome binary to the VM
+   `deploy_chrome --build-dir out_amd64-generic-vm/Release/ --device 127.0.0.1:9222`
+   This will require you to accept a prompt twice, once because of a board
+   mismatch and once because the VM still has rootfs verification enabled.
+1. Terminal 1: Run your test on the VM. For GPU integration tests, this involves
+   specifying `--browser cros-chrome --remote 127.0.0.1 --remote-ssh-port 9222`
+1. Terminal 2: After determining whether the revision is good or bad, shut down
+   the VM `cros_vm --stop`
+1. Terminal 2: Exit the SKD `exit`
+1. Terminal 1: Let git know whether the revision was good or bad
+   `git bisect good`/`git bisect bad`
+1. Repeat from step 2 with the new revision git spits out.
+
+The repeated entry/exit from the SDK between revisions is to ensure that the
+VM image is in sync with the Chromium revision, as it is possible for
+regressions to be caused by an update to the image itself rather than a Chromium
+change.
+
+[Simple Chrome SDK]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md
+
 ### Telemetry Test Suites
 The Telemetry-based tests are all technically the same target,
 `telemetry_gpu_integration_test`, just run with different runtime arguments. The
