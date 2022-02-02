@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
@@ -34,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 /** Unit tests for the SpareChildConnection class. */
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class SpareChildConnectionTest {
     @Mock
     private ChildProcessConnection.ServiceCallback mServiceCallback;
