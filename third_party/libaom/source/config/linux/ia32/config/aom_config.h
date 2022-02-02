@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Alliance for Open Media. All rights reserved
+ * Copyright (c) 2022, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -23,6 +23,7 @@
 #define CONFIG_AV1_TEMPORAL_DENOISING 1
 #define CONFIG_BIG_ENDIAN 0
 #define CONFIG_BITRATE_ACCURACY 0
+#define CONFIG_BITRATE_ACCURACY_BL 0
 #define CONFIG_BITSTREAM_DEBUG 0
 #define CONFIG_COEFFICIENT_RANGE_CHECKING 0
 #define CONFIG_COLLECT_COMPONENT_TIMING 0
@@ -63,6 +64,7 @@
 #define CONFIG_SIZE_LIMIT 1
 #define CONFIG_SPATIAL_RESAMPLING 1
 #define CONFIG_SPEED_STATS 0
+#define CONFIG_TFLITE 0
 #define CONFIG_THREE_PASS 0
 #define CONFIG_TUNE_BUTTERAUGLI 0
 #define CONFIG_TUNE_VMAF 0

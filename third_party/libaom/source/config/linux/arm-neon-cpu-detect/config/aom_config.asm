@@ -1,5 +1,5 @@
 ;
-; Copyright (c) 2021, Alliance for Open Media. All rights reserved
+; Copyright (c) 2022, Alliance for Open Media. All rights reserved
 ;
 ; This source code is subject to the terms of the BSD 2 Clause License and
 ; the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -21,6 +21,7 @@ CONFIG_AV1_HIGHBITDEPTH equ 0
 CONFIG_AV1_TEMPORAL_DENOISING equ 1
 CONFIG_BIG_ENDIAN equ 0
 CONFIG_BITRATE_ACCURACY equ 0
+CONFIG_BITRATE_ACCURACY_BL equ 0
 CONFIG_BITSTREAM_DEBUG equ 0
 CONFIG_COEFFICIENT_RANGE_CHECKING equ 0
 CONFIG_COLLECT_COMPONENT_TIMING equ 0
@@ -61,6 +62,7 @@ CONFIG_SHARP_SETTINGS equ 0
 CONFIG_SIZE_LIMIT equ 1
 CONFIG_SPATIAL_RESAMPLING equ 1
 CONFIG_SPEED_STATS equ 0
+CONFIG_TFLITE equ 0
 CONFIG_THREE_PASS equ 0
 CONFIG_TUNE_BUTTERAUGLI equ 0
 CONFIG_TUNE_VMAF equ 0
