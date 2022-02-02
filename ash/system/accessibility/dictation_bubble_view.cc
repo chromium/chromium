@@ -30,8 +30,10 @@
 namespace ash {
 
 namespace {
-constexpr int kIconSizeDip = 15;
-constexpr int kSpaceBetweenIconAndTextDip = 10;
+constexpr int kIconSizeDip = 16;
+constexpr int kSpaceBetweenTopRowAndHintViewsDip = 4;
+constexpr int kSpaceBetweenHintLabelsDip = 4;
+constexpr int kSpaceBetweenIconAndTextDip = 4;
 constexpr int kMaxNumHints = 5;
 
 std::unique_ptr<views::ImageView> CreateImageView(
@@ -206,12 +208,16 @@ class ASH_EXPORT HintView : public views::View {
     std::unique_ptr<views::BoxLayout> layout =
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical);
+    layout->set_between_child_spacing(kSpaceBetweenHintLabelsDip);
     SetLayoutManager(std::move(layout));
+
+    SkColor primary = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    SkColor secondary = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary);
     for (size_t i = 0; i < labels_.size(); ++i) {
-      AddChildView(CreateLabelView(
-          &labels_[i], std::u16string(),
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kTextColorPrimary)));
+      SkColor color = i == 0 ? secondary : primary;
+      AddChildView(CreateLabelView(&labels_[i], std::u16string(), color));
     }
   }
 
@@ -222,8 +228,11 @@ class ASH_EXPORT HintView : public views::View {
   // Updates the text content and visibility of all labels in this view.
   void Update(
       const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
-    if (hints.has_value())
+    int num_visible_hints = 0;
+    if (hints.has_value()) {
       DCHECK(hints.value().size() <= kMaxNumHints);
+      num_visible_hints = hints.value().size();
+    }
 
     for (size_t i = 0; i < labels_.size(); ++i) {
       bool has_hint_for_index = hints.has_value() && (i < hints.value().size());
@@ -235,6 +244,10 @@ class ASH_EXPORT HintView : public views::View {
         labels_[i]->SetText(std::u16string());
       }
     }
+
+    // Set visibility of this view based on the number of visible hints.
+    SetVisible(num_visible_hints > 0 ? true : false);
+
     SizeToPreferredSize();
   }
 
@@ -244,10 +257,12 @@ class ASH_EXPORT HintView : public views::View {
     if (!color_provider)
       return;
 
-    SkColor text_color = color_provider->GetContentLayerColor(
+    SkColor primary = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary);
+    SkColor secondary = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary);
     for (size_t i = 0; i < labels_.size(); ++i) {
-      labels_[i]->SetEnabledColor(text_color);
+      labels_[i]->SetEnabledColor(i == 0 ? secondary : primary);
     }
   }
 
@@ -296,6 +311,7 @@ void DictationBubbleView::OnColorModeChanged(bool dark_mode_enabled) {
 void DictationBubbleView::Init() {
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
+  layout->set_between_child_spacing(kSpaceBetweenTopRowAndHintViewsDip);
   SetLayoutManager(std::move(layout));
   UseCompactMargins();
 
