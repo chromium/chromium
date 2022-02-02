@@ -2100,11 +2100,11 @@ void BrowserView::ShowIntentPickerBubble(
     std::vector<IntentPickerBubbleView::AppInfo> app_info,
     bool show_stay_in_chrome,
     bool show_remember_selection,
-    PageActionIconType icon_type,
+    apps::IntentPickerBubbleType bubble_type,
     const absl::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
   toolbar_->ShowIntentPickerBubble(std::move(app_info), show_stay_in_chrome,
-                                   show_remember_selection, icon_type,
+                                   show_remember_selection, bubble_type,
                                    initiating_origin, std::move(callback));
 }
 

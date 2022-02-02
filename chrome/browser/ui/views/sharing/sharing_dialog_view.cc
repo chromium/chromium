@@ -37,7 +37,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #endif
 
@@ -189,7 +188,8 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!dialog) {
     auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
-    if (bubble && bubble->icon_type() == PageActionIconType::kClickToCall)
+    if (bubble && bubble->bubble_type() ==
+                      IntentPickerBubbleView::BubbleType::kClickToCall)
       return bubble;
   }
 #endif

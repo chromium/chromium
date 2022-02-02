@@ -111,9 +111,10 @@ class SharingUiController {
       chrome_browser_sharing::SharingMessage sharing_message,
       absl::optional<SharingMessageSender::ResponseCallback> callback);
 
- private:
   // Updates the omnibox icon if available.
   void UpdateIcon();
+
+ private:
   // Closes the current dialog if there is one.
   void CloseDialog();
   // Shows a new SharingDialog and closes the old one.

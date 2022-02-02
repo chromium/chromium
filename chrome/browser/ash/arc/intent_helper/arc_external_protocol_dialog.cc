@@ -57,6 +57,7 @@ constexpr int kDeviceIconSize = 16;
 
 using IntentPickerResponseWithDevices = base::OnceCallback<void(
     std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    apps::IntentPickerBubbleType intent_picker_type,
     const std::string& launch_name,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason close_reason,
@@ -111,12 +112,12 @@ bool MaybeAddDevicesAndShowPicker(
   bool has_apps = !app_info.empty();
   bool has_devices = false;
 
-  PageActionIconType icon_type = PageActionIconType::kIntentPicker;
+  auto bubble_type = apps::IntentPickerBubbleType::kExternalProtocol;
   ClickToCallUiController* controller = nullptr;
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
 
   if (ShouldOfferClickToCallForURL(web_contents->GetBrowserContext(), url)) {
-    icon_type = PageActionIconType::kClickToCall;
+    bubble_type = apps::IntentPickerBubbleType::kClickToCall;
     controller =
         ClickToCallUiController::GetOrCreateFromWebContents(web_contents);
     devices = controller->GetDevices();
@@ -129,14 +130,15 @@ bool MaybeAddDevicesAndShowPicker(
     return false;
 
   IntentPickerTabHelper::SetShouldShowIcon(
-      web_contents, icon_type == PageActionIconType::kIntentPicker);
+      web_contents,
+      bubble_type == apps::IntentPickerBubbleType::kExternalProtocol);
   browser->window()->ShowIntentPickerBubble(
-      std::move(app_info), stay_in_chrome, show_remember_selection, icon_type,
+      std::move(app_info), stay_in_chrome, show_remember_selection, bubble_type,
       initiating_origin,
-      base::BindOnce(std::move(callback), std::move(devices)));
+      base::BindOnce(std::move(callback), std::move(devices), bubble_type));
 
   if (controller)
-    controller->OnDialogShown(has_devices, has_apps);
+    controller->OnIntentPickerShown(has_devices, has_apps);
 
   return true;
 }
@@ -475,6 +477,7 @@ void OnIntentPickerClosed(
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    apps::IntentPickerBubbleType intent_picker_type,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,
@@ -491,8 +494,14 @@ void OnIntentPickerClosed(
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
   auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
 
-  if (web_contents)
-    IntentPickerTabHelper::SetShouldShowIcon(web_contents, false);
+  if (web_contents) {
+    if (intent_picker_type == apps::IntentPickerBubbleType::kClickToCall) {
+      ClickToCallUiController::GetOrCreateFromWebContents(web_contents)
+          ->OnIntentPickerClosed();
+    } else {
+      IntentPickerTabHelper::SetShouldShowIcon(web_contents, false);
+    }
+  }
 
   if (entry_type == apps::PickerEntryType::kDevice) {
     DCHECK_EQ(apps::IntentPickerCloseReason::OPEN_APP, reason);
@@ -824,7 +833,8 @@ void OnIntentPickerClosedForTesting(
   OnIntentPickerClosed(
       render_process_host_id, routing_id, url, safe_to_bypass_ui,
       std::move(handlers), std::move(mojo_delegate), std::move(devices),
-      selected_app_package, entry_type, reason, should_persist);
+      apps::IntentPickerBubbleType::kExternalProtocol, selected_app_package,
+      entry_type, reason, should_persist);
 }
 
 ProtocolAction GetProtocolAction(Scheme scheme,

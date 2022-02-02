@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_ui_controller.h"
@@ -44,6 +45,16 @@ class ClickToCallUiController
   void OnDeviceSelected(const std::string& phone_number,
                         const syncer::DeviceInfo& device,
                         SharingClickToCallEntryPoint entry_point);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Called when an Intent Picker dialog is shown containing click to call
+  // devices.
+  void OnIntentPickerShown(bool has_devices, bool has_apps);
+
+  // Called when an Intent Picker dialog containing click to call results is
+  // closed.
+  void OnIntentPickerClosed();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Overridden from SharingUiController:
   std::u16string GetTitle(SharingDialogType dialog_type) override;

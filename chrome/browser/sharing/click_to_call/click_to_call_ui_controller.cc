@@ -70,6 +70,20 @@ void ClickToCallUiController::OnDeviceSelected(
   SendNumberToDevice(device, phone_number, entry_point);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+void ClickToCallUiController::OnIntentPickerShown(bool has_devices,
+                                                  bool has_apps) {
+  UpdateIcon();
+  OnDialogShown(has_devices, has_apps);
+}
+
+void ClickToCallUiController::OnIntentPickerClosed() {
+  UpdateIcon();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void ClickToCallUiController::OnDialogClosed(SharingDialog* dialog) {
   if (ukm_recorder_ && this->dialog() == dialog)
     std::move(ukm_recorder_).Run(SharingClickToCallSelection::kNone);

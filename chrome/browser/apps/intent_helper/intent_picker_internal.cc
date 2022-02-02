@@ -112,7 +112,8 @@ void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
 
   browser->window()->ShowIntentPickerBubble(
       std::move(apps), show_stay_in_chrome, show_remember_selection,
-      PageActionIconType::kIntentPicker, absl::nullopt, std::move(callback));
+      IntentPickerBubbleType::kLinkCapturing, absl::nullopt,
+      std::move(callback));
 }
 
 bool InAppBrowser(content::WebContents* web_contents) {

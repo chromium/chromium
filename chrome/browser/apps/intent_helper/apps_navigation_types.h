@@ -94,6 +94,18 @@ struct IntentPickerAppInfo {
   std::string display_name;
 };
 
+// The variant of the Intent Picker bubble to display. Used to customize some
+// strings and behavior.
+enum class IntentPickerBubbleType {
+  // Used to select an app to handle http/https links.
+  kLinkCapturing,
+  // Used to select an app to handle external protocol links (e.g. sms:).
+  kExternalProtocol,
+  // Special case of kExternalProtocol for tel: links, which can also be handled
+  // by Android devices.
+  kClickToCall,
+};
+
 // Callback to allow app-platform-specific code to asynchronously signal what
 // action should be taken for the current navigation, and provide a list of apps
 // which can handle the navigation.

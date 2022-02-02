@@ -497,19 +497,25 @@ void ToolbarView::ShowIntentPickerBubble(
     std::vector<IntentPickerBubbleView::AppInfo> app_info,
     bool show_stay_in_chrome,
     bool show_remember_selection,
-    PageActionIconType icon_type,
+    IntentPickerBubbleView::BubbleType bubble_type,
     const absl::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
-  PageActionIconView* const intent_picker_view =
-      GetPageActionIconView(icon_type);
-  if (!intent_picker_view)
+  views::Button* highlighted_button = nullptr;
+  if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
+    highlighted_button =
+        GetPageActionIconView(PageActionIconType::kClickToCall);
+  } else {
+    highlighted_button =
+        GetPageActionIconView(PageActionIconType::kIntentPicker);
+  }
+
+  if (!highlighted_button)
     return;
 
   IntentPickerBubbleView::ShowBubble(
-      location_bar(), intent_picker_view, icon_type, GetWebContents(),
+      location_bar(), highlighted_button, bubble_type, GetWebContents(),
       std::move(app_info), show_stay_in_chrome, show_remember_selection,
       initiating_origin, std::move(callback));
-  intent_picker_view->Update();
 }
 
 void ToolbarView::ShowBookmarkBubble(

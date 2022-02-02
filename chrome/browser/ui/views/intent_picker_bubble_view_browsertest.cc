@@ -419,7 +419,7 @@ class IntentPickerDialogTest : public DialogBrowserTest {
     add_entry("c");
     add_entry("d");
     IntentPickerBubbleView::ShowBubble(
-        anchor, anchor, PageActionIconType::kIntentPicker,
+        anchor, anchor, IntentPickerBubbleView::BubbleType::kLinkCapturing,
         browser()->tab_strip_model()->GetActiveWebContents(),
         std::move(app_info), true, true,
         url::Origin::Create(GURL("https://c.com")), base::DoNothing());
