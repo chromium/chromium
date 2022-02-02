@@ -138,12 +138,12 @@ public class TabGroupUtils {
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
                 if (!navigationHandle.isInPrimaryMainFrame()) return;
                 if (tab.isIncognito()) return;
-                Integer transition = navigationHandle.pageTransition();
+                if (!navigationHandle.hasCommitted()) return;
+
                 // Searching from omnibox results in PageTransition.GENERATED.
                 if (navigationHandle.isValidSearchFormUrl()
-                        || (transition != null
-                                && (transition & PageTransition.CORE_MASK)
-                                        == PageTransition.GENERATED)) {
+                        || (navigationHandle.pageTransition() & PageTransition.CORE_MASK)
+                                == PageTransition.GENERATED) {
                     maybeShowIPH(FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
                             tab.getView(), null);
                     sTabModelSelectorTabObserver.destroy();

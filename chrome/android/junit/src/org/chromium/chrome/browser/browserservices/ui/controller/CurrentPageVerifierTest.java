@@ -187,7 +187,7 @@ public class CurrentPageVerifierTest {
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
                 true /* isInPrimaryMainFrame */, false /* isSameDocument */,
                 false /* isRendererInitiated */, null /* initiatorOrigin */,
-                null /* impressionData */);
+                null /* impressionData */, 0 /* pageTransition */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidStartNavigation(mTab, navigation);
         }

@@ -359,17 +359,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             }
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
+                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()
+                        || !navigationHandle.hasCommitted()) {
                     return;
                 }
 
                 // User navigating to a different page, as detected by a search or typing something
                 // into the address bar.
-                if (navigationHandle.isValidSearchFormUrl()
-                        || navigationHandle.pageTransition() != null
-                                && (navigationHandle.pageTransition()
-                                           & PageTransition.FROM_ADDRESS_BAR)
-                                        != 0) {
+                boolean fromAddressBar =
+                        (navigationHandle.pageTransition() & PageTransition.FROM_ADDRESS_BAR) != 0;
+                if (navigationHandle.isValidSearchFormUrl() || fromAddressBar) {
                     resetPriceData();
                 }
 

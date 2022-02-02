@@ -49,7 +49,7 @@ NavigationHandleProxy::NavigationHandleProxy(
       cpp_navigation_handle_->GetInitiatorOrigin()
           ? cpp_navigation_handle_->GetInitiatorOrigin()->CreateJavaObject()
           : nullptr,
-      impression_byte_buffer);
+      impression_byte_buffer, cpp_navigation_handle_->GetPageTransition());
 }
 
 void NavigationHandleProxy::DidRedirect() {
@@ -90,9 +90,7 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->IsErrorPage(),
       cpp_navigation_handle_->HasCommitted(), is_fragment_navigation,
       cpp_navigation_handle_->IsDownload(), is_valid_search_form_url,
-      cpp_navigation_handle_->HasCommitted()
-          ? cpp_navigation_handle_->GetPageTransition()
-          : -1,
+      cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->GetNetErrorCode(),
       // TODO(shaktisahu): Change default status to -1 after fixing
       // crbug/690041.

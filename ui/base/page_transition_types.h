@@ -148,6 +148,8 @@ enum PageTransition {
   // Redirects sent from the server by HTTP headers. It might be nice to
   // break this out into 2 types in the future, permanent or temporary, if we
   // can get that information from WebKit.
+  // TODO(https://crbug.com/1291237): Remove this as it's inaccurate.
+  // NavigationHandle::WasServerRedirect() should be used instead.
   PAGE_TRANSITION_SERVER_REDIRECT = 0x80000000,
 
   // Used to test whether a transition involves a redirect.

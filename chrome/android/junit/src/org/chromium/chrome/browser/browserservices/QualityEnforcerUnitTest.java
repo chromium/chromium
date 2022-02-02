@@ -260,7 +260,7 @@ public class QualityEnforcerUnitTest {
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, url,
                 true /* isInPrimaryMainFrame */, false /* isSameDocument */,
                 false /* isRendererInitiated */, null /* initiatorOrigin */,
-                null /* impressionData */);
+                null /* impressionData */, 0 /* pageTransition */);
         navigation.didFinish(url, false /* isErrorPage */, true /* hasCommitted */,
                 false /* isFragmentNavigation */, false /* isDownload */,
                 false /* isValidSearchFormUrl */, 0 /* pageTransition */, errorCode,

@@ -11,6 +11,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.Impression;
 import org.chromium.net.NetError;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -25,7 +26,7 @@ public class NavigationHandle {
     private final boolean mIsInPrimaryMainFrame;
     private final boolean mIsRendererInitiated;
     private final boolean mIsSameDocument;
-    private Integer mPageTransition;
+    private @PageTransition int mPageTransition;
     private GURL mUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
@@ -39,15 +40,16 @@ public class NavigationHandle {
 
     @CalledByNative
     public NavigationHandle(long nativeNavigationHandleProxy, GURL url,
-            boolean isInPrimaryMaimFrame, boolean isSameDocument, boolean isRendererInitiated,
-            Origin initiatorOrigin, ByteBuffer impressionData) {
+            boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
+            Origin initiatorOrigin, ByteBuffer impressionData, @PageTransition int transition) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
-        mIsInPrimaryMainFrame = isInPrimaryMaimFrame;
+        mIsInPrimaryMainFrame = isInPrimaryMainFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
         mInitiatorOrigin = initiatorOrigin;
         mImpression = impressionData != null ? Impression.deserialize(impressionData) : null;
+        mPageTransition = transition;
     }
 
     /**
@@ -65,14 +67,14 @@ public class NavigationHandle {
     @CalledByNative
     public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
             boolean isFragmentNavigation, boolean isDownload, boolean isValidSearchFormUrl,
-            int transition, @NetError int errorCode, int httpStatuscode) {
+            @PageTransition int transition, @NetError int errorCode, int httpStatuscode) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
         mIsFragmentNavigation = isFragmentNavigation;
         mIsDownload = isDownload;
         mIsValidSearchFormUrl = isValidSearchFormUrl;
-        mPageTransition = transition == -1 ? null : transition;
+        mPageTransition = transition;
         mErrorCode = errorCode;
         mHttpStatusCode = httpStatuscode;
     }
@@ -169,7 +171,7 @@ public class NavigationHandle {
     /**
      * Returns the page transition type.
      */
-    public Integer pageTransition() {
+    public @PageTransition int pageTransition() {
         return mPageTransition;
     }
 

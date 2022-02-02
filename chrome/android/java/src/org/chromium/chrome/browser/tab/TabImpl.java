@@ -1067,10 +1067,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url The URL that was loaded.
      * @param transitionType The transition type to the current URL.
      */
-    void handleDidFinishNavigation(GURL url, Integer transitionType) {
+    void handleDidFinishNavigation(GURL url, int transitionType) {
         mIsNativePageCommitPending = false;
-        boolean isReload = (transitionType != null
-                && (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD);
+        boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
         if (!maybeShowNativePage(url.getSpec(), isReload)) {
             showRenderedPage();
         }

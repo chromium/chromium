@@ -126,7 +126,7 @@ public class MediaNotificationTestTabHolder {
 
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
                 true /* isInPrimaryMainFrame */, isSameDocument, false /* isRendererInitiated */,
-                null /* initiatorOrigin */, null /* impressionData */);
+                null /* initiatorOrigin */, null /* impressionData */, 0 /* pageTransition */);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.didStartNavigation(
                 navigation);
 

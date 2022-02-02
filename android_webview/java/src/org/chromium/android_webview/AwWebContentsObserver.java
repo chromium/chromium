@@ -275,9 +275,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
                 client.getCallbackHelper().postOnPageStarted(url);
             }
 
-            boolean isReload = navigation.pageTransition() != null
-                    && ((navigation.pageTransition() & PageTransition.CORE_MASK)
-                            == PageTransition.RELOAD);
+            boolean isReload = (navigation.pageTransition() & PageTransition.CORE_MASK)
+                    == PageTransition.RELOAD;
             client.getCallbackHelper().postDoUpdateVisitedHistory(url, isReload);
         }
 
