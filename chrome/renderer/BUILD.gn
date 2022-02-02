@@ -356,19 +356,12 @@ static_library("renderer") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "extensions/file_browser_handler_custom_bindings.cc",
       "extensions/file_browser_handler_custom_bindings.h",
       "extensions/platform_keys_natives.cc",
       "extensions/platform_keys_natives.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "extensions/file_manager_private_custom_bindings.cc",
-      "extensions/file_manager_private_custom_bindings.h",
     ]
     if (use_cups) {
       sources += [
@@ -376,6 +369,13 @@ static_library("renderer") {
         "extensions/printing_hooks_delegate.h",
       ]
     }
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "extensions/file_manager_private_custom_bindings.cc",
+      "extensions/file_manager_private_custom_bindings.h",
+    ]
   }
 
   if (!is_android) {

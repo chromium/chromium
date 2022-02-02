@@ -42,17 +42,17 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/renderer/extensions/file_browser_handler_custom_bindings.h"
 #include "chrome/renderer/extensions/platform_keys_natives.h"
+#if defined(USE_CUPS)
+#include "chrome/renderer/extensions/printing_hooks_delegate.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/renderer/extensions/accessibility_private_hooks_delegate.h"
 #include "chrome/renderer/extensions/file_manager_private_custom_bindings.h"
-#if defined(USE_CUPS)
-#include "chrome/renderer/extensions/printing_hooks_delegate.h"
-#endif
 #endif
 
 using extensions::NativeHandler;
@@ -70,14 +70,14 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
       "sync_file_system",
       std::unique_ptr<NativeHandler>(
           new extensions::SyncFileSystemCustomBindings(context)));
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   module_system->RegisterNativeHandler(
       "file_browser_handler",
       std::make_unique<extensions::FileBrowserHandlerCustomBindings>(context));
   module_system->RegisterNativeHandler(
       "platform_keys_natives",
       std::make_unique<extensions::PlatformKeysNatives>(context));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   module_system->RegisterNativeHandler(
       "file_manager_private",
@@ -141,7 +141,7 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
   source_map->RegisterSource("tts", IDR_TTS_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("ttsEngine", IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   source_map->RegisterSource("enterprise.platformKeys",
                              IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("enterprise.platformKeys.KeyPair",
@@ -249,7 +249,7 @@ void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
       ->SetDelegate(
           std::make_unique<extensions::AccessibilityPrivateHooksDelegate>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
   bindings->GetHooksForAPI("printing")
       ->SetDelegate(std::make_unique<extensions::PrintingHooksDelegate>());
 #endif
