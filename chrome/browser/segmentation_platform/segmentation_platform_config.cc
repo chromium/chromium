@@ -133,7 +133,7 @@ std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
   };
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      feature_guide::features::kFeatureNotificationGuide,
+      feature_guide::features::kSegmentationModelLowEngagedUsers,
       "segment_selection_ttl_days", kChromeLowUserEngagementSelectionTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   config->unknown_selection_ttl = base::Days(segment_selection_ttl_days);
@@ -163,7 +163,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
     configs.emplace_back(GetConfigForQueryTiles());
   }
   if (base::FeatureList::IsEnabled(
-          feature_guide::features::kFeatureNotificationGuide)) {
+          feature_guide::features::kSegmentationModelLowEngagedUsers)) {
     configs.emplace_back(GetConfigForChromeLowUserEngagement());
   }
 #endif

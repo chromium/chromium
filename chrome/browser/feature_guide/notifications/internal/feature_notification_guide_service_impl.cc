@@ -75,6 +75,11 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
   if (!init_success)
     return;
 
+  if (!base::FeatureList::IsEnabled(
+          feature_guide::features::kSegmentationModelLowEngagedUsers)) {
+    return;
+  }
+
   segmentation_platform_service_->GetSelectedSegment(
       segmentation_platform::kChromeLowUserEngagementSegmentationKey,
       base::BindOnce(

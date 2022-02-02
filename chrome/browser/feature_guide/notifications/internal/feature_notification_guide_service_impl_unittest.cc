@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -120,6 +121,8 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
   ~FeatureNotificationGuideServiceImplTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {feature_guide::features::kSegmentationModelLowEngagedUsers}, {});
     config_.enabled_features.emplace_back(FeatureType::kIncognitoTab);
     config_.enabled_features.emplace_back(FeatureType::kVoiceSearch);
     config_.notification_deliver_time_delta = base::Days(7);
@@ -137,6 +140,7 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
   TestSegmentationPlatformService segmentation_platform_service_;
   Config config_;
   base::SimpleTestClock test_clock_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FeatureNotificationGuideServiceImpl> service_;
 };
 

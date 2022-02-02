@@ -26,6 +26,9 @@ namespace features {
 // Main feature flag for the feature notification guide feature.
 extern const base::Feature kFeatureNotificationGuide;
 
+// Feature flag used for running the segmentation model for low engaged users.
+extern const base::Feature kSegmentationModelLowEngagedUsers;
+
 // Feature flag to determine whether to skip check for the low engaged users.
 extern const base::Feature kSkipCheckForLowEngagedUsers;
 
