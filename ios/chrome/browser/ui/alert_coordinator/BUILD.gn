@@ -9,8 +9,6 @@ source_set("alert_coordinator") {
     "action_sheet_coordinator.mm",
     "alert_coordinator.h",
     "alert_coordinator.mm",
-    "input_alert_coordinator.h",
-    "input_alert_coordinator.mm",
     "repost_form_coordinator.h",
     "repost_form_coordinator.mm",
   ]
@@ -34,7 +32,6 @@ source_set("unit_tests") {
   sources = [
     "action_sheet_coordinator_unittest.mm",
     "alert_coordinator_unittest.mm",
-    "input_alert_coordinator_unittest.mm",
     "repost_form_coordinator_unittest.mm",
   ]
   deps = [
