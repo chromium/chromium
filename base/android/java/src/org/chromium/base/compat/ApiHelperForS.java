@@ -6,6 +6,7 @@ package org.chromium.base.compat;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -103,5 +104,12 @@ public final class ApiHelperForS {
     public static Context createWindowContext(
             Context context, Display display, int type, Bundle options) {
         return context.createWindowContext(display, type, options);
+    }
+
+    /**
+     * See {@link PendingIntent#FLAG_MUTABLE}.
+     */
+    public static int getPendingIntentMutableFlag() {
+        return PendingIntent.FLAG_MUTABLE;
     }
 }

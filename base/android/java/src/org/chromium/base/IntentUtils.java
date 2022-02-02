@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.app.BundleCompat;
 
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForS;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,9 +45,6 @@ public class IntentUtils {
     @VisibleForTesting
     public static final String EPHEMERAL_INSTALLER_CLASS =
             "com.google.android.gms.instantapps.routing.EphemeralInstallerActivity";
-
-    // TODO(mthiesse): Move to ApiHelperForS when it exist.
-    private static final int FLAG_MUTABLE = 1 << 25;
 
     /**
      * Intent extra used to identify the sending application.
@@ -516,7 +514,7 @@ public class IntentUtils {
         if (!mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return ApiHelperForM.getPendingIntentImmutableFlag();
         } else if (mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return FLAG_MUTABLE;
+            return ApiHelperForS.getPendingIntentMutableFlag();
         }
         return 0;
     }
