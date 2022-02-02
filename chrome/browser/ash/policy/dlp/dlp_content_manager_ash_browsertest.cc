@@ -955,6 +955,53 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       ScreenShareWarnedFromLacrosDuringAllowed) {
+  helper_->EnableScreenShareWarningMode();
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  base::MockCallback<base::RepeatingClosure> stop_cb;
+  // Explicitly specify that the stop callback should never be invoked.
+  EXPECT_CALL(stop_cb, Run()).Times(0);
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(1);
+
+  manager->OnScreenCaptureStarted(kLabel, {media_id}, kApplicationTitle,
+                                  stop_cb.Get(), state_change_cb.Get());
+
+  manager->OnWindowRestrictionChanged(browser()->window()->GetNativeWindow(),
+                                      kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+
+  // Hit Enter to "Share anyway".
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_RETURN, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+
+  // The window contents should already be cached as allowed by the user, so
+  // this should not trigger a new warning.
+  manager->OnWindowRestrictionChanged(browser()->window()->GetNativeWindow(),
+                                      kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+}
+
 class DlpContentManagerAshScreenShareBrowserTest
     : public DlpContentManagerAshBrowserTest {
  public:
