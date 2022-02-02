@@ -37,8 +37,6 @@ class LinkCapturingPrefMigration : public apps::AppRegistryCache::Observer {
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       scoped_observation_{this};
-
-  base::WeakPtrFactory<LinkCapturingPrefMigration> weak_factory_{this};
 };
 
 }  // namespace web_app
