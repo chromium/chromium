@@ -48,9 +48,8 @@ bool HeadersContainFrameAncestorsCSP(
 }
 
 // From a RenderFrameHost |rfh|, return its parent. This goes through nested
-// WebContents like Portals or GuestView, but doesn't go through FencedFrames.
-// This returns nullptr for the top-level document and FencedFrame top-level
-// document.
+// WebContents like Portals, but doesn't go through FencedFrames. This returns
+// nullptr for the top-level document and FencedFrame top-level document.
 RenderFrameHostImpl* GetParentExceptForFencedFrame(RenderFrameHostImpl* frame) {
   return frame->IsFencedFrameRoot() ? nullptr
                                     : frame->GetParentOrOuterDocument();
