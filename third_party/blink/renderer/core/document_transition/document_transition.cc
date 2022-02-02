@@ -116,14 +116,7 @@ void DocumentTransition::ContextDestroyed() {
     start_promise_resolver_->Detach();
     start_promise_resolver_ = nullptr;
   }
-  if (style_tracker_) {
-    style_tracker_->Abort();
-    style_tracker_ = nullptr;
-  }
-  state_ = State::kIdle;
-  active_shared_elements_.clear();
-  signal_ = nullptr;
-  StopDeferringCommits();
+  ResetState();
 }
 
 bool DocumentTransition::HasPendingActivity() const {
@@ -137,9 +130,8 @@ ScriptPromise DocumentTransition::prepare(
     const DocumentTransitionPrepareOptions* options,
     ExceptionState& exception_state) {
   // Reject any previous prepare promises.
-  if (state_ == State::kPreparing || state_ == State::kPrepared) {
+  if (state_ == State::kPreparing || state_ == State::kPrepared)
     CancelPendingTransition(kAbortedFromPrepare);
-  }
 
   // Get the sequence id before any early outs so we will correctly process
   // callbacks from previous requests.
@@ -277,6 +269,7 @@ ScriptPromise DocumentTransition::start(
 
   signal_ = nullptr;
   StopDeferringCommits();
+
   if (options->hasSharedElements())
     SetActiveSharedElements(options->sharedElements());
 
@@ -292,11 +285,7 @@ ScriptPromise DocumentTransition::start(
 
     // TODO(khushalsagar) : Viz keeps copy results cached for 5 seconds at this
     // point. We should send an early release. See crbug.com/1266500.
-    SetActiveSharedElements({});
-    if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
-      style_tracker_->Abort();
-      style_tracker_ = nullptr;
-    }
+    ResetState();
     return ScriptPromise();
   }
 
@@ -374,15 +363,12 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   if (disable_end_transition_)
     return;
 
-  state_ = State::kIdle;
-  SetActiveSharedElements({});
-
   if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
     style_tracker_->StartFinished();
-    style_tracker_ = nullptr;
     pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
     NotifyHasChangesToCommit();
   }
+  ResetState(/*abort_style_tracker=*/false);
 }
 
 std::unique_ptr<DocumentTransitionRequest>
@@ -595,7 +581,7 @@ void DocumentTransition::StopDeferringCommits() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("blink",
                                   "DocumentTransition::DeferringCommits", this);
   deferring_commits_ = false;
-  if (!document_->GetPage())
+  if (!document_ || !document_->GetPage())
     return;
 
   document_->GetPage()->GetChromeClient().StopDeferringCommits(
@@ -613,11 +599,14 @@ void DocumentTransition::CancelPendingTransition(const char* abort_message) {
     prepare_promise_resolver_ = nullptr;
   }
 
+  ResetState();
+}
+
+void DocumentTransition::ResetState(bool abort_style_tracker) {
   SetActiveSharedElements({});
-  if (style_tracker_) {
+  if (style_tracker_ && abort_style_tracker)
     style_tracker_->Abort();
-    style_tracker_ = nullptr;
-  }
+  style_tracker_ = nullptr;
   StopDeferringCommits();
   state_ = State::kIdle;
   signal_ = nullptr;

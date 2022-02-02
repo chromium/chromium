@@ -131,6 +131,10 @@ class CORE_EXPORT DocumentTransition
 
   void Abort(AbortSignal* signal);
 
+  // Resets internal state, called in both abort situations and transition
+  // finished situations.
+  void ResetState(bool abort_style_tracker = true);
+
   Member<Document> document_;
 
   State state_ = State::kIdle;
