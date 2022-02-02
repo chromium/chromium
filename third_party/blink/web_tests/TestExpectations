@@ -7020,7 +7020,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/jpeg-with-color-profile.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-shape.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/timeline-layout.js [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-js/timeline-microtasks.js [ Failure Pass ]
@@ -7587,3 +7586,6 @@ crbug.com/1292887 [ Mac ] virtual/plz-dedicated-worker/external/wpt/resource-tim
 crbug.com/1292889 [ Mac ] virtual/threaded/external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
 
 crbug.com/1197296 [ Mac10.12 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
+
+crbug.com/1038139 [ Linux ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
+crbug.com/1038139 [ Mac ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
