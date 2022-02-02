@@ -22,6 +22,15 @@
 
 extern "C" {
 
+// WARNING: Whenever a new function is added there (which, surprisingly enough,
+// happens. For instance glibc 2.33 introduced mallinfo2(), which we don't
+// support... yet?), it MUST be added to build/linux/chrome.map.
+//
+// Otherwise the new symbol is not exported from Chromium's main binary, which
+// is necessary to override libc's weak symbol, which in turn is necessary to
+// intercept calls made by dynamic libraries. See crbug.com/1292206 for such
+// an example.
+
 SHIM_ALWAYS_EXPORT void* malloc(size_t size) __THROW {
   return ShimMalloc(size, nullptr);
 }
