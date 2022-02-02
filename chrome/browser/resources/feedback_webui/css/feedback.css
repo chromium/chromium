@@ -79,6 +79,16 @@ body {
   padding-inline-start: 10px;
 }
 
+:is(input, select, textarea) {
+  background-color: var(--feedback-textfield-bg-color);
+}
+
+:is(input, select, textarea):active,
+:is(input, select, textarea):focus {
+  caret-color: var(--feedback-prominent-color);
+  outline: 2px solid var(--feedback-focus-color);
+}
+
 .content .text-field-container > label {
   flex: 0 1 auto;
   width: 100px;
@@ -86,7 +96,7 @@ body {
 
 .content .text-field-container > select {
   border: 1px solid var(--feedback-separator-color);
-  color: var(--feedback-secondary-color);
+  color: var(--feedback-primary-color);
   flex: 1 1 auto;
   height: 100%;
   padding-inline-start: 5px;
@@ -99,6 +109,10 @@ body {
   flex: 1 1 auto;
   height: 100%;
   padding-inline-start: 5px;
+}
+
+.content .text-field-container > input:focus {
+  color: var(--feedback-primary-color);
 }
 
 .content .text-field-container > input[type=checkbox] {
@@ -249,4 +263,11 @@ button.blue-button {
   position: absolute;
   top: auto;
   width: 1px;
+}
+
+option {
+  background: var(--feedback-bg-color) linear-gradient(
+      rgba(255,255,255, 0.06),rgba(255,255,255, 0.06));
+  box-shadow: 0 1px 2px rgba(var(--feedback-box-shadow-color), 0.3),
+              0 1px 6px rgba(var(--feedback-box-shadow-color), 0.15);
 }
