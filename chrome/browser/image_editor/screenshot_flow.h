@@ -130,6 +130,13 @@ class ScreenshotFlow : public content::WebContentsObserver,
   // Adds mouse listeners.
   void CreateAndAddUIOverlay();
 
+  // Checks whether the UI overlay is visible.
+  bool IsUIOverlayShown();
+
+  // Resizes the UI overlay. It's used to make the UI overlay responsive to
+  // the frame size changes.
+  void ResetUIOverlayBounds();
+
   // Removes the UI overlay and any listeners.
   void RemoveUIOverlay();
 

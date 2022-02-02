@@ -272,6 +272,28 @@ void ScreenshotFlow::RunScreenshotCompleteCallback(
   std::move(flow_callback_).Run(result);
 }
 
+bool ScreenshotFlow::IsUIOverlayShown() {
+  return screen_capture_layer_ != nullptr && screen_capture_layer_->visible();
+}
+
+void ScreenshotFlow::ResetUIOverlayBounds() {
+#if BUILDFLAG(IS_MAC)
+  gfx::Rect bounds = web_contents_->GetViewBounds();
+  const gfx::NativeView web_contents_view =
+      web_contents_->GetContentNativeView();
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeView(web_contents_view);
+  if (widget != nullptr) {
+    const gfx::Rect offset_bounds = widget->GetWindowBoundsInScreen();
+    bounds.Offset(-offset_bounds.x(), -offset_bounds.y());
+  }
+#else
+  const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
+  const gfx::Rect bounds = native_window->bounds();
+#endif
+  screen_capture_layer_->SetBounds(bounds);
+}
+
 void ScreenshotFlow::OnPaintLayer(const ui::PaintContext& context) {
   if (!screen_capture_layer_)
     return;
@@ -379,6 +401,15 @@ class ScreenshotFlow::UnderlyingWebContentsObserver
     if (screenshot_flow_->IsCaptureModeActive())
       screenshot_flow_->CompleteCapture(
           ScreenshotCaptureResultCode::USER_NAVIGATED_EXIT, gfx::Rect());
+  }
+
+  // content::WebContentsObserver
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override {
+    // We only care to resize the UI overlay when it's visible to the user.
+    if (screenshot_flow_->IsUIOverlayShown()) {
+      screenshot_flow_->ResetUIOverlayBounds();
+    }
   }
 
  private:
