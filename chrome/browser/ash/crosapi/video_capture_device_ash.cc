@@ -60,4 +60,8 @@ void VideoCaptureDeviceAsh::ProcessFeedback(
   device_->ProcessFeedback(std::move(feedback));
 }
 
+void VideoCaptureDeviceAsh::RequestRefreshFrame() {
+  device_->RequestRefreshFrame();
+}
+
 }  // namespace crosapi

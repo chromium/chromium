@@ -169,6 +169,9 @@ void VideoFrameHandlerProxyLacros::OnNewBuffer(
   } else if (buffer_handle->is_gpu_memory_buffer_handle()) {
     media_handle->set_gpu_memory_buffer_handle(ToGfxGpuMemoryBufferHandle(
         std::move(buffer_handle->get_gpu_memory_buffer_handle())));
+  } else if (buffer_handle->is_read_only_shmem_region()) {
+    media_handle->set_read_only_shmem_region(
+        std::move(buffer_handle->get_read_only_shmem_region()));
   } else {
     NOTREACHED() << "Unexpected new buffer type";
   }

@@ -41,6 +41,7 @@ class VideoCaptureDeviceAsh : public crosapi::mojom::VideoCaptureDevice {
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override;
+  void RequestRefreshFrame() override;
 
   std::unique_ptr<VideoFrameHandlerAsh> handler_;
 

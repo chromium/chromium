@@ -54,6 +54,7 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override;
+  void RequestRefreshFrame() override;
 
   void Stop();
 

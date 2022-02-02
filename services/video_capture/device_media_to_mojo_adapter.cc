@@ -156,6 +156,10 @@ void DeviceMediaToMojoAdapter::ProcessFeedback(
   device_->OnUtilizationReport(/*frame_feedback_id=*/0, feedback);
 }
 
+void DeviceMediaToMojoAdapter::RequestRefreshFrame() {
+  device_->RequestRefreshFrame();
+}
+
 void DeviceMediaToMojoAdapter::Stop() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!device_started_)
