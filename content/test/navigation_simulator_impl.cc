@@ -396,7 +396,7 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   // |same_document_| should always be false here.
   referrer_ = request_->common_params().referrer.Clone();
   transition_ = request_->GetPageTransition();
-  if (!request->IsInMainFrame()) {
+  if (!request_->IsInMainFrame()) {
     // Subframe transitions always start as MANUAL_SUBFRAME, and the final
     // value will be calculated at DidCommit time (see
     // BuildDidCommitProvisionalLoadParams()).
@@ -420,20 +420,22 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   // there.
   if (num_did_start_navigation_called_ == 0) {
     num_did_start_navigation_called_++;
-    RegisterTestThrottle(request);
+    RegisterTestThrottle();
     PrepareCompleteCallbackOnRequest();
   }
 }
 
-void NavigationSimulatorImpl::RegisterTestThrottle(NavigationRequest* request) {
+void NavigationSimulatorImpl::RegisterTestThrottle() {
+  DCHECK(request_);
+
   // Page activating navigations don't run throttles so we don't need to
   // register it in that case.
   if (request_->IsPageActivation())
     return;
 
-  request->RegisterThrottleForTesting(
+  request_->RegisterThrottleForTesting(
       std::make_unique<NavigationThrottleCallbackRunner>(
-          request,
+          request_,
           base::BindOnce(&NavigationSimulatorImpl::OnWillStartRequest,
                          weak_factory_.GetWeakPtr()),
           base::BindRepeating(&NavigationSimulatorImpl::OnWillRedirectRequest,
@@ -1164,7 +1166,7 @@ void NavigationSimulatorImpl::DidStartNavigation(
   request_->set_has_user_gesture(has_user_gesture_);
 
   // Add a throttle to count NavigationThrottle calls count.
-  RegisterTestThrottle(request);
+  RegisterTestThrottle();
   PrepareCompleteCallbackOnRequest();
 
   if (did_start_navigation_closure_)

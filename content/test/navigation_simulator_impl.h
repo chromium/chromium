@@ -44,7 +44,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
  public:
   ~NavigationSimulatorImpl() override;
 
-  // TODO(https://crbug.com/1131832): Remove |original_url| as it's not used.
+  // TODO(https://crbug.com/1131832): Remove `original_url` as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateBrowserInitiated(
       const GURL& original_url,
       WebContents* contents);
@@ -54,7 +54,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       WebContents* web_contents,
       bool is_renderer_initiated);
 
-  // TODO(https://crbug.com/1131832): Remove |original_url| as it's not used.
+  // TODO(https://crbug.com/1131832): Remove `original_url` as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateRendererInitiated(
       const GURL& original_url,
       RenderFrameHost* render_frame_host);
@@ -63,7 +63,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       NavigationController& controller);
 
   // Creates a NavigationSimulator for an already-started navigation happening
-  // in |frame_tree_node|. Can be used to drive the navigation to completion.
+  // in `frame_tree_node`. Can be used to drive the navigation to completion.
   static std::unique_ptr<NavigationSimulatorImpl> CreateFromPendingInFrame(
       FrameTreeNode* frame_tree_node);
 
@@ -131,11 +131,11 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     should_check_main_world_csp_ = disposition;
   }
 
-  // Set DidCommit*Params history_list_was_cleared flag to |history_cleared|.
+  // Set DidCommit*Params history_list_was_cleared flag to `history_cleared`.
   void set_history_list_was_cleared(bool history_cleared);
 
   // Manually force the value of should_replace_current_entry flag in
-  // DidCommit*Params to |should_replace_current_entry|.
+  // DidCommit*Params to `should_replace_current_entry`.
   void set_should_replace_current_entry(bool should_replace_current_entry) {
     should_replace_current_entry_ = should_replace_current_entry;
   }
@@ -232,9 +232,9 @@ class NavigationSimulatorImpl : public NavigationSimulator,
                           WebContentsImpl* web_contents,
                           TestRenderFrameHost* render_frame_host);
 
-  // Adds a test navigation throttle to |request| which sanity checks various
+  // Adds a test navigation throttle to `request_` which sanity checks various
   // callbacks have been properly called.
-  void RegisterTestThrottle(NavigationRequest* request);
+  void RegisterTestThrottle();
 
   // Initializes a NavigationSimulator from an existing NavigationRequest. This
   // should only be needed if a navigation was started without a valid
@@ -269,18 +269,17 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // This method will block waiting for the navigation to reach the next
   // NavigationThrottle phase of the navigation to complete
-  // (StartRequest|Redirect|Failed|ProcessResponse) if |auto_advance_|. This
+  // (StartRequest|Redirect|Failed|ProcessResponse) if `auto_advance_`. This
   // waits until *after* throttle checks are run (if the navigation requires
-  // throttle checks).  If |!auto_advance_| this will just set up state for
+  // throttle checks).  If !`auto_advance_` this will just set up state for
   // checking the result when the throttles end up finishing.
   void MaybeWaitForThrottleChecksComplete(base::OnceClosure complete_closure);
 
   // Like above but blocks waiting for the ReadyToCommit checks to complete.
-  // This check calls ReadyToCommitComplete() when finished.
   void MaybeWaitForReadyToCommitCheckComplete();
 
-  // Sets |last_throttle_check_result_| and calls both the |wait_closure_| and
-  // the |throttle_checks_complete_closure_|, if they are set.
+  // Sets `last_throttle_check_result_` and calls both the `wait_closure_` and
+  // the `throttle_checks_complete_closure_`, if they are set.
   bool OnThrottleChecksComplete(NavigationThrottle::ThrottleCheckResult result);
 
   // Helper method to set the OnThrottleChecksComplete callback on the
