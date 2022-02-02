@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -26,16 +27,21 @@ class ASH_EXPORT CameraId {
  public:
   CameraId() = default;
   CameraId(std::string model_id, int number);
+  CameraId(const CameraId&) = default;
   CameraId(CameraId&&) = default;
+  CameraId& operator=(const CameraId&) = default;
   CameraId& operator=(CameraId&&) = default;
   ~CameraId() = default;
 
-  bool is_valid() const { return !model_id_.empty(); }
-  const std::string& model_id() const { return model_id_; }
+  bool is_valid() const { return !model_id_or_display_name_.empty(); }
+  const std::string& model_id_or_display_name() const {
+    return model_id_or_display_name_;
+  }
   int number() const { return number_; }
 
   bool operator==(const CameraId& rhs) const {
-    return model_id_ == rhs.model_id_ && number_ == rhs.number_;
+    return model_id_or_display_name_ == rhs.model_id_or_display_name_ &&
+           number_ == rhs.number_;
   }
   bool operator!=(const CameraId& rhs) const { return !(*this == rhs); }
 
@@ -51,7 +57,7 @@ class ASH_EXPORT CameraId {
   // Note that in some cases, `media::VideoCaptureDeviceDescriptor::model_id`
   // may not be present. In this case, this will be filled by the camera's
   // display name.
-  std::string model_id_;
+  std::string model_id_or_display_name_;
 
   // A number that disambiguates cameras of the same type. For example if we
   // have two connected cameras of the same type, the first one will have
@@ -127,6 +133,10 @@ class ASH_EXPORT CaptureModeCameraController
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 
+  void SetOnCameraListReceivedForTesting(base::OnceClosure callback) {
+    on_camera_list_received_for_test_ = std::move(callback);
+  }
+
  private:
   // Called to connect to the video capture services's video source provider for
   // the first time, or when the connection to it is lost. It also queries the
@@ -167,6 +177,13 @@ class ASH_EXPORT CaptureModeCameraController
   CameraId selected_camera_;
 
   base::ObserverList<Observer> observers_;
+
+  // If bound, will be invoked at the end of the scope of
+  // `OnCameraDevicesReceived()` regardless of whether there was a change in the
+  // available cameras or not, which is different from the behavior of
+  // `Observer::OnAvailableCamerasChanged()` which is called only when there is
+  // a change.
+  base::OnceClosure on_camera_list_received_for_test_;
 
   // TODO(https://crbug.com/1290883): Remove this and replace it by the actual
   // preview widget. This was added temporarily for testing purposes.

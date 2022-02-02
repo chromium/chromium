@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -17,15 +18,24 @@ namespace ash {
 
 namespace {
 
-// Defines a map type to map a camera model ID to the number of cameras of that
-// model that are currently connected.
+// Defines a map type to map a camera model ID (or display name) to the number
+// of cameras of that model that are currently connected.
 using ModelIdToCountMap = std::map<std::string, int>;
 
 // Using the given `cam_models_map` which tracks the number of cameras connected
-// of each model, returns the next `CameraId::number` for the given `model_id`.
-int GetNextCameraNumber(const std::string& model_id,
+// of each model, returns the next `CameraId::number` for the given
+// `model_id_or_display_name`.
+int GetNextCameraNumber(const std::string& model_id_or_display_name,
                         ModelIdToCountMap* cam_models_map) {
-  return ++(*cam_models_map)[model_id];
+  return ++(*cam_models_map)[model_id_or_display_name];
+}
+
+// Returns a reference to either the model ID (if available) or the display name
+// from the given `descriptor`.
+const std::string& PickModelIdOrDisplayName(
+    const media::VideoCaptureDeviceDescriptor& descriptor) {
+  return descriptor.model_id.empty() ? descriptor.display_name()
+                                     : descriptor.model_id;
 }
 
 // Returns true if the `incoming_list` (supplied by the video source provider)
@@ -47,13 +57,15 @@ bool DidDevicesChange(
     if (iter == current_list.end())
       return true;
 
-    const auto& incoming_model_id = incoming_camera.descriptor.model_id;
+    const auto& model_id_or_display_name =
+        PickModelIdOrDisplayName(incoming_camera.descriptor);
     const int cam_number =
-        GetNextCameraNumber(incoming_model_id, &cam_models_map);
+        GetNextCameraNumber(model_id_or_display_name, &cam_models_map);
 
     const CameraInfo& found_info = *iter;
     if (found_info.display_name != incoming_camera.descriptor.display_name() ||
-        found_info.camera_id.model_id() != incoming_model_id ||
+        found_info.camera_id.model_id_or_display_name() !=
+            model_id_or_display_name ||
         found_info.camera_id.number() != cam_number) {
       return true;
     }
@@ -72,32 +84,27 @@ const CameraInfo* GetCameraInfoById(const CameraId& id,
   return iter == list.end() ? nullptr : &(*iter);
 }
 
-// Returns a reference to either the model ID (if available) or the display name
-// from the given `descriptor`.
-const std::string& PickModelIdOrDisplayName(
-    const media::VideoCaptureDeviceDescriptor& descriptor) {
-  return descriptor.model_id.empty() ? descriptor.display_name()
-                                     : descriptor.model_id;
-}
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
 // CameraId:
 
-CameraId::CameraId(std::string model_id, int number)
-    : model_id_(std::move(model_id)), number_(number) {
-  DCHECK(!model_id_.empty());
+CameraId::CameraId(std::string model_id_or_display_name, int number)
+    : model_id_or_display_name_(std::move(model_id_or_display_name)),
+      number_(number) {
+  DCHECK(!model_id_or_display_name_.empty());
   DCHECK_GE(number, 1);
 }
 
 bool CameraId::operator<(const CameraId& rhs) const {
-  const int result = std::strcmp(model_id_.c_str(), rhs.model_id_.c_str());
+  const int result = std::strcmp(model_id_or_display_name_.c_str(),
+                                 rhs.model_id_or_display_name_.c_str());
   return result != 0 ? result : (number_ < rhs.number_);
 }
 
 std::string CameraId::ToString() const {
-  return base::StringPrintf("%s:%0d", model_id_.c_str(), number_);
+  return base::StringPrintf("%s:%0d", model_id_or_display_name_.c_str(),
+                            number_);
 }
 
 // -----------------------------------------------------------------------------
@@ -178,6 +185,13 @@ void CaptureModeCameraController::GetCameraDevices() {
 
 void CaptureModeCameraController::OnCameraDevicesReceived(
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
+  // Run the optional for-test closure at the exit of this function's scope.
+  base::ScopedClosureRunner deferred_runner;
+  if (on_camera_list_received_for_test_) {
+    deferred_runner.ReplaceClosure(
+        std::move(on_camera_list_received_for_test_));
+  }
+
   DCHECK(waiting_for_camera_devices_);
   waiting_for_camera_devices_ = false;
 
