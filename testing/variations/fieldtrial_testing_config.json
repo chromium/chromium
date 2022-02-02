@@ -5619,6 +5619,24 @@
             ]
         }
     ],
+    "ShareButtonInTopToolbar": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "minimum_width": "360"
+                    },
+                    "enable_features": [
+                        "ShareButtonInTopToolbar"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShareUsageRanking": [
         {
             "platforms": [
