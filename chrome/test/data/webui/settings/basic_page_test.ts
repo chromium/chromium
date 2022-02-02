@@ -11,7 +11,7 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PrivacyReviewBrowserProxy, PrivacyReviewBrowserProxyImpl, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PrivacyGuideInteractions, PrivacyReviewBrowserProxy, PrivacyReviewBrowserProxyImpl, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -373,5 +373,18 @@ suite('PrivacyReviewPromo', () => {
     // The privacy guide should be marked as seen and the promo no longer
     // visible.
     assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+  });
+
+  test('privacyReviewPromoStartMetrics', async function() {
+    // Click the start button.
+    const privacyReviewPromo =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyReviewPromo')!;
+    privacyReviewPromo.shadowRoot!.querySelector<HTMLElement>(
+                                      '#startButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(result, PrivacyGuideInteractions.PROMO_ENTRY);
   });
 });
