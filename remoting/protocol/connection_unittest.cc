@@ -557,7 +557,7 @@ TEST_P(ConnectionTest, MAYBE_Video) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          std::make_unique<TestScreenCapturer>());
+          "stream", std::make_unique<TestScreenCapturer>());
 
   // Receive 5 frames.
   for (int i = 0; i < 5; ++i) {
@@ -582,7 +582,7 @@ TEST_P(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          base::WrapUnique(new TestScreenCapturer()));
+          "stream", base::WrapUnique(new TestScreenCapturer()));
 
   WaitNextVideoFrame();
 }
@@ -632,7 +632,7 @@ TEST_P(ConnectionTest, DISABLED_VideoStats) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          std::make_unique<TestScreenCapturer>());
+          "stream", std::make_unique<TestScreenCapturer>());
   video_stream->SetEventTimestampsSource(input_event_timestamps_source);
 
   WaitNextVideoFrame();
@@ -694,7 +694,8 @@ TEST_P(ConnectionTest, DISABLED_FirstCaptureFailed) {
 
   auto capturer = std::make_unique<TestScreenCapturer>();
   capturer->FailNthFrame(0);
-  auto video_stream = host_connection_->StartVideoStream(std::move(capturer));
+  auto video_stream =
+      host_connection_->StartVideoStream("stream", std::move(capturer));
 
   WaitNextVideoFrame();
 }
@@ -706,7 +707,8 @@ TEST_P(ConnectionTest, DISABLED_SecondCaptureFailed) {
 
   auto capturer = std::make_unique<TestScreenCapturer>();
   capturer->FailNthFrame(1);
-  auto video_stream = host_connection_->StartVideoStream(std::move(capturer));
+  auto video_stream =
+      host_connection_->StartVideoStream("stream", std::move(capturer));
 
   WaitNextVideoFrame();
   WaitNextVideoFrame();

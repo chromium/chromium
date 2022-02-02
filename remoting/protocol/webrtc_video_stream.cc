@@ -24,13 +24,6 @@
 namespace remoting {
 namespace protocol {
 
-namespace {
-
-const char kStreamLabel[] = "screen_stream";
-const char kVideoLabel[] = "screen_video";
-
-}  // namespace
-
 struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   FrameStats() = default;
   FrameStats(const FrameStats&) = default;
@@ -46,8 +39,9 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   uint32_t capturer_id = 0;
 };
 
-WebrtcVideoStream::WebrtcVideoStream(const SessionOptions& session_options)
-    : session_options_(session_options) {}
+WebrtcVideoStream::WebrtcVideoStream(const std::string& stream_name,
+                                     const SessionOptions& session_options)
+    : stream_name_(stream_name), session_options_(session_options) {}
 
 WebrtcVideoStream::~WebrtcVideoStream() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -75,11 +69,11 @@ void WebrtcVideoStream::Start(
       base::BindRepeating(&WebrtcVideoStream::OnSinkAddedOrUpdated,
                           weak_factory_.GetWeakPtr()));
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      peer_connection_factory->CreateVideoTrack(kVideoLabel,
+      peer_connection_factory->CreateVideoTrack(stream_name_,
                                                 video_track_source_);
 
   webrtc::RtpTransceiverInit init;
-  init.stream_ids = {kStreamLabel};
+  init.stream_ids = {stream_name_};
 
   // value() DCHECKs if AddTransceiver() fails, which only happens if a track
   // was already added with the stream label.

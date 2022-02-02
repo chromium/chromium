@@ -51,7 +51,10 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace {
+
 constexpr char kRtcLogTransferDataChannelPrefix[] = "rtc-log-transfer-";
+constexpr char kStreamName[] = "screen_stream";
+
 }  // namespace
 
 namespace remoting {
@@ -458,10 +461,11 @@ void ClientSession::CreateMediaStreams() {
   auto composer = desktop_environment_->CreateComposingVideoCapturer();
   if (composer) {
     desktop_and_cursor_composer_ = composer->GetWeakPtr();
-    video_stream_ = connection_->StartVideoStream(std::move(composer));
+    video_stream_ =
+        connection_->StartVideoStream(kStreamName, std::move(composer));
   } else {
     video_stream_ = connection_->StartVideoStream(
-        desktop_environment_->CreateVideoCapturer());
+        kStreamName, desktop_environment_->CreateVideoCapturer());
   }
 
   // Create a AudioStream to pump audio from the capturer to the client.

@@ -60,6 +60,7 @@ class FakeConnectionToClient : public ConnectionToClient {
   void SetEventHandler(EventHandler* event_handler) override;
 
   std::unique_ptr<VideoStream> StartVideoStream(
+      const std::string& stream_name,
       std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
