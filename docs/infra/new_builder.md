@@ -402,10 +402,14 @@ To add a builder to the CQ, add a `tryjob` value to the builder definition.
 This will add the builder to all CQ attempts (except for CLs that only contain
 files in some particular directories).
 
-###### Regular (non-Orchestrator) CQ builders
+The starlark config files for builders are organized by builder_group. For
+example, the linux builders are in
+//infra/config/subprojects/chromium/try/tryserver.chromium.linux.star. These
+files have default values set for all builders in each particular file.
 
+###### Regular (non-Orchestrator) CQ builders
 ```starlark
-try_.chromium_linux_builder(
+try_.builder(
     name = '$BUILDER_NAME',
     tryjob = try_.job(),
 )
@@ -422,19 +426,22 @@ Orchestrator builder uses 2 or 4 core bots and the Compilator builder uses a
 beefier >=16 core bot. The Compilator builder name should always be the
 orchestrator name + "-compilator", like linux-rel and linux-rel-compilator.
 
-In chromium/src/infra/config/subprojects/chromium/try.star:
+In //infra/config/subprojects/chromium/try/tryserver.chromium.linux.star:
 ```starlark
-try_.chromium_linux_orchestrator_pair(
+try_.orchestrator_builder(
     name = "linux-rel",
+    compilator = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    orchestrator_cores = 2,
-    orchestrator_tryjob = try_.job(),
-    compilator_cores = 16,
-    compilator_goma_jobs = goma.jobs.J150,
-    compilator_name = "linux-rel-compilator",
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "linux-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
 )
 ```
 
