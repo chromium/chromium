@@ -2289,8 +2289,8 @@ Try tapping the mic to ask me anything.
         Done
       </message>
       <!-- Manual write protect disable complete page -->
-      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE" translateable="false" desc="Title for the manual write protect disable complete page. Displays next steps, either reassemble device or leave wp disabled until further notice.">
-        Manual write-protect disable complete
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE" translateable="false" desc="Title for the write protect disable complete page. Displays next steps, either reassemble device or leave wp disabled until further notice.">
+        Write Protect is turned off
       </message>
       <message name="IDS_SHIMLESS_RMA_WP_DISABLE_SKIPPED_MESSAGE" translateable="false" desc="If the device already had write protection disabled before reaching the 'choose method' page the flow skips straight to this page and informs the user they can manually re-enable if it is currently manually disabled. It is not possible for the device to determine this automatically, so the instructions must cover both cases.">
         Write protection is already disabled. If the device is disassembled you may reassemble it now.
