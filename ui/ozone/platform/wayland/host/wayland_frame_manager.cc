@@ -205,8 +205,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
     } else {
       subsurface->ConfigureAndShowSurface(
           config->bounds_rect, root_config->bounds_rect,
-          root_config->surface_scale_factor,
-          reference_above ? nullptr : root_surface, reference_above);
+          root_config->surface_scale_factor, nullptr, reference_above);
       ApplySurfaceConfigure(frame.get(), surface, config, true);
       reference_above = surface;
       surface->Commit(false);

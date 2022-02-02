@@ -502,8 +502,8 @@ void Surface::PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling) {
     return;
   }
 
-  auto sibling_it = FindListEntry(pending_sub_surfaces_, sibling);
-  if (sibling_it == pending_sub_surfaces_.end()) {
+  auto position_it = FindListEntry(pending_sub_surfaces_, sibling);
+  if (position_it == pending_sub_surfaces_.end()) {
     DLOG(WARNING) << "Client tried to place sub-surface below a surface that "
                      "is not a sibling";
     return;
@@ -511,9 +511,12 @@ void Surface::PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling) {
 
   DCHECK(ListContainsEntry(pending_sub_surfaces_, sub_surface));
   auto it = FindListEntry(pending_sub_surfaces_, sub_surface);
-  if (it == sibling_it)
+
+  // If |sub_surface| is already immediately below |sibling|, do not do
+  // anything.
+  if (it == --position_it)
     return;
-  pending_sub_surfaces_.splice(sibling_it, pending_sub_surfaces_, it);
+  pending_sub_surfaces_.splice(++position_it, pending_sub_surfaces_, it);
   sub_surfaces_changed_ = true;
 }
 
