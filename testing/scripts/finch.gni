@@ -1,0 +1,46 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+template("android_wpt_finch_smoke_tests") {
+  assert(defined(invoker.test_case))
+  assert(defined(invoker.browser_apk))
+  script_test(target_name) {
+    script = "//testing/scripts/run_finch_smoke_tests_android.py"
+    args = [
+      "--test-case",
+      invoker.test_case,
+      "--browser-apk",
+      rebase_path(root_build_dir, root_build_dir) + "/apks/" +
+          invoker.browser_apk,
+    ]
+    if (defined(invoker.webview_provider_apk)) {
+      args += [
+        "--webview-provider-apk",
+        rebase_path(root_build_dir, root_build_dir) + "/apks/" +
+            invoker.webview_provider_apk,
+      ]
+    }
+
+    data = [
+      "//build/android/",
+      "//testing/scripts/variations_smoke_test_data/webview_test_seed",
+      "//tools/android/",
+    ]
+    data_deps = [
+      "//chrome/test/chromedriver:chromedriver($host_toolchain)",
+      "//testing:wpt_android_lib",
+      "//third_party/blink/tools:wpt_tests_android_isolate",
+      "//third_party/catapult/devil:devil",
+    ]
+
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
+  }
+}
