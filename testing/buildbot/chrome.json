@@ -1810,7 +1810,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R98-14388.37.0",
+        "cros_img": "atlas-release/R98-14388.44.0",
         "name": "lacros_all_tast_tests_ATLAS_BETA",
         "resultdb": {
           "enable": true,
@@ -1870,7 +1870,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R98-14388.37.0",
+        "cros_img": "eve-release/R98-14388.44.0",
         "name": "lacros_all_tast_tests_EVE_BETA",
         "resultdb": {
           "enable": true,
