@@ -3509,6 +3509,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/app_list/search/help_app_search_browsertest.cc",
         "../browser/ui/ash/accelerator_commands_browsertest.cc",
         "../browser/ui/ash/app_list/bubble_apps_grid_drag_browsertest.cc",
+        "../browser/ui/ash/arc_open_url_delegate_impl_browsertest.cc",
         "../browser/ui/ash/ash_web_view_impl_browsertest.cc",
         "../browser/ui/ash/assistant/assistant_context_browsertest.cc",
         "../browser/ui/ash/back_gesture_browsertest.cc",

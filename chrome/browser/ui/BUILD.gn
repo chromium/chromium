@@ -2066,6 +2066,8 @@ static_library("ui") {
       "ash/app_icon_color_cache.h",
       "ash/arc_custom_tab_modal_dialog_host.cc",
       "ash/arc_custom_tab_modal_dialog_host.h",
+      "ash/arc_open_url_delegate_impl.cc",
+      "ash/arc_open_url_delegate_impl.h",
       "ash/ash_shell_init.cc",
       "ash/ash_shell_init.h",
       "ash/ash_util.cc",

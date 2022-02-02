@@ -5,20 +5,12 @@
 #ifndef CHROME_BROWSER_UI_ASH_CHROME_NEW_WINDOW_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_CHROME_NEW_WINDOW_CLIENT_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
-#include "components/arc/intent_helper/open_url_delegate.h"
 #include "url/gurl.h"
-
-namespace arc {
-namespace mojom {
-enum class ChromePage;
-}
-}  // namespace arc
 
 namespace content {
 class WebContents;
@@ -27,7 +19,6 @@ class WebContents;
 // Handles opening new tabs and windows on behalf of ash (over mojo) and the
 // ARC bridge (via a delegate in the browser process).
 class ChromeNewWindowClient : public ash::NewWindowDelegate,
-                              public arc::OpenUrlDelegate,
                               public arc::ControlCameraAppDelegate {
  public:
   ChromeNewWindowClient();
@@ -60,16 +51,9 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
                         const std::string& description_template) override;
   void OpenPersonalizationHub() override;
 
-  // arc::OpenUrlDelegate:
-  void OpenUrlFromArc(const GURL& url) override;
-  void OpenWebAppFromArc(const GURL& url) override;
-  void OpenArcCustomTab(
-      const GURL& url,
-      int32_t task_id,
-      arc::mojom::IntentHelperHost::OnOpenCustomTabCallback callback) override;
-  void OpenChromePageFromArc(arc::mojom::ChromePage page) override;
-  void OpenAppWithIntent(const GURL& start_url,
-                         arc::mojom::LaunchIntentPtr intent) override;
+  // TODO(crbug.com/1291192): Make this a part of NewWindowDelegate to support
+  // crosapi.
+  bool OpenUrlFromArc(const GURL& url);
 
   // arc::ControlCameraAppDelegate:
   void LaunchCameraApp(const std::string& queries, int32_t task_id) override;
@@ -88,12 +72,6 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
                                     bool from_user_interaction);
 
   std::unique_ptr<TabRestoreHelper> tab_restore_helper_;
-
-  const std::map<arc::mojom::ChromePage, std::string> os_settings_pages_;
-
-  const std::map<arc::mojom::ChromePage, std::string> browser_settings_pages_;
-
-  const std::map<arc::mojom::ChromePage, std::string> about_pages_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_NEW_WINDOW_CLIENT_H_

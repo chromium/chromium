@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
+#include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/ash_shell_init.h"
 #include "chrome/browser/ui/ash/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
@@ -169,6 +170,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
         std::make_unique<ChromeNewWindowDelegateProvider>(
             std::move(chrome_new_window_client),
             std::move(crosapi_new_window_delegate));
+    arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
   }
 
   ime_controller_client_ = std::make_unique<ImeControllerClientImpl>(
@@ -342,6 +344,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   session_controller_client_.reset();
   ime_controller_client_.reset();
   in_session_auth_dialog_client_.reset();
+  arc_open_url_delegate_impl_.reset();
   new_window_delegate_provider_.reset();
   accessibility_controller_client_.reset();
   // AppListClientImpl indirectly holds WebContents for answer card and

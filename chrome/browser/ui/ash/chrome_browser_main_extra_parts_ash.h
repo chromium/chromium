@@ -26,6 +26,7 @@ class DisplaySettingsHandler;
 class AccessibilityControllerClient;
 class AmbientClientImpl;
 class AppListClientImpl;
+class ArcOpenUrlDelegateImpl;
 class AshShellInit;
 class AshWebViewFactoryImpl;
 class CastConfigControllerMediaRouter;
@@ -95,6 +96,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
   std::unique_ptr<ash::NewWindowDelegateProvider> new_window_delegate_provider_;
+  std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;
   std::unique_ptr<ImeControllerClientImpl> ime_controller_client_;
   std::unique_ptr<InSessionAuthDialogClient> in_session_auth_dialog_client_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>
