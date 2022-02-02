@@ -56,6 +56,22 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
     return num_invalid_dp_cable_notification_calls_;
   }
 
+  size_t num_invalid_usb4_valid_tbt_cable_notification_calls() const {
+    return num_invalid_usb4_valid_tbt_cable_notification_calls_;
+  }
+
+  size_t num_invalid_usb4_cable_notification_calls() const {
+    return num_invalid_usb4_cable_notification_calls_;
+  }
+
+  size_t num_invalid_tbt_cable_notification_calls() const {
+    return num_invalid_tbt_cable_notification_calls_;
+  }
+
+  size_t num_speed_limiting_cable_notification_calls() const {
+    return num_speed_limiting_cable_notification_calls_;
+  }
+
   bool is_current_guest_device_tbt_only() const {
     return is_current_guest_device_tbt_only_;
   }
@@ -82,12 +98,32 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
     ++num_invalid_dp_cable_notification_calls_;
   }
 
+  void OnInvalidUSB4ValidTBTCableWarning() override {
+    ++num_invalid_usb4_valid_tbt_cable_notification_calls_;
+  }
+
+  void OnInvalidUSB4CableWarning() override {
+    ++num_invalid_usb4_cable_notification_calls_;
+  }
+
+  void OnInvalidTBTCableWarning() override {
+    ++num_invalid_tbt_cable_notification_calls_;
+  }
+
+  void OnSpeedLimitingCableWarning() override {
+    ++num_speed_limiting_cable_notification_calls_;
+  }
+
  private:
   size_t num_limited_performance_notification_calls_ = 0u;
   size_t num_guest_notification_calls_ = 0u;
   size_t num_peripheral_blocked_notification_calls_ = 0u;
   size_t num_billboard_notification_calls_ = 0u;
   size_t num_invalid_dp_cable_notification_calls_ = 0u;
+  size_t num_invalid_usb4_valid_tbt_cable_notification_calls_ = 0u;
+  size_t num_invalid_usb4_cable_notification_calls_ = 0u;
+  size_t num_invalid_tbt_cable_notification_calls_ = 0u;
+  size_t num_speed_limiting_cable_notification_calls_ = 0u;
   bool is_current_guest_device_tbt_only_ = false;
 };
 
@@ -161,6 +197,22 @@ class PeripheralNotificationManagerTest : public AshTestBase {
 
   size_t GetInvalidDpCableNotificationObserverCalls() {
     return fake_observer_.num_invalid_dp_cable_notification_calls();
+  }
+
+  size_t GetInvalidUSB4ValidTBTCableNotificationObserverCalls() {
+    return fake_observer_.num_invalid_usb4_valid_tbt_cable_notification_calls();
+  }
+
+  size_t GetInvalidUSB4CableNotificationObserverCalls() {
+    return fake_observer_.num_invalid_usb4_cable_notification_calls();
+  }
+
+  size_t GetInvalidTBTCableNotificationObserverCalls() {
+    return fake_observer_.num_invalid_tbt_cable_notification_calls();
+  }
+
+  size_t GetSpeedLimitingCableNotificationObserverCalls() {
+    return fake_observer_.num_speed_limiting_cable_notification_calls();
   }
 
   bool GetIsCurrentGuestDeviceTbtOnly() {
@@ -474,6 +526,98 @@ TEST_F(PeripheralNotificationManagerTest, InvalidDpCableWarning) {
       "Ash.Peripheral.ConnectivityResults",
       PeripheralNotificationManager::PeripheralConnectivityResults::
           kInvalidDpCable,
+      1);
+}
+
+TEST_F(PeripheralNotificationManagerTest, InvalidUSB4ValidTBTCableWarning) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+  EXPECT_EQ(0u, GetInvalidUSB4ValidTBTCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidUSB4ValidTBTCable,
+      0);
+
+  typecd::CableWarningType cable_warning_type =
+      typecd::CableWarningType::kInvalidUSB4ValidTBTCable;
+  fake_typecd_client()->EmitCableWarningSignal(cable_warning_type);
+  EXPECT_EQ(1u, GetInvalidUSB4ValidTBTCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidUSB4ValidTBTCable,
+      1);
+}
+
+TEST_F(PeripheralNotificationManagerTest, InvalidUSB4CableWarning) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+  EXPECT_EQ(0u, GetInvalidUSB4CableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidUSB4Cable,
+      0);
+
+  typecd::CableWarningType cable_warning_type =
+      typecd::CableWarningType::kInvalidUSB4Cable;
+  fake_typecd_client()->EmitCableWarningSignal(cable_warning_type);
+  EXPECT_EQ(1u, GetInvalidUSB4CableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidUSB4Cable,
+      1);
+}
+
+TEST_F(PeripheralNotificationManagerTest, InvalidTBTCableWarning) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+  EXPECT_EQ(0u, GetInvalidTBTCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidTBTCable,
+      0);
+
+  typecd::CableWarningType cable_warning_type =
+      typecd::CableWarningType::kInvalidTBTCable;
+  fake_typecd_client()->EmitCableWarningSignal(cable_warning_type);
+  EXPECT_EQ(1u, GetInvalidTBTCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidTBTCable,
+      1);
+}
+
+TEST_F(PeripheralNotificationManagerTest, SpeedLimitingCableWarning) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+  EXPECT_EQ(0u, GetSpeedLimitingCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kSpeedLimitingCable,
+      0);
+
+  typecd::CableWarningType cable_warning_type =
+      typecd::CableWarningType::kSpeedLimitingCable;
+  fake_typecd_client()->EmitCableWarningSignal(cable_warning_type);
+  EXPECT_EQ(1u, GetSpeedLimitingCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kSpeedLimitingCable,
       1);
 }
 

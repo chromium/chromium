@@ -134,15 +134,58 @@ void PeripheralNotificationManager::OnCableWarning(
     return;
 
   // Decode cable warnging signal.
-  if (cable_warning_type == typecd::CableWarningType::kInvalidDpCable) {
-    NotifyInvalidDpCable();
-    RecordConnectivityMetric(PeripheralConnectivityResults::kInvalidDpCable);
+  switch (cable_warning_type) {
+    case typecd::CableWarningType::kInvalidDpCable:
+      NotifyInvalidDpCable();
+      RecordConnectivityMetric(PeripheralConnectivityResults::kInvalidDpCable);
+      break;
+    case typecd::CableWarningType::kInvalidUSB4ValidTBTCable:
+      NotifyInvalidUSB4ValidTBTCableWarning();
+      RecordConnectivityMetric(
+          PeripheralConnectivityResults::kInvalidUSB4ValidTBTCable);
+      break;
+    case typecd::CableWarningType::kInvalidUSB4Cable:
+      NotifyInvalidUSB4CableWarning();
+      RecordConnectivityMetric(
+          PeripheralConnectivityResults::kInvalidUSB4Cable);
+      break;
+    case typecd::CableWarningType::kInvalidTBTCable:
+      NotifyInvalidTBTCableWarning();
+      RecordConnectivityMetric(PeripheralConnectivityResults::kInvalidTBTCable);
+      break;
+    case typecd::CableWarningType::kSpeedLimitingCable:
+      NotifySpeedLimitingCableWarning();
+      RecordConnectivityMetric(
+          PeripheralConnectivityResults::kSpeedLimitingCable);
+      break;
+    default:
+      break;
   }
 }
 
 void PeripheralNotificationManager::NotifyInvalidDpCable() {
   for (auto& observer : observer_list_)
     observer.OnInvalidDpCableWarning();
+}
+
+void PeripheralNotificationManager::NotifyInvalidUSB4ValidTBTCableWarning() {
+  for (auto& observer : observer_list_)
+    observer.OnInvalidUSB4ValidTBTCableWarning();
+}
+
+void PeripheralNotificationManager::NotifyInvalidUSB4CableWarning() {
+  for (auto& observer : observer_list_)
+    observer.OnInvalidUSB4CableWarning();
+}
+
+void PeripheralNotificationManager::NotifyInvalidTBTCableWarning() {
+  for (auto& observer : observer_list_)
+    observer.OnInvalidTBTCableWarning();
+}
+
+void PeripheralNotificationManager::NotifySpeedLimitingCableWarning() {
+  for (auto& observer : observer_list_)
+    observer.OnSpeedLimitingCableWarning();
 }
 
 void PeripheralNotificationManager::OnDeviceConnected(

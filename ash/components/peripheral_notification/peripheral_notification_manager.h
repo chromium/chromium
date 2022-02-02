@@ -59,6 +59,27 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
     // sent by typecd when the partner meets the conditions for DP alternate
     // mode, but the cable does not.
     virtual void OnInvalidDpCableWarning() = 0;
+
+    // Called to notify the user that their USB4 device is unable to establish a
+    // USB4 connection because of the cable. In this case, the connection will
+    // fall back to Thunderbolt.
+    virtual void OnInvalidUSB4ValidTBTCableWarning() = 0;
+
+    // Called to notify the user that their USB4 device is unable to establish a
+    // USB4 connection because of the cable. It is similar to
+    // OnUSB4ToThundeboltCableWarning, but in this case the connection will
+    // fall back to DisplayPort, USB 3.2 or USB 2.0.
+    virtual void OnInvalidUSB4CableWarning() = 0;
+
+    // Called to notify the user that their Thubderbolt device is unable to
+    // establish a Thunderbolt connection, and will instead use DisplayPort,
+    // USB 3.2 or USB 2.0.
+    virtual void OnInvalidTBTCableWarning() = 0;
+
+    // Called to notify the user when their 40 Gbps USB4 device is unable to use
+    // 40 Gbps data transmission because of the cable. Transmissions speeds will
+    // decrease to 20 Gbps, 10 Gbps or 5 Gbps.
+    virtual void OnSpeedLimitingCableWarning() = 0;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -72,7 +93,11 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
     kPeripheralBlocked = 5,
     kBillboardDevice = 6,
     kInvalidDpCable = 7,
-    kMaxValue = kInvalidDpCable,
+    kInvalidUSB4ValidTBTCable = 8,
+    kInvalidUSB4Cable = 9,
+    kInvalidTBTCable = 10,
+    kSpeedLimitingCable = 11,
+    kMaxValue = kSpeedLimitingCable,
   };
 
   // Sets the global instance. Must be called before any calls to Get().
@@ -118,6 +143,10 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
   void NotifyPeripheralBlockedReceived();
   void OnBillboardDeviceConnected(bool billboard_is_supported);
   void NotifyInvalidDpCable();
+  void NotifyInvalidUSB4ValidTBTCableWarning();
+  void NotifyInvalidUSB4CableWarning();
+  void NotifyInvalidTBTCableWarning();
+  void NotifySpeedLimitingCableWarning();
 
   // Called by unit tests to set up root_prefix_ for simulating the existence
   // of a system folder.

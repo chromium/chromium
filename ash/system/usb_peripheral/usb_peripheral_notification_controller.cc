@@ -9,7 +9,10 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -21,8 +24,18 @@ namespace {
 const char kNotifierUsbPeripheral[] = "ash.usb_peripheral";
 const char kUsbPeripheralInvalidDpCableNotificationId[] =
     "cros_usb_peripheral_invalid_dp_cable_notification_id";
-const char kNotificationLandingPageUrl[] =
+const char kUsbPeripheralInvalidUSB4ValidTBTCableNotificationId[] =
+    "cros_usb_peripheral_invalid_usb4_valid_tbt_cable_notification_id";
+const char kUsbPeripheralInvalidUSB4CableNotificationId[] =
+    "cros_usb_peripheral_invalid_usb4_cable_notification_id";
+const char kUsbPeripheralInvalidTBTCableNotificationId[] =
+    "cros_usb_peripheral_invalid_tbt_cable_notification_id";
+const char kUsbPeripheralSpeedLimitingCableNotificationId[] =
+    "cros_usb_peripheral_speed_limiting_cable_notification_id";
+const char kNotificationDisplayLandingPageUrl[] =
     "https://support.google.com/chromebook?p=cable_notification";
+const char kNotificationDeviceLandingPageUrl[] =
+    "https://support.google.com/chromebook?p=cable_notification_2";
 
 bool ShouldDisplayNotification() {
   return Shell::Get()->session_controller()->GetSessionState() ==
@@ -30,11 +43,15 @@ bool ShouldDisplayNotification() {
          !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
-void OnInvalidDpCableNotificationClicked() {
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kNotificationLandingPageUrl),
-                                            /*from_user_interaction=*/true);
-  message_center::MessageCenter::Get()->RemoveNotification(
-      kUsbPeripheralInvalidDpCableNotificationId, /*from_user=*/true);
+void OnCableNotificationClicked(const std::string& notification_id,
+                                const std::string& landing_page,
+                                absl::optional<int> button_index) {
+  if (button_index)
+    NewWindowDelegate::GetInstance()->OpenUrl(GURL(landing_page),
+                                              /*from_user_interaction=*/true);
+
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*from_user=*/true);
 }
 
 }  // namespace
@@ -61,18 +78,159 @@ void UsbPeripheralNotificationController::OnInvalidDpCableWarning() {
   if (!ShouldDisplayNotification())
     return;
 
+  message_center::RichNotificationData optional;
+  optional.buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
-          kUsbPeripheralInvalidDpCableNotificationId, u"USB Type-C Warning.",
-          u"This cable may not support dp alternate mode.",
+          kUsbPeripheralInvalidDpCableNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_BODY),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierUsbPeripheral),
-          message_center::RichNotificationData(),
+          optional,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&OnInvalidDpCableNotificationClicked)),
+              base::BindRepeating(&OnCableNotificationClicked,
+                                  kUsbPeripheralInvalidDpCableNotificationId,
+                                  kNotificationDisplayLandingPageUrl)),
+          kSettingsIcon,
+          message_center::SystemNotificationWarningLevel::WARNING);
+
+  message_center_->AddNotification(std::move(notification));
+}
+
+// Notify the user that the USB4 device will use TBT due to the cable.
+void UsbPeripheralNotificationController::OnInvalidUSB4ValidTBTCableWarning() {
+  if (!ShouldDisplayNotification())
+    return;
+
+  message_center::RichNotificationData optional;
+  optional.buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kUsbPeripheralInvalidUSB4ValidTBTCableNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
+          /*display_source=*/std::u16string(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierUsbPeripheral),
+          optional,
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(
+                  &OnCableNotificationClicked,
+                  kUsbPeripheralInvalidUSB4ValidTBTCableNotificationId,
+                  kNotificationDeviceLandingPageUrl)),
+          kSettingsIcon,
+          message_center::SystemNotificationWarningLevel::WARNING);
+
+  message_center_->AddNotification(std::move(notification));
+}
+
+// Notify the user that the USB4 device will use DisplayPort,
+// USB 3.2 or USB 2.0 due to the cable.
+void UsbPeripheralNotificationController::OnInvalidUSB4CableWarning() {
+  if (!ShouldDisplayNotification())
+    return;
+
+  message_center::RichNotificationData optional;
+  optional.buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kUsbPeripheralInvalidUSB4CableNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
+          /*display_source=*/std::u16string(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierUsbPeripheral),
+          optional,
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(&OnCableNotificationClicked,
+                                  kUsbPeripheralInvalidUSB4CableNotificationId,
+                                  kNotificationDeviceLandingPageUrl)),
+          kSettingsIcon,
+          message_center::SystemNotificationWarningLevel::WARNING);
+
+  message_center_->AddNotification(std::move(notification));
+}
+
+// Notify the user that the TBT device will use DisplayPort,
+// USB 3.2 or USB 2.0 due to the cable.
+void UsbPeripheralNotificationController::OnInvalidTBTCableWarning() {
+  if (!ShouldDisplayNotification())
+    return;
+
+  message_center::RichNotificationData optional;
+  optional.buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kUsbPeripheralInvalidTBTCableNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_TBT_SUPPORT_BODY),
+          /*display_source=*/std::u16string(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierUsbPeripheral),
+          optional,
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(&OnCableNotificationClicked,
+                                  kUsbPeripheralInvalidTBTCableNotificationId,
+                                  kNotificationDeviceLandingPageUrl)),
+          kSettingsIcon,
+          message_center::SystemNotificationWarningLevel::WARNING);
+
+  message_center_->AddNotification(std::move(notification));
+}
+
+// Notify the user that the cable limits USB device performance.
+void UsbPeripheralNotificationController::OnSpeedLimitingCableWarning() {
+  if (!ShouldDisplayNotification())
+    return;
+
+  message_center::RichNotificationData optional;
+  optional.buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kUsbPeripheralSpeedLimitingCableNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_SPEED_LIMITED_BODY),
+          /*display_source=*/std::u16string(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierUsbPeripheral),
+          optional,
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(
+                  &OnCableNotificationClicked,
+                  kUsbPeripheralSpeedLimitingCableNotificationId,
+                  kNotificationDeviceLandingPageUrl)),
           kSettingsIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
 

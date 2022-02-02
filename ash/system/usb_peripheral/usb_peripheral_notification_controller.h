@@ -30,6 +30,10 @@ class ASH_EXPORT UsbPeripheralNotificationController
 
   // PeripheralNotificationManager::Observer:
   void OnInvalidDpCableWarning() override;
+  void OnInvalidUSB4ValidTBTCableWarning() override;
+  void OnInvalidUSB4CableWarning() override;
+  void OnInvalidTBTCableWarning() override;
+  void OnSpeedLimitingCableWarning() override;
 
   // Stubs from PCIE Notification controller
   void OnLimitedPerformancePeripheralReceived() override {}

@@ -4633,6 +4633,29 @@ New install
       <message name="IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_BUTTON_TEXT" desc="Notification button text, if the user clicks on the button it will redirect them to the Firmware Update app.">
         Update
       </message>
+
+      <!-- USB-C cable notifications -->
+      <message name="IDS_ASH_USB_NOTIFICATION_LEARN_MORE" desc="Notification button text. If the user clicks on it, it will send them to a relevant webpage." translateable="false">
+        Learn More
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_TITLE" desc="Notification title text for when a user connects a display to a Chromebook's USB-C port with a cable that cannot support driving display signals." translateable="false">
+        Cable may not support displays
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_BODY" desc="Notification body text for when a user connects a display to a Chromebook's USB-C port with a cable that cannot support driving display signals." translateable="false">
+        Your USB-C cable may not connect to diplays properly
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE" desc="Notification title text for when a user connects something to the USB-C port on their Chromebook and performance is in some way limited by the cable." translateable="false">
+        Cable may impact performance
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_USB4_SUPPORT_BODY" desc="Notification body text for when a user connects a USB4 device to their Chromebook with a cable that does not support USB4." translateable="false">
+        Your USB-C cable does not support USB4. Device performance may be limited.
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_TBT_SUPPORT_BODY" desc="Notification body text for when a user connects a Thunderbolt device to their Chromebook with a cable that does not support Thunderbolt." translateable="false">
+        Your USB-C cable does not support Thunderbolt. Device performance may be limited.
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_SPEED_LIMITED_BODY" desc="Notification body text for when a user connects a device to their Chromebook with a cable that has a lower maximum data rate than the device." translateable="false">
+        Your device supports a higher data rate than your cable. Device performance may be limited.
+      </message>
     </messages>
   </release>
 </grit>

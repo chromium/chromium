@@ -16,6 +16,14 @@ namespace {
 
 const char kUsbPeripheralInvalidDpCableNotificationId[] =
     "cros_usb_peripheral_invalid_dp_cable_notification_id";
+const char kUsbPeripheralInvalidUSB4ValidTBTCableNotificationId[] =
+    "cros_usb_peripheral_invalid_usb4_valid_tbt_cable_notification_id";
+const char kUsbPeripheralInvalidUSB4CableNotificationId[] =
+    "cros_usb_peripheral_invalid_usb4_cable_notification_id";
+const char kUsbPeripheralInvalidTBTCableNotificationId[] =
+    "cros_usb_peripheral_invalid_tbt_cable_notification_id";
+const char kUsbPeripheralSpeedLimitingCableNotificationId[] =
+    "cros_usb_peripheral_speed_limiting_cable_notification_id";
 
 }  // namespace
 
@@ -31,11 +39,6 @@ class UsbPeripheralNotificationControllerTest : public AshTestBase {
   UsbPeripheralNotificationController* controller() {
     return Shell::Get()->usb_peripheral_notification_controller();
   }
-
-  message_center::Notification* GetInvalidDpCableNotification() {
-    return MessageCenter::Get()->FindVisibleNotificationById(
-        kUsbPeripheralInvalidDpCableNotificationId);
-  }
 };
 
 TEST_F(UsbPeripheralNotificationControllerTest, InvalidDpCableNotification) {
@@ -43,11 +46,75 @@ TEST_F(UsbPeripheralNotificationControllerTest, InvalidDpCableNotification) {
   controller()->OnInvalidDpCableWarning();
   EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
 
-  message_center::Notification* notification = GetInvalidDpCableNotification();
+  message_center::Notification* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(
+          kUsbPeripheralInvalidDpCableNotificationId);
   ASSERT_TRUE(notification);
 
-  EXPECT_EQ(notification->buttons().size(), 0u);
+  EXPECT_EQ(notification->buttons().size(), 1u);
   controller()->OnInvalidDpCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+}
+
+TEST_F(UsbPeripheralNotificationControllerTest,
+       InvalidUSB4ValidTBTCableNotification) {
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);
+  controller()->OnInvalidUSB4ValidTBTCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+
+  message_center::Notification* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(
+          kUsbPeripheralInvalidUSB4ValidTBTCableNotificationId);
+  ASSERT_TRUE(notification);
+
+  EXPECT_EQ(notification->buttons().size(), 1u);
+  controller()->OnInvalidUSB4ValidTBTCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+}
+
+TEST_F(UsbPeripheralNotificationControllerTest, InvalidUSB4CableNotification) {
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);
+  controller()->OnInvalidUSB4CableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+
+  message_center::Notification* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(
+          kUsbPeripheralInvalidUSB4CableNotificationId);
+  ASSERT_TRUE(notification);
+
+  EXPECT_EQ(notification->buttons().size(), 1u);
+  controller()->OnInvalidUSB4CableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+}
+
+TEST_F(UsbPeripheralNotificationControllerTest, InvalidTBTCableNotification) {
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);
+  controller()->OnInvalidTBTCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+
+  message_center::Notification* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(
+          kUsbPeripheralInvalidTBTCableNotificationId);
+  ASSERT_TRUE(notification);
+
+  EXPECT_EQ(notification->buttons().size(), 1u);
+  controller()->OnInvalidTBTCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+}
+
+TEST_F(UsbPeripheralNotificationControllerTest,
+       SpeedLimitingCableNotification) {
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);
+  controller()->OnSpeedLimitingCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+
+  message_center::Notification* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(
+          kUsbPeripheralSpeedLimitingCableNotificationId);
+  ASSERT_TRUE(notification);
+
+  EXPECT_EQ(notification->buttons().size(), 1u);
+  controller()->OnSpeedLimitingCableWarning();
   EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
 }
 

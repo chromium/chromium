@@ -63,6 +63,10 @@ class ASH_EXPORT PciePeripheralNotificationController
 
   // Stubs from usb peripheral notification controller
   void OnInvalidDpCableWarning() override {}
+  void OnInvalidUSB4ValidTBTCableWarning() override {}
+  void OnInvalidUSB4CableWarning() override {}
+  void OnInvalidTBTCableWarning() override {}
+  void OnSpeedLimitingCableWarning() override {}
 
  private:
   friend class PciePeripheralNotificationControllerTest;
