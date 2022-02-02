@@ -58,7 +58,8 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
   }
 
   bool IsSortedInChronologicalOrder(const base::Value* ts) {
-    return std::is_sorted(ts->GetList().begin(), ts->GetList().end(),
+    return std::is_sorted(ts->GetListDeprecated().begin(),
+                          ts->GetListDeprecated().end(),
                           [](const base::Value& ts_a, const base::Value& ts_b) {
                             return base::ValueToInt64(ts_a).value_or(0) <
                                    base::ValueToInt64(ts_b).value_or(0);
@@ -210,19 +211,21 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   const base::Value* timestamps = GetTsFromUserStateAndEventType(
       UserState::kEnhancedProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
-  EXPECT_EQ(30u, timestamps->GetList().size());
+  EXPECT_EQ(30u, timestamps->GetListDeprecated().size());
   EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
 
   task_environment_.FastForwardBy(base::Days(1));
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  EXPECT_EQ(30u, timestamps->GetList().size());
+  EXPECT_EQ(30u, timestamps->GetListDeprecated().size());
   EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
   // The oldest timestamp should be removed.
-  EXPECT_EQ(timestamps->GetList()[0], timestamps->GetList()[1]);
+  EXPECT_EQ(timestamps->GetListDeprecated()[0],
+            timestamps->GetListDeprecated()[1]);
   // The newest timestamp should be added as the last element.
-  EXPECT_NE(timestamps->GetList()[28], timestamps->GetList()[29]);
+  EXPECT_NE(timestamps->GetListDeprecated()[28],
+            timestamps->GetListDeprecated()[29]);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
@@ -239,10 +242,10 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   const base::Value* enhanced_timestamps = GetTsFromUserStateAndEventType(
       UserState::kEnhancedProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
-  EXPECT_EQ(1u, enhanced_timestamps->GetList().size());
+  EXPECT_EQ(1u, enhanced_timestamps->GetListDeprecated().size());
   const base::Value* managed_timestamps = GetTsFromUserStateAndEventType(
       UserState::kManaged, EventType::DATABASE_INTERSTITIAL_BYPASS);
-  EXPECT_EQ(2u, managed_timestamps->GetList().size());
+  EXPECT_EQ(2u, managed_timestamps->GetListDeprecated().size());
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
@@ -780,15 +783,15 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   const base::Value* db_timestamps = GetTsFromUserStateAndEventType(
       UserState::kStandardProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
   // The event is removed from pref because it was logged more than 30 days.
-  EXPECT_EQ(0u, db_timestamps->GetList().size());
+  EXPECT_EQ(0u, db_timestamps->GetListDeprecated().size());
   const base::Value* csd_timestamps = GetTsFromUserStateAndEventType(
       UserState::kStandardProtection, EventType::CSD_INTERSTITIAL_BYPASS);
   // The CSD event is still in pref because it was logged less than 30 days.
-  EXPECT_EQ(1u, csd_timestamps->GetList().size());
+  EXPECT_EQ(1u, csd_timestamps->GetListDeprecated().size());
 
   task_environment_.FastForwardBy(base::Days(1));
   // The CSD event is also removed because it was logged more than 30 days now.
-  EXPECT_EQ(0u, csd_timestamps->GetList().size());
+  EXPECT_EQ(0u, csd_timestamps->GetListDeprecated().size());
 
   histograms.ExpectUniqueSample("SafeBrowsing.MetricsCollector.IsPrefValid",
                                 /* sample */ 1,

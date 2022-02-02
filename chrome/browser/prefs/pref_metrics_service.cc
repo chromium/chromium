@@ -80,7 +80,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
     const base::Value* url_list =
         prefs_->GetList(prefs::kURLsToRestoreOnStartup);
     // Similarly, check startup pages for known search engine TLD+1s.
-    for (const base::Value& i : url_list->GetList()) {
+    for (const base::Value& i : url_list->GetListDeprecated()) {
       const std::string* url_text = i.GetIfString();
       if (url_text) {
         GURL start_url(*url_text);

@@ -112,7 +112,7 @@ void DispatchEventToExtensions(Profile* profile,
         extension->permissions_data()->HasAPIPermission(permission) &&
         (!incognito || util::IsIncognitoEnabled(extension->id(), profile))) {
       // Inject level of control key-value.
-      base::Value::ListView args_list = args->GetList();
+      base::Value::ListView args_list = args->GetListDeprecated();
       DCHECK(!args_list.empty());
       DCHECK(args_list[0].is_dict());
 

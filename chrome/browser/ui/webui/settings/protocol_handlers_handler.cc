@@ -198,8 +198,8 @@ void ProtocolHandlersHandler::HandleRemoveHandler(const base::ListValue* args) {
 void ProtocolHandlersHandler::HandleSetHandlersEnabled(
     const base::ListValue* args) {
   bool enabled = true;
-  CHECK(args->GetList()[0].is_bool());
-  enabled = args->GetList()[0].GetBool();
+  CHECK(args->GetListDeprecated()[0].is_bool());
+  enabled = args->GetListDeprecated()[0].GetBool();
   if (enabled)
     GetProtocolHandlerRegistry()->Enable();
   else
@@ -214,7 +214,7 @@ void ProtocolHandlersHandler::HandleSetDefault(const base::ListValue* args) {
 
 ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
     const base::ListValue* args) const {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   bool ok = args_list.size() >= 2u && args_list[0].is_string() &&
             args_list[1].is_string();
   if (!ok)

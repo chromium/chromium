@@ -57,8 +57,8 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
     return std::move(dict_copy);
   } else if (value->is_list()) {
     std::unique_ptr<base::ListValue> list_copy(new base::ListValue());
-    for (const base::Value& child : value->GetList()) {
-      if (list_copy->GetList().size() >= kMaxChildren - 1) {
+    for (const base::Value& child : value->GetListDeprecated()) {
+      if (list_copy->GetListDeprecated().size() >= kMaxChildren - 1) {
         list_copy->Append("...");
         break;
       }

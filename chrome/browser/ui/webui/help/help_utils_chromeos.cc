@@ -32,7 +32,7 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
   if (!types_value)
     return default_update_over_cellular_allowed;
   CHECK(types_value->is_list());
-  const auto& list = types_value->GetList();
+  const auto& list = types_value->GetListDeprecated();
   for (size_t i = 0; i < list.size(); ++i) {
     if (!list[i].is_int()) {
       LOG(WARNING) << "Can't parse connection type #" << i;

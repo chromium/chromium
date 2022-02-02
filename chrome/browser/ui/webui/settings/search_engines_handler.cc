@@ -253,8 +253,8 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
 
 void SearchEnginesHandler::HandleGetSearchEnginesList(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, *GetSearchEnginesList());
 }
@@ -276,9 +276,9 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
 
 void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
-  const int index = args->GetList()[0].GetInt();
-  const bool is_active = args->GetList()[1].GetBool();
+  CHECK_EQ(2U, args->GetListDeprecated().size());
+  const int index = args->GetListDeprecated()[0].GetInt();
+  const bool is_active = args->GetListDeprecated()[1].GetBool();
 
   if (index < 0 || index >= list_controller_.table_model()->RowCount())
     return;
@@ -337,11 +337,11 @@ void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
 
 void SearchEnginesHandler::HandleValidateSearchEngineInput(
     const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetList().size());
+  CHECK_EQ(3U, args->GetListDeprecated().size());
 
-  const base::Value& callback_id = args->GetList()[0];
-  const std::string& field_name = args->GetList()[1].GetString();
-  const std::string& field_value = args->GetList()[2].GetString();
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const std::string& field_name = args->GetListDeprecated()[1].GetString();
+  const std::string& field_value = args->GetListDeprecated()[2].GetString();
   ResolveJavascriptCallback(
       callback_id, base::Value(CheckFieldValidity(field_name, field_value)));
 }
@@ -376,9 +376,9 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
     const base::ListValue* args) {
   if (!edit_controller_.get())
     return;
-  const std::string& search_engine = args->GetList()[0].GetString();
-  const std::string& keyword = args->GetList()[1].GetString();
-  const std::string& query_url = args->GetList()[2].GetString();
+  const std::string& search_engine = args->GetListDeprecated()[0].GetString();
+  const std::string& keyword = args->GetListDeprecated()[1].GetString();
+  const std::string& query_url = args->GetListDeprecated()[2].GetString();
 
   // Recheck validity. It's possible to get here with invalid input if e.g. the
   // user calls the right JS functions directly from the web inspector.

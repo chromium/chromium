@@ -343,7 +343,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
                                   &browser_locales);
 
       bool locale_supported = false;
-      for (const base::Value& locale : supported_locales->GetList()) {
+      for (const base::Value& locale : supported_locales->GetListDeprecated()) {
         const std::string* current_locale = locale.GetIfString();
         if (current_locale && l10n_util::IsValidLocaleSyntax(*current_locale)) {
           std::string normalized_locale =

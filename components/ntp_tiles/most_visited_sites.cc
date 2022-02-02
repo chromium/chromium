@@ -768,7 +768,7 @@ bool MostVisitedSites::WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url) {
       prefs->GetList(webapps::kWebAppsMigratedPreinstalledApps);
   if (!migrated_apps)
     return false;
-  for (const auto& val : migrated_apps->GetList()) {
+  for (const auto& val : migrated_apps->GetListDeprecated()) {
     if (val.is_string() && val.GetString() == url.host())
       return true;
   }

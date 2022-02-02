@@ -354,7 +354,7 @@ class TestPrintManagerHost
     const base::Value* page_range = job_settings.FindListKey(kSettingPageRange);
     PageRanges new_ranges;
     if (page_range) {
-      for (const base::Value& dict : page_range->GetList()) {
+      for (const base::Value& dict : page_range->GetListDeprecated()) {
         if (!dict.is_dict())
           continue;
 

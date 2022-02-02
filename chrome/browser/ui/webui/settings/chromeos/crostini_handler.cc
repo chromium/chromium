@@ -764,7 +764,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
   base::Value::ConstListView containers =
       profile_->GetPrefs()
           ->GetList(crostini::prefs::kCrostiniContainers)
-          ->GetList();
+          ->GetListDeprecated();
 
   for (const auto& dict : containers) {
     crostini::ContainerId container_id(dict);

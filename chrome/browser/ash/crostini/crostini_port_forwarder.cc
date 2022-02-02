@@ -117,7 +117,7 @@ bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
   PrefService* pref_service = profile_->GetPrefs();
   ListPrefUpdate update(pref_service, crostini::prefs::kCrostiniPortForwarding);
   base::Value* all_ports = update.Get();
-  base::Value::ListView list_view = all_ports->GetList();
+  base::Value::ListView list_view = all_ports->GetListDeprecated();
   auto it = std::find_if(
       list_view.begin(), list_view.end(),
       [&key, this](const auto& dict) { return MatchPortRuleDict(dict, key); });
@@ -131,9 +131,10 @@ absl::optional<base::Value> CrostiniPortForwarder::ReadPortPreference(
   const base::Value* all_ports =
       pref_service->GetList(crostini::prefs::kCrostiniPortForwarding);
   auto it = std::find_if(
-      all_ports->GetList().begin(), all_ports->GetList().end(),
+      all_ports->GetListDeprecated().begin(),
+      all_ports->GetListDeprecated().end(),
       [&key, this](const auto& dict) { return MatchPortRuleDict(dict, key); });
-  if (it == all_ports->GetList().end()) {
+  if (it == all_ports->GetListDeprecated().end()) {
     return absl::nullopt;
   }
   return absl::optional<base::Value>(it->Clone());

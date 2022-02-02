@@ -150,7 +150,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
 
   std::vector<Entry> matching_actions;
 
-  for (const auto& entry : permission_actions->GetList()) {
+  for (const auto& entry : permission_actions->GetListDeprecated()) {
     const absl::optional<base::Time> timestamp =
         base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
 

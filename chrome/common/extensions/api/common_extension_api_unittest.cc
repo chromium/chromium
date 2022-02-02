@@ -844,7 +844,7 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
       const base::ListValue* list, const std::string& key,
       const std::string& value) -> const base::DictionaryValue* {
     const base::DictionaryValue* ret = nullptr;
-    for (const auto& val : list->GetList()) {
+    for (const auto& val : list->GetListDeprecated()) {
       const base::DictionaryValue* dict = nullptr;
       if (!val.GetAsDictionary(&dict))
         continue;

@@ -340,11 +340,11 @@ std::string GetManagedLoginScreenLocale() {
   // Currently, only the first element is used. The setting is a list for future
   // compatibility, if dynamically switching locales on the login screen will be
   // implemented.
-  if (login_screen_locales->GetList().empty() ||
-      !login_screen_locales->GetList()[0].is_string())
+  if (login_screen_locales->GetListDeprecated().empty() ||
+      !login_screen_locales->GetListDeprecated()[0].is_string())
     return std::string();
 
-  return login_screen_locales->GetList()[0].GetString();
+  return login_screen_locales->GetListDeprecated()[0].GetString();
 }
 
 // Disables virtual keyboard overscroll. Login UI will scroll user pods

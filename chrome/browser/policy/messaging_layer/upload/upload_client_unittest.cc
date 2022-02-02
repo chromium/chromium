@@ -72,11 +72,11 @@ base::Value ValueFromSucceededSequenceInfo(
   const base::Value* const encrypted_record_list =
       request.value().FindListKey("encryptedRecord");
   EXPECT_TRUE(encrypted_record_list != nullptr);
-  EXPECT_FALSE(encrypted_record_list->GetList().empty());
+  EXPECT_FALSE(encrypted_record_list->GetListDeprecated().empty());
 
   // Retrieve and process sequence information
   const base::Value* seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
+      encrypted_record_list->GetListDeprecated().rbegin()->FindDictKey(
           "sequenceInformation");
   EXPECT_TRUE(seq_info != nullptr);
   response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());

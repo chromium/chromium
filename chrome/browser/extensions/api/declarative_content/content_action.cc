@@ -264,14 +264,16 @@ bool RequestContentScript::InitScriptData(const base::DictionaryValue* dict,
     return false;
   }
   if (css) {
-    if (!css->is_list() || !AppendJSStringsToCPPStrings(
-                               css->GetList(), &script_data->css_file_names)) {
+    if (!css->is_list() ||
+        !AppendJSStringsToCPPStrings(css->GetListDeprecated(),
+                                     &script_data->css_file_names)) {
       return false;
     }
   }
   if (js) {
-    if (!js->is_list() || !AppendJSStringsToCPPStrings(
-                              js->GetList(), &script_data->js_file_names)) {
+    if (!js->is_list() ||
+        !AppendJSStringsToCPPStrings(js->GetListDeprecated(),
+                                     &script_data->js_file_names)) {
       return false;
     }
   }

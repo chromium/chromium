@@ -47,7 +47,7 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
  private:
   void GetLog(const base::ListValue* value) {
     AllowJavascript();
-    std::string callback_id = value->GetList()[0].GetString();
+    std::string callback_id = value->GetListDeprecated()[0].GetString();
     base::Value data(device_event_log::GetAsString(
         device_event_log::NEWEST_FIRST, "json", "",
         device_event_log::LOG_LEVEL_DEBUG, 0));

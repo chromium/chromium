@@ -93,7 +93,7 @@ bool JsonToCategories(const base::Value& parsed,
     return false;
   }
 
-  for (const base::Value& v : categories_value->GetList()) {
+  for (const base::Value& v : categories_value->GetListDeprecated()) {
     if (!v.is_dict())
       return false;
 

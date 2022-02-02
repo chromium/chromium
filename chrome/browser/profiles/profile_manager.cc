@@ -1209,7 +1209,7 @@ void ProfileManager::CleanUpDeletedProfiles() {
       local_state->GetList(prefs::kProfilesDeleted);
   DCHECK(deleted_profiles);
 
-  for (const base::Value& value : deleted_profiles->GetList()) {
+  for (const base::Value& value : deleted_profiles->GetListDeprecated()) {
     absl::optional<base::FilePath> profile_path = base::ValueToFilePath(value);
     // Although it should never happen, make sure this is a valid path in the
     // user_data_dir, so we don't accidentally delete something else.

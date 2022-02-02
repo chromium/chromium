@@ -164,27 +164,27 @@ void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue* args) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
-  if (!args->GetList()[0].is_string())
+  if (!args->GetListDeprecated()[0].is_string())
     return;
 
-  const std::string& pref_name = args->GetList()[0].GetString();
+  const std::string& pref_name = args->GetListDeprecated()[0].GetString();
   if (pref_name == "blocked_languages") {
-    if (!args->GetList()[1].is_string())
+    if (!args->GetListDeprecated()[1].is_string())
       return;
-    const std::string& language = args->GetList()[1].GetString();
+    const std::string& language = args->GetListDeprecated()[1].GetString();
     translate_prefs->UnblockLanguage(language);
   } else if (pref_name == "site_blocklist") {
-    if (!args->GetList()[1].is_string())
+    if (!args->GetListDeprecated()[1].is_string())
       return;
-    const std::string& site = args->GetList()[1].GetString();
+    const std::string& site = args->GetListDeprecated()[1].GetString();
     translate_prefs->RemoveSiteFromNeverPromptList(site);
   } else if (pref_name == "allowlists") {
-    if (!args->GetList()[1].is_string())
+    if (!args->GetListDeprecated()[1].is_string())
       return;
-    if (!args->GetList()[2].is_string())
+    if (!args->GetListDeprecated()[2].is_string())
       return;
-    const std::string& from = args->GetList()[1].GetString();
-    const std::string& to = args->GetList()[2].GetString();
+    const std::string& from = args->GetListDeprecated()[1].GetString();
+    const std::string& to = args->GetListDeprecated()[2].GetString();
     translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(from, to);
   } else {
     return;
@@ -198,18 +198,18 @@ void TranslateInternalsHandler::OnSetRecentTargetLanguage(
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
-  if (!args->GetList()[0].is_string())
+  if (!args->GetListDeprecated()[0].is_string())
     return;
 
-  const std::string& new_value = args->GetList()[0].GetString();
+  const std::string& new_value = args->GetListDeprecated()[0].GetString();
   translate_prefs->SetRecentTargetLanguage(new_value);
 
   SendPrefsToJs();
 }
 
 void TranslateInternalsHandler::OnOverrideCountry(const base::ListValue* args) {
-  if (args->GetList()[0].is_string()) {
-    const std::string& country = args->GetList()[0].GetString();
+  if (args->GetListDeprecated()[0].is_string()) {
+    const std::string& country = args->GetListDeprecated()[0].GetString();
     variations::VariationsService* variations_service = GetVariationsService();
     SendCountryToJs(
         variations_service->OverrideStoredPermanentCountry(country));

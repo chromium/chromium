@@ -80,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(TopSitesExtensionTest, GetTopSites) {
   std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
       get_top_sites_function.get(), "[]", browser()));
   ASSERT_TRUE(result->is_list());
-  EXPECT_GE(result->GetList().size(), top_sites_prepopulated_pages_size());
+  EXPECT_GE(result->GetListDeprecated().size(),
+            top_sites_prepopulated_pages_size());
 }
 
 }  // namespace extensions

@@ -75,7 +75,7 @@ TEST_F(JSONParserTest, ConsumeList) {
 
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  EXPECT_EQ(2u, value->GetList().size());
+  EXPECT_EQ(2u, value->GetListDeprecated().size());
 }
 
 TEST_F(JSONParserTest, ConsumeDictionary) {

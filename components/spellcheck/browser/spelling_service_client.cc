@@ -74,7 +74,7 @@ bool SpellingServiceClient::RequestTextCheck(
   const base::Value* dicts_list =
       pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   DCHECK(dicts_list->is_list());
-  base::Value::ConstListView dicts_lists_view = dicts_list->GetList();
+  base::Value::ConstListView dicts_lists_view = dicts_list->GetListDeprecated();
   if (0u < dicts_lists_view.size() && dicts_lists_view[0].is_string())
     dictionary = dicts_lists_view[0].GetString();
 
@@ -183,7 +183,7 @@ bool SpellingServiceClient::IsAvailable(content::BrowserContext* context,
   const base::Value* dicts_list =
       pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   DCHECK(dicts_list->is_list());
-  base::Value::ConstListView dicts_lists_view = dicts_list->GetList();
+  base::Value::ConstListView dicts_lists_view = dicts_list->GetListDeprecated();
   if (0u < dicts_lists_view.size() && dicts_lists_view[0].is_string())
     locale = dicts_lists_view[0].GetString();
 
@@ -270,7 +270,7 @@ bool SpellingServiceClient::ParseResponse(
   if (!misspellings)
     return true;
 
-  for (const base::Value& misspelling : misspellings->GetList()) {
+  for (const base::Value& misspelling : misspellings->GetListDeprecated()) {
     // Retrieve the i-th misspelling region and put it to the given vector. When
     // the Spelling service sends two or more suggestions, we read only the
     // first one because SpellCheckResult can store only one suggestion.
@@ -284,7 +284,7 @@ bool SpellingServiceClient::ParseResponse(
       return false;
     }
 
-    const base::Value& suggestion = suggestions->GetList()[0];
+    const base::Value& suggestion = suggestions->GetListDeprecated()[0];
     if (!suggestion.is_dict())
       return false;
 

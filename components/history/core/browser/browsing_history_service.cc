@@ -687,22 +687,22 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     has_synced_results_ = true;
     if (const base::Value* events = results_value->FindListKey("event")) {
       state->remote_results.reserve(state->remote_results.size() +
-                                    events->GetList().size());
+                                    events->GetListDeprecated().size());
       std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
-      for (const base::Value& event : events->GetList()) {
+      for (const base::Value& event : events->GetListDeprecated()) {
         if (!event.is_dict())
           continue;
         const base::Value* results = event.FindListKey("result");
-        if (!results || results->GetList().empty())
+        if (!results || results->GetListDeprecated().empty())
           continue;
-        const base::Value& result = results->GetList()[0];
+        const base::Value& result = results->GetListDeprecated()[0];
         if (!result.is_dict())
           continue;
         const std::string* url = result.FindStringKey("url");
         if (!url)
           continue;
         const base::Value* ids = result.FindListKey("id");
-        if (!ids || ids->GetList().empty())
+        if (!ids || ids->GetListDeprecated().empty())
           continue;
 
         GURL gurl(*url);
@@ -729,7 +729,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
 
         // Extract the timestamps of all the visits to this URL.
         // They are referred to as "IDs" by the server.
-        for (const base::Value& id : ids->GetList()) {
+        for (const base::Value& id : ids->GetListDeprecated()) {
           const std::string* timestamp_string;
           int64_t timestamp_usec = 0;
 

@@ -1205,7 +1205,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   const base::Value* deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   ASSERT_TRUE(deleted_profiles);
-  ASSERT_TRUE(deleted_profiles->GetList().empty());
+  ASSERT_TRUE(deleted_profiles->GetListDeprecated().empty());
 
   // Sign the profile in.
   SetupSignedInAccounts(signin::ConsentLevel::kSync);
@@ -1224,7 +1224,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   const base::Value* deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   EXPECT_TRUE(deleted_profiles);
-  EXPECT_EQ(1U, deleted_profiles->GetList().size());
+  EXPECT_EQ(1U, deleted_profiles->GetListDeprecated().size());
 
   content::RunAllTasksUntilIdle();
 

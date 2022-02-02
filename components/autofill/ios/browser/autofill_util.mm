@@ -101,7 +101,7 @@ bool ExtractFormsData(NSString* forms_json,
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  for (const auto& form_dict : forms_value->GetList()) {
+  for (const auto& form_dict : forms_value->GetListDeprecated()) {
     autofill::FormData form;
     if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
                         frame_origin, &form))
@@ -165,7 +165,7 @@ bool ExtractFormData(const base::Value& form_value,
   const base::ListValue* fields_list = nullptr;
   if (!form_dictionary->GetList("fields", &fields_list))
     return false;
-  for (const auto& field_dict : fields_list->GetList()) {
+  for (const auto& field_dict : fields_list->GetListDeprecated()) {
     const base::DictionaryValue* field;
     autofill::FormFieldData field_data;
     if (field_dict.GetAsDictionary(&field) &&
@@ -233,8 +233,8 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   const base::ListValue* option_contents;
   if (field.GetList("option_values", &option_values) &&
       field.GetList("option_contents", &option_contents)) {
-    auto value_list = option_values->GetList();
-    auto content_list = option_contents->GetList();
+    auto value_list = option_values->GetListDeprecated();
+    auto content_list = option_contents->GetListDeprecated();
     if (value_list.size() != content_list.size())
       return false;
     auto value_it = value_list.begin();
@@ -308,7 +308,7 @@ bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
   if (!ids_value->is_list())
     return false;
 
-  for (const auto& unique_id : ids_value->GetList()) {
+  for (const auto& unique_id : ids_value->GetListDeprecated()) {
     std::string id_string;
     if (!unique_id.GetAsString(&id_string))
       return false;

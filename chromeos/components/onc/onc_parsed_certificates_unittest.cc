@@ -404,7 +404,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
         authority_web_trust_mangled.GetList()[1].FindKeyOfType(
             "TrustBits", base::Value::Type::LIST);
     ASSERT_TRUE(trust_bits);
-    trust_bits->GetList()[0] = base::Value("UnknownTrustBit");
+    trust_bits->GetListDeprecated()[0] = base::Value("UnknownTrustBit");
 
     OncParsedCertificates parsed_authority_web_trust_mangled(
         authority_web_trust_mangled);

@@ -80,7 +80,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 void GcmInternalsUIMessageHandler::RequestAllInfo(
     const base::ListValue* args) {
   AllowJavascript();
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   if (list.size() != 1) {
     NOTREACHED();
     return;
@@ -106,7 +106,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 }
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   if (list.size() != 1) {
     NOTREACHED();
     return;

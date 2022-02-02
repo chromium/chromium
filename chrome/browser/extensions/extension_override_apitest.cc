@@ -56,7 +56,7 @@ class ExtensionOverrideTest : public ExtensionApiTest {
       return false;
 
     std::set<std::string> seen_overrides;
-    for (const auto& val : values->GetList()) {
+    for (const auto& val : values->GetListDeprecated()) {
       const base::DictionaryValue* dict = nullptr;
       std::string entry;
       if (!val.GetAsDictionary(&dict) || !dict->GetString("entry", &entry) ||

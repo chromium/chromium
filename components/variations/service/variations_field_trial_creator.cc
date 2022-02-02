@@ -349,11 +349,12 @@ std::string VariationsFieldTrialCreator::LoadPermanentConsistencyCountry(
   const std::string* stored_country = nullptr;
 
   // Determine if the saved pref value is present and valid.
-  const bool is_pref_empty = list_value->GetList().empty();
+  const bool is_pref_empty = list_value->GetListDeprecated().empty();
   const bool is_pref_valid =
-      list_value->GetList().size() == 2 &&
-      (stored_version_string = list_value->GetList()[0].GetIfString()) &&
-      (stored_country = list_value->GetList()[1].GetIfString()) &&
+      list_value->GetListDeprecated().size() == 2 &&
+      (stored_version_string =
+           list_value->GetListDeprecated()[0].GetIfString()) &&
+      (stored_country = list_value->GetListDeprecated()[1].GetIfString()) &&
       base::Version(*stored_version_string).IsValid();
 
   // Determine if the version from the saved pref matches |version|.

@@ -56,7 +56,7 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
     return;  // Warning logged.
   }
   for (const base::Value& processor_description_dict :
-       filter_description_list->GetList()) {
+       filter_description_list->GetListDeprecated()) {
     DCHECK(processor_description_dict.is_dict());
 
     std::string processor_name;

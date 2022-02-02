@@ -72,7 +72,7 @@ class NetExportMessageHandler
   }
 
   void OnStartNetLog(const base::ListValue* list) {
-    base::Value::ConstListView params = list->GetList();
+    base::Value::ConstListView params = list->GetListDeprecated();
 
     // Determine the capture mode.
     if (!params.empty() && params[0].is_string()) {

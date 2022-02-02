@@ -2123,9 +2123,9 @@ bool CompositorRenderPassListFromDict(
   const base::Value* list = dict.FindListKey("render_pass_list");
   if (!list || !list->is_list())
     return false;
-  for (size_t ii = 0; ii < list->GetList().size(); ++ii) {
+  for (size_t ii = 0; ii < list->GetListDeprecated().size(); ++ii) {
     render_pass_list->push_back(
-        CompositorRenderPassFromDict(list->GetList()[ii]));
+        CompositorRenderPassFromDict(list->GetListDeprecated()[ii]));
     if (!(*render_pass_list)[ii].get()) {
       render_pass_list->clear();
       return false;
@@ -2177,7 +2177,8 @@ bool CompositorFrameFromDict(const base::Value& dict,
   if (!referenced_surfaces || !referenced_surfaces->is_list()) {
     return false;
   }
-  for (auto& referenced_surface_dict : referenced_surfaces->GetList()) {
+  for (auto& referenced_surface_dict :
+       referenced_surfaces->GetListDeprecated()) {
     auto referenced_surface = SurfaceRangeFromDict(referenced_surface_dict);
     if (!referenced_surface) {
       return false;

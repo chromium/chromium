@@ -173,7 +173,7 @@ std::vector<const std::string*> ExtractResultList(
   if (!values)
     return {};
 
-  auto list = values->GetList();
+  auto list = values->GetListDeprecated();
   std::vector<const std::string*> extracted(list.size());
   std::transform(list.begin(), list.end(), extracted.begin(),
                  [field_path](const auto& value) {
@@ -702,7 +702,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   if (!results) {
     return matches;
   }
-  size_t num_results = results->GetList().size();
+  size_t num_results = results->GetListDeprecated().size();
   UMA_HISTOGRAM_COUNTS_1M("Omnibox.DocumentSuggest.ResultCount", num_results);
 
   // During development/quality iteration we may wish to defeat server scores.
@@ -733,7 +733,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   // Ensure server's suggestions are added with monotonically decreasing scores.
   int previous_score = INT_MAX;
   for (size_t i = 0; i < num_results; i++) {
-    const base::Value& result = results->GetList()[i];
+    const base::Value& result = results->GetListDeprecated()[i];
     if (!result.is_dict()) {
       return matches;
     }

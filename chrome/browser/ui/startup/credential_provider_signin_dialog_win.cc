@@ -194,11 +194,11 @@ class CredentialProviderWebUIMessageHandler
   base::Value ParseArgs(const base::ListValue* args, int* out_exit_code) {
     DCHECK(out_exit_code);
 
-    if (!args || args->GetList().empty()) {
+    if (!args || args->GetListDeprecated().empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);
     }
-    const base::Value& dict_result = args->GetList()[0];
+    const base::Value& dict_result = args->GetListDeprecated()[0];
     if (!dict_result.is_dict()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);

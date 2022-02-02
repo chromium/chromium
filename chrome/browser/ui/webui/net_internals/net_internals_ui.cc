@@ -172,7 +172,7 @@ void NetInternalsMessageHandler::OnClearHostResolverCache(
 void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
     const base::ListValue* list) {
   // |list| should be: [<domain to query>].
-  const std::string* domain = list->GetList()[0].GetIfString();
+  const std::string* domain = list->GetListDeprecated()[0].GetIfString();
   DCHECK(domain);
   if (!base::IsStringASCII(*domain)) {
     // There cannot be a unicode entry in the HSTS set.
@@ -183,8 +183,8 @@ void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
 }
 
 void NetInternalsMessageHandler::OnHSTSQuery(const base::ListValue* list) {
-  const std::string* callback_id = list->GetList()[0].GetIfString();
-  const std::string* domain = list->GetList()[1].GetIfString();
+  const std::string* callback_id = list->GetListDeprecated()[0].GetIfString();
+  const std::string* domain = list->GetListDeprecated()[1].GetIfString();
   DCHECK(callback_id && domain);
 
   AllowJavascript();
@@ -201,11 +201,11 @@ void NetInternalsMessageHandler::ResolveCallbackWithResult(
 }
 
 void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
-  const auto list_view = list->GetList();
+  const auto list_view = list->GetListDeprecated();
   DCHECK_GE(2u, list_view.size());
 
   // |list| should be: [<domain to query>, <STS include subdomains>]
-  const std::string* domain = list->GetList()[0].GetIfString();
+  const std::string* domain = list->GetListDeprecated()[0].GetIfString();
   DCHECK(domain);
   if (!base::IsStringASCII(*domain)) {
     // Silently fail. The user will get a helpful error if they query for the
@@ -220,8 +220,8 @@ void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
 }
 
 void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
-  const std::string* callback_id = list->GetList()[0].GetIfString();
-  const std::string* domain = list->GetList()[1].GetIfString();
+  const std::string* callback_id = list->GetListDeprecated()[0].GetIfString();
+  const std::string* domain = list->GetListDeprecated()[1].GetIfString();
   DCHECK(callback_id && domain);
 
   url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
@@ -237,7 +237,7 @@ void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
 
 void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
   // |list| should be: [<domain to add>, <report URI>, <enforce>].
-  const std::string* domain = list->GetList()[0].GetIfString();
+  const std::string* domain = list->GetListDeprecated()[0].GetIfString();
   DCHECK(domain);
   if (!base::IsStringASCII(*domain)) {
     // Silently fail. The user will get a helpful error if they query for the
@@ -245,8 +245,9 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
     return;
   }
 
-  const std::string* report_uri_str = list->GetList()[1].GetIfString();
-  absl::optional<bool> enforce = list->GetList()[2].GetIfBool();
+  const std::string* report_uri_str =
+      list->GetListDeprecated()[1].GetIfString();
+  absl::optional<bool> enforce = list->GetListDeprecated()[2].GetIfBool();
   DCHECK(report_uri_str && enforce);
 
   url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
@@ -261,8 +262,9 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
 
 void NetInternalsMessageHandler::OnExpectCTTestReport(
     const base::ListValue* list) {
-  const std::string* callback_id = list->GetList()[0].GetIfString();
-  const std::string* report_uri_str = list->GetList()[1].GetIfString();
+  const std::string* callback_id = list->GetListDeprecated()[0].GetIfString();
+  const std::string* report_uri_str =
+      list->GetListDeprecated()[1].GetIfString();
   DCHECK(callback_id && report_uri_str);
   GURL report_uri(*report_uri_str);
   AllowJavascript();

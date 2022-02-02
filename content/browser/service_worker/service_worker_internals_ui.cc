@@ -453,9 +453,9 @@ void ServiceWorkerInternalsHandler::OnOperationComplete(
 }
 
 void ServiceWorkerInternalsHandler::HandleGetOptions(const ListValue* args) {
-  CHECK(args->GetList()[0].is_string());
-  CHECK(args->GetList().size() != 0);
-  std::string callback_id = args->GetList()[0].GetString();
+  CHECK(args->GetListDeprecated()[0].is_string());
+  CHECK(args->GetListDeprecated().size() != 0);
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
   AllowJavascript();
   base::Value options(base::Value::Type::DICTIONARY);
   options.SetBoolKey("debug_on_start",
@@ -465,7 +465,7 @@ void ServiceWorkerInternalsHandler::HandleGetOptions(const ListValue* args) {
 }
 
 void ServiceWorkerInternalsHandler::HandleSetOption(const ListValue* args) {
-  auto args_list = args->GetList();
+  auto args_list = args->GetListDeprecated();
   if (args_list.size() < 2) {
     return;
   }
@@ -565,11 +565,12 @@ bool ServiceWorkerInternalsHandler::GetServiceWorkerContext(
 
 void ServiceWorkerInternalsHandler::HandleStopWorker(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+  if (args->GetListDeprecated().size() == 0 ||
+      !args->GetListDeprecated()[0].is_string())
     return;
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
-  const base::Value& cmd_args = args->GetList()[1];
+  const base::Value& cmd_args = args->GetListDeprecated()[1];
   if (!cmd_args.is_dict())
     return;
 
@@ -591,11 +592,12 @@ void ServiceWorkerInternalsHandler::HandleStopWorker(const ListValue* args) {
 
 void ServiceWorkerInternalsHandler::HandleInspectWorker(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+  if (args->GetListDeprecated().size() == 0 ||
+      !args->GetListDeprecated()[0].is_string())
     return;
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
-  const base::Value& cmd_args = args->GetList()[1];
+  const base::Value& cmd_args = args->GetListDeprecated()[1];
   if (!cmd_args.is_dict())
     return;
 
@@ -622,11 +624,12 @@ void ServiceWorkerInternalsHandler::HandleInspectWorker(const ListValue* args) {
 
 void ServiceWorkerInternalsHandler::HandleUnregister(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+  if (args->GetListDeprecated().size() == 0 ||
+      !args->GetListDeprecated()[0].is_string())
     return;
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
-  const base::Value& cmd_args = args->GetList()[1];
+  const base::Value& cmd_args = args->GetListDeprecated()[1];
   if (!cmd_args.is_dict())
     return;
 
@@ -646,11 +649,12 @@ void ServiceWorkerInternalsHandler::HandleUnregister(const ListValue* args) {
 
 void ServiceWorkerInternalsHandler::HandleStartWorker(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+  if (args->GetListDeprecated().size() == 0 ||
+      !args->GetListDeprecated()[0].is_string())
     return;
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
-  const base::Value& cmd_args = args->GetList()[1];
+  const base::Value& cmd_args = args->GetListDeprecated()[1];
   if (!cmd_args.is_dict())
     return;
 

@@ -247,8 +247,8 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     return accounts;
 
   std::set<std::string> account_ids;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::Value& entry = list->GetList()[i];
+  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
+    const base::Value& entry = list->GetListDeprecated()[i];
     if (!entry.is_dict()) {
       LOG(ERROR) << "Corrupt entry in device-local account list at index " << i
                  << ".";

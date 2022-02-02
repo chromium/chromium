@@ -170,9 +170,9 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
 
   const base::ListValue* entries;
   ASSERT_TRUE(dict->GetList("entries", &entries));
-  ASSERT_EQ(1u, entries->GetList().size());
+  ASSERT_EQ(1u, entries->GetListDeprecated().size());
 
-  const base::Value& entry_value = entries->GetList()[0u];
+  const base::Value& entry_value = entries->GetListDeprecated()[0u];
   ASSERT_TRUE(entry_value.is_dict());
   const base::DictionaryValue& entry =
       base::Value::AsDictionaryValue(entry_value);

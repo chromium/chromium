@@ -85,7 +85,7 @@ bool ParseDefaultApplications(const GURL& manifest_url,
         base::StringPrintf("\"%s\" must be a list.", kDefaultApplications));
     return false;
   }
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
 
   size_t apps_number = list_view.size();
   if (apps_number > kMaximumNumberOfItems) {
@@ -139,7 +139,7 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
                                  kSupportedOrigins));
     return false;
   }
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
 
   size_t supported_origins_number = list_view.size();
   if (supported_origins_number > kMaximumNumberOfSupportedOrigins) {
@@ -193,7 +193,7 @@ void ParseIcons(const base::DictionaryValue& dict,
     return;
   }
 
-  for (const auto& icon : icons_list->GetList()) {
+  for (const auto& icon : icons_list->GetListDeprecated()) {
     if (!icon.is_dict()) {
       log.Warn(base::StringPrintf(
           "Each item in the list \"%s\" should be a dictionary.",
@@ -270,7 +270,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
     return;
   }
 
-  size_t size = related_applications->GetList().size();
+  size_t size = related_applications->GetListDeprecated().size();
   if (size == 0) {
     log.Warn(base::StringPrintf(
         "Did not find any entries in \"%s\", even though \"%s\" is true.",
@@ -280,7 +280,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
 
   for (size_t i = 0; i < size; ++i) {
     const base::Value& related_application_value =
-        related_applications->GetList()[i];
+        related_applications->GetListDeprecated()[i];
     if (!related_application_value.is_dict()) {
       log.Warn(
           base::StringPrintf("Element #%zu in \"%s\" should be a dictionary.",
@@ -426,7 +426,8 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     return false;
   }
 
-  for (const base::Value& related_application_value : list->GetList()) {
+  for (const base::Value& related_application_value :
+       list->GetListDeprecated()) {
     if (!related_application_value.is_dict()) {
       log.Error(base::StringPrintf("\"%s\" must be a list of dictionaries.",
                                    kRelatedApplications));
@@ -487,8 +488,8 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
 
     const base::ListValue* fingerprints_list = nullptr;
     if (!related_application.GetList(kFingerprints, &fingerprints_list) ||
-        fingerprints_list->GetList().empty() ||
-        fingerprints_list->GetList().size() > kMaximumNumberOfItems) {
+        fingerprints_list->GetListDeprecated().empty() ||
+        fingerprints_list->GetListDeprecated().size() > kMaximumNumberOfItems) {
       log.Error(base::StringPrintf(
           "\"%s\" must be a non-empty list of at most %zu items.",
           kFingerprints, kMaximumNumberOfItems));
@@ -497,7 +498,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     }
 
     for (const base::Value& fingerprint_dict_value :
-         fingerprints_list->GetList()) {
+         fingerprints_list->GetListDeprecated()) {
       const base::DictionaryValue* fingerprint_dict = nullptr;
       if (fingerprint_dict_value.is_dict()) {
         fingerprint_dict =
@@ -600,8 +601,8 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
   if (dict->GetDictionary(kPayment, &payment_dict)) {
     const base::ListValue* delegation_list = nullptr;
     if (payment_dict->GetList(kSupportedDelegations, &delegation_list)) {
-      if (delegation_list->GetList().empty() ||
-          delegation_list->GetList().size() >
+      if (delegation_list->GetListDeprecated().empty() ||
+          delegation_list->GetListDeprecated().size() >
               kMaximumNumberOfSupportedDelegations) {
         log.Error(base::StringPrintf(
             "\"%s.%s\" must be a non-empty list of at most %zu entries.",
@@ -609,7 +610,7 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
             kMaximumNumberOfSupportedDelegations));
         return false;
       }
-      for (const auto& delegation_item : delegation_list->GetList()) {
+      for (const auto& delegation_item : delegation_list->GetListDeprecated()) {
         std::string delegation_name = delegation_item.GetString();
         if (delegation_name == "shippingAddress") {
           installation_info->supported_delegations.shipping_address = true;

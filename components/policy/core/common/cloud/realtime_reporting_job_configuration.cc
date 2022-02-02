@@ -75,7 +75,7 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value report) {
 
   // Append event_list to the payload.
   base::Value* to = payload_.FindListKey(kEventListKey);
-  for (auto& event : event_list->GetList())
+  for (auto& event : event_list->GetListDeprecated())
     to->Append(std::move(event));
   return true;
 }
@@ -130,7 +130,7 @@ std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(
   base::Value response_value = response ? std::move(*response) : base::Value();
   base::Value* failedUploads = response_value.FindListKey(kFailedUploadsKey);
   if (failedUploads) {
-    for (const auto& failedUpload : failedUploads->GetList()) {
+    for (const auto& failedUpload : failedUploads->GetListDeprecated()) {
       auto* id = failedUpload.FindStringKey(kEventIdKey);
       if (id) {
         failedIds.insert(*id);

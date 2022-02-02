@@ -34,7 +34,7 @@ void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
     // handler during iteration of the vector, resulting in undefined behavior.
     std::vector<MessageCallback> callbacks_to_run = callbacks_map_it->second;
     for (auto& callback : callbacks_to_run)
-      callback.Run(args->GetList());
+      callback.Run(args->GetListDeprecated());
     return;
   }
 

@@ -128,12 +128,12 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
 
   const base::Value* fields_json =
       inner_json->FindKeyOfType(kAnswerJsonText, base::Value::Type::LIST);
-  if (!fields_json || fields_json->GetList().empty()) {
+  if (!fields_json || fields_json->GetListDeprecated().empty()) {
     return false;
   }
 
   bool found_num_lines = false;
-  for (const base::Value& field_json : fields_json->GetList()) {
+  for (const base::Value& field_json : fields_json->GetListDeprecated()) {
     TextField text_field;
     if (!field_json.is_dict() ||
         !TextField::ParseTextField(field_json, &text_field)) {
@@ -314,17 +314,17 @@ bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
 
   const base::Value* lines_json =
       answer_json.FindKeyOfType(kAnswerJsonLines, base::Value::Type::LIST);
-  if (!lines_json || lines_json->GetList().size() != 2) {
+  if (!lines_json || lines_json->GetListDeprecated().size() != 2) {
     return false;
   }
 
-  const base::Value& first_line_json = lines_json->GetList()[0];
+  const base::Value& first_line_json = lines_json->GetListDeprecated()[0];
   if (!first_line_json.is_dict() ||
       !ImageLine::ParseImageLine(first_line_json, &result->first_line_)) {
     return false;
   }
 
-  const base::Value& second_line_json = lines_json->GetList()[1];
+  const base::Value& second_line_json = lines_json->GetListDeprecated()[1];
   if (!second_line_json.is_dict() ||
       !ImageLine::ParseImageLine(second_line_json, &result->second_line_)) {
     return false;

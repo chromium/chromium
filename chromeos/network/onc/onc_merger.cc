@@ -52,7 +52,7 @@ void MarkRecommendedFieldnames(const base::Value& policy, base::Value* result) {
       policy.FindListKey(::onc::kRecommended);
   if (!recommended_value)
     return;
-  for (const auto& value : recommended_value->GetList()) {
+  for (const auto& value : recommended_value->GetListDeprecated()) {
     if (value.is_string())
       result->SetBoolKey(value.GetString(), true);
   }

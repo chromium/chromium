@@ -432,7 +432,7 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::GetGroupEvents(
 
 bool ArcTracingModel::ProcessEvent(base::ListValue* events) {
   std::vector<std::unique_ptr<ArcTracingEvent>> parsed_events;
-  for (auto& it : events->GetList()) {
+  for (auto& it : events->GetListDeprecated()) {
     base::Value event_data = std::move(it);
     if (!event_data.is_dict()) {
       LOG(ERROR) << "Event is not a dictionary";

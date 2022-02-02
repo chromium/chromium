@@ -105,7 +105,7 @@ void ImportDataHandler::StartImport(
 
 void ImportDataHandler::HandleImportData(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 2u);
 
   int browser_index = list[0].GetInt();
@@ -148,8 +148,8 @@ void ImportDataHandler::HandleInitializeImportDialog(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   importer_list_ = std::make_unique<ImporterList>();
   importer_list_->DetectSourceProfiles(
@@ -166,7 +166,7 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
   if (select_file_dialog_)
     return;
 
-  DCHECK(args && args->GetList().empty());
+  DCHECK(args && args->GetListDeprecated().empty());
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));

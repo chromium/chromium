@@ -44,12 +44,13 @@ bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
     return false;
   }
 
-  if (patterns->GetList().size() >= kPatternsSizeWarningLevel) {
-    LOG(WARNING) << "Allowed urls list size is " << patterns->GetList().size()
+  if (patterns->GetListDeprecated().size() >= kPatternsSizeWarningLevel) {
+    LOG(WARNING) << "Allowed urls list size is "
+                 << patterns->GetListDeprecated().size()
                  << ". Check may be slow.";
   }
 
-  for (const base::Value& cur_pattern : patterns->GetList()) {
+  for (const base::Value& cur_pattern : patterns->GetListDeprecated()) {
     if (ContentSettingsPattern::FromString(cur_pattern.GetString())
             .Matches(url)) {
       return true;

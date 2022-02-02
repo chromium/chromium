@@ -44,7 +44,7 @@ MATCHER(IsJsonData2, "") {
   if (!arg || !arg->is_list()) {
     return false;
   }
-  auto list = arg->GetList();
+  auto list = arg->GetListDeprecated();
   return list.size() == 1 && list[0].is_string() &&
          list[0].GetString() == "123";
 }

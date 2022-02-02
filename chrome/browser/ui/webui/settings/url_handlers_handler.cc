@@ -234,8 +234,8 @@ void UrlHandlersHandler::UpdateModel() {
 }
 
 void UrlHandlersHandler::HandleGetUrlHandlers(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   AllowJavascript();
 
   base::Value result(base::Value::Type::DICTIONARY);
@@ -246,13 +246,13 @@ void UrlHandlersHandler::HandleGetUrlHandlers(const base::ListValue* args) {
 
 void UrlHandlersHandler::HandleResetUrlHandlerSavedChoice(
     const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetList().size());
-  const std::string& origin = args->GetList()[0].GetString();
-  bool has_origin_wildcard = args->GetList()[1].GetBool();
-  const std::string& path = args->GetList()[2].GetString();
+  CHECK_EQ(4U, args->GetListDeprecated().size());
+  const std::string& origin = args->GetListDeprecated()[0].GetString();
+  bool has_origin_wildcard = args->GetListDeprecated()[1].GetBool();
+  const std::string& path = args->GetListDeprecated()[2].GetString();
   // If app_id is an empty string, reset saved choices for all applicable
   // entries regardless of app_id.
-  const std::string& app_id = args->GetList()[3].GetString();
+  const std::string& app_id = args->GetListDeprecated()[3].GetString();
   absl::optional<std::string> app_id_opt =
       app_id.empty() ? absl::nullopt : absl::make_optional(app_id);
 

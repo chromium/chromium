@@ -107,7 +107,7 @@ void UpdateRecurrentInterstitialPref(PrefService* pref_service,
     // Check that the values are in increasing order and wipe out the list if
     // not (presumably because the clock changed).
     double previous = 0;
-    for (const auto& error_instance : list_value->GetList()) {
+    for (const auto& error_instance : list_value->GetListDeprecated()) {
       double error_time = error_instance.GetDouble();
       if (error_time < previous) {
         list_value = nullptr;
@@ -130,8 +130,9 @@ void UpdateRecurrentInterstitialPref(PrefService* pref_service,
     // Only up to |threshold| values need to be stored. If the list already
     // contains |threshold| values, pop one off the front and append the new one
     // at the end; otherwise just append the new one.
-    while (base::MakeStrictNum(list_value->GetList().size()) >= threshold) {
-      list_value->EraseListIter(list_value->GetList().begin());
+    while (base::MakeStrictNum(list_value->GetListDeprecated().size()) >=
+           threshold) {
+      list_value->EraseListIter(list_value->GetListDeprecated().begin());
     }
     list_value->Append(now);
   }
@@ -155,7 +156,7 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
   // Assume that the values in the list are in increasing order;
   // UpdateRecurrentInterstitialPref() maintains this ordering. Check if there
   // are more than |threshold| values after the cutoff time.
-  base::Value::ConstListView error_list = list_value->GetList();
+  base::Value::ConstListView error_list = list_value->GetListDeprecated();
   for (size_t i = 0; i < error_list.size(); i++) {
     if (base::Time::FromJsTime(error_list[i].GetDouble()) >= cutoff_time)
       return base::MakeStrictNum(error_list.size() - i) >= threshold;

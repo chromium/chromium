@@ -116,7 +116,7 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
     ListPrefUpdate update(prefs_, prefs::kPluginsPluginsList);
     base::Value* saved_plugins_list = update.Get();
     if (saved_plugins_list) {
-      for (auto& plugin_value : saved_plugins_list->GetList()) {
+      for (auto& plugin_value : saved_plugins_list->GetListDeprecated()) {
         base::DictionaryValue* plugin;
         if (!plugin_value.GetAsDictionary(&plugin)) {
           LOG(WARNING) << "Invalid entry in " << prefs::kPluginsPluginsList;

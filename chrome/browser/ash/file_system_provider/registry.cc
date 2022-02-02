@@ -207,7 +207,8 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
         if (!entry_path || !recursive || !last_tag || !persistent_origins ||
             it.first != *entry_path || entry_path->empty() ||
             (!options.supports_notify_tag &&
-             (!last_tag->empty() || persistent_origins->GetList().size()))) {
+             (!last_tag->empty() ||
+              persistent_origins->GetListDeprecated().size()))) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }
@@ -217,7 +218,8 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
             base::FilePath::FromUTF8Unsafe(*entry_path);
         restored_watcher.recursive = recursive.value();
         restored_watcher.last_tag = *last_tag;
-        for (const auto& persistent_origin : persistent_origins->GetList()) {
+        for (const auto& persistent_origin :
+             persistent_origins->GetListDeprecated()) {
           if (!persistent_origin.is_string()) {
             LOG(ERROR) << "Malformed subscriber information in preferences.";
             continue;

@@ -87,7 +87,7 @@ void SpellcheckLanguagePolicyHandler::SortForcedLanguages(
     return;
 
   // Separate the valid languages from the unknown / unsupported languages.
-  for (const base::Value& language : value->GetList()) {
+  for (const base::Value& language : value->GetListDeprecated()) {
     std::string candidate_language(
         base::TrimWhitespaceASCII(language.GetString(), base::TRIM_ALL));
     std::string current_language =

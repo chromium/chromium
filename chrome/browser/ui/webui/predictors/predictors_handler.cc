@@ -69,7 +69,8 @@ void PredictorsHandler::RequestAutocompleteActionPredictorDb(
     dict.Set("db", std::move(db));
   }
 
-  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */, dict);
+  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
+                            dict);
 }
 
 void PredictorsHandler::RequestResourcePrefetchPredictorDb(
@@ -97,7 +98,8 @@ void PredictorsHandler::RequestResourcePrefetchPredictorDb(
     }
   }
 
-  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */, dict);
+  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
+                            dict);
 }
 
 void PredictorsHandler::AddOriginDataMapToListValue(

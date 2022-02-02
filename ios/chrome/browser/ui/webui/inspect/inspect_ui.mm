@@ -95,7 +95,7 @@ InspectDOMHandler::~InspectDOMHandler() {
 }
 
 void InspectDOMHandler::HandleSetLoggingEnabled(const base::ListValue* args) {
-  auto args_list = args->GetList();
+  auto args_list = args->GetListDeprecated();
   if (args_list.size() != 1) {
     NOTREACHED();
     return;

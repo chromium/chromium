@@ -89,7 +89,7 @@ void VersionHandler::HandleRequestVersionInfo(const base::ListValue* args) {
 void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
   AllowJavascript();
 
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(2U, list.size());
   const std::string& callback_id = list[0].GetString();
   const bool include_variations_cmd = list[1].GetBool();
@@ -107,8 +107,8 @@ void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
 void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   // Grab the executable path on the FILE thread. It is returned in
   // OnGotFilePaths.

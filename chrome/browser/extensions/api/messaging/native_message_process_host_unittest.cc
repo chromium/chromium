@@ -350,8 +350,8 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   const base::ListValue* args_value = nullptr;
   ASSERT_TRUE(last_message_parsed_->GetList("args", &args_value));
   std::vector<base::CommandLine::StringType> args;
-  args.reserve(args_value->GetList().size());
-  for (auto& arg : args_value->GetList()) {
+  args.reserve(args_value->GetListDeprecated().size());
+  for (auto& arg : args_value->GetListDeprecated()) {
     ASSERT_TRUE(arg.is_string());
 #if BUILDFLAG(IS_WIN)
     args.push_back(base::UTF8ToWide(arg.GetString()));

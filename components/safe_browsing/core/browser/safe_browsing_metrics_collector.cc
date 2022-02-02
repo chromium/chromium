@@ -238,8 +238,8 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
   }
 
   // Remove the oldest timestamp if the length of the timestamps hits the limit.
-  while (timestamps->GetList().size() >= kTimestampsMaxLength) {
-    timestamps->EraseListIter(timestamps->GetList().begin());
+  while (timestamps->GetListDeprecated().size() >= kTimestampsMaxLength) {
+    timestamps->EraseListIter(timestamps->GetListDeprecated().begin());
   }
 
   timestamps->Append(TimeToPrefValue(base::Time::Now()));
@@ -282,8 +282,8 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
   const base::Value* timestamps =
       event_dict->FindListKey(EventTypeToPrefKey(event_type));
 
-  if (timestamps && timestamps->GetList().size() > 0) {
-    base::Time time = PrefValueToTime(timestamps->GetList().back());
+  if (timestamps && timestamps->GetListDeprecated().size() > 0) {
+    base::Time time = PrefValueToTime(timestamps->GetListDeprecated().back());
     return Event(event_type, time);
   }
 
@@ -419,8 +419,8 @@ int SafeBrowsingMetricsCollector::GetEventCountSince(UserState user_state,
     return 0;
   }
 
-  return std::count_if(timestamps->GetList().begin(),
-                       timestamps->GetList().end(),
+  return std::count_if(timestamps->GetListDeprecated().begin(),
+                       timestamps->GetListDeprecated().end(),
                        [&](const base::Value& timestamp) {
                          return PrefValueToTime(timestamp) > since_time;
                        });

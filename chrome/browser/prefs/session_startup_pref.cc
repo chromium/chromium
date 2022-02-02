@@ -40,7 +40,7 @@ int TypeToPrefValue(SessionStartupPref::Type type) {
 
 void URLListToPref(const base::Value* url_list, SessionStartupPref* pref) {
   pref->urls.clear();
-  for (const base::Value& i : url_list->GetList()) {
+  for (const base::Value& i : url_list->GetListDeprecated()) {
     const std::string* url_text = i.GetIfString();
     if (url_text) {
       GURL fixed_url = url_formatter::FixupURL(*url_text, std::string());

@@ -189,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
     const base::Value* font_list = font_info->FindKey("fonts");
     ASSERT_TRUE(font_list);
     ASSERT_TRUE(font_list->is_list());
-    base::span<const base::Value> font_info_list = font_list->GetList();
+    base::span<const base::Value> font_info_list =
+        font_list->GetListDeprecated();
     ASSERT_TRUE(font_info_list.size());
     const base::Value& first_font_info = font_info_list[0];
     ASSERT_TRUE(first_font_info.is_dict());

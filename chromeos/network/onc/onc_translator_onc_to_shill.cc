@@ -208,7 +208,7 @@ void LocalTranslator::TranslateOpenVPN() {
       onc_object_->FindListKey(::onc::openvpn::kRemoteCertKU);
   std::string cert_ku;
   if (cert_kus) {
-    const auto cert_kus_list = cert_kus->GetList();
+    const auto cert_kus_list = cert_kus->GetListDeprecated();
     if (!cert_kus_list.empty() && cert_kus_list[0].is_string()) {
       cert_ku = cert_kus_list[0].GetString();
     }
@@ -385,7 +385,8 @@ void LocalTranslator::TranslateEAP() {
     base::Value serialized_dicts(base::Value::Type::LIST);
     std::string serialized_dict;
     JSONStringValueSerializer serializer(&serialized_dict);
-    for (const base::Value& v : subject_alternative_name_match->GetList()) {
+    for (const base::Value& v :
+         subject_alternative_name_match->GetListDeprecated()) {
       if (serializer.Serialize(v)) {
         serialized_dicts.Append(serialized_dict);
       }
@@ -407,12 +408,12 @@ void LocalTranslator::TranslateStaticIPConfig() {
   if (name_servers) {
     static const char kDefaultIpAddr[] = "0.0.0.0";
     net::IPAddress ip_addr;
-    for (base::Value& value_ref : name_servers->GetList()) {
+    for (base::Value& value_ref : name_servers->GetListDeprecated()) {
       // AssignFromIPLiteral returns true if a string is valid ipv4 or ipv6.
       if (!ip_addr.AssignFromIPLiteral(value_ref.GetString()))
         value_ref = base::Value(kDefaultIpAddr);
     }
-    while (name_servers->GetList().size() < 4)
+    while (name_servers->GetListDeprecated().size() < 4)
       name_servers->Append(base::Value(kDefaultIpAddr));
   }
 }

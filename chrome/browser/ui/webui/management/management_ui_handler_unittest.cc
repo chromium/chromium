@@ -1283,7 +1283,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   auto info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
   threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
+  EXPECT_TRUE(
+      threat_protection_info->FindListKey("info")->GetListDeprecated().empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
       base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
@@ -1305,7 +1306,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
   threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
+  EXPECT_TRUE(
+      threat_protection_info->FindListKey("info")->GetListDeprecated().empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
       base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
@@ -1336,7 +1338,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
   threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
+  EXPECT_TRUE(
+      threat_protection_info->FindListKey("info")->GetListDeprecated().empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
       base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
@@ -1349,7 +1352,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
   threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_EQ(6u, threat_protection_info->FindListKey("info")->GetList().size());
+  EXPECT_EQ(
+      6u,
+      threat_protection_info->FindListKey("info")->GetListDeprecated().size());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
       base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));

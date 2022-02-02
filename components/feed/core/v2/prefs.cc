@@ -31,7 +31,8 @@ const char* RequestSchedulePrefName(RefreshTaskId task_id) {
 std::vector<int> GetThrottlerRequestCounts(PrefService& pref_service) {
   std::vector<int> result;
   const auto& value_list =
-      pref_service.GetList(kThrottlerRequestCountListPrefName)->GetList();
+      pref_service.GetList(kThrottlerRequestCountListPrefName)
+          ->GetListDeprecated();
   for (const base::Value& value : value_list) {
     result.push_back(value.is_int() ? value.GetInt() : 0);
   }

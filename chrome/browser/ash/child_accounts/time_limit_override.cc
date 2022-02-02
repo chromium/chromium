@@ -92,7 +92,7 @@ absl::optional<TimeLimitOverride> TimeLimitOverride::MostRecentFromList(
 
   // The most recent override created.
   absl::optional<TimeLimitOverride> last_override;
-  for (const base::Value& override_value : list->GetList()) {
+  for (const base::Value& override_value : list->GetListDeprecated()) {
     absl::optional<TimeLimitOverride> current_override =
         FromDictionary(&override_value);
     if (!current_override.has_value()) {

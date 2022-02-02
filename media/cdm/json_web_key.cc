@@ -186,8 +186,8 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   // Create a local list of keys, so that |jwk_keys| only gets updated on
   // success.
   KeyIdAndKeyPairs local_keys;
-  for (size_t i = 0; i < list_val->GetList().size(); ++i) {
-    base::Value& jwk = list_val->GetList()[i];
+  for (size_t i = 0; i < list_val->GetListDeprecated().size(); ++i) {
+    base::Value& jwk = list_val->GetListDeprecated()[i];
     if (!jwk.is_dict()) {
       DVLOG(1) << "Unable to access '" << kKeysTag << "'[" << i
                << "] in JWK Set";
@@ -256,7 +256,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   // Create a local list of key ids, so that |key_ids| only gets updated on
   // success.
   KeyIdList local_key_ids;
-  base::Value::ConstListView list_val_view = list_val->GetList();
+  base::Value::ConstListView list_val_view = list_val->GetListDeprecated();
   for (size_t i = 0; i < list_val_view.size(); ++i) {
     const std::string* encoded_key_id = list_val_view[i].GetIfString();
     if (!encoded_key_id) {
@@ -401,12 +401,13 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
   }
 
   // Get the first key.
-  if (list_val->GetList().size() < 1) {
+  if (list_val->GetListDeprecated().size() < 1) {
     DVLOG(1) << "Empty '" << kKeyIdsTag << "' list";
     return false;
   }
 
-  const std::string* encoded_key = list_val->GetList()[0].GetIfString();
+  const std::string* encoded_key =
+      list_val->GetListDeprecated()[0].GetIfString();
   if (!encoded_key) {
     DVLOG(1) << "First entry in '" << kKeyIdsTag << "' not a string";
     return false;

@@ -69,7 +69,7 @@ bool AppIsolationHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   bool has_isolated_storage = false;
-  base::Value::ConstListView list_view = isolation_list->GetList();
+  base::Value::ConstListView list_view = isolation_list->GetListDeprecated();
   for (size_t i = 0; i < list_view.size(); ++i) {
     if (!list_view[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

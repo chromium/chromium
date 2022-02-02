@@ -63,7 +63,7 @@ UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)
 UkmMessageHandler::~UkmMessageHandler() {}
 
 void UkmMessageHandler::HandleRequestUkmData(const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   AllowJavascript();
 
   // Identifies the callback, used for when resolving.

@@ -82,10 +82,10 @@ void CompareTrafficCounters(
     const base::Value* expected_traffic_counters,
     enum ComparisonType comparison_type) {
   EXPECT_EQ(actual_traffic_counters.size(),
-            expected_traffic_counters->GetList().size());
+            expected_traffic_counters->GetListDeprecated().size());
   for (size_t i = 0; i < actual_traffic_counters.size(); i++) {
     auto& actual_tc = actual_traffic_counters[i];
-    auto& expected_tc = expected_traffic_counters->GetList()[i];
+    auto& expected_tc = expected_traffic_counters->GetListDeprecated()[i];
     EXPECT_EQ(actual_tc->source,
               CrosNetworkConfig::GetTrafficCounterEnumForTesting(
                   expected_tc.FindKey("source")->GetString()));

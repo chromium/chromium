@@ -732,7 +732,7 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
     return events;
   }
 
-  for (const base::Value& event_val : events_value->GetList()) {
+  for (const base::Value& event_val : events_value->GetListDeprecated()) {
     const std::string* event = event_val.GetIfString();
     if (event)
       events.insert(*event);
@@ -782,7 +782,7 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
     return;
   }
   filter_list->EraseListIter(
-      base::ranges::find(filter_list->GetList(), *filter));
+      base::ranges::find(filter_list->GetListDeprecated(), *filter));
 }
 
 const DictionaryValue* EventRouter::GetFilteredEvents(

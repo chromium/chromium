@@ -26,7 +26,7 @@ void NavigationHandler::RegisterMessages() {
 }
 
 void NavigationHandler::HandleNavigateToUrl(const base::ListValue* args) {
-  base::Value::ConstListView list = args->GetList();
+  base::Value::ConstListView list = args->GetListDeprecated();
   const std::string& url_string = list[0].GetString();
   const std::string& target_string = list[1].GetString();
   double button = list[2].GetDouble();

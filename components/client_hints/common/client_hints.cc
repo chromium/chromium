@@ -39,7 +39,7 @@ void GetAllowedClientHintsFromSource(
     if (list_value == nullptr)
       continue;
     DCHECK(list_value->is_list());
-    for (const auto& client_hint : list_value->GetList()) {
+    for (const auto& client_hint : list_value->GetListDeprecated()) {
       DCHECK(client_hint.is_int());
       network::mojom::WebClientHintsType client_hint_mojo =
           static_cast<network::mojom::WebClientHintsType>(client_hint.GetInt());

@@ -223,7 +223,8 @@ class PolicyPrefMappingTest {
     const base::Value* required_preprocessor_macros_value =
         mapping.FindListKey("required_preprocessor_macros");
     if (required_preprocessor_macros_value) {
-      for (const auto& macro : required_preprocessor_macros_value->GetList())
+      for (const auto& macro :
+           required_preprocessor_macros_value->GetListDeprecated())
         required_preprocessor_macros_.push_back(macro.GetString());
     }
   }
@@ -299,7 +300,7 @@ class PolicyTestCase {
 
     const base::Value* os_list = test_case.FindListKey("os");
     if (os_list) {
-      for (const auto& os : os_list->GetList()) {
+      for (const auto& os : os_list->GetListDeprecated()) {
         if (os.is_string())
           supported_os_.push_back(os.GetString());
       }
@@ -308,7 +309,8 @@ class PolicyTestCase {
     const base::Value* policy_pref_mapping_tests =
         test_case.FindListKey("policy_pref_mapping_tests");
     if (policy_pref_mapping_tests) {
-      for (const auto& mapping : policy_pref_mapping_tests->GetList()) {
+      for (const auto& mapping :
+           policy_pref_mapping_tests->GetListDeprecated()) {
         if (mapping.is_dict()) {
           policy_pref_mapping_tests_.push_back(
               std::make_unique<PolicyPrefMappingTest>(mapping));

@@ -42,7 +42,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   if (tap_act_val) {
     const base::Value* keyboard_act_list = tap_act_val->FindListKey(kKeyboard);
     if (keyboard_act_list && keyboard_act_list->is_list()) {
-      for (const base::Value& val : keyboard_act_list->GetList()) {
+      for (const base::Value& val : keyboard_act_list->GetListDeprecated()) {
         std::unique_ptr<Action> action = std::make_unique<ActionTapKey>(window);
         bool succeed = action->ParseFromJson(val);
         if (succeed)
@@ -51,7 +51,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
     }
     const auto* mouse_act_list = tap_act_val->FindListKey(kMouse);
     if (mouse_act_list && mouse_act_list->is_list()) {
-      for (const auto& val : mouse_act_list->GetList()) {
+      for (const auto& val : mouse_act_list->GetListDeprecated()) {
         auto action = std::make_unique<input_overlay::ActionTapMouse>(window);
         bool succeed = action->ParseFromJson(val);
         if (succeed)
@@ -65,7 +65,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   if (move_act_val) {
     const base::Value* keyboard_act_list = move_act_val->FindListKey(kKeyboard);
     if (keyboard_act_list && keyboard_act_list->is_list()) {
-      for (const base::Value& val : keyboard_act_list->GetList()) {
+      for (const base::Value& val : keyboard_act_list->GetListDeprecated()) {
         std::unique_ptr<Action> action =
             std::make_unique<ActionMoveKey>(window);
         bool succeed = action->ParseFromJson(val);
@@ -75,7 +75,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
     }
     const auto* mouse_act_list = move_act_val->FindListKey(kMouse);
     if (mouse_act_list && mouse_act_list->is_list()) {
-      for (const auto& val : mouse_act_list->GetList()) {
+      for (const auto& val : mouse_act_list->GetListDeprecated()) {
         auto action = std::make_unique<ActionMoveMouse>(window);
         bool succeed = action->ParseFromJson(val);
         if (succeed)

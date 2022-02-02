@@ -90,14 +90,20 @@ class GuestOsSharePathTest : public testing::Test {
     const base::Value* prefs =
         profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
     EXPECT_NE(prefs->FindKey(shared_path_.value()), nullptr);
-    EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetList().size(), 1U);
-    EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetList()[0].GetString(),
+    EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetListDeprecated().size(),
+              1U);
+    EXPECT_EQ(prefs->FindKey(shared_path_.value())
+                  ->GetListDeprecated()[0]
+                  .GetString(),
               crostini::kCrostiniDefaultVmName);
     if (expected_persist == Persist::YES) {
       EXPECT_EQ(prefs->DictSize(), 2U);
       EXPECT_NE(prefs->FindKey(share_path_.value()), nullptr);
-      EXPECT_EQ(prefs->FindKey(share_path_.value())->GetList().size(), 1U);
-      EXPECT_EQ(prefs->FindKey(share_path_.value())->GetList()[0].GetString(),
+      EXPECT_EQ(prefs->FindKey(share_path_.value())->GetListDeprecated().size(),
+                1U);
+      EXPECT_EQ(prefs->FindKey(share_path_.value())
+                    ->GetListDeprecated()[0]
+                    .GetString(),
                 expected_vm_name);
     } else {
       EXPECT_EQ(prefs->DictSize(), 1U);
@@ -721,21 +727,21 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
   const base::Value* prefs =
       profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v1");
 
   // Adding the same path again for same VM should not cause any changes.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a/a"));
   prefs = profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
 
   // Adding the same path for a new VM adds to the vm list.
   guest_os_share_path_->RegisterPersistedPath("v2", base::FilePath("/a/a/a"));
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 2U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v1");
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[1].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 2U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[1].GetString(), "v2");
 
   // Add more paths.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a/b"));
@@ -743,45 +749,45 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/b/a"));
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/b/a/a"));
   EXPECT_EQ(prefs->DictSize(), 5U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 2U);
-  EXPECT_EQ(prefs->FindKey("/a/a/b")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/c")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetList().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 2U);
+  EXPECT_EQ(prefs->FindKey("/a/a/b")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/c")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetListDeprecated().size(), 1U);
 
   // Adding /a/a should remove /a/a/a, /a/a/b, /a/a/c.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a"));
   EXPECT_EQ(prefs->DictSize(), 4U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v2");
-  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a")->GetListDeprecated()[0].GetString(), "v1");
 
   // Adding /a should remove /a/a, /a/b/a.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a"));
   EXPECT_EQ(prefs->DictSize(), 3U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v2");
-  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a")->GetListDeprecated()[0].GetString(), "v1");
 
   // Adding / should remove all others.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/"));
   EXPECT_EQ(prefs->DictSize(), 2U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v2");
-  EXPECT_EQ(prefs->FindKey("/")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated()[0].GetString(), "v1");
 
   // Add / for v2.
   guest_os_share_path_->RegisterPersistedPath("v2", base::FilePath("/"));
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/")->GetList().size(), 2U);
-  EXPECT_EQ(prefs->FindKey("/")->GetList()[0].GetString(), "v1");
-  EXPECT_EQ(prefs->FindKey("/")->GetList()[1].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated().size(), 2U);
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated()[1].GetString(), "v2");
 }
 
 TEST_F(GuestOsSharePathTest, UnsharePathSuccess) {

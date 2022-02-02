@@ -658,7 +658,7 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     EXPECT_FALSE(manifest->GetString(manifest_keys::kBackgroundPage, &value));
     const base::ListValue* scripts;
     ASSERT_TRUE(manifest->GetList(manifest_keys::kBackgroundScripts, &scripts));
-    EXPECT_EQ(1u, scripts->GetList().size());
+    EXPECT_EQ(1u, scripts->GetListDeprecated().size());
   }
 
  protected:
@@ -1470,8 +1470,8 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
 
   const base::ListValue* list_val = nullptr;
   prefs.prefs()->ReadPrefAsList(extension_id, kTestListPref, &list_val);
-  EXPECT_TRUE(list_val->GetList()[0].is_string());
-  EXPECT_EQ(list_val->GetList()[0].GetString(), "list_val");
+  EXPECT_TRUE(list_val->GetListDeprecated()[0].is_string());
+  EXPECT_EQ(list_val->GetListDeprecated()[0].GetString(), "list_val");
 
   EXPECT_EQ(time, prefs.prefs()->ReadPrefAsTime(extension_id, kTestTimePref));
 }

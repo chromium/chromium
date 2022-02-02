@@ -216,7 +216,7 @@ std::unique_ptr<std::set<std::string>> GetAllowedLockScreenApps(
 
   auto allowed_apps = std::make_unique<std::set<std::string>>();
   for (const base::Value& app_value :
-       allowed_lock_screen_apps_value->GetList()) {
+       allowed_lock_screen_apps_value->GetListDeprecated()) {
     if (!app_value.is_string()) {
       LOG(ERROR) << "Invalid app ID value " << app_value;
       continue;

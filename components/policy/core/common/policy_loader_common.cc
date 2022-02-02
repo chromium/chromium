@@ -77,8 +77,8 @@ bool FilterSensitiveExtensionsInstallForcelist(PolicyMap::Entry* map_entry) {
     return false;
 
   // Using index for loop to update the list in place.
-  for (size_t i = 0; i < policy_list_value->GetList().size(); i++) {
-    const auto& list_entry = policy_list_value->GetList()[i];
+  for (size_t i = 0; i < policy_list_value->GetListDeprecated().size(); i++) {
+    const auto& list_entry = policy_list_value->GetListDeprecated()[i];
     if (!list_entry.is_string())
       continue;
 
@@ -90,7 +90,7 @@ bool FilterSensitiveExtensionsInstallForcelist(PolicyMap::Entry* map_entry) {
     // Only allow custom update urls in enterprise environments.
     if (!base::LowerCaseEqualsASCII(entry.substr(pos + 1),
                                     kChromeWebstoreUpdateURL)) {
-      policy_list_value->GetList()[i] =
+      policy_list_value->GetListDeprecated()[i] =
           base::Value(kBlockedExtensionPrefix + entry);
       has_invalid_policies = true;
     }

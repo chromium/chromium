@@ -35,7 +35,7 @@ const int kMaximumSSIDLengthInBytes = 32;
 
 void AddKeyToList(const char* key, base::Value* list) {
   base::Value key_value(key);
-  if (!base::Contains(list->GetList(), key_value))
+  if (!base::Contains(list->GetListDeprecated(), key_value))
     list->Append(std::move(key_value));
 }
 
@@ -48,8 +48,8 @@ bool FieldIsRecommended(const base::Value& object,
                         const std::string& field_name) {
   const base::Value* recommended =
       object.FindKeyOfType(::onc::kRecommended, base::Value::Type::LIST);
-  return recommended &&
-         base::Contains(recommended->GetList(), base::Value(field_name));
+  return recommended && base::Contains(recommended->GetListDeprecated(),
+                                       base::Value(field_name));
 }
 
 bool FieldIsSetToValueOrRecommended(const base::Value& object,
@@ -280,7 +280,7 @@ bool Validator::ValidateRecommendedField(
   }
 
   base::Value repaired_recommended(base::Value::Type::LIST);
-  for (const auto& entry : recommended_value->GetList()) {
+  for (const auto& entry : recommended_value->GetListDeprecated()) {
     const std::string* field_name = entry.GetIfString();
     if (!field_name) {
       NOTREACHED();  // The types of field values are already verified.
@@ -440,7 +440,7 @@ bool Validator::FieldExistsAndIsEmpty(const base::Value& object,
     if (!(*str).empty())
       return false;
   } else if (value->is_list()) {
-    if (!value->GetList().empty())
+    if (!value->GetListDeprecated().empty())
       return false;
   } else {
     NOTREACHED();
@@ -488,7 +488,7 @@ bool Validator::ListFieldContainsValidValues(
   if (!list)
     return true;
   path_.push_back(field_name);
-  for (const auto& entry : list->GetList()) {
+  for (const auto& entry : list->GetListDeprecated()) {
     const std::string* value = entry.GetIfString();
     if (!value) {
       NOTREACHED();  // The types of field values are already verified.
@@ -978,7 +978,7 @@ bool Validator::ValidateWireGuard(base::Value* result) {
     AddValidationIssue(true /* is_error */, msg.str());
     return false;
   }
-  for (const base::Value& p : peers->GetList()) {
+  for (const base::Value& p : peers->GetListDeprecated()) {
     if (!p.FindKey(::onc::wireguard::kPublicKey)) {
       msg << ::onc::wireguard::kPublicKey
           << " field is required for each peer.";

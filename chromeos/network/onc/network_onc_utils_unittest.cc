@@ -32,11 +32,11 @@ TEST(ONCUtils, ProxySettingsToProxyConfig) {
   std::unique_ptr<base::Value> additional_tests =
       test_utils::ReadTestJson("proxy_config_from_onc.json");
   ASSERT_TRUE(additional_tests->is_list());
-  for (const base::Value& value : additional_tests->GetList())
+  for (const base::Value& value : additional_tests->GetListDeprecated())
     list_of_tests->Append(value.Clone());
 
   int index = 0;
-  for (const base::Value& test_case : list_of_tests->GetList()) {
+  for (const base::Value& test_case : list_of_tests->GetListDeprecated()) {
     SCOPED_TRACE("Test case #" + base::NumberToString(index++));
 
     ASSERT_TRUE(test_case.is_dict());
@@ -61,7 +61,7 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
   ASSERT_TRUE(list_of_tests->is_list());
 
   int index = 0;
-  for (const base::Value& test_case : list_of_tests->GetList()) {
+  for (const base::Value& test_case : list_of_tests->GetListDeprecated()) {
     SCOPED_TRACE("Test case #" + base::NumberToString(index++));
 
     const base::Value* shill_proxy_config = test_case.FindKey("ProxyConfig");
@@ -104,8 +104,9 @@ TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailable) {
   const auto network_dictionary = test_utils::ReadTestDictionary(
       "managed_toplevel_with_password_variable.onc");
 
-  const auto network_list = std::make_unique<base::ListValue>(base::ListValue(
-      network_dictionary->FindKey("NetworkConfigurations")->GetList()));
+  const auto network_list = std::make_unique<base::ListValue>(
+      base::ListValue(network_dictionary->FindKey("NetworkConfigurations")
+                          ->GetListDeprecated()));
 
   EXPECT_TRUE(HasUserPasswordSubsitutionVariable(network_list.get()));
 }
@@ -114,8 +115,9 @@ TEST(ONCPasswordVariable, MultipleNetworksPasswordNotAvailable) {
   const auto network_dictionary = test_utils::ReadTestDictionary(
       "managed_toplevel_with_no_password_variable.onc");
 
-  const auto network_list = std::make_unique<base::ListValue>(base::ListValue(
-      network_dictionary->FindKey("NetworkConfigurations")->GetList()));
+  const auto network_list = std::make_unique<base::ListValue>(
+      base::ListValue(network_dictionary->FindKey("NetworkConfigurations")
+                          ->GetListDeprecated()));
 
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(network_list.get()));
 }

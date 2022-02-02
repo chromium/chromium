@@ -318,8 +318,10 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMessageProperlyEncoded) {
       parsed_function_result.value().FindKeyOfType("parameters",
                                                    base::Value::Type::LIST);
   ASSERT_TRUE(decrypted_parameters);
-  ASSERT_EQ(function_params.size(), decrypted_parameters->GetList().size());
-  EXPECT_EQ(plaintext_param, decrypted_parameters->GetList()[0].GetString());
+  ASSERT_EQ(function_params.size(),
+            decrypted_parameters->GetListDeprecated().size());
+  EXPECT_EQ(plaintext_param,
+            decrypted_parameters->GetListDeprecated()[0].GetString());
 
   absl::optional<base::Value> parsed_message_result =
       base::JSONReader::Read(message_plaintext, false);

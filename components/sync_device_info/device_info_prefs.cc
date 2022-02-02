@@ -62,7 +62,8 @@ DeviceInfoPrefs::~DeviceInfoPrefs() = default;
 bool DeviceInfoPrefs::IsRecentLocalCacheGuid(
     const std::string& cache_guid) const {
   base::Value::ConstListView recent_local_cache_guids =
-      pref_service_->GetList(kDeviceInfoRecentGUIDsWithTimestamps)->GetList();
+      pref_service_->GetList(kDeviceInfoRecentGUIDsWithTimestamps)
+          ->GetListDeprecated();
 
   for (const auto& v : recent_local_cache_guids) {
     if (MatchesGuidInDictionary(v, cache_guid)) {
@@ -77,8 +78,8 @@ void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
   ListPrefUpdate update_cache_guids(pref_service_,
                                     kDeviceInfoRecentGUIDsWithTimestamps);
 
-  for (auto it = update_cache_guids->GetList().begin();
-       it != update_cache_guids->GetList().end(); it++) {
+  for (auto it = update_cache_guids->GetListDeprecated().begin();
+       it != update_cache_guids->GetListDeprecated().end(); it++) {
     if (MatchesGuidInDictionary(*it, cache_guid)) {
       // Remove it from the list, to be reinserted below, in the first
       // position.
@@ -93,11 +94,13 @@ void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
       kTimestampKey,
       base::Value(clock_->Now().ToDeltaSinceWindowsEpoch().InDays()));
 
-  update_cache_guids->Insert(update_cache_guids->GetList().begin(),
+  update_cache_guids->Insert(update_cache_guids->GetListDeprecated().begin(),
                              std::move(new_entry));
 
-  while (update_cache_guids->GetList().size() > kMaxLocalCacheGuidsStored) {
-    update_cache_guids->EraseListIter(update_cache_guids->GetList().end() - 1);
+  while (update_cache_guids->GetListDeprecated().size() >
+         kMaxLocalCacheGuidsStored) {
+    update_cache_guids->EraseListIter(
+        update_cache_guids->GetListDeprecated().end() - 1);
   }
 }
 

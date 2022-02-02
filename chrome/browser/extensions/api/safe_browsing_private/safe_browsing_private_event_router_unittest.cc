@@ -318,7 +318,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -353,7 +353,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordChanged) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -392,7 +392,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -441,7 +441,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -481,7 +481,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -515,7 +515,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -559,7 +559,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -840,7 +840,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -864,8 +864,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   base::Value* triggered_rule_info =
       event->FindKey(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rule_info);
-  ASSERT_EQ(1u, triggered_rule_info->GetList().size());
-  base::Value triggered_rule = std::move(triggered_rule_info->GetList()[0]);
+  ASSERT_EQ(1u, triggered_rule_info->GetListDeprecated().size());
+  base::Value triggered_rule =
+      std::move(triggered_rule_info->GetListDeprecated()[0]);
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
@@ -892,7 +893,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -916,8 +917,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   base::Value* triggered_rule_info =
       event->FindKey(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rule_info);
-  ASSERT_EQ(1u, triggered_rule_info->GetList().size());
-  base::Value triggered_rule = std::move(triggered_rule_info->GetList()[0]);
+  ASSERT_EQ(1u, triggered_rule_info->GetListDeprecated().size());
+  base::Value triggered_rule =
+      std::move(triggered_rule_info->GetListDeprecated()[0]);
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
@@ -944,7 +946,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
@@ -988,7 +990,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
       report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetList();
+  base::Value::ListView mutable_list = event_list->GetListDeprecated();
   ASSERT_EQ(1, (int)mutable_list.size());
   base::Value wrapper = std::move(mutable_list[0]);
   EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());

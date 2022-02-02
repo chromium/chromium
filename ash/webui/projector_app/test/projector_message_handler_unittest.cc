@@ -136,7 +136,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetAccounts) {
   EXPECT_TRUE(call_data.arg2()->GetBool());
   ASSERT_TRUE(call_data.arg3()->is_list());
 
-  const auto& list_view = call_data.arg3()->GetList();
+  const auto& list_view = call_data.arg3()->GetListDeprecated();
   // There is only one account in the identity manager.
   EXPECT_EQ(list_view.size(), 1u);
 
@@ -371,7 +371,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
   EXPECT_TRUE(call_data.arg2()->GetBool());
   ASSERT_TRUE(call_data.arg3()->is_list());
 
-  const auto& list_view = call_data.arg3()->GetList();
+  const auto& list_view = call_data.arg3()->GetListDeprecated();
   // There is only one screencast.
   EXPECT_EQ(list_view.size(), 1u);
 

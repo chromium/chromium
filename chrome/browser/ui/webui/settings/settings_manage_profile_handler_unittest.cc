@@ -75,7 +75,7 @@ class ManageProfileHandlerTest : public testing::Test {
 
     // Expect a non-empty list of dictionaries containing non-empty strings for
     // profile avatar icon urls and labels.
-    EXPECT_FALSE(icons->GetList().empty());
+    EXPECT_FALSE(icons->GetListDeprecated().empty());
     if (gaia_included) {
       VerifyGaiaAvatar(icons, gaia_selected);
     } else {
@@ -86,8 +86,8 @@ class ManageProfileHandlerTest : public testing::Test {
         gaia_selected ||
         (selected_index == profiles::GetPlaceholderAvatarIndex());
 
-    for (size_t i = 1; i < icons->GetList().size(); ++i) {
-      const base::Value& icon = icons->GetList()[i];
+    for (size_t i = 1; i < icons->GetListDeprecated().size(); ++i) {
+      const base::Value& icon = icons->GetListDeprecated()[i];
       EXPECT_TRUE(icon.is_dict());
 
       const std::string* icon_url = icon.FindStringKey("url");
@@ -131,7 +131,7 @@ class ManageProfileHandlerTest : public testing::Test {
   std::unique_ptr<TestManageProfileHandler> handler_;
 
   void VerifyGaiaAvatar(const base::Value* icons, bool gaia_selected) {
-    const base::Value& icon = icons->GetList()[0];
+    const base::Value& icon = icons->GetListDeprecated()[0];
     EXPECT_TRUE(icon.is_dict());
     EXPECT_EQ(*icon.FindIntKey("index"), 0);
 
@@ -147,7 +147,7 @@ class ManageProfileHandlerTest : public testing::Test {
 
   void VerifyDefaultGenericAvatar(const base::Value* icons,
                                   size_t selected_index) {
-    const base::Value& icon = icons->GetList()[0];
+    const base::Value& icon = icons->GetListDeprecated()[0];
     EXPECT_TRUE(icon.is_dict());
     EXPECT_TRUE(!icon.FindStringKey("label")->empty());
     int icon_index_int = icon.FindIntKey("index").value_or(0);

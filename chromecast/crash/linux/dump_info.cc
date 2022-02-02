@@ -135,7 +135,7 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
   const base::ListValue* attachments_list;
   if (dict->GetList(kAttachmentsKey, &attachments_list)) {
     ++num_params;
-    for (const auto& attachment : attachments_list->GetList()) {
+    for (const auto& attachment : attachments_list->GetListDeprecated()) {
       attachments_.push_back(attachment.GetString());
     }
   }

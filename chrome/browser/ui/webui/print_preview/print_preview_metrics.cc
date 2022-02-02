@@ -53,7 +53,7 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
   const base::Value* page_range_array =
       preview_settings.FindKey(kSettingPageRange);
   if (page_range_array && page_range_array->is_list() &&
-      !page_range_array->GetList().empty()) {
+      !page_range_array->GetListDeprecated().empty()) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPageRange);
   }
 

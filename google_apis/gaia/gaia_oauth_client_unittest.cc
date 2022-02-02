@@ -532,7 +532,7 @@ TEST_F(GaiaOAuthClientTest, GetAccountCapabilities) {
   FlushNetwork();
 
   auto capabilities =
-      captured_result->FindListKey("accountCapabilities")->GetList();
+      captured_result->FindListKey("accountCapabilities")->GetListDeprecated();
   ASSERT_EQ(capabilities.size(), 2U);
   EXPECT_EQ(*capabilities[0].FindStringKey("name"), "accountcapabilities/111");
   EXPECT_FALSE(*capabilities[0].FindBoolKey("booleanValue"));

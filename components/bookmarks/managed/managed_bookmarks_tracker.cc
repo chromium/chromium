@@ -52,7 +52,7 @@ int64_t ManagedBookmarksTracker::LoadInitial(BookmarkNode* folder,
                                              const base::Value* list,
                                              int64_t next_node_id) {
   DCHECK(list->is_list());
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
+  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
     // Extract the data for the next bookmark from the |list|.
     std::u16string title;
     GURL url;
@@ -116,7 +116,7 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
                                               const base::Value* list) {
   DCHECK(list->is_list());
   size_t folder_index = 0;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
+  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
     // Extract the data for the next bookmark from the |list|.
     std::u16string title;
     GURL url;
@@ -165,7 +165,7 @@ bool ManagedBookmarksTracker::LoadBookmark(const base::Value* list,
   DCHECK(list->is_list());
   *url = GURL();
   *children = nullptr;
-  const base::Value& dict = list->GetList()[index];
+  const base::Value& dict = list->GetListDeprecated()[index];
   if (!dict.is_dict()) {
     // Should never happen after policy validation.
     NOTREACHED();

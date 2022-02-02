@@ -260,7 +260,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     base::ListValue* list;
     EXTENSION_FUNCTION_VALIDATE(
         options->GetList(constants::kRequiredEventTypesKey, &list));
-    for (const base::Value& i : list->GetList()) {
+    for (const base::Value& i : list->GetListDeprecated()) {
       const std::string* event_type = i.GetIfString();
       if (event_type) {
         required_event_types.insert(
@@ -274,7 +274,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     base::ListValue* list;
     EXTENSION_FUNCTION_VALIDATE(
         options->GetList(constants::kDesiredEventTypesKey, &list));
-    for (const base::Value& i : list->GetList()) {
+    for (const base::Value& i : list->GetListDeprecated()) {
       const std::string* event_type = i.GetIfString();
       if (event_type)
         desired_event_types.insert(TtsEventTypeFromString(event_type->c_str()));

@@ -157,7 +157,7 @@ void CallModuleMethod(const std::string& module_name,
       content::V8ValueConverter::Create();
 
   std::vector<v8::Local<v8::Value>> arguments;
-  for (const auto& arg : args->GetList()) {
+  for (const auto& arg : args->GetListDeprecated()) {
     arguments.push_back(converter->ToV8Value(&arg, context->v8_context()));
   }
 

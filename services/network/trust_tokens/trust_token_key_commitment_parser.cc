@@ -135,7 +135,7 @@ bool ParseLocalOperationFieldsIfPresent(
     return false;
 
   for (const base::Value& maybe_os_value :
-       maybe_request_issuance_locally_on->GetList()) {
+       maybe_request_issuance_locally_on->GetListDeprecated()) {
     if (!maybe_os_value.is_string())
       return false;
     absl::optional<mojom::TrustTokenKeyCommitmentResult::Os> maybe_os =

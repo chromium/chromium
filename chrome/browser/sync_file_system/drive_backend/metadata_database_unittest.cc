@@ -1161,10 +1161,10 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
 
   std::unique_ptr<base::ListValue> files =
       metadata_database()->DumpFiles(app_root.tracker.app_id());
-  ASSERT_EQ(2u, files->GetList().size());
+  ASSERT_EQ(2u, files->GetListDeprecated().size());
 
   const std::string* str;
-  const base::Value& folder = files->GetList()[0];
+  const base::Value& folder = files->GetListDeprecated()[0];
   ASSERT_TRUE(folder.is_dict());
   str = folder.FindStringKey("title");
   EXPECT_TRUE(str && *str == "folder_0");
@@ -1172,7 +1172,7 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
   EXPECT_TRUE(str && *str == "folder");
   EXPECT_TRUE(folder.FindKey("details"));
 
-  const base::Value& file = files->GetList()[1];
+  const base::Value& file = files->GetListDeprecated()[1];
   ASSERT_TRUE(file.is_dict());
   str = file.FindStringKey("title");
   EXPECT_TRUE(str && *str == "file_0");

@@ -103,7 +103,7 @@ mojom::AnnotationPtr ParseJsonOcrAnnotation(const base::Value& ocr_engine,
   std::string all_ocr_text;
   int word_count = 0;
   double word_confidence_sum = 0.0;
-  for (const base::Value& ocr_region : ocr_regions->GetList()) {
+  for (const base::Value& ocr_region : ocr_regions->GetListDeprecated()) {
     if (!ocr_region.is_dict())
       continue;
 
@@ -112,7 +112,7 @@ mojom::AnnotationPtr ParseJsonOcrAnnotation(const base::Value& ocr_engine,
       continue;
 
     std::string region_ocr_text;
-    for (const base::Value& word : words->GetList()) {
+    for (const base::Value& word : words->GetListDeprecated()) {
       if (!word.is_dict())
         continue;
 
@@ -192,7 +192,7 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
   if (!desc_list || !desc_list->is_list())
     return {adult, std::move(results)};
 
-  for (const base::Value& desc : desc_list->GetList()) {
+  for (const base::Value& desc : desc_list->GetListDeprecated()) {
     if (!desc.is_dict())
       continue;
 
@@ -241,7 +241,7 @@ mojom::AnnotationPtr ParseJsonIconAnnotations(const base::Value& icon_engine) {
   if (!icon_list || !icon_list->is_list())
     return {};
 
-  for (const base::Value& icon : icon_list->GetList()) {
+  for (const base::Value& icon : icon_list->GetListDeprecated()) {
     if (!icon.is_dict())
       continue;
 
@@ -303,7 +303,7 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     return {};
 
   std::map<std::string, mojom::AnnotateImageResultPtr> out;
-  for (const base::Value& result : results->GetList()) {
+  for (const base::Value& result : results->GetListDeprecated()) {
     if (!result.is_dict())
       continue;
 
@@ -323,7 +323,8 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     std::vector<mojom::AnnotationPtr> annotations;
     mojom::AnnotationPtr ocr_annotation;
     mojom::AnnotationPtr icon_annotation;
-    for (const base::Value& engine_result : engine_results->GetList()) {
+    for (const base::Value& engine_result :
+         engine_results->GetListDeprecated()) {
       if (!engine_result.is_dict())
         continue;
 
@@ -995,7 +996,7 @@ void Annotator::OnServerLangsResponseJsonParsed(
   }
 
   std::vector<std::string> new_server_languages;
-  for (const base::Value& lang : langs->GetList()) {
+  for (const base::Value& lang : langs->GetListDeprecated()) {
     if (!lang.is_string()) {
       DVLOG(1) << "Lang in response JSON is not a string";
       return;

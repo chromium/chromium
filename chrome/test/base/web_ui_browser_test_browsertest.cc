@@ -163,7 +163,7 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
 
     // Starts the test in |list_value|[0] with the runAsync wrapper.
     void HandleStartAsyncTest(const base::ListValue* list_value) {
-      const base::Value& test_name = list_value->GetList()[0];
+      const base::Value& test_name = list_value->GetListDeprecated()[0];
       web_ui()->CallJavascriptFunctionUnsafe("runAsync", test_name);
     }
   };

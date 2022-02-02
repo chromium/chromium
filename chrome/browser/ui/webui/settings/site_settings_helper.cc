@@ -817,7 +817,7 @@ void GetPolicyAllowedUrls(
 
   // Convert the URLs to |ContentSettingsPattern|s. Ignore any invalid ones.
   std::vector<ContentSettingsPattern> patterns;
-  for (const auto& entry : policy_urls->GetList()) {
+  for (const auto& entry : policy_urls->GetListDeprecated()) {
     const std::string* url = entry.GetIfString();
     if (!url)
       continue;

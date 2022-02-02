@@ -125,8 +125,8 @@ void FlagsDOMHandler::Init(
 void FlagsDOMHandler::HandleRequestExperimentalFeatures(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  DCHECK(!args->GetList().empty());
-  const base::Value& callback_id = args->GetList()[0];
+  DCHECK(!args->GetListDeprecated().empty());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   std::vector<base::Value> supported_features;
   std::vector<base::Value> unsupported_features;
@@ -152,7 +152,7 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args_list.size());
   if (args_list.size() != 2)

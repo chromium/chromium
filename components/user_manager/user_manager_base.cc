@@ -820,8 +820,8 @@ void UserManagerBase::EnsureUsersLoaded() {
   // Load regular users and supervised users.
   std::vector<AccountId> regular_users;
   std::set<AccountId> regular_users_set;
-  ParseUserList(prefs_regular_users->GetList(), device_local_accounts_set,
-                &regular_users, &regular_users_set);
+  ParseUserList(prefs_regular_users->GetListDeprecated(),
+                device_local_accounts_set, &regular_users, &regular_users_set);
   for (std::vector<AccountId>::const_iterator it = regular_users.begin();
        it != regular_users.end(); ++it) {
     if (IsDeprecatedSupervisedAccountId(*it)) {
@@ -881,7 +881,7 @@ const User* UserManagerBase::FindUserInList(const AccountId& account_id) const {
 
 bool UserManagerBase::UserExistsInList(const AccountId& account_id) const {
   const base::Value* user_list = GetLocalState()->GetList(kRegularUsersPref);
-  for (const base::Value& i : user_list->GetList()) {
+  for (const base::Value& i : user_list->GetListDeprecated()) {
     const std::string* email = i.GetIfString();
     if (email && (account_id.GetUserEmail() == *email))
       return true;
@@ -906,7 +906,7 @@ void UserManagerBase::GuestUserLoggedIn() {
 void UserManagerBase::AddUserRecord(User* user) {
   // Add the user to the front of the user list.
   ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsersPref);
-  prefs_users_update->Insert(prefs_users_update->GetList().begin(),
+  prefs_users_update->Insert(prefs_users_update->GetListDeprecated().begin(),
                              base::Value(user->GetAccountId().GetUserEmail()));
   users_.insert(users_.begin(), user);
 }

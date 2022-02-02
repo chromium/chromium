@@ -261,7 +261,7 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
     return false;
 
   const base::Value* origin_patterns = nullptr;
-  for (const base::Value& entry : exempted_protocols->GetList()) {
+  for (const base::Value& entry : exempted_protocols->GetListDeprecated()) {
     const base::DictionaryValue& protocol_origins_map =
         base::Value::AsDictionaryValue(entry);
     const std::string* protocol = protocol_origins_map.FindStringKey(

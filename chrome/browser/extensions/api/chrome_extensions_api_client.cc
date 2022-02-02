@@ -335,7 +335,7 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
   const base::ListValue* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
-    for (const auto& entry : policy_list->GetList()) {
+    for (const auto& entry : policy_list->GetListDeprecated()) {
       if (entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid) == vid &&
           entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid) == pid) {
         return true;

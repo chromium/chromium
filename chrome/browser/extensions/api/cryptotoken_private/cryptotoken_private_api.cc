@@ -203,7 +203,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   const base::Value* const permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
 
-  for (const auto& entry : permit_attestation->GetList()) {
+  for (const auto& entry : permit_attestation->GetListDeprecated()) {
     if (entry.GetString() == app_id)
       return RespondNow(OneArgument(base::Value(true)));
   }

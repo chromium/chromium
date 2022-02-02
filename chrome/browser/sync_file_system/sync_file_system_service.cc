@@ -123,8 +123,8 @@ void DidGetFileSyncStatusForDump(
     file->SetString("status", SyncFileStatusToString(sync_file_status));
 
   // Once all results have been received, run the callback to signal end.
-  DCHECK_LE(*num_results, files->GetList().size());
-  if (++*num_results < files->GetList().size())
+  DCHECK_LE(*num_results, files->GetListDeprecated().size());
+  if (++*num_results < files->GetListDeprecated().size())
     return;
 
   // `callback` is a DumpFilesCallback, which should only be called
@@ -557,8 +557,8 @@ void SyncFileSystemService::DidDumpFiles(
     const GURL& origin,
     DumpFilesCallback callback,
     std::unique_ptr<base::ListValue> dump_files) {
-  if (!dump_files || !dump_files->GetList().size() || !local_service_ ||
-      !remote_service_) {
+  if (!dump_files || !dump_files->GetListDeprecated().size() ||
+      !local_service_ || !remote_service_) {
     std::move(callback).Run(base::ListValue());
     return;
   }
@@ -575,7 +575,7 @@ void SyncFileSystemService::DidDumpFiles(
       base::OwnedRef(std::move(callback)));
 
   // After all metadata loaded, sync status can be added to each entry.
-  for (base::Value& file : files->GetList()) {
+  for (base::Value& file : files->GetListDeprecated()) {
     const std::string* path_string =
       file.is_dict() ? file.FindStringKey("path") : nullptr;
     if (!path_string) {

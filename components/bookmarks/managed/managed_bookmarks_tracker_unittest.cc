@@ -138,12 +138,14 @@ class ManagedBookmarksTrackerTest : public testing::Test {
 
     if (node->is_folder()) {
       const base::Value* children = dict.FindListKey("children");
-      if (!children || node->children().size() != children->GetList().size())
+      if (!children ||
+          node->children().size() != children->GetListDeprecated().size())
         return false;
       size_t i = 0;
       return std::all_of(node->children().cbegin(), node->children().cend(),
                          [children, &i](const auto& child_node) {
-                           const base::Value& child = children->GetList()[i++];
+                           const base::Value& child =
+                               children->GetListDeprecated()[i++];
                            return child.is_dict() &&
                                   NodeMatchesValue(child_node.get(), child);
                          });

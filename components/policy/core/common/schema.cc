@@ -330,14 +330,14 @@ bool ValidateEnum(const base::Value* enum_list,
                   const std::string& type,
                   std::string* error) {
   if (enum_list->type() != base::Value::Type::LIST ||
-      enum_list->GetList().empty()) {
+      enum_list->GetListDeprecated().empty()) {
     *error = "Attribute 'enum' must be a non-empty list.";
     return false;
   }
   base::Value::Type expected_item_type = base::Value::Type::NONE;
   MapSchemaKeyToValueType(type, kSchemaTypesToValueTypes,
                           kSchemaTypesToValueTypesEnd, &expected_item_type);
-  for (const base::Value& item : enum_list->GetList()) {
+  for (const base::Value& item : enum_list->GetListDeprecated()) {
     if (item.type() != expected_item_type) {
       *error = base::StringPrintf(
           "Attribute 'enum' for type '%s' contains items with invalid types",
@@ -455,7 +455,7 @@ bool IsValidSchema(const base::Value& dict, int options, std::string* error) {
 
     const base::Value* required = dict.FindKey(schema::kRequired);
     if (required) {
-      for (const base::Value& item : required->GetList()) {
+      for (const base::Value& item : required->GetListDeprecated()) {
         if (!item.is_string()) {
           *error = "Attribute 'required' may only contain strings.";
           return false;
@@ -764,13 +764,14 @@ void Schema::InternalStorage::DetermineStorageSizes(const base::Value& schema,
 
     const base::Value* required_properties = schema.FindKey(schema::kRequired);
     if (required_properties) {
-      sizes->strings += required_properties->GetList().size();
-      sizes->required_properties += required_properties->GetList().size();
+      sizes->strings += required_properties->GetListDeprecated().size();
+      sizes->required_properties +=
+          required_properties->GetListDeprecated().size();
     }
   } else if (schema.FindKey(schema::kEnum)) {
     const base::Value* possible_values = schema.FindListKey(schema::kEnum);
     if (possible_values) {
-      size_t num_possible_values = possible_values->GetList().size();
+      size_t num_possible_values = possible_values->GetListDeprecated().size();
       if (type == base::Value::Type::INTEGER) {
         sizes->int_enums += num_possible_values;
       } else if (type == base::Value::Type::STRING) {
@@ -952,7 +953,7 @@ bool Schema::InternalStorage::ParseDictionary(
   properties_nodes_[extra].required_begin = required_properties_.size();
   const base::Value* required_properties = schema.FindKey(schema::kRequired);
   if (required_properties) {
-    for (const base::Value& val : required_properties->GetList()) {
+    for (const base::Value& val : required_properties->GetListDeprecated()) {
       strings_.push_back(val.GetString());
       required_properties_.push_back(strings_.back().c_str());
     }
@@ -991,7 +992,7 @@ bool Schema::InternalStorage::ParseEnum(const base::Value& schema,
     *error = "Enum attribute must be a list value";
     return false;
   }
-  if (possible_values->GetList().empty()) {
+  if (possible_values->GetListDeprecated().empty()) {
     *error = "Enum attribute must be non-empty";
     return false;
   }
@@ -999,7 +1000,7 @@ bool Schema::InternalStorage::ParseEnum(const base::Value& schema,
   int offset_end;
   if (type == base::Value::Type::INTEGER) {
     offset_begin = static_cast<int>(int_enums_.size());
-    for (const auto& possible_value : possible_values->GetList()) {
+    for (const auto& possible_value : possible_values->GetListDeprecated()) {
       if (!possible_value.is_int()) {
         *error = "Invalid enumeration member type";
         return false;
@@ -1009,7 +1010,7 @@ bool Schema::InternalStorage::ParseEnum(const base::Value& schema,
     offset_end = static_cast<int>(int_enums_.size());
   } else if (type == base::Value::Type::STRING) {
     offset_begin = static_cast<int>(string_enums_.size());
-    for (const auto& possible_value : possible_values->GetList()) {
+    for (const auto& possible_value : possible_values->GetListDeprecated()) {
       if (!possible_value.is_string()) {
         *error = "Invalid enumeration member type";
         return false;
@@ -1611,7 +1612,7 @@ void Schema::MaskSensitiveValuesRecursive(base::Value* value) const {
         schema_item.MaskSensitiveValuesRecursive(&sub_value);
     }
   } else if (value->is_list()) {
-    for (auto& list_elem : value->GetList())
+    for (auto& list_elem : value->GetListDeprecated())
       GetItems().MaskSensitiveValuesRecursive(&list_elem);
   }
 }

@@ -234,9 +234,9 @@ void CookiesViewHandler::RecreateCookiesTreeModel() {
 }
 
 void CookiesViewHandler::HandleGetCookieDetails(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
-  std::string site = args->GetList()[1].GetString();
+  CHECK_EQ(2U, args->GetListDeprecated().size());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string site = args->GetListDeprecated()[1].GetString();
 
   AllowJavascript();
   pending_requests_.emplace(
@@ -267,10 +267,10 @@ void CookiesViewHandler::GetCookieDetails(const std::string& callback_id,
 
 void CookiesViewHandler::HandleGetNumCookiesString(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
+  CHECK_EQ(2U, args->GetListDeprecated().size());
   std::string callback_id;
-  callback_id = args->GetList()[0].GetString();
-  int num_cookies = args->GetList()[1].GetInt();
+  callback_id = args->GetListDeprecated()[0].GetString();
+  int num_cookies = args->GetListDeprecated()[1].GetInt();
 
   AllowJavascript();
   const std::u16string string =
@@ -282,9 +282,10 @@ void CookiesViewHandler::HandleGetNumCookiesString(
 }
 
 void CookiesViewHandler::HandleGetDisplayList(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
-  std::u16string filter = base::UTF8ToUTF16(args->GetList()[1].GetString());
+  CHECK_EQ(2U, args->GetListDeprecated().size());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::u16string filter =
+      base::UTF8ToUTF16(args->GetListDeprecated()[1].GetString());
 
   AllowJavascript();
   pending_requests_.emplace(
@@ -308,8 +309,8 @@ void CookiesViewHandler::GetDisplayList(std::string callback_id,
 }
 
 void CookiesViewHandler::HandleReloadCookies(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
   // Allowing Javascript for the first time will queue a task to create a new
   // tree model. Thus the tree model only needs to be recreated if Javascript
@@ -334,10 +335,10 @@ void CookiesViewHandler::HandleReloadCookies(const base::ListValue* args) {
 }
 
 void CookiesViewHandler::HandleRemoveAll(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   AllowJavascript();
 
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
   pending_requests_.emplace(
       Request::SYNC_BATCH,
@@ -352,7 +353,7 @@ void CookiesViewHandler::RemoveAll(const std::string& callback_id) {
 }
 
 void CookiesViewHandler::HandleRemoveItem(const base::ListValue* args) {
-  std::string node_path = args->GetList()[0].GetString();
+  std::string node_path = args->GetListDeprecated()[0].GetString();
 
   AllowJavascript();
   pending_requests_.emplace(
@@ -371,8 +372,8 @@ void CookiesViewHandler::RemoveItem(const std::string& path) {
 }
 
 void CookiesViewHandler::HandleRemoveThirdParty(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
   AllowJavascript();
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -390,7 +391,7 @@ void CookiesViewHandler::HandleRemoveThirdParty(const base::ListValue* args) {
 }
 
 void CookiesViewHandler::HandleRemoveShownItems(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetList().size());
+  CHECK_EQ(0U, args->GetListDeprecated().size());
 
   AllowJavascript();
   pending_requests_.emplace(
@@ -407,8 +408,9 @@ void CookiesViewHandler::RemoveShownItems() {
 }
 
 void CookiesViewHandler::HandleRemoveSite(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  std::u16string site = base::UTF8ToUTF16(args->GetList()[0].GetString());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  std::u16string site =
+      base::UTF8ToUTF16(args->GetListDeprecated()[0].GetString());
   AllowJavascript();
   pending_requests_.emplace(
       Request::NO_BATCH,

@@ -114,7 +114,7 @@ Status GetWebCryptoUsagesFromJwkKeyOps(const base::ListValue* key_ops,
   std::set<std::string> unrecognized_usages;
 
   *usages = 0;
-  base::Value::ConstListView key_ops_list = key_ops->GetList();
+  base::Value::ConstListView key_ops_list = key_ops->GetListDeprecated();
   for (size_t i = 0; i < key_ops_list.size(); ++i) {
     const base::Value& key_op_value = key_ops_list[i];
     if (!key_op_value.is_string()) {

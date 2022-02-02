@@ -226,7 +226,7 @@ const base::Value* KnownUser::FindPrefs(const AccountId& account_id) const {
     return nullptr;
 
   const base::Value* known_users = local_state_->GetList(kKnownUsers);
-  for (const base::Value& element_value : known_users->GetList()) {
+  for (const base::Value& element_value : known_users->GetListDeprecated()) {
     if (element_value.is_dict()) {
       if (UserMatches(account_id, element_value)) {
         return &element_value;
@@ -250,7 +250,7 @@ void KnownUser::SetPath(const AccountId& account_id,
     return;
 
   ListPrefUpdate update(local_state_, kKnownUsers);
-  for (base::Value& element_value : update->GetList()) {
+  for (base::Value& element_value : update->GetListDeprecated()) {
     if (element_value.is_dict()) {
       if (UserMatches(account_id, element_value)) {
         if (opt_value.has_value())
@@ -441,7 +441,7 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
   std::vector<AccountId> result;
 
   const base::Value* known_users = local_state_->GetList(kKnownUsers);
-  for (const base::Value& element_value : known_users->GetList()) {
+  for (const base::Value& element_value : known_users->GetListDeprecated()) {
     if (element_value.is_dict()) {
       const std::string* email = element_value.FindStringKey(kCanonicalEmail);
       const std::string* gaia_id = element_value.FindStringKey(kGAIAIdKey);
@@ -759,7 +759,7 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
     return;
 
   ListPrefUpdate update(local_state_, kKnownUsers);
-  base::Value::ListView update_view = update->GetList();
+  base::Value::ListView update_view = update->GetListDeprecated();
   for (auto it = update_view.begin(); it != update_view.end(); ++it) {
     if (UserMatches(account_id, *it)) {
       update->EraseListIter(it);
@@ -781,7 +781,7 @@ void KnownUser::CleanEphemeralUsers() {
 
 void KnownUser::CleanObsoletePrefs() {
   ListPrefUpdate update(local_state_, kKnownUsers);
-  for (base::Value& user_entry : update.Get()->GetList()) {
+  for (base::Value& user_entry : update.Get()->GetListDeprecated()) {
     if (!user_entry.is_dict())
       continue;
     for (const std::string& key : kObsoleteKeys)

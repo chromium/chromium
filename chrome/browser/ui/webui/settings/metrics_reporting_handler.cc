@@ -96,7 +96,7 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
     return;
   }
 
-  bool enabled = args->GetList()[0].GetBool();
+  bool enabled = args->GetListDeprecated()[0].GetBool();
   ChangeMetricsReportingState(enabled);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

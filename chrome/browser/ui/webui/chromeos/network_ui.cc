@@ -197,9 +197,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetShillNetworkProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
-    std::string guid = arg_list->GetList()[1].GetString();
+    CHECK_EQ(2u, arg_list->GetListDeprecated().size());
+    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
+    std::string guid = arg_list->GetListDeprecated()[1].GetString();
 
     std::string service_path;
     if (!GetServicePathFromGuid(guid, &service_path)) {
@@ -232,9 +232,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetShillDeviceProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
-    std::string type = arg_list->GetList()[1].GetString();
+    CHECK_EQ(2u, arg_list->GetListDeprecated().size());
+    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
+    std::string type = arg_list->GetListDeprecated()[1].GetString();
 
     const DeviceState* device =
         NetworkHandler::Get()->network_state_handler()->GetDeviceStateByType(
@@ -251,8 +251,8 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetShillEthernetEAP(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
+    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
+    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
 
     NetworkStateHandler::NetworkStateList list;
     NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
@@ -275,8 +275,8 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void OpenCellularActivationUi(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
+    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
+    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
 
     const NetworkState* cellular_network =
         NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
@@ -302,15 +302,15 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ShowNetworkDetails(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid = arg_list->GetList()[0].GetString();
+    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
+    std::string guid = arg_list->GetListDeprecated()[0].GetString();
 
     InternetDetailDialog::ShowDialog(guid);
   }
 
   void ShowNetworkConfig(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid = arg_list->GetList()[0].GetString();
+    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
+    std::string guid = arg_list->GetListDeprecated()[0].GetString();
 
     InternetConfigDialog::ShowDialogForNetworkId(guid);
   }
@@ -338,16 +338,16 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
+    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
+    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
     std::string hostname =
         NetworkHandler::Get()->network_state_handler()->hostname();
     Respond(callback_id, base::Value(hostname));
   }
 
   void SetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string hostname = arg_list->GetList()[0].GetString();
+    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
+    std::string hostname = arg_list->GetListDeprecated()[0].GetString();
     NET_LOG(USER) << "SET HOSTNAME: " << hostname;
     NetworkHandler::Get()->network_state_handler()->SetHostname(hostname);
   }
@@ -377,8 +377,8 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void AddNetwork(const base::ListValue* args) {
-    DCHECK(!args->GetList().empty());
-    std::string onc_type = args->GetList()[0].GetString();
+    DCHECK(!args->GetListDeprecated().empty());
+    std::string onc_type = args->GetListDeprecated()[0].GetString();
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
   }
 

@@ -70,7 +70,7 @@ base::Value* AddChildToElement(base::Value* element, base::Value child) {
     children = element->SetKey(mojom::XmlParser::kChildrenKey,
                                base::Value(base::Value::Type::LIST));
   children->Append(std::move(child));
-  return &children->GetList().back();
+  return &children->GetListDeprecated().back();
 }
 
 void PopulateNamespaces(base::Value* node_value, XmlReader* xml_reader) {

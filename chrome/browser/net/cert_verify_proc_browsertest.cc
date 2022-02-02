@@ -103,7 +103,7 @@ class CertVerifyProcNetLogBrowserTest : public NetLogPlatformBrowserTestBase {
     ASSERT_TRUE(events);
 
     bool found_cert_verify_proc_event = false;
-    for (const auto& event : events->GetList()) {
+    for (const auto& event : events->GetListDeprecated()) {
       absl::optional<int> event_type = event.FindIntKey("type");
       ASSERT_TRUE(event_type.has_value());
       if (event_type ==

@@ -75,7 +75,8 @@ class GeoLanguageProviderTest : public testing::Test {
     std::vector<std::string> languages;
     const base::Value* const cached_languages_list =
         local_state_.GetList(GeoLanguageProvider::kCachedGeoLanguagesPref);
-    for (const auto& language_value : cached_languages_list->GetList()) {
+    for (const auto& language_value :
+         cached_languages_list->GetListDeprecated()) {
       languages.push_back(language_value.GetString());
     }
     return languages;

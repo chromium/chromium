@@ -841,7 +841,7 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
         // attribute names.
         std::unique_ptr<base::ListValue> filtered_list(new base::ListValue());
 
-        for (const auto& entry : value->GetList()) {
+        for (const auto& entry : value->GetListDeprecated()) {
           std::string string_value;
           if (entry.is_string()) {
             if (WriteAttribute(false, entry.GetString(), &line))

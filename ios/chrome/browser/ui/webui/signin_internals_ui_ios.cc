@@ -67,7 +67,7 @@ void SignInInternalsHandlerIOS::RegisterMessages() {
 
 void SignInInternalsHandlerIOS::HandleGetSignInInfo(
     const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   CHECK_GE(args_list.size(), 1u);
   std::string callback_id = args_list[0].GetString();  // CHECKs if non-string.
   base::Value callback(callback_id);

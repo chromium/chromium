@@ -926,10 +926,10 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
 
   ListPrefUpdate list_value(pref_service_,
                             metrics::prefs::kMetricsFileMetricsMetadata);
-  if (list_value->GetList().empty())
+  if (list_value->GetListDeprecated().empty())
     return false;
 
-  base::Value::ListView mutable_list = list_value->GetList();
+  base::Value::ListView mutable_list = list_value->GetListDeprecated();
   size_t count = pref_service_->GetInteger(
       metrics::prefs::kStabilityFileMetricsUnsentSamplesCount);
   pref_service_->SetInteger(
@@ -937,7 +937,7 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
       mutable_list[0].GetInt() + count);
   pref_service_->SetInteger(
       metrics::prefs::kStabilityFileMetricsUnsentFilesCount,
-      list_value->GetList().size() - 1);
+      list_value->GetListDeprecated().size() - 1);
   list_value->EraseListIter(mutable_list.begin());
 
   return true;

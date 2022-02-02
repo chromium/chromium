@@ -57,7 +57,7 @@ ConnectionEndpointMetadata::FromValue(const base::Value& value) {
   ConnectionEndpointMetadata metadata;
 
   std::vector<std::string> alpns;
-  for (const base::Value& value : alpns_value->GetList()) {
+  for (const base::Value& value : alpns_value->GetListDeprecated()) {
     if (!value.is_string())
       return absl::nullopt;
     metadata.supported_protocol_alpns.push_back(value.GetString());

@@ -738,7 +738,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     const base::Value* value = dict.FindListPath(ui::ToString(attr));
     if (!value || !value->is_list())
       continue;
-    base::Value::ConstListView list = value->GetList();
+    base::Value::ConstListView list = value->GetListDeprecated();
     std::string attr_string(ui::ToString(attr));
     attr_string.push_back('=');
     for (size_t i = 0; i < list.size(); ++i) {

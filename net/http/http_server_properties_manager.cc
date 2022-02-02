@@ -279,8 +279,8 @@ void HttpServerPropertiesManager::ReadPrefs(
   // Iterate servers list in reverse MRU order so that entries are inserted
   // into |spdy_servers_map|, |alternative_service_map|, and
   // |server_network_stats_map| from oldest to newest.
-  for (auto it = servers_list->GetList().end();
-       it != servers_list->GetList().begin();) {
+  for (auto it = servers_list->GetListDeprecated().end();
+       it != servers_list->GetListDeprecated().begin();) {
     --it;
     if (!it->is_dict()) {
       DVLOG(1) << "Malformed http_server_properties for servers dictionary.";
@@ -305,8 +305,8 @@ void HttpServerPropertiesManager::ReadPrefs(
             kMaxRecentlyBrokenAlternativeServiceEntries);
 
     // Iterate list in reverse-MRU order
-    for (auto it = broken_alt_svc_list->GetList().end();
-         it != broken_alt_svc_list->GetList().begin();) {
+    for (auto it = broken_alt_svc_list->GetListDeprecated().end();
+         it != broken_alt_svc_list->GetListDeprecated().begin();) {
       --it;
       if (!it->is_dict()) {
         DVLOG(1) << "Malformed broken alterantive service entry.";
@@ -538,7 +538,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
       return false;
     }
     quic::ParsedQuicVersionVector advertised_versions;
-    for (const auto& value : versions_list->GetList()) {
+    for (const auto& value : versions_list->GetListDeprecated()) {
       const std::string* version_string = value.GetIfString();
       if (!version_string) {
         DVLOG(1) << "Malformed alternative service version for server: "
@@ -573,7 +573,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfo(
 
   AlternativeServiceInfoVector alternative_service_info_vector;
   for (const auto& alternative_service_list_item :
-       alternative_service_list->GetList()) {
+       alternative_service_list->GetListDeprecated()) {
     if (!alternative_service_list_item.is_dict())
       return false;
     AlternativeServiceInfo alternative_service_info;
@@ -653,7 +653,8 @@ void HttpServerPropertiesManager::AddToQuicServerInfoMap(
     return;
   }
 
-  for (const auto& quic_server_info_value : quic_server_info_list->GetList()) {
+  for (const auto& quic_server_info_value :
+       quic_server_info_list->GetListDeprecated()) {
     if (!quic_server_info_value.is_dict())
       continue;
 

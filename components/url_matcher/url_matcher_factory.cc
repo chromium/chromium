@@ -247,7 +247,7 @@ std::unique_ptr<URLMatcherPortFilter> URLMatcherFactory::CreateURLMatcherPorts(
     *error = kInvalidPortRanges;
     return nullptr;
   }
-  base::Value::ConstListView value_list = value->GetList();
+  base::Value::ConstListView value_list = value->GetListDeprecated();
 
   for (const auto& entry : value_list) {
     if (entry.is_int()) {

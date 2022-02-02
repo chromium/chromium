@@ -118,10 +118,10 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   const base::ListValue* login_screen_locales = nullptr;
   if (cros_settings->GetList(ash::kDeviceLoginScreenLocales,
                              &login_screen_locales) &&
-      !login_screen_locales->GetList().empty() &&
-      login_screen_locales->GetList()[0].is_string()) {
+      !login_screen_locales->GetListDeprecated().empty() &&
+      login_screen_locales->GetListDeprecated()[0].is_string()) {
     std::string login_screen_locale =
-        login_screen_locales->GetList()[0].GetString();
+        login_screen_locales->GetListDeprecated()[0].GetString();
     local_state->SetString(language::prefs::kApplicationLocale,
                            login_screen_locale);
     return true;

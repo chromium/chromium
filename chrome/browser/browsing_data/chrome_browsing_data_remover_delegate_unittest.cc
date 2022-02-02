@@ -1549,7 +1549,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("https://bar.com", base::TimeToValue(base::Time::Now()));
@@ -1563,7 +1563,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
                                 constants::DATA_TYPE_HISTORY, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   EXPECT_TRUE(
       prefs->GetDictionary(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -1573,7 +1573,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
@@ -1587,7 +1587,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
                                 constants::DATA_TYPE_SITE_DATA, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   EXPECT_TRUE(
       prefs->GetDictionary(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -1597,7 +1597,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
@@ -1609,7 +1609,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
                                 constants::DATA_TYPE_ISOLATED_ORIGINS, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   EXPECT_TRUE(
       prefs->GetDictionary(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -1619,7 +1619,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
@@ -1633,7 +1633,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
       constants::DATA_TYPE_HISTORY | constants::DATA_TYPE_SITE_DATA, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetList()
+          ->GetListDeprecated()
           .empty());
   EXPECT_TRUE(
       prefs->GetDictionary(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -3160,7 +3160,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   EXPECT_EQ(3u, prefs->GetDictionary(kPermissionActionsPrefPath)
                     ->FindKey("notifications")
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   // Remove the first and the second element.
   BlockUntilBrowsingDataRemoved(first_recorded_time, third_recorded_time,
@@ -3168,11 +3168,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   // There is only one element left.
   EXPECT_EQ(1u, prefs->GetDictionary(kPermissionActionsPrefPath)
                     ->FindKey("notifications")
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   EXPECT_EQ((base::ValueToTime(prefs->GetDictionary(kPermissionActionsPrefPath)
                                    ->FindKey("notifications")
-                                   ->GetList()
+                                   ->GetListDeprecated()
                                    .begin()
                                    ->FindKey("time")))
                 .value_or(base::Time()),

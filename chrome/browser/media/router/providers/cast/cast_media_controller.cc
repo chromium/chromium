@@ -200,7 +200,8 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
   const base::Value* status_list_value = message_value.FindKey("status");
   if (!status_list_value || !status_list_value->is_list())
     return;
-  base::Value::ConstListView status_list = status_list_value->GetList();
+  base::Value::ConstListView status_list =
+      status_list_value->GetListDeprecated();
   if (status_list.empty())
     return;
   const base::Value& status_value = status_list[0];
@@ -219,7 +220,7 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
   const base::Value* images = status_value.FindPath("media.metadata.images");
   if (images && images->is_list()) {
     media_status_.images.clear();
-    for (const base::Value& image_value : images->GetList()) {
+    for (const base::Value& image_value : images->GetListDeprecated()) {
       if (!image_value.is_dict())
         continue;
       const std::string* url_string = image_value.FindStringKey("url");

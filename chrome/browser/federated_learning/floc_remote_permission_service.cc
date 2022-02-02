@@ -205,7 +205,7 @@ void FlocRemotePermissionService::QueryFlocPermissionCompletionCallback(
 
   response_value = ReadResponseAsList(request);
   if (response_value) {
-    base::Value::ListView l = response_value->GetList();
+    base::Value::ListView l = response_value->GetListDeprecated();
     if (l.size() == 3) {
       if (l[0].is_bool())
         swaa = l[0].GetBool();

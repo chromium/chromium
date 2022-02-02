@@ -237,9 +237,11 @@ TEST_F(LanguageSettingsPrivateApiTest, GetAlwaysTranslateLanguagesListTest) {
   ASSERT_NE(nullptr, result) << function->GetError();
   EXPECT_TRUE(result->is_list());
 
-  ASSERT_EQ(result->GetList().size(), always_translate_languages.size());
-  for (size_t i = 0; i < result->GetList().size(); i++) {
-    EXPECT_EQ(result->GetList()[i].GetString(), always_translate_languages[i]);
+  ASSERT_EQ(result->GetListDeprecated().size(),
+            always_translate_languages.size());
+  for (size_t i = 0; i < result->GetListDeprecated().size(); i++) {
+    EXPECT_EQ(result->GetListDeprecated()[i].GetString(),
+              always_translate_languages[i]);
   }
 }
 
@@ -296,9 +298,11 @@ TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {
   ASSERT_NE(nullptr, result) << function->GetError();
   EXPECT_TRUE(result->is_list());
 
-  ASSERT_EQ(result->GetList().size(), never_translate_languages.size());
-  for (size_t i = 0; i < result->GetList().size(); i++) {
-    EXPECT_EQ(result->GetList()[i].GetString(), never_translate_languages[i]);
+  ASSERT_EQ(result->GetListDeprecated().size(),
+            never_translate_languages.size());
+  for (size_t i = 0; i < result->GetListDeprecated().size(); i++) {
+    EXPECT_EQ(result->GetListDeprecated()[i].GetString(),
+              never_translate_languages[i]);
   }
 }
 
@@ -390,7 +394,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   EXPECT_TRUE(result->is_list());
 
   size_t languages_to_test_found_count = 0;
-  for (auto& language_val : result->GetList()) {
+  for (auto& language_val : result->GetListDeprecated()) {
     EXPECT_TRUE(language_val.is_dict());
     std::string* language_code_ptr = language_val.FindStringKey("code");
     ASSERT_NE(nullptr, language_code_ptr);
@@ -545,26 +549,27 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
 
   base::Value* input_methods = result->FindListKey("thirdPartyExtensionImes");
   ASSERT_NE(input_methods, nullptr);
-  EXPECT_EQ(3u, input_methods->GetList().size());
+  EXPECT_EQ(3u, input_methods->GetListDeprecated().size());
 
-  for (auto& input_method : input_methods->GetList()) {
+  for (auto& input_method : input_methods->GetListDeprecated()) {
     base::Value* ime_tags_ptr = input_method.FindListKey("tags");
     ASSERT_NE(nullptr, ime_tags_ptr);
 
     // Check tags contain input method's display name
     base::Value* ime_name_ptr = input_method.FindKey("displayName");
-    EXPECT_TRUE(base::Contains(ime_tags_ptr->GetList(), *ime_name_ptr));
+    EXPECT_TRUE(
+        base::Contains(ime_tags_ptr->GetListDeprecated(), *ime_name_ptr));
 
     // Check tags contain input method's language codes' display names
     base::Value* ime_language_codes_ptr =
         input_method.FindListKey("languageCodes");
     ASSERT_NE(nullptr, ime_language_codes_ptr);
-    for (auto& language_code : ime_language_codes_ptr->GetList()) {
+    for (auto& language_code : ime_language_codes_ptr->GetListDeprecated()) {
       std::string language_display_name =
           base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
               language_code.GetString(), "en", true));
       if (!language_display_name.empty())
-        EXPECT_TRUE(base::Contains(ime_tags_ptr->GetList(),
+        EXPECT_TRUE(base::Contains(ime_tags_ptr->GetListDeprecated(),
                                    base::Value(language_display_name)));
     }
   }

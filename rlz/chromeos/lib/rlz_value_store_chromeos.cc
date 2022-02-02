@@ -330,7 +330,7 @@ bool RlzValueStoreChromeOS::ReadProductEvents(
   events->clear();
 
   bool remove_caf = false;
-  for (const base::Value& item : events_list->GetList()) {
+  for (const base::Value& item : events_list->GetListDeprecated()) {
     const std::string* event = item.GetIfString();
     if (!event)
       continue;
@@ -469,7 +469,7 @@ bool RlzValueStoreChromeOS::AddValueToList(const std::string& list_name,
     list_value =
         rlz_store_.SetPath(list_name, base::Value(base::Value::Type::LIST));
   }
-  if (!base::Contains(list_value->GetList(), value)) {
+  if (!base::Contains(list_value->GetListDeprecated(), value)) {
     list_value->Append(std::move(value));
   }
   return true;
@@ -497,7 +497,7 @@ bool RlzValueStoreChromeOS::ListContainsValue(const std::string& list_name,
   if (!list_value)
     return false;
 
-  return base::Contains(list_value->GetList(), value);
+  return base::Contains(list_value->GetListDeprecated(), value);
 }
 
 bool RlzValueStoreChromeOS::HasAccessPointRlz(AccessPoint access_point) const {

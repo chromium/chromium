@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   SimulateGaiaPasswordChange("password");
   ASSERT_EQ(1u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   // Turn off trigger
   profile->GetPrefs()->SetInteger(
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       user_manager::kStubUserEmail, /*is_gaia_password=*/true));
   EXPECT_EQ(0u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
 }
 
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 
   ASSERT_EQ(0u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   // Configures initial password to "password_1";
   password_manager::PasswordReuseManager* reuse_manager =
@@ -868,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
           CHANGED_IN_CONTENT_AREA);
   ASSERT_EQ(2u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
 
   // Turn off trigger
@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                                             /*is_gaia_password=*/true));
   EXPECT_EQ(0u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
 }
 

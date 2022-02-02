@@ -173,7 +173,7 @@ void GeolocationHandler::GeolocationCallback(
     }
 
     // List[Dictionary<key, value_str>]
-    for (const auto& entry : entry_list->GetList()) {
+    for (const auto& entry : entry_list->GetListDeprecated()) {
       if (!entry.is_dict()) {
         LOG(WARNING) << "Geolocation list value not a Dictionary";
         continue;

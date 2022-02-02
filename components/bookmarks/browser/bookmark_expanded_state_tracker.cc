@@ -48,7 +48,7 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
     return nodes;
 
   bool changed = false;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     int64_t node_id;
     const BookmarkNode* node;
     const std::string* value_str = entry.GetIfString();

@@ -1175,8 +1175,9 @@ TEST_F(HttpServerPropertiesManagerTest, UpdatePrefsWithCache) {
   base::Value* broken_alt_svc_list =
       server_dict.FindListKey("broken_alternative_services");
   ASSERT_TRUE(broken_alt_svc_list);
-  ASSERT_EQ(2u, broken_alt_svc_list->GetList().size());
-  base::Value& broken_alt_svcs_list_entry = broken_alt_svc_list->GetList()[0];
+  ASSERT_EQ(2u, broken_alt_svc_list->GetListDeprecated().size());
+  base::Value& broken_alt_svcs_list_entry =
+      broken_alt_svc_list->GetListDeprecated()[0];
   const std::string* broken_until_str =
       broken_alt_svcs_list_entry.FindStringKey("broken_until");
   ASSERT_TRUE(broken_until_str);
@@ -1351,7 +1352,7 @@ TEST_F(HttpServerPropertiesManagerTest, DoNotPersistExpiredAlternativeService) {
 
   const base::Value* servers_list = pref_dict->FindListKey("servers");
   ASSERT_TRUE(servers_list);
-  auto it = servers_list->GetList().begin();
+  auto it = servers_list->GetListDeprecated().begin();
   const base::Value& server_pref_dict = *it;
   ASSERT_TRUE(server_pref_dict.is_dict());
 
@@ -1363,22 +1364,22 @@ TEST_F(HttpServerPropertiesManagerTest, DoNotPersistExpiredAlternativeService) {
       server_pref_dict.FindKey("isolation");
   ASSERT_TRUE(network_isolation_key_value);
   ASSERT_EQ(base::Value::Type::LIST, network_isolation_key_value->type());
-  EXPECT_TRUE(network_isolation_key_value->GetList().empty());
+  EXPECT_TRUE(network_isolation_key_value->GetListDeprecated().empty());
 
   const base::Value* altsvc_list =
       server_pref_dict.FindListKey("alternative_service");
   ASSERT_TRUE(altsvc_list);
 
-  ASSERT_EQ(2u, altsvc_list->GetList().size());
+  ASSERT_EQ(2u, altsvc_list->GetListDeprecated().size());
 
-  const base::Value& altsvc_entry = altsvc_list->GetList()[0];
+  const base::Value& altsvc_entry = altsvc_list->GetListDeprecated()[0];
   ASSERT_TRUE(altsvc_entry.is_dict());
   const std::string* hostname = altsvc_entry.FindStringKey("host");
 
   ASSERT_TRUE(hostname);
   EXPECT_EQ("broken.example.com", *hostname);
 
-  const base::Value& altsvc_entry2 = altsvc_list->GetList()[1];
+  const base::Value& altsvc_entry2 = altsvc_list->GetListDeprecated()[1];
   ASSERT_TRUE(altsvc_entry.is_dict());
   hostname = altsvc_entry2.FindStringKey("host");
   ASSERT_TRUE(hostname);
@@ -3026,8 +3027,8 @@ TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
     const base::Value* servers_list = preferences_dict->FindListKey("servers");
     ASSERT_TRUE(servers_list);
     ASSERT_TRUE(servers_list->is_list());
-    ASSERT_EQ(servers_list->GetList().size(), 1u);
-    const base::Value& server_dict = servers_list->GetList()[0];
+    ASSERT_EQ(servers_list->GetListDeprecated().size(), 1u);
+    const base::Value& server_dict = servers_list->GetListDeprecated()[0];
     HttpServerProperties::ServerInfo server_info;
     EXPECT_TRUE(HttpServerPropertiesManager::ParseAlternativeServiceInfo(
         server, server_dict, &server_info));

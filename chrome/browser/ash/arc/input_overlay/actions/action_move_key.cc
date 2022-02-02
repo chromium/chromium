@@ -41,13 +41,13 @@ bool ActionMoveKey::ParseFromJson(const base::Value& value) {
     LOG(ERROR) << "Require key codes for move key action: " << name_ << ".";
     return false;
   }
-  if (keys->GetList().size() != kActionMoveKeysSize) {
+  if (keys->GetListDeprecated().size() != kActionMoveKeysSize) {
     LOG(ERROR) << "Not right amount of keys for action move keys. Require {"
                << kActionMoveKeysSize << "} keys, but got {"
-               << keys->GetList().size() << "} keys.";
+               << keys->GetListDeprecated().size() << "} keys.";
     return false;
   }
-  for (const base::Value& val : keys->GetList()) {
+  for (const base::Value& val : keys->GetListDeprecated()) {
     DCHECK(val.is_string());
     auto key = ui::KeycodeConverter::CodeStringToDomCode(val.GetString());
     if (key == ui::DomCode::NONE) {

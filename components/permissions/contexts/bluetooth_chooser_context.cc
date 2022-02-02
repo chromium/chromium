@@ -289,7 +289,8 @@ bool BluetoothChooserContext::IsAllowedToAccessManufacturerData(
   if (!manufacturer_data_list)
     return false;
 
-  for (const auto& manufacturer_data : manufacturer_data_list->GetList()) {
+  for (const auto& manufacturer_data :
+       manufacturer_data_list->GetListDeprecated()) {
     if (manufacturer_code == manufacturer_data.GetInt())
       return true;
   }

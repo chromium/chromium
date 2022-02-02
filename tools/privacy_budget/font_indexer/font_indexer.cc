@@ -100,7 +100,7 @@ void FontIndexer::PrintAllFonts() {
 void FontIndexer::FontListHasLoaded(std::unique_ptr<base::ListValue> list) {
   std::cout << kOutputHeader << std::endl;
 
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
   for (const auto& i : list_view) {
     DCHECK(i.is_list());
     base::Value::ConstListView font = i.GetList();

@@ -67,7 +67,7 @@ void AppShimRegistry::GetProfilesSetForApp(
   const base::Value* profile_values = app_info->FindListKey(profiles_key);
   if (!profile_values)
     return;
-  for (const auto& profile_path_value : profile_values->GetList()) {
+  for (const auto& profile_path_value : profile_values->GetListDeprecated()) {
     if (profile_path_value.is_string())
       profiles->insert(GetFullProfilePath(profile_path_value.GetString()));
   }
@@ -111,7 +111,8 @@ std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
         iter_app.second.FindListKey(kInstalledProfiles);
     if (!installed_profiles_list)
       continue;
-    for (const auto& profile_path_value : installed_profiles_list->GetList()) {
+    for (const auto& profile_path_value :
+         installed_profiles_list->GetListDeprecated()) {
       if (!profile_path_value.is_string())
         continue;
       if (profile == GetFullProfilePath(profile_path_value.GetString())) {

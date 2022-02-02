@@ -277,7 +277,8 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
     const auto* fido_eligible_card_ids = response.FindKeyOfType(
         "fido_eligible_card_id", base::Value::Type::LIST);
     if (fido_eligible_card_ids) {
-      for (const base::Value& result : fido_eligible_card_ids->GetList()) {
+      for (const base::Value& result :
+           fido_eligible_card_ids->GetListDeprecated()) {
         unmask_details_.fido_eligible_card_ids.insert(result.GetString());
       }
     }
@@ -826,7 +827,7 @@ class MigrateCardsRequest : public PaymentsRequest {
 
     save_result_ =
         std::make_unique<std::unordered_map<std::string, std::string>>();
-    for (const base::Value& result : found_list->GetList()) {
+    for (const base::Value& result : found_list->GetListDeprecated()) {
       if (result.is_dict()) {
         const std::string* unique_id = result.FindStringKey("unique_id");
         const std::string* status = result.FindStringKey("status");

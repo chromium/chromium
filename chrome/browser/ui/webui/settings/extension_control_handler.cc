@@ -27,7 +27,7 @@ void ExtensionControlHandler::RegisterMessages() {
 
 void ExtensionControlHandler::HandleDisableExtension(
     const base::ListValue* args) {
-  const std::string& extension_id = args->GetList()[0].GetString();
+  const std::string& extension_id = args->GetListDeprecated()[0].GetString();
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(Profile::FromWebUI(web_ui()))
           ->extension_service();

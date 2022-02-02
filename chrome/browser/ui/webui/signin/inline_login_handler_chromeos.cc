@@ -378,7 +378,7 @@ void InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog(
 
 void InlineLoginHandlerChromeOS::GetAccountsInSession(
     const base::ListValue* args) {
-  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
   const Profile* profile = Profile::FromWebUI(web_ui());
   ::GetAccountManagerFacade(profile->GetPath().value())
       ->GetAccounts(base::BindOnce(&InlineLoginHandlerChromeOS::OnGetAccounts,
@@ -460,7 +460,7 @@ void InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog(
 
 void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK(!list.empty());
   const bool skip = list[0].GetBool();
   Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(

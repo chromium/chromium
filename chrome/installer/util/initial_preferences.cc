@@ -43,8 +43,8 @@ std::vector<std::string> GetNamedList(const char* name,
   if (!prefs->GetList(name, &value_list))
     return list;
 
-  list.reserve(value_list->GetList().size());
-  for (const base::Value& entry : value_list->GetList()) {
+  list.reserve(value_list->GetListDeprecated().size());
+  for (const base::Value& entry : value_list->GetListDeprecated()) {
     if (!entry.is_string()) {
       NOTREACHED();
       break;

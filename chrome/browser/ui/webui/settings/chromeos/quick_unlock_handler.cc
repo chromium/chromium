@@ -57,7 +57,7 @@ void QuickUnlockHandler::HandleRequestPinLoginState(
 void QuickUnlockHandler::HandleQuickUnlockDisabledByPolicy(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(0U, args->GetList().size());
+  CHECK_EQ(0U, args->GetListDeprecated().size());
 
   UpdateQuickUnlockDisabledByPolicy();
 }

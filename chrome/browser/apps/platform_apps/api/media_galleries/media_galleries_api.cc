@@ -762,7 +762,8 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
   base::ListValue* attached_images_list = NULL;
   result_dictionary->GetList(kAttachedImagesBlobInfoKey, &attached_images_list);
   DCHECK(attached_images_list);
-  DCHECK_LT(attached_images_list->GetList().size(), attached_images->size());
+  DCHECK_LT(attached_images_list->GetListDeprecated().size(),
+            attached_images->size());
 
   metadata::AttachedImage* current_image =
       &(*attached_images)[blob_uuids->size()];

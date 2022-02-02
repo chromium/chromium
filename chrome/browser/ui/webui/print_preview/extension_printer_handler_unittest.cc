@@ -626,7 +626,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
   EXPECT_EQ(1u, call_count);
   EXPECT_FALSE(is_done);
   EXPECT_TRUE(printers.get());
-  EXPECT_EQ(2u, printers->GetList().size());
+  EXPECT_EQ(2u, printers->GetListDeprecated().size());
   std::unique_ptr<base::DictionaryValue> extension_1_entry(
       DictionaryBuilder()
           .Set("id", base::StringPrintf("provisional-usb:%s:%s",
@@ -647,8 +647,10 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
           .Set("extensionId", extension_2->id())
           .Set("provisional", true)
           .Build());
-  EXPECT_TRUE(base::Contains(printers->GetList(), *extension_1_entry));
-  EXPECT_TRUE(base::Contains(printers->GetList(), *extension_2_entry));
+  EXPECT_TRUE(
+      base::Contains(printers->GetListDeprecated(), *extension_1_entry));
+  EXPECT_TRUE(
+      base::Contains(printers->GetListDeprecated(), *extension_2_entry));
 
   fake_api->TriggerNextGetPrintersCallback(base::ListValue(), true);
 

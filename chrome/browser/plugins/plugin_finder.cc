@@ -54,7 +54,7 @@ void LoadMimeTypes(bool matching_mime_types,
   if (!plugin_dict->GetList(list_key, &mime_types))
     return;
 
-  for (const auto& mime_type : mime_types->GetList()) {
+  for (const auto& mime_type : mime_types->GetListDeprecated()) {
     const std::string& mime_type_str = mime_type.GetString();
     if (matching_mime_types)
       plugin->AddMatchingMimeType(mime_type_str);
@@ -87,7 +87,7 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
       group_name_matcher, language_str, plugin_is_deprecated);
   const base::ListValue* versions = NULL;
   if (plugin_dict->GetList("versions", &versions)) {
-    for (const auto& entry : versions->GetList()) {
+    for (const auto& entry : versions->GetListDeprecated()) {
       const base::DictionaryValue* version_dict = nullptr;
       if (!entry.GetAsDictionary(&version_dict)) {
         NOTREACHED();

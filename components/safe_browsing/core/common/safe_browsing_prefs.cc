@@ -346,7 +346,7 @@ bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
     return false;
   const base::Value* allowlist =
       pref.GetList(prefs::kSafeBrowsingAllowlistDomains);
-  for (const base::Value& value : allowlist->GetList()) {
+  for (const base::Value& value : allowlist->GetListDeprecated()) {
     if (url.DomainIs(value.GetString()))
       return true;
   }
@@ -357,7 +357,7 @@ std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service) {
   std::vector<std::string> allowlist_domains;
   const base::Value* allowlist =
       pref_service->GetList(prefs::kSafeBrowsingAllowlistDomains);
-  for (const base::Value& value : allowlist->GetList()) {
+  for (const base::Value& value : allowlist->GetListDeprecated()) {
     allowlist_domains.push_back(value.GetString());
   }
   return allowlist_domains;
@@ -377,7 +377,7 @@ void GetPasswordProtectionLoginURLsPref(const PrefService& prefs,
   const base::Value* pref_value =
       prefs.GetList(prefs::kPasswordProtectionLoginURLs);
   out_login_url_list->clear();
-  for (const base::Value& value : pref_value->GetList()) {
+  for (const base::Value& value : pref_value->GetListDeprecated()) {
     GURL login_url(value.GetString());
     // Skip invalid or none-http/https login URLs.
     if (login_url.is_valid() && login_url.SchemeIsHTTPOrHTTPS())

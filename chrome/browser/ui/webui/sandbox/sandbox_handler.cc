@@ -116,8 +116,8 @@ void SandboxHandler::HandleRequestSandboxDiagnostics(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  CHECK_EQ(1U, args->GetList().size());
-  sandbox_diagnostics_callback_id_ = args->GetList()[0].Clone();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  sandbox_diagnostics_callback_id_ = args->GetListDeprecated()[0].Clone();
 
   AllowJavascript();
 

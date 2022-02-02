@@ -45,8 +45,8 @@ void PasswordChangeHandler::HandleInitialize(const base::ListValue* value) {
 
 void PasswordChangeHandler::HandleChangePassword(
     const base::ListValue* params) {
-  const base::Value& old_passwords = params->GetList()[0];
-  const base::Value& new_passwords = params->GetList()[1];
+  const base::Value& old_passwords = params->GetListDeprecated()[0];
+  const base::Value& new_passwords = params->GetListDeprecated()[1];
   VLOG(4) << "Scraped " << old_passwords.GetList().size() << " old passwords";
   VLOG(4) << "Scraped " << new_passwords.GetList().size() << " new passwords";
 

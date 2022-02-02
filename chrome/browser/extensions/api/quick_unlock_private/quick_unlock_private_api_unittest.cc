@@ -332,7 +332,7 @@ class QuickUnlockPrivateUnitTest
     QuickUnlockModeList modes;
 
     EXPECT_TRUE(result->is_list());
-    for (const base::Value& value : result->GetList()) {
+    for (const base::Value& value : result->GetListDeprecated()) {
       EXPECT_TRUE(value.is_string());
       modes.push_back(
           quick_unlock_private::ParseQuickUnlockMode(value.GetString()));
@@ -350,7 +350,7 @@ class QuickUnlockPrivateUnitTest
     QuickUnlockModeList modes;
 
     EXPECT_TRUE(result->is_list());
-    for (const base::Value& value : result->GetList()) {
+    for (const base::Value& value : result->GetListDeprecated()) {
       EXPECT_TRUE(value.is_string());
       modes.push_back(
           quick_unlock_private::ParseQuickUnlockMode(value.GetString()));
@@ -643,7 +643,7 @@ class QuickUnlockPrivateUnitTest
     auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
     api_test_utils::RunFunction(func.get(), std::move(params),
                                 std::move(dispatcher), api_test_utils::NONE);
-    EXPECT_TRUE(func->GetResultList()->GetList().empty());
+    EXPECT_TRUE(func->GetResultList()->GetListDeprecated().empty());
     base::RunLoop().RunUntilIdle();
     return func->GetError();
   }

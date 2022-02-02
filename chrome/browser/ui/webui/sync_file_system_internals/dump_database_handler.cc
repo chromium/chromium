@@ -33,7 +33,7 @@ void DumpDatabaseHandler::HandleGetDatabaseDump(const base::ListValue* args) {
   if (sync_service) {
     sync_service->DumpDatabase(base::BindOnce(
         &DumpDatabaseHandler::DidGetDatabaseDump, base::Unretained(this),
-        args->GetList()[0].GetString() /* callback_id */));
+        args->GetListDeprecated()[0].GetString() /* callback_id */));
   }
 }
 

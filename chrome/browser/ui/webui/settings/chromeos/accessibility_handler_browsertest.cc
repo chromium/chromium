@@ -111,7 +111,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
           listener == expected_listener) {
         if (!data->arg2()->is_list())
           return false;
-        *argument = data->arg2()->GetList();
+        *argument = data->arg2()->GetListDeprecated();
         return true;
       }
     }

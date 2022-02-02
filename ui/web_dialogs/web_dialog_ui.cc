@@ -104,9 +104,9 @@ void WebDialogUIBase::OnDialogClosed(const base::ListValue* args) {
   WebDialogDelegate* delegate = GetDelegate(web_ui_->GetWebContents());
   if (delegate) {
     std::string json_retval;
-    if (args && !args->GetList().empty()) {
-      if (args->GetList()[0].is_string())
-        json_retval = args->GetList()[0].GetString();
+    if (args && !args->GetListDeprecated().empty()) {
+      if (args->GetListDeprecated()[0].is_string())
+        json_retval = args->GetListDeprecated()[0].GetString();
       else
         NOTREACHED() << "Could not read JSON argument";
     }

@@ -737,7 +737,7 @@ void GpuMessageHandler::RegisterMessages() {
 }
 
 void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   DCHECK_GE(args_list.size(), static_cast<size_t>(2));
   // unpack args into requestId, submessage and submessageArgs
   const base::Value& requestId = args_list[0];

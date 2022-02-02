@@ -258,7 +258,7 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
   if (!list)
     return;
 
-  for (const auto& entry : list->GetList()) {
+  for (const auto& entry : list->GetListDeprecated()) {
     const base::DictionaryValue* dict = nullptr;
     if (!entry.GetAsDictionary(&dict)) {
       NOTREACHED();

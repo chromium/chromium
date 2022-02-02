@@ -2097,7 +2097,7 @@ ExtensionPrefs::GetDNREnabledStaticRulesets(
     return absl::nullopt;
 
   DCHECK(ids_value);
-  for (const base::Value& id_value : ids_value->GetList()) {
+  for (const base::Value& id_value : ids_value->GetListDeprecated()) {
     if (!id_value.is_int())
       return absl::nullopt;
 
@@ -2297,7 +2297,7 @@ bool ExtensionPrefs::GetUserExtensionPrefIntoContainer(
 
   std::insert_iterator<ExtensionIdContainer> insert_iterator(
       *id_container_out, id_container_out->end());
-  for (const auto& entry : user_pref_value->GetList()) {
+  for (const auto& entry : user_pref_value->GetListDeprecated()) {
     if (!entry.is_string()) {
       NOTREACHED();
       continue;
@@ -2661,7 +2661,7 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
   ListPrefUpdate update(prefs_, kExternalUninstalls);
   base::Value* current_ids = update.Get();
   for (const auto& id : uninstalled_ids) {
-    base::Value::ListView list = current_ids->GetList();
+    base::Value::ListView list = current_ids->GetListDeprecated();
     auto existing_entry =
         std::find_if(list.begin(), list.end(), [&id](const base::Value& value) {
           return value.is_string() && value.GetString() == id;
@@ -2733,7 +2733,7 @@ bool ExtensionPrefs::ShouldInstallObsoleteComponentExtension(
     const std::string& extension_id) {
   ListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
   base::Value* current_ids = update.Get();
-  base::Value::ListView list = current_ids->GetList();
+  base::Value::ListView list = current_ids->GetListDeprecated();
   auto existing_entry = std::find_if(
       list.begin(), list.end(), [&extension_id](const base::Value& value) {
         return value.is_string() && value.GetString() == extension_id;
@@ -2746,7 +2746,7 @@ void ExtensionPrefs::MarkObsoleteComponentExtensionAsRemoved(
     const ManifestLocation location) {
   ListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
   base::Value* current_ids = update.Get();
-  base::Value::ListView list = current_ids->GetList();
+  base::Value::ListView list = current_ids->GetListDeprecated();
   auto existing_entry = std::find_if(
       list.begin(), list.end(), [&extension_id](const base::Value& value) {
         return value.is_string() && value.GetString() == extension_id;

@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
       test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                    browser()));
   ASSERT_TRUE(result->is_list());
-  EXPECT_EQ(1U, result->GetList().size());
+  EXPECT_EQ(1U, result->GetListDeprecated().size());
 
   // And it should continue to do so even after it crashes.
   ASSERT_TRUE(CrashEnabledExtension(extension->id()));
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   result = test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                         browser());
   ASSERT_TRUE(result->is_list());
-  EXPECT_EQ(1U, result->GetList().size());
+  EXPECT_EQ(1U, result->GetListDeprecated().size());
 }
 
 class ExtensionManagementApiEscalationTest :

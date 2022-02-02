@@ -1054,7 +1054,7 @@ int GetSpdySessionCount(HttpNetworkSession* session) {
       session->spdy_session_pool()->SpdySessionPoolInfoToValue());
   if (!value || !value->is_list())
     return -1;
-  return value->GetList().size();
+  return value->GetListDeprecated().size();
 }
 
 // Return count of sockets handed out by a given socket pool.
@@ -1070,7 +1070,7 @@ int GetQuicSessionCount(HttpNetworkSession* session) {
   base::Value* session_list = dict.FindListKey("sessions");
   if (!session_list)
     return -1;
-  return session_list->GetList().size();
+  return session_list->GetListDeprecated().size();
 }
 
 TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {

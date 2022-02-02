@@ -238,7 +238,7 @@ std::unique_ptr<base::ListValue> URLPatternSet::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue);
   for (auto i = patterns_.cbegin(); i != patterns_.cend(); ++i) {
     base::Value pattern_str_value(i->GetAsString());
-    if (!base::Contains(value->GetList(), pattern_str_value))
+    if (!base::Contains(value->GetListDeprecated(), pattern_str_value))
       value->Append(std::move(pattern_str_value));
   }
   return value;

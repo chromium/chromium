@@ -156,7 +156,7 @@ void SwitchLanguage(const std::string& locale,
 
 bool IsAllowedLanguage(const std::string& language, const PrefService* prefs) {
   base::Value::ConstListView allowed_languages =
-      prefs->GetList(prefs::kAllowedLanguages)->GetList();
+      prefs->GetList(prefs::kAllowedLanguages)->GetListDeprecated();
 
   // Empty list means all languages are allowed.
   if (allowed_languages.empty())
@@ -180,7 +180,7 @@ bool IsNativeUILanguage(const std::string& locale) {
 
 void RemoveDisallowedLanguagesFromPreferred(PrefService* prefs) {
   // Do nothing if all languages are allowed
-  if (prefs->GetList(prefs::kAllowedLanguages)->GetList().empty())
+  if (prefs->GetList(prefs::kAllowedLanguages)->GetListDeprecated().empty())
     return;
 
   std::vector<std::string> preferred_languages =
@@ -218,7 +218,7 @@ std::string GetAllowedFallbackUILanguage(const PrefService* prefs) {
 
   // Check the allowed UI locales and return the first valid entry.
   base::Value::ConstListView allowed_languages =
-      prefs->GetList(prefs::kAllowedLanguages)->GetList();
+      prefs->GetList(prefs::kAllowedLanguages)->GetListDeprecated();
   for (const base::Value& value : allowed_languages) {
     const std::string& locale = value.GetString();
     if (IsAllowedUILanguage(locale, prefs))

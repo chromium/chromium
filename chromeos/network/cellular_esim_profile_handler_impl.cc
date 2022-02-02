@@ -79,7 +79,7 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
   }
 
   std::vector<CellularESimProfile> profiles;
-  for (const base::Value& value : profiles_list->GetList()) {
+  for (const base::Value& value : profiles_list->GetListDeprecated()) {
     const base::DictionaryValue* dict;
     if (!value.GetAsDictionary(&dict)) {
       NET_LOG(ERROR) << "List item from eSIM profiles pref is not a dictionary";
@@ -201,7 +201,7 @@ CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   }
 
   base::flat_set<std::string> euicc_paths;
-  for (const auto& euicc : euicc_paths_from_prefs->GetList()) {
+  for (const auto& euicc : euicc_paths_from_prefs->GetListDeprecated()) {
     if (!euicc.is_string()) {
       NET_LOG(ERROR) << "Non-string EUICC path: " << euicc;
       continue;

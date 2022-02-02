@@ -68,7 +68,7 @@ bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
     return false;
 
   const auto disabled_system_features =
-      disabled_system_features_pref->GetList();
+      disabled_system_features_pref->GetListDeprecated();
   return base::Contains(disabled_system_features, base::Value(feature));
 }
 
@@ -86,7 +86,7 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
     enums_list.Append(feature);
 
     if (!old_list ||
-        !base::Contains(old_list->GetList(), base::Value(feature))) {
+        !base::Contains(old_list->GetListDeprecated(), base::Value(feature))) {
       base::UmaHistogramEnumeration(kSystemFeaturesDisableListHistogram,
                                     feature);
     }

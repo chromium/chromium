@@ -236,7 +236,7 @@ class EventRouterFilterTest : public ExtensionsTest,
       return false;
     }
 
-    for (const base::Value& filter : filter_list->GetList()) {
+    for (const base::Value& filter : filter_list->GetListDeprecated()) {
       if (!filter.is_dict()) {
         ADD_FAILURE();
         return false;

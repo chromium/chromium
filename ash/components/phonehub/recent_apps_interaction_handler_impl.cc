@@ -118,7 +118,7 @@ void RecentAppsInteractionHandlerImpl::
     PA_LOG(INFO) << "LoadRecentAppMetadataListFromPref";
     const base::Value* recent_apps_history_pref =
         pref_service_->GetList(prefs::kRecentAppsHistory);
-    for (const auto& value : recent_apps_history_pref->GetList()) {
+    for (const auto& value : recent_apps_history_pref->GetListDeprecated()) {
       DCHECK(value.is_dict());
       recent_app_metadata_list_.emplace_back(
           Notification::AppMetadata::FromValue(value),

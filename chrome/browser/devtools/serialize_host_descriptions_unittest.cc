@@ -102,21 +102,23 @@ namespace {
 MATCHER(Node2, "") {
   if (!CheckLabel(arg, 2))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(), UnorderedElementsAre(EmptyNode(4)));
+  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
+              UnorderedElementsAre(EmptyNode(4)));
   return true;
 }
 
 MATCHER(Node5, "") {
   if (!CheckLabel(arg, 5))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(), UnorderedElementsAre(Node2()));
+  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
+              UnorderedElementsAre(Node2()));
   return true;
 }
 
 MATCHER(Node0, "") {
   if (!CheckLabel(arg, 0))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(),
+  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
               UnorderedElementsAre(EmptyNode(1), EmptyNode(3), EmptyNode(6)));
   return true;
 }

@@ -391,7 +391,7 @@ base::ListValue WelcomeScreenHandler::GetTimezoneList() {
 
   base::ListValue timezone_list;
   std::unique_ptr<base::ListValue> timezones = system::GetTimezoneList();
-  base::Value::ConstListView timezones_view = timezones->GetList();
+  base::Value::ConstListView timezones_view = timezones->GetListDeprecated();
   for (size_t i = 0; i < timezones_view.size(); ++i) {
     CHECK(timezones_view[i].is_list());
     base::Value::ConstListView timezone = timezones_view[i].GetList();

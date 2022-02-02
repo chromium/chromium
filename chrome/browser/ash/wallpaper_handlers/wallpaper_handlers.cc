@@ -609,7 +609,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
 
   // Populate the ID -> URL mapping for the each album's cover photo.
   std::map<std::string, std::string> cover_photo_urls_by_id;
-  for (const auto& response_photo : response_photos->GetList()) {
+  for (const auto& response_photo : response_photos->GetListDeprecated()) {
     const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
     const std::string* url = response_photo.FindStringPath("photo.servingUrl");
     if (id && url)
@@ -622,7 +622,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
 
   parsed_response->albums =
       std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr>();
-  for (const auto& response_album : response_albums->GetList()) {
+  for (const auto& response_album : response_albums->GetListDeprecated()) {
     const std::string* album_id =
         response_album.FindStringPath("collectionId.mediaKey");
     const std::string* title = response_album.FindStringPath("name");
@@ -723,7 +723,7 @@ GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
 
   parsed_response->photos =
       std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr>();
-  for (const auto& response_photo : response_photos->GetList()) {
+  for (const auto& response_photo : response_photos->GetListDeprecated()) {
     const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
     const std::string* timestamp_seconds_string =
         response_photo.FindStringPath("creationTimestamp.seconds");

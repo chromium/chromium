@@ -150,7 +150,7 @@ void RestorePrimaryUserDesks() {
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.
-  const size_t restore_size = desks_names->GetList().size();
+  const size_t restore_size = desks_names->GetListDeprecated().size();
 
   // If we don't have any restore data, or the list is corrupt for some reason,
   // abort.
@@ -161,9 +161,10 @@ void RestorePrimaryUserDesks() {
   while (desks_controller->desks().size() < restore_size)
     desks_controller->NewDesk(DesksCreationRemovalSource::kDesksRestore);
 
-  const auto& desks_names_list = desks_names->GetList();
-  const auto& desks_metrics_list = desks_metrics->GetList();
-  const size_t desks_metrics_list_size = desks_metrics->GetList().size();
+  const auto& desks_names_list = desks_names->GetListDeprecated();
+  const auto& desks_metrics_list = desks_metrics->GetListDeprecated();
+  const size_t desks_metrics_list_size =
+      desks_metrics->GetListDeprecated().size();
   const auto now = base::Time::Now();
   for (size_t index = 0; index < restore_size; ++index) {
     const std::string& desk_name = desks_names_list[index].GetString();
@@ -274,7 +275,7 @@ void UpdatePrimaryUserDeskNamesPrefs() {
                                : std::string());
   }
 
-  DCHECK_EQ(name_pref_data->GetList().size(), desks.size());
+  DCHECK_EQ(name_pref_data->GetListDeprecated().size(), desks.size());
 
   if (IsNowInValidTimePeriod() &&
       !primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently)) {
@@ -311,7 +312,7 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
     metrics_pref_data->Append(std::move(metrics_dict));
   }
 
-  DCHECK_EQ(metrics_pref_data->GetList().size(), desks.size());
+  DCHECK_EQ(metrics_pref_data->GetListDeprecated().size(), desks.size());
 
   // Save weekly active report time.
   DictionaryPrefUpdate weekly_active_desks_update(

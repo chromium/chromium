@@ -115,7 +115,7 @@ void RemoveDuplicatePhoneNumberAtIndex(size_t index,
                                        const std::string& country_code,
                                        base::Value* list_value) {
   DCHECK(list_value->is_list());
-  base::Value::ListView list = list_value->GetList();
+  base::Value::ListView list = list_value->GetListDeprecated();
   if (list.size() <= index) {
     NOTREACHED() << "List should have a value at index " << index;
     return;

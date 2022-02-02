@@ -172,7 +172,7 @@ bool ParseAccounts(const base::Value* accounts,
   if (!accounts->is_list())
     return false;
 
-  for (auto& account : accounts->GetList()) {
+  for (auto& account : accounts->GetListDeprecated()) {
     if (!account.is_dict())
       return false;
 
@@ -220,7 +220,7 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
   const base::Value* icons_value = idp_metadata_value.FindKey("icons");
   if (icons_value != nullptr && icons_value->is_list()) {
     std::vector<blink::Manifest::ImageResource> icons;
-    for (const base::Value& icon_value : icons_value->GetList()) {
+    for (const base::Value& icon_value : icons_value->GetListDeprecated()) {
       if (!icon_value.is_dict())
         continue;
 

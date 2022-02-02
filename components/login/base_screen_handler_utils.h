@@ -87,7 +87,7 @@ inline void DispatchToCallback(
     const base::ListValue* args,
     std::index_sequence<Ns...> indexes) {
   DCHECK(args);
-  DCHECK_EQ(sizeof...(Args), args->GetList().size());
+  DCHECK_EQ(sizeof...(Args), args->GetListDeprecated().size());
 
   callback.Run(ParseArg<Args, Ns>(args)...);
 }

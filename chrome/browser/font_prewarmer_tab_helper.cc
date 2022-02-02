@@ -49,7 +49,7 @@ std::vector<std::string> GetFontNamesFromPrefsForKey(Profile* profile,
                                                      const char* pref_name) {
   const base::Value* font_name_list = profile->GetPrefs()->GetList(pref_name);
   DCHECK(font_name_list && font_name_list->is_list());
-  const auto font_name_list_view = font_name_list->GetList();
+  const auto font_name_list_view = font_name_list->GetListDeprecated();
   if (font_name_list_view.empty())
     return {};
 

@@ -277,7 +277,7 @@ void FakeShillDeviceClient::Register(const dbus::ObjectPath& device_path,
     PostError("No Cellular scan results", std::move(error_callback));
     return;
   }
-  for (auto& network : scan_results->GetList()) {
+  for (auto& network : scan_results->GetListDeprecated()) {
     std::string id = network.FindKey(shill::kNetworkIdProperty)->GetString();
     std::string status = id == network_id ? "current" : "available";
     network.SetKey(shill::kStatusProperty, base::Value(status));
@@ -411,7 +411,7 @@ void FakeShillDeviceClient::AddCellularFoundNetwork(
                                              base::ListValue());
   }
   base::Value new_result(base::Value::Type::DICTIONARY);
-  int idx = static_cast<int>(scan_results->GetList().size());
+  int idx = static_cast<int>(scan_results->GetListDeprecated().size());
   new_result.SetKey(shill::kNetworkIdProperty,
                     base::Value(base::StringPrintf("network%d", idx)));
   new_result.SetKey(shill::kLongNameProperty,

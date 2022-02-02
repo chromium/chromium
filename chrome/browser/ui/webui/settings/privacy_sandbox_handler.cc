@@ -55,15 +55,15 @@ void PrivacySandboxHandler::RegisterMessages() {
 void PrivacySandboxHandler::HandleGetFlocId(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   ResolveJavascriptCallback(callback_id,
                             GetFlocIdInformation(Profile::FromWebUI(web_ui())));
 }
 
 void PrivacySandboxHandler::HandleResetFlocId(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetList().size());
+  CHECK_EQ(0U, args->GetListDeprecated().size());
   AllowJavascript();
 
   auto* privacy_sandbox_service =

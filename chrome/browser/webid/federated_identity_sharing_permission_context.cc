@@ -142,8 +142,8 @@ std::u16string FederatedIdentitySharingPermissionContext::GetObjectDisplayName(
   DCHECK(IsValidObject(object));
   const auto rp_string = *object.FindStringKey(kRelyingPartyOriginKey);
   if (auto* account_ids = object.FindListKey(kAccountIdsKey)) {
-    std::vector<std::string> ids(account_ids->GetList().size());
-    for (const base::Value& account_id : account_ids->GetList()) {
+    std::vector<std::string> ids(account_ids->GetListDeprecated().size());
+    for (const base::Value& account_id : account_ids->GetListDeprecated()) {
       ids.push_back(account_id.GetString());
     }
     return base::UTF8ToUTF16(base::StrCat(

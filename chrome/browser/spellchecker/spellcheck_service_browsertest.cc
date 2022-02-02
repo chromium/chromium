@@ -187,7 +187,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
     const base::Value* list_value =
         prefs_->GetList(spellcheck::prefs::kSpellCheckDictionaries);
     std::vector<base::StringPiece> dictionaries;
-    for (const auto& item_value : list_value->GetList()) {
+    for (const auto& item_value : list_value->GetListDeprecated()) {
       EXPECT_TRUE(item_value.is_string());
       dictionaries.push_back(item_value.GetString());
     }
@@ -633,15 +633,15 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesMigrated) {
   // Make sure the preferences have been migrated.
   ASSERT_EQ(1u, GetPrefs()
                     ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetList()[0]
+                  ->GetListDeprecated()[0]
                   .is_string());
   EXPECT_EQ("en-US", GetPrefs()
                          ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                         ->GetList()[0]
+                         ->GetListDeprecated()[0]
                          .GetString());
   EXPECT_TRUE(
       GetPrefs()->GetString(spellcheck::prefs::kSpellCheckDictionary).empty());
@@ -660,15 +660,15 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesNotMigrated) {
   // Make sure the preferences have not been migrated.
   ASSERT_EQ(1u, GetPrefs()
                     ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetList()[0]
+                  ->GetListDeprecated()[0]
                   .is_string());
   EXPECT_EQ("en-US", GetPrefs()
                          ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                         ->GetList()[0]
+                         ->GetListDeprecated()[0]
                          .GetString());
   EXPECT_TRUE(
       GetPrefs()->GetString(spellcheck::prefs::kSpellCheckDictionary).empty());
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
   EXPECT_FALSE(GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
   EXPECT_EQ(1U, GetPrefs()
                     ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
 }
 
@@ -708,23 +708,23 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
   EXPECT_TRUE(GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
   EXPECT_EQ(2U, GetPrefs()
                     ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetList()[0]
+                  ->GetListDeprecated()[0]
                   .is_string());
   EXPECT_EQ("en-US", GetPrefs()
                          ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                         ->GetList()[0]
+                         ->GetListDeprecated()[0]
                          .GetString());
   ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetList()[1]
+                  ->GetListDeprecated()[1]
                   .is_string());
   EXPECT_EQ("fr", GetPrefs()
                       ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                      ->GetList()[1]
+                      ->GetListDeprecated()[1]
                       .GetString());
 }
 
@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
   const base::Value* dictionaries_list =
       GetPrefs()->Get(spellcheck::prefs::kSpellCheckDictionaries);
   std::vector<std::string> actual_dictionaries;
-  for (const auto& dictionary : dictionaries_list->GetList()) {
+  for (const auto& dictionary : dictionaries_list->GetListDeprecated()) {
     actual_dictionaries.push_back(dictionary.GetString());
   }
   EXPECT_EQ(kSpellcheckDictionariesAfter, actual_dictionaries);

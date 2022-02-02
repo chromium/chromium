@@ -113,14 +113,15 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
       UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath());
   ASSERT_TRUE(record_list);
   ASSERT_TRUE(record_list->is_list());
-  EXPECT_EQ(record_list->GetList().size(), records.size());
+  EXPECT_EQ(record_list->GetListDeprecated().size(), records.size());
 
   size_t counter = 0;
   for (auto record : records) {
     auto record_value_result =
         EncryptedRecordDictionaryBuilder(std::move(record)).Build();
     ASSERT_TRUE(record_value_result.has_value());
-    EXPECT_EQ(record_list->GetList()[counter++], record_value_result.value());
+    EXPECT_EQ(record_list->GetListDeprecated()[counter++],
+              record_value_result.value());
   }
 }
 

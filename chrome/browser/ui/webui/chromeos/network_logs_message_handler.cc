@@ -85,9 +85,9 @@ void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
 }
 
 void NetworkLogsMessageHandler::OnStoreLogs(const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetList().size());
-  std::string callback_id = list->GetList()[0].GetString();
-  const base::Value& options = list->GetList()[1];
+  CHECK_EQ(2u, list->GetListDeprecated().size());
+  std::string callback_id = list->GetListDeprecated()[0].GetString();
+  const base::Value& options = list->GetListDeprecated()[1];
   AllowJavascript();
 
   if (GetBoolOrFalse(options, "systemLogs")) {
@@ -180,9 +180,9 @@ void NetworkLogsMessageHandler::OnWriteSystemLogsCompleted(
 
 void NetworkLogsMessageHandler::OnSetShillDebugging(
     const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetList().size());
-  std::string callback_id = list->GetList()[0].GetString();
-  std::string subsystem = list->GetList()[1].GetString();
+  CHECK_EQ(2u, list->GetListDeprecated().size());
+  std::string callback_id = list->GetListDeprecated()[0].GetString();
+  std::string subsystem = list->GetListDeprecated()[1].GetString();
   AllowJavascript();
   chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetDebugMode(
       subsystem,

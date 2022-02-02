@@ -100,8 +100,8 @@ void ProfileInfoHandler::OnProfileAvatarChanged(
 void ProfileInfoHandler::HandleGetProfileInfo(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   ResolveJavascriptCallback(callback_id, *GetAccountNameAndIcon());
 }

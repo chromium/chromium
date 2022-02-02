@@ -53,7 +53,7 @@ class HostCachePersistenceManagerTest : public testing::Test {
     const base::Value* value = pref_service_->GetUserPref(kPrefName);
     base::Value list(base::Value::Type::LIST);
     if (value)
-      list = base::Value(value->GetList());
+      list = base::Value(value->GetListDeprecated());
     net::HostCache temp_cache(10);
     temp_cache.RestoreFromListValue(base::Value::AsListValue(list));
     ASSERT_EQ(expected_size, temp_cache.size());

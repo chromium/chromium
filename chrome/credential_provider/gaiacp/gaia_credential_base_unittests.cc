@@ -3477,7 +3477,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
 
   std::vector<std::string> actual_mac_address_list;
   for (const base::Value& value :
-       request_dict.FindKey("wlan_mac_addr")->GetList()) {
+       request_dict.FindKey("wlan_mac_addr")->GetListDeprecated()) {
     ASSERT_TRUE(value.is_string());
     actual_mac_address_list.push_back(value.GetString());
   }

@@ -160,7 +160,7 @@ class CONTENT_EXPORT WebUI {
     static void Impl(base::RepeatingCallback<void(Args...)> callback,
                      base::StringPiece message,
                      const base::ListValue* list) {
-      base::span<const base::Value> args = list->GetList();
+      base::span<const base::Value> args = list->GetListDeprecated();
       CHECK_EQ(args.size(), sizeof...(Args)) << message;
       callback.Run(GetValue<Args>(args[Is])...);
     }

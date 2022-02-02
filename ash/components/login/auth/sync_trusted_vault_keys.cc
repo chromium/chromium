@@ -63,7 +63,7 @@ std::vector<T> ParseList(
   }
 
   std::vector<T> parsed_list;
-  for (const base::Value& list_entry : list->GetList()) {
+  for (const base::Value& list_entry : list->GetListDeprecated()) {
     absl::optional<T> parsed_entry = entry_parser.Run(list_entry);
     if (parsed_entry.has_value()) {
       parsed_list.push_back(std::move(*parsed_entry));

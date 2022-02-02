@@ -271,7 +271,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
       std::unique_ptr<base::Value> value(
           session_->spdy_session_pool()->SpdySessionPoolInfoToValue());
       CHECK(value && value->is_list());
-      return value->GetList().size();
+      return value->GetListDeprecated().size();
     }
 
     HttpNetworkTransaction* trans() { return trans_.get(); }
@@ -4862,23 +4862,24 @@ TEST_F(SpdyNetworkTransactionTest, NetLog) {
   auto* header_list = entries[pos].params.FindKey("headers");
   ASSERT_TRUE(header_list);
   ASSERT_TRUE(header_list->is_list());
-  ASSERT_EQ(5u, header_list->GetList().size());
+  ASSERT_EQ(5u, header_list->GetListDeprecated().size());
 
-  ASSERT_TRUE(header_list->GetList()[0].is_string());
-  EXPECT_EQ(":method: GET", header_list->GetList()[0].GetString());
+  ASSERT_TRUE(header_list->GetListDeprecated()[0].is_string());
+  EXPECT_EQ(":method: GET", header_list->GetListDeprecated()[0].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[1].is_string());
+  ASSERT_TRUE(header_list->GetListDeprecated()[1].is_string());
   EXPECT_EQ(":authority: www.example.org",
-            header_list->GetList()[1].GetString());
+            header_list->GetListDeprecated()[1].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[2].is_string());
-  EXPECT_EQ(":scheme: https", header_list->GetList()[2].GetString());
+  ASSERT_TRUE(header_list->GetListDeprecated()[2].is_string());
+  EXPECT_EQ(":scheme: https", header_list->GetListDeprecated()[2].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[3].is_string());
-  EXPECT_EQ(":path: /", header_list->GetList()[3].GetString());
+  ASSERT_TRUE(header_list->GetListDeprecated()[3].is_string());
+  EXPECT_EQ(":path: /", header_list->GetListDeprecated()[3].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[4].is_string());
-  EXPECT_EQ("user-agent: Chrome", header_list->GetList()[4].GetString());
+  ASSERT_TRUE(header_list->GetListDeprecated()[4].is_string());
+  EXPECT_EQ("user-agent: Chrome",
+            header_list->GetListDeprecated()[4].GetString());
 }
 
 // Since we buffer the IO from the stream to the renderer, this test verifies
@@ -10464,7 +10465,7 @@ TEST_F(SpdyNetworkTransactionTest, GreaseSettings) {
   ASSERT_TRUE(settings);
   ASSERT_TRUE(settings->is_list());
 
-  base::Value::ConstListView list = settings->GetList();
+  base::Value::ConstListView list = settings->GetListDeprecated();
   ASSERT_FALSE(list.empty());
   // Get last setting parameter.
   const base::Value& greased_setting = list[list.size() - 1];

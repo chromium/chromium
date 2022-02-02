@@ -87,9 +87,9 @@ class SpellcheckLanguagePolicyHandlersTest
 
       EXPECT_TRUE(prefs.GetValue(key, &languages_list));
       EXPECT_TRUE(languages_list->is_list());
-      EXPECT_EQ(expected.size(), languages_list->GetList().size());
+      EXPECT_EQ(expected.size(), languages_list->GetListDeprecated().size());
 
-      for (const auto& language : languages_list->GetList()) {
+      for (const auto& language : languages_list->GetListDeprecated()) {
         EXPECT_TRUE(language.is_string());
         EXPECT_TRUE(std::find(expected.begin(), expected.end(),
                               language.GetString()) != expected.end());

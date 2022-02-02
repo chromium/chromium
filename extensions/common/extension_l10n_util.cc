@@ -129,7 +129,7 @@ bool LocalizeManifestListValue(const std::string& key,
     return true;
 
   bool ret = true;
-  base::Value::ListView list_view = list->GetList();
+  base::Value::ListView list_view = list->GetListDeprecated();
   for (size_t i = 0; i < list_view.size(); ++i) {
     if (list_view[i].is_string()) {
       std::string result = list_view[i].GetString();
@@ -270,7 +270,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
 
   base::ListValue* file_handlers = NULL;
   if (manifest->GetList(keys::kFileBrowserHandlers, &file_handlers)) {
-    for (base::Value& handler : file_handlers->GetList()) {
+    for (base::Value& handler : file_handlers->GetListDeprecated()) {
       if (!handler.is_dict()) {
         *error = errors::kInvalidFileBrowserHandler;
         return false;
@@ -284,7 +284,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   // Initialize all input_components
   base::ListValue* input_components = NULL;
   if (manifest->GetList(keys::kInputComponents, &input_components)) {
-    for (base::Value& module : input_components->GetList()) {
+    for (base::Value& module : input_components->GetListDeprecated()) {
       if (!module.is_dict()) {
         *error = errors::kInvalidInputComponents;
         return false;

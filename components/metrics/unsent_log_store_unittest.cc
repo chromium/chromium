@@ -139,7 +139,7 @@ TEST_F(UnsentLogStoreTest, EmptyLogList) {
 
   unsent_log_store.TrimAndPersistUnsentLogs();
   const base::Value* list_value = prefs_.GetList(kTestPrefName);
-  EXPECT_EQ(0U, list_value->GetList().size());
+  EXPECT_EQ(0U, list_value->GetListDeprecated().size());
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
   result_unsent_log_store.LoadPersistedUnsentLogs();

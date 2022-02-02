@@ -239,7 +239,7 @@ std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value& dict) {
     return app_limits;
   }
 
-  base::Value::ConstListView list_view = limits_array->GetList();
+  base::Value::ConstListView list_view = limits_array->GetListDeprecated();
   for (const base::Value& dict : list_view) {
     if (!dict.is_dict()) {
       DLOG(ERROR) << "Invalid app limits entry. ";

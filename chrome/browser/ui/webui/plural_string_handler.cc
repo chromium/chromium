@@ -41,7 +41,7 @@ void PluralStringHandler::AddLocalizedString(const std::string& name, int id) {
 
 void PluralStringHandler::HandleGetPluralString(const base::ListValue* args) {
   AllowJavascript();
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(3U, list.size());
 
   const base::Value& callback_id = list[0];
@@ -66,7 +66,7 @@ void PluralStringHandler::HandleGetPluralStringTupleWithPeriods(
 void PluralStringHandler::GetPluralStringTuple(const base::ListValue* args,
                                                int string_tuple_id) {
   AllowJavascript();
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(5U, list.size());
 
   const base::Value& callback_id = list[0];

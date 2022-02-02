@@ -134,10 +134,10 @@ void ResetSettingsHandler::HandleResetProfileSettings(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(3U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
-  const bool& send_settings = args->GetList()[1].GetBool();
-  std::string request_origin_string = args->GetList()[2].GetString();
+  CHECK_EQ(3U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+  const bool& send_settings = args->GetListDeprecated()[1].GetBool();
+  std::string request_origin_string = args->GetListDeprecated()[2].GetString();
   reset_report::ChromeResetReport::ResetRequestOrigin request_origin =
       ResetRequestOriginFromString(request_origin_string);
 
@@ -177,8 +177,8 @@ void ResetSettingsHandler::HandleGetReportedSettings(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   setting_snapshot_->RequestShortcuts(
       base::BindOnce(&ResetSettingsHandler::OnGetReportedSettingsDone,
@@ -265,8 +265,8 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   // Set up the localized strings for the triggered profile reset dialog.
   // Custom reset tool names are supported on Windows only.

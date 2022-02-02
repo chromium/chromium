@@ -275,14 +275,14 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::
   }
 
   // If there is nothing to check, terminate immediately.
-  if (value->GetList().size() == 0) {
+  if (value->GetListDeprecated().size() == 0) {
     CleanupTransientState();
     GetCheckConnectionInfoCompleted(true);
     return;
   }
 
   // Start a fetcher for each connection URL that needs to be checked.
-  for (const base::Value& elem : value->GetList()) {
+  for (const base::Value& elem : value->GetListDeprecated()) {
     if (!elem.is_dict())
       continue;
 

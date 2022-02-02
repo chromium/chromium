@@ -536,7 +536,7 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
   if (!sample_list)
     return false;
 
-  for (const auto& sample_entry : sample_list->GetList()) {
+  for (const auto& sample_entry : sample_list->GetListDeprecated()) {
     if (!sample_entry.is_dict())
       return false;
 

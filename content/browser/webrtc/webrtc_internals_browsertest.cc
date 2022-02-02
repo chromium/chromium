@@ -253,10 +253,10 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::ListValue* list_request =
         static_cast<base::ListValue*>(value_requests.get());
-    EXPECT_EQ(requests.size(), list_request->GetList().size());
+    EXPECT_EQ(requests.size(), list_request->GetListDeprecated().size());
 
     for (size_t i = 0; i < requests.size(); ++i) {
-      const base::Value& value = list_request->GetList()[i];
+      const base::Value& value = list_request->GetListDeprecated()[i];
       ASSERT_TRUE(value.is_dict());
       absl::optional<int> rid = value.FindIntKey("rid");
       absl::optional<int> pid = value.FindIntKey("pid");
@@ -470,7 +470,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       // Verifies the number of updates.
       const base::Value* value = pc_dump.FindListKey("updateLog");
       ASSERT_TRUE(value);
-      EXPECT_EQ((size_t)update_number, value->GetList().size());
+      EXPECT_EQ((size_t)update_number, value->GetListDeprecated().size());
 
       // Verifies the number of stats tables.
       value = pc_dump.FindDictKey("stats");

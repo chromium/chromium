@@ -163,7 +163,7 @@ void PolicyApplicator::GetProfilePropertiesCallback(
     return;
   }
 
-  for (const auto& it : entries->GetList()) {
+  for (const auto& it : entries->GetListDeprecated()) {
     if (!it.is_string())
       continue;
 

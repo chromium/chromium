@@ -137,7 +137,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
       const base::Value* options = supportedFeature.FindListKey("options");
       DCHECK(options);
 
-      for (const base::Value& option : options->GetList()) {
+      for (const base::Value& option : options->GetListDeprecated()) {
         DCHECK(option.is_dict());
 
         const std::string* internalName = option.FindStringKey("internal_name");

@@ -769,9 +769,9 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
     device_type_ = DeviceMediaTypeToDeviceType(media_type_double.value());
 
   base::Value* mount_paths = value.FindListKey(cros_disks::kDeviceMountPaths);
-  if (mount_paths && !mount_paths->GetList().empty() &&
-      mount_paths->GetList()[0].is_string()) {
-    mount_path_ = mount_paths->GetList()[0].GetString();
+  if (mount_paths && !mount_paths->GetListDeprecated().empty() &&
+      mount_paths->GetListDeprecated()[0].is_string()) {
+    mount_path_ = mount_paths->GetListDeprecated()[0].GetString();
   }
 }
 

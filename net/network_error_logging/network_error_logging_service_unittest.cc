@@ -1252,7 +1252,8 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
                               NetworkErrorLoggingService::kInnerUrlKey);
   base::ExpectStringValue(
       kCertUrl_.spec(),
-      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
+      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)
+          ->GetListDeprecated()[0]);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
@@ -1303,7 +1304,8 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
                               NetworkErrorLoggingService::kInnerUrlKey);
   base::ExpectStringValue(
       kCertUrl_.spec(),
-      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
+      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)
+          ->GetListDeprecated()[0]);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, MismatchingSubdomain_SignedExchange) {

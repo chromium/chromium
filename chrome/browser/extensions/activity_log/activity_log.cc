@@ -262,7 +262,8 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   int url_index = api_info->arg_url_index;
 
   if (!action->args() || url_index < 0 ||
-      static_cast<size_t>(url_index) >= action->args()->GetList().size())
+      static_cast<size_t>(url_index) >=
+          action->args()->GetListDeprecated().size())
     return;
 
   // Do not overwrite an existing arg_url value in the Action, so that callers
@@ -270,7 +271,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   if (action->arg_url().is_valid())
     return;
 
-  base::Value::ListView args_list = action->mutable_args()->GetList();
+  base::Value::ListView args_list = action->mutable_args()->GetListDeprecated();
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();

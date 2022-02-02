@@ -399,7 +399,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     }
 
     // Write the children.
-    for (const base::Value& child_value : child_values->GetList()) {
+    for (const base::Value& child_value : child_values->GetListDeprecated()) {
       if (!child_value.is_dict()) {
         NOTREACHED();
         return false;

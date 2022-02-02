@@ -156,7 +156,7 @@ bool PowerPolicyController::GetPeakShiftDayConfigs(
     return false;
   }
 
-  for (const base::Value& item : entries->GetList()) {
+  for (const base::Value& item : entries->GetListDeprecated()) {
     const base::Value* week_day_value =
         item.FindKeyOfType({"day"}, base::Value::Type::STRING);
     const base::Value* start_time_hour =
@@ -211,7 +211,7 @@ bool PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
     return false;
   }
 
-  for (const base::Value& item : entries->GetList()) {
+  for (const base::Value& item : entries->GetListDeprecated()) {
     const base::Value* week_day_value =
         item.FindKeyOfType({"day"}, base::Value::Type::STRING);
     const base::Value* charge_start_time_hour = item.FindPathOfType(

@@ -98,7 +98,7 @@ bool DevToolsProtocolTest::HasListItem(const std::string& path_to_list,
   if (!result_->GetList(path_to_list, &list))
     return false;
 
-  for (const base::Value& item_value : list->GetList()) {
+  for (const base::Value& item_value : list->GetListDeprecated()) {
     if (!item_value.is_dict())
       return false;
     const base::DictionaryValue& item =

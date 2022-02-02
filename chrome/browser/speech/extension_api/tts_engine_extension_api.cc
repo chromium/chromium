@@ -129,7 +129,7 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
 
     if (event_types) {
       const base::Value::ConstListView event_types_list =
-          event_types->GetList();
+          event_types->GetListDeprecated();
       for (size_t j = 0; j < event_types_list.size(); j++) {
         std::string event_type;
         if (event_types_list[j].is_string())
@@ -156,7 +156,7 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
                                       &voices_data)) {
     const char* error = nullptr;
     return ValidateAndConvertToTtsVoiceVector(
-        extension, voices_data->GetList(),
+        extension, voices_data->GetListDeprecated(),
         /* return_after_first_error = */ false, &error);
   }
 

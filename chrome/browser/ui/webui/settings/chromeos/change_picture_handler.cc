@@ -165,7 +165,7 @@ void ChangePictureHandler::SendDefaultImages() {
 }
 
 void ChangePictureHandler::HandleChooseFile(const base::ListValue* args) {
-  DCHECK(args && args->GetList().empty());
+  DCHECK(args && args->GetListDeprecated().empty());
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
@@ -187,7 +187,7 @@ void ChangePictureHandler::HandleChooseFile(const base::ListValue* args) {
 }
 
 void ChangePictureHandler::HandleDiscardPhoto(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kObjectDelete, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
@@ -197,9 +197,10 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kCameraSnap, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 
-  if (!args || args->GetList().size() != 1 || !args->GetList()[0].is_string())
+  if (!args || args->GetListDeprecated().size() != 1 ||
+      !args->GetListDeprecated()[0].is_string())
     NOTREACHED();
-  const std::string& image_url = args->GetList()[0].GetString();
+  const std::string& image_url = args->GetListDeprecated()[0].GetString();
   DCHECK(!image_url.empty());
 
   std::string raw_data;
@@ -222,7 +223,7 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
 }
 
 void ChangePictureHandler::HandlePageInitialized(const base::ListValue* args) {
-  DCHECK(args && args->GetList().empty());
+  DCHECK(args && args->GetListDeprecated().empty());
 
   AllowJavascript();
 
@@ -319,13 +320,14 @@ void ChangePictureHandler::SendOldImage(std::string&& image_url) {
 }
 
 void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
-  if (!args || args->GetList().size() != 2 || !args->GetList()[0].is_string() ||
-      !args->GetList()[1].is_string()) {
+  if (!args || args->GetListDeprecated().size() != 2 ||
+      !args->GetListDeprecated()[0].is_string() ||
+      !args->GetListDeprecated()[1].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& image_url = args->GetList()[0].GetString();
-  const std::string& image_type = args->GetList()[1].GetString();
+  const std::string& image_url = args->GetListDeprecated()[0].GetString();
+  const std::string& image_type = args->GetListDeprecated()[1].GetString();
   // |image_url| may be empty unless |image_type| is "default".
   DCHECK(!image_type.empty());
 

@@ -84,7 +84,7 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
     return nullptr;
   }
   std::vector<std::string> parsed_ids;
-  for (const base::Value& value : ids->GetList()) {
+  for (const base::Value& value : ids->GetListDeprecated()) {
     if (!value.is_string()) {
       return nullptr;
     }

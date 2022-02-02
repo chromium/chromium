@@ -91,7 +91,7 @@ void DownloadInternalsUIMessageHandler::OnServiceRequestMade(
 void DownloadInternalsUIMessageHandler::HandleGetServiceStatus(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id,
                             download_service_->GetLogger()->GetServiceStatus());
 }
@@ -99,15 +99,16 @@ void DownloadInternalsUIMessageHandler::HandleGetServiceStatus(
 void DownloadInternalsUIMessageHandler::HandleGetServiceDownloads(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id, download_service_->GetLogger()->GetServiceDownloads());
 }
 
 void DownloadInternalsUIMessageHandler::HandleStartDownload(
     const base::ListValue* args) {
-  CHECK_GT(args->GetList().size(), 1u) << "Missing argument download URL.";
-  GURL url = GURL(args->GetList()[1].GetString());
+  CHECK_GT(args->GetListDeprecated().size(), 1u)
+      << "Missing argument download URL.";
+  GURL url = GURL(args->GetListDeprecated()[1].GetString());
   if (!url.is_valid()) {
     LOG(WARNING) << "Can't parse download URL, try to enter a valid URL.";
     return;

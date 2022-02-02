@@ -752,7 +752,7 @@ void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
   const base::Value* unlock_key_list =
       pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   synced_devices_.clear();
-  for (const auto& it : unlock_key_list->GetList()) {
+  for (const auto& it : unlock_key_list->GetListDeprecated()) {
     if (it.is_dict()) {
       cryptauth::ExternalDeviceInfo unlock_key;
       if (DictionaryToUnlockKey(it, &unlock_key)) {

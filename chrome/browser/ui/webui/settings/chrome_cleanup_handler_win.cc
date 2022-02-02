@@ -191,7 +191,7 @@ void ChromeCleanupHandler::OnRebootRequired() {
 
 void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetList().size());
+  DCHECK_EQ(0U, args->GetListDeprecated().size());
 
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_Shown"));
@@ -202,10 +202,10 @@ void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
 }
 
 void ChromeCleanupHandler::HandleStartScanning(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   bool allow_logs_upload = false;
-  if (args->GetList()[0].is_bool())
-    allow_logs_upload = args->GetList()[0].GetBool();
+  if (args->GetListDeprecated()[0].is_bool())
+    allow_logs_upload = args->GetListDeprecated()[0].GetBool();
 
   // If this operation is not allowed the UI should be disabled.
   CHECK(controller_->IsAllowedByPolicy());
@@ -220,7 +220,7 @@ void ChromeCleanupHandler::HandleStartScanning(const base::ListValue* args) {
 }
 
 void ChromeCleanupHandler::HandleRestartComputer(const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetList().size());
+  DCHECK_EQ(0U, args->GetListDeprecated().size());
 
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_RestartComputer"));
@@ -229,10 +229,10 @@ void ChromeCleanupHandler::HandleRestartComputer(const base::ListValue* args) {
 }
 
 void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   bool allow_logs_upload = false;
-  if (args->GetList()[0].is_bool())
-    allow_logs_upload = args->GetList()[0].GetBool();
+  if (args->GetListDeprecated()[0].is_bool())
+    allow_logs_upload = args->GetListDeprecated()[0].GetBool();
 
   // The state is propagated to all open tabs and should be consistent.
   DCHECK_EQ(controller_->logs_enabled(profile_), allow_logs_upload);
@@ -251,10 +251,10 @@ void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
 
 void ChromeCleanupHandler::HandleNotifyShowDetails(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   bool details_section_visible = false;
-  if (args->GetList()[0].is_bool())
-    details_section_visible = args->GetList()[0].GetBool();
+  if (args->GetListDeprecated()[0].is_bool())
+    details_section_visible = args->GetListDeprecated()[0].GetBool();
 
   if (details_section_visible) {
     base::RecordAction(
@@ -267,7 +267,7 @@ void ChromeCleanupHandler::HandleNotifyShowDetails(
 
 void ChromeCleanupHandler::HandleNotifyChromeCleanupLearnMoreClicked(
     const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetList().size());
+  CHECK_EQ(0U, args->GetListDeprecated().size());
 
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_LearnMore"));
@@ -289,7 +289,7 @@ void ChromeCleanupHandler::HandleGetItemsToRemovePluralString(
 
 void ChromeCleanupHandler::GetPluralString(int id,
                                            const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(2U, list.size());
 
   std::string callback_id = list[0].GetString();

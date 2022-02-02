@@ -55,7 +55,7 @@ bool CopyPreventionSettingsPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  for (auto& pattern : disable->GetList()) {
+  for (auto& pattern : disable->GetListDeprecated()) {
     if (pattern.GetString() == "*") {
       errors->AddError(
           policy_name(),

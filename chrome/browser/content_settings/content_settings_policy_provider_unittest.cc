@@ -192,8 +192,8 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
   base::Value* cert_filters =
       cert_filter_setting.FindKeyOfType("filters", base::Value::Type::LIST);
   ASSERT_TRUE(cert_filters);
-  ASSERT_FALSE(cert_filters->GetList().empty());
-  auto& filter = cert_filters->GetList().front();
+  ASSERT_FALSE(cert_filters->GetListDeprecated().empty());
+  auto& filter = cert_filters->GetListDeprecated().front();
   ASSERT_TRUE(filter.is_dict());
   const std::string* actual_common_name = filter.FindStringPath("ISSUER.CN");
   ASSERT_TRUE(actual_common_name);

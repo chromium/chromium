@@ -2594,7 +2594,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
       breakpoint_hit1.value.FindListPath("params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints1);
   base::Value::ConstListView hit_breakpoints_list1 =
-      hit_breakpoints1->GetList();
+      hit_breakpoints1->GetListDeprecated();
   ASSERT_EQ(1u, hit_breakpoints_list1.size());
   ASSERT_TRUE(hit_breakpoints_list1[0].is_string());
   EXPECT_EQ("1:0:0:http://example.com/first.js",
@@ -2638,7 +2638,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
       breakpoint_hit2.value.FindListPath("params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints2);
   base::Value::ConstListView hit_breakpoints_list2 =
-      hit_breakpoints2->GetList();
+      hit_breakpoints2->GetListDeprecated();
   ASSERT_EQ(1u, hit_breakpoints_list2.size());
   ASSERT_TRUE(hit_breakpoints_list2[0].is_string());
   EXPECT_EQ("1:0:0:http://example.org/second.js",

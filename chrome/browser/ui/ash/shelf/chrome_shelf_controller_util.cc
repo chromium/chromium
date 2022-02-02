@@ -125,7 +125,8 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   if (!policy_apps)
     return AppListControllerDelegate::PIN_EDITABLE;
 
-  for (const base::Value& policy_dict_entry : policy_apps->GetList()) {
+  for (const base::Value& policy_dict_entry :
+       policy_apps->GetListDeprecated()) {
     if (!policy_dict_entry.is_dict())
       return AppListControllerDelegate::PIN_EDITABLE;
 

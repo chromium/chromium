@@ -40,7 +40,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
       errors->AddError(key::kDisabledSchemes, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::LIST));
     } else {
-      disabled_schemes_entries = disabled_schemes->GetList().size();
+      disabled_schemes_entries = disabled_schemes->GetListDeprecated().size();
     }
   }
 
@@ -57,7 +57,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
   // warning message.
-  if (url_blocklist->GetList().size() + disabled_schemes_entries >
+  if (url_blocklist->GetListDeprecated().size() + disabled_schemes_entries >
       kMaxUrlFiltersPerPolicy) {
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
@@ -67,7 +67,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   bool type_error = false;
   std::string policy;
   std::vector<std::string> invalid_policies;
-  for (const auto& policy_iter : url_blocklist->GetList()) {
+  for (const auto& policy_iter : url_blocklist->GetListDeprecated()) {
     if (!policy_iter.is_string()) {
       type_error = true;
       continue;
@@ -103,7 +103,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // handling URLBlocklists.
   if (disabled_schemes_policy && disabled_schemes_policy->is_list()) {
     merged_url_blocklist = std::vector<base::Value>();
-    for (const auto& entry : disabled_schemes_policy->GetList()) {
+    for (const auto& entry : disabled_schemes_policy->GetListDeprecated()) {
       if (entry.is_string()) {
         merged_url_blocklist->emplace_back(
             base::StrCat({entry.GetString(), "://*"}));
@@ -115,7 +115,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     if (!merged_url_blocklist)
       merged_url_blocklist = std::vector<base::Value>();
 
-    for (const auto& entry : url_blocklist_policy->GetList()) {
+    for (const auto& entry : url_blocklist_policy->GetListDeprecated()) {
       if (entry.is_string())
         merged_url_blocklist->push_back(entry.Clone());
     }

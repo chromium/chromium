@@ -126,7 +126,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   }
 
   size_t num_reporters_deserialized = 0u;
-  for (const base::Value& sct_entry : value->GetList()) {
+  for (const base::Value& sct_entry : value->GetListDeprecated()) {
     if (!sct_entry.is_dict()) {
       continue;
     }

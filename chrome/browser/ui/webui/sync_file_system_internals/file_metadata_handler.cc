@@ -45,8 +45,8 @@ void FileMetadataHandler::RegisterMessages() {
 
 void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
   AllowJavascript();
-  std::string callback_id = args->GetList()[0].GetString();
-  std::string extension_id = args->GetList()[1].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string extension_id = args->GetListDeprecated()[1].GetString();
   if (extension_id.empty()) {
     LOG(WARNING) << "GetFileMetadata() Extension ID wasn't given";
     return;
@@ -81,9 +81,9 @@ void FileMetadataHandler::HandleGetExtensions(const base::ListValue* args) {
   DCHECK(args);
   ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
       profile_,
-      base::BindOnce(&FileMetadataHandler::DidGetExtensions,
-                     weak_factory_.GetWeakPtr(),
-                     args->GetList()[0].GetString() /* callback_id */));
+      base::BindOnce(
+          &FileMetadataHandler::DidGetExtensions, weak_factory_.GetWeakPtr(),
+          args->GetListDeprecated()[0].GetString() /* callback_id */));
 }
 
 void FileMetadataHandler::DidGetExtensions(std::string callback_id,

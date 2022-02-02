@@ -124,9 +124,9 @@ void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
 }
 
 void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetList().size());
-  const std::string& text = args->GetList()[0].GetString();
-  const std::string& voice_id = args->GetList()[1].GetString();
+  DCHECK_EQ(2U, args->GetListDeprecated().size());
+  const std::string& text = args->GetListDeprecated()[0].GetString();
+  const std::string& voice_id = args->GetListDeprecated()[1].GetString();
 
   if (text.empty() || voice_id.empty())
     return;

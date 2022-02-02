@@ -39,8 +39,8 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
     const base::ListValue* args) {
   AllowJavascript();
 
-  DCHECK(!args->GetList().empty());
-  std::string callback_id = args->GetList()[0].GetString();
+  DCHECK(!args->GetListDeprecated().empty());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
@@ -59,7 +59,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
     const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       Profile::FromWebUI(web_ui()),
       chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);

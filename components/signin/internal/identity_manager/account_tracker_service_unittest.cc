@@ -1024,8 +1024,8 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
                 ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
                 .is_child_account);
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
-  ASSERT_FALSE(update->GetList().empty());
-  base::Value& dict = update->GetList()[0];
+  ASSERT_FALSE(update->GetListDeprecated().empty());
+  base::Value& dict = update->GetListDeprecated()[0];
   ASSERT_TRUE(dict.is_dict());
   const char kDeprecatedChildKey[] = "is_child_account";
   const char kNewChildKey[] = "is_supervised_child";

@@ -113,13 +113,13 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
     EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "deviceName"));
     const std::unique_ptr<base::ListValue> sessions =
         api_test_utils::GetList(device, "sessions");
-    EXPECT_EQ(num_sessions, sessions->GetList().size());
+    EXPECT_EQ(num_sessions, sessions->GetListDeprecated().size());
     // Because this test is hurried, really there are only ever 0 or 1
     // sessions, and if 1, that will be a Window. Grab it.
     if (num_sessions == 0)
       continue;
     const base::Value::DictStorage session =
-        utils::ToDictionary(sessions->GetList()[0]);
+        utils::ToDictionary(sessions->GetListDeprecated()[0]);
     const base::Value::DictStorage window =
         api_test_utils::GetDict(session, "window");
     // Only the tabs are interesting.
@@ -129,10 +129,10 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
       return testing::AssertionFailure()
              << "window dictionary does not contain a tabs list entry";
     }
-    EXPECT_EQ(base::size(kTabIDs), tabs->GetList().size());
-    for (size_t j = 0; j < tabs->GetList().size(); ++j) {
+    EXPECT_EQ(base::size(kTabIDs), tabs->GetListDeprecated().size());
+    for (size_t j = 0; j < tabs->GetListDeprecated().size(); ++j) {
       const base::Value::DictStorage tab =
-          utils::ToDictionary(tabs->GetList()[j]);
+          utils::ToDictionary(tabs->GetListDeprecated()[j]);
       EXPECT_FALSE(tab.contains("id"));  // sessions API does not give tab IDs
       EXPECT_EQ(static_cast<int>(j), api_test_utils::GetInteger(tab, "index"));
       EXPECT_EQ(0, api_test_utils::GetInteger(tab, "windowId"));
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
 
   ASSERT_TRUE(result);
   base::ListValue* devices = result.get();
-  EXPECT_EQ(0u, devices->GetList().size());
+  EXPECT_EQ(0u, devices->GetListDeprecated().size());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
@@ -320,12 +320,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   ASSERT_TRUE(result);
 
   base::ListValue* windows = result.get();
-  EXPECT_EQ(2u, windows->GetList().size());
+  EXPECT_EQ(2u, windows->GetListDeprecated().size());
   const base::Value::DictStorage restored_window =
       api_test_utils::GetDict(restored_window_session, "window");
   base::Value::DictStorage window;
   int restored_id = api_test_utils::GetInteger(restored_window, "id");
-  for (base::Value& window_value : windows->GetList()) {
+  for (base::Value& window_value : windows->GetListDeprecated()) {
     window = utils::ToDictionary(std::move(window_value));
     if (api_test_utils::GetInteger(window, "id") == restored_id)
       break;
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {
           CreateIncognitoBrowser())));
   ASSERT_TRUE(result);
   base::ListValue* sessions = result.get();
-  EXPECT_EQ(0u, sessions->GetList().size());
+  EXPECT_EQ(0u, sessions->GetListDeprecated().size());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
         browser()));
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
-    EXPECT_EQ(kTabCount, result->GetList().size());
+    EXPECT_EQ(kTabCount, result->GetListDeprecated().size());
   }
   {
     std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
         "[{\"maxResults\": 0}]", browser()));
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
-    EXPECT_EQ(0u, result->GetList().size());
+    EXPECT_EQ(0u, result->GetListDeprecated().size());
   }
   {
     std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
         "[{\"maxResults\": 2}]", browser()));
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
-    EXPECT_EQ(2u, result->GetList().size());
+    EXPECT_EQ(2u, result->GetListDeprecated().size());
   }
 }
 

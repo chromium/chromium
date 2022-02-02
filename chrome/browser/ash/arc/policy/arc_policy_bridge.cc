@@ -180,7 +180,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
       continue;
 
     bool web_trust_flag = false;
-    for (const auto& list_val : trust_list->GetList()) {
+    for (const auto& list_val : trust_list->GetListDeprecated()) {
       if (!list_val.is_string())
         NOTREACHED();
 
@@ -299,7 +299,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     base::Value* applications_value =
         filtered_policies.FindListKey(ArcPolicyBridge::kApplications);
     if (applications_value) {
-      base::Value::ListView list_view = applications_value->GetList();
+      base::Value::ListView list_view = applications_value->GetListDeprecated();
       for (base::Value& entry : list_view) {
         auto* installType = entry.FindStringKey("installType");
         if (installType &&
@@ -323,7 +323,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     base::Value* applications_value =
         filtered_policies.FindListKey(ArcPolicyBridge::kApplications);
     if (applications_value) {
-      base::Value::ListView list_view = applications_value->GetList();
+      base::Value::ListView list_view = applications_value->GetListDeprecated();
       for (base::Value& entry : list_view) {
         const std::string* packageName = entry.FindStringKey("packageName");
         if (packageName && *packageName != kPlayStorePackageName)

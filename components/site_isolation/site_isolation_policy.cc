@@ -182,7 +182,7 @@ void SiteIsolationPolicy::PersistUserTriggeredIsolatedOrigin(
                         site_isolation::prefs::kUserTriggeredIsolatedOrigins);
   base::Value* list = update.Get();
   base::Value value(origin.Serialize());
-  if (!base::Contains(list->GetList(), value))
+  if (!base::Contains(list->GetListDeprecated(), value))
     list->Append(std::move(value));
 }
 
@@ -235,7 +235,7 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
     std::vector<url::Origin> origins;
     for (const auto& value : user_prefs::UserPrefs::Get(browser_context)
                                  ->GetList(prefs::kUserTriggeredIsolatedOrigins)
-                                 ->GetList()) {
+                                 ->GetListDeprecated()) {
       origins.push_back(url::Origin::Create(GURL(value.GetString())));
     }
 

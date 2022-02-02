@@ -627,7 +627,7 @@ bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
 }
 
 bool HasUserPasswordSubsitutionVariable(base::Value* network_configs) {
-  for (auto& network : network_configs->GetList()) {
+  for (auto& network : network_configs->GetListDeprecated()) {
     DCHECK(network.is_dict());
     bool result = HasUserPasswordSubsitutionVariable(
         kNetworkConfigurationSignature, &network);

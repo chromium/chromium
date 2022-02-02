@@ -684,14 +684,14 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
           nel_args.FindListKey(kNetworkErrorLoggingPreloadedReportToHeaders);
       if (preloaded_report_to_headers_config) {
         preloaded_report_to_headers = ParseNetworkErrorLoggingHeaders(
-            preloaded_report_to_headers_config->GetList());
+            preloaded_report_to_headers_config->GetListDeprecated());
       }
 
       const auto* preloaded_nel_headers_config =
           nel_args.FindListKey(kNetworkErrorLoggingPreloadedNELHeaders);
       if (preloaded_nel_headers_config) {
         preloaded_nel_headers = ParseNetworkErrorLoggingHeaders(
-            preloaded_nel_headers_config->GetList());
+            preloaded_nel_headers_config->GetListDeprecated());
       }
     } else if (iter.first == kDisableIPv6OnWifi) {
       if (!iter.second.is_bool()) {

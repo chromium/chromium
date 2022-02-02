@@ -84,7 +84,7 @@ TEST(FontList, GetFontListLocalized) {
 TEST(FontList, GetFontListDoesNotIncludeHiddenFonts) {
   std::unique_ptr<base::ListValue> fonts = content::GetFontList_SlowBlocking();
 
-  for (const auto& font : fonts->GetList()) {
+  for (const auto& font : fonts->GetListDeprecated()) {
     const auto& font_names = font.GetList();
     const std::string& font_id = font_names[0].GetString();
 

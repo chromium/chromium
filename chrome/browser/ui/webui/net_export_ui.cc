@@ -217,7 +217,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
 void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::Value::ConstListView params = list->GetList();
+  base::Value::ConstListView params = list->GetListDeprecated();
 
   // Determine the capture mode.
   capture_mode_ = net::NetLogCaptureMode::kDefault;

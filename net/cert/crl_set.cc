@@ -132,7 +132,7 @@ bool CopyHashListFromHeader(base::DictionaryValue* header_dict,
     // Hash lists are optional so it's not an error if not present.
     return true;
   }
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
 
   out->clear();
   out->reserve(list_view.size());

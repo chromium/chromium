@@ -281,24 +281,24 @@ static bool ParseStringArgs(const base::ListValue* args,
                             std::string* arg0,
                             std::string* arg1,
                             std::string* arg2 = 0) {
-  int arg_size = args->GetList().size();
+  int arg_size = args->GetListDeprecated().size();
   if (arg0) {
-    if (arg_size < 1 || !args->GetList()[0].is_string()) {
+    if (arg_size < 1 || !args->GetListDeprecated()[0].is_string()) {
       return false;
     }
-    *arg0 = args->GetList()[0].GetString();
+    *arg0 = args->GetListDeprecated()[0].GetString();
   }
   if (arg1) {
-    if (arg_size < 2 || !args->GetList()[1].is_string()) {
+    if (arg_size < 2 || !args->GetListDeprecated()[1].is_string()) {
       return false;
     }
-    *arg1 = args->GetList()[1].GetString();
+    *arg1 = args->GetListDeprecated()[1].GetString();
   }
   if (arg2) {
-    if (arg_size < 3 || !args->GetList()[2].is_string()) {
+    if (arg_size < 3 || !args->GetListDeprecated()[2].is_string()) {
       return false;
     }
-    *arg2 = args->GetList()[2].GetString();
+    *arg2 = args->GetListDeprecated()[2].GetString();
   }
   return true;
 }
@@ -372,7 +372,7 @@ void InspectMessageHandler::HandleBooleanPrefChanged(
   if (!profile)
     return;
 
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   if (list.size() == 1 && list[0].is_bool())
     profile->GetPrefs()->SetBoolean(pref_name, list[0].GetBool());
 }
@@ -383,8 +383,8 @@ void InspectMessageHandler::HandlePortForwardingConfigCommand(
   if (!profile)
     return;
 
-  if (args->GetList().size() == 1) {
-    const base::Value& src = args->GetList()[0];
+  if (args->GetListDeprecated().size() == 1) {
+    const base::Value& src = args->GetListDeprecated()[0];
     if (src.is_dict())
       profile->GetPrefs()->Set(prefs::kDevToolsPortForwardingConfig, src);
   }
@@ -396,7 +396,7 @@ void InspectMessageHandler::HandleTCPDiscoveryConfigCommand(
   if (!profile)
     return;
 
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   if (args_list.size() == 1u && args_list[0].is_list())
     profile->GetPrefs()->Set(prefs::kDevToolsTCPDiscoveryConfig, args_list[0]);
 }

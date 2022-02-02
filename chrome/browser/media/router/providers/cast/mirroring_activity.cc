@@ -437,7 +437,7 @@ std::string MirroringActivity::GetScrubbedLogMessage(
     return message_str;
   }
 
-  for (base::Value& item : streams->GetList()) {
+  for (base::Value& item : streams->GetListDeprecated()) {
     if (item.FindStringKey("aesKey")) {
       item.SetStringKey("aesKey", "AES_KEY");
     }

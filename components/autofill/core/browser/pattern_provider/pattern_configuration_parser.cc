@@ -40,7 +40,7 @@ absl::optional<DenseSet<Enum>> JsonListToDenseSet(
     return absl::nullopt;
 
   DenseSet<Enum> set;
-  for (const base::Value& v : list_value->GetList()) {
+  for (const base::Value& v : list_value->GetListDeprecated()) {
     if (!v.is_int())
       return absl::nullopt;
     int i = v.GetInt();
@@ -154,7 +154,7 @@ absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
         return absl::nullopt;
       }
 
-      for (const auto& matchingPatternObj : inner_list->GetList()) {
+      for (const auto& matchingPatternObj : inner_list->GetListDeprecated()) {
         bool success = ParseMatchingPattern(patterns, field_type, language,
                                             matchingPatternObj);
         if (!success) {

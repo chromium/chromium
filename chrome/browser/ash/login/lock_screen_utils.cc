@@ -117,7 +117,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
   const base::ListValue* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
-      login_screen_input_methods->GetList().empty()) {
+      login_screen_input_methods->GetListDeprecated().empty()) {
     StopEnforcingPolicyInputMethods();
     return;
   }
@@ -129,7 +129,8 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
     allowed_input_method_ids.push_back(user_input_method_id);
   }
 
-  for (const auto& input_method_entry : login_screen_input_methods->GetList()) {
+  for (const auto& input_method_entry :
+       login_screen_input_methods->GetListDeprecated()) {
     if (input_method_entry.is_string())
       allowed_input_method_ids.push_back(input_method_entry.GetString());
   }
@@ -183,7 +184,7 @@ void SetKeyboardSettings(const AccountId& account_id) {
 std::vector<LocaleItem> FromListValueToLocaleItem(
     std::unique_ptr<base::ListValue> locales) {
   std::vector<LocaleItem> result;
-  for (const auto& locale : locales->GetList()) {
+  for (const auto& locale : locales->GetListDeprecated()) {
     const base::DictionaryValue* dictionary;
     if (!locale.GetAsDictionary(&dictionary))
       continue;

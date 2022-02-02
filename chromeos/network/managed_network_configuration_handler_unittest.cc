@@ -293,7 +293,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     const base::Value* found_network_configs = validated_policy.FindListKey(
         ::onc::toplevel_config::kNetworkConfigurations);
     if (found_network_configs) {
-      for (const auto& network_config : found_network_configs->GetList()) {
+      for (const auto& network_config :
+           found_network_configs->GetListDeprecated()) {
         network_configs.Append(network_config.Clone());
       }
     }

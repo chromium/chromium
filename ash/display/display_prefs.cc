@@ -409,7 +409,7 @@ void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
   const base::Value* pref_data =
       local_state->Get(prefs::kExternalDisplayMirrorInfo);
   std::set<int64_t> external_display_mirror_info;
-  for (const auto& it : pref_data->GetList()) {
+  for (const auto& it : pref_data->GetListDeprecated()) {
     const std::string* display_id_str = it.GetIfString();
     if (!display_id_str)
       continue;
@@ -452,7 +452,8 @@ void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
 
   DCHECK(mirroring_destination_ids_value->is_list());
   display::DisplayIdList mirroring_destination_ids;
-  for (const auto& entry : mirroring_destination_ids_value->GetList()) {
+  for (const auto& entry :
+       mirroring_destination_ids_value->GetListDeprecated()) {
     DCHECK(entry.is_string());
     int64_t id;
     if (!base::StringToInt64(entry.GetString(), &id))

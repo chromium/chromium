@@ -60,7 +60,7 @@ bool PaymentMethodData::FromValue(const base::Value& value) {
         data_dict->FindListKey(kSupportedNetworks);
     if (supported_networks_list) {
       for (const base::Value& supported_network :
-           supported_networks_list->GetList()) {
+           supported_networks_list->GetListDeprecated()) {
         if (!supported_network.is_string() ||
             !base::IsStringASCII(supported_network.GetString())) {
           return false;

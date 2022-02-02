@@ -287,7 +287,7 @@ void NotificationClient::OnRulesFetched(const std::string& user_email,
     return;
   }
 
-  for (const auto& rule : rules->GetList()) {
+  for (const auto& rule : rules->GetListDeprecated()) {
     std::string message_text_filename;
     std::string link_text_filename;
     auto message = ParseAndMatchRule(rule, user_email, &message_text_filename,

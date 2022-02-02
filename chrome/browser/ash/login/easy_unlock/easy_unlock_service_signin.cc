@@ -135,7 +135,8 @@ std::vector<multidevice::BeaconSeed> DeserializeBeaconSeeds(
     return beacon_seeds;
   }
 
-  for (const base::Value& beacon_seed_value : deserialized_value->GetList()) {
+  for (const base::Value& beacon_seed_value :
+       deserialized_value->GetListDeprecated()) {
     if (!beacon_seed_value.is_string()) {
       PA_LOG(ERROR) << "Expected Base64 BeaconSeed.";
       continue;

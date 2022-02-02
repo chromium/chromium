@@ -74,10 +74,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   ASSERT_FALSE(params.FindPath("visibleSecurityState.safetyTipInfo"));
   const base::Value* security_state_issue_ids =
       params.FindListPath("visibleSecurityState.securityStateIssueIds");
-  ASSERT_TRUE(std::find(security_state_issue_ids->GetList().begin(),
-                        security_state_issue_ids->GetList().end(),
+  ASSERT_TRUE(std::find(security_state_issue_ids->GetListDeprecated().begin(),
+                        security_state_issue_ids->GetListDeprecated().end(),
                         base::Value("scheme-is-not-cryptographic")) !=
-              security_state_issue_ids->GetList().end());
+              security_state_issue_ids->GetListDeprecated().end());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateDeleteContext) {
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   const base::Value* certificate_value =
       certificate_security_state->FindListPath("certificate");
   std::vector<std::string> der_certs;
-  for (const auto& cert : certificate_value->GetList()) {
+  for (const auto& cert : certificate_value->GetListDeprecated()) {
     std::string decoded;
     ASSERT_TRUE(base::Base64Decode(cert.GetString(), &decoded));
     der_certs.push_back(decoded);
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
             certificate->CalculateChainFingerprint256());
   const base::Value* security_state_issue_ids =
       params.FindListPath("visibleSecurityState.securityStateIssueIds");
-  EXPECT_EQ(security_state_issue_ids->GetList().size(), 0u);
+  EXPECT_EQ(security_state_issue_ids->GetListDeprecated().size(), 0u);
 
   ASSERT_FALSE(params.FindPath("visibleSecurityState.safetyTipInfo"));
 }
@@ -629,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   const base::Value* sans =
       response.FindListPath("response.securityDetails.sanList");
   ASSERT_TRUE(sans);
-  ASSERT_EQ(1u, sans->GetList().size());
-  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[0]);
+  ASSERT_EQ(1u, sans->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[0]);
 
   absl::optional<double> valid_from =
       response.FindDoublePath("response.securityDetails.validFrom");
@@ -755,13 +755,13 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsSAN) {
   const base::Value* sans =
       response.FindListPath("response.securityDetails.sanList");
   ASSERT_TRUE(sans);
-  ASSERT_EQ(6u, sans->GetList().size());
-  EXPECT_EQ(base::Value("a.example"), sans->GetList()[0]);
-  EXPECT_EQ(base::Value("b.example"), sans->GetList()[1]);
-  EXPECT_EQ(base::Value("*.c.example"), sans->GetList()[2]);
-  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[3]);
-  EXPECT_EQ(base::Value("::1"), sans->GetList()[4]);
-  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetList()[5]);
+  ASSERT_EQ(6u, sans->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("a.example"), sans->GetListDeprecated()[0]);
+  EXPECT_EQ(base::Value("b.example"), sans->GetListDeprecated()[1]);
+  EXPECT_EQ(base::Value("*.c.example"), sans->GetListDeprecated()[2]);
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[3]);
+  EXPECT_EQ(base::Value("::1"), sans->GetListDeprecated()[4]);
+  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetListDeprecated()[5]);
 }
 
 class ExtensionProtocolTest : public DevToolsProtocolTest {
@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadServiceWorkerExtension) {
 
   std::string target_id;
   base::Value ext_target;
-  for (auto& target : result_.FindListKey("targetInfos")->GetList()) {
+  for (auto& target : result_.FindListKey("targetInfos")->GetListDeprecated()) {
     if (*target.FindStringKey("type") == "service_worker") {
       ext_target = target.Clone();
       break;

@@ -54,9 +54,9 @@ bool GetParentsFromValue(const base::Value* value,
     return false;
 
   base::JSONValueConverter<ParentReference> converter;
-  result->resize(value->GetList().size());
-  for (size_t i = 0; i < value->GetList().size(); ++i) {
-    const base::Value& parent_value = value->GetList()[i];
+  result->resize(value->GetListDeprecated().size());
+  for (size_t i = 0; i < value->GetListDeprecated().size(); ++i) {
+    const base::Value& parent_value = value->GetListDeprecated()[i];
     if (!converter.Convert(parent_value, &(*result)[i]))
       return false;
   }

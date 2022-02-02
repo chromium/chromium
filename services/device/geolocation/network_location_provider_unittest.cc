@@ -308,7 +308,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
         ASSERT_TRUE(expected_json_value.is_dict());
         const base::DictionaryValue& expected_json =
             base::Value::AsDictionaryValue(expected_json_value);
-        const base::Value& actual_json_value = wifi_aps_json->GetList()[i];
+        const base::Value& actual_json_value =
+            wifi_aps_json->GetListDeprecated()[i];
         ASSERT_TRUE(actual_json_value.is_dict());
         const base::DictionaryValue& actual_json =
             base::Value::AsDictionaryValue(actual_json_value);

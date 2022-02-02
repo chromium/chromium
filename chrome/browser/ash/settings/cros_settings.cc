@@ -225,7 +225,7 @@ bool CrosSettings::FindEmailInList(const std::string& path,
     return false;
   }
 
-  return FindEmailInList(list->GetList(), email, wildcard_match);
+  return FindEmailInList(list->GetListDeprecated(), email, wildcard_match);
 }
 
 // static

@@ -126,8 +126,8 @@ void DateTimeHandler::HandleDateTimePageReady(const base::ListValue* args) {
 void DateTimeHandler::HandleGetTimeZones(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id, *system::GetTimezoneList());
 }
 

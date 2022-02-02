@@ -134,7 +134,7 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
   }
 
   ComputedHashes::Data data;
-  for (const base::Value& file_hash : all_hashes->GetList()) {
+  for (const base::Value& file_hash : all_hashes->GetListDeprecated()) {
     if (!file_hash.is_dict()) {
       *status = Status::PARSE_FAILED;
       return absl::nullopt;
@@ -170,7 +170,7 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
         base::FilePath::FromUTF8Unsafe(*relative_path_utf8);
     std::vector<std::string> hashes;
 
-    for (const base::Value& value : block_hashes->GetList()) {
+    for (const base::Value& value : block_hashes->GetListDeprecated()) {
       if (!value.is_string()) {
         *status = Status::PARSE_FAILED;
         return absl::nullopt;

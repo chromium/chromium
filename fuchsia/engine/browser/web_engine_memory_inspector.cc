@@ -26,8 +26,8 @@ std::vector<std::string> GetAllocatorDumpNamesFromConfig() {
     return {};
 
   std::vector<std::string> names;
-  names.reserve(names_list->GetList().size());
-  for (auto& name : names_list->GetList()) {
+  names.reserve(names_list->GetListDeprecated().size());
+  for (auto& name : names_list->GetListDeprecated()) {
     names.push_back(name.GetString());
   }
   return names;

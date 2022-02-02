@@ -532,8 +532,9 @@ void AccountTrackerService::OnAccountImageUpdated(
 
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
-    base::Value& dict_value = update->GetList()[i];
+  for (size_t i = 0; i < update->GetListDeprecated().size();
+       ++i, dict = nullptr) {
+    base::Value& dict_value = update->GetListDeprecated()[i];
     if (dict_value.is_dict()) {
       dict = static_cast<base::DictionaryValue*>(&dict_value);
       const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
@@ -560,8 +561,8 @@ void AccountTrackerService::RemoveAccountImageFromDisk(
 void AccountTrackerService::LoadFromPrefs() {
   const base::Value* list = pref_service_->GetList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::Value& dict_value = list->GetList()[i];
+  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
+    const base::Value& dict_value = list->GetListDeprecated()[i];
     if (dict_value.is_dict()) {
       const base::DictionaryValue& dict =
           base::Value::AsDictionaryValue(dict_value);
@@ -595,7 +596,7 @@ void AccountTrackerService::LoadFromPrefs() {
                                               : signin::Tribool::kFalse;
           // Migrate to kAccountChildAttributePath.
           ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value* update_dict = &update->GetList()[i];
+          base::Value* update_dict = &update->GetListDeprecated()[i];
           DCHECK(update_dict->is_dict());
           SetAccountCapabilityPath(update_dict, kAccountChildAttributePath,
                                    account_info.is_child_account);
@@ -663,8 +664,9 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
 
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
-    base::Value& dict_value = update->GetList()[i];
+  for (size_t i = 0; i < update->GetListDeprecated().size();
+       ++i, dict = nullptr) {
+    base::Value& dict_value = update->GetListDeprecated()[i];
     if (dict_value.is_dict()) {
       dict = static_cast<base::DictionaryValue*>(&dict_value);
       const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
@@ -676,7 +678,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
 
   if (!dict) {
     update->Append(base::Value(base::Value::Type::DICTIONARY));
-    base::Value& dict_value = update->GetList().back();
+    base::Value& dict_value = update->GetListDeprecated().back();
     DCHECK(dict_value.is_dict());
     dict = static_cast<base::DictionaryValue*>(&dict_value);
     dict->SetString(kAccountKeyPath, account_info.account_id.ToString());

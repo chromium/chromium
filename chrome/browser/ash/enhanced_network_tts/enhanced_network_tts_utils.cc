@@ -225,7 +225,8 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
     return GetResultOnError(mojom::TtsRequestError::kReceivedUnexpectedData);
   }
 
-  base::Value::ConstListView timing_info_list = timing_info_ptr->GetList();
+  base::Value::ConstListView timing_info_list =
+      timing_info_ptr->GetListDeprecated();
   for (size_t i = 0; i < timing_info_list.size(); ++i) {
     const base::Value& timing_info = timing_info_list[i];
     const std::string* timing_info_text_ptr = timing_info.FindStringKey("text");

@@ -109,7 +109,7 @@ class LogNetLogExplicitFileTest
     // Ensure it has an "events" property.
     base::ListValue* events;
     ASSERT_TRUE(main->GetList("events", &events));
-    ASSERT_FALSE(events->GetList().empty());
+    ASSERT_FALSE(events->GetListDeprecated().empty());
 
     // Verify that cookies were stripped when the --net-log-capture-mode flag
     // was omitted, and not stripped when it was given a value of

@@ -438,9 +438,9 @@ void AddTerminalMenuShortcuts(
   if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile)) {
     const base::Value* container_list =
         profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
-    if (container_list && container_list->GetList().size() > 1) {
+    if (container_list && container_list->GetListDeprecated().size() > 1) {
       // Shortcuts for each container.
-      for (const auto& dict : container_list->GetList()) {
+      for (const auto& dict : container_list->GetListDeprecated()) {
         crostini::ContainerId id(dict);
         if (!id.vm_name.empty() && !id.container_name.empty()) {
           std::string shortcut_id = ShortcutIdFromContainerId(id);

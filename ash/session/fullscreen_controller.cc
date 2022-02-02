@@ -165,7 +165,7 @@ bool FullscreenController::ShouldExitFullscreenBeforeLock() {
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   const auto* url_allow_list =
       prefs->GetList(prefs::kKeepFullscreenWithoutNotificationUrlAllowList);
-  if (url_allow_list->GetList().size() == 0)
+  if (url_allow_list->GetListDeprecated().size() == 0)
     return true;
 
   // Get the URL of the active window from the shell delegate.

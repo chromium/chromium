@@ -614,9 +614,9 @@ bool ShouldUpdateIncludePaths(const base::Value& current_handler,
     return true;
 
   base::Value::ConstListView include_paths_list_lh =
-      include_paths_lh->GetList();
+      include_paths_lh->GetListDeprecated();
   base::Value::ConstListView include_paths_list_rh =
-      include_paths_rh->GetList();
+      include_paths_rh->GetListDeprecated();
   if (include_paths_list_lh.size() != include_paths_list_rh.size())
     return true;
 
@@ -951,7 +951,7 @@ void ResetSavedChoice(PrefService* local_state,
   if (!handlers_mutable)
     return;
 
-  for (auto& handler : handlers_mutable->GetList()) {
+  for (auto& handler : handlers_mutable->GetListDeprecated()) {
     auto handler_view = GetHandlerView(handler);
     if (!handler_view)
       continue;

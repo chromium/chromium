@@ -531,8 +531,8 @@ TEST_F(StatsEventSubscriberTest, Packets) {
 bool CheckHistogramHasValue(base::ListValue* values,
                             const std::string& bucket,
                             int expected_count) {
-  for (size_t i = 0; i < values->GetList().size(); ++i) {
-    const base::Value& value = values->GetList()[i];
+  for (size_t i = 0; i < values->GetListDeprecated().size(); ++i) {
+    const base::Value& value = values->GetListDeprecated()[i];
     if (!value.is_dict() || !value.FindKey(bucket))
       continue;
     absl::optional<int> bucket_count = value.FindIntKey(bucket);

@@ -109,7 +109,7 @@ ExtensionCleanupHandler::GetCleanupExemptExtensions() {
   const base::Value* exempt_list = profile_->GetPrefs()->GetList(
       prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 
-  for (const base::Value& value : exempt_list->GetList()) {
+  for (const base::Value& value : exempt_list->GetListDeprecated()) {
     exempt_extensions.insert(value.GetString());
   }
   return exempt_extensions;

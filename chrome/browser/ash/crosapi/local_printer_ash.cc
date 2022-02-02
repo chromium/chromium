@@ -494,8 +494,9 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
     return;
   }
 
-  deny_list.reserve(deny_list_from_prefs->GetList().size());
-  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
+  deny_list.reserve(deny_list_from_prefs->GetListDeprecated().size());
+  for (const base::Value& deny_list_value :
+       deny_list_from_prefs->GetListDeprecated()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     printing::mojom::PrinterType printer_type;
     if (deny_list_str == "privet")

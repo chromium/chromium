@@ -145,9 +145,9 @@ void DownloadsHandler::FileSelectionCanceled(void* params) {
 void DownloadsHandler::HandleGetDownloadLocationText(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
-  const std::string& path = args->GetList()[1].GetString();
+  CHECK_EQ(2U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+  const std::string& path = args->GetListDeprecated()[1].GetString();
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
@@ -185,8 +185,8 @@ void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
 void DownloadsHandler::HandleSetDownloadsConnectionAccountLink(
     const base::ListValue* args) {
   DCHECK(IsDownloadsConnectionPolicyEnabled());
-  CHECK_EQ(1U, args->GetList().size());
-  bool enable_link = args->GetList()[0].GetBool();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  bool enable_link = args->GetListDeprecated()[0].GetBool();
   ec::SetFileSystemConnectorAccountLinkForSettingsPage(
       enable_link, profile_,
       base::BindOnce(&DownloadsHandler::OnDownloadsConnectionAccountLinkSet,

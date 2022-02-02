@@ -83,8 +83,8 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 }
 
 void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetList().size());
-  const base::Value& result_value = args->GetList()[0];
+  CHECK_EQ(1u, args->GetListDeprecated().size());
+  const base::Value& result_value = args->GetListDeprecated()[0];
   CHECK(result_value.is_dict());
   const base::DictionaryValue& result =
       base::Value::AsDictionaryValue(result_value);

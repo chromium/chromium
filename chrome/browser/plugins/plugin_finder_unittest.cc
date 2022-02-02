@@ -40,14 +40,14 @@ TEST(PluginFinderTest, JsonSyntax) {
       EXPECT_TRUE(plugin->FindBoolKey("requires_authorization").has_value());
     const base::ListValue* mime_types = NULL;
     if (plugin->GetList("mime_types", &mime_types)) {
-      for (const auto& mime_type : mime_types->GetList()) {
+      for (const auto& mime_type : mime_types->GetListDeprecated()) {
         EXPECT_TRUE(mime_type.GetAsString(&dummy_str));
       }
     }
 
     const base::ListValue* matching_mime_types = NULL;
     if (plugin->GetList("matching_mime_types", &matching_mime_types)) {
-      for (const auto& mime_type : matching_mime_types->GetList()) {
+      for (const auto& mime_type : matching_mime_types->GetListDeprecated()) {
         EXPECT_TRUE(mime_type.GetAsString(&dummy_str));
       }
     }
@@ -56,7 +56,7 @@ TEST(PluginFinderTest, JsonSyntax) {
     if (!plugin->GetList("versions", &versions))
       continue;
 
-    for (const auto& version_value : versions->GetList()) {
+    for (const auto& version_value : versions->GetListDeprecated()) {
       const base::DictionaryValue* version_dict = nullptr;
       ASSERT_TRUE(version_value.GetAsDictionary(&version_dict));
       EXPECT_TRUE(version_dict->GetString("version", &dummy_str));

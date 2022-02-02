@@ -129,8 +129,8 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 
   profiles::UpdateGaiaProfileInfoIfNeeded(profile_);
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   ResolveJavascriptCallback(callback_id, base::Value(GetAvailableIcons()));
 }
@@ -204,10 +204,10 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(args);
-  CHECK_EQ(1u, args->GetList().size());
-  CHECK(args->GetList()[0].is_int());
+  CHECK_EQ(1u, args->GetListDeprecated().size());
+  CHECK(args->GetListDeprecated()[0].is_int());
 
-  size_t new_icon_index = args->GetList()[0].GetInt();
+  size_t new_icon_index = args->GetListDeprecated()[0].GetInt();
   CHECK(profiles::IsDefaultAvatarIconIndex(new_icon_index));
 
   PrefService* pref_service = profile_->GetPrefs();
@@ -224,10 +224,10 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
 void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(args);
-  CHECK_EQ(1u, args->GetList().size());
+  CHECK_EQ(1u, args->GetListDeprecated().size());
 
   std::u16string new_profile_name =
-      base::UTF8ToUTF16(args->GetList()[0].GetString());
+      base::UTF8ToUTF16(args->GetListDeprecated()[0].GetString());
 
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);
   CHECK(!new_profile_name.empty());
@@ -242,8 +242,8 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
 
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   // Don't show the add/remove desktop shortcut button in the single user case.
   ProfileAttributesStorage& storage =

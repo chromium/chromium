@@ -24,7 +24,7 @@ template <typename StringListType>
 bool ParseStringList(const base::Value* value, StringListType* out_value) {
   if (!value->is_list())
     return false;
-  base::Value::ConstListView list = value->GetList();
+  base::Value::ConstListView list = value->GetListDeprecated();
   out_value->resize(list.size());
   for (size_t i = 0; i < list.size(); ++i) {
     if (!list[i].is_string())

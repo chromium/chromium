@@ -232,7 +232,7 @@ void ExternalLoader::Load() {
       ReadExternalOrdinalFile(ordinals_file);
   if (ordinals_value) {
     std::string locale = g_browser_process->GetApplicationLocale();
-    for (const base::Value& i : ordinals_value->GetList()) {
+    for (const base::Value& i : ordinals_value->GetListDeprecated()) {
       const base::DictionaryValue* dict = nullptr;
       if (i.is_string()) {
         std::string app_id = i.GetString();

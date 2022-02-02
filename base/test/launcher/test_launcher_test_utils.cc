@@ -71,12 +71,12 @@ bool ValidateTestResult(const Value* iteration_data,
     ADD_FAILURE() << "Cannot find result";
     return false;
   }
-  if (1u != results->GetList().size()) {
+  if (1u != results->GetListDeprecated().size()) {
     ADD_FAILURE() << "Expected one result";
     return false;
   }
 
-  const Value& val = results->GetList()[0];
+  const Value& val = results->GetListDeprecated()[0];
   if (!val.is_dict()) {
     ADD_FAILURE() << "Value must be of type DICTIONARY";
     return false;
@@ -105,9 +105,9 @@ bool ValidateTestResult(const Value* iteration_data,
     return false;
   }
 
-  if (result_part_count != value->GetList().size()) {
+  if (result_part_count != value->GetListDeprecated().size()) {
     ADD_FAILURE() << "result_parts count expected: " << result_part_count
-                  << ", actual:" << value->GetList().size();
+                  << ", actual:" << value->GetListDeprecated().size();
     return false;
   }
   return true;

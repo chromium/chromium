@@ -301,7 +301,7 @@ void MultideviceHandler::NotifyAndroidSmsInfoChange() {
 
 void MultideviceHandler::HandleShowMultiDeviceSetupDialog(
     const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   multidevice_setup::MultiDeviceSetupDialog::Show();
 }
 
@@ -310,7 +310,7 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue* args) {
   // loaded, so it should be the one to allow JS calls.
   AllowJavascript();
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   DCHECK(callback_id.is_string());
 
   std::unique_ptr<base::DictionaryValue> page_content_dictionary =
@@ -324,7 +324,7 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue* args) {
 
 void MultideviceHandler::HandleSetFeatureEnabledState(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   DCHECK_GE(list.size(), 3u);
   std::string callback_id = list[0].GetString();
 
@@ -357,25 +357,25 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
 }
 
 void MultideviceHandler::HandleRemoveHostDevice(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   multidevice_setup_client_->RemoveHostDevice();
 }
 
 void MultideviceHandler::HandleRetryPendingHostSetup(
     const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   multidevice_setup_client_->RetrySetHostNow(
       base::BindOnce(&OnRetrySetHostNowResult));
 }
 
 void MultideviceHandler::HandleSetUpAndroidSms(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   android_sms_app_manager_->SetUpAndLaunchAndroidSmsApp();
 }
 
 void MultideviceHandler::HandleGetSmartLockSignInEnabled(
     const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   CHECK(callback_id.is_string());
 
   bool signInEnabled = prefs_->GetBoolean(
@@ -386,13 +386,13 @@ void MultideviceHandler::HandleGetSmartLockSignInEnabled(
 void MultideviceHandler::HandleSetSmartLockSignInEnabled(
     const base::ListValue* args) {
   bool enabled = false;
-  if (args->GetList()[0].is_bool())
-    enabled = args->GetList()[0].GetBool();
+  if (args->GetListDeprecated()[0].is_bool())
+    enabled = args->GetListDeprecated()[0].GetBool();
 
-  const bool auth_token_present =
-      args->GetList().size() >= 2 && args->GetList()[1].is_string();
+  const bool auth_token_present = args->GetListDeprecated().size() >= 2 &&
+                                  args->GetListDeprecated()[1].is_string();
   const std::string& auth_token =
-      auth_token_present ? args->GetList()[1].GetString() : "";
+      auth_token_present ? args->GetListDeprecated()[1].GetString() : "";
 
   // Either the user is disabling sign-in, or they are enabling it and the auth
   // token must be present.
@@ -408,7 +408,7 @@ void MultideviceHandler::HandleSetSmartLockSignInEnabled(
 
 void MultideviceHandler::HandleGetSmartLockSignInAllowed(
     const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   CHECK(callback_id.is_string());
 
   bool sign_in_allowed =
@@ -443,7 +443,7 @@ MultideviceHandler::GenerateAndroidSmsInfo() {
 }
 
 void MultideviceHandler::HandleGetAndroidSmsInfo(const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   ResolveJavascriptCallback(callback_id, *GenerateAndroidSmsInfo());
 }

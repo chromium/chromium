@@ -171,7 +171,7 @@ bool TestStatsDictionary::GetSequenceBoolean(
   if (!stats_->GetList(key, &list))
     return false;
   std::vector<bool> sequence;
-  base::Value::ConstListView args_list = list->GetList();
+  base::Value::ConstListView args_list = list->GetListDeprecated();
   for (const base::Value& arg : args_list) {
     if (!arg.is_bool())
       return false;
@@ -189,7 +189,7 @@ bool TestStatsDictionary::GetSequenceNumber(
     return false;
 
   out->clear();
-  for (const base::Value& element : number_sequence->GetList()) {
+  for (const base::Value& element : number_sequence->GetListDeprecated()) {
     absl::optional<double> double_value = element.GetIfDouble();
     if (!double_value)
       return false;
@@ -207,7 +207,7 @@ bool TestStatsDictionary::GetSequenceString(
   if (!stats_->GetList(key, &list))
     return false;
   std::vector<std::string> sequence;
-  for (const base::Value& i : list->GetList()) {
+  for (const base::Value& i : list->GetListDeprecated()) {
     const std::string* element = i.GetIfString();
     if (!element)
       return false;

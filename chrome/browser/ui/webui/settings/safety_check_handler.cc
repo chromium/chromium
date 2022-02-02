@@ -373,7 +373,7 @@ void SafetyCheckHandler::HandlePerformSafetyCheck(const base::ListValue* args) {
 
 void SafetyCheckHandler::HandleGetParentRanDisplayString(
     const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   // Send updated timestamp-based display strings to all SC children who have
   // such strings.

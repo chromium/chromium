@@ -252,7 +252,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
                   policy::CloudPolicyClient::ResponseCallback done_cb) {
       base::Value* const records = payload.FindListKey("encryptedRecord");
       ASSERT_THAT(records, Ne(nullptr));
-      base::Value::ListView records_list = records->GetList();
+      base::Value::ListView records_list = records->GetListDeprecated();
       ASSERT_THAT(records_list, SizeIs(1));
       base::Value& record = records_list[0];
       if (is_encryption_enabled()) {

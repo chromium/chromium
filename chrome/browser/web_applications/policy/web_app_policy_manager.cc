@@ -108,7 +108,7 @@ void WebAppPolicyManager::Start() {
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   const base::Value* web_apps =
       pref_service_->GetList(prefs::kWebAppInstallForceList);
-  const auto& web_apps_list = web_apps->GetList();
+  const auto& web_apps_list = web_apps->GetListDeprecated();
 
   const auto it =
       std::find_if(web_apps_list.begin(), web_apps_list.end(),
@@ -222,7 +222,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
   // No need to validate the types or values of the policy members because we
   // are using a SimpleSchemaValidatingPolicyHandler which should validate them
   // for us.
-  for (const base::Value& entry : web_apps->GetList()) {
+  for (const base::Value& entry : web_apps->GetListDeprecated()) {
     ExternalInstallOptions install_options = ParseInstallPolicyEntry(entry);
 
     if (!install_options.install_url.is_valid())
@@ -619,7 +619,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   if (!disabled_system_features_pref)
     return;
 
-  for (const auto& entry : disabled_system_features_pref->GetList()) {
+  for (const auto& entry : disabled_system_features_pref->GetListDeprecated()) {
     switch (entry.GetInt()) {
       case policy::SystemFeature::kCamera:
         disabled_system_apps_.insert(SystemAppType::CAMERA);

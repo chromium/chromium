@@ -72,7 +72,7 @@ std::string GetPngDataUrl(const unsigned char* data, size_t size) {
 
 WindowOpenDisposition GetDispositionFromClick(const base::ListValue* args,
                                               int start_index) {
-  base::Value::ConstListView list = args->GetList();
+  base::Value::ConstListView list = args->GetListDeprecated();
   double button = list[start_index].GetDouble();
   bool alt_key = list[start_index + 1].GetBool();
   bool ctrl_key = list[start_index + 2].GetBool();

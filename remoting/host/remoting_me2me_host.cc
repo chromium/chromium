@@ -1240,7 +1240,7 @@ bool HostProcess::OnHostDomainListPolicyUpdate(
   }
 
   host_domain_list_.clear();
-  for (const auto& value : list->GetList()) {
+  for (const auto& value : list->GetListDeprecated()) {
     host_domain_list_.push_back(value.GetString());
   }
 
@@ -1259,7 +1259,7 @@ bool HostProcess::OnClientDomainListPolicyUpdate(
   }
 
   client_domain_list_.clear();
-  for (const auto& value : list->GetList()) {
+  for (const auto& value : list->GetListDeprecated()) {
     client_domain_list_.push_back(value.GetString());
   }
 

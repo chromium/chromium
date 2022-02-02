@@ -506,7 +506,7 @@ std::string NetworkState::GetDnsServersAsString() const {
   if (!listv)
     return std::string();
   std::string result;
-  for (const auto& v : listv->GetList()) {
+  for (const auto& v : listv->GetListDeprecated()) {
     if (!result.empty())
       result += ",";
     result += v.GetString();

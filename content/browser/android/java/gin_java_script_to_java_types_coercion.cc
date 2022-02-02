@@ -459,14 +459,14 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
   }
 
   // Create the Java array.
-  jsize length = static_cast<jsize>(value->GetList().size());
+  jsize length = static_cast<jsize>(value->GetListDeprecated().size());
   jobject result = CreateJavaArray(env, target_inner_type, length);
   if (!result) {
     return NULL;
   }
 
   jsize i = 0;
-  for (const auto& value_element : value->GetList()) {
+  for (const auto& value_element : value->GetListDeprecated()) {
     jvalue element = CoerceJavaScriptValueToJavaValue(
         env, &value_element, target_inner_type, false, object_refs, error);
     SetArrayElement(env, result, target_inner_type, i++, element);

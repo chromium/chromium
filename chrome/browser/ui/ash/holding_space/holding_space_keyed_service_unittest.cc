@@ -668,7 +668,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
   EXPECT_EQ(GetProfile()
                 ->GetPrefs()
                 ->GetList(HoldingSpacePersistenceDelegate::kPersistencePath)
-                ->GetList()
+                ->GetListDeprecated()
                 .size(),
             0u);
 
@@ -1576,7 +1576,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
   EXPECT_EQ(3u, GetProfile()
                     ->GetPrefs()
                     ->GetList(HoldingSpacePersistenceDelegate::kPersistencePath)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   EXPECT_EQ(3u, holding_space_model->items().size());
 
@@ -1586,7 +1586,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
   EXPECT_EQ(1u, GetProfile()
                     ->GetPrefs()
                     ->GetList(HoldingSpacePersistenceDelegate::kPersistencePath)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   ASSERT_EQ(1u, holding_space_model->items().size());
   EXPECT_EQ(file_path_2, holding_space_model->items()[0]->file_path());

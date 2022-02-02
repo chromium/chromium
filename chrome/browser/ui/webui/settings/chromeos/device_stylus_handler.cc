@@ -121,7 +121,7 @@ void StylusHandler::HandleRequestApps(const base::ListValue* unused_args) {
 
 void StylusHandler::HandleSetPreferredNoteTakingApp(
     const base::ListValue* args) {
-  const std::string& app_id = args->GetList()[0].GetString();
+  const std::string& app_id = args->GetListDeprecated()[0].GetString();
 
   // Sanity check: make sure that the ID we got back from WebUI is in the
   // currently-available set.
@@ -137,8 +137,8 @@ void StylusHandler::HandleSetPreferredNoteTakingApp(
 void StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
     const base::ListValue* args) {
   bool enabled = false;
-  CHECK(args->GetList()[0].is_bool());
-  enabled = args->GetList()[0].GetBool();
+  CHECK(args->GetListDeprecated()[0].is_bool());
+  enabled = args->GetListDeprecated()[0].GetBool();
 
   NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(
       Profile::FromWebUI(web_ui()), enabled);
@@ -157,8 +157,9 @@ void StylusHandler::SendHasStylus() {
 }
 
 void StylusHandler::HandleShowPlayStoreApps(const base::ListValue* args) {
-  const std::string& apps_url =
-      !args->GetList().empty() ? args->GetList()[0].GetString() : "";
+  const std::string& apps_url = !args->GetListDeprecated().empty()
+                                    ? args->GetListDeprecated()[0].GetString()
+                                    : "";
   Profile* profile = Profile::FromWebUI(web_ui());
   if (!arc::IsArcAllowedForProfile(profile)) {
     VLOG(1) << "ARC is not enabled for this profile";

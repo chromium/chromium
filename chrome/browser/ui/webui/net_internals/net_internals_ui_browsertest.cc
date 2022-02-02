@@ -201,7 +201,7 @@ void NetInternalsTest::MessageHandler::RunJavascriptCallback(
 void NetInternalsTest::MessageHandler::GetTestServerURL(
     const base::ListValue* list_value) {
   ASSERT_TRUE(net_internals_test_->StartTestServer());
-  const std::string& path = list_value->GetList()[0].GetString();
+  const std::string& path = list_value->GetListDeprecated()[0].GetString();
   GURL url = net_internals_test_->embedded_test_server()->GetURL(path);
   base::Value url_value(url.spec());
   RunJavascriptCallback(&url_value);
@@ -219,7 +219,7 @@ void NetInternalsTest::MessageHandler::SetUpTestReportURI(
 
 void NetInternalsTest::MessageHandler::DnsLookup(
     const base::ListValue* list_value) {
-  const auto& list = list_value->GetList();
+  const auto& list = list_value->GetListDeprecated();
   ASSERT_GE(2u, list.size());
   ASSERT_TRUE(list[0].is_string());
   ASSERT_TRUE(list[1].is_bool());

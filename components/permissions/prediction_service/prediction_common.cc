@@ -235,13 +235,13 @@ GeneratePredictionsResponseJsonToMessage(std::string input) {
     return message;
 
   auto* prediction_list = parsed_message->FindListKey(kPrediction);
-  if (!prediction_list || prediction_list->GetList().empty() ||
-      !prediction_list->GetList()[0].is_dict()) {
+  if (!prediction_list || prediction_list->GetListDeprecated().empty() ||
+      !prediction_list->GetListDeprecated()[0].is_dict()) {
     return message;
   }
 
   auto* likelihood_dict =
-      prediction_list->GetList()[0].FindDictKey(kGrantLikelihood);
+      prediction_list->GetListDeprecated()[0].FindDictKey(kGrantLikelihood);
   if (!likelihood_dict)
     return message;
 

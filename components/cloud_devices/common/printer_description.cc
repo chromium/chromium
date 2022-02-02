@@ -1058,7 +1058,8 @@ class PwgRasterConfigTraits : public NoValueValidation,
     if (document_types_supported) {
       if (!document_types_supported->is_list())
         return false;
-      for (const auto& type_value : document_types_supported->GetList()) {
+      for (const auto& type_value :
+           document_types_supported->GetListDeprecated()) {
         if (!type_value.is_string())
           return false;
 
@@ -1333,7 +1334,7 @@ class PageRangeTraits : public ItemsTraits<kOptionPageRange> {
         dict.FindKeyOfType(kPageRangeInterval, base::Value::Type::LIST);
     if (!list_value)
       return false;
-    for (const base::Value& interval : list_value->GetList()) {
+    for (const base::Value& interval : list_value->GetListDeprecated()) {
       int page_range_start = interval.FindIntKey(kPageRangeStart).value_or(1);
       int page_range_end =
           interval.FindIntKey(kPageRangeEnd).value_or(kMaxPageNumber);

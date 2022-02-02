@@ -441,7 +441,7 @@ void AddEventListenerData(extensions::EventRouter* event_router,
   }
 
   // Move all of the entries from the map into the output data.
-  for (auto& output_entry : data->GetList()) {
+  for (auto& output_entry : data->GetListDeprecated()) {
     const base::Value* const value = output_entry.FindKey(kInternalsIdKey);
     CHECK(value && value->is_string());
     const auto it = listeners_map.find(value->GetString());

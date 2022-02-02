@@ -241,14 +241,14 @@ class AmbientModeHandlerTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(static_cast<int>(topic_source), topic_source_value->GetInt());
 
     const base::Value* albums = dictionary->FindKey("albums");
-    EXPECT_EQ(2U, albums->GetList().size());
+    EXPECT_EQ(2U, albums->GetListDeprecated().size());
 
     const base::DictionaryValue* album0;
-    albums->GetList()[0].GetAsDictionary(&album0);
+    albums->GetListDeprecated()[0].GetAsDictionary(&album0);
     EXPECT_EQ("0", album0->FindKey("albumId")->GetString());
 
     const base::DictionaryValue* album1;
-    albums->GetList()[1].GetAsDictionary(&album1);
+    albums->GetListDeprecated()[1].GetAsDictionary(&album1);
     EXPECT_EQ("1", album1->FindKey("albumId")->GetString());
 
     if (topic_source == ash::AmbientModeTopicSource::kGooglePhotos) {

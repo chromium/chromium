@@ -733,7 +733,7 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
         breakpoint_hit.value.FindListPath("params.hitBreakpoints");
     ASSERT_TRUE(hit_breakpoints);
     base::Value::ConstListView hit_breakpoints_list =
-        hit_breakpoints->GetList();
+        hit_breakpoints->GetListDeprecated();
     ASSERT_EQ(1u, hit_breakpoints_list.size());
     ASSERT_TRUE(hit_breakpoints_list[0].is_string());
     EXPECT_EQ("1:2:0:https://example.com/test.js",
@@ -845,7 +845,7 @@ TEST_F(AuctionV8HelperTest, DevToolsAgentDebuggerInstrumentationBreakpoint) {
         const base::Value* reasons =
             breakpoint_hit.value.FindListPath("params.data.reasons");
         ASSERT_TRUE(reasons);
-        base::Value::ConstListView reasons_list = reasons->GetList();
+        base::Value::ConstListView reasons_list = reasons->GetListDeprecated();
         ASSERT_EQ(2u, reasons_list.size());
         ASSERT_TRUE(reasons_list[0].is_dict());
         ASSERT_TRUE(reasons_list[1].is_dict());

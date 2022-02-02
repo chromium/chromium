@@ -21,7 +21,7 @@ int GetNumberOfUserSelectedApps() {
   const PrefService* pref_service = profile->GetPrefs();
   return static_cast<int>(
       pref_service->Get(arc::prefs::kArcFastAppReinstallPackages)
-          ->GetList()
+          ->GetListDeprecated()
           .size());
 }
 

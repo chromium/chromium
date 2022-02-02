@@ -61,9 +61,9 @@ void OncImportMessageHandler::Respond(const std::string& callback_id,
 }
 
 void OncImportMessageHandler::OnImportONC(const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetList().size());
-  std::string callback_id = list->GetList()[0].GetString();
-  std::string onc_blob = list->GetList()[1].GetString();
+  CHECK_EQ(2u, list->GetListDeprecated().size());
+  std::string callback_id = list->GetListDeprecated()[0].GetString();
+  std::string onc_blob = list->GetListDeprecated()[1].GetString();
   AllowJavascript();
 
   // TODO(https://crbug.com/1186373): Pass the `NssCertDatabaseGetter` to

@@ -72,7 +72,7 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
   if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value)
     return false;
 
-  base::Value::ConstListView policy_list = policy_value->GetList();
+  base::Value::ConstListView policy_list = policy_value->GetListDeprecated();
   for (size_t i = 0; i < policy_list.size(); ++i) {
     const base::DictionaryValue& protocol_origins_map =
         base::Value::AsDictionaryValue(policy_list[i]);
@@ -88,7 +88,7 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
 
     const base::Value* origins_list = protocol_origins_map.FindListKey(
         AutoLaunchProtocolsPolicyHandler::kOriginListKey);
-    for (const auto& entry : origins_list->GetList()) {
+    for (const auto& entry : origins_list->GetListDeprecated()) {
       const std::string pattern = entry.GetString();
       // If it's not a valid origin pattern mark it as an error.
       if (!IsValidOriginMatchingPattern(pattern)) {
@@ -97,7 +97,7 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
       }
     }
     // If the origin list is empty mark it as an error.
-    if (origins_list->GetList().empty()) {
+    if (origins_list->GetListDeprecated().empty()) {
       errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins, i,
                        IDS_POLICY_VALUE_FORMAT_ERROR);
     }
@@ -115,7 +115,7 @@ void AutoLaunchProtocolsPolicyHandler::ApplyPolicySettings(
   CheckAndGetValue(policies, nullptr, &policy_value);
 
   base::ListValue validated_pref_values;
-  for (auto& protocol_origins_map : policy_value->GetList()) {
+  for (auto& protocol_origins_map : policy_value->GetListDeprecated()) {
     // If the protocol is invalid skip the entry.
     const std::string* protocol = protocol_origins_map.FindStringKey(
         AutoLaunchProtocolsPolicyHandler::kProtocolNameKey);
@@ -130,7 +130,7 @@ void AutoLaunchProtocolsPolicyHandler::ApplyPolicySettings(
       return !IsValidOriginMatchingPattern(pattern.GetString());
     });
     // If the origin list is empty skip the entry.
-    if (origin_patterns_list->GetList().size() == 0)
+    if (origin_patterns_list->GetListDeprecated().size() == 0)
       continue;
 
     validated_pref_values.Append(protocol_origins_map.Clone());

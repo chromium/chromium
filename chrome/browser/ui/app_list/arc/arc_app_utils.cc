@@ -495,7 +495,7 @@ std::vector<std::string> GetSelectedPackagesFromPrefs(
 
   const base::Value* selected_package_prefs =
       prefs->GetList(arc::prefs::kArcFastAppReinstallPackages);
-  for (const base::Value& item : selected_package_prefs->GetList()) {
+  for (const base::Value& item : selected_package_prefs->GetListDeprecated()) {
     std::string item_str = item.is_string() ? item.GetString() : std::string();
     packages.push_back(std::move(item_str));
   }

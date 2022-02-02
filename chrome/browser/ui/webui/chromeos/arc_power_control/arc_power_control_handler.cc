@@ -197,14 +197,14 @@ void ArcPowerControlHandler::HandleReady(const base::ListValue* args) {
 
 void ArcPowerControlHandler::HandleSetWakefulnessMode(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
+  DCHECK_EQ(1U, args->GetListDeprecated().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
     return;
   }
 
-  if (!args->GetList()[0].is_string()) {
+  if (!args->GetListDeprecated()[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
@@ -213,7 +213,7 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
       arc::ArcServiceManager::Get()->arc_bridge_service()->power();
   DCHECK(power);
 
-  const std::string mode = args->GetList()[0].GetString();
+  const std::string mode = args->GetListDeprecated()[0].GetString();
   if (mode == kWakenessfullWakeUp) {
     if (wakefulness_mode_ == arc::mojom::WakefulnessMode::ASLEEP) {
       arc::mojom::PowerInstance* const power_instance =
@@ -242,14 +242,14 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
 }
 
 void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
+  DCHECK_EQ(1U, args->GetListDeprecated().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
     return;
   }
 
-  if (!args->GetList()[0].is_string()) {
+  if (!args->GetListDeprecated()[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
@@ -262,7 +262,7 @@ void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
     return;
   }
 
-  const std::string mode = args->GetList()[0].GetString();
+  const std::string mode = args->GetListDeprecated()[0].GetString();
   if (mode == kThrottlingDisable) {
     observer->SetActive(true);
     observer->SetEnforced(true);
@@ -279,12 +279,12 @@ void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
 }
 
 void ArcPowerControlHandler::HandleStartTracing(const base::ListValue* args) {
-  DCHECK(!args->GetList().size());
+  DCHECK(!args->GetListDeprecated().size());
   StartTracing();
 }
 
 void ArcPowerControlHandler::HandleStopTracing(const base::ListValue* args) {
-  DCHECK(!args->GetList().size());
+  DCHECK(!args->GetListDeprecated().size());
   StopTracing();
 }
 

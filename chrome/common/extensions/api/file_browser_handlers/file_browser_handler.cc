@@ -168,11 +168,13 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   const base::Value* access_list_value =
       file_browser_handler->FindKey(keys::kFileAccessList);
   if (access_list_value) {
-    if (!access_list_value->is_list() || access_list_value->GetList().empty()) {
+    if (!access_list_value->is_list() ||
+        access_list_value->GetListDeprecated().empty()) {
       *error = errors::kInvalidFileAccessList;
       return nullptr;
     }
-    base::Value::ConstListView access_list_view = access_list_value->GetList();
+    base::Value::ConstListView access_list_view =
+        access_list_value->GetListDeprecated();
     for (size_t i = 0; i < access_list_view.size(); ++i) {
       const std::string* access = access_list_view[i].GetIfString();
       if (!access || result->AddFileAccessPermission(*access)) {
@@ -196,7 +198,8 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
       *error = errors::kInvalidFileFiltersList;
       return nullptr;
     }
-    base::Value::ConstListView file_filters_list = file_filters->GetList();
+    base::Value::ConstListView file_filters_list =
+        file_filters->GetListDeprecated();
     for (size_t i = 0; i < file_filters_list.size(); ++i) {
       const std::string* filter_in = file_filters_list[i].GetIfString();
       if (!filter_in) {
@@ -291,7 +294,7 @@ bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
 
   std::unique_ptr<FileBrowserHandlerInfo> info(new FileBrowserHandlerInfo);
   if (!LoadFileBrowserHandlers(extension->id(),
-                               file_browser_handlers_value->GetList(),
+                               file_browser_handlers_value->GetListDeprecated(),
                                &info->file_browser_handlers, error)) {
     return false;  // Failed to parse file browser actions definition.
   }

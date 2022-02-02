@@ -186,7 +186,7 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
 
   std::set<url::Origin> current_origins;
 
-  for (const auto& entry : managed_configurations->GetList()) {
+  for (const auto& entry : managed_configurations->GetListDeprecated()) {
     const std::string* url = entry.FindStringKey(kOriginKey);
     if (!url)
       continue;

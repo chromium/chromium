@@ -1828,7 +1828,7 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
   base::Value* events =
       payload->FindPath(RealtimeReportingJobConfiguration::kEventListKey);
   EXPECT_EQ(base::Value::Type::LIST, events->type());
-  EXPECT_EQ(1u, events->GetList().size());
+  EXPECT_EQ(1u, events->GetListDeprecated().size());
 }
 
 TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
@@ -1903,7 +1903,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   ASSERT_EQ(
       2u,
       payload->FindListPath(RealtimeReportingJobConfiguration::kEventListKey)
-          ->GetList()
+          ->GetListDeprecated()
           .size());
 }
 

@@ -55,7 +55,7 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
     return false;
 
   DCHECK(list_value->is_list());
-  for (const auto& base_value : list_value->GetList()) {
+  for (const auto& base_value : list_value->GetListDeprecated()) {
     const std::string* value = base_value.GetIfString();
     if (value) {
       const ContentSettingsPattern pattern =

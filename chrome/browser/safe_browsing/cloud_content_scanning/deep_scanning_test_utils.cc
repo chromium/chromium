@@ -366,7 +366,7 @@ void EventReportValidator::ValidateReport(base::Value* report) {
       report->FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
   EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  const base::Value::ListView mutable_list = event_list->GetList();
+  const base::Value::ListView mutable_list = event_list->GetListDeprecated();
 
   // There should only be 1 event per test.
   ASSERT_EQ(1, (int)mutable_list.size());
@@ -419,7 +419,7 @@ void EventReportValidator::ValidateIdentities(base::Value* value) {
     EXPECT_NE(nullptr, v);
 
     EXPECT_TRUE(v->is_list());
-    const auto& identities = v->GetList();
+    const auto& identities = v->GetListDeprecated();
     EXPECT_EQ(password_breach_identities_->size(), identities.size());
     for (const auto& expected_identity : *password_breach_identities_) {
       bool matched = false;
@@ -460,7 +460,7 @@ void EventReportValidator::ValidateDlpVerdict(
       value->FindListKey(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rules);
   ASSERT_EQ(base::Value::Type::LIST, triggered_rules->type());
-  base::Value::ListView rules_list = triggered_rules->GetList();
+  base::Value::ListView rules_list = triggered_rules->GetListDeprecated();
   int rules_size = rules_list.size();
   ASSERT_EQ(rules_size, result.triggered_rules_size());
   for (int i = 0; i < rules_size; ++i) {
@@ -567,7 +567,7 @@ void SetAnalysisConnector(PrefService* prefs,
                           bool machine_scope) {
   ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   DCHECK(settings_list.Get());
-  if (!settings_list->GetList().empty())
+  if (!settings_list->GetListDeprecated().empty())
     settings_list->ClearList();
 
   settings_list->Append(*base::JSONReader::Read(pref_value));
@@ -585,7 +585,7 @@ void SetOnSecurityEventReporting(
                                enterprise_connectors::kOnSecurityEventPref);
   DCHECK(settings_list.Get());
   if (enabled) {
-    if (settings_list->GetList().empty()) {
+    if (settings_list->GetListDeprecated().empty()) {
       base::Value settings(base::Value::Type::DICTIONARY);
 
       settings.SetKey(enterprise_connectors::kKeyServiceProvider,

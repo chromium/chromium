@@ -49,7 +49,7 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
     auto* list =
         prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
     std::vector<std::string> sites;
-    for (const base::Value& value : list->GetList())
+    for (const base::Value& value : list->GetListDeprecated())
       sites.push_back(value.GetString());
     return sites;
   }

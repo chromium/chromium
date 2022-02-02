@@ -143,7 +143,7 @@ bool AddressListFromListValue(const base::Value* value,
   }
 
   out_list->emplace();
-  for (const auto& it : value->GetList()) {
+  for (const auto& it : value->GetListDeprecated()) {
     IPAddress address;
     const std::string* addr_string = it.GetIfString();
     if (!addr_string || !address.AssignFromIPLiteral(*addr_string)) {
@@ -993,7 +993,7 @@ bool HostCache::RestoreFromListValue(const base::Value& old_cache) {
     if (ip_endpoints_value) {
       ip_endpoints.emplace();
       for (const base::Value& ip_endpoint_value :
-           ip_endpoints_value->GetList()) {
+           ip_endpoints_value->GetListDeprecated()) {
         absl::optional<IPEndPoint> ip_endpoint =
             IpEndpointFromValue(ip_endpoint_value);
         if (!ip_endpoint)
@@ -1008,7 +1008,7 @@ bool HostCache::RestoreFromListValue(const base::Value& old_cache) {
     if (endpoint_metadatas_value) {
       endpoint_metadatas.emplace();
       for (const base::Value& endpoint_metadata_value :
-           endpoint_metadatas_value->GetList()) {
+           endpoint_metadatas_value->GetListDeprecated()) {
         absl::optional<
             std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
             pair = EndpointMetadataPairFromValue(endpoint_metadata_value);
@@ -1021,7 +1021,8 @@ bool HostCache::RestoreFromListValue(const base::Value& old_cache) {
     absl::optional<std::set<std::string>> aliases;
     if (aliases_value) {
       aliases.emplace();
-      for (const base::Value& alias_value : aliases_value->GetList()) {
+      for (const base::Value& alias_value :
+           aliases_value->GetListDeprecated()) {
         if (!alias_value.is_string())
           return false;
         aliases->insert(alias_value.GetString());
@@ -1037,7 +1038,7 @@ bool HostCache::RestoreFromListValue(const base::Value& old_cache) {
     absl::optional<std::vector<std::string>> text_records;
     if (text_records_value) {
       text_records.emplace();
-      for (const base::Value& value : text_records_value->GetList()) {
+      for (const base::Value& value : text_records_value->GetListDeprecated()) {
         if (!value.is_string())
           return false;
         text_records.value().push_back(value.GetString());
@@ -1047,23 +1048,24 @@ bool HostCache::RestoreFromListValue(const base::Value& old_cache) {
     absl::optional<std::vector<HostPortPair>> hostname_records;
     if (hostname_records_value) {
       DCHECK(host_ports_value);
-      if (hostname_records_value->GetList().size() !=
-          host_ports_value->GetList().size()) {
+      if (hostname_records_value->GetListDeprecated().size() !=
+          host_ports_value->GetListDeprecated().size()) {
         return false;
       }
 
       hostname_records.emplace();
-      for (size_t i = 0; i < hostname_records_value->GetList().size(); ++i) {
-        if (!hostname_records_value->GetList()[i].is_string() ||
-            !host_ports_value->GetList()[i].is_int() ||
+      for (size_t i = 0; i < hostname_records_value->GetListDeprecated().size();
+           ++i) {
+        if (!hostname_records_value->GetListDeprecated()[i].is_string() ||
+            !host_ports_value->GetListDeprecated()[i].is_int() ||
             !base::IsValueInRangeForNumericType<uint16_t>(
-                host_ports_value->GetList()[i].GetInt())) {
+                host_ports_value->GetListDeprecated()[i].GetInt())) {
           return false;
         }
-        hostname_records.value().push_back(
-            HostPortPair(hostname_records_value->GetList()[i].GetString(),
-                         base::checked_cast<uint16_t>(
-                             host_ports_value->GetList()[i].GetInt())));
+        hostname_records.value().push_back(HostPortPair(
+            hostname_records_value->GetListDeprecated()[i].GetString(),
+            base::checked_cast<uint16_t>(
+                host_ports_value->GetListDeprecated()[i].GetInt())));
       }
     }
 

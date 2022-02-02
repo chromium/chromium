@@ -80,8 +80,8 @@ void ValidateJsonList(const std::string& json) {
   absl::optional<Value> list = JSONReader::Read(json);
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  ASSERT_EQ(1U, list->GetList().size());
-  const Value& elt = list->GetList()[0];
+  ASSERT_EQ(1U, list->GetListDeprecated().size());
+  const Value& elt = list->GetListDeprecated()[0];
   ASSERT_TRUE(elt.is_int());
   ASSERT_EQ(1, elt.GetInt());
 }
@@ -371,8 +371,8 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   absl::optional<Value> list = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  ASSERT_EQ(1U, list->GetList().size());
-  const Value& elt = list->GetList()[0];
+  ASSERT_EQ(1U, list->GetListDeprecated().size());
+  const Value& elt = list->GetListDeprecated()[0];
   ASSERT_TRUE(elt.is_string());
   ASSERT_EQ("// ok\n /* foo */ ", elt.GetString());
 

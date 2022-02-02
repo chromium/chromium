@@ -86,7 +86,7 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
 
   } else if (value->is_list()) {
     std::vector<base::Value> list;
-    for (const base::Value& list_item : value->GetList()) {
+    for (const base::Value& list_item : value->GetListDeprecated()) {
       base::Value converted_item =
           ConvertedResultFromScriptResult(&list_item, max_depth - 1);
       if (converted_item.type() == base::Value::Type::NONE) {

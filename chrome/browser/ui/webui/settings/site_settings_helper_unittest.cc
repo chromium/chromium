@@ -560,7 +560,7 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         exception, /*chooser_type=*/kUsbChooserGroupName,
         /*display_name=*/kObjectName, *chooser_object);
 
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.FindKey(kSites)->GetListDeprecated();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/kGoogleUrl,
                                    /*source=*/kPreferenceSource,
@@ -588,7 +588,7 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
 
     // The map sorts the sites by requesting origin, so |kAndroidUrl| should
     // be first, followed by the origin pair (kGoogleOrigin, kChromiumOrigin).
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.FindKey(kSites)->GetListDeprecated();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/kAndroidUrl,
                                    /*source=*/kPreferenceSource,
@@ -619,7 +619,7 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
     // CreateChooserExceptionObject method sorts the sites further by the
     // source. Therefore, policy granted sites are listed before user granted
     // sites.
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.FindKey(kSites)->GetListDeprecated();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/kGoogleUrl,
                                    /*source=*/kPolicySource,
@@ -752,7 +752,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     ExpectDisplayNameEq(exception,
                         /*display_name=*/"Devices from Google Inc.");
 
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.FindKey(kSites)->GetListDeprecated();
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
                                    /*origin=*/kAndroidUrl,
@@ -769,7 +769,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     ExpectDisplayNameEq(exception,
                         /*display_name=*/"Devices from any vendor");
 
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.FindKey(kSites)->GetListDeprecated();
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
                                    /*origin=*/kGoogleUrl,
@@ -786,7 +786,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     ExpectDisplayNameEq(exception,
                         /*display_name=*/"Devices from vendor 0x18D2");
 
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.FindKey(kSites)->GetListDeprecated();
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
                                    /*origin=*/kAndroidUrl,
@@ -807,7 +807,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     const auto& exception = exceptions_list[3];
     ExpectDisplayNameEq(exception, /*display_name=*/"Gizmo");
 
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.FindKey(kSites)->GetListDeprecated();
     ASSERT_EQ(sites_list.size(), 2u);
     ExpectValidSiteExceptionObject(sites_list[0],
                                    /*origin=*/kChromiumUrl,

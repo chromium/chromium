@@ -154,13 +154,14 @@ class ManagedBookmarkServiceTest : public testing::Test {
     if (node->is_folder()) {
       const base::ListValue* children = nullptr;
       if (!dict->GetList("children", &children) ||
-          node->children().size() != children->GetList().size()) {
+          node->children().size() != children->GetListDeprecated().size()) {
         return false;
       }
       size_t i = 0;
       return std::all_of(node->children().cbegin(), node->children().cend(),
                          [children, &i](const auto& child_node) {
-                           const base::Value& child = children->GetList()[i++];
+                           const base::Value& child =
+                               children->GetListDeprecated()[i++];
                            if (!child.is_dict())
                              return false;
                            return NodeMatchesValue(
@@ -196,7 +197,7 @@ TEST_F(ManagedBookmarkServiceTest, LoadInitial) {
 TEST_F(ManagedBookmarkServiceTest, SwapNodes) {
   // Swap the Google bookmark with the Folder.
   std::unique_ptr<base::ListValue> updated(CreateTestTree());
-  base::Value::ListView updated_listview = updated->GetList();
+  base::Value::ListView updated_listview = updated->GetListDeprecated();
   ASSERT_FALSE(updated_listview.empty());
   base::Value removed = std::move(updated_listview[0]);
   ASSERT_TRUE(updated->EraseListIter(updated_listview.begin()));
@@ -218,7 +219,7 @@ TEST_F(ManagedBookmarkServiceTest, SwapNodes) {
 TEST_F(ManagedBookmarkServiceTest, RemoveNode) {
   // Remove the Folder.
   std::unique_ptr<base::ListValue> updated(CreateTestTree());
-  ASSERT_TRUE(updated->EraseListIter(updated->GetList().begin() + 1));
+  ASSERT_TRUE(updated->EraseListIter(updated->GetListDeprecated().begin() + 1));
 
   const BookmarkNode* parent = managed_->managed_node();
   EXPECT_CALL(observer_, BookmarkNodeRemoved(model_.get(), parent, 1, _, _));

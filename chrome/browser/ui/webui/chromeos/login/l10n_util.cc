@@ -393,8 +393,8 @@ void ResolveLanguageListInThreadPool(
 
 void AdjustUILanguageList(const std::string& selected,
                           base::ListValue* languages_list) {
-  for (size_t i = 0; i < languages_list->GetList().size(); ++i) {
-    base::Value& language_info = languages_list->GetList()[i];
+  for (size_t i = 0; i < languages_list->GetListDeprecated().size(); ++i) {
+    base::Value& language_info = languages_list->GetListDeprecated()[i];
     if (!language_info.is_dict())
       NOTREACHED();
 

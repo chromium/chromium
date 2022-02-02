@@ -65,7 +65,7 @@ void UkmMessageHandler::RegisterMessages() {
 }
 
 void UkmMessageHandler::HandleRequestUkmData(const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   base::Value ukm_debug_data =
       ukm::debug::UkmDebugDataExtractor::GetStructuredData(ukm_service_);
 

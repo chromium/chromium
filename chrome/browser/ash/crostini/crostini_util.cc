@@ -465,9 +465,9 @@ void AddNewLxdContainerToPrefs(Profile* profile,
   ListPrefUpdate updater(profile->GetPrefs(),
                          crostini::prefs::kCrostiniContainers);
   auto it = std::find_if(
-      updater->GetList().begin(), updater->GetList().end(),
+      updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
       [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
-  if (it != updater->GetList().end()) {
+  if (it != updater->GetListDeprecated().end()) {
     return;
   }
 
@@ -486,8 +486,8 @@ void RemoveLxdContainerFromPrefs(Profile* profile,
   auto* pref_service = profile->GetPrefs();
   ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
   updater->EraseListIter(
-      std::find_if(updater->GetList().begin(), updater->GetList().end(),
-                   [&](const auto& dict) {
+      std::find_if(updater->GetListDeprecated().begin(),
+                   updater->GetListDeprecated().end(), [&](const auto& dict) {
                      return MatchContainerDict(dict, container_id);
                    }));
 
@@ -507,7 +507,7 @@ const base::Value* GetContainerPrefValue(Profile* profile,
   if (!containers) {
     return nullptr;
   }
-  for (const auto& dict : containers->GetList()) {
+  for (const auto& dict : containers->GetListDeprecated()) {
     if (MatchContainerDict(dict, container_id))
       return dict.FindKey(key);
   }
@@ -521,9 +521,9 @@ void UpdateContainerPref(Profile* profile,
   ListPrefUpdate updater(profile->GetPrefs(),
                          crostini::prefs::kCrostiniContainers);
   auto it = std::find_if(
-      updater->GetList().begin(), updater->GetList().end(),
+      updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
       [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
-  if (it != updater->GetList().end()) {
+  if (it != updater->GetListDeprecated().end()) {
     it->SetKey(key, std::move(value));
   }
 }

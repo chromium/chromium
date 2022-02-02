@@ -152,8 +152,8 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   CHECK(result->GetList("result", &coverage_entries));
 
   auto entries = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i != coverage_entries->GetList().size(); ++i) {
-    base::Value& entry = coverage_entries->GetList()[i];
+  for (size_t i = 0; i != coverage_entries->GetListDeprecated().size(); ++i) {
+    base::Value& entry = coverage_entries->GetListDeprecated()[i];
     CHECK(entry.is_dict());
 
     std::string* script_id = entry.FindStringKey("scriptId");

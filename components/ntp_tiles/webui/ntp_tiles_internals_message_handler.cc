@@ -98,7 +98,7 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
     SendTiles(NTPTilesVector(), FaviconResultMap());
     return;
   }
-  DCHECK_EQ(0u, args->GetList().size());
+  DCHECK_EQ(0u, args->GetListDeprecated().size());
 
   popular_sites_json_.clear();
   most_visited_sites_ = client_->MakeMostVisitedSites();
@@ -112,8 +112,8 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
     return;
   }
 
-  DCHECK_EQ(1u, args->GetList().size());
-  const base::Value& dict = args->GetList()[0];
+  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  const base::Value& dict = args->GetListDeprecated()[0];
   DCHECK(dict.is_dict());
 
   PrefService* prefs = client_->GetPrefs();
@@ -166,7 +166,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
 
 void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
     const base::ListValue* args) {
-  DCHECK_EQ(0u, args->GetList().size());
+  DCHECK_EQ(0u, args->GetListDeprecated().size());
   if (!most_visited_sites_ ||
       !most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
     return;

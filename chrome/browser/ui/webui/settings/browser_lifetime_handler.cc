@@ -112,7 +112,7 @@ void BrowserLifetimeHandler::HandleSignOutAndRestart(
 
 void BrowserLifetimeHandler::HandleFactoryReset(
     const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   CHECK_EQ(1U, args_list.size());
   bool tpm_firmware_update_requested = args_list[0].GetBool();
 
@@ -145,7 +145,7 @@ void BrowserLifetimeHandler::HandleFactoryReset(
 void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   size_t incognito_count = BrowserList::GetIncognitoBrowserCount();
   base::Value description;
   if (incognito_count > 0) {
@@ -158,7 +158,7 @@ void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
 void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   base::Value result = base::Value(BrowserList::GetIncognitoBrowserCount() > 0);
   ResolveJavascriptCallback(callback_id, result);
 }

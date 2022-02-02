@@ -32,7 +32,7 @@ void WhatsNewHandler::RegisterMessages() {
 }
 
 void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(1U, list.size());
   const std::string& callback_id = list[0].GetString();
 

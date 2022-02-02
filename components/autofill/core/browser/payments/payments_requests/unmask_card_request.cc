@@ -214,7 +214,7 @@ void UnmaskCardRequest::ParseResponse(const base::Value& response) {
   if (challenge_option_list) {
     std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
     for (const base::Value& challenge_option :
-         challenge_option_list->GetList()) {
+         challenge_option_list->GetListDeprecated()) {
       CardUnmaskChallengeOption parsed_challenge_option =
           ParseCardUnmaskChallengeOption(challenge_option);
       // Only return successfully parsed challenge option.

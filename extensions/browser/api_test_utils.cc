@@ -137,8 +137,9 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
                                             << function->GetError();
   if (function->GetResultList() &&
-      !function->GetResultList()->GetList().empty()) {
-    const base::Value& single_result = function->GetResultList()->GetList()[0];
+      !function->GetResultList()->GetListDeprecated().empty()) {
+    const base::Value& single_result =
+        function->GetResultList()->GetListDeprecated()[0];
     return single_result.CreateDeepCopy();
   }
   return nullptr;
@@ -182,7 +183,8 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
   // is no specified result.
   const base::ListValue* results = function->GetResultList();
   CHECK(results);
-  EXPECT_TRUE(results->GetList().empty()) << "Did not expect a result";
+  EXPECT_TRUE(results->GetListDeprecated().empty())
+      << "Did not expect a result";
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();

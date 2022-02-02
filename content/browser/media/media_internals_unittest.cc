@@ -89,12 +89,13 @@ class MediaInternalsTestBase {
     const base::ListValue* actual_list;
     ASSERT_TRUE(update_data_.GetList(key, &actual_list));
     const size_t expected_size = expected_list.GetList().size();
-    const size_t actual_size = actual_list->GetList().size();
+    const size_t actual_size = actual_list->GetListDeprecated().size();
     ASSERT_EQ(expected_size, actual_size);
     for (size_t i = 0; i < expected_size; ++i) {
       const std::string* expected_value =
           expected_list.GetList()[i].GetIfString();
-      const std::string* actual_value = actual_list->GetList()[i].GetIfString();
+      const std::string* actual_value =
+          actual_list->GetListDeprecated()[i].GetIfString();
       ASSERT_TRUE(expected_value);
       ASSERT_TRUE(actual_value);
       EXPECT_EQ(*expected_value, *actual_value);

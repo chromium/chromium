@@ -183,9 +183,9 @@ bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
 
 void SessionLogHandler::HandleSaveSessionLogRequest(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   DCHECK(save_session_log_callback_id_.empty());
-  save_session_log_callback_id_ = args->GetList()[0].GetString();
+  save_session_log_callback_id_ = args->GetListDeprecated()[0].GetString();
 
   content::WebContents* web_contents = web_ui()->GetWebContents();
   gfx::NativeWindow owning_window =
@@ -205,7 +205,7 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
 }
 
 void SessionLogHandler::HandleInitialize(const base::ListValue* args) {
-  DCHECK(args && args->GetList().empty());
+  DCHECK(args && args->GetListDeprecated().empty());
   AllowJavascript();
 }
 

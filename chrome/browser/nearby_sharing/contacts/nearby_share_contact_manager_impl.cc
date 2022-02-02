@@ -270,7 +270,7 @@ std::set<std::string> NearbyShareContactManagerImpl::GetAllowedContacts()
   std::set<std::string> allowlist;
   for (const base::Value& id :
        pref_service_->Get(prefs::kNearbySharingAllowedContactsPrefName)
-           ->GetList()) {
+           ->GetListDeprecated()) {
     allowlist.insert(id.GetString());
   }
   return allowlist;

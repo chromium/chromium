@@ -307,7 +307,7 @@ void MultidevicePhoneHubHandler::OnCameraRollViewUiStateUpdated() {
 }
 
 void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK(!list.empty());
   const bool enabled = list[0].GetBool();
   PA_LOG(VERBOSE) << "Setting Do Not Disturb state to " << enabled;
@@ -318,7 +318,7 @@ void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
 
 void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 1u);
   int status_as_int = list[0].GetInt();
 
@@ -331,7 +331,7 @@ void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
 
 void MultidevicePhoneHubHandler::HandleSetTetherStatus(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 1u);
   int status_as_int = list[0].GetInt();
 
@@ -367,7 +367,7 @@ void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
 void MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager(
     const base::ListValue* args) {
   AllowJavascript();
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK(!list.empty());
   const bool enabled = list[0].GetBool();
   if (enabled) {
@@ -379,7 +379,7 @@ void MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager(
 
 void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 1u);
   int feature_as_int = list[0].GetInt();
 
@@ -390,7 +390,7 @@ void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
 
 void MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK(!list.empty());
   const bool show_onboarding_flow = list[0].GetBool();
   PA_LOG(VERBOSE) << "Setting show onboarding flow to " << show_onboarding_flow;
@@ -400,7 +400,7 @@ void MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow(
 
 void MultidevicePhoneHubHandler::HandleSetFakePhoneName(
     const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   CHECK_GE(args_list.size(), 1u);
   std::u16string phone_name = base::UTF8ToUTF16(args_list[0].GetString());
   fake_phone_hub_manager_->mutable_phone_model()->SetPhoneName(phone_name);
@@ -409,7 +409,7 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneName(
 
 void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
     const base::ListValue* args) {
-  const base::Value& phones_status_value = args->GetList()[0];
+  const base::Value& phones_status_value = args->GetListDeprecated()[0];
   CHECK(phones_status_value.is_dict());
 
   absl::optional<int> mobile_status_as_int =
@@ -469,7 +469,7 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
 
 void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
     const base::ListValue* args) {
-  const base::Value& browser_tab_status_value = args->GetList()[0];
+  const base::Value& browser_tab_status_value = args->GetListDeprecated()[0];
   CHECK(browser_tab_status_value.is_dict());
   const base::DictionaryValue* browser_tab_status_dict =
       static_cast<const base::DictionaryValue*>(&browser_tab_status_value);
@@ -505,7 +505,7 @@ void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
 
 void MultidevicePhoneHubHandler::HandleSetNotification(
     const base::ListValue* args) {
-  const base::Value& notification_data_value = args->GetList()[0];
+  const base::Value& notification_data_value = args->GetListDeprecated()[0];
   CHECK(notification_data_value.is_dict());
 
   absl::optional<int> id = notification_data_value.FindIntKey("id");
@@ -581,7 +581,7 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
 
 void MultidevicePhoneHubHandler::HandleRemoveNotification(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 1u);
   int notification_id = list[0].GetInt();
   fake_phone_hub_manager_->fake_notification_manager()->RemoveNotification(
@@ -613,7 +613,7 @@ void MultidevicePhoneHubHandler::HandleResetCameraRollOnboardingUiDismissed(
 
 void MultidevicePhoneHubHandler::HandleSetFakeCameraRoll(
     const base::ListValue* args) {
-  const base::Value& camera_roll_dict = args->GetList()[0];
+  const base::Value& camera_roll_dict = args->GetListDeprecated()[0];
   CHECK(camera_roll_dict.is_dict());
 
   absl::optional<bool> is_camera_roll_enabled =

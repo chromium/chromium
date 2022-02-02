@@ -101,7 +101,7 @@ const std::vector<std::string> NearbyShareSettings::GetAllowedContacts() const {
   const base::Value* list =
       pref_service_->GetList(prefs::kNearbySharingAllowedContactsPrefName);
   if (list) {
-    base::Value::ConstListView view = list->GetList();
+    base::Value::ConstListView view = list->GetListDeprecated();
     for (const auto& value : view) {
       allowed_contacts.push_back(value.GetString());
     }

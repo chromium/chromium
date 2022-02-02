@@ -444,7 +444,7 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
     EXPECT_TRUE(call_data.arg2()->GetBool());
 
     // Get results from JS callback.
-    return call_data.arg3()->GetList();
+    return call_data.arg3()->GetListDeprecated();
   }
 
  private:

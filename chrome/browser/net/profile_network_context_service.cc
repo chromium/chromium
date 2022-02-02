@@ -120,7 +120,7 @@ std::vector<std::string> TranslateStringArray(const base::Value* list) {
     return std::vector<std::string>();
 
   std::vector<std::string> strings;
-  for (const base::Value& value : list->GetList()) {
+  for (const base::Value& value : list->GetListDeprecated()) {
     DCHECK(value.is_string());
     strings.push_back(value.GetString());
   }
@@ -772,7 +772,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
   const base::Value* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);
-  for (const auto& value : hsts_policy_bypass_list->GetList()) {
+  for (const auto& value : hsts_policy_bypass_list->GetListDeprecated()) {
     const std::string* string_value = value.GetIfString();
     if (!string_value)
       continue;

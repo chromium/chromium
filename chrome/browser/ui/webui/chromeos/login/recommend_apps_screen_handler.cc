@@ -164,7 +164,7 @@ void RecommendAppsScreenHandler::HandleSkip() {
 
 void RecommendAppsScreenHandler::HandleInstall(const base::ListValue* args) {
   if (recommended_app_count_ != 0) {
-    int selected_app_count = static_cast<int>(args->GetList().size());
+    int selected_app_count = static_cast<int>(args->GetListDeprecated().size());
     int selected_recommended_percentage =
         100 * selected_app_count / recommended_app_count_;
     RecordUmaUserSelectionAppCount(selected_app_count);
@@ -173,7 +173,7 @@ void RecommendAppsScreenHandler::HandleInstall(const base::ListValue* args) {
 
   // If the user does not select any apps, we should skip the app downloading
   // screen.
-  if (args->GetList().empty()) {
+  if (args->GetListDeprecated().empty()) {
     RecordUmaScreenAction(RecommendAppsScreenAction::SELECTED_NONE);
     HandleSkip();
     return;

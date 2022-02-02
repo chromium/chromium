@@ -828,7 +828,7 @@ bool MathUtil::FromValue(const base::Value* raw_value, gfx::Rect* out_rect) {
   if (!raw_value->is_list())
     return false;
 
-  base::Value::ConstListView list_view = raw_value->GetList();
+  base::Value::ConstListView list_view = raw_value->GetListDeprecated();
 
   if (list_view.size() != 4)
     return false;

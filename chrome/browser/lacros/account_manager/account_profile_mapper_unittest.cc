@@ -425,7 +425,7 @@ class AccountProfileMapperTest : public testing::Test {
     const base::Value* list = local_state()->Get(kLacrosAccountIdsPref);
     EXPECT_TRUE(list->is_list());
     return base::MakeFlatSet<std::string>(
-        list->GetList(), {},
+        list->GetListDeprecated(), {},
         [](const base::Value& value) { return value.GetString(); });
   }
 

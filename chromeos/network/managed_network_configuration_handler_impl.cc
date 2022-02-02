@@ -892,7 +892,7 @@ ManagedNetworkConfigurationHandlerImpl::GetBlockedHexSSIDs() const {
     return std::vector<std::string>();
 
   std::vector<std::string> blocked_hex_ssids;
-  for (const base::Value& entry : blocked_value->GetList())
+  for (const base::Value& entry : blocked_value->GetListDeprecated())
     blocked_hex_ssids.push_back(entry.GetString());
   return blocked_hex_ssids;
 }

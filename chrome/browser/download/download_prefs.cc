@@ -667,7 +667,8 @@ void DownloadPrefs::UpdateAutoOpenByPolicy() {
 
   PrefService* prefs = profile_->GetPrefs();
   for (const auto& extension :
-       prefs->GetList(prefs::kDownloadExtensionsToOpenByPolicy)->GetList()) {
+       prefs->GetList(prefs::kDownloadExtensionsToOpenByPolicy)
+           ->GetListDeprecated()) {
     base::FilePath::StringType extension_string =
         StringToFilePathString(extension.GetString());
     auto_open_by_policy_.insert(extension_string);
@@ -683,7 +684,7 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
 
   // We only need to configure |allowed_urls| if something is set by policy,
   // otherwise the default object does what we want.
-  if (list->GetList().size() != 0) {
+  if (list->GetListDeprecated().size() != 0) {
     allowed_urls->Allow(&base::Value::AsListValue(*list));
 
     // Since we only want to auto-open for the specified urls, block everything

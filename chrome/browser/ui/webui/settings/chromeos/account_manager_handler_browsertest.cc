@@ -304,7 +304,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  const base::span<const base::Value> result =
+      call_data.arg3()->GetListDeprecated();
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // Check first (device) account.
@@ -353,7 +354,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  const base::span<const base::Value> result =
+      call_data.arg3()->GetListDeprecated();
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // Check first (device) account.
@@ -539,7 +541,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  const base::span<const base::Value> result =
+      call_data.arg3()->GetListDeprecated();
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // The value for the device account should be always `true`.
@@ -611,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   // Get results from JS callback.
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   const base::span<const base::Value> accounts_dict =
-      call_data.arg3()->GetList();
+      call_data.arg3()->GetListDeprecated();
   absl::optional<const base::Value> secondary_1_dict =
       FindAccountDictByEmail(accounts_dict, kSecondaryAccount1Email);
   ASSERT_TRUE(secondary_1_dict.has_value());

@@ -132,7 +132,7 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
       compare_value_ptr);
   bool value_changed = false;
 
-  for (const base::Value& val : policy->value()->GetList()) {
+  for (const base::Value& val : policy->value()->GetListDeprecated()) {
     if (duplicates.find(&val) != duplicates.end())
       continue;
     duplicates.insert(&val);
@@ -147,7 +147,7 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
       continue;
     }
 
-    for (const base::Value& val : it.entry().value()->GetList()) {
+    for (const base::Value& val : it.entry().value()->GetListDeprecated()) {
       if (duplicates.find(&val) != duplicates.end())
         continue;
       duplicates.insert(&val);

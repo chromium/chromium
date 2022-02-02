@@ -67,7 +67,7 @@ const Value* UnitConverter::FindProperDestinationUnit(
   // no proper unit found, return nullptr.
   const Value* dst_unit = nullptr;
   double min_rate = preferred_range;
-  for (const Value& unit : units->GetList()) {
+  for (const Value& unit : units->GetListDeprecated()) {
     const auto* name = unit.FindStringPath(kNamePath);
     const auto rate_a = unit.FindDoublePath(kConversionRateAPath);
     if (*name == *src_name || !rate_a.has_value() || rate_a.value() == 0)

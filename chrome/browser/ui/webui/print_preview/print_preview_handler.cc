@@ -560,8 +560,9 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
     return;
 
   std::vector<mojom::PrinterType> deny_list;
-  deny_list.reserve(deny_list_from_prefs->GetList().size());
-  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
+  deny_list.reserve(deny_list_from_prefs->GetListDeprecated().size());
+  for (const base::Value& deny_list_value :
+       deny_list_from_prefs->GetListDeprecated()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     mojom::PrinterType printer_type;
     if (deny_list_str == "extension")
@@ -622,7 +623,7 @@ std::string PrintPreviewHandler::GetCallbackId(int request_id) {
 }
 
 void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 2u);
   std::string callback_id = list[0].GetString();
   CHECK(!callback_id.empty());
@@ -653,7 +654,7 @@ void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
 
 void PrintPreviewHandler::HandleGetPrinterCapabilities(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   // Validate that we have a valid callback_id
   if (list.size() < 1 || !list[0].is_string() || list[0].GetString().empty()) {
     RejectJavascriptCallback(base::Value(""), base::Value());
@@ -692,15 +693,15 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
 }
 
 void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetList().size());
+  DCHECK_EQ(2U, args->GetListDeprecated().size());
   std::string callback_id;
   std::string json_str;
 
   // All of the conditions below should be guaranteed by the print preview
   // javascript.
-  callback_id = args->GetList()[0].GetString();
+  callback_id = args->GetListDeprecated()[0].GetString();
   CHECK(!callback_id.empty());
-  json_str = args->GetList()[1].GetString();
+  json_str = args->GetListDeprecated()[1].GetString();
   base::Value settings = GetSettingsDictionary(json_str);
   CHECK(settings.is_dict());
   int request_id = settings.FindIntKey(kPreviewRequestID).value();
@@ -766,11 +767,11 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
 void PrintPreviewHandler::HandlePrint(const base::ListValue* args) {
   ReportRegeneratePreviewRequestCountBeforePrint(
       regenerate_preview_request_count_);
-  CHECK(args->GetList()[0].is_string());
-  std::string callback_id = args->GetList()[0].GetString();
+  CHECK(args->GetListDeprecated()[0].is_string());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
   CHECK(!callback_id.empty());
-  CHECK(args->GetList()[1].is_string());
-  std::string json_str = args->GetList()[1].GetString();
+  CHECK(args->GetListDeprecated()[1].is_string());
+  std::string json_str = args->GetListDeprecated()[1].GetString();
 
   base::Value settings = GetSettingsDictionary(json_str);
   if (!settings.is_dict()) {
@@ -842,8 +843,8 @@ void PrintPreviewHandler::HandleSaveAppState(const base::ListValue* args) {
   std::string data_to_save;
   PrintPreviewStickySettings* sticky_settings =
       PrintPreviewStickySettings::GetInstance();
-  if (args->GetList()[0].is_string())
-    data_to_save = args->GetList()[0].GetString();
+  if (args->GetListDeprecated()[0].is_string())
+    data_to_save = args->GetListDeprecated()[0].GetString();
   if (!data_to_save.empty())
     sticky_settings->StoreAppState(data_to_save);
   sticky_settings->SaveInPrefs(GetPrefs());
@@ -935,8 +936,8 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
 
 void PrintPreviewHandler::HandleGetInitialSettings(
     const base::ListValue* args) {
-  CHECK(args->GetList()[0].is_string());
-  std::string callback_id = args->GetList()[0].GetString();
+  CHECK(args->GetListDeprecated()[0].is_string());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();

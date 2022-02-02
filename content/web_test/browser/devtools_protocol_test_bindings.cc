@@ -98,8 +98,9 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(base::Value message) {
 
   const base::Value* params = message.FindListKey("params");
   if (*method == "dispatchProtocolMessage" && params &&
-      params->GetList().size() == 1) {
-    const std::string* protocol_message = params->GetList()[0].GetIfString();
+      params->GetListDeprecated().size() == 1) {
+    const std::string* protocol_message =
+        params->GetListDeprecated()[0].GetIfString();
     if (!protocol_message)
       return;
 

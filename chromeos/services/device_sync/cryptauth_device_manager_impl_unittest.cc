@@ -186,11 +186,13 @@ void ExpectSyncedDevicesAndPrefAreEqual(
 
   const base::Value* synced_devices_pref =
       pref_service.GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
-  ASSERT_EQ(expected_devices.size(), synced_devices_pref->GetList().size());
-  for (size_t i = 0; i < synced_devices_pref->GetList().size(); ++i) {
+  ASSERT_EQ(expected_devices.size(),
+            synced_devices_pref->GetListDeprecated().size());
+  for (size_t i = 0; i < synced_devices_pref->GetListDeprecated().size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Compare pref dictionary at index=%d",
                                     static_cast<int>(i)));
-    const base::Value& device_dictionary = synced_devices_pref->GetList()[i];
+    const base::Value& device_dictionary =
+        synced_devices_pref->GetListDeprecated()[i];
     EXPECT_TRUE(device_dictionary.is_dict());
 
     const auto& expected_device = expected_devices[i];
@@ -298,9 +300,11 @@ void ExpectSyncedDevicesAndPrefAreEqual(
         device_dictionary.FindListKey("beacon_seeds");
     if (beacon_seeds_from_prefs) {
       ASSERT_EQ(static_cast<size_t>(expected_device.beacon_seeds_size()),
-                beacon_seeds_from_prefs->GetList().size());
-      for (size_t i = 0; i < beacon_seeds_from_prefs->GetList().size(); i++) {
-        const base::Value& seed = beacon_seeds_from_prefs->GetList()[i];
+                beacon_seeds_from_prefs->GetListDeprecated().size());
+      for (size_t i = 0;
+           i < beacon_seeds_from_prefs->GetListDeprecated().size(); i++) {
+        const base::Value& seed =
+            beacon_seeds_from_prefs->GetListDeprecated()[i];
         ASSERT_TRUE(seed.is_dict());
 
         const std::string* data_b64 = seed.FindStringKey("beacon_seed_data");
@@ -958,7 +962,7 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncThreeDevices) {
   device_manager_->Start();
   EXPECT_EQ(1u, device_manager_->GetSyncedDevices().size());
   EXPECT_EQ(1u, pref_service_.GetList(prefs::kCryptAuthDeviceSyncUnlockKeys)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_PERIODIC);

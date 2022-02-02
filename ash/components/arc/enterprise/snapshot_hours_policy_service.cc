@@ -115,7 +115,7 @@ void SnapshotHoursPolicyService::UpdatePolicy() {
   if (!intervals)
     return;
 
-  for (const auto& entry : intervals->GetList()) {
+  for (const auto& entry : intervals->GetListDeprecated()) {
     if (!entry.is_dict())
       continue;
     auto interval =

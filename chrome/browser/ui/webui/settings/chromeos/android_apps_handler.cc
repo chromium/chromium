@@ -105,10 +105,10 @@ void AndroidAppsHandler::SendAndroidAppsInfo() {
 }
 
 void AndroidAppsHandler::ShowAndroidAppsSettings(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   bool activated_from_keyboard = false;
-  if (args->GetList()[0].is_bool())
-    activated_from_keyboard = args->GetList()[0].GetBool();
+  if (args->GetListDeprecated()[0].is_bool())
+    activated_from_keyboard = args->GetListDeprecated()[0].GetBool();
   int flags = activated_from_keyboard ? ui::EF_NONE : ui::EF_LEFT_MOUSE_BUTTON;
 
   app_service_proxy_->Launch(

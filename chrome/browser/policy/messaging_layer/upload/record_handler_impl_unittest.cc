@@ -77,9 +77,9 @@ void RetrieveFinalSequenceInformation(const base::Value& request,
   const base::Value* const encrypted_record_list =
       request.FindListKey("encryptedRecord");
   ASSERT_TRUE(encrypted_record_list != nullptr);
-  ASSERT_FALSE(encrypted_record_list->GetList().empty());
+  ASSERT_FALSE(encrypted_record_list->GetListDeprecated().empty());
   const auto* const seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
+      encrypted_record_list->GetListDeprecated().rbegin()->FindDictKey(
           "sequenceInformation");
   ASSERT_TRUE(seq_info != nullptr);
   ASSERT_TRUE(!seq_info->FindStringKey("sequencingId")->empty());

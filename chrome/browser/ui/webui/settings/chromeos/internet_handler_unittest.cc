@@ -75,7 +75,8 @@ class InternetHandlerTest : public BrowserWithTestWindowTest {
     EXPECT_EQ(kSendDeviceNamesMessageType, last_call_data->arg1()->GetString());
 
     std::vector<std::string> actual_device_names;
-    for (const auto& device_name_value : last_call_data->arg2()->GetList())
+    for (const auto& device_name_value :
+         last_call_data->arg2()->GetListDeprecated())
       actual_device_names.push_back(device_name_value.GetString());
     EXPECT_EQ(expected_device_names, actual_device_names);
   }

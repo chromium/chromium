@@ -644,7 +644,7 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
   dictionary->Set("apps", std::move(installed_extensions));
 
   const base::Value* app_page_names = prefs->GetList(prefs::kNtpAppPageNames);
-  if (!app_page_names || !app_page_names->GetList().size()) {
+  if (!app_page_names || !app_page_names->GetListDeprecated().size()) {
     ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
     base::Value* list = update.Get();
     list->Append(l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME));
@@ -733,8 +733,8 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
-  const std::string& extension_id = args->GetList()[0].GetString();
-  double source = args->GetList()[1].GetDouble();
+  const std::string& extension_id = args->GetListDeprecated()[0].GetString();
+  double source = args->GetListDeprecated()[1].GetDouble();
   GURL override_url;
 
   extension_misc::AppLaunchBucket launch_bucket =
@@ -780,16 +780,18 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
   }
 
   WindowOpenDisposition disposition =
-      args->GetList().size() > 3 ? webui::GetDispositionFromClick(args, 3)
-                                 : WindowOpenDisposition::CURRENT_TAB;
+      args->GetListDeprecated().size() > 3
+          ? webui::GetDispositionFromClick(args, 3)
+          : WindowOpenDisposition::CURRENT_TAB;
   if (extension_id != extensions::kWebStoreAppId) {
     CHECK_NE(launch_bucket, extension_misc::APP_LAUNCH_BUCKET_INVALID);
     extensions::RecordAppLaunchType(launch_bucket, type);
   } else {
     extensions::RecordWebStoreLaunch();
 
-    if (args->GetList().size() > 2) {
-      const std::string& source_value = args->GetList()[2].GetString();
+    if (args->GetListDeprecated().size() > 2) {
+      const std::string& source_value =
+          args->GetListDeprecated()[2].GetString();
       if (!source_value.empty()) {
         override_url = net::AppendQueryParameter(
             full_launch_url, extension_urls::kWebstoreSourceField,
@@ -841,8 +843,8 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
-  const std::string& app_id = args->GetList()[0].GetString();
-  double launch_type_double = args->GetList()[1].GetDouble();
+  const std::string& app_id = args->GetListDeprecated()[0].GetString();
+  double launch_type_double = args->GetListDeprecated()[1].GetDouble();
   extensions::LaunchType launch_type =
       static_cast<extensions::LaunchType>(static_cast<int>(launch_type_double));
 
@@ -885,7 +887,7 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
-  const std::string& extension_id = args->GetList()[0].GetString();
+  const std::string& extension_id = args->GetListDeprecated()[0].GetString();
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
@@ -907,7 +909,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
         weak_ptr_factory_.GetWeakPtr());
 
     extension_id_prompting_ = extension_id;
-    const auto& list = args->GetList();
+    const auto& list = args->GetListDeprecated();
     const bool dont_confirm =
         list.size() >= 2 && list[1].is_bool() && list[1].GetBool();
     if (dont_confirm) {
@@ -945,7 +947,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
 
   extension_id_prompting_ = extension_id;
 
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   const bool dont_confirm =
       list.size() >= 2 && list[1].is_bool() && list[1].GetBool();
   if (dont_confirm) {
@@ -963,7 +965,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
-  const std::string& app_id = args->GetList()[0].GetString();
+  const std::string& app_id = args->GetListDeprecated()[0].GetString();
 
   if (web_app_provider_->registrar().IsInstalled(app_id) &&
       !IsYoutubeExtension(app_id)) {
@@ -998,7 +1000,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
-  const std::string& app_id = args->GetList()[0].GetString();
+  const std::string& app_id = args->GetListDeprecated()[0].GetString();
 
   if (!web_app_provider_->registrar().IsInstalled(app_id))
     return;
@@ -1010,7 +1012,7 @@ void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
-  const std::string& extension_id = args->GetList()[0].GetString();
+  const std::string& extension_id = args->GetListDeprecated()[0].GetString();
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
@@ -1045,7 +1047,7 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+  base::Value::ConstListView args_list = args->GetListDeprecated();
   CHECK_EQ(args_list.size(), 2u);
 
   const std::string& dragged_app_id = args_list[0].GetString();
@@ -1075,8 +1077,8 @@ void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {
 void AppLauncherHandler::HandleSetPageIndex(const base::ListValue* args) {
   AppSorting* app_sorting =
       ExtensionSystem::Get(extension_service_->profile())->app_sorting();
-  const std::string& extension_id = args->GetList()[0].GetString();
-  double page_index = args->GetList()[1].GetDouble();
+  const std::string& extension_id = args->GetListDeprecated()[0].GetString();
+  double page_index = args->GetListDeprecated()[1].GetDouble();
   const syncer::StringOrdinal& page_ordinal =
       app_sorting->PageIntegerAsStringOrdinal(static_cast<size_t>(page_index));
 
@@ -1086,22 +1088,23 @@ void AppLauncherHandler::HandleSetPageIndex(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleSaveAppPageName(const base::ListValue* args) {
-  const std::string& name = args->GetList()[0].GetString();
-  size_t page_index = static_cast<size_t>(args->GetList()[1].GetDouble());
+  const std::string& name = args->GetListDeprecated()[0].GetString();
+  size_t page_index =
+      static_cast<size_t>(args->GetListDeprecated()[1].GetDouble());
 
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
   base::Value* list = update.Get();
-  if (page_index < list->GetList().size()) {
-    list->GetList()[page_index] = base::Value(name);
+  if (page_index < list->GetListDeprecated().size()) {
+    list->GetListDeprecated()[page_index] = base::Value(name);
   } else {
     list->Append(name);
   }
 }
 
 void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
-  base::Value::ConstListView list = args->GetList();
+  base::Value::ConstListView list = args->GetListDeprecated();
   GURL launch_url(list[0].GetString());
   // Do not install app for invalid url.
   if (!launch_url.SchemeIsHTTPOrHTTPS())
@@ -1141,7 +1144,7 @@ void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandlePageSelected(const base::ListValue* args) {
-  double index_double = args->GetList()[0].GetDouble();
+  double index_double = args->GetListDeprecated()[0].GetDouble();
   int index = static_cast<int>(index_double);
 
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
@@ -1152,8 +1155,8 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
   if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin))
     return;
 
-  const std::string& app_id = args->GetList()[0].GetString();
-  const std::string& mode_string = args->GetList()[1].GetString();
+  const std::string& app_id = args->GetListDeprecated()[0].GetString();
+  const std::string& mode_string = args->GetListDeprecated()[1].GetString();
   web_app::RunOnOsLoginMode mode;
 
   if (mode_string == kRunOnOsLoginModeNotRun) {

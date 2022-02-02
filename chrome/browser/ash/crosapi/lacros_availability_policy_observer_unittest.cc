@@ -91,7 +91,7 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
         absl::optional<base::Value> parsed = base::JSONReader::Read(flag_value);
         std::vector<std::string> result;
         if (parsed && parsed->is_list()) {
-          for (const auto& element : parsed->GetList()) {
+          for (const auto& element : parsed->GetListDeprecated()) {
             result.push_back(element.GetString());
           }
         }

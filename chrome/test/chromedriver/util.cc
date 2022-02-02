@@ -45,7 +45,7 @@ const double kCentimetersPerInch = 2.54;
 
 Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
   std::u16string keys;
-  for (const base::Value& i : src->GetList()) {
+  for (const base::Value& i : src->GetListDeprecated()) {
     if (!i.is_string())
       return Status(kUnknownError, "keys should be a string");
     std::u16string keys_list_part = base::UTF8ToUTF16(i.GetString());

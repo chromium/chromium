@@ -137,8 +137,8 @@ class VisualDebuggerTest : public testing::Test {
     base::Value* list_source = global_dict->FindListKey("new_sources");
     EXPECT_TRUE(list_source->is_list());
 
-    for (size_t i = 0; i < list_source->GetList().size(); i++) {
-      auto&& local_dict = list_source->GetList()[i];
+    for (size_t i = 0; i < list_source->GetListDeprecated().size(); i++) {
+      auto&& local_dict = list_source->GetListDeprecated()[i];
       StaticSource ss;
       ss.file = local_dict.FindKey("file")->GetString();
       ss.func = local_dict.FindKey("func")->GetString();
@@ -172,8 +172,8 @@ class VisualDebuggerTest : public testing::Test {
           option_dict->FindKey("alpha")->GetIfInt().value_or(kNoVal));
     };
 
-    for (size_t i = 0; i < draw_call_list->GetList().size(); i++) {
-      const base::Value& local_dict = draw_call_list->GetList()[i];
+    for (size_t i = 0; i < draw_call_list->GetListDeprecated().size(); i++) {
+      const base::Value& local_dict = draw_call_list->GetListDeprecated()[i];
       int draw_index;
       int source_index;
       VizDebugger::DrawOption option;
@@ -181,13 +181,17 @@ class VisualDebuggerTest : public testing::Test {
 
       const base::Value* list_size = local_dict.FindListKey("size");
       EXPECT_TRUE(list_size->is_list());
-      int size_x = list_size->GetList()[0].GetIfInt().value_or(kNoVal);
-      int size_y = list_size->GetList()[1].GetIfInt().value_or(kNoVal);
+      int size_x =
+          list_size->GetListDeprecated()[0].GetIfInt().value_or(kNoVal);
+      int size_y =
+          list_size->GetListDeprecated()[1].GetIfInt().value_or(kNoVal);
 
       const base::Value* list_pos = local_dict.FindListKey("pos");
       EXPECT_TRUE(list_pos->is_list());
-      float pos_x = list_pos->GetList()[0].GetIfDouble().value_or(kNoVal);
-      float pos_y = list_pos->GetList()[1].GetIfDouble().value_or(kNoVal);
+      float pos_x =
+          list_pos->GetListDeprecated()[0].GetIfDouble().value_or(kNoVal);
+      float pos_y =
+          list_pos->GetListDeprecated()[1].GetIfDouble().value_or(kNoVal);
 
       VizDebuggerInternal::DrawCall draw_call(draw_index, source_index, option,
                                               gfx::Size(size_x, size_y),
@@ -199,8 +203,8 @@ class VisualDebuggerTest : public testing::Test {
     base::Value* text_call_list = global_dict->FindListKey("text");
     EXPECT_TRUE(text_call_list->is_list());
 
-    for (size_t i = 0; i < text_call_list->GetList().size(); i++) {
-      const base::Value& local_dict = text_call_list->GetList()[i];
+    for (size_t i = 0; i < text_call_list->GetListDeprecated().size(); i++) {
+      const base::Value& local_dict = text_call_list->GetListDeprecated()[i];
       int draw_index;
       int source_index;
       VizDebugger::DrawOption option;
@@ -209,8 +213,10 @@ class VisualDebuggerTest : public testing::Test {
 
       const base::Value* list_pos = local_dict.FindListKey("pos");
       EXPECT_TRUE(list_pos->is_list());
-      float pos_x = list_pos->GetList()[0].GetIfDouble().value_or(kNoVal);
-      float pos_y = list_pos->GetList()[1].GetIfDouble().value_or(kNoVal);
+      float pos_x =
+          list_pos->GetListDeprecated()[0].GetIfDouble().value_or(kNoVal);
+      float pos_y =
+          list_pos->GetListDeprecated()[1].GetIfDouble().value_or(kNoVal);
 
       VizDebuggerInternal::DrawTextCall text_call(
           draw_index, source_index, option, gfx::Vector2dF(pos_x, pos_y),
@@ -222,8 +228,8 @@ class VisualDebuggerTest : public testing::Test {
     base::Value* log_call_list = global_dict->FindListKey("logs");
     EXPECT_TRUE(log_call_list->is_list());
 
-    for (size_t i = 0; i < log_call_list->GetList().size(); i++) {
-      const base::Value& local_dict = log_call_list->GetList()[i];
+    for (size_t i = 0; i < log_call_list->GetListDeprecated().size(); i++) {
+      const base::Value& local_dict = log_call_list->GetListDeprecated()[i];
       int draw_index;
       int source_index;
       VizDebugger::DrawOption option;

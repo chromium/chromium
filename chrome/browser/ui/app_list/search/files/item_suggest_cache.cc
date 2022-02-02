@@ -101,7 +101,7 @@ absl::optional<base::Value::ConstListView> GetList(const base::Value* value,
   const base::Value* field = value->FindListKey(key);
   if (!field)
     return absl::nullopt;
-  return field->GetList();
+  return field->GetListDeprecated();
 }
 
 absl::optional<std::string> GetString(const base::Value* value,

@@ -1983,10 +1983,11 @@ void VerifyDesksRestoreData(PrefService* user_prefs,
                             const std::vector<std::string>& desks_names) {
   const base::Value* desks_restore_names =
       user_prefs->GetList(prefs::kDesksNamesList);
-  ASSERT_EQ(desks_names.size(), desks_restore_names->GetList().size());
+  ASSERT_EQ(desks_names.size(),
+            desks_restore_names->GetListDeprecated().size());
 
   size_t index = 0;
-  for (const auto& value : desks_restore_names->GetList())
+  for (const auto& value : desks_restore_names->GetListDeprecated())
     EXPECT_EQ(desks_names[index++], value.GetString());
 }
 
@@ -3246,7 +3247,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
     DCHECK(prefs);
     ListPrefUpdate update(prefs, prefs::kDesksNamesList);
     base::Value* pref_data = update.Get();
-    ASSERT_TRUE(pref_data->GetList().empty());
+    ASSERT_TRUE(pref_data->GetListDeprecated().empty());
     for (auto desk_name : desk_names)
       pref_data->Append(desk_name);
   }

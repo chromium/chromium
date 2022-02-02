@@ -1344,7 +1344,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
   if (!list)
     return t_urls;
 
-  for (const base::Value& engine : list->GetList()) {
+  for (const base::Value& engine : list->GetListDeprecated()) {
     if (engine.is_dict()) {
       auto t_url = TemplateURLDataFromOverrideDictionary(engine);
       if (t_url)

@@ -579,7 +579,7 @@ CreditCardFIDOAuthenticator::ParseRequestOptions(
   const auto* key_info_list =
       request_options.FindKeyOfType("key_info", base::Value::Type::LIST);
   DCHECK(key_info_list);
-  for (const base::Value& key_info : key_info_list->GetList()) {
+  for (const base::Value& key_info : key_info_list->GetListDeprecated()) {
     options->allow_credentials.push_back(ParseCredentialDescriptor(key_info));
   }
 
@@ -628,7 +628,8 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
   const auto* identifier_list = creation_options.FindKeyOfType(
       "algorithm_identifier", base::Value::Type::LIST);
   if (identifier_list) {
-    for (const base::Value& algorithm_identifier : identifier_list->GetList()) {
+    for (const base::Value& algorithm_identifier :
+         identifier_list->GetListDeprecated()) {
       device::PublicKeyCredentialParams::CredentialInfo parameter;
       parameter.type = device::CredentialType::kPublicKey;
       parameter.algorithm = algorithm_identifier.GetInt();
@@ -664,7 +665,8 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
   const auto* excluded_keys_list =
       creation_options.FindKeyOfType("key_info", base::Value::Type::LIST);
   if (excluded_keys_list) {
-    for (const base::Value& key_info : excluded_keys_list->GetList()) {
+    for (const base::Value& key_info :
+         excluded_keys_list->GetListDeprecated()) {
       options->exclude_credentials.push_back(
           ParseCredentialDescriptor(key_info));
     }
@@ -684,8 +686,8 @@ CreditCardFIDOAuthenticator::ParseCredentialDescriptor(
   base::flat_set<FidoTransportProtocol> authenticator_transports;
   const auto* transports = key_info.FindKeyOfType(
       "authenticator_transport_support", base::Value::Type::LIST);
-  if (transports && !transports->GetList().empty()) {
-    for (const base::Value& transport_type : transports->GetList()) {
+  if (transports && !transports->GetListDeprecated().empty()) {
+    for (const base::Value& transport_type : transports->GetListDeprecated()) {
       absl::optional<FidoTransportProtocol> protocol =
           device::ConvertToFidoTransportProtocol(
               base::ToLowerASCII(transport_type.GetString()));
@@ -749,10 +751,10 @@ bool CreditCardFIDOAuthenticator::IsValidRequestOptions(
   const auto* key_info_list =
       request_options.FindKeyOfType("key_info", base::Value::Type::LIST);
 
-  if (key_info_list->GetList().empty())
+  if (key_info_list->GetListDeprecated().empty())
     return false;
 
-  for (const base::Value& key_info : key_info_list->GetList()) {
+  for (const base::Value& key_info : key_info_list->GetListDeprecated()) {
     if (!key_info.is_dict() || !key_info.FindStringKey("credential_id"))
       return false;
   }

@@ -142,7 +142,7 @@ WebRequestConditionAttributeResourceType::Create(
                                             keys::kResourceTypeKey);
     return nullptr;
   }
-  base::Value::ConstListView list = value->GetList();
+  base::Value::ConstListView list = value->GetListDeprecated();
 
   std::vector<WebRequestResourceType> passed_types;
   passed_types.reserve(list.size());
@@ -223,7 +223,7 @@ WebRequestConditionAttributeContentType::Create(
     return nullptr;
   }
   std::vector<std::string> content_types;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     if (!entry.is_string()) {
       *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
       return nullptr;
@@ -497,7 +497,7 @@ HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
     switch (content->type()) {
       case base::Value::Type::LIST: {
         CHECK(content->is_list());
-        for (const auto& elem : content->GetList()) {
+        for (const auto& elem : content->GetListDeprecated()) {
           matching_tests->push_back(
               StringMatchTest::Create(elem, match_type, !is_name));
         }
@@ -559,7 +559,7 @@ std::unique_ptr<const HeaderMatcher> PrepareHeaderMatcher(
   }
 
   std::unique_ptr<const HeaderMatcher> header_matcher(
-      HeaderMatcher::Create(value->GetList()));
+      HeaderMatcher::Create(value->GetListDeprecated()));
   if (!header_matcher.get())
     *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
   return header_matcher;

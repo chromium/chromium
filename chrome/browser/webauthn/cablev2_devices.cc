@@ -216,7 +216,7 @@ std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
       prefs->GetList(kWebAuthnCablePairingsPrefName);
 
   std::vector<std::unique_ptr<Pairing>> ret;
-  for (const auto& pairing : pref_pairings->GetList()) {
+  for (const auto& pairing : pref_pairings->GetListDeprecated()) {
     if (!pairing.is_dict()) {
       continue;
     }
@@ -414,7 +414,7 @@ bool RenamePairing(
   const std::string public_key_base64 = base::Base64Encode(public_key);
 
   ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
-  base::Value::ListView list = update.Get()->GetList();
+  base::Value::ListView list = update.Get()->GetListDeprecated();
 
   for (base::Value& value : list) {
     if (!value.is_dict()) {

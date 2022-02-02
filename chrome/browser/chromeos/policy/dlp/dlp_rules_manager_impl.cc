@@ -101,7 +101,7 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
   std::string path;
   std::string query;
   bool match_subdomains = true;
-  for (const auto& list_entry : urls->GetList()) {
+  for (const auto& list_entry : urls->GetListDeprecated()) {
     std::string url = list_entry.GetString();
     if (!url_matcher::util::FilterToComponents(
             url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
@@ -415,8 +415,8 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
   DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA,
-                      rules_list && !rules_list->GetList().empty());
-  if (!rules_list || rules_list->GetList().empty()) {
+                      rules_list && !rules_list->GetListDeprecated().empty());
+  if (!rules_list || rules_list->GetListDeprecated().empty()) {
     DataTransferDlpController::DeleteInstance();
     return;
   }
@@ -428,7 +428,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   // Constructing request to send the policy to DLP Files daemon.
   ::dlp::SetDlpFilesPolicyRequest request_to_daemon;
 
-  for (const base::Value& rule : rules_list->GetList()) {
+  for (const base::Value& rule : rules_list->GetListDeprecated()) {
     DCHECK(rule.is_dict());
     const auto* sources = rule.FindDictKey("sources");
     DCHECK(sources);
@@ -452,7 +452,8 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     const auto* destinations_components =
         destinations ? destinations->FindListKey("components") : nullptr;
     if (destinations_components) {
-      for (const auto& component : destinations_components->GetList()) {
+      for (const auto& component :
+           destinations_components->GetListDeprecated()) {
         DCHECK(component.is_string());
         components_rules_[GetComponentMapping(component.GetString())].insert(
             rules_counter);
@@ -461,7 +462,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
     const auto* restrictions = rule.FindListKey("restrictions");
     DCHECK(restrictions);
-    for (const auto& restriction : restrictions->GetList()) {
+    for (const auto& restriction : restrictions->GetListDeprecated()) {
       const auto* rule_class_str = restriction.FindStringKey("class");
       DCHECK(rule_class_str);
       const auto* rule_level_str = restriction.FindStringKey("level");
@@ -477,13 +478,14 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
       // TODO(crbug.com/1172959): Implement Warn level for Files.
       if (rule_restriction == Restriction::kFiles && destinations_urls &&
-          !destinations_urls->GetList().empty() && rule_level != Level::kWarn) {
+          !destinations_urls->GetListDeprecated().empty() &&
+          rule_level != Level::kWarn) {
         ::dlp::DlpFilesRule files_rule;
-        for (const auto& url : sources_urls->GetList()) {
+        for (const auto& url : sources_urls->GetListDeprecated()) {
           DCHECK(url.is_string());
           files_rule.add_source_urls(url.GetString());
         }
-        for (const auto& url : destinations_urls->GetList()) {
+        for (const auto& url : destinations_urls->GetListDeprecated()) {
           DCHECK(url.is_string());
           files_rule.add_destination_urls(url.GetString());
         }

@@ -116,7 +116,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
     // To ensure this gets done, do this before ASSERT* calls.
     RunQuitClosure();
 
-    const auto& list = test_result->GetList();
+    const auto& list = test_result->GetListDeprecated();
     ASSERT_FALSE(list.empty());
     const bool test_succeeded = list[0].is_bool() && list[0].GetBool();
     std::string message;

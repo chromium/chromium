@@ -150,10 +150,10 @@ struct ParsedNetLog {
 
 // Returns the event at index |i|, or nullptr if there is none.
 const base::Value* ParsedNetLog::GetEvent(size_t i) const {
-  if (!events || i >= events->GetList().size())
+  if (!events || i >= events->GetListDeprecated().size())
     return nullptr;
 
-  const base::Value& value = events->GetList()[i];
+  const base::Value& value = events->GetListDeprecated()[i];
   if (!value.is_dict())
     return nullptr;
 
@@ -189,7 +189,7 @@ void VerifyEventsInLog(const ParsedNetLog* log,
                        size_t num_events_saved) {
   ASSERT_TRUE(log);
   ASSERT_LE(num_events_saved, num_events_emitted);
-  ASSERT_EQ(num_events_saved, log->events->GetList().size());
+  ASSERT_EQ(num_events_saved, log->events->GetListDeprecated().size());
 
   // The last |num_events_saved| should all be sequential, with the last one
   // being numbered |num_events_emitted - 1|.
@@ -442,7 +442,7 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithNoEvents) {
   // Verify the written log.
   std::unique_ptr<ParsedNetLog> log = ReadNetLogFromDisk(log_path_);
   ASSERT_TRUE(log);
-  ASSERT_EQ(0u, log->events->GetList().size());
+  ASSERT_EQ(0u, log->events->GetListDeprecated().size());
 }
 
 TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithOneEvent) {
@@ -460,7 +460,7 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithOneEvent) {
   // Verify the written log.
   std::unique_ptr<ParsedNetLog> log = ReadNetLogFromDisk(log_path_);
   ASSERT_TRUE(log);
-  ASSERT_EQ(1u, log->events->GetList().size());
+  ASSERT_EQ(1u, log->events->GetListDeprecated().size());
 }
 
 TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithOneEventPreExisting) {
@@ -478,7 +478,7 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithOneEventPreExisting) {
   // Verify the written log.
   std::unique_ptr<ParsedNetLog> log = ReadNetLogFromDisk(log_path_);
   ASSERT_TRUE(log);
-  ASSERT_EQ(1u, log->events->GetList().size());
+  ASSERT_EQ(1u, log->events->GetListDeprecated().size());
 }
 
 TEST_P(FileNetLogObserverTest, PreExistingFileBroken) {
@@ -547,7 +547,7 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithPolledData) {
   // Verify the written log.
   std::unique_ptr<ParsedNetLog> log = ReadNetLogFromDisk(log_path_);
   ASSERT_TRUE(log);
-  ASSERT_EQ(0u, log->events->GetList().size());
+  ASSERT_EQ(0u, log->events->GetListDeprecated().size());
 
   // Make sure additional information is present and validate it.
   ASSERT_TRUE(log->polled_data);
@@ -642,7 +642,7 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
   ASSERT_TRUE(log);
   // Check that the expected number of events were written to disk.
   EXPECT_EQ(kNumEventsAddedPerThread * kNumThreads,
-            log->events->GetList().size());
+            log->events->GetListDeprecated().size());
 
 #if BUILDFLAG(IS_FUCHSIA)
   LOG(ERROR) << "Teardown.";
@@ -956,7 +956,7 @@ TEST_F(FileNetLogObserverBoundedTest, BlockEventsFile0) {
   // Verify the written log.
   std::unique_ptr<ParsedNetLog> log = ReadNetLogFromDisk(log_path_);
   ASSERT_TRUE(log);
-  ASSERT_EQ(0u, log->events->GetList().size());
+  ASSERT_EQ(0u, log->events->GetListDeprecated().size());
 }
 
 // Make sure that when using bounded mode with a pre-existing output file,
@@ -1016,7 +1016,7 @@ TEST_F(FileNetLogObserverBoundedTest, LargeWriteQueueSize) {
   // Verify the written log.
   std::unique_ptr<ParsedNetLog> log = ReadNetLogFromDisk(log_path_);
   ASSERT_TRUE(log);
-  ASSERT_EQ(3u, log->events->GetList().size());
+  ASSERT_EQ(3u, log->events->GetListDeprecated().size());
 }
 
 void AddEntriesViaNetLog(NetLog* net_log, int num_entries) {

@@ -108,7 +108,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWKResult) {
 
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(test_array));
   ASSERT_TRUE(value->is_list());
-  base::Value::ConstListView list = value->GetList();
+  base::Value::ConstListView list = value->GetListDeprecated();
 
   size_t list_size = 3;
   ASSERT_EQ(list_size, list.size());
@@ -182,7 +182,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   absl::optional<base::Value::ConstListView> inner_list;
 
   ASSERT_TRUE(value->is_list());
-  current_list = value->GetList();
+  current_list = value->GetListDeprecated();
 
   for (int current_depth = 0; current_depth <= kMaximumParsingRecursionDepth;
        current_depth++) {

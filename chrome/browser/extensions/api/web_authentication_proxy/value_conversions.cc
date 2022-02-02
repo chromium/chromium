@@ -361,7 +361,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   if (!transports) {
     return nullptr;
   }
-  for (const base::Value& transport_name : transports->GetList()) {
+  for (const base::Value& transport_name : transports->GetListDeprecated()) {
     absl::optional<device::FidoTransportProtocol> transport =
         FidoTransportProtocolFromValue(transport_name);
     if (!transport) {

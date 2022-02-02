@@ -38,7 +38,7 @@ void WebApksHandler::HandleRequestWebApksInfo(const base::ListValue* args) {
 
 void WebApksHandler::HandleRequestWebApkUpdate(const base::ListValue* args) {
   AllowJavascript();
-  for (const auto& val : args->GetList()) {
+  for (const auto& val : args->GetListDeprecated()) {
     if (val.is_string())
       ShortcutHelper::SetForceWebApkUpdate(val.GetString());
   }

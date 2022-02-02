@@ -117,7 +117,7 @@ class SetDisjunctionPermission : public APIPermission {
       return false;
     }
 
-    for (const base::Value& item_value : value->GetList()) {
+    for (const base::Value& item_value : value->GetListDeprecated()) {
       PermissionDataType data;
       if (data.FromValue(&item_value)) {
         data_set_.insert(data);

@@ -266,7 +266,7 @@ class DisplayPrefsTest : public AshTestBase {
     const auto* mirror_ids = prefs->FindListKey("mirroring_destination_ids");
     ASSERT_TRUE(mirror_ids);
     display::DisplayIdList pref_dest_ids;
-    for (const auto& value : mirror_ids->GetList()) {
+    for (const auto& value : mirror_ids->GetListDeprecated()) {
       int64_t id;
       EXPECT_TRUE(base::StringToInt64(value.GetString(), &id));
       pref_dest_ids.push_back(id);
@@ -287,7 +287,7 @@ class DisplayPrefsTest : public AshTestBase {
         local_state()->Get(prefs::kExternalDisplayMirrorInfo);
     ASSERT_TRUE(prefs);
     std::set<int64_t> read_ids;
-    for (const auto& value : prefs->GetList()) {
+    for (const auto& value : prefs->GetListDeprecated()) {
       int64_t id;
       EXPECT_TRUE(base::StringToInt64(value.GetString(), &id));
       read_ids.insert(id);
@@ -463,7 +463,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   const base::Value* external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(0U, external_display_mirror_info->GetList().size());
+  EXPECT_EQ(0U, external_display_mirror_info->GetListDeprecated().size());
 
   const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayProperties);
@@ -595,10 +595,10 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, external_display_mirror_info->GetList().size());
+  EXPECT_EQ(1U, external_display_mirror_info->GetListDeprecated().size());
   // ExternalDisplayInfo stores ID without output index.
   EXPECT_EQ(base::NumberToString(display::GetDisplayIdWithoutOutputIndex(id2)),
-            external_display_mirror_info->GetList()[0].GetString());
+            external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // External display's selected resolution must not change
   // by mirroring.
@@ -1421,9 +1421,10 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   LoadDisplayPreferences();
   const base::Value* pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(first_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(first_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add first display, mirror mode restores and the external display mirror
   // info does not change.
@@ -1432,9 +1433,10 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(first_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(first_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add second display, mirror mode persists and the second display id is added
   // to the external display mirror info.
@@ -1443,11 +1445,13 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(2U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(first_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
-  EXPECT_EQ(base::NumberToString(second_display_masked_id),
-            pref_external_display_mirror_info->GetList()[1].GetString());
+  EXPECT_EQ(2U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(first_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
+  EXPECT_EQ(
+      base::NumberToString(second_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[1].GetString());
 
   // Disconnect all external displays.
   display_info_list.erase(display_info_list.begin() + 1,
@@ -1461,9 +1465,10 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   LoadDisplayPreferences();
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(second_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(second_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add first display, mirror mode is off and the external display mirror info
   // does not change.
@@ -1472,9 +1477,10 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(second_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(second_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add second display, mirror mode remains off and the second display id is
   // removed from the external display mirror info.
@@ -1483,7 +1489,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(0U, pref_external_display_mirror_info->GetList().size());
+  EXPECT_EQ(0U, pref_external_display_mirror_info->GetListDeprecated().size());
 }
 
 TEST_F(DisplayPrefsTest, ExternalDisplayConnectedBeforeLoadingPrefs) {
@@ -1573,9 +1579,9 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
             pref_data->FindKey("mirroring_source_id")->GetString());
   const base::Value* destination_ids_value =
       pref_data->FindKey("mirroring_destination_ids");
-  EXPECT_EQ(1U, destination_ids_value->GetList().size());
+  EXPECT_EQ(1U, destination_ids_value->GetListDeprecated().size());
   EXPECT_EQ(base::NumberToString(first_display_id),
-            destination_ids_value->GetList()[0].GetString());
+            destination_ids_value->GetListDeprecated()[0].GetString());
 
   // Overwrite current mixed mirror mode with a new configuration. (Mirror from
   // the first external display to the second external display)
@@ -1597,9 +1603,9 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   EXPECT_EQ(base::NumberToString(first_display_id),
             pref_data->FindKey("mirroring_source_id")->GetString());
   destination_ids_value = pref_data->FindKey("mirroring_destination_ids");
-  EXPECT_EQ(1U, destination_ids_value->GetList().size());
+  EXPECT_EQ(1U, destination_ids_value->GetListDeprecated().size());
   EXPECT_EQ(base::NumberToString(second_display_id),
-            destination_ids_value->GetList()[0].GetString());
+            destination_ids_value->GetListDeprecated()[0].GetString());
 
   // Turn off mirror mode.
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);

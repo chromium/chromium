@@ -86,7 +86,7 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
 bool FindInListValue(const std::string& needle, const base::Value* haystack) {
   if (!haystack->is_list())
     return false;
-  return base::Contains(haystack->GetList(), base::Value(needle));
+  return base::Contains(haystack->GetListDeprecated(), base::Value(needle));
 }
 
 }  // namespace

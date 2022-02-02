@@ -1013,7 +1013,8 @@ void DevToolsUIBindings::IndexPath(
   absl::optional<base::Value> parsed_excluded_folders =
       base::JSONReader::Read(excluded_folders_message);
   if (parsed_excluded_folders && parsed_excluded_folders->is_list()) {
-    for (const base::Value& folder_path : parsed_excluded_folders->GetList()) {
+    for (const base::Value& folder_path :
+         parsed_excluded_folders->GetListDeprecated()) {
       if (folder_path.is_string())
         excluded_folders.push_back(folder_path.GetString());
     }

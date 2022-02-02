@@ -139,7 +139,7 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
   if (primary_account().given_name.empty())
     bubble_parameters_.primary_account.given_name = primary_account().email;
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id, GetInterceptionParametersValue());
 }
 

@@ -111,9 +111,10 @@ void ExtensionStatusesHandler::HandleGetExtensionStatuses(
   DCHECK(args);
   GetExtensionStatusesAsDictionary(
       profile_,
-      base::BindOnce(&ExtensionStatusesHandler::DidGetExtensionStatuses,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     args->GetList()[0].GetString() /* callback_id */));
+      base::BindOnce(
+          &ExtensionStatusesHandler::DidGetExtensionStatuses,
+          weak_ptr_factory_.GetWeakPtr(),
+          args->GetListDeprecated()[0].GetString() /* callback_id */));
 }
 
 void ExtensionStatusesHandler::DidGetExtensionStatuses(

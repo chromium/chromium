@@ -355,11 +355,12 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddEncryptedRecord) {
 
   base::Value* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
-  EXPECT_EQ(record_list->GetList().size(), 1u);
-  EXPECT_EQ(record_list->GetList()[0], record_value);
+  EXPECT_EQ(record_list->GetListDeprecated().size(), 1u);
+  EXPECT_EQ(record_list->GetListDeprecated()[0], record_value);
 
   std::string* encrypted_wrapped_record =
-      record_list->GetList()[0].FindStringKey(kEncryptedWrappedRecordKey);
+      record_list->GetListDeprecated()[0].FindStringKey(
+          kEncryptedWrappedRecordKey);
   ASSERT_THAT(encrypted_wrapped_record, NotNull());
 
   std::string decoded_record;
@@ -387,11 +388,11 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsMultipleRecords) {
   base::Value* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
 
-  EXPECT_EQ(record_list->GetList().size(), records.size());
+  EXPECT_EQ(record_list->GetListDeprecated().size(), records.size());
 
   size_t counter = 0;
   for (const auto& record : records) {
-    EXPECT_EQ(record_list->GetList()[counter++], record);
+    EXPECT_EQ(record_list->GetListDeprecated()[counter++], record);
   }
 
   EXPECT_FALSE(GetAttachEncryptionSettings(&configuration));
@@ -411,7 +412,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
   base::Value* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
 
-  EXPECT_TRUE(record_list->GetList().empty());
+  EXPECT_TRUE(record_list->GetListDeprecated().empty());
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
 }
@@ -436,11 +437,11 @@ TEST_F(EncryptedReportingJobConfigurationTest,
   base::Value* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
 
-  EXPECT_EQ(record_list->GetList().size(), records.size());
+  EXPECT_EQ(record_list->GetListDeprecated().size(), records.size());
 
   size_t counter = 0;
   for (const auto& record : records) {
-    EXPECT_EQ(record_list->GetList()[counter++], record);
+    EXPECT_EQ(record_list->GetListDeprecated()[counter++], record);
   }
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));

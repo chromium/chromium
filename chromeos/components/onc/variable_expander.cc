@@ -134,7 +134,7 @@ bool VariableExpander::ExpandValue(base::Value* value) const {
     }
 
     case base::Value::Type::LIST: {
-      for (base::Value& child : value->GetList())
+      for (base::Value& child : value->GetListDeprecated())
         no_error &= ExpandValue(&child);
       break;
     }

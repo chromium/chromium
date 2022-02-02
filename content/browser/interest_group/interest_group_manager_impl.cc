@@ -271,7 +271,7 @@ namespace {
     return true;
   std::vector<std::string> trusted_bidding_signals_keys;
   for (const base::Value& keys_value :
-       maybe_update_trusted_bidding_signals_keys->GetList()) {
+       maybe_update_trusted_bidding_signals_keys->GetListDeprecated()) {
     const std::string* maybe_key = keys_value.GetIfString();
     if (!maybe_key)
       return false;
@@ -290,7 +290,7 @@ namespace {
   if (!maybe_ads)
     return true;
   std::vector<blink::InterestGroup::Ad> ads;
-  for (const base::Value& ads_value : maybe_ads->GetList()) {
+  for (const base::Value& ads_value : maybe_ads->GetListDeprecated()) {
     if (!ads_value.is_dict())
       return false;
     const std::string* maybe_render_url = ads_value.FindStringKey("renderUrl");

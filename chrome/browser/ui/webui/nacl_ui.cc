@@ -296,8 +296,8 @@ void NaClDomHandler::AddNaClInfo(base::ListValue* list) {
 
 void NaClDomHandler::HandleRequestNaClInfo(const base::ListValue* args) {
   CHECK(callback_id_.empty());
-  CHECK_EQ(1U, args->GetList().size());
-  callback_id_ = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  callback_id_ = args->GetListDeprecated()[0].GetString();
 
   if (!has_plugin_info_) {
     PluginService::GetInstance()->GetPlugins(base::BindOnce(

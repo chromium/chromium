@@ -281,7 +281,7 @@ void DevToolsEventForwarder::SetWhitelistedShortcuts(
   absl::optional<base::Value> parsed_message = base::JSONReader::Read(message);
   if (!parsed_message || !parsed_message->is_list())
     return;
-  for (const auto& list_item : parsed_message->GetList()) {
+  for (const auto& list_item : parsed_message->GetListDeprecated()) {
     if (!list_item.is_dict())
       continue;
     int key_code = list_item.FindIntKey("keyCode").value_or(0);
@@ -1587,7 +1587,7 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
   absl::optional<base::Value> value = base::JSONReader::Read(cert_chain);
   CHECK(value && value->is_list());
   std::vector<std::string> decoded;
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     CHECK(item.is_string());
     std::string temp;
     CHECK(base::Base64Decode(item.GetString(), &temp));

@@ -52,11 +52,12 @@ bool ParseResponse(const std::string& response, bool* is_porn) {
     DLOG(WARNING) << "ParseResponse failed to parse classifications list";
     return false;
   }
-  if (classifications_list->GetList().size() != 1) {
+  if (classifications_list->GetListDeprecated().size() != 1) {
     DLOG(WARNING) << "ParseResponse expected exactly one result";
     return false;
   }
-  const base::Value& classification_value = classifications_list->GetList()[0];
+  const base::Value& classification_value =
+      classifications_list->GetListDeprecated()[0];
   if (!classification_value.is_dict()) {
     DLOG(WARNING) << "ParseResponse failed to parse classification dict";
     return false;

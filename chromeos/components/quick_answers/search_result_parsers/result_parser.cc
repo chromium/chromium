@@ -24,7 +24,7 @@ const Value* ResultParser::GetFirstListElement(const Value& value,
     return nullptr;
   }
 
-  auto list = entries->GetList();
+  auto list = entries->GetListDeprecated();
   if (list.empty()) {
     // No valid dictionary entries found.
     return nullptr;

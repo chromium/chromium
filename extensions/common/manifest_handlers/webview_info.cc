@@ -130,7 +130,8 @@ bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   // The partition list must have at least one entry.
-  base::Value::ConstListView partition_list_view = partition_list->GetList();
+  base::Value::ConstListView partition_list_view =
+      partition_list->GetListDeprecated();
   if (partition_list_view.empty()) {
     *error = errors::kInvalidWebviewPartitionsList;
     return false;
@@ -160,7 +161,7 @@ bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
     }
 
     // The URL list should have at least one entry.
-    base::Value::ConstListView url_list_view = url_list->GetList();
+    base::Value::ConstListView url_list_view = url_list->GetListDeprecated();
     if (url_list_view.empty()) {
       *error = errors::kInvalidWebviewAccessibleResourcesList;
       return false;

@@ -31,10 +31,10 @@ void PluralStringHandler::AddStringToPluralMap(const std::string& name,
 
 void PluralStringHandler::HandleGetPluralString(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(3U, args->GetList().size());
-  const std::string callback = args->GetList()[0].GetString();
-  const std::string name = args->GetList()[1].GetString();
-  const int count = args->GetList()[2].GetInt();
+  CHECK_EQ(3U, args->GetListDeprecated().size());
+  const std::string callback = args->GetListDeprecated()[0].GetString();
+  const std::string name = args->GetListDeprecated()[1].GetString();
+  const int count = args->GetListDeprecated()[2].GetInt();
   DCHECK(base::Contains(string_id_map_, name));
   const std::u16string localized_string =
       l10n_util::GetPluralStringFUTF16(string_id_map_.at(name), count);

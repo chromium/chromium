@@ -39,7 +39,7 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
   base::Value* override_disabled_feature_list =
       manifest.FindListPath(kManifestDisabledFeaturesPath);
   if (override_disabled_feature_list &&
-      !override_disabled_feature_list->GetList().empty()) {
+      !override_disabled_feature_list->GetListDeprecated().empty()) {
     ListPrefUpdate update(local_state, prefs::kOriginTrialDisabledFeatures);
     *update = std::move(*override_disabled_feature_list);
   } else {
@@ -48,7 +48,8 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
 
   base::Value* disabled_tokens_list =
       manifest.FindListPath(kManifestDisabledTokenSignaturesPath);
-  if (disabled_tokens_list && !disabled_tokens_list->GetList().empty()) {
+  if (disabled_tokens_list &&
+      !disabled_tokens_list->GetListDeprecated().empty()) {
     ListPrefUpdate update(local_state, prefs::kOriginTrialDisabledTokens);
     *update = std::move(*disabled_tokens_list);
   } else {

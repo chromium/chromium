@@ -82,8 +82,8 @@ double LayoutInstabilityTest::CheckTraceData(Value& expectations,
     }
     const Value* sources = expectation.FindListKey("sources");
     if (sources) {
-      CheckSources(sources->GetList(),
-                   data.FindListKey("impacted_nodes")->GetList());
+      CheckSources(sources->GetListDeprecated(),
+                   data.FindListKey("impacted_nodes")->GetListDeprecated());
     }
   }
 

@@ -79,7 +79,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 }
 
 void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
-  auto args_list = args->GetList();
+  auto args_list = args->GetListDeprecated();
   if (args_list.size() != 1 || !args_list[0].is_bool()) {
     NOTREACHED();
     return;
@@ -106,7 +106,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
 }
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  auto args_list = args->GetList();
+  auto args_list = args->GetListDeprecated();
   if (args_list.size() != 1 || !args_list[0].is_bool()) {
     NOTREACHED();
     return;

@@ -44,7 +44,7 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
 
   if (heuristic_overrides) {
     base::ListValue domains_for_extension;
-    for (const base::Value& entry : heuristic_overrides->GetList()) {
+    for (const base::Value& entry : heuristic_overrides->GetListDeprecated()) {
       const base::DictionaryValue& extension_domain_patterns_dict =
           base::Value::AsDictionaryValue(entry);
       const std::string* extension_for_this_entry =
@@ -54,7 +54,8 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
         const base::Value* domains_for_this_entry =
             extension_domain_patterns_dict.FindListKey(kDomainListKey);
         if (domains_for_this_entry) {
-          for (const base::Value& domain : domains_for_this_entry->GetList()) {
+          for (const base::Value& domain :
+               domains_for_this_entry->GetListDeprecated()) {
             domains_for_extension.Append(domain.Clone());
           }
         }

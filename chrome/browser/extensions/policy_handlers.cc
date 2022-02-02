@@ -115,7 +115,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
   }
 
   int index = -1;
-  for (const auto& entry : policy_value->GetList()) {
+  for (const auto& entry : policy_value->GetListDeprecated()) {
     ++index;
     if (!entry.is_string()) {
       if (errors) {
@@ -185,7 +185,7 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
 
   // Check that the list contains valid URLPattern strings only.
   int index = 0;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     if (!entry.is_string()) {
       errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::STRING));
@@ -291,7 +291,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     for (const char* key : host_keys) {
       const base::Value* unparsed_urls = sub_dict->FindListKey(key);
       if (unparsed_urls != nullptr) {
-        for (const auto& url_value : unparsed_urls->GetList()) {
+        for (const auto& url_value : unparsed_urls->GetListDeprecated()) {
           const std::string& unparsed_url = url_value.GetString();
           URLPattern pattern(extension_scheme_mask);
           URLPattern::ParseResult parse_result = pattern.Parse(unparsed_url);
@@ -332,7 +332,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     const base::Value* runtime_blocked_hosts =
         sub_dict->FindListKey(schema_constants::kPolicyBlockedHosts);
     if (runtime_blocked_hosts != nullptr &&
-        runtime_blocked_hosts->GetList().size() >
+        runtime_blocked_hosts->GetListDeprecated().size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
         errors->AddError(
@@ -346,7 +346,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     const base::Value* runtime_allowed_hosts =
         sub_dict->FindListKey(schema_constants::kPolicyAllowedHosts);
     if (runtime_allowed_hosts != nullptr &&
-        runtime_allowed_hosts->GetList().size() >
+        runtime_allowed_hosts->GetListDeprecated().size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
         errors->AddError(

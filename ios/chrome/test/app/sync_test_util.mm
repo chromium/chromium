@@ -141,7 +141,7 @@ int GetNumberOfSyncEntities(syncer::ModelType type) {
   if (!entities->GetList(model_type_string, &entity_list)) {
     return 0;
   }
-  return entity_list->GetList().size();
+  return entity_list->GetListDeprecated().size();
 }
 
 BOOL VerifyNumberOfSyncEntitiesWithName(syncer::ModelType type,

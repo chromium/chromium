@@ -40,7 +40,7 @@ bool IsOriginInList(const GURL& request_origin,
   // Though we are not technically a Content Setting, ContentSettingsPattern
   // aligns better than URLMatcher with the rules from:
   // https://chromeenterprise.google/policies/url-patterns/.
-  for (const auto& value : allowed_origins->GetList()) {
+  for (const auto& value : allowed_origins->GetListDeprecated()) {
     if (!value.is_string())
       continue;
     ContentSettingsPattern pattern =

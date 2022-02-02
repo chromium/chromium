@@ -75,14 +75,14 @@ TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
   auto* header_list = dict->FindKey("headers");
   ASSERT_TRUE(header_list);
   ASSERT_TRUE(header_list->is_list());
-  ASSERT_EQ(2u, header_list->GetList().size());
+  ASSERT_EQ(2u, header_list->GetListDeprecated().size());
 
-  ASSERT_TRUE(header_list->GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", header_list->GetList()[0].GetString());
+  ASSERT_TRUE(header_list->GetListDeprecated()[0].is_string());
+  EXPECT_EQ("foo: bar", header_list->GetListDeprecated()[0].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[1].is_string());
+  ASSERT_TRUE(header_list->GetListDeprecated()[1].is_string());
   EXPECT_EQ("cookie: [10 bytes were stripped]",
-            header_list->GetList()[1].GetString());
+            header_list->GetListDeprecated()[1].GetString());
 
   dict = base::Value::ToUniquePtrValue(Http2HeaderBlockNetLogParams(
       &headers, NetLogCaptureMode::kIncludeSensitive));
@@ -94,13 +94,14 @@ TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
   header_list = dict->FindKey("headers");
   ASSERT_TRUE(header_list);
   ASSERT_TRUE(header_list->is_list());
-  ASSERT_EQ(2u, header_list->GetList().size());
+  ASSERT_EQ(2u, header_list->GetListDeprecated().size());
 
-  ASSERT_TRUE(header_list->GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", header_list->GetList()[0].GetString());
+  ASSERT_TRUE(header_list->GetListDeprecated()[0].is_string());
+  EXPECT_EQ("foo: bar", header_list->GetListDeprecated()[0].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[1].is_string());
-  EXPECT_EQ("cookie: name=value", header_list->GetList()[1].GetString());
+  ASSERT_TRUE(header_list->GetListDeprecated()[1].is_string());
+  EXPECT_EQ("cookie: name=value",
+            header_list->GetListDeprecated()[1].GetString());
 }
 
 // Regression test for https://crbug.com/800282.

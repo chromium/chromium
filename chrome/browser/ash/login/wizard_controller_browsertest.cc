@@ -2958,7 +2958,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
   ASSERT_TRUE(network_list);
   ASSERT_TRUE(network_list->is_list());
 
-  const base::Value& network = network_list->GetList()[0];
+  const base::Value& network = network_list->GetListDeprecated()[0];
   ASSERT_TRUE(network.is_dict());
 
   const std::string* guid = network.FindStringKey("GUID");

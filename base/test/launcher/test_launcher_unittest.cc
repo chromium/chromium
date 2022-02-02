@@ -557,12 +557,12 @@ bool ValidateTestResultObject(const Value* iteration_data,
     ADD_FAILURE() << "Results not found";
     return false;
   }
-  if (1u != results->GetList().size()) {
+  if (1u != results->GetListDeprecated().size()) {
     ADD_FAILURE() << "Expected one result, actual: "
-                  << results->GetList().size();
+                  << results->GetListDeprecated().size();
     return false;
   }
-  const Value& val = results->GetList()[0];
+  const Value& val = results->GetListDeprecated()[0];
   if (!val.is_dict()) {
     ADD_FAILURE() << "Unexpected type";
     return false;
@@ -587,14 +587,15 @@ bool ValidateTestResultObject(const Value* iteration_data,
   result &= ValidateKeyValue(val, "status", test_result.StatusAsString());
 
   const Value* value = val.FindListKey("result_parts");
-  if (test_result.test_result_parts.size() != value->GetList().size()) {
+  if (test_result.test_result_parts.size() !=
+      value->GetListDeprecated().size()) {
     ADD_FAILURE() << "test_result_parts count is not valid";
     return false;
   }
 
   for (unsigned i = 0; i < test_result.test_result_parts.size(); i++) {
     TestResultPart result_part = test_result.test_result_parts.at(i);
-    const Value& part_dict = value->GetList()[i];
+    const Value& part_dict = value->GetListDeprecated()[i];
 
     result &= ValidateKeyValue(part_dict, "type", result_part.TypeAsString());
     result &= ValidateKeyValue(part_dict, "file", result_part.file_name);
@@ -616,15 +617,15 @@ bool ValidateStringList(const absl::optional<Value>& root,
     return false;
   }
 
-  if (values.size() != val->GetList().size()) {
+  if (values.size() != val->GetListDeprecated().size()) {
     ADD_FAILURE() << "expected size: " << values.size()
-                  << ", actual size:" << val->GetList().size();
+                  << ", actual size:" << val->GetListDeprecated().size();
     return false;
   }
 
   for (unsigned i = 0; i < values.size(); i++) {
-    if (!val->GetList()[i].is_string() &&
-        val->GetList()[i].GetString().compare(values.at(i))) {
+    if (!val->GetListDeprecated()[i].is_string() &&
+        val->GetListDeprecated()[i].GetString().compare(values.at(i))) {
       ADD_FAILURE() << "Expected list values do not match actual list";
       return false;
     }
@@ -685,9 +686,9 @@ TEST_F(TestLauncherTest, JsonSummary) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(2u, val->GetList().size());
-  for (size_t i = 0; i < val->GetList().size(); i++) {
-    const Value* iteration_val = &(val->GetList()[i]);
+  ASSERT_EQ(2u, val->GetListDeprecated().size());
+  for (size_t i = 0; i < val->GetListDeprecated().size(); i++) {
+    const Value* iteration_val = &(val->GetListDeprecated()[i]);
     ASSERT_TRUE(iteration_val);
     ASSERT_TRUE(iteration_val->is_dict());
     EXPECT_EQ(2u, iteration_val->DictSize());
@@ -728,9 +729,9 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetList().size());
+  ASSERT_EQ(1u, val->GetListDeprecated().size());
 
-  Value* iteration_val = &(val->GetList()[0]);
+  Value* iteration_val = &(val->GetListDeprecated()[0]);
   ASSERT_TRUE(iteration_val);
   ASSERT_TRUE(iteration_val->is_dict());
   EXPECT_EQ(1u, iteration_val->DictSize());
@@ -888,9 +889,9 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetList().size());
+  ASSERT_EQ(1u, val->GetListDeprecated().size());
 
-  Value* iteration_val = &(val->GetList()[0]);
+  Value* iteration_val = &(val->GetListDeprecated()[0]);
   ASSERT_TRUE(iteration_val);
   ASSERT_TRUE(iteration_val->is_dict());
   EXPECT_EQ(4u, iteration_val->DictSize());

@@ -80,9 +80,9 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
   base::ListValue* entity_list = nullptr;
   if (!entities->GetList(model_type_string, &entity_list)) {
     return UnknownTypeAssertionFailure(model_type_string);
-  } else if (expected_count != entity_list->GetList().size()) {
-    return VerificationCountAssertionFailure(entity_list->GetList().size(),
-                                             expected_count)
+  } else if (expected_count != entity_list->GetListDeprecated().size()) {
+    return VerificationCountAssertionFailure(
+               entity_list->GetListDeprecated().size(), expected_count)
            << "\n\n"
            << ConvertFakeServerContentsToString(*entities);
   }
@@ -105,7 +105,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
   size_t actual_count = 0;
   if (entities->GetList(model_type_string, &entity_list)) {
     base::Value name_value(name);
-    for (const base::Value& entity : entity_list->GetList()) {
+    for (const base::Value& entity : entity_list->GetListDeprecated()) {
       if (name_value == entity)
         actual_count++;
     }

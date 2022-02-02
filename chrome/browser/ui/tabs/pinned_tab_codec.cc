@@ -109,7 +109,7 @@ StartupTabs PinnedTabCodec::ReadPinnedTabs(const base::Value* value) {
   if (!value->is_list())
     return results;
 
-  for (const auto& serialized_tab : value->GetList()) {
+  for (const auto& serialized_tab : value->GetListDeprecated()) {
     if (!serialized_tab.is_dict())
       continue;
     absl::optional<StartupTab> tab = DecodeTab(serialized_tab);

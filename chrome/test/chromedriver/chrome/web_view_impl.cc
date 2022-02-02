@@ -289,11 +289,11 @@ Status WebViewImpl::GetUrl(std::string* url) {
   base::Value* entries = result.FindListKey("entries");
   if (!entries)
     return Status(kUnknownError, "navigation history missing entries");
-  if (static_cast<int>(entries->GetList().size()) <= *current_index ||
-      !entries->GetList()[*current_index].is_dict()) {
+  if (static_cast<int>(entries->GetListDeprecated().size()) <= *current_index ||
+      !entries->GetListDeprecated()[*current_index].is_dict()) {
     return Status(kUnknownError, "navigation history missing entry");
   }
-  base::Value& entry = entries->GetList()[*current_index];
+  base::Value& entry = entries->GetListDeprecated()[*current_index];
   if (!entry.FindStringKey("url"))
     return Status(kUnknownError, "navigation history entry is missing url");
   *url = *entry.FindStringKey("url");
@@ -390,15 +390,16 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   if (!entries)
     return Status(kUnknownError, "DevTools didn't return entries");
 
-  if (static_cast<int>(entries->GetList().size()) <= *current_index + delta ||
-      !entries->GetList()[*current_index + delta].is_dict()) {
+  if (static_cast<int>(entries->GetListDeprecated().size()) <=
+          *current_index + delta ||
+      !entries->GetListDeprecated()[*current_index + delta].is_dict()) {
     // The WebDriver spec says that if there are no pages left in the browser's
     // history (i.e. |current_index + delta| is out of range), then we must not
     // navigate anywhere.
     return Status(kOk);
   }
 
-  base::Value& entry = entries->GetList()[*current_index + delta];
+  base::Value& entry = entries->GetListDeprecated()[*current_index + delta];
   absl::optional<int> entry_id = entry.FindIntKey("id");
   if (!entry_id)
     return Status(kUnknownError, "history entry does not have an id");

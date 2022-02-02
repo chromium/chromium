@@ -72,7 +72,7 @@ class ConnectivityDiagnosticsMessageHandler
   // TODO(crbug/1220965): Remove conditional feedback button when WebUI feedback
   // is launched.
   void GetShowFeedbackButton(const base::ListValue* value) {
-    auto args = value->GetList();
+    auto args = value->GetListDeprecated();
     if (args.size() < 1 || !args[0].is_string())
       return;
 

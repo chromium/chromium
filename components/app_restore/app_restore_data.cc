@@ -133,12 +133,12 @@ absl::optional<std::vector<GURL>> GetUrlsFromDict(
 
   const base::Value* urls_path_value = dict.FindListKey(kUrlsKey);
   if (!urls_path_value || !urls_path_value->is_list() ||
-      urls_path_value->GetList().empty()) {
+      urls_path_value->GetListDeprecated().empty()) {
     return absl::nullopt;
   }
 
   std::vector<GURL> url_paths;
-  for (const auto& item : urls_path_value->GetList()) {
+  for (const auto& item : urls_path_value->GetListDeprecated()) {
     if (item.GetString().empty())
       continue;
     GURL url(item.GetString());
@@ -160,11 +160,11 @@ absl::optional<std::vector<base::FilePath>> GetFilePathsFromDict(
 
   const base::Value* file_paths_value = dict.FindListKey(kFilePathsKey);
   if (!file_paths_value || !file_paths_value->is_list() ||
-      file_paths_value->GetList().empty())
+      file_paths_value->GetListDeprecated().empty())
     return absl::nullopt;
 
   std::vector<base::FilePath> file_paths;
-  for (const auto& item : file_paths_value->GetList()) {
+  for (const auto& item : file_paths_value->GetListDeprecated()) {
     if (item.GetString().empty())
       continue;
     file_paths.push_back(base::FilePath(item.GetString()));
@@ -182,12 +182,12 @@ absl::optional<gfx::Size> GetSizeFromDict(const base::DictionaryValue& dict,
 
   const base::Value* size_value = dict.FindListKey(key_name);
   if (!size_value || !size_value->is_list() ||
-      size_value->GetList().size() != 2) {
+      size_value->GetListDeprecated().size() != 2) {
     return absl::nullopt;
   }
 
   std::vector<int> size;
-  for (const auto& item : size_value->GetList())
+  for (const auto& item : size_value->GetListDeprecated())
     size.push_back(item.GetInt());
 
   return gfx::Size(size[0], size[1]);
@@ -202,11 +202,12 @@ absl::optional<gfx::Rect> GetBoundsRectFromDict(
     return absl::nullopt;
 
   const base::Value* rect_value = dict.FindListKey(key_name);
-  if (!rect_value || !rect_value->is_list() || rect_value->GetList().empty())
+  if (!rect_value || !rect_value->is_list() ||
+      rect_value->GetListDeprecated().empty())
     return absl::nullopt;
 
   std::vector<int> rect;
-  for (const auto& item : rect_value->GetList())
+  for (const auto& item : rect_value->GetListDeprecated())
     rect.push_back(item.GetInt());
 
   if (rect.size() != 4)

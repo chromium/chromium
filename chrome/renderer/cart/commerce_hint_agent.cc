@@ -855,7 +855,7 @@ void CommerceHintAgent::OnProductsExtracted(
   bool is_partner = commerce_renderer_feature::IsPartnerMerchant(
       GURL(render_frame()->GetWebFrame()->GetDocument().Url()));
   std::vector<mojom::ProductPtr> products;
-  for (const auto& product : extracted_products->GetList()) {
+  for (const auto& product : extracted_products->GetListDeprecated()) {
     if (!product.is_dict())
       continue;
     const auto* image_url = product.FindKey("imageUrl");

@@ -57,27 +57,27 @@ void ScanningMetricsHandler::HandleRecordNumScanSettingChanges(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   base::UmaHistogramCounts100("Scanning.NumScanSettingChanges",
-                              args->GetList()[0].GetInt());
+                              args->GetListDeprecated()[0].GetInt());
 }
 
 void ScanningMetricsHandler::HandleRecordScanCompleteAction(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  base::UmaHistogramEnumeration(
-      "Scanning.ScanCompleteAction",
-      static_cast<scanning::ScanCompleteAction>(args->GetList()[0].GetInt()));
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  base::UmaHistogramEnumeration("Scanning.ScanCompleteAction",
+                                static_cast<scanning::ScanCompleteAction>(
+                                    args->GetListDeprecated()[0].GetInt()));
 }
 
 void ScanningMetricsHandler::HandleRecordScanJobSettings(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& scan_job_settings = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& scan_job_settings = args->GetListDeprecated()[0];
   CHECK(scan_job_settings.is_dict());
 
   base::UmaHistogramEnumeration(
@@ -109,9 +109,9 @@ void ScanningMetricsHandler::HandleRecordNumCompletedScans(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   base::UmaHistogramCounts100("Scanning.NumCompletedScansInSession",
-                              args->GetList()[0].GetInt());
+                              args->GetListDeprecated()[0].GetInt());
 }
 
 }  // namespace ash

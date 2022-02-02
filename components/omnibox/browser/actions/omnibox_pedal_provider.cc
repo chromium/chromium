@@ -293,7 +293,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     tokenize_characters_ = u" -";
   }
 
-  const auto& dictionary = concept_data->FindKey("dictionary")->GetList();
+  const auto& dictionary =
+      concept_data->FindKey("dictionary")->GetListDeprecated();
   dictionary_.reserve(dictionary.size());
   int token_id = 0;
   for (const auto& token_value : dictionary) {
@@ -324,7 +325,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     ignore_group_ = LoadSynonymGroupValue(*ignore_group_value);
   }
 
-  for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
+  for (const auto& pedal_value :
+       concept_data->FindKey("pedals")->GetListDeprecated()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
     if (!locale_is_english) {
@@ -373,7 +375,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     // back to loading from JSON to robustly handle partial presence of data.
     if (specs.empty() ||
         !OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
-      for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
+      for (const auto& group_value :
+           pedal_value.FindKey("groups")->GetListDeprecated()) {
         // Note, group JSON values are preprocessed by the data generation tool.
         pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));
       }
@@ -403,7 +406,7 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupValue(
   DCHECK(group_value.is_dict());
   const bool required = group_value.FindKey("required")->GetBool();
   const bool single = group_value.FindKey("single")->GetBool();
-  const auto& synonyms = group_value.FindKey("synonyms")->GetList();
+  const auto& synonyms = group_value.FindKey("synonyms")->GetListDeprecated();
   OmniboxPedal::SynonymGroup synonym_group(required, single, synonyms.size());
   for (const auto& synonyms_value : synonyms) {
     DCHECK(synonyms_value.is_list());

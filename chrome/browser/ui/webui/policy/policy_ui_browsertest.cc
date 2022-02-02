@@ -321,7 +321,7 @@ void PolicyUITest::VerifyPolicies(
   absl::optional<base::Value> value_ptr = base::JSONReader::Read(json);
   ASSERT_TRUE(value_ptr);
   ASSERT_TRUE(value_ptr->is_list());
-  base::Value::ConstListView actual_policies = value_ptr->GetList();
+  base::Value::ConstListView actual_policies = value_ptr->GetListDeprecated();
 
   // Verify that the cells contain the expected strings for all policies.
   ASSERT_EQ(expected_policies.size(), actual_policies.size());

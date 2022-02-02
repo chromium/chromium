@@ -176,7 +176,7 @@ class AsyncFunctionRunner {
         << "Unexpected error: " << function->GetError();
     EXPECT_NE(nullptr, function->GetResultList());
 
-    const auto& result_list = function->GetResultList()->GetList();
+    const auto& result_list = function->GetResultList()->GetListDeprecated();
     EXPECT_EQ(2ul, result_list.size());
 
     *first_result = result_list[0].Clone();
@@ -633,7 +633,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     if (!callback_arguments)
       return GenerateFailureResult(gaia_ids, absl::nullopt) << "NULL result";
     base::Value::ConstListView callback_arguments_list =
-        callback_arguments->GetList();
+        callback_arguments->GetListDeprecated();
 
     if (callback_arguments_list.size() != 1u) {
       return GenerateFailureResult(gaia_ids, absl::nullopt)
@@ -998,7 +998,7 @@ class GetAuthTokenFunctionTest
         << "Unexpected error: " << function->GetError();
     EXPECT_NE(nullptr, function->GetResultList());
 
-    const auto& result_list = function->GetResultList()->GetList();
+    const auto& result_list = function->GetResultList()->GetListDeprecated();
     EXPECT_EQ(2ul, result_list.size());
 
     const auto& access_token_value = result_list[0];

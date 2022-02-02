@@ -235,10 +235,10 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
       watcher->FindListKey(kPrefKeyWatcherPersistentOrigins);
   ASSERT_TRUE(persistent_origins);
   ASSERT_GT(fake_watcher_.subscribers.size(),
-            persistent_origins->GetList().size());
-  ASSERT_EQ(1u, persistent_origins->GetList().size());
+            persistent_origins->GetListDeprecated().size());
+  ASSERT_EQ(1u, persistent_origins->GetListDeprecated().size());
   const std::string* persistent_origin =
-      persistent_origins->GetList()[0].GetIfString();
+      persistent_origins->GetListDeprecated()[0].GetIfString();
   ASSERT_TRUE(persistent_origin);
   const auto& fake_subscriber_it =
       fake_watcher_.subscribers.find(GURL(*persistent_origin));

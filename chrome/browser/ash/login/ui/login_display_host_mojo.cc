@@ -94,7 +94,7 @@ bool AllAllowlistedUsersPresent() {
   const base::ListValue* allowlist = nullptr;
   if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist)
     return false;
-  for (const base::Value& i : allowlist->GetList()) {
+  for (const base::Value& i : allowlist->GetListDeprecated()) {
     const std::string* allowlisted_user = i.GetIfString();
     // NB: Wildcards in the allowlist are also detected as not present here.
     if (!allowlisted_user || !user_manager->IsKnownUser(

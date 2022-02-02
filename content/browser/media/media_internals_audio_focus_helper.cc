@@ -195,7 +195,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
   DCHECK(sessions_list);
 
   bool updated = false;
-  for (auto& session : sessions_list->GetList()) {
+  for (auto& session : sessions_list->GetListDeprecated()) {
     if (session.FindKey(kAudioFocusIdKey)->GetString() != id)
       continue;
 

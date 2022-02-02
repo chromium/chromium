@@ -460,7 +460,7 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       continue;
     }
     if (it.second.value() && it.second.value()->is_list()) {
-      for (const auto& app : it.second.value()->GetList()) {
+      for (const auto& app : it.second.value()->GetListDeprecated()) {
         const base::DictionaryValue* dict = nullptr;
         if (app.GetAsDictionary(&dict)) {
           const base::Value* const icon = dict->FindKey(kCustomIconKey);

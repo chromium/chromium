@@ -283,7 +283,7 @@ Status ParseWebViewsInfo(const std::string& data, WebViewsInfo* views_info) {
     return Status(kUnknownError, "DevTools did not return list");
 
   std::vector<WebViewInfo> temp_views_info;
-  for (const base::Value& info_value : value->GetList()) {
+  for (const base::Value& info_value : value->GetListDeprecated()) {
     if (!info_value.is_dict())
       return Status(kUnknownError, "DevTools contains non-dictionary item");
     const base::DictionaryValue& info =

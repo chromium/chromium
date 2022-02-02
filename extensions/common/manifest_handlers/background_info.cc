@@ -187,7 +187,7 @@ bool BackgroundInfo::LoadBackgroundScripts(const Extension* extension,
   }
 
   base::Value::ConstListView background_scripts =
-      background_scripts_value->GetList();
+      background_scripts_value->GetListDeprecated();
   for (size_t i = 0; i < background_scripts.size(); ++i) {
     if (!background_scripts[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

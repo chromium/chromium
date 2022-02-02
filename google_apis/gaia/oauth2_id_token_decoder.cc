@@ -71,7 +71,7 @@ bool GetServiceFlags(const std::string id_token,
     VLOG(1) << "Missing service flags in the id_token";
     return false;
   }
-  for (const auto& flag_value : service_flags_value_raw->GetList()) {
+  for (const auto& flag_value : service_flags_value_raw->GetListDeprecated()) {
     const std::string& flag = flag_value.GetString();
     if (flag.size())
       out_service_flags->push_back(flag);

@@ -1448,7 +1448,7 @@ bool LoadEvents(const base::Value* value,
   if (!value || !value->is_list())
     return false;
   int64_t previous_timestamp = 0;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     if (!entry.is_list() || entry.GetList().size() < 2)
       return false;
     if (!entry.GetList()[0].is_int())
@@ -1507,7 +1507,7 @@ bool LoadEventsContainer(const base::Value* value,
   if (!buffer_entries)
     return false;
 
-  for (const auto& buffer_entry : buffer_entries->GetList()) {
+  for (const auto& buffer_entry : buffer_entries->GetListDeprecated()) {
     BufferEvents events;
     if (!LoadEvents(&buffer_entry, &events))
       return false;
@@ -1893,12 +1893,12 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::DictionaryValue& root) {
 
   const base::Value* view_list =
       root.FindKeyOfType(kKeyViews, base::Value::Type::LIST);
-  if (!view_list || view_list->GetList().empty()) {
+  if (!view_list || view_list->GetListDeprecated().empty()) {
     // Views are optional for overview tracing.
     if (!skip_structure_validation_)
       return false;
   } else {
-    for (const auto& view_entry : view_list->GetList()) {
+    for (const auto& view_entry : view_list->GetListDeprecated()) {
       if (!view_entry.is_dict())
         return false;
       const base::Value* activity =

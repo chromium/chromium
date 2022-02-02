@@ -148,7 +148,7 @@ DeserializeInterestGroupAdVector(const std::string& serialized_ads) {
   if (!ads_value || !ads_value->is_list())
     return absl::nullopt;
   std::vector<blink::InterestGroup::Ad> result;
-  for (const auto& ad_value : ads_value->GetList()) {
+  for (const auto& ad_value : ads_value->GetListDeprecated()) {
     result.emplace_back(FromInterestGroupAdValue(&ad_value));
   }
   return result;
@@ -168,7 +168,7 @@ absl::optional<std::vector<std::string>> DeserializeStringVector(
   if (!list || !list->is_list())
     return absl::nullopt;
   std::vector<std::string> result;
-  for (const auto& value : list->GetList())
+  for (const auto& value : list->GetListDeprecated())
     result.push_back(value.GetString());
   return result;
 }

@@ -14,7 +14,7 @@ TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligible) {
   std::unique_ptr<base::ListValue> current_default_images =
       default_user_image::GetCurrentImageSetAsListValue();
 
-  for (auto& image_data : current_default_images.get()->GetList()) {
+  for (auto& image_data : current_default_images.get()->GetListDeprecated()) {
     const auto index = image_data.FindIntPath("index");
     EXPECT_TRUE(index.has_value());
     EXPECT_TRUE(IsValidIndex(index.value()));

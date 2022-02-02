@@ -123,10 +123,10 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(2u, pairings_->GetList().size());
-  const base::Value& actual_pairing_1_value = pairings_->GetList()[0];
+  ASSERT_EQ(2u, pairings_->GetListDeprecated().size());
+  const base::Value& actual_pairing_1_value = pairings_->GetListDeprecated()[0];
   ASSERT_TRUE(actual_pairing_1_value.is_dict());
-  const base::Value& actual_pairing_2_value = pairings_->GetList()[1];
+  const base::Value& actual_pairing_2_value = pairings_->GetListDeprecated()[1];
   ASSERT_TRUE(actual_pairing_2_value.is_dict());
   const base::DictionaryValue* actual_pairing_1 =
       &base::Value::AsDictionaryValue(actual_pairing_1_value);
@@ -160,8 +160,8 @@ TEST_F(PairingRegistryTest, DeletePairing) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(1u, pairings_->GetList().size());
-  const base::Value& actual_pairing_2_value = pairings_->GetList()[0];
+  ASSERT_EQ(1u, pairings_->GetListDeprecated().size());
+  const base::Value& actual_pairing_2_value = pairings_->GetListDeprecated()[0];
   ASSERT_TRUE(actual_pairing_2_value.is_dict());
   const base::DictionaryValue& actual_pairing_2 =
       base::Value::AsDictionaryValue(actual_pairing_2_value);
@@ -184,7 +184,7 @@ TEST_F(PairingRegistryTest, ClearAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  EXPECT_TRUE(pairings_->GetList().empty());
+  EXPECT_TRUE(pairings_->GetListDeprecated().empty());
 }
 
 ACTION_P(QuitMessageLoop, callback) {
@@ -196,7 +196,7 @@ MATCHER_P(EqualsClientName, client_name, "") {
 }
 
 MATCHER(NoPairings, "") {
-  return arg->GetList().empty();
+  return arg->GetListDeprecated().empty();
 }
 
 TEST_F(PairingRegistryTest, SerializedRequests) {

@@ -49,7 +49,7 @@ bool HasWebTrustFlag(const base::Value& onc_certificate) {
   if (!trust_list)
     return false;
 
-  for (const base::Value& trust_entry : trust_list->GetList()) {
+  for (const base::Value& trust_entry : trust_list->GetListDeprecated()) {
     DCHECK(trust_entry.is_string());
 
     if (trust_entry.GetString() == ::onc::certificate::kWeb) {

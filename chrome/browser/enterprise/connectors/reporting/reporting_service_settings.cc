@@ -57,7 +57,7 @@ ReportingServiceSettings::ReportingServiceSettings(
       settings_value.FindListKey(kKeyEnabledEventNames);
   if (enabled_event_name_list_value) {
     for (const base::Value& enabled_event_name_value :
-         enabled_event_name_list_value->GetList()) {
+         enabled_event_name_list_value->GetListDeprecated()) {
       if (enabled_event_name_value.is_string())
         enabled_event_names_.insert(enabled_event_name_value.GetString());
       else

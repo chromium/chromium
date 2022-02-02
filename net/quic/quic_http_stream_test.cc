@@ -138,7 +138,7 @@ bool CheckHeader(const base::Value& params,
   std::string header_prefix = base::StrCat({key, ": "});
   std::string expected_header = base::StrCat({header_prefix, expected_value});
 
-  auto header_list = headers->GetList();
+  auto header_list = headers->GetListDeprecated();
   auto header_it = header_list.begin();
   bool header_found = false;
   while (header_it != header_list.end()) {

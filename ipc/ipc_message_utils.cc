@@ -135,8 +135,8 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
     }
     case base::Value::Type::LIST: {
       const base::ListValue* list = static_cast<const base::ListValue*>(value);
-      WriteParam(m, base::checked_cast<int>(list->GetList().size()));
-      for (const auto& entry : list->GetList()) {
+      WriteParam(m, base::checked_cast<int>(list->GetListDeprecated().size()));
+      for (const auto& entry : list->GetListDeprecated()) {
         WriteValue(m, &entry, recursion + 1);
       }
       break;

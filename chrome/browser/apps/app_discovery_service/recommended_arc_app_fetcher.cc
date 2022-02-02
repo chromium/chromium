@@ -37,7 +37,7 @@ void RecommendedArcAppFetcher::OnLoadSuccess(const base::Value& app_list) {
     return;
   }
 
-  base::Value::ConstListView apps = app_value->GetList();
+  base::Value::ConstListView apps = app_value->GetListDeprecated();
   if (apps.empty()) {
     std::move(callback_).Run({});
     return;

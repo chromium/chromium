@@ -113,7 +113,8 @@ std::string RunFunctionAndReturnError(
   // is no specified result.
   const base::ListValue* results = function->GetResultList();
   CHECK(results);
-  EXPECT_TRUE(results->GetList().empty()) << "Did not expect a result";
+  EXPECT_TRUE(results->GetListDeprecated().empty())
+      << "Did not expect a result";
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();
@@ -138,9 +139,9 @@ std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
       << function->GetError();
   if (function->GetResultList() &&
-      !function->GetResultList()->GetList().empty()) {
+      !function->GetResultList()->GetListDeprecated().empty()) {
     return base::Value::ToUniquePtrValue(
-        function->GetResultList()->GetList()[0].Clone());
+        function->GetResultList()->GetListDeprecated()[0].Clone());
   }
   return nullptr;
 }

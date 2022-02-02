@@ -55,7 +55,7 @@ base::Value CreateOrCloneListValue(const base::Value* list) {
 bool ListContains(const base::Value* list, const std::string& value) {
   if (!list)
     return false;
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
   return std::find(list_view.begin(), list_view.end(), base::Value(value)) !=
          list_view.end();
 }

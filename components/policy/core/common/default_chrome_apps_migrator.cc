@@ -48,7 +48,7 @@ void DefaultChromeAppsMigrator::Migrate(PolicyMap* policies) const {
   // ExtensionInstallForcelist value. Add the Chrome app ids that need to be
   // blocked to 'chrome_app_ids'. Add the URLs of Web Apps that need to be
   // installed to `web_app_urls`.
-  for (const auto& list_entry : forcelist_value->GetList()) {
+  for (const auto& list_entry : forcelist_value->GetListDeprecated()) {
     if (!list_entry.is_string()) {
       new_forcelist_value.Append(list_entry.Clone());
       continue;

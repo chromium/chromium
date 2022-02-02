@@ -193,7 +193,7 @@ void WebRtcLogsDOMHandler::RegisterMessages() {
 
 void WebRtcLogsDOMHandler::HandleRequestWebRtcLogs(
     const base::ListValue* args) {
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
   AllowJavascript();
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   LoadWebRtcTextLogs(callback_id);

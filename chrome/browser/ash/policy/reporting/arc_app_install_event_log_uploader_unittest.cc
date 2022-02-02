@@ -501,7 +501,7 @@ TEST_F(ArcAppInstallEventLogUploaderTest, DuplicateEvents) {
   EXPECT_EQ(2u,
             value_report_
                 .FindListKey(RealtimeReportingJobConfiguration::kEventListKey)
-                ->GetList()
+                ->GetListDeprecated()
                 .size());
 }
 

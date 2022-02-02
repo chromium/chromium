@@ -71,7 +71,7 @@ void FlagsUIHandler::Init(flags_ui::FlagsStorage* flags_storage,
 void FlagsUIHandler::HandleRequestExperimentalFeatures(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   experimental_features_callback_id_ = callback_id.GetString();
   // Bail out if the handler hasn't been initialized yet. The request will be
@@ -134,16 +134,18 @@ void FlagsUIHandler::SendExperimentalFeatures() {
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetList().size());
-  if (args->GetList().size() != 2)
+  DCHECK_EQ(2u, args->GetListDeprecated().size());
+  if (args->GetListDeprecated().size() != 2)
     return;
 
-  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string()) {
+  if (!args->GetListDeprecated()[0].is_string() ||
+      !args->GetListDeprecated()[1].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& entry_internal_name = args->GetList()[0].GetString();
-  const std::string& enable_str = args->GetList()[1].GetString();
+  const std::string& entry_internal_name =
+      args->GetListDeprecated()[0].GetString();
+  const std::string& enable_str = args->GetListDeprecated()[1].GetString();
   if (entry_internal_name.empty()) {
     NOTREACHED();
     return;
@@ -156,17 +158,19 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
 void FlagsUIHandler::HandleSetOriginListFlagMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  if (args->GetList().size() != 2) {
+  if (args->GetListDeprecated().size() != 2) {
     NOTREACHED();
     return;
   }
 
-  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string()) {
+  if (!args->GetListDeprecated()[0].is_string() ||
+      !args->GetListDeprecated()[1].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& entry_internal_name = args->GetList()[0].GetString();
-  const std::string& value_str = args->GetList()[1].GetString();
+  const std::string& entry_internal_name =
+      args->GetListDeprecated()[0].GetString();
+  const std::string& value_str = args->GetListDeprecated()[1].GetString();
   if (entry_internal_name.empty()) {
     NOTREACHED();
     return;

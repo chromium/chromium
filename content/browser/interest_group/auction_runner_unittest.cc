@@ -1590,7 +1590,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
           breakpoint_hit.value.FindListPath("params.hitBreakpoints");
       ASSERT_TRUE(hit_breakpoints);
       base::Value::ConstListView hit_breakpoints_list =
-          hit_breakpoints->GetList();
+          hit_breakpoints->GetListDeprecated();
       ASSERT_EQ(1u, hit_breakpoints_list.size());
       ASSERT_TRUE(hit_breakpoints_list[0].is_string());
       EXPECT_EQ(base::StringPrintf("1:5:0:%s", debug_url.spec().c_str()),

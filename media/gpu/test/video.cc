@@ -488,7 +488,7 @@ bool Video::LoadMetadata() {
   const base::Value* md5_checksums =
       metadata->FindKeyOfType("md5_checksums", base::Value::Type::LIST);
   if (md5_checksums) {
-    for (const base::Value& checksum : md5_checksums->GetList()) {
+    for (const base::Value& checksum : md5_checksums->GetListDeprecated()) {
       frame_checksums_.push_back(checksum.GetString());
     }
   }

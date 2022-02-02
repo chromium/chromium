@@ -69,7 +69,7 @@ void AssertOnDemandRequest(bool on_demand, std::string post_data) {
   ASSERT_TRUE(root);
   const auto* request = root->FindKey("request");
   ASSERT_TRUE(request);
-  const auto& app = request->FindKey("app")->GetList()[0];
+  const auto& app = request->FindKey("app")->GetListDeprecated()[0];
   if (on_demand) {
     EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
   } else {

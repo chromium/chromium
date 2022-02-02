@@ -2084,7 +2084,7 @@ bool LegacyDeviceStatusCollector::ShouldFetchCrosHealthdData() const {
 void LegacyDeviceStatusCollector::ReportingUsersChanged() {
   std::vector<std::string> reporting_users;
   for (auto& value :
-       pref_service_->GetList(prefs::kReportingUsers)->GetList()) {
+       pref_service_->GetList(prefs::kReportingUsers)->GetListDeprecated()) {
     if (value.is_string())
       reporting_users.push_back(value.GetString());
   }

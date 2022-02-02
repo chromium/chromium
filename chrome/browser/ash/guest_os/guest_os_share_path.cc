@@ -141,15 +141,15 @@ void RemovePersistedPathFromPrefs(base::Value* shared_paths,
                  << " for VM " << vm_name;
     return;
   }
-  auto it = std::find(found->GetList().begin(), found->GetList().end(),
-                      base::Value(vm_name));
+  auto it = std::find(found->GetListDeprecated().begin(),
+                      found->GetListDeprecated().end(), base::Value(vm_name));
   if (!found->EraseListIter(it)) {
     LOG(WARNING) << "VM not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;
     return;
   }
   // If VM list is now empty, remove |path| from |shared_paths|.
-  if (found->GetList().empty()) {
+  if (found->GetListDeprecated().empty()) {
     shared_paths->RemoveKey(path.value());
   }
 }

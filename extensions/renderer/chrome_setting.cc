@@ -28,7 +28,8 @@ v8::Local<v8::Object> ChromeSetting::Create(
     APIEventHandler* event_handler,
     APITypeReferenceMap* type_refs,
     const BindingAccessChecker* access_checker) {
-  base::Value::ConstListView property_values_list = property_values->GetList();
+  base::Value::ConstListView property_values_list =
+      property_values->GetListDeprecated();
   CHECK_GE(property_values_list.size(), 2u);
   std::string pref_name = property_values_list[0u].GetString();
   const base::Value& value_spec = property_values_list[1u];
@@ -178,7 +179,8 @@ void ChromeSetting::HandleFunction(const std::string& method_name,
   }
 
   parse_result.arguments_list->Insert(
-      parse_result.arguments_list->GetList().begin(), base::Value(pref_name_));
+      parse_result.arguments_list->GetListDeprecated().begin(),
+      base::Value(pref_name_));
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, full_name, std::move(parse_result.arguments_list),

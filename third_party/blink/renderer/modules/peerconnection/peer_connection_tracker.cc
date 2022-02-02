@@ -463,7 +463,7 @@ class InternalLegacyStatsObserver : public webrtc::StatsObserver {
         list->Append(std::move(report).value());
     }
 
-    if (!list->GetList().empty()) {
+    if (!list->GetListDeprecated().empty()) {
       PostCrossThreadTask(
           *main_thread_.get(), FROM_HERE,
           CrossThreadBindOnce(&InternalLegacyStatsObserver::OnCompleteImpl,
@@ -487,7 +487,7 @@ class InternalLegacyStatsObserver : public webrtc::StatsObserver {
       std::unique_ptr<base::ListValue> list,
       int lid,
       CrossThreadOnceFunction<void(int, base::Value)> completion_callback) {
-    DCHECK(!list->GetList().empty());
+    DCHECK(!list->GetListDeprecated().empty());
     std::move(completion_callback).Run(lid, std::move(*list.get()));
   }
 

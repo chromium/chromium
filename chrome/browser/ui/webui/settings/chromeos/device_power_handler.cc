@@ -217,7 +217,7 @@ void PowerHandler::HandleUpdatePowerStatus(const base::ListValue* args) {
 void PowerHandler::HandleSetPowerSource(const base::ListValue* args) {
   AllowJavascript();
 
-  const std::string& id = args->GetList()[0].GetString();
+  const std::string& id = args->GetListDeprecated()[0].GetString();
   chromeos::PowerManagerClient::Get()->SetPowerSource(id);
 }
 
@@ -230,7 +230,7 @@ void PowerHandler::HandleRequestPowerManagementSettings(
 void PowerHandler::HandleSetIdleBehavior(const base::ListValue* args) {
   AllowJavascript();
 
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 2u);
   int value = list[0].GetInt();
   bool when_on_ac = list[1].GetBool();
@@ -280,7 +280,7 @@ void PowerHandler::HandleSetIdleBehavior(const base::ListValue* args) {
 void PowerHandler::HandleSetLidClosedBehavior(const base::ListValue* args) {
   AllowJavascript();
 
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 1u);
   int value = list[0].GetInt();
   switch (static_cast<PowerPolicyController::Action>(value)) {

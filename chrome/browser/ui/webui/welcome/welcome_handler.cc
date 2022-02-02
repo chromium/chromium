@@ -65,8 +65,8 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
     GoToNewTabPage();
   } else {
     GURL redirect_url = GURL::EmptyGURL();
-    if (args->GetList().size() == 1U) {
-      const std::string& url_string = args->GetList()[0].GetString();
+    if (args->GetListDeprecated().size() == 1U) {
+      const std::string& url_string = args->GetListDeprecated()[0].GetString();
       redirect_url = GURL(url_string);
       DCHECK(redirect_url.is_valid());
     }

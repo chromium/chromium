@@ -75,7 +75,7 @@ void ImeRulesConfig::InitFromTrialParams() {
     auto* ac_domains_items =
         ac_domain_denylist->FindListKey(kConfigRuleItemsKey);
     if (ac_domains_items != nullptr) {
-      for (const auto& domain : ac_domains_items->GetList()) {
+      for (const auto& domain : ac_domains_items->GetListDeprecated()) {
         if (domain.is_string()) {
           auto_correct_domain_denylist_.push_back(*domain.GetIfString());
         }

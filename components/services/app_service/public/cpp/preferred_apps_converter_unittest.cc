@@ -33,20 +33,21 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
   auto* converted_preferred_apps =
       converted_value.FindKey(apps::kPreferredAppsKey);
   // Check that each entry is correct.
-  ASSERT_EQ(1u, converted_preferred_apps->GetList().size());
-  auto& entry = converted_preferred_apps->GetList()[0];
+  ASSERT_EQ(1u, converted_preferred_apps->GetListDeprecated().size());
+  auto& entry = converted_preferred_apps->GetListDeprecated()[0];
   EXPECT_EQ(kAppId1, *entry.FindStringKey(apps::kAppIdKey));
 
   auto* converted_intent_filter = entry.FindKey(apps::kIntentFilterKey);
   ASSERT_EQ(intent_filter->conditions.size(),
-            converted_intent_filter->GetList().size());
+            converted_intent_filter->GetListDeprecated().size());
 
   for (size_t i = 0; i < intent_filter->conditions.size(); i++) {
     auto& condition = intent_filter->conditions[i];
-    auto& converted_condition = converted_intent_filter->GetList()[i];
+    auto& converted_condition = converted_intent_filter->GetListDeprecated()[i];
     auto& condition_values = condition->condition_values;
     auto converted_condition_values =
-        converted_condition.FindKey(apps::kConditionValuesKey)->GetList();
+        converted_condition.FindKey(apps::kConditionValuesKey)
+            ->GetListDeprecated();
 
     EXPECT_EQ(static_cast<int>(condition->condition_type),
               converted_condition.FindIntKey(apps::kConditionTypeKey));

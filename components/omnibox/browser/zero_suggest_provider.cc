@@ -417,10 +417,11 @@ bool ZeroSuggestProvider::UpdateResults(const std::string& json_data) {
     // If we received an empty result list, we should update the display, as it
     // may be showing cached results that should not be shown.
     //
-    // `data->GetList()[1]` is the results list.
+    // `data->GetListDeprecated()[1]` is the results list.
     const bool non_empty_parsed_list =
-        data->is_list() && data->GetList().size() >= 2u &&
-        data->GetList()[1].is_list() && !data->GetList()[1].GetList().empty();
+        data->is_list() && data->GetListDeprecated().size() >= 2u &&
+        data->GetListDeprecated()[1].is_list() &&
+        !data->GetListDeprecated()[1].GetList().empty();
     const bool non_empty_cache = !results_.suggest_results.empty() ||
                                  !results_.navigation_results.empty();
     if (non_empty_parsed_list && non_empty_cache)

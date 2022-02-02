@@ -119,7 +119,7 @@ bool ListPolicyHandler::CheckAndGetList(const policy::PolicyMap& policies,
     return true;
 
   // Filter the list, rejecting any invalid strings.
-  base::Value::ConstListView list = value->GetList();
+  base::Value::ConstListView list = value->GetListDeprecated();
   if (filtered_list)
     *filtered_list = base::Value(base::Value::Type::LIST);
   for (size_t list_index = 0; list_index < list.size(); ++list_index) {
@@ -251,7 +251,7 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
   }
 
   int index = -1;
-  for (const auto& entry : input->GetList()) {
+  for (const auto& entry : input->GetListDeprecated()) {
     ++index;
     if (!entry.is_string()) {
       if (errors) {
@@ -536,7 +536,7 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckListOfJsonStrings(
 
   // If that succeeds, validate all the list items are strings and validate
   // the JSON inside the strings.
-  base::Value::ConstListView list = root_value->GetList();
+  base::Value::ConstListView list = root_value->GetListDeprecated();
   bool json_error_seen = false;
 
   for (size_t index = 0; index < list.size(); ++index) {

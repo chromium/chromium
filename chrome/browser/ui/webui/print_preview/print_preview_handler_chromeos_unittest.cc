@@ -233,7 +233,7 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   auto* call_data = web_ui()->call_data().back().get();
   AssertWebUIEventFired(*call_data, "print-servers-config-changed");
   base::Value::ConstListView printer_list =
-      call_data->arg2()->FindListKey("printServers")->GetList();
+      call_data->arg2()->FindListKey("printServers")->GetListDeprecated();
   bool is_single_server_fetching_mode =
       call_data->arg2()->FindBoolKey("isSingleServerFetchingMode").value();
 

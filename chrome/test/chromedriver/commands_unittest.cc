@@ -512,7 +512,7 @@ TEST(CommandsTest, FailedFindElements) {
                                      &result, nullptr)
                      .code());
   ASSERT_TRUE(result->is_list());
-  ASSERT_EQ(0U, result->GetList().size());
+  ASSERT_EQ(0U, result->GetListDeprecated().size());
 }
 
 TEST(CommandsTest, SuccessfulFindChildElement) {
@@ -590,7 +590,7 @@ TEST(CommandsTest, FailedFindChildElements) {
                      base::Value::AsDictionaryValue(params), &result)
                      .code());
   ASSERT_TRUE(result->is_list());
-  ASSERT_EQ(0U, result->GetList().size());
+  ASSERT_EQ(0U, result->GetListDeprecated().size());
 }
 
 TEST(CommandsTest, TimeoutInFindElement) {

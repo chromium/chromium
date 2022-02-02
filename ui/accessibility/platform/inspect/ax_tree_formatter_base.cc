@@ -125,8 +125,8 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
     return;
 
   const base::Value* children = dict.FindListPath(kChildrenDictAttr);
-  if (children && !children->GetList().empty()) {
-    for (const auto& child_dict : children->GetList()) {
+  if (children && !children->GetListDeprecated().empty()) {
+    for (const auto& child_dict : children->GetListDeprecated()) {
       RecursiveFormatTree(child_dict, contents, depth + 1);
     }
   }

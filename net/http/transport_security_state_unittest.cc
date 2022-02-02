@@ -254,10 +254,11 @@ void CompareCertificateChainWithList(
   ASSERT_TRUE(cert_list->is_list());
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
-  ASSERT_EQ(pem_encoded_chain.size(), cert_list->GetList().size());
+  ASSERT_EQ(pem_encoded_chain.size(), cert_list->GetListDeprecated().size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
-    const std::string& list_cert = cert_list->GetList()[i].GetString();
+    const std::string& list_cert =
+        cert_list->GetListDeprecated()[i].GetString();
     EXPECT_EQ(pem_encoded_chain[i], list_cert);
   }
 }

@@ -247,7 +247,7 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   // the kStaticIPConfigProperty object will be empty except for DNS addresses.
   if (const auto* dns_list =
           shill_ipconfig->FindListKey(shill::kNameServersProperty)) {
-    for (const auto& dns_value : dns_list->GetList()) {
+    for (const auto& dns_value : dns_list->GetListDeprecated()) {
       const std::string& dns = dns_value.GetString();
       if (dns.empty())
         continue;
@@ -264,7 +264,7 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   if (const auto* domains =
           shill_ipconfig->FindKey(shill::kSearchDomainsProperty)) {
     if (domains->is_list()) {
-      for (const auto& domain : domains->GetList())
+      for (const auto& domain : domains->GetListDeprecated())
         network->host_search_domains->push_back(domain.GetString());
     }
   }

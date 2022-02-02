@@ -1073,7 +1073,7 @@ bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
                                  const GURL& url) {
   const auto* list =
       pref_service->GetList(prefs::kLookalikeWarningAllowlistDomains);
-  for (const auto& domain_val : list->GetList()) {
+  for (const auto& domain_val : list->GetListDeprecated()) {
     auto domain = domain_val.GetString();
     if (url.DomainIs(domain)) {
       return true;

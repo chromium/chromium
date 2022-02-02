@@ -110,7 +110,7 @@ bool JoinListValuesToString(const base::Value& dictionary,
 
   std::string buffer;
   bool first = true;
-  for (const auto& v : list_value->GetList()) {
+  for (const auto& v : list_value->GetListDeprecated()) {
     const std::string* value = v.GetIfString();
     if (!value)
       return false;
@@ -134,10 +134,10 @@ bool GetFirstListValueAsString(const base::Value& dictionary,
                                const std::string key,
                                std::string* result) {
   const base::Value* list_value = dictionary.FindListKey(key);
-  if (list_value == nullptr || list_value->GetList().empty())
+  if (list_value == nullptr || list_value->GetListDeprecated().empty())
     return false;
 
-  const std::string* value = list_value->GetList()[0].GetIfString();
+  const std::string* value = list_value->GetListDeprecated()[0].GetIfString();
   if (value == nullptr)
     return false;
   if (result != nullptr)

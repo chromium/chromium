@@ -132,7 +132,8 @@ class BookmarkCodecTest : public testing::Test {
         bb_value->FindListKey(BookmarkCodec::kChildrenKey);
     ASSERT_TRUE(bb_children_value);
 
-    base::Value::ListView bb_children_l_value = bb_children_value->GetList();
+    base::Value::ListView bb_children_l_value =
+        bb_children_value->GetListDeprecated();
     ASSERT_LT(index, bb_children_l_value.size());
 
     base::Value& child_value = bb_children_l_value[index];

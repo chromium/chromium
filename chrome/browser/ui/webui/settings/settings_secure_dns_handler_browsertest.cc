@@ -159,7 +159,7 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
         return false;
       secure_dns_templates->clear();
       for (const auto& template_str :
-           dict->FindListPath("templates")->GetList()) {
+           dict->FindListPath("templates")->GetListDeprecated()) {
         if (!template_str.is_string())
           return false;
         secure_dns_templates->push_back(template_str.GetString());
@@ -303,7 +303,8 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownList) {
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Check results.
-  base::Value::ConstListView resolver_list = call_data.arg3()->GetList();
+  base::Value::ConstListView resolver_list =
+      call_data.arg3()->GetListDeprecated();
   ASSERT_GE(resolver_list.size(), 1U);
   EXPECT_TRUE(resolver_list[0].FindKey("value")->GetString().empty());
 }

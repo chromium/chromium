@@ -21,7 +21,7 @@ std::unique_ptr<NTPCatalog> NTPCatalog::create(const base::Value& json) {
     return nullptr;
 
   std::vector<NTPCatalog::Category> catalog_categories;
-  for (const auto& category : categories->GetList()) {
+  for (const auto& category : categories->GetListDeprecated()) {
     if (!category.is_dict()) {
       return nullptr;
     }

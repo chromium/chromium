@@ -144,7 +144,7 @@ bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events) {
     return false;
 
   uint64_t previous_timestamp = 0;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     if (!entry.is_list() || entry.GetList().size() != 3)
       return false;
     if (!entry.GetList()[0].is_int())
@@ -179,7 +179,7 @@ bool LoadAllCpuEvents(const base::Value* value, AllCpuEvents* all_cpu_events) {
   if (!value || !value->is_list())
     return false;
 
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     CpuEvents cpu_events;
     if (!LoadCpuEvents(&entry, &cpu_events))
       return false;

@@ -44,10 +44,10 @@ bool HasPolicyValue(const PrefService* pref_service, const char* value) {
       pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
   // TODO(crbug.com/1187106): Use base::Contains once |quick_unlock_allowlist|
   // is not a ListValue.
-  return std::find(quick_unlock_allowlist->GetList().begin(),
-                   quick_unlock_allowlist->GetList().end(),
+  return std::find(quick_unlock_allowlist->GetListDeprecated().begin(),
+                   quick_unlock_allowlist->GetListDeprecated().end(),
                    base::Value(value)) !=
-         quick_unlock_allowlist->GetList().end();
+         quick_unlock_allowlist->GetListDeprecated().end();
 }
 
 }  // namespace

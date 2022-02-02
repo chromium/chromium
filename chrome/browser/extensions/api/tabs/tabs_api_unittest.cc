@@ -309,7 +309,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
   std::unique_ptr<base::ListValue> tabs_list_without_permission(
       RunTabsQueryFunction(browser(), extension.get(), kTitleAndURLQueryInfo));
   ASSERT_TRUE(tabs_list_without_permission);
-  EXPECT_EQ(0u, tabs_list_without_permission->GetList().size());
+  EXPECT_EQ(0u, tabs_list_without_permission->GetListDeprecated().size());
 
   // An extension with "tabs" permission however will see the third tab.
   scoped_refptr<const Extension> extension_with_permission =
@@ -326,9 +326,10 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
       RunTabsQueryFunction(browser(), extension_with_permission.get(),
                            kTitleAndURLQueryInfo));
   ASSERT_TRUE(tabs_list_with_permission);
-  ASSERT_EQ(1u, tabs_list_with_permission->GetList().size());
+  ASSERT_EQ(1u, tabs_list_with_permission->GetListDeprecated().size());
 
-  const base::Value& third_tab_info = tabs_list_with_permission->GetList()[0];
+  const base::Value& third_tab_info =
+      tabs_list_with_permission->GetListDeprecated()[0];
   ASSERT_TRUE(third_tab_info.is_dict());
   absl::optional<int> third_tab_id = third_tab_info.FindIntKey("id");
   EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
@@ -382,9 +383,10 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
         RunTabsQueryFunction(browser(), extension_with_permission.get(),
                              kTitleAndURLQueryInfo));
     ASSERT_TRUE(tabs_list_with_permission);
-    ASSERT_EQ(1u, tabs_list_with_permission->GetList().size());
+    ASSERT_EQ(1u, tabs_list_with_permission->GetListDeprecated().size());
 
-    const base::Value& third_tab_info = tabs_list_with_permission->GetList()[0];
+    const base::Value& third_tab_info =
+        tabs_list_with_permission->GetListDeprecated()[0];
     ASSERT_TRUE(third_tab_info.is_dict());
     absl::optional<int> third_tab_id = third_tab_info.FindIntKey("id");
     EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
@@ -397,11 +399,13 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
         RunTabsQueryFunction(browser(), extension_with_permission.get(),
                              kURLQueryInfo));
     ASSERT_TRUE(tabs_list_with_permission);
-    ASSERT_EQ(2u, tabs_list_with_permission->GetList().size());
+    ASSERT_EQ(2u, tabs_list_with_permission->GetListDeprecated().size());
 
-    const base::Value& first_tab_info = tabs_list_with_permission->GetList()[0];
+    const base::Value& first_tab_info =
+        tabs_list_with_permission->GetListDeprecated()[0];
     ASSERT_TRUE(first_tab_info.is_dict());
-    const base::Value& third_tab_info = tabs_list_with_permission->GetList()[1];
+    const base::Value& third_tab_info =
+        tabs_list_with_permission->GetListDeprecated()[1];
     ASSERT_TRUE(third_tab_info.is_dict());
 
     std::vector<int> expected_tabs_ids;

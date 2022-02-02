@@ -68,7 +68,7 @@ int32_t FontMessageFilter::OnHostMsgGetFontFamilies(
   // OK to use "slow blocking" version since we're on the blocking pool.
   std::unique_ptr<base::ListValue> list(GetFontList_SlowBlocking());
 
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
   std::string output;
   for (const auto& i : list_view) {
     if (!i.is_list())

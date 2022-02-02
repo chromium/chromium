@@ -45,7 +45,7 @@ void LanguagesHandler::RegisterMessages() {
 
 void LanguagesHandler::HandleGetProspectiveUILanguage(
     const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   AllowJavascript();
 
@@ -66,18 +66,18 @@ void LanguagesHandler::HandleGetProspectiveUILanguage(
 void LanguagesHandler::HandleSetProspectiveUILanguage(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
 
 #if BUILDFLAG(IS_WIN)
   PrefService* prefs = g_browser_process->local_state();
-  const std::string& language_code = args->GetList()[0].GetString();
+  const std::string& language_code = args->GetListDeprecated()[0].GetString();
   prefs->SetString(language::prefs::kApplicationLocale, language_code);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // Secondary users and public session users cannot change the locale.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-  const std::string& language_code = args->GetList()[0].GetString();
+  const std::string& language_code = args->GetListDeprecated()[0].GetString();
   if (user &&
       user->GetAccountId() == user_manager->GetPrimaryUser()->GetAccountId() &&
       user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {

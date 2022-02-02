@@ -170,7 +170,7 @@ void AffiliationTestHelper::SetUserAffiliationIDs(
 void AffiliationTestHelper::PreLoginUser(const AccountId& account_id) {
   ListPrefUpdate users_pref(g_browser_process->local_state(), "LoggedInUsers");
   base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_pref->GetList(), email_value))
+  if (!base::Contains(users_pref->GetListDeprecated(), email_value))
     users_pref->Append(std::move(email_value));
 
   user_manager::KnownUser(g_browser_process->local_state())

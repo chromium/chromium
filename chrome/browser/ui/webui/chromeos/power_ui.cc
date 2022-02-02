@@ -108,7 +108,7 @@ void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue* args) {
   base::DictionaryValue data;
   data.SetKey("powerSupplyData", std::move(js_power_supply_data));
   data.SetKey("systemResumedData", std::move(js_system_resumed_data));
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id, data);
 }
 
@@ -131,7 +131,7 @@ void PowerMessageHandler::OnGetCpuIdleData(const base::ListValue* args) {
   base::DictionaryValue data;
   data.SetKey("idleStateData", std::move(js_idle_data));
   data.SetKey("systemResumedData", std::move(js_system_resumed_data));
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id, data);
 }
 
@@ -154,15 +154,15 @@ void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue* args) {
   base::DictionaryValue data;
   data.SetKey("freqStateData", std::move(js_freq_data));
   data.SetKey("systemResumedData", std::move(js_system_resumed_data));
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id, data);
 }
 
 void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   const std::vector<ProcessDataCollector::ProcessUsageData>& process_list =
       ProcessDataCollector::Get()->GetProcessUsages();

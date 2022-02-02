@@ -251,7 +251,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
         prefs_->FindPreference(allowlist_pref_);
     if (pref != nullptr && !pref->IsDefaultValue()) {
       allowlist_ = std::set<std::string>();
-      for (const base::Value& value : pref->GetValue()->GetList()) {
+      for (const base::Value& value : pref->GetValue()->GetListDeprecated()) {
         if (value.is_string()) {
           allowlist_.value().insert(value.GetString());
         }

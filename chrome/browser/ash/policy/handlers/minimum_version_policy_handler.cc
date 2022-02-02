@@ -236,7 +236,7 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
     return;
   }
   const base::Value* entries = policy_value->FindListKey(kRequirements);
-  if (!entries || entries->GetList().empty()) {
+  if (!entries || entries->GetListDeprecated().empty()) {
     VLOG(1) << "Revoke policy - empty policy requirements.";
     HandleUpdateNotRequired();
     return;
@@ -245,7 +245,7 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
   unmanaged_user_restricted_ = restricted.value_or(false);
 
   std::vector<std::unique_ptr<MinimumVersionRequirement>> configs;
-  for (const auto& item : entries->GetList()) {
+  for (const auto& item : entries->GetListDeprecated()) {
     const base::DictionaryValue* dict;
     if (item.GetAsDictionary(&dict)) {
       std::unique_ptr<MinimumVersionRequirement> instance =

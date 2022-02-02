@@ -117,8 +117,9 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
     const base::ListValue* expected_resolved_onc = NULL;
     test_case->GetList("WithResolvedRefs", &expected_resolved_onc);
 
-    bool expected_success = (networks_with_cert_refs->GetList().size() ==
-                             expected_resolved_onc->GetList().size());
+    bool expected_success =
+        (networks_with_cert_refs->GetListDeprecated().size() ==
+         expected_resolved_onc->GetListDeprecated().size());
 
     base::Value actual_resolved_onc(networks_with_cert_refs->Clone());
     bool success = ResolveServerCertRefsInNetworks(certs, &actual_resolved_onc);

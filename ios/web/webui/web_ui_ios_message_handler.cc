@@ -13,7 +13,7 @@ namespace web {
 
 bool WebUIIOSMessageHandler::ExtractIntegerValue(const base::ListValue* value,
                                                  int* out_int) {
-  const base::Value& single_element = value->GetList()[0];
+  const base::Value& single_element = value->GetListDeprecated()[0];
   absl::optional<double> double_value = single_element.GetIfDouble();
   if (double_value) {
     *out_int = static_cast<int>(*double_value);
@@ -25,7 +25,7 @@ bool WebUIIOSMessageHandler::ExtractIntegerValue(const base::ListValue* value,
 
 bool WebUIIOSMessageHandler::ExtractDoubleValue(const base::ListValue* value,
                                                 double* out_value) {
-  const base::Value& single_element = value->GetList()[0];
+  const base::Value& single_element = value->GetListDeprecated()[0];
   absl::optional<double> double_value = single_element.GetIfDouble();
   if (double_value) {
     *out_value = *double_value;
@@ -37,7 +37,7 @@ bool WebUIIOSMessageHandler::ExtractDoubleValue(const base::ListValue* value,
 
 std::u16string WebUIIOSMessageHandler::ExtractStringValue(
     const base::ListValue* value) {
-  base::Value::ConstListView value_list = value->GetList();
+  base::Value::ConstListView value_list = value->GetListDeprecated();
   if (!value_list.empty() && value_list[0].is_string())
     return base::UTF8ToUTF16(value_list[0].GetString());
   NOTREACHED();

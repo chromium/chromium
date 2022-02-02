@@ -68,9 +68,9 @@ void NetworkDropdownHandler::HandleLaunchAddWiFiNetworkDialog() {
 
 void NetworkDropdownHandler::HandleShowNetworkDetails(
     const base::ListValue* args) {
-  DCHECK_GE(args->GetList().size(), 2U);
-  std::string type = args->GetList()[0].GetString();
-  std::string guid = args->GetList()[1].GetString();
+  DCHECK_GE(args->GetListDeprecated().size(), 2U);
+  std::string type = args->GetListDeprecated()[0].GetString();
+  std::string guid = args->GetListDeprecated()[1].GetString();
   if (type == ::onc::network_type::kCellular) {
     // Make sure Cellular is enabled.
     NetworkStateHandler* handler =
@@ -87,8 +87,8 @@ void NetworkDropdownHandler::HandleShowNetworkDetails(
 
 void NetworkDropdownHandler::HandleShowNetworkConfig(
     const base::ListValue* args) {
-  DCHECK(!args->GetList().empty());
-  std::string guid = args->GetList()[0].GetString();
+  DCHECK(!args->GetListDeprecated().empty());
+  std::string guid = args->GetListDeprecated()[0].GetString();
   chromeos::InternetConfigDialog::ShowDialogForNetworkId(
       guid, LoginDisplayHost::default_host()->GetNativeWindow());
 }

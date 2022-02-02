@@ -58,9 +58,9 @@ void HatsHandler::HandleTrustSafetyInteractionOccurred(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  auto interaction =
-      static_cast<TrustSafetyInteraction>(args->GetList()[0].GetInt());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  auto interaction = static_cast<TrustSafetyInteraction>(
+      args->GetListDeprecated()[0].GetInt());
 
   // Both the HaTS service, and the T&S sentiment service (which is another
   // wrapper on the HaTS service), may decide to launch surveys based on this

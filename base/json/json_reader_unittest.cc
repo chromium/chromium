@@ -88,15 +88,15 @@ TEST(JSONReaderTest, EmbeddedComments) {
   root = JSONReader::Read("[1, /* comment, 2 ] */ \n 3]");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_list());
-  ASSERT_EQ(2u, root->GetList().size());
-  ASSERT_TRUE(root->GetList()[0].is_int());
-  EXPECT_EQ(1, root->GetList()[0].GetInt());
-  ASSERT_TRUE(root->GetList()[1].is_int());
-  EXPECT_EQ(3, root->GetList()[1].GetInt());
+  ASSERT_EQ(2u, root->GetListDeprecated().size());
+  ASSERT_TRUE(root->GetListDeprecated()[0].is_int());
+  EXPECT_EQ(1, root->GetListDeprecated()[0].GetInt());
+  ASSERT_TRUE(root->GetListDeprecated()[1].is_int());
+  EXPECT_EQ(3, root->GetListDeprecated()[1].GetInt());
   root = JSONReader::Read("[1, /*a*/2, 3]");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_list());
-  EXPECT_EQ(3u, root->GetList().size());
+  EXPECT_EQ(3u, root->GetListDeprecated().size());
   root = JSONReader::Read("/* comment **/42");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_int());
@@ -302,7 +302,7 @@ TEST(JSONReaderTest, BasicArray) {
   absl::optional<Value> list = JSONReader::Read("[true, false, null]");
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(3U, list->GetList().size());
+  EXPECT_EQ(3U, list->GetListDeprecated().size());
 
   // Test with trailing comma.  Should be parsed the same as above.
   absl::optional<Value> root2 =
@@ -315,14 +315,14 @@ TEST(JSONReaderTest, EmptyArray) {
   absl::optional<Value> list = JSONReader::Read("[]");
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  EXPECT_TRUE(list->GetList().empty());
+  EXPECT_TRUE(list->GetListDeprecated().empty());
 }
 
 TEST(JSONReaderTest, CompleteArray) {
   absl::optional<Value> list = JSONReader::Read("[\"a\", 3, 4.56, null]");
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(4U, list->GetList().size());
+  EXPECT_EQ(4U, list->GetListDeprecated().size());
 }
 
 TEST(JSONReaderTest, NestedArrays) {
@@ -331,7 +331,7 @@ TEST(JSONReaderTest, NestedArrays) {
       "[null]], null]");
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(5U, list->GetList().size());
+  EXPECT_EQ(5U, list->GetListDeprecated().size());
 
   // Lots of trailing commas.
   absl::optional<Value> root2 = JSONReader::Read(
@@ -363,8 +363,8 @@ TEST(JSONReaderTest, ArrayTrailingComma) {
       JSONReader::Read("[true,]", JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  ASSERT_EQ(1U, list->GetList().size());
-  const Value& value1 = list->GetList()[0];
+  ASSERT_EQ(1U, list->GetListDeprecated().size());
+  const Value& value1 = list->GetListDeprecated()[0];
   ASSERT_TRUE(value1.is_bool());
   EXPECT_TRUE(value1.GetBool());
 }
@@ -449,7 +449,7 @@ TEST(JSONReaderTest, NestedDictionaries) {
   ASSERT_TRUE(inner_dict);
   const Value* inner_array = inner_dict->FindListKey("array");
   ASSERT_TRUE(inner_array);
-  EXPECT_EQ(4U, inner_array->GetList().size());
+  EXPECT_EQ(4U, inner_array->GetListDeprecated().size());
   auto bool_value = dict_val->FindBoolKey("false");
   ASSERT_TRUE(bool_value);
   EXPECT_FALSE(*bool_value);
@@ -549,7 +549,7 @@ TEST(JSONReaderTest, StackOverflow) {
   absl::optional<Value> list = JSONReader::Read(not_evil);
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(5001U, list->GetList().size());
+  EXPECT_EQ(5001U, list->GetListDeprecated().size());
 }
 
 TEST(JSONReaderTest, UTF8Input) {
@@ -750,9 +750,9 @@ TEST(JSONReaderTest, StringOptimizations) {
     ASSERT_TRUE(dict->RemoveKey("baz"));
     ASSERT_TRUE(dict->RemoveKey("moo"));
 
-    ASSERT_EQ(2u, list->GetList().size());
-    list_value_0 = std::move(list->GetList()[0]);
-    list_value_1 = std::move(list->GetList()[1]);
+    ASSERT_EQ(2u, list->GetListDeprecated().size());
+    list_value_0 = std::move(list->GetListDeprecated()[0]);
+    list_value_1 = std::move(list->GetListDeprecated()[1]);
     list->ClearList();
   }
 
@@ -828,7 +828,7 @@ TEST(JSONReaderTest, Decode4ByteUtf8Char) {
   absl::optional<Value> root = JSONReader::Read(kUtf8Data, JSON_PARSE_RFC);
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_list());
-  Value::ListView lv = root->GetList();
+  Value::ListView lv = root->GetListDeprecated();
   ASSERT_EQ(5u, lv.size());
   ASSERT_TRUE(lv[0].is_string());
   EXPECT_EQ("\xF0\x9F\x98\x87", lv[0].GetString());

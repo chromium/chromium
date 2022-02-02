@@ -106,8 +106,8 @@ bool LoadFileHandler(const std::string& handler_id,
     }
   }
 
-  if ((!mime_types || mime_types->GetList().empty()) &&
-      (!file_extensions || file_extensions->GetList().empty()) &&
+  if ((!mime_types || mime_types->GetListDeprecated().empty()) &&
+      (!file_extensions || file_extensions->GetListDeprecated().empty()) &&
       !handler.include_directories) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidFileHandlerNoTypeOrExtension,
@@ -116,7 +116,7 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   if (mime_types) {
-    base::Value::ConstListView list_storage = mime_types->GetList();
+    base::Value::ConstListView list_storage = mime_types->GetListDeprecated();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       if (!list_storage[i].is_string()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -129,7 +129,8 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   if (file_extensions) {
-    base::Value::ConstListView list_storage = file_extensions->GetList();
+    base::Value::ConstListView list_storage =
+        file_extensions->GetListDeprecated();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       if (!list_storage[i].is_string()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(

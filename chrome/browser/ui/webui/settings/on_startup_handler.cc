@@ -80,16 +80,16 @@ base::Value OnStartupHandler::GetNtpExtension() {
 }
 
 void OnStartupHandler::HandleGetNtpExtension(const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   AllowJavascript();
 
   ResolveJavascriptCallback(callback_id, GetNtpExtension());
 }
 
 void OnStartupHandler::HandleValidateStartupPage(const base::ListValue* args) {
-  CHECK_EQ(args->GetList().size(), 2U);
-  const base::Value& callback_id = args->GetList()[0];
-  const std::string& url_string = args->GetList()[1].GetString();
+  CHECK_EQ(args->GetListDeprecated().size(), 2U);
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const std::string& url_string = args->GetListDeprecated()[1].GetString();
   AllowJavascript();
 
   bool valid = settings_utils::FixupAndValidateStartupPage(url_string, nullptr);

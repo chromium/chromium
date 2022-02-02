@@ -45,7 +45,7 @@ void LensInternalsUIMessageHandler::HandleStartDebugMode(
 
   Java_LensDebugBridge_startProactiveDebugMode(env);
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id, base::Value());
 }
 
@@ -72,7 +72,7 @@ void LensInternalsUIMessageHandler::HandleRefreshDebugData(
         base::Value(row_as_list_storage));
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id,
                             base::Value(debug_data_as_vector_of_values));
 }
@@ -83,6 +83,6 @@ void LensInternalsUIMessageHandler::HandleStopDebugMode(
 
   Java_LensDebugBridge_stopProactiveDebugMode(env);
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id, base::Value());
 }

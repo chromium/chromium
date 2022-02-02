@@ -155,7 +155,7 @@ void TraceConfig::ProcessFilterConfig::InitializeFromConfigDict(
   const Value* value = dict.FindListKey(kIncludedProcessesParam);
   if (!value)
     return;
-  for (auto& pid_value : value->GetList()) {
+  for (auto& pid_value : value->GetListDeprecated()) {
     if (pid_value.is_int())
       included_process_ids_.insert(pid_value.GetInt());
   }
@@ -230,7 +230,7 @@ bool TraceConfig::EventFilterConfig::GetArgAsSet(
   const Value* list = args_.FindListPath(key);
   if (!list)
     return false;
-  for (const Value& item : list->GetList()) {
+  for (const Value& item : list->GetListDeprecated()) {
     if (item.is_string())
       out_set->insert(item.GetString());
   }
@@ -418,7 +418,7 @@ void TraceConfig::InitializeFromConfigDict(const Value& dict) {
   if (enable_systrace_) {
     const Value* systrace_events = dict.FindListKey(kSystraceEventsParam);
     if (systrace_events) {
-      for (const Value& value : systrace_events->GetList())
+      for (const Value& value : systrace_events->GetListDeprecated())
         systrace_events_.insert(value.GetString());
     }
   }
@@ -494,7 +494,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
   const Value* allowed_modes_list =
       memory_dump_config.FindListKey(kAllowedDumpModesParam);
   if (allowed_modes_list) {
-    for (const Value& item : allowed_modes_list->GetList()) {
+    for (const Value& item : allowed_modes_list->GetListDeprecated()) {
       DCHECK(item.is_string());
       memory_dump_config_.allowed_dump_modes.insert(
           StringToMemoryDumpLevelOfDetail(item.GetString()));
@@ -508,7 +508,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
   memory_dump_config_.triggers.clear();
   const Value* trigger_list = memory_dump_config.FindListKey(kTriggersParam);
   if (trigger_list) {
-    for (const Value& trigger : trigger_list->GetList()) {
+    for (const Value& trigger : trigger_list->GetListDeprecated()) {
       if (!trigger.is_dict())
         continue;
 

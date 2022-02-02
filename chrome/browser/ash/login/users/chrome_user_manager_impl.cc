@@ -720,8 +720,9 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
   const base::Value* prefs_device_local_accounts =
       GetLocalState()->GetList(kDeviceLocalAccountsWithSavedData);
   std::vector<AccountId> device_local_accounts;
-  ParseUserList(prefs_device_local_accounts->GetList(), std::set<AccountId>(),
-                &device_local_accounts, device_local_accounts_set);
+  ParseUserList(prefs_device_local_accounts->GetListDeprecated(),
+                std::set<AccountId>(), &device_local_accounts,
+                device_local_accounts_set);
   for (const AccountId& account_id : device_local_accounts) {
     policy::DeviceLocalAccount::Type type;
     if (!policy::IsDeviceLocalAccountUser(account_id.GetUserEmail(), &type)) {
@@ -1350,14 +1351,15 @@ bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
 void ChromeUserManagerImpl::AddReportingUser(const AccountId& account_id) {
   ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
   base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_update->GetList(), email_value))
+  if (!base::Contains(users_update->GetListDeprecated(), email_value))
     users_update->Append(std::move(email_value));
 }
 
 void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {
   ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
   users_update->EraseListIter(
-      std::find(users_update->GetList().begin(), users_update->GetList().end(),
+      std::find(users_update->GetListDeprecated().begin(),
+                users_update->GetListDeprecated().end(),
                 base::Value(FullyCanonicalize(account_id.GetUserEmail()))));
 }
 

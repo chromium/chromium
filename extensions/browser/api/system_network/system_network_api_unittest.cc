@@ -42,9 +42,9 @@ TEST_F(SystemNetworkApiUnitTest, MAYBE_GetNetworkInterfaces) {
   // All we can confirm is that we have at least one address, but not what it
   // is.
   base::ListValue* value = static_cast<base::ListValue*>(result.get());
-  ASSERT_TRUE(value->GetList().size() > 0);
+  ASSERT_TRUE(value->GetListDeprecated().size() > 0);
 
-  for (const auto& network_interface_value : value->GetList()) {
+  for (const auto& network_interface_value : value->GetListDeprecated()) {
     NetworkInterface network_interface;
     ASSERT_TRUE(NetworkInterface::Populate(network_interface_value,
                                            &network_interface));

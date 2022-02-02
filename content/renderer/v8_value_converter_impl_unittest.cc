@@ -111,7 +111,7 @@ class V8ValueConverterImplTest : public testing::Test {
   }
 
   std::string GetString(base::ListValue* value, uint32_t index) {
-    base::Value::ConstListView value_list = value->GetList();
+    base::Value::ConstListView value_list = value->GetListDeprecated();
     if (index >= value_list.size() || !value_list[index].is_string()) {
       ADD_FAILURE();
       return std::string();
@@ -237,15 +237,15 @@ class V8ValueConverterImplTest : public testing::Test {
     ASSERT_TRUE(list.get());
     ASSERT_TRUE(list->is_list());
     if (expected_value) {
-      ASSERT_FALSE(list->GetList().empty());
-      const base::Value& temp = list->GetList()[0];
+      ASSERT_FALSE(list->GetListDeprecated().empty());
+      const base::Value& temp = list->GetListDeprecated()[0];
       EXPECT_EQ(expected_type, temp.type());
       EXPECT_EQ(*expected_value, temp);
     } else {
       // Arrays should preserve their length, and convert unconvertible
       // types into null.
-      ASSERT_FALSE(list->GetList().empty());
-      const base::Value& temp = list->GetList()[0];
+      ASSERT_FALSE(list->GetListDeprecated().empty());
+      const base::Value& temp = list->GetListDeprecated()[0];
       EXPECT_EQ(base::Value::Type::NONE, temp.type());
     }
   }
@@ -499,7 +499,7 @@ TEST_F(V8ValueConverterImplTest, ArrayExceptions) {
       base::ListValue::From(converter.FromV8Value(array, context)));
   ASSERT_TRUE(converted.get());
   // http://code.google.com/p/v8/issues/detail?id=1342
-  EXPECT_EQ(2u, converted->GetList().size());
+  EXPECT_EQ(2u, converted->GetListDeprecated().size());
   EXPECT_TRUE(IsNull(converted.get(), 0));
 
   // Converting to v8 value should not be affected by the getter/setter
@@ -775,7 +775,7 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
   std::unique_ptr<base::ListValue> list_result(
       base::ListValue::From(converter.FromV8Value(array, context)));
   ASSERT_TRUE(list_result.get());
-  EXPECT_EQ(2u, list_result->GetList().size());
+  EXPECT_EQ(2u, list_result->GetListDeprecated().size());
   EXPECT_TRUE(IsNull(list_result.get(), 1));
 }
 
@@ -838,7 +838,7 @@ TEST_F(V8ValueConverterImplTest, ArrayGetters) {
   std::unique_ptr<base::ListValue> result(
       base::ListValue::From(converter.FromV8Value(array, context)));
   ASSERT_TRUE(result.get());
-  EXPECT_EQ(2u, result->GetList().size());
+  EXPECT_EQ(2u, result->GetListDeprecated().size());
 }
 
 TEST_F(V8ValueConverterImplTest, UndefinedValueBehavior) {
@@ -1032,8 +1032,8 @@ TEST_F(V8ValueConverterImplTest, ReuseObjects) {
     std::unique_ptr<base::ListValue> list_result(
         base::ListValue::From(converter.FromV8Value(array, context)));
     ASSERT_TRUE(list_result.get());
-    ASSERT_EQ(2u, list_result->GetList().size());
-    for (size_t i = 0; i < list_result->GetList().size(); ++i) {
+    ASSERT_EQ(2u, list_result->GetListDeprecated().size());
+    for (size_t i = 0; i < list_result->GetListDeprecated().size(); ++i) {
       ASSERT_FALSE(IsNull(list_result.get(), i));
       base::DictionaryValue* dict_value = nullptr;
       ASSERT_TRUE(list_result->GetDictionary(0u, &dict_value));

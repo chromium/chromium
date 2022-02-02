@@ -548,7 +548,7 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
   }
   if (variant_list) {
     std::vector<OnlineWallpaperVariant> variants;
-    for (const auto& variant_info : variant_list->GetList()) {
+    for (const auto& variant_info : variant_list->GetListDeprecated()) {
       const std::string* variant_asset_id_str = variant_info.FindStringPath(
           WallpaperControllerImpl::kNewWallpaperAssetIdNodeName);
       const std::string* url = variant_info.FindStringPath(
@@ -2439,8 +2439,9 @@ absl::optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(
 
   absl::optional<std::vector<SkColor>> cached_colors_out;
   cached_colors_out = std::vector<SkColor>();
-  cached_colors_out.value().reserve(prominent_colors->GetList().size());
-  for (const auto& value : prominent_colors->GetList()) {
+  cached_colors_out.value().reserve(
+      prominent_colors->GetListDeprecated().size());
+  for (const auto& value : prominent_colors->GetListDeprecated()) {
     cached_colors_out.value().push_back(
         static_cast<SkColor>(value.GetDouble()));
   }

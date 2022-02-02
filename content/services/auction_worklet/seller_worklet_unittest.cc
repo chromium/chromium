@@ -1742,7 +1742,7 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       breakpoint_hit1.value.FindListPath("params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints1);
   base::Value::ConstListView hit_breakpoints_list1 =
-      hit_breakpoints1->GetList();
+      hit_breakpoints1->GetListDeprecated();
   ASSERT_EQ(1u, hit_breakpoints_list1.size());
   ASSERT_TRUE(hit_breakpoints_list1[0].is_string());
   EXPECT_EQ("1:2:0:http://example.com/first.js",

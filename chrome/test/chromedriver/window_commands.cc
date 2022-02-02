@@ -612,7 +612,7 @@ Status ParsePageRanges(const base::DictionaryValue& params,
   }
 
   std::vector<std::string> ranges;
-  for (const base::Value& page_range : page_range_list->GetList()) {
+  for (const base::Value& page_range : page_range_list->GetListDeprecated()) {
     if (page_range.is_int()) {
       if (page_range.GetInt() < 0) {
         return Status(kInvalidArgument,
@@ -1354,7 +1354,7 @@ Status ProcessInputActionSequence(
     return Status(kInvalidArgument, "'actions' must be an array");
 
   std::unique_ptr<base::ListValue> actions_result(new base::ListValue);
-  for (const base::Value& action_item_value : actions->GetList()) {
+  for (const base::Value& action_item_value : actions->GetListDeprecated()) {
     std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
 
     if (!action_item_value.is_dict()) {
@@ -1577,7 +1577,8 @@ Status ExecutePerformActions(Session* session,
 
   // the processed actions
   std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
-  for (const base::Value& action_sequence : actions_input->GetList()) {
+  for (const base::Value& action_sequence :
+       actions_input->GetListDeprecated()) {
     // process input action sequence
     if (!action_sequence.is_dict())
       return Status(kInvalidArgument, "each argument must be a dictionary");

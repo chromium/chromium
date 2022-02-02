@@ -52,7 +52,7 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
 
   std::unique_ptr<NaClModuleData> nacl_module_data(new NaClModuleData);
 
-  base::Value::ConstListView list_view = list_value->GetList();
+  base::Value::ConstListView list_view = list_value->GetListDeprecated();
   for (size_t i = 0; i < list_view.size(); ++i) {
     if (!list_view[i].is_dict()) {
       *error = errors::kInvalidNaClModules;

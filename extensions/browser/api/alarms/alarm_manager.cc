@@ -334,7 +334,7 @@ void AlarmManager::ReadFromStorage(const std::string& extension_id,
                                    std::unique_ptr<base::Value> value) {
   if (value.get() && value->is_list()) {
     AlarmList alarm_states =
-        AlarmsFromValue(extension_id, is_unpacked, value->GetList());
+        AlarmsFromValue(extension_id, is_unpacked, value->GetListDeprecated());
     for (auto& alarm : alarm_states)
       AddAlarmImpl(extension_id, std::move(alarm));
   }

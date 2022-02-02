@@ -58,7 +58,7 @@ bool AssetLinkData::Parse(const std::string& data) {
   if (!value || !value->is_list())
     return false;
   base::JSONValueConverter<Statement> converter;
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     Statement statement;
     if (converter.Convert(item, &statement)) {
       if (!statement.include.empty()) {

@@ -143,7 +143,7 @@ bool GetExtensionIdSet(const base::DictionaryValue& dictionary,
   const base::ListValue* id_list = nullptr;
   if (!dictionary.GetList(key, &id_list))
     return false;
-  for (const auto& entry : id_list->GetList()) {
+  for (const auto& entry : id_list->GetListDeprecated()) {
     if (!entry.is_string()) {
       return false;
     }
@@ -428,7 +428,8 @@ void InstallSigner::ParseFetchResponse(
   ExtensionIdSet invalid_ids;
   const base::Value* invalid_ids_list = dictionary->FindListKey(kInvalidIdsKey);
   if (invalid_ids_list) {
-    for (const base::Value& invalid_id : invalid_ids_list->GetList()) {
+    for (const base::Value& invalid_id :
+         invalid_ids_list->GetListDeprecated()) {
       const std::string* id = invalid_id.GetIfString();
       if (!id) {
         ReportErrorViaCallback();

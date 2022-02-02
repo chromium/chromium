@@ -248,9 +248,9 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetList().size());
+  ASSERT_EQ(1u, val->GetListDeprecated().size());
 
-  base::Value* iteration_val = &(val->GetList()[0]);
+  base::Value* iteration_val = &(val->GetListDeprecated()[0]);
   ASSERT_TRUE(iteration_val);
   ASSERT_TRUE(iteration_val->is_dict());
   EXPECT_EQ(3u, iteration_val->DictSize());

@@ -66,7 +66,7 @@ bool ParseManifest(const base::Value& manifest_node,
     return false;
   }
 
-  for (const auto& package : package_node->GetList()) {
+  for (const auto& package : package_node->GetListDeprecated()) {
     if (!package.is_dict()) {
       *error = "'package' is not a dictionary.";
       return false;
@@ -113,7 +113,7 @@ void ParseActions(const base::Value& actions_node,
   if (!action_node || !action_node->is_list())
     return;
 
-  const auto& action_list = action_node->GetList();
+  const auto& action_list = action_node->GetListDeprecated();
   if (action_list.empty() || !action_list[0].is_dict())
     return;
 
@@ -133,7 +133,7 @@ bool ParseUrls(const base::Value& urls_node,
     return false;
   }
 
-  for (const auto& url : url_node->GetList()) {
+  for (const auto& url : url_node->GetListDeprecated()) {
     if (!url.is_dict())
       continue;
     const auto* codebase = url.FindKey("codebase");
@@ -323,7 +323,7 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
 
   const auto* app_node = response_node->FindKey("app");
   if (app_node && app_node->is_list()) {
-    for (const auto& app : app_node->GetList()) {
+    for (const auto& app : app_node->GetListDeprecated()) {
       Result result;
       std::string error;
       if (ParseApp(app, &result, &error))

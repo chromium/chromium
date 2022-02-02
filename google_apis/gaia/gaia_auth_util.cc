@@ -126,7 +126,7 @@ bool ParseListAccountsData(const std::string& data,
 
   if (!value->is_list())
     return false;
-  base::Value::ConstListView list = value->GetList();
+  base::Value::ConstListView list = value->GetListDeprecated();
   if (list.size() < 2u)
     return false;
 

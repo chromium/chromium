@@ -940,7 +940,7 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
   translate_prefs_->AddValueToNeverPromptList(
       TranslatePrefs::kPrefNeverPromptSitesDeprecated, "migratedWrong.com");
   EXPECT_EQ(prefs_.Get(TranslatePrefs::kPrefNeverPromptSitesDeprecated)
-                ->GetList()
+                ->GetListDeprecated()
                 .size(),
             2u);
   // Also put one of those sites on the new pref but migrated incorrectly.
@@ -955,7 +955,7 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
                   base::Time::Now() - base::Days(1), base::Time::Max()),
               ElementsAre("migratedWrong.com", "unmigrated.com"));
   EXPECT_EQ(prefs_.Get(TranslatePrefs::kPrefNeverPromptSitesDeprecated)
-                ->GetList()
+                ->GetListDeprecated()
                 .size(),
             0u);
 }

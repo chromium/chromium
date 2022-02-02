@@ -508,13 +508,13 @@ class NetworkContextTest : public testing::Test {
             {"groups", group.ToString(), "idle_sockets"}},
         base::Value::Type::LIST);
     if (idle_sockets)
-      count += idle_sockets->GetList().size();
+      count += idle_sockets->GetListDeprecated().size();
     base::Value* connect_jobs = pool_info.FindPathOfType(
         base::span<const base::StringPiece>{
             {"groups", group.ToString(), "connect_jobs"}},
         base::Value::Type::LIST);
     if (connect_jobs)
-      count += connect_jobs->GetList().size();
+      count += connect_jobs->GetListDeprecated().size();
     return count;
   }
 

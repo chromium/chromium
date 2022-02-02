@@ -529,7 +529,7 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   }
   base::Value::ListView event_arguments;
 
-  event_arguments = event.event_args->GetList();
+  event_arguments = event.event_args->GetListDeprecated();
   if (event_arguments.size() < 1) {
     return;
   }

@@ -425,7 +425,7 @@ void AboutHandler::PromoteUpdater(const base::ListValue* args) {
 #endif
 
 void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
@@ -433,7 +433,7 @@ void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
@@ -441,18 +441,18 @@ void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   chrome::ShowDiagnosticsApp(profile_);
 }
 
 void AboutHandler::HandleOpenFirmwareUpdates(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   chrome::ShowFirmwareUpdatesApp(profile_);
 }
 
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
@@ -463,7 +463,7 @@ void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   // We can always show the release notes since the Help app caches it, or can
   // show an appropriate error state (e.g. No internet connection).
   base::RecordAction(base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
@@ -472,26 +472,27 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleOpenOsHelpPage(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+  DCHECK(args->GetListDeprecated().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI_CHROME_OS);
 }
 
 void AboutHandler::HandleSetChannel(const base::ListValue* args) {
-  DCHECK(args->GetList().size() == 2);
+  DCHECK(args->GetListDeprecated().size() == 2);
 
   if (!CanChangeChannel(profile_)) {
     LOG(WARNING) << "Non-owner tried to change release track.";
     return;
   }
 
-  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_bool()) {
+  if (!args->GetListDeprecated()[0].is_string() ||
+      !args->GetListDeprecated()[1].is_bool()) {
     LOG(ERROR) << "Can't parse SetChannel() args";
     return;
   }
-  const std::string& channel = args->GetList()[0].GetString();
-  const bool& is_powerwash_allowed = args->GetList()[1].GetBool();
+  const std::string& channel = args->GetListDeprecated()[0].GetString();
+  const bool& is_powerwash_allowed = args->GetListDeprecated()[1].GetBool();
 
   version_updater_->SetChannel(channel, is_powerwash_allowed);
   if (user_manager::UserManager::Get()->IsCurrentUserOwner()) {
@@ -504,8 +505,8 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleGetVersionInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetVersionInfo),
@@ -520,8 +521,8 @@ void AboutHandler::OnGetVersionInfoReady(
 }
 
 void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -531,8 +532,8 @@ void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
   version_updater_->GetChannel(
       true /* get current channel */,
       base::BindOnce(&AboutHandler::OnGetCurrentChannel,
@@ -540,8 +541,8 @@ void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleCanChangeChannel(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(CanChangeChannel(profile_)));
 }
@@ -578,10 +579,11 @@ void AboutHandler::HandleRequestUpdate(const base::ListValue* args) {
 
 void AboutHandler::HandleRequestUpdateOverCellular(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
+  CHECK_EQ(2U, args->GetListDeprecated().size());
 
-  const std::string& update_version = args->GetList()[0].GetString();
-  const std::string& update_size_string = args->GetList()[1].GetString();
+  const std::string& update_version = args->GetListDeprecated()[0].GetString();
+  const std::string& update_size_string =
+      args->GetListDeprecated()[1].GetString();
   int64_t update_size;
   CHECK(base::StringToInt64(update_size_string, &update_size));
 
@@ -612,8 +614,8 @@ void AboutHandler::RefreshTPMFirmwareUpdateStatus(
 }
 
 void AboutHandler::HandleGetEndOfLifeInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
   version_updater_->GetEolInfo(base::BindOnce(&AboutHandler::OnGetEndOfLifeInfo,
                                               weak_factory_.GetWeakPtr(),
                                               callback_id));

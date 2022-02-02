@@ -58,17 +58,17 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
   // which is a string instead of a dictionary.
   ListPrefUpdate cache_guids_update(&pref_service_,
                                     kDeviceInfoRecentGUIDsWithTimestamps);
-  cache_guids_update->Insert(cache_guids_update->GetList().begin(),
+  cache_guids_update->Insert(cache_guids_update->GetListDeprecated().begin(),
                              base::Value("corrupt_string_entry"));
 
   // Add another corrupt entry: in this case the entry is a dictionary, but it
   // contains no timestamp.
-  cache_guids_update->Insert(cache_guids_update->GetList().begin(),
+  cache_guids_update->Insert(cache_guids_update->GetListDeprecated().begin(),
                              base::Value(base::Value::Type::DICTIONARY));
 
   // The end result is the list contains three entries among which one is valid.
   ASSERT_EQ(3u, pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
   ASSERT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("guid1"));
 
@@ -78,7 +78,7 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
 
   // |guid1| should be the only entry in the list.
   EXPECT_EQ(1u, pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps)
-                    ->GetList()
+                    ->GetListDeprecated()
                     .size());
 }
 

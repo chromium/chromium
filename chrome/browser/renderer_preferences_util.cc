@@ -86,7 +86,7 @@ std::vector<std::string> GetLocalIpsAllowedUrls(
     const base::Value* allowed_urls) {
   std::vector<std::string> ret;
   if (allowed_urls) {
-    const auto& urls = allowed_urls->GetList();
+    const auto& urls = allowed_urls->GetListDeprecated();
     for (const auto& url : urls)
       ret.push_back(url.GetString());
   }

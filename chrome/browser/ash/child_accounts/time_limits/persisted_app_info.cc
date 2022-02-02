@@ -80,7 +80,7 @@ std::vector<AppActivity::ActiveTime> AppActiveTimesFromList(
     return active_times;
   }
 
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
 
   for (const auto& value : list_view) {
     absl::optional<AppActivity::ActiveTime> entry = AppActivityFromDict(value);
@@ -145,7 +145,7 @@ std::vector<PersistedAppInfo> PersistedAppInfo::PersistedAppInfosFromList(
   if (!value || !value->is_list())
     return apps_info;
 
-  base::Value::ConstListView list_view = value->GetList();
+  base::Value::ConstListView list_view = value->GetListDeprecated();
 
   for (const auto& per_app_info : list_view) {
     absl::optional<PersistedAppInfo> info =
@@ -247,7 +247,7 @@ void PersistedAppInfo::UpdateAppActivityPreference(
 
   // If the last entry in |value| can be merged with the first entry in
   // |active_times_| merge them.
-  base::Value::ListView list_view = value->GetList();
+  base::Value::ListView list_view = value->GetListDeprecated();
   if (list_view.size() > 0) {
     base::Value& mergeable_entry = list_view[list_view.size() - 1];
     absl::optional<AppActivity::ActiveTime> active_time =

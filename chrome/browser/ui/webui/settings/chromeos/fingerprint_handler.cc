@@ -160,8 +160,8 @@ void FingerprintHandler::OnSessionStateChanged() {
 
 void FingerprintHandler::HandleGetFingerprintsList(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   AllowJavascript();
   fp_service_->GetRecordsForUser(
@@ -189,8 +189,8 @@ void FingerprintHandler::OnGetFingerprintsList(
 }
 
 void FingerprintHandler::HandleGetNumFingerprints(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   int fingerprints_num =
       profile_->GetPrefs()->GetInteger(prefs::kQuickUnlockFingerprintRecord);
@@ -203,7 +203,7 @@ void FingerprintHandler::HandleGetNumFingerprints(const base::ListValue* args) {
 void FingerprintHandler::HandleStartEnroll(const base::ListValue* args) {
   AllowJavascript();
 
-  const std::string& auth_token = args->GetList()[0].GetString();
+  const std::string& auth_token = args->GetListDeprecated()[0].GetString();
 
   // Auth token expiration will trigger password prompt.
   // Silently fail if auth token is incorrect.
@@ -240,7 +240,7 @@ void FingerprintHandler::OnCancelCurrentEnrollSession(bool success) {
 }
 
 void FingerprintHandler::HandleGetEnrollmentLabel(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(2U, list.size());
   std::string callback_id = list[0].GetString();
   int index = list[1].GetInt();
@@ -260,7 +260,7 @@ void FingerprintHandler::OnRequestRecordLabel(const std::string& callback_id,
 }
 
 void FingerprintHandler::HandleRemoveEnrollment(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(2U, list.size());
   std::string callback_id = list[0].GetString();
   int index = list[1].GetInt();
@@ -283,7 +283,7 @@ void FingerprintHandler::OnRemoveRecord(const std::string& callback_id,
 
 void FingerprintHandler::HandleChangeEnrollmentLabel(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(3U, list.size());
 
   std::string callback_id = list[0].GetString();

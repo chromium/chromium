@@ -274,7 +274,7 @@ void InlineLoginUIBrowserTest::AddEmailToOneClickRejectedList(
   PrefService* pref_service = browser()->profile()->GetPrefs();
   ListPrefUpdate updater(pref_service,
                          prefs::kReverseAutologinRejectedEmailList);
-  if (!base::Contains(updater->GetList(), base::Value(email)))
+  if (!base::Contains(updater->GetListDeprecated(), base::Value(email)))
     updater->Append(email);
 }
 

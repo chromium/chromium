@@ -121,7 +121,7 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // languages, it probably means that this source language was set to never
     // be translated after the old pref was deprecated, so avoid this conflict.
     const auto& never_translate_languages =
-        prefs->GetList(prefs::kBlockedLanguages)->GetList();
+        prefs->GetList(prefs::kBlockedLanguages)->GetListDeprecated();
     if (std::any_of(
             never_translate_languages.begin(), never_translate_languages.end(),
             [&old_language_pair](const base::Value& never_translate_language) {
@@ -299,7 +299,7 @@ bool TranslatePrefs::IsBlockedLanguage(base::StringPiece input_language) const {
   language::ToTranslateLanguageSynonym(&canonical_lang);
   const base::Value* blocked =
       prefs_->GetList(translate::prefs::kBlockedLanguages);
-  return base::Contains(blocked->GetList(),
+  return base::Contains(blocked->GetListDeprecated(),
                         base::Value(std::move(canonical_lang)));
 }
 
@@ -345,7 +345,7 @@ std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
   }
 
   std::vector<std::string> languages;
-  for (const auto& language : fluent_languages_value->GetList()) {
+  for (const auto& language : fluent_languages_value->GetListDeprecated()) {
     std::string chrome_language(language.GetString());
     language::ToChromeLanguageSynonym(&chrome_language);
     languages.push_back(chrome_language);
@@ -1026,7 +1026,7 @@ void TranslatePrefs::MigrateNeverPromptSites() {
     ListPrefUpdate deprecated_prompt_list_update(
         prefs_, kPrefNeverPromptSitesDeprecated);
     base::Value* deprecated_list = deprecated_prompt_list_update.Get();
-    for (auto& site : deprecated_list->GetList()) {
+    for (auto& site : deprecated_list->GetListDeprecated()) {
       if (!never_prompt_list->FindKey(site.GetString()) ||
           !base::ValueToTime(never_prompt_list->FindKey(site.GetString()))) {
         never_prompt_list->SetKey(site.GetString(),
@@ -1060,7 +1060,8 @@ bool TranslatePrefs::IsValueOnNeverPromptList(const char* pref_id,
   const base::Value* never_prompt_list = prefs_->GetList(pref_id);
   if (!never_prompt_list)
     return false;
-  for (const base::Value& value_in_list : never_prompt_list->GetList()) {
+  for (const base::Value& value_in_list :
+       never_prompt_list->GetListDeprecated()) {
     if (value_in_list.is_string() && value_in_list.GetString() == value)
       return true;
   }
@@ -1091,7 +1092,7 @@ void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
     return;
   }
 
-  auto list_view = never_prompt_list->GetList();
+  auto list_view = never_prompt_list->GetListDeprecated();
   never_prompt_list->EraseListIter(std::find_if(
       list_view.begin(), list_view.end(),
       [value](const base::Value& value_in_list) {
@@ -1101,7 +1102,9 @@ void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
 
 size_t TranslatePrefs::GetListSize(const char* pref_id) const {
   const base::Value* never_prompt_list = prefs_->GetList(pref_id);
-  return never_prompt_list == nullptr ? 0 : never_prompt_list->GetList().size();
+  return never_prompt_list == nullptr
+             ? 0
+             : never_prompt_list->GetListDeprecated().size();
 }
 
 bool TranslatePrefs::IsDictionaryEmpty(const char* pref_id) const {

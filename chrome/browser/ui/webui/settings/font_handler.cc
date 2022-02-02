@@ -48,8 +48,8 @@ void FontHandler::OnJavascriptAllowed() {}
 void FontHandler::OnJavascriptDisallowed() {}
 
 void FontHandler::HandleFetchFontsData(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
 
   AllowJavascript();
   content::GetFontListAsync(base::BindOnce(&FontHandler::FontListHasLoaded,
@@ -59,7 +59,7 @@ void FontHandler::HandleFetchFontsData(const base::ListValue* args) {
 
 void FontHandler::FontListHasLoaded(std::string callback_id,
                                     std::unique_ptr<base::ListValue> list) {
-  base::Value::ListView list_view = list->GetList();
+  base::Value::ListView list_view = list->GetListDeprecated();
   // Font list. Selects the directionality for the fonts in the given list.
   for (auto& i : list_view) {
     DCHECK(i.is_list());

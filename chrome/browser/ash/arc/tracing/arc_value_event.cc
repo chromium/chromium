@@ -31,7 +31,7 @@ bool LoadValueEvents(const base::Value* value, ValueEvents* value_events) {
     return false;
 
   int64_t previous_timestamp = 0;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     if (!entry.is_list() || entry.GetList().size() != 3)
       return false;
     if (!entry.GetList()[0].is_int())

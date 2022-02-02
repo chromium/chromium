@@ -335,7 +335,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   }
 
   bool also_run_disabled = testing::FLAGS_gtest_also_run_disabled_tests == 1;
-  for (auto& item : list_node->GetList()) {
+  for (auto& item : list_node->GetListDeprecated()) {
     if (!item.is_dict())
       continue;
     CapturedSiteParams param;
@@ -1837,7 +1837,7 @@ bool TestRecipeReplayer::GetIFramePathFromAction(
     ADD_FAILURE() << "The action's iframe path is not a list!";
     return false;
   }
-  for (const auto& xpath : iframe_path_container->GetList()) {
+  for (const auto& xpath : iframe_path_container->GetListDeprecated()) {
     if (!xpath.is_string()) {
       ADD_FAILURE() << "Failed to extract the iframe xpath from action!";
       return false;

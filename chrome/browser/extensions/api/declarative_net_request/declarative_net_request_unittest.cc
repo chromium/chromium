@@ -509,7 +509,7 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
     if (expected_rules_count)
       rules_count = *expected_rules_count;
     else if (rules_value_ && rules_value_->is_list())
-      rules_count = rules_value_->GetList().size();
+      rules_count = rules_value_->GetListDeprecated().size();
     else
       rules_count = rules_list_.size();
 

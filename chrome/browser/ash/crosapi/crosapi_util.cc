@@ -465,7 +465,8 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
                                  &usb_detachable_allow_list)) {
         mojom::UsbDetachableAllowlistPtr allow_list =
             mojom::UsbDetachableAllowlist::New();
-        for (const auto& entry : usb_detachable_allow_list->GetList()) {
+        for (const auto& entry :
+             usb_detachable_allow_list->GetListDeprecated()) {
           mojom::UsbDeviceIdPtr usb_device_id = mojom::UsbDeviceId::New();
           absl::optional<int> vid =
               entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid);

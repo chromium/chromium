@@ -22,7 +22,7 @@ const base::Value* GetPolicyUrlPatterns(PrefService* prefs) {
 
 bool ConnectorPolicyHasValues(PrefService* profile_prefs) {
   const auto* list = GetPolicyUrlPatterns(profile_prefs);
-  return list && !list->GetList().empty();
+  return list && !list->GetListDeprecated().empty();
 }
 
 }  // namespace
@@ -86,7 +86,7 @@ void DeviceTrustConnectorService::OnPolicyUpdated() {
     matcher_ = std::make_unique<url_matcher::URLMatcher>();
   }
 
-  if (url_patterns && !url_patterns->GetList().empty()) {
+  if (url_patterns && !url_patterns->GetListDeprecated().empty()) {
     // Add the new endpoints to the conditions.
     url_matcher::util::AddAllowFilters(
         matcher_.get(), &base::Value::AsListValue(*url_patterns));

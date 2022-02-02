@@ -632,7 +632,7 @@ void AppActivityRegistry::SaveAppActivity() {
 
     const base::Time now = base::Time::Now();
 
-    base::Value::ListView list_view = list_value->GetList();
+    base::Value::ListView list_view = list_value->GetListDeprecated();
     for (base::Value& entry : list_view) {
       absl::optional<AppId> app_id = policy::AppIdFromAppInfoDict(entry);
       DCHECK(app_id.has_value());

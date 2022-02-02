@@ -113,7 +113,7 @@ bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
     return false;
   }
 
-  if (base::Contains(list->GetList(), user_email_value)) {
+  if (base::Contains(list->GetListDeprecated(), user_email_value)) {
     profile->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);
     return PolicyCertServiceFactory::ClearUsedPolicyCertificates(user_email);
   }

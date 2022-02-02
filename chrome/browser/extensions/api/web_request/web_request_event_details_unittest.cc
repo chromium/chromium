@@ -94,15 +94,19 @@ TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
         details.GetFilteredDict(kFilter, nullptr, std::string(), false);
     base::Value* filtered_headers = dict->FindKey("responseHeaders");
     ASSERT_TRUE(filtered_headers);
-    ASSERT_EQ(2u, filtered_headers->GetList().size());
-    EXPECT_EQ("Key1",
-              filtered_headers->GetList()[0].FindKey("name")->GetString());
-    EXPECT_EQ("Value1",
-              filtered_headers->GetList()[0].FindKey("value")->GetString());
-    EXPECT_EQ("X-Chrome-ID-Consistency-Response",
-              filtered_headers->GetList()[1].FindKey("name")->GetString());
-    EXPECT_EQ("Value2",
-              filtered_headers->GetList()[1].FindKey("value")->GetString());
+    ASSERT_EQ(2u, filtered_headers->GetListDeprecated().size());
+    EXPECT_EQ(
+        "Key1",
+        filtered_headers->GetListDeprecated()[0].FindKey("name")->GetString());
+    EXPECT_EQ(
+        "Value1",
+        filtered_headers->GetListDeprecated()[0].FindKey("value")->GetString());
+    EXPECT_EQ(
+        "X-Chrome-ID-Consistency-Response",
+        filtered_headers->GetListDeprecated()[1].FindKey("name")->GetString());
+    EXPECT_EQ(
+        "Value2",
+        filtered_headers->GetListDeprecated()[1].FindKey("value")->GetString());
   }
 
   {
@@ -116,11 +120,13 @@ TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
         gaia_details.GetFilteredDict(kFilter, nullptr, std::string(), false);
     base::Value* filtered_headers = dict->FindKey("responseHeaders");
     ASSERT_TRUE(filtered_headers);
-    ASSERT_EQ(1u, filtered_headers->GetList().size());
-    EXPECT_EQ("Key1",
-              filtered_headers->GetList()[0].FindKey("name")->GetString());
-    EXPECT_EQ("Value1",
-              filtered_headers->GetList()[0].FindKey("value")->GetString());
+    ASSERT_EQ(1u, filtered_headers->GetListDeprecated().size());
+    EXPECT_EQ(
+        "Key1",
+        filtered_headers->GetListDeprecated()[0].FindKey("name")->GetString());
+    EXPECT_EQ(
+        "Value1",
+        filtered_headers->GetListDeprecated()[0].FindKey("value")->GetString());
   }
 }
 

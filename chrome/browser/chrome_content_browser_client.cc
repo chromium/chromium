@@ -675,7 +675,8 @@ bool IsSSLErrorOverrideAllowedForOrigin(const GURL& request_url,
     return false;
 
   base::Value::ConstListView allow_list_urls =
-      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)->GetList();
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
+          ->GetListDeprecated();
   if (allow_list_urls.empty())
     return false;
 
@@ -819,7 +820,8 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
       prefs->GetList(prefs::kAutoplayAllowlist);
   return autoplay_allowlist &&
          prefs->IsManagedPreference(prefs::kAutoplayAllowlist) &&
-         IsURLAllowlisted(contents->GetURL(), autoplay_allowlist->GetList());
+         IsURLAllowlisted(contents->GetURL(),
+                          autoplay_allowlist->GetListDeprecated());
 }
 #endif
 

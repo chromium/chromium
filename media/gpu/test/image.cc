@@ -176,7 +176,7 @@ bool Image::LoadMetadata() {
   const base::Value* visible_rect_info =
       metadata->FindKeyOfType("visible_rect", base::Value::Type::LIST);
   if (visible_rect_info) {
-    base::Value::ConstListView values = visible_rect_info->GetList();
+    base::Value::ConstListView values = visible_rect_info->GetListDeprecated();
     if (values.size() != 4) {
       VLOGF(1) << "unexpected json format for visible rectangle";
       return false;

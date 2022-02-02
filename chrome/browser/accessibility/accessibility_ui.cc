@@ -429,7 +429,7 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
 
 void AccessibilityUIMessageHandler::ToggleAccessibility(
     const base::ListValue* args) {
-  const base::Value& data = args->GetList()[0];
+  const base::Value& data = args->GetListDeprecated()[0];
   CHECK(data.is_dict());
 
   int process_id = *data.FindIntPath(kProcessIdField);
@@ -481,7 +481,7 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
 }
 
 void AccessibilityUIMessageHandler::SetGlobalFlag(const base::ListValue* args) {
-  const base::Value& data = args->GetList()[0];
+  const base::Value& data = args->GetListDeprecated()[0];
   CHECK(data.is_dict());
 
   const std::string* flag_name_str_p = data.FindStringPath(kFlagNameField);
@@ -562,7 +562,7 @@ void AccessibilityUIMessageHandler::GetRequestTypeAndFilters(
 
 void AccessibilityUIMessageHandler::RequestWebContentsTree(
     const base::ListValue* args) {
-  const base::Value& data = args->GetList()[0];
+  const base::Value& data = args->GetListDeprecated()[0];
   CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
@@ -609,7 +609,7 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
 
 void AccessibilityUIMessageHandler::RequestNativeUITree(
     const base::ListValue* args) {
-  const base::Value& data = args->GetList()[0];
+  const base::Value& data = args->GetListDeprecated()[0];
   CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
@@ -653,7 +653,7 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
 void AccessibilityUIMessageHandler::RequestWidgetsTree(
     const base::ListValue* args) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::Value& data = args->GetList()[0];
+  const base::Value& data = args->GetListDeprecated()[0];
   CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
@@ -712,7 +712,7 @@ void AccessibilityUIMessageHandler::StopRecording(
 
 void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
     const base::ListValue* args) {
-  const base::Value& data = args->GetList()[0];
+  const base::Value& data = args->GetListDeprecated()[0];
   CHECK(data.is_dict());
 
   int process_id = *data.FindIntPath(kProcessIdField);

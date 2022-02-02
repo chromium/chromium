@@ -281,7 +281,7 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
     auto* parts = middle_slot.value().FindListPath("part");
     if (parts) {
       std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
-      for (const base::Value& part : parts->GetList()) {
+      for (const base::Value& part : parts->GetListDeprecated()) {
         if (part.FindKey("image")) {
           auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
           auto* image_url = part.FindStringPath("image.image_url");
@@ -586,7 +586,7 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
   ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value module_id_value(module_id);
   if (disabled) {
-    if (!base::Contains(update->GetList(), module_id_value))
+    if (!base::Contains(update->GetListDeprecated(), module_id_value))
       update->Append(std::move(module_id_value));
   } else {
     update->EraseListValue(module_id_value);
@@ -601,7 +601,7 @@ void NewTabPageHandler::UpdateDisabledModules() {
   if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
     const auto* module_ids_value =
         profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
-    for (const auto& id : module_ids_value->GetList()) {
+    for (const auto& id : module_ids_value->GetListDeprecated()) {
       module_ids.push_back(id.GetString());
     }
   }
@@ -634,7 +634,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop)) {
     const auto* module_ids_value =
         profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
-    for (const auto& id : module_ids_value->GetList()) {
+    for (const auto& id : module_ids_value->GetListDeprecated()) {
       module_ids.push_back(id.GetString());
     }
   }

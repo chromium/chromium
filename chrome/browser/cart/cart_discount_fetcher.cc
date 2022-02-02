@@ -131,11 +131,11 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
                             0 /*highest_percent_off*/);
   }
 
-  cart_discounts.reserve(rule_discount_list->GetList().size());
+  cart_discounts.reserve(rule_discount_list->GetListDeprecated().size());
 
   int highest_percent_off = 0;
   int64_t highest_amount_off = 0;
-  for (const auto& rule_discount : rule_discount_list->GetList()) {
+  for (const auto& rule_discount : rule_discount_list->GetListDeprecated()) {
     cart_db::RuleDiscountInfoProto discount_proto;
 
     // Parse ruleId
@@ -257,9 +257,10 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
     return CouponDiscountInfo({});
   }
 
-  coupons.reserve(coupon_discount_list->GetList().size());
+  coupons.reserve(coupon_discount_list->GetListDeprecated().size());
 
-  for (const auto& coupon_discount : coupon_discount_list->GetList()) {
+  for (const auto& coupon_discount :
+       coupon_discount_list->GetListDeprecated()) {
     coupon_db::FreeListingCouponInfoProto coupon_info_proto;
 
     // Parse type
@@ -516,7 +517,7 @@ void CartDiscountFetcher::OnDiscountsAvailable(
     return;
   }
 
-  for (const auto& merchant_discount : discounts_list->GetList()) {
+  for (const auto& merchant_discount : discounts_list->GetListDeprecated()) {
     // Parse merchant_identifier.
     const base::Value* merchant_identifier =
         merchant_discount.FindKey("merchantIdentifier");

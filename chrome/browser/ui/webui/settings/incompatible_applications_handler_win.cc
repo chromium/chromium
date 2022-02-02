@@ -63,7 +63,7 @@ void IncompatibleApplicationsHandler::OnJavascriptDisallowed() {
 
 void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
     const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetList().size());
+  CHECK_EQ(1u, args->GetListDeprecated().size());
 
   AllowJavascript();
 
@@ -111,19 +111,19 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
   UMA_HISTOGRAM_COUNTS_100("IncompatibleApplicationsPage.NumApplications",
                            incompatible_applications.size());
 
-  const base::Value& callback_id = args->GetList().front();
+  const base::Value& callback_id = args->GetListDeprecated().front();
   ResolveJavascriptCallback(callback_id, application_list);
 }
 
 void IncompatibleApplicationsHandler::HandleStartApplicationUninstallation(
     const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetList().size());
+  CHECK_EQ(1u, args->GetListDeprecated().size());
   base::RecordAction(base::UserMetricsAction(
       "IncompatibleApplicationsPage.UninstallationStarted"));
 
   // Open the Apps & Settings page with the application name highlighted.
   uninstall_application::LaunchUninstallFlow(
-      base::UTF8ToWide(args->GetList()[0].GetString()));
+      base::UTF8ToWide(args->GetListDeprecated()[0].GetString()));
 }
 
 void IncompatibleApplicationsHandler::HandleGetSubtitlePluralString(
@@ -147,10 +147,10 @@ void IncompatibleApplicationsHandler::HandleGetListTitlePluralString(
 void IncompatibleApplicationsHandler::GetPluralString(
     int id,
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
+  CHECK_EQ(2U, args->GetListDeprecated().size());
 
-  const base::Value& callback_id = args->GetList()[0];
-  int num_applications = args->GetList()[1].GetInt();
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  int num_applications = args->GetListDeprecated()[1].GetInt();
   DCHECK_GT(num_applications, 0);
 
   ResolveJavascriptCallback(

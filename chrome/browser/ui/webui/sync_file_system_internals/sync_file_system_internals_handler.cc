@@ -129,7 +129,7 @@ void SyncFileSystemInternalsHandler::HandleGetServiceStatus(
     state_enum = sync_service->GetSyncServiceState();
   const std::string state_string = chrome_apps::api::sync_file_system::ToString(
       chrome_apps::api::SyncServiceStateToExtensionEnum(state_enum));
-  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */,
+  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
                             base::Value(state_string));
 }
 
@@ -142,13 +142,13 @@ void SyncFileSystemInternalsHandler::HandleGetNotificationSource(
     return;
   bool xmpp_enabled = drive_notification_manager->push_notification_enabled();
   std::string notification_source = xmpp_enabled ? "XMPP" : "Polling";
-  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */,
+  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
                             base::Value(notification_source));
 }
 
 void SyncFileSystemInternalsHandler::HandleGetLog(const base::ListValue* args) {
   AllowJavascript();
-  const auto& args_list = args->GetList();
+  const auto& args_list = args->GetListDeprecated();
   DCHECK_GE(args_list.size(), 1u);
   const base::Value& callback_id = args_list[0];
   const std::vector<EventLogger::Event> log =

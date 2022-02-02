@@ -299,7 +299,7 @@ bool CheckHeader(const base::DictionaryValue& dict,
     return false;
   }
 
-  for (const auto& header : headers->GetList()) {
+  for (const auto& header : headers->GetListDeprecated()) {
     if (!header.is_list()) {
       ADD_FAILURE();
       return false;
@@ -335,7 +335,7 @@ bool HasHeader(const base::DictionaryValue& dict,
     return false;
   }
 
-  for (const auto& header : headers->GetList()) {
+  for (const auto& header : headers->GetListDeprecated()) {
     if (!header.is_list()) {
       ADD_FAILURE();
       return false;

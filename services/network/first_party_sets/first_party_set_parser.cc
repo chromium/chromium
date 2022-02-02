@@ -102,7 +102,7 @@ bool ParseSet(const base::Value& value,
     return false;
 
   // Add each member to our mapping (assuming the member is a string).
-  for (const auto& item : maybe_members_list->GetList()) {
+  for (const auto& item : maybe_members_list->GetListDeprecated()) {
     // Members may not be a member of another set, and may not be an owner of
     // another set.
     if (!item.is_string())
@@ -114,7 +114,7 @@ bool ParseSet(const base::Value& value,
     map.emplace(*member, *canonical_owner);
     elements.insert(std::move(*member));
   }
-  return !maybe_members_list->GetList().empty();
+  return !maybe_members_list->GetListDeprecated().empty();
 }
 
 }  // namespace
@@ -199,7 +199,7 @@ FirstPartySetParser::ParseSetsFromComponentUpdater(base::StringPiece raw_sets) {
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
   base::flat_set<net::SchemefulSite> elements;
-  for (const auto& value : maybe_value->GetList()) {
+  for (const auto& value : maybe_value->GetListDeprecated()) {
     if (!ParseSet(value, map, elements))
       return {};
   }

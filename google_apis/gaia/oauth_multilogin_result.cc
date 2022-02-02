@@ -74,7 +74,7 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
-  for (auto& account : failed_accounts->GetList()) {
+  for (auto& account : failed_accounts->GetListDeprecated()) {
     const std::string* gaia_id = account.FindStringKey("obfuscated_id");
     const std::string* status = account.FindStringKey("status");
     if (status && gaia_id && *status != "OK")
@@ -92,7 +92,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
-  for (const auto& cookie : cookie_list->GetList()) {
+  for (const auto& cookie : cookie_list->GetListDeprecated()) {
     const std::string* name = cookie.FindStringKey("name");
     const std::string* value = cookie.FindStringKey("value");
     const std::string* domain = cookie.FindStringKey("domain");

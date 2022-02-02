@@ -297,9 +297,9 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg2()->GetBool());
 
     ASSERT_TRUE(data.arg3()->is_list());
-    EXPECT_EQ(1U, data.arg3()->GetList().size());
+    EXPECT_EQ(1U, data.arg3()->GetListDeprecated().size());
 
-    const base::Value& exception = data.arg3()->GetList()[0];
+    const base::Value& exception = data.arg3()->GetListDeprecated()[0];
     ASSERT_TRUE(exception.is_dict());
 
     const std::string* origin = exception.FindStringKey(site_settings::kOrigin);
@@ -397,7 +397,7 @@ class SiteSettingsHandlerTest : public testing::Test {
     EXPECT_EQ("onZoomLevelsChanged", data.arg1()->GetString());
 
     ASSERT_TRUE(data.arg2()->is_list());
-    base::Value::ConstListView exceptions = data.arg2()->GetList();
+    base::Value::ConstListView exceptions = data.arg2()->GetListDeprecated();
     if (expected_host.empty()) {
       EXPECT_EQ(0U, exceptions.size());
     } else {
@@ -537,7 +537,7 @@ class SiteSettingsHandlerTest : public testing::Test {
     handler()->ClearAllSitesMapForTesting();
     handler()->OnStorageFetched();
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    return data.arg2()->GetList();
+    return data.arg2()->GetListDeprecated();
   }
 
   std::vector<CookieTreeNode*> GetHostNodes(GURL url) {
@@ -615,7 +615,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(0UL, site_groups.size());
   }
 
@@ -636,13 +636,13 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(1UL, site_groups.size());
     for (const base::Value& site_group : site_groups) {
       const std::string& etld_plus1_string =
           site_group.FindKey("etldPlus1")->GetString();
       base::Value::ConstListView origin_list =
-          site_group.FindKey("origins")->GetList();
+          site_group.FindKey("origins")->GetListDeprecated();
       EXPECT_EQ("example.com", etld_plus1_string);
       EXPECT_EQ(2UL, origin_list.size());
       EXPECT_EQ(url1.spec(), origin_list[0].FindKey("origin")->GetString());
@@ -665,13 +665,13 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(2UL, site_groups.size());
     for (const base::Value& site_group : site_groups) {
       const std::string& etld_plus1_string =
           site_group.FindKey("etldPlus1")->GetString();
       base::Value::ConstListView origin_list =
-          site_group.FindKey("origins")->GetList();
+          site_group.FindKey("origins")->GetListDeprecated();
       if (etld_plus1_string == "example2.net") {
         EXPECT_EQ(1UL, origin_list.size());
         EXPECT_EQ(url3.spec(), origin_list[0].FindKey("origin")->GetString());
@@ -704,7 +704,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(3UL, site_groups.size());
   }
 
@@ -718,7 +718,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(2UL, site_groups.size());
     EXPECT_EQ("example.com", site_groups[0].FindKey("etldPlus1")->GetString());
     EXPECT_EQ("example2.net", site_groups[1].FindKey("etldPlus1")->GetString());
@@ -747,7 +747,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(2UL, site_groups.size());
     EXPECT_EQ("example.com", site_groups[0].FindKey("etldPlus1")->GetString());
     EXPECT_EQ("example2.net", site_groups[1].FindKey("etldPlus1")->GetString());
@@ -776,7 +776,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(2UL, site_groups.size());
     EXPECT_EQ("example.com", site_groups[0].FindKey("etldPlus1")->GetString());
     EXPECT_EQ("example2.net", site_groups[1].FindKey("etldPlus1")->GetString());
@@ -826,7 +826,8 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView recent_permissions = data.arg3()->GetList();
+    base::Value::ConstListView recent_permissions =
+        data.arg3()->GetListDeprecated();
     EXPECT_EQ(0UL, recent_permissions.size());
   }
 
@@ -861,7 +862,8 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    base::Value::ConstListView recent_permissions = data.arg3()->GetList();
+    base::Value::ConstListView recent_permissions =
+        data.arg3()->GetListDeprecated();
     EXPECT_EQ(2UL, recent_permissions.size());
     EXPECT_EQ(url1.spec(),
               recent_permissions[1].FindKey("origin")->GetString());
@@ -872,9 +874,9 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
     EXPECT_FALSE(recent_permissions[1].FindKey("incognito")->GetBool());
 
     base::Value::ConstListView incognito_url1_permissions =
-        recent_permissions[0].FindKey("recentPermissions")->GetList();
+        recent_permissions[0].FindKey("recentPermissions")->GetListDeprecated();
     base::Value::ConstListView url1_permissions =
-        recent_permissions[1].FindKey("recentPermissions")->GetList();
+        recent_permissions[1].FindKey("recentPermissions")->GetListDeprecated();
 
     EXPECT_EQ(1UL, incognito_url1_permissions.size());
 
@@ -904,7 +906,8 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
   EXPECT_EQ("onStorageListFetched", data.arg1()->GetString());
 
   ASSERT_TRUE(data.arg2()->is_list());
-  base::Value::ConstListView storage_and_cookie_list = data.arg2()->GetList();
+  base::Value::ConstListView storage_and_cookie_list =
+      data.arg2()->GetListDeprecated();
   EXPECT_EQ(3U, storage_and_cookie_list.size());
 
   {
@@ -921,9 +924,9 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     // There will be 2 origins in this case. Cookie node with url
     // http://www.example.com/ will be treat as https://www.example.com/ because
     // this url existed in the storage nodes.
-    EXPECT_EQ(2U, origin_list->GetList().size());
+    EXPECT_EQ(2U, origin_list->GetListDeprecated().size());
 
-    const base::Value& origin_info_0 = origin_list->GetList()[0];
+    const base::Value& origin_info_0 = origin_list->GetListDeprecated()[0];
     ASSERT_TRUE(origin_info_0.is_dict());
 
     EXPECT_EQ("http://abc.example.com/",
@@ -932,7 +935,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ(0, origin_info_0.FindKey("usage")->GetDouble());
     EXPECT_EQ(1, origin_info_0.FindKey("numCookies")->GetDouble());
 
-    const base::Value& origin_info_1 = origin_list->GetList()[1];
+    const base::Value& origin_info_1 = origin_list->GetListDeprecated()[1];
     ASSERT_TRUE(origin_info_1.is_dict());
 
     // Even though in the cookies the scheme is http, it still stored as https
@@ -956,9 +959,10 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     const base::Value* origin_list = site_group.FindListKey("origins");
     ASSERT_TRUE(origin_list && origin_list->is_list());
 
-    EXPECT_EQ(2U, origin_list->GetList().size());
+    EXPECT_EQ(2U, origin_list->GetListDeprecated().size());
 
-    const base::Value& partitioned_origin_info = origin_list->GetList()[0];
+    const base::Value& partitioned_origin_info =
+        origin_list->GetListDeprecated()[0];
     ASSERT_TRUE(partitioned_origin_info.is_dict());
 
     EXPECT_EQ("https://www.example.com/",
@@ -968,7 +972,8 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ(1, partitioned_origin_info.FindKey("numCookies")->GetDouble());
     EXPECT_TRUE(partitioned_origin_info.FindKey("isPartitioned")->GetBool());
 
-    const base::Value& unpartitioned_origin_info = origin_list->GetList()[1];
+    const base::Value& unpartitioned_origin_info =
+        origin_list->GetListDeprecated()[1];
     ASSERT_TRUE(unpartitioned_origin_info.is_dict());
 
     EXPECT_EQ("https://www.google.com/",
@@ -997,9 +1002,10 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     // exist for the unpartitioned storage. The partitioned cookie for
     // google.com.au, partitioned by google.com.au should have also created an
     // entry.
-    EXPECT_EQ(3U, origin_list->GetList().size());
+    EXPECT_EQ(3U, origin_list->GetListDeprecated().size());
 
-    const base::Value& partitioned_origin_one_info = origin_list->GetList()[0];
+    const base::Value& partitioned_origin_one_info =
+        origin_list->GetListDeprecated()[0];
     ASSERT_TRUE(partitioned_origin_one_info.is_dict());
 
     EXPECT_EQ("https://google.com.au/",
@@ -1012,7 +1018,8 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_TRUE(
         partitioned_origin_one_info.FindKey("isPartitioned")->GetBool());
 
-    const base::Value& partitioned_origin_two_info = origin_list->GetList()[1];
+    const base::Value& partitioned_origin_two_info =
+        origin_list->GetListDeprecated()[1];
     EXPECT_EQ("https://www.another-example.com/",
               partitioned_origin_two_info.FindKey("origin")->GetString());
     EXPECT_EQ(0,
@@ -1024,7 +1031,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
         partitioned_origin_two_info.FindKey("isPartitioned")->GetBool());
 
     const base::Value& partitioned_origin_three_info =
-        origin_list->GetList()[2];
+        origin_list->GetListDeprecated()[2];
     ASSERT_TRUE(partitioned_origin_three_info.is_dict());
 
     EXPECT_EQ("https://www.example.com/",
@@ -1060,7 +1067,7 @@ TEST_F(SiteSettingsHandlerTest, InstalledApps) {
     const base::Value* origin_list = site_group.FindListKey("origins");
     ASSERT_TRUE(origin_list);
 
-    const base::Value& origin_info = origin_list->GetList()[0];
+    const base::Value& origin_info = origin_list->GetListDeprecated()[0];
     ASSERT_TRUE(origin_info.is_dict());
 
     EXPECT_EQ("http://abc.example.com/",
@@ -1080,7 +1087,7 @@ TEST_F(SiteSettingsHandlerTest, InstalledApps) {
     const base::Value* origin_list = site_group.FindListKey("origins");
     ASSERT_TRUE(origin_list);
 
-    for (const auto& origin_info : origin_list->GetList()) {
+    for (const auto& origin_info : origin_list->GetListDeprecated()) {
       ASSERT_TRUE(origin_info.is_dict());
       EXPECT_FALSE(origin_info.FindKey("isInstalled")->GetBool());
     }
@@ -1120,7 +1127,7 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
     ASSERT_TRUE(data.arg3()->is_list());
-    base::Value::ConstListView exceptions = data.arg3()->GetList();
+    base::Value::ConstListView exceptions = data.arg3()->GetListDeprecated();
     ASSERT_EQ(1U, exceptions.size());
 
     validate_exception(exceptions[0]);
@@ -1147,7 +1154,7 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
     ASSERT_TRUE(data.arg3()->is_list());
-    base::Value::ConstListView exceptions = data.arg3()->GetList();
+    base::Value::ConstListView exceptions = data.arg3()->GetListDeprecated();
     ASSERT_EQ(2U, exceptions.size());
 
     validate_exception(exceptions[0]);
@@ -1581,7 +1588,7 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
   site_settings::AddExceptionForHostedApp("[*.]google.com", *extension.get(),
                                           exceptions.get());
 
-  const base::Value& dictionary = exceptions->GetList()[0];
+  const base::Value& dictionary = exceptions->GetListDeprecated()[0];
   CHECK(dictionary.is_dict());
   CHECK(dictionary.FindStringKey(site_settings::kOrigin));
   CHECK(dictionary.FindStringKey(site_settings::kDisplayName));
@@ -1983,14 +1990,14 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
     handler()->HandleGetAllSites(&base::Value::AsListValue(get_all_sites_args));
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    base::Value::ConstListView site_groups = data.arg3()->GetList();
+    base::Value::ConstListView site_groups = data.arg3()->GetListDeprecated();
     EXPECT_EQ(1UL, site_groups.size());
 
     const std::string etld_plus1_string =
         site_groups[0].FindKey("etldPlus1")->GetString();
     EXPECT_EQ("example.com", etld_plus1_string);
     base::Value::ConstListView origin_list =
-        site_groups[0].FindKey("origins")->GetList();
+        site_groups[0].FindKey("origins")->GetListDeprecated();
     EXPECT_EQ(1UL, origin_list.size());
     EXPECT_EQ(kWebUrl.spec(), origin_list[0].FindKey("origin")->GetString());
   }
@@ -2005,7 +2012,8 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
         &base::Value::AsListValue(get_exception_list_args));
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    base::Value::ConstListView exception_list = data.arg3()->GetList();
+    base::Value::ConstListView exception_list =
+        data.arg3()->GetListDeprecated();
     EXPECT_EQ(1UL, exception_list.size());
     EXPECT_EQ("https://example.com:443",
               exception_list[0].FindKey("origin")->GetString());
@@ -2021,7 +2029,8 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
         &base::Value::AsListValue(get_recent_permissions_args));
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    base::Value::ConstListView recent_permission_list = data.arg3()->GetList();
+    base::Value::ConstListView recent_permission_list =
+        data.arg3()->GetListDeprecated();
     EXPECT_EQ(1UL, recent_permission_list.size());
     EXPECT_EQ(kWebUrl.spec(),
               recent_permission_list[0].FindKey("origin")->GetString());
@@ -2057,7 +2066,8 @@ TEST_F(SiteSettingsHandlerTest, IncludeWebUISchemesInGetOriginPermissions) {
     handler()->HandleGetOriginPermissions(
         &base::Value::AsListValue(get_origin_permissions_args));
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    const base::Value::ConstListView exception_list = data.arg3()->GetList();
+    const base::Value::ConstListView exception_list =
+        data.arg3()->GetListDeprecated();
     EXPECT_EQ(1UL, exception_list.size());
 
     EXPECT_EQ(origin.GetURL().spec(),
@@ -2236,7 +2246,7 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
     if (!sites)
       return false;
 
-    for (const auto& site : sites->GetList()) {
+    for (const auto& site : sites->GetListDeprecated()) {
       const std::string* exception_origin =
           site.FindStringKey(site_settings::kOrigin);
       if (!exception_origin)

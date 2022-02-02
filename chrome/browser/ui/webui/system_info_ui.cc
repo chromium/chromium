@@ -119,7 +119,7 @@ void SystemInfoHandler::RegisterMessages() {
 
 void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue* args) {
   AllowJavascript();
-  callback_id_ = args->GetList()[0].GetString();
+  callback_id_ = args->GetListDeprecated()[0].GetString();
 
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildAboutSystemLogsFetcher();

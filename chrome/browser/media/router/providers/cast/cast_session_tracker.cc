@@ -135,7 +135,7 @@ void CastSessionTracker::HandleMediaStatusMessage(const MediaSinkInternal& sink,
   updated_status->EraseListValueIf(
       [](auto const& media) { return !media.is_dict(); });
 
-  base::Value::ListView media_list = updated_status->GetList();
+  base::Value::ListView media_list = updated_status->GetListDeprecated();
 
   // Backfill messages from receivers to make them compatible with Cast SDK.
   for (auto& media : media_list) {
@@ -173,7 +173,8 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
       session->value().FindKeyOfType("media", base::Value::Type::LIST);
   if (!session_media_value)
     return;
-  const auto& session_media_value_list = session_media_value->GetList();
+  const auto& session_media_value_list =
+      session_media_value->GetListDeprecated();
   for (auto& media : media_list) {
     const base::Value* media_session_id_value =
         media.FindKeyOfType("mediaSessionId", base::Value::Type::INTEGER);

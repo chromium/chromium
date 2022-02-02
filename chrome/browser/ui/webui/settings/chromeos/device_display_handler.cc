@@ -40,8 +40,10 @@ void DisplayHandler::HandleHighlightDisplay(const base::ListValue* args) {
 
   int64_t display_id;
 
-  if (args->GetList().empty() || !args->GetList()[0].is_string() ||
-      !base::StringToInt64(args->GetList()[0].GetString(), &display_id)) {
+  if (args->GetListDeprecated().empty() ||
+      !args->GetListDeprecated()[0].is_string() ||
+      !base::StringToInt64(args->GetListDeprecated()[0].GetString(),
+                           &display_id)) {
     cros_display_config_->HighlightDisplay(display::kInvalidDisplayId);
     return;
   }
@@ -50,10 +52,10 @@ void DisplayHandler::HandleHighlightDisplay(const base::ListValue* args) {
 }
 
 void DisplayHandler::HandleDragDisplayDelta(const base::ListValue* args) {
-  DCHECK_EQ(3U, args->GetList().size());
+  DCHECK_EQ(3U, args->GetListDeprecated().size());
   AllowJavascript();
 
-  const auto& args_list = args->GetList();
+  const auto& args_list = args->GetListDeprecated();
   const std::string& display_id_str = args_list[0].GetString();
   int32_t delta_x = static_cast<int32_t>(args_list[1].GetInt());
   int32_t delta_y = static_cast<int32_t>(args_list[2].GetInt());

@@ -50,7 +50,7 @@ TEST_F(ImageWriterPrivateApiUnittest,
       ImageWriterPrivateListRemovableStorageDevicesFunction>();
   std::unique_ptr<base::Value> devices =
       RunFunctionAndReturnList(function.get(), "[]");
-  ASSERT_TRUE(devices.get() && devices.get()->GetList().empty())
+  ASSERT_TRUE(devices.get() && devices.get()->GetListDeprecated().empty())
       << "Under policy ListDevices should return an empty list.";
 }
 

@@ -297,7 +297,7 @@ void FontSettingsGetFontListFunction::FontListHasLoaded(
 ExtensionFunction::ResponseValue
 FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  for (const auto& entry : fonts->GetList()) {
+  for (const auto& entry : fonts->GetListDeprecated()) {
     if (!entry.is_list()) {
       NOTREACHED();
       return Error("");

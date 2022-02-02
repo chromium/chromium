@@ -125,7 +125,7 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
   if (extensions) {
     if (!extensions->is_list())
       return Status(kInvalidArgument, kExtensionsMustBeList);
-    for (const base::Value& extension : extensions->GetList()) {
+    for (const base::Value& extension : extensions->GetListDeprecated()) {
       if (!extension.is_string())
         return Status(kInvalidArgument, kExtensionsMustBeList);
       const std::string& extension_string = extension.GetString();
@@ -220,7 +220,7 @@ Status ExecuteGetCredentials(WebView* web_view,
   if (!credentials)
     return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
 
-  for (base::Value& credential : credentials->GetList()) {
+  for (base::Value& credential : credentials->GetListDeprecated()) {
     ConvertBase64ToBase64Url(
         &credential, {"credentialId", "privateKey", "userHandle", "largeBlob"});
   }

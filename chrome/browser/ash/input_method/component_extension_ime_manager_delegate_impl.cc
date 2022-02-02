@@ -278,7 +278,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     if (language_value->is_string()) {
       languages.insert(language_value->GetString());
     } else if (language_value->is_list()) {
-      for (const base::Value& elem : language_value->GetList()) {
+      for (const base::Value& elem : language_value->GetListDeprecated()) {
         if (elem.is_string())
           languages.insert(elem.GetString());
       }
@@ -296,7 +296,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   if (!dict.GetList(extensions::manifest_keys::kLayouts, &layouts))
     return false;
 
-  base::Value::ConstListView layouts_list = layouts->GetList();
+  base::Value::ConstListView layouts_list = layouts->GetListDeprecated();
   if (!layouts_list.empty() && layouts_list[0].is_string())
     out->layout = layouts_list[0].GetString();
   else
@@ -419,7 +419,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       continue;
     }
 
-    for (const base::Value& value : component_list->GetList()) {
+    for (const base::Value& value : component_list->GetListDeprecated()) {
       if (!value.is_dict())
         continue;
 

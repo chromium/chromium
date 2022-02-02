@@ -220,7 +220,7 @@ bool GetAsStringVector(const base::Value* value,
   if (!value->is_list())
     return false;
 
-  for (const base::Value& item : value->GetList()) {
+  for (const base::Value& item : value->GetListDeprecated()) {
     if (!item.is_string())
       return false;
 
@@ -415,7 +415,7 @@ void AddFilters(URLMatcher* matcher,
                 std::map<url_matcher::URLMatcherConditionSet::ID,
                          url_matcher::util::FilterComponents>* filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  base::Value::ConstListView patterns_list = patterns->GetList();
+  base::Value::ConstListView patterns_list = patterns->GetListDeprecated();
   size_t size = std::min(kMaxFiltersAllowed, patterns_list.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
   for (size_t i = 0; i < size; ++i) {

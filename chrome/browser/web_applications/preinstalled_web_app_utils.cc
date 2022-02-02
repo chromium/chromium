@@ -179,7 +179,7 @@ constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
     "disable_if_touchscreen_with_stylus_not_supported";
 
 void EnsureContains(ListPrefUpdate& update, base::StringPiece value) {
-  for (const base::Value& item : update->GetList()) {
+  for (const base::Value& item : update->GetListDeprecated()) {
     if (item.is_string() && item.GetString() == value)
       return;
   }
@@ -207,7 +207,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   if (!value) {
     return base::StrCat({file.AsUTF8Unsafe(), " missing ", kUserType});
   }
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     if (!item.is_string()) {
       return base::StrCat({file.AsUTF8Unsafe(), " has invalid ", kUserType,
                            item.DebugString()});
@@ -372,7 +372,8 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
       return base::StrCat(
           {file.AsUTF8Unsafe(), " had an invalid ", kUninstallAndReplace});
     }
-    base::Value::ConstListView uninstall_and_replace_values = value->GetList();
+    base::Value::ConstListView uninstall_and_replace_values =
+        value->GetListDeprecated();
 
     for (const auto& app_id_value : uninstall_and_replace_values) {
       if (!app_id_value.is_string()) {
@@ -517,12 +518,12 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
   // icon_any_pngs
   const base::Value* icon_files =
       offline_manifest.FindListKey(kOfflineManifestIconAnyPngs);
-  if (!icon_files || icon_files->GetList().empty()) {
+  if (!icon_files || icon_files->GetListDeprecated().empty()) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestIconAnyPngs,
                          " missing, empty or invalid."});
   }
-  for (const base::Value& icon_file : icon_files->GetList()) {
+  for (const base::Value& icon_file : icon_files->GetListDeprecated()) {
     if (!icon_file.is_string()) {
       return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                            kOfflineManifestIconAnyPngs, " ",
@@ -605,7 +606,7 @@ bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
   if (!migrated_apps)
     return false;
 
-  for (const auto& val : migrated_apps->GetList()) {
+  for (const auto& val : migrated_apps->GetListDeprecated()) {
     if (val.is_string() && val.GetString() == app_id)
       return true;
   }
@@ -630,7 +631,7 @@ bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
   if (!migrated_features)
     return false;
 
-  for (const auto& val : migrated_features->GetList()) {
+  for (const auto& val : migrated_features->GetListDeprecated()) {
     if (val.is_string() && val.GetString() == feature_name)
       return true;
   }
@@ -656,7 +657,7 @@ bool WasPreinstalledAppUninstalled(Profile* profile,
   if (!uninstalled_apps)
     return false;
 
-  for (const auto& val : uninstalled_apps->GetList()) {
+  for (const auto& val : uninstalled_apps->GetListDeprecated()) {
     if (val.is_string() && val.GetString() == app_id)
       return true;
   }

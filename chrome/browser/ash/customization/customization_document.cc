@@ -360,7 +360,7 @@ void StartupCustomizationDocument::Init(
             chromeos::system::kHardwareClassKey, &hwid)) {
       base::ListValue* hwid_list = NULL;
       if (root_->GetList(kHwidMapAttr, &hwid_list)) {
-        for (const base::Value& hwid_value : hwid_list->GetList()) {
+        for (const base::Value& hwid_value : hwid_list->GetListDeprecated()) {
           const base::DictionaryValue* hwid_dictionary = nullptr;
           if (hwid_value.is_dict())
             hwid_dictionary = &base::Value::AsDictionaryValue(hwid_value);
@@ -748,10 +748,10 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   const base::ListValue* apps_list = NULL;
   if (root.GetList(kDefaultAppsAttr, &apps_list)) {
-    for (size_t i = 0; i < apps_list->GetList().size(); ++i) {
+    for (size_t i = 0; i < apps_list->GetListDeprecated().size(); ++i) {
       std::string app_id;
       std::unique_ptr<base::DictionaryValue> entry;
-      const base::Value& app_entry_value = apps_list->GetList()[i];
+      const base::Value& app_entry_value = apps_list->GetListDeprecated()[i];
       if (app_entry_value.is_string()) {
         app_id = app_entry_value.GetString();
         entry = std::make_unique<base::DictionaryValue>();

@@ -53,7 +53,7 @@ std::vector<api::events::Rule> RulesFromValue(const base::Value* value) {
   if (!value || !value->is_list())
     return rules;
 
-  base::Value::ConstListView list_view = value->GetList();
+  base::Value::ConstListView list_view = value->GetListDeprecated();
   rules.reserve(list_view.size());
   for (const base::Value& value : list_view) {
     if (!value.is_dict())

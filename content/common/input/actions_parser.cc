@@ -222,7 +222,7 @@ bool ActionsParser::ParseGpuBenchmarkingActionSequence(
         "action_sequence[%zu].actions is not defined or not a list",
         action_index_);
     return false;
-  } else if (actions->GetList().size() == 0) {
+  } else if (actions->GetListDeprecated().size() == 0) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is an empty list", action_index_);
     return false;
@@ -285,11 +285,12 @@ bool ActionsParser::ParseTestDriverActionSequence(
         "action_sequence[%zu].actions is not defined or not a list",
         action_index_);
     return false;
-  } else if (actions->GetList().size() == 0) {
+  } else if (actions->GetListDeprecated().size() == 0) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is an empty list", action_index_);
     return false;
-  } else if (*source_type == "wheel" && actions->GetList().size() > 1) {
+  } else if (*source_type == "wheel" &&
+             actions->GetListDeprecated().size() > 1) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions should only have one action for the "
         "wheel input source",

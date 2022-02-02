@@ -349,11 +349,11 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
   result_categories->clear();
   const base::Value* list =
       pref_service_->GetList(prefs::kClickBasedCategoryRankerOrderWithClicks);
-  if (!list || list->GetList().size() == 0) {
+  if (!list || list->GetListDeprecated().size() == 0) {
     return false;
   }
 
-  for (const base::Value& value : list->GetList()) {
+  for (const base::Value& value : list->GetListDeprecated()) {
     const base::DictionaryValue* dictionary;
     if (!value.GetAsDictionary(&dictionary)) {
       LOG(DFATAL) << "Failed to parse category data from prefs param "

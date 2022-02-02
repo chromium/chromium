@@ -63,7 +63,7 @@ void ComponentsHandler::OnJavascriptDisallowed() {
 void ComponentsHandler::HandleRequestComponentsData(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   base::DictionaryValue result;
   result.SetKey("components",
@@ -86,16 +86,16 @@ void ComponentsHandler::HandleRequestComponentsData(
 // state e.g. If component state is currently updating then we need to disable
 // button. (https://code.google.com/p/chromium/issues/detail?id=272540)
 void ComponentsHandler::HandleCheckUpdate(const base::ListValue* args) {
-  if (args->GetList().size() != 1) {
+  if (args->GetListDeprecated().size() != 1) {
     NOTREACHED();
     return;
   }
 
-  if (!args->GetList()[0].is_string()) {
+  if (!args->GetListDeprecated()[0].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& component_id = args->GetList()[0].GetString();
+  const std::string& component_id = args->GetListDeprecated()[0].GetString();
 
   OnDemandUpdate(component_id);
 }

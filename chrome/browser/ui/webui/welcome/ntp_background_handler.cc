@@ -59,8 +59,8 @@ void NtpBackgroundHandler::HandleClearBackground(const base::ListValue* args) {
 
 void NtpBackgroundHandler::HandleGetBackgrounds(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   base::ListValue list_value;
   std::array<GURL, kNtpBackgroundsCount> NtpBackgrounds = GetNtpBackgrounds();
@@ -116,7 +116,7 @@ void NtpBackgroundHandler::HandleGetBackgrounds(const base::ListValue* args) {
 }
 
 void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_EQ(1U, list.size());
   int background_index = list[0].GetInt();
 

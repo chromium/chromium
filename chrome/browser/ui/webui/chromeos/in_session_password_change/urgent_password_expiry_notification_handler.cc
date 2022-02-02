@@ -30,8 +30,8 @@ void UrgentPasswordExpiryNotificationHandler::HandleContinue(
 
 void UrgentPasswordExpiryNotificationHandler::HandleGetTitleText(
     const base::ListValue* params) {
-  const std::string callback_id = params->GetList()[0].GetString();
-  const int ms_until_expiry = params->GetList()[1].GetInt();
+  const std::string callback_id = params->GetListDeprecated()[0].GetString();
+  const int ms_until_expiry = params->GetListDeprecated()[1].GetInt();
 
   const std::u16string title = PasswordExpiryNotification::GetTitleText(
       base::Milliseconds(ms_until_expiry));

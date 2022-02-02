@@ -58,7 +58,7 @@ void QueryTilesInternalsUIMessageHandler::RegisterMessages() {
 void QueryTilesInternalsUIMessageHandler::HandleGetTileData(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id,
                             tile_service_->GetLogger()->GetTileData());
 }
@@ -66,7 +66,7 @@ void QueryTilesInternalsUIMessageHandler::HandleGetTileData(
 void QueryTilesInternalsUIMessageHandler::HandleGetServiceStatus(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(callback_id,
                             tile_service_->GetLogger()->GetServiceStatus());
 }
@@ -86,8 +86,9 @@ void QueryTilesInternalsUIMessageHandler::HandlePurgeDb(
 void QueryTilesInternalsUIMessageHandler::HandleSetServerUrl(
     const base::ListValue* args) {
   AllowJavascript();
-  DCHECK_EQ(args->GetList().size(), 1u) << "Missing argument server URL.";
-  tile_service_->SetServerUrl(args->GetList()[0].GetString());
+  DCHECK_EQ(args->GetListDeprecated().size(), 1u)
+      << "Missing argument server URL.";
+  tile_service_->SetServerUrl(args->GetListDeprecated()[0].GetString());
 }
 
 void QueryTilesInternalsUIMessageHandler::OnServiceStatusChanged(

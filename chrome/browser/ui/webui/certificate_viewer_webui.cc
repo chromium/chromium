@@ -317,7 +317,7 @@ void CertificateViewerDialogHandler::RegisterMessages() {
 
 void CertificateViewerDialogHandler::HandleExportCertificate(
     const base::ListValue* args) {
-  int cert_index = GetCertificateIndex(args->GetList()[0].GetInt());
+  int cert_index = GetCertificateIndex(args->GetListDeprecated()[0].GetInt());
   if (cert_index < 0)
     return;
 
@@ -332,8 +332,8 @@ void CertificateViewerDialogHandler::HandleExportCertificate(
 void CertificateViewerDialogHandler::HandleRequestCertificateFields(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
-  int cert_index = GetCertificateIndex(args->GetList()[1].GetInt());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  int cert_index = GetCertificateIndex(args->GetListDeprecated()[1].GetInt());
   if (cert_index < 0)
     return;
 

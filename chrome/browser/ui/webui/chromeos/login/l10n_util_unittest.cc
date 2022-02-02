@@ -170,7 +170,7 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   VerifyOnlyUILanguages(*list);
 
   // (4 languages (except Irish) + divider) = 5 + all other languages
-  ASSERT_LE(5u, list->GetList().size());
+  ASSERT_LE(5u, list->GetListDeprecated().size());
 
   VerifyLanguageCode(*list, 0, "fr");
   VerifyLanguageCode(*list, 1, "en-US");
@@ -191,7 +191,7 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
 
   VerifyOnlyUILanguages(*list);
 
-  ASSERT_LE(3u, list->GetList().size());
+  ASSERT_LE(3u, list->GetListDeprecated().size());
 
   VerifyLanguageCode(*list, 0, "it");
   VerifyLanguageCode(*list, 1, "de");

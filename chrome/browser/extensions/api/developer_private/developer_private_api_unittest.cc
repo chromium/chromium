@@ -98,10 +98,10 @@ bool WasItemChangedEventDispatched(
 
   const Event& event = *iter->second;
   CHECK(event.event_args);
-  CHECK_GE(1u, event.event_args->GetList().size());
+  CHECK_GE(1u, event.event_args->GetListDeprecated().size());
   std::unique_ptr<api::developer_private::EventData> event_data =
       api::developer_private::EventData::FromValue(
-          event.event_args->GetList()[0]);
+          event.event_args->GetListDeprecated()[0]);
   if (!event_data)
     return false;
 
@@ -291,7 +291,8 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
 
   // Extract the result. We don't have to test this here, since it's verified as
   // part of the general extension api system.
-  const base::Value& response_value = function->GetResultList()->GetList()[0];
+  const base::Value& response_value =
+      function->GetResultList()->GetListDeprecated()[0];
   std::unique_ptr<api::developer_private::PackDirectoryResponse> response =
       api::developer_private::PackDirectoryResponse::FromValue(response_value);
   CHECK(response);
@@ -329,8 +330,9 @@ void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
 
   ASSERT_TRUE(function->GetResultList());
-  ASSERT_EQ(1u, function->GetResultList()->GetList().size());
-  const base::Value& response_value = function->GetResultList()->GetList()[0];
+  ASSERT_EQ(1u, function->GetResultList()->GetListDeprecated().size());
+  const base::Value& response_value =
+      function->GetResultList()->GetListDeprecated()[0];
   *profile_info =
       api::developer_private::ProfileInfo::FromValue(response_value);
 }
@@ -501,7 +503,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   const base::Value* result_list = function->GetResultList();
   ASSERT_TRUE(result_list);
   ASSERT_TRUE(result_list->is_list());
-  base::Value::ConstListView result_list_view = result_list->GetList();
+  base::Value::ConstListView result_list_view =
+      result_list->GetListDeprecated();
   ASSERT_GT(result_list_view.size(), 0u);
   ASSERT_TRUE(result_list_view[0].is_string());
   path = result_list_view[0].GetString();
@@ -520,7 +523,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   result_list = function->GetResultList();
   ASSERT_TRUE(result_list);
   ASSERT_TRUE(result_list->is_list());
-  result_list_view = result_list->GetList();
+  result_list_view = result_list->GetListDeprecated();
   ASSERT_GT(result_list_view.size(), 0u);
   ASSERT_TRUE(result_list_view[0].is_string());
   path = result_list_view[0].GetString();
@@ -1024,7 +1027,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
   file_source_args.Append(properties.ToValue());
   EXPECT_TRUE(RunFunction(function, file_source_args)) << function->GetError();
 
-  const base::Value& response_value = function->GetResultList()->GetList()[0];
+  const base::Value& response_value =
+      function->GetResultList()->GetListDeprecated()[0];
   std::unique_ptr<api::developer_private::RequestFileSourceResponse> response =
       api::developer_private::RequestFileSourceResponse::FromValue(
           response_value);
@@ -1047,7 +1051,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
       new api::DeveloperPrivateGetExtensionsInfoFunction());
   EXPECT_TRUE(RunFunction(function, base::ListValue())) << function->GetError();
   const base::ListValue* results = function->GetResultList();
-  base::Value::ConstListView results_list = results->GetList();
+  base::Value::ConstListView results_list = results->GetListDeprecated();
   ASSERT_EQ(1u, results_list.size());
   ASSERT_TRUE(results_list[0].is_list());
   base::Value::ConstListView list = results_list[0].GetList();
@@ -1064,7 +1068,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   args.Append(false);
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
   results = function->GetResultList();
-  results_list = results->GetList();
+  results_list = results->GetListDeprecated();
   ASSERT_EQ(1u, results_list.size());
   ASSERT_TRUE(results_list[0].is_list());
   list = results_list[0].GetList();
@@ -1820,8 +1824,9 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
   base::ListValue args;
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
   ASSERT_TRUE(function->GetResultList());
-  ASSERT_EQ(1u, function->GetResultList()->GetList().size());
-  const base::Value& response_value = function->GetResultList()->GetList()[0];
+  ASSERT_EQ(1u, function->GetResultList()->GetListDeprecated().size());
+  const base::Value& response_value =
+      function->GetResultList()->GetListDeprecated()[0];
   std::unique_ptr<api::developer_private::UserSiteSettings> settings =
       api::developer_private::UserSiteSettings::FromValue(response_value);
 

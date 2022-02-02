@@ -211,7 +211,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
   std::vector<std::string> result;
   const base::Value* policy_apps =
       prefs->GetList(prefs::kPolicyPinnedLauncherApps);
-  if (!policy_apps || policy_apps->GetList().empty())
+  if (!policy_apps || policy_apps->GetListDeprecated().empty())
     return result;
 
   // Obtain here all ids of ARC apps because it takes linear time, and getting
@@ -221,7 +221,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
       arc_app_list_pref ? arc_app_list_pref->GetAppIds()
                         : std::vector<std::string>());
 
-  for (const auto& policy_dict_entry : policy_apps->GetList()) {
+  for (const auto& policy_dict_entry : policy_apps->GetListDeprecated()) {
     const std::string* policy_entry =
         policy_dict_entry.is_dict()
             ? policy_dict_entry.FindStringKey(
@@ -577,7 +577,7 @@ bool ChromeShelfPrefs::DidAddDefaultApps(PrefService* pref_service) {
   const auto* layouts_rolled =
       pref_service->GetList(GetShelfDefaultPinLayoutPref());
   DCHECK(layouts_rolled);
-  return !layouts_rolled->GetList().empty();
+  return !layouts_rolled->GetListDeprecated().empty();
 }
 
 bool ChromeShelfPrefs::ShouldAddDefaultApps(PrefService* pref_service) {

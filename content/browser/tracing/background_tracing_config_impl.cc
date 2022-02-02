@@ -269,7 +269,7 @@ BackgroundTracingConfigImpl::PreemptiveFromDict(const base::Value& dict) {
   if (!configs_list)
     return nullptr;
 
-  for (const auto& config_dict : configs_list->GetList()) {
+  for (const auto& config_dict : configs_list->GetListDeprecated()) {
     if (!config_dict.is_dict())
       return nullptr;
 
@@ -319,7 +319,7 @@ BackgroundTracingConfigImpl::ReactiveFromDict(const base::Value& dict) {
   if (!configs_list)
     return nullptr;
 
-  for (const auto& config_dict : configs_list->GetList()) {
+  for (const auto& config_dict : configs_list->GetListDeprecated()) {
     if (!config_dict.is_dict())
       return nullptr;
 
@@ -356,7 +356,7 @@ BackgroundTracingConfigImpl::SystemFromDict(const base::Value& dict) {
   if (!configs_list)
     return nullptr;
 
-  for (const auto& config_dict : configs_list->GetList()) {
+  for (const auto& config_dict : configs_list->GetListDeprecated()) {
     if (!config_dict.is_dict())
       return nullptr;
 

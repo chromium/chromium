@@ -128,7 +128,7 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
       // |kExpectedPreferenceListSize| origin IDs.
       DVLOG(1) << "Per-application provisioning is supported.";
       EXPECT_TRUE(list->is_list());
-      EXPECT_EQ(list->GetList().size(), kExpectedPreferenceListSize);
+      EXPECT_EQ(list->GetListDeprecated().size(), kExpectedPreferenceListSize);
     } else {
       // No pre-provisioned origin IDs should exist. In fact, the dictionary
       // should not have any entries.
@@ -278,7 +278,7 @@ TEST_F(MediaDrmOriginIdManagerTest, GetOriginIdCreatesList) {
 
   auto* list = dict->FindKey(kAvailableOriginIds);
   EXPECT_TRUE(list->is_list());
-  EXPECT_EQ(list->GetList().size(), kExpectedPreferenceListSize);
+  EXPECT_EQ(list->GetListDeprecated().size(), kExpectedPreferenceListSize);
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
@@ -295,8 +295,9 @@ TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
   auto* dict = GetDictionary(kMediaDrmOriginIds);
   auto* list = dict->FindKey(kAvailableOriginIds);
-  EXPECT_FALSE(base::Contains(
-      list->GetList(), base::UnguessableTokenToValue(origin_id.value())));
+  EXPECT_FALSE(
+      base::Contains(list->GetListDeprecated(),
+                     base::UnguessableTokenToValue(origin_id.value())));
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, ProvisioningFail) {
@@ -345,7 +346,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningSuccessAfterFail) {
   // As well, the list of available pre-provisioned origin IDs should be full.
   auto* list = dict->FindKey(kAvailableOriginIds);
   EXPECT_TRUE(list->is_list());
-  EXPECT_EQ(list->GetList().size(), kExpectedPreferenceListSize);
+  EXPECT_EQ(list->GetListDeprecated().size(), kExpectedPreferenceListSize);
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
@@ -389,7 +390,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
     // If per-application provisioning is supported, it's OK to attempt
     // to pre-provision origin IDs any time.
     DVLOG(1) << "Per-application provisioning is supported.";
-    EXPECT_EQ(list->GetList().size(), kExpectedPreferenceListSize);
+    EXPECT_EQ(list->GetListDeprecated().size(), kExpectedPreferenceListSize);
     EXPECT_FALSE(dict->FindKey(kExpirableToken));
   } else {
     // Per-application provisioning is not supported, so attempting to
@@ -453,7 +454,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   dict = GetDictionary(kMediaDrmOriginIds);
   DVLOG(1) << DisplayPref(dict);
   auto* list = dict->FindKey(kAvailableOriginIds);
-  EXPECT_EQ(list->GetList().size(), kExpectedPreferenceListSize);
+  EXPECT_EQ(list->GetListDeprecated().size(), kExpectedPreferenceListSize);
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {

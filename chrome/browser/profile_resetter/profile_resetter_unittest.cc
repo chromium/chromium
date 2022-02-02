@@ -792,7 +792,7 @@ TEST_F(ConfigParserTest, ParseConfig) {
       settings->GetUrlsToRestoreOnStartup());
   EXPECT_TRUE(startup_list);
   std::vector<std::string> startup_pages;
-  for (const auto& entry : startup_list->GetList()) {
+  for (const auto& entry : startup_list->GetListDeprecated()) {
     std::string url_str;
     EXPECT_TRUE(entry.GetAsString(&url_str));
     startup_pages.push_back(url_str);
@@ -988,8 +988,8 @@ TEST_F(ProfileResetterTest, GetReadableFeedback) {
   ASSERT_TRUE(list);
   bool checked_extensions = false;
   bool checked_shortcuts = false;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::Value& dict = list->GetList()[i];
+  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
+    const base::Value& dict = list->GetListDeprecated()[i];
     ASSERT_TRUE(dict.is_dict());
     const std::string* value = dict.FindStringKey("key");
     ASSERT_TRUE(value);

@@ -79,8 +79,8 @@ bool IsWebauthnRPIDListedInEnterprisePolicy(
   const PrefService* prefs = profile->GetPrefs();
   const base::Value* permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
-  return std::any_of(permit_attestation->GetList().begin(),
-                     permit_attestation->GetList().end(),
+  return std::any_of(permit_attestation->GetListDeprecated().begin(),
+                     permit_attestation->GetListDeprecated().end(),
                      [&relying_party_id](const base::Value& v) {
                        return v.GetString() == relying_party_id;
                      });

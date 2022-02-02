@@ -105,7 +105,7 @@ void FormatDictRecurse(base::Value* value,
     return;
   }
   if (value->is_list()) {
-    for (base::Value& child : value->GetList())
+    for (base::Value& child : value->GetListDeprecated())
       FormatDictRecurse(&child, messages);
     return;
   }
@@ -201,7 +201,7 @@ class CertificateProvisioningUiHandlerTestBase : public ::testing::Test {
     if (!out_profile_ids)
       return;
     out_profile_ids->clear();
-    for (const base::Value& process : out_all_processes->GetList()) {
+    for (const base::Value& process : out_all_processes->GetListDeprecated()) {
       const std::string* profile_id = process.FindStringKey("certProfileId");
       ASSERT_TRUE(profile_id);
       out_profile_ids->push_back(*profile_id);

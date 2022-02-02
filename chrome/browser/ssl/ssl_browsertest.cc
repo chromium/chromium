@@ -1739,7 +1739,7 @@ class CertificateTransparencySSLUITest : public CertVerifierBrowserTest {
     const base::Value* pref_value = pref_service->GetList(pref_name);
     ASSERT_TRUE(pref_value);
     std::vector<std::string> pref_values;
-    for (const auto& value : pref_value->GetList()) {
+    for (const auto& value : pref_value->GetListDeprecated()) {
       ASSERT_TRUE(value.is_string());
       pref_values.push_back(value.GetString());
     }

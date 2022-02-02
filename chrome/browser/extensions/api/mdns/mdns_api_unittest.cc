@@ -126,23 +126,24 @@ class EventServiceListSizeMatcher
       *listener << "event.event_arg is null when it shouldn't be";
       return false;
     }
-    if (e.event_args->GetList().size() != 1) {
+    if (e.event_args->GetListDeprecated().size() != 1) {
       *listener << "event.event_arg.GetSize() should be 1 but is "
-                << e.event_args->GetList().size();
+                << e.event_args->GetListDeprecated().size();
       return false;
     }
     const base::ListValue* services = nullptr;
     {
-      const base::Value& out = e.event_args->GetList()[0];
+      const base::Value& out = e.event_args->GetListDeprecated()[0];
       services = static_cast<const base::ListValue*>(&out);
     }
     if (!services) {
       *listener << "event's service list argument is not a ListValue";
       return false;
     }
-    *listener << "number of services is " << services->GetList().size();
+    *listener << "number of services is "
+              << services->GetListDeprecated().size();
     return static_cast<testing::Matcher<size_t>>(testing::Eq(expected_size_))
-        .MatchAndExplain(services->GetList().size(), listener);
+        .MatchAndExplain(services->GetListDeprecated().size(), listener);
   }
 
   virtual void DescribeTo(::std::ostream* os) const {

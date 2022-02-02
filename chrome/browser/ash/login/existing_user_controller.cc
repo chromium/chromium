@@ -1357,7 +1357,7 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
             .Get(policy::key::kSessionLocales);
     if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
         entry->value() && entry->value()->is_list()) {
-      base::Value::ConstListView list = entry->value()->GetList();
+      base::Value::ConstListView list = entry->value()->GetListDeprecated();
       if (!list.empty() && list[0].is_string()) {
         locale = list[0].GetString();
         new_user_context.SetPublicSessionLocale(locale);
@@ -1560,8 +1560,8 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
     std::unique_ptr<base::ListValue> keyboard_layouts) {
   UserContext new_user_context = user_context;
   std::string keyboard_layout;
-  for (size_t i = 0; i < keyboard_layouts->GetList().size(); ++i) {
-    base::Value& entry = keyboard_layouts->GetList()[i];
+  for (size_t i = 0; i < keyboard_layouts->GetListDeprecated().size(); ++i) {
+    base::Value& entry = keyboard_layouts->GetListDeprecated()[i];
     if (entry.FindBoolKey("selected").value_or(false)) {
       const std::string* keyboard_layout_ptr = entry.FindStringKey("value");
       if (keyboard_layout_ptr)

@@ -583,9 +583,9 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
   ASSERT_TRUE(color);
   const base::Value* color_options = color->FindListKey("option");
   ASSERT_TRUE(color_options);
-  ASSERT_EQ(1u, color_options->GetList().size());
+  ASSERT_EQ(1u, color_options->GetListDeprecated().size());
   const std::string* color_type =
-      color_options->GetList()[0].FindStringKey("type");
+      color_options->GetListDeprecated()[0].FindStringKey("type");
   ASSERT_TRUE(color_type);
   EXPECT_EQ("STANDARD_MONOCHROME", *color_type);
 
@@ -595,10 +595,10 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
   const base::Value* page_orientation_options =
       page_orientation->FindListKey("option");
   ASSERT_TRUE(page_orientation_options);
-  ASSERT_EQ(3u, page_orientation_options->GetList().size());
+  ASSERT_EQ(3u, page_orientation_options->GetListDeprecated().size());
   std::vector<std::string> page_orientation_types;
   for (const base::Value& page_orientation_option :
-       page_orientation_options->GetList()) {
+       page_orientation_options->GetListDeprecated()) {
     const std::string* page_orientation_type =
         page_orientation_option.FindStringKey("type");
     ASSERT_TRUE(page_orientation_type);

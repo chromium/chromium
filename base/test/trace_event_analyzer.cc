@@ -779,13 +779,13 @@ bool ParseEventsFromJson(const std::string& json,
 
   base::Value::ListView list;
   if (root->is_list()) {
-    list = root->GetList();
+    list = root->GetListDeprecated();
   } else if (root->is_dict()) {
     base::Value* trace_events = root->FindListKey("traceEvents");
     if (!trace_events)
       return false;
 
-    list = trace_events->GetList();
+    list = trace_events->GetListDeprecated();
   } else {
     return false;
   }

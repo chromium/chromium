@@ -100,11 +100,12 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
         embedder_support::prefs::kOriginTrialDisabledFeatures);
     ASSERT_TRUE(disabled_feature_list);
 
-    ASSERT_EQ(features.size(), disabled_feature_list->GetList().size());
+    ASSERT_EQ(features.size(),
+              disabled_feature_list->GetListDeprecated().size());
 
     for (size_t i = 0; i < features.size(); ++i) {
       const std::string* disabled_feature =
-          disabled_feature_list->GetList()[i].GetIfString();
+          disabled_feature_list->GetListDeprecated()[i].GetIfString();
       if (!disabled_feature) {
         ADD_FAILURE() << "Entry not found or not a string at index " << i;
         continue;
@@ -134,11 +135,11 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
         embedder_support::prefs::kOriginTrialDisabledTokens);
     ASSERT_TRUE(disabled_token_list);
 
-    ASSERT_EQ(tokens.size(), disabled_token_list->GetList().size());
+    ASSERT_EQ(tokens.size(), disabled_token_list->GetListDeprecated().size());
 
     for (size_t i = 0; i < tokens.size(); ++i) {
       const std::string* disabled_token =
-          disabled_token_list->GetList()[i].GetIfString();
+          disabled_token_list->GetListDeprecated()[i].GetIfString();
 
       if (!disabled_token) {
         ADD_FAILURE() << "Entry not found or not a string at index " << i;

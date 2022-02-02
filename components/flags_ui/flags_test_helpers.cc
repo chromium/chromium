@@ -72,7 +72,7 @@ FlagMetadataMap LoadFlagMetadata() {
     std::string name = entry.FindKey("name")->GetString();
     std::vector<std::string> owners;
     if (const base::Value* e = entry.FindKey("owners")) {
-      for (const auto& owner : e->GetList())
+      for (const auto& owner : e->GetListDeprecated())
         owners.push_back(owner.GetString());
     }
     int expiry_milestone = entry.FindKey("expiry_milestone")->GetInt();

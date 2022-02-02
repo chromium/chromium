@@ -82,7 +82,8 @@ PageRanges GetPageRangesFromJobSettings(const base::Value& job_settings) {
   const base::Value* page_range_array =
       job_settings.FindListKey(kSettingPageRange);
   if (page_range_array) {
-    for (const base::Value& page_range : page_range_array->GetList()) {
+    for (const base::Value& page_range :
+         page_range_array->GetListDeprecated()) {
       if (!page_range.is_dict())
         continue;
 

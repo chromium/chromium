@@ -158,9 +158,9 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
     auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetList().size());
+    ASSERT_EQ(1u, value->GetListDeprecated().size());
 
-    base::Value& report = value->GetList()[0];
+    base::Value& report = value->GetListDeprecated()[0];
     ASSERT_TRUE(report.is_dict());
     EXPECT_EQ(5u, report.DictSize());
 
@@ -234,9 +234,9 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
     const auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetList().size());
+    ASSERT_EQ(1u, value->GetListDeprecated().size());
 
-    const base::Value& report = value->GetList()[0];
+    const base::Value& report = value->GetListDeprecated()[0];
     ASSERT_TRUE(report.is_dict());
 
     ExpectDictIntegerValue(0, report, "age");
@@ -312,9 +312,9 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
     auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetList().size());
+    ASSERT_EQ(1u, value->GetListDeprecated().size());
 
-    base::Value& report = value->GetList()[0];
+    base::Value& report = value->GetListDeprecated()[0];
     ASSERT_TRUE(report.is_dict());
     EXPECT_EQ(5u, report.DictSize());
 
@@ -391,9 +391,9 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
     auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetList().size());
+    ASSERT_EQ(1u, value->GetListDeprecated().size());
 
-    base::Value& report = value->GetList()[0];
+    base::Value& report = value->GetListDeprecated()[0];
     ASSERT_TRUE(report.is_dict());
     EXPECT_EQ(5u, report.DictSize());
 

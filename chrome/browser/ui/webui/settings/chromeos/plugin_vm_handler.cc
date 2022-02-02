@@ -43,17 +43,17 @@ void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
   bool requires_relaunch =
       plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
           ->IsRelaunchNeededForNewPermissions();
   ResolveJavascriptCallback(
-      /*callback_id=*/base::Value(args->GetList()[0].GetString()),
+      /*callback_id=*/base::Value(args->GetListDeprecated()[0].GetString()),
       base::Value(requires_relaunch));
 }
 
 void PluginVmHandler::HandleRelaunchPluginVm(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetList().size());
+  CHECK_EQ(0U, args->GetListDeprecated().size());
   plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
       ->RelaunchPluginVm();
 }

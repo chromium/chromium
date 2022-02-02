@@ -82,7 +82,7 @@ std::string GetStringValue(const base::Value& dict, const char* key) {
 
 // Returns whether added.
 bool AppendIfNotPresent(base::ListValue* list, base::Value value) {
-  if (base::Contains(list->GetList(), value))
+  if (base::Contains(list->GetListDeprecated(), value))
     return false;
   list->Append(std::move(value));
   return true;
@@ -662,7 +662,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   // ServiceCompleteList contains string path values for each service.
   base::Value* complete_path_list =
       stub_properties_.FindListKey(shill::kServiceCompleteListProperty);
-  if (!complete_path_list || complete_path_list->GetList().empty())
+  if (!complete_path_list || complete_path_list->GetListDeprecated().empty())
     return;
   base::Value prev_complete_path_list = complete_path_list->Clone();
 
@@ -678,7 +678,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
 
   // Build a list of dictionaries for each service in the list.
   std::vector<base::Value> complete_dict_list;
-  for (const base::Value& value : complete_path_list->GetList()) {
+  for (const base::Value& value : complete_path_list->GetListDeprecated()) {
     std::string service_path = value.GetString();
     const base::Value* properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
@@ -1138,7 +1138,7 @@ bool FakeShillManagerClient::TechnologyEnabled(const std::string& type) const {
   const base::Value* technologies =
       stub_properties_.FindListKey(shill::kEnabledTechnologiesProperty);
   if (technologies)
-    return base::Contains(technologies->GetList(), base::Value(type));
+    return base::Contains(technologies->GetListDeprecated(), base::Value(type));
   return false;
 }
 
@@ -1164,7 +1164,7 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
   if (service_list) {
     ShillServiceClient::TestInterface* service_client =
         ShillServiceClient::Get()->GetTestInterface();
-    for (const base::Value& v : service_list->GetList()) {
+    for (const base::Value& v : service_list->GetListDeprecated()) {
       std::string service_path = v.GetString();
       const base::Value* properties =
           service_client->GetServiceProperties(service_path);
@@ -1181,7 +1181,7 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
 }
 
 void FakeShillManagerClient::ClearProfiles() {
-  if (GetListProperty(shill::kProfilesProperty)->GetList().empty()) {
+  if (GetListProperty(shill::kProfilesProperty)->GetListDeprecated().empty()) {
     return;
   }
   GetListProperty(shill::kProfilesProperty)->ClearList();

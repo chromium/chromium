@@ -649,11 +649,11 @@ absl::optional<std::vector<apps::mojom::IntentFilePtr>> GetFilesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   const base::Value* value = dict.FindListKey(key_name);
-  if (!value || !value->is_list() || value->GetList().empty())
+  if (!value || !value->is_list() || value->GetListDeprecated().empty())
     return absl::nullopt;
 
   std::vector<apps::mojom::IntentFilePtr> files;
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     GURL url(item.GetString());
     if (url.is_valid()) {
       auto file = apps::mojom::IntentFile::New();
@@ -668,11 +668,11 @@ absl::optional<std::vector<std::string>> GetCategoriesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   const base::Value* value = dict.FindListKey(key_name);
-  if (!value || !value->is_list() || value->GetList().empty())
+  if (!value || !value->is_list() || value->GetListDeprecated().empty())
     return absl::nullopt;
 
   std::vector<std::string> categories;
-  for (const auto& item : value->GetList())
+  for (const auto& item : value->GetListDeprecated())
     categories.push_back(item.GetString());
 
   return categories;

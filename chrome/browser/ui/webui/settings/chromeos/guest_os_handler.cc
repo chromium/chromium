@@ -75,11 +75,11 @@ void GuestOsHandler::OnJavascriptDisallowed() {
 void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(2U, args->GetListDeprecated().size());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
   base::Value texts(base::Value::Type::LIST);
-  for (const auto& path : args->GetList()[1].GetList()) {
+  for (const auto& path : args->GetListDeprecated()[1].GetList()) {
     texts.Append(file_manager::util::GetPathDisplayTextForSettings(
         profile_, path.GetString()));
   }
@@ -88,10 +88,10 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
 
 void GuestOsHandler::HandleRemoveGuestOsSharedPath(
     const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
-  std::string vm_name = args->GetList()[1].GetString();
-  std::string path = args->GetList()[2].GetString();
+  CHECK_EQ(3U, args->GetListDeprecated().size());
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string vm_name = args->GetListDeprecated()[1].GetString();
+  std::string path = args->GetListDeprecated()[2].GetString();
 
   guest_os::GuestOsSharePath::GetForProfile(profile_)->UnsharePath(
       vm_name, base::FilePath(path),
@@ -119,8 +119,8 @@ void GuestOsHandler::HandleNotifyGuestOsSharedUsbDevicesPageReady(
 
 void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
     const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetList().size());
-  const auto& args_list = args->GetList();
+  CHECK_EQ(3U, args->GetListDeprecated().size());
+  const auto& args_list = args->GetListDeprecated();
   const std::string& vm_name = args_list[0].GetString();
   const std::string& guid = args_list[1].GetString();
   bool shared = args_list[2].GetBool();

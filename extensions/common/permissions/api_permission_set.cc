@@ -102,7 +102,8 @@ bool ParseChildPermissions(const std::string& base_name,
       return true;
     }
 
-    base::Value::ConstListView list_view = permission_value->GetList();
+    base::Value::ConstListView list_view =
+        permission_value->GetListDeprecated();
     for (size_t i = 0; i < list_view.size(); ++i) {
       std::string permission_str;
       if (!list_view[i].is_string()) {
@@ -159,7 +160,7 @@ bool APIPermissionSet::ParseFromJSON(
     // return true here anyway.
     return true;
   }
-  base::Value::ConstListView list_view = permissions->GetList();
+  base::Value::ConstListView list_view = permissions->GetListDeprecated();
   for (size_t i = 0; i < list_view.size(); ++i) {
     std::string permission_str;
     const base::Value* permission_value = nullptr;

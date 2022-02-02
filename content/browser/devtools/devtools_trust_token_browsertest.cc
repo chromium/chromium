@@ -36,7 +36,7 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
     SendCommand("Storage.getTrustTokens", nullptr);
     base::Value* tokens = result_->FindPath("tokens");
     EXPECT_TRUE(tokens);
-    return tokens->GetList();
+    return tokens->GetListDeprecated();
   }
 
   // Asserts that CDP reports |count| number of tokens for |issuerOrigin|.

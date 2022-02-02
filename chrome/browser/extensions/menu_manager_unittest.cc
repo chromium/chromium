@@ -620,9 +620,9 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   manager_.ExecuteCommand(&profile, nullptr /* web_contents */,
                           nullptr /* render_frame_host */, params, id);
 
-  ASSERT_EQ(2u, list->GetList().size());
+  ASSERT_EQ(2u, list->GetListDeprecated().size());
 
-  const base::Value& info = list->GetList()[0];
+  const base::Value& info = list->GetListDeprecated()[0];
   ASSERT_TRUE(info.is_dict());
 
   ASSERT_EQ(id.uid, info.FindIntKey("menuItemId"));

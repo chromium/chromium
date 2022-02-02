@@ -57,7 +57,7 @@ bool ListValueContainsUrl(const base::Value* list, const GURL& url) {
   if (!list || !list->is_list())
     return false;
 
-  for (const base::Value& i : list->GetList()) {
+  for (const base::Value& i : list->GetListDeprecated()) {
     const std::string* url_text = i.GetIfString();
     if (url_text && url == *url_text)
       return true;

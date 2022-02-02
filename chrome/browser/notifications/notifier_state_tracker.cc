@@ -131,7 +131,7 @@ void NotifierStateTracker::SetNotifierEnabled(
 
   ListPrefUpdate update(profile_->GetPrefs(), pref_name);
   if (add_new_item) {
-    if (!base::Contains(update->GetList(), id))
+    if (!base::Contains(update->GetListDeprecated(), id))
       update->Append(std::move(id));
   } else {
     update->EraseListValue(id);
@@ -141,11 +141,12 @@ void NotifierStateTracker::SetNotifierEnabled(
 void NotifierStateTracker::OnStringListPrefChanged(
     const char* pref_name, std::set<std::string>* ids_field) {
   ids_field->clear();
-  // Separate GetPrefs()->GetList() to analyze the crash. See crbug.com/322320
+  // Separate GetPrefs()->GetListDeprecated() to analyze the crash. See
+  // crbug.com/322320
   const PrefService* pref_service = profile_->GetPrefs();
   CHECK(pref_service);
   const base::Value* pref_list = pref_service->GetList(pref_name);
-  base::Value::ConstListView pref_list_view = pref_list->GetList();
+  base::Value::ConstListView pref_list_view = pref_list->GetListDeprecated();
   for (size_t i = 0; i < pref_list_view.size(); ++i) {
     const std::string* element = pref_list_view[i].GetIfString();
     if (element && !element->empty())

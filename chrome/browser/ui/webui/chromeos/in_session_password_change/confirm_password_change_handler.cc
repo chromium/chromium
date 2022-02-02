@@ -53,7 +53,7 @@ ConfirmPasswordChangeHandler::~ConfirmPasswordChangeHandler() {
 
 void ConfirmPasswordChangeHandler::HandleGetInitialState(
     const base::ListValue* params) {
-  const std::string callback_id = params->GetList()[0].GetString();
+  const std::string callback_id = params->GetListDeprecated()[0].GetString();
 
   base::Value state(base::Value::Type::DICTIONARY);
   state.SetBoolKey("showOldPasswordPrompt", scraped_old_password_.empty());
@@ -66,10 +66,10 @@ void ConfirmPasswordChangeHandler::HandleGetInitialState(
 
 void ConfirmPasswordChangeHandler::HandleChangePassword(
     const base::ListValue* params) {
-  const std::string old_password =
-      FirstNonEmpty(params->GetList()[0].GetString(), scraped_old_password_);
-  const std::string new_password =
-      FirstNonEmpty(params->GetList()[1].GetString(), scraped_new_password_);
+  const std::string old_password = FirstNonEmpty(
+      params->GetListDeprecated()[0].GetString(), scraped_old_password_);
+  const std::string new_password = FirstNonEmpty(
+      params->GetListDeprecated()[1].GetString(), scraped_new_password_);
   DCHECK(!old_password.empty() && !new_password.empty());
 
   InSessionPasswordChangeManager::Get()->ChangePassword(

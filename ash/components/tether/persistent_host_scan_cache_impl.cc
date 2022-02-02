@@ -107,7 +107,7 @@ PersistentHostScanCacheImpl::GetStoredCacheEntries() {
 
   std::unordered_map<std::string, HostScanCacheEntry> entries;
   std::unordered_set<std::string> ids_processed_so_far;
-  for (auto& cache_entry_value : cache_entry_list->GetList()) {
+  for (auto& cache_entry_value : cache_entry_list->GetListDeprecated()) {
     const base::DictionaryValue* cache_entry_dict;
 
     if (!cache_entry_value.GetAsDictionary(&cache_entry_dict)) {

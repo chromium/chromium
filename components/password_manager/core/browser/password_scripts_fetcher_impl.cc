@@ -67,7 +67,8 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
     }
   }
 
-  for (const base::Value& domain : supported_domains_list->GetList()) {
+  for (const base::Value& domain :
+       supported_domains_list->GetListDeprecated()) {
     if (!domain.is_string()) {
       warnings.insert(ParsingResult::kInvalidJson);
       continue;

@@ -36,21 +36,21 @@ bool URLSchemeListPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
 
   const base::Value* schemes = policies.GetValue(policy_name());
-  if (!schemes || schemes->GetList().empty())
+  if (!schemes || schemes->GetListDeprecated().empty())
     return true;
 
   DCHECK(schemes->is_list());
 
   // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
   // warning message.
-  if (schemes->GetList().size() > policy::kMaxUrlFiltersPerPolicy) {
+  if (schemes->GetListDeprecated().size() > policy::kMaxUrlFiltersPerPolicy) {
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
                      base::NumberToString(policy::kMaxUrlFiltersPerPolicy));
   }
 
   std::vector<std::string> invalid_policies;
-  for (const auto& entry : schemes->GetList()) {
+  for (const auto& entry : schemes->GetListDeprecated()) {
     if (!ValidatePolicyEntry(entry.GetIfString()))
       invalid_policies.push_back(entry.GetString());
   }
@@ -60,7 +60,7 @@ bool URLSchemeListPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                      base::JoinString(invalid_policies, ","));
   }
 
-  return invalid_policies.size() < schemes->GetList().size();
+  return invalid_policies.size() < schemes->GetListDeprecated().size();
 }
 
 void URLSchemeListPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
@@ -69,7 +69,7 @@ void URLSchemeListPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (!schemes || !schemes->is_list())
     return;
   std::vector<base::Value> filtered_schemes;
-  for (const auto& entry : schemes->GetList()) {
+  for (const auto& entry : schemes->GetListDeprecated()) {
     if (ValidatePolicyEntry(entry.GetIfString()))
       filtered_schemes.push_back(entry.Clone());
   }

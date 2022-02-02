@@ -140,7 +140,7 @@ class SessionTest : public mojom::ResourceProvider,
       ASSERT_TRUE(offer);
       auto* raw_streams = offer->FindKey("supportedStreams");
       if (raw_streams) {
-        base::Value::ListView streams = raw_streams->GetList();
+        base::Value::ListView streams = raw_streams->GetListDeprecated();
         for (auto it = streams.begin(); it != streams.end(); ++it) {
           EXPECT_EQ(it->FindKey("targetDelay")->GetInt(),
                     target_playout_delay_ms_);

@@ -101,7 +101,7 @@ bool VendorCapabilityInvalid(const base::Value& val) {
     return true;
   const base::Value* options_list =
       select_cap->FindKeyOfType(kOptionKey, base::Value::Type::LIST);
-  if (!options_list || options_list->GetList().empty() ||
+  if (!options_list || options_list->GetListDeprecated().empty() ||
       GetFilteredList(options_list, ValueIsNull).GetList().empty()) {
     return true;
   }
@@ -138,12 +138,12 @@ base::Value ValidateCddForPrintPreview(base::Value cdd) {
     bool is_vendor_capability = key == kVendorCapabilityKey;
     list_value->EraseListValueIf(is_vendor_capability ? VendorCapabilityInvalid
                                                       : ValueIsNull);
-    if (list_value->GetList().empty())  // leave out empty lists.
+    if (list_value->GetListDeprecated().empty())  // leave out empty lists.
       continue;
 
     if (is_vendor_capability) {
       // Need to also filter the individual capability lists.
-      for (auto& vendor_option : list_value->GetList()) {
+      for (auto& vendor_option : list_value->GetListDeprecated()) {
         if (*vendor_option.FindStringKey(kTypeKey) != kSelectString)
           continue;
 

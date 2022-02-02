@@ -65,8 +65,8 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
         << "GetArguments() should only be called once.";
     std::unique_ptr<content::V8ValueConverter> converter =
         content::V8ValueConverter::Create();
-    v8_arguments_.reserve(base_arguments_->GetList().size());
-    for (const auto& arg : base_arguments_->GetList())
+    v8_arguments_.reserve(base_arguments_->GetListDeprecated().size());
+    for (const auto& arg : base_arguments_->GetListDeprecated())
       v8_arguments_.push_back(converter->ToV8Value(&arg, context));
   }
 

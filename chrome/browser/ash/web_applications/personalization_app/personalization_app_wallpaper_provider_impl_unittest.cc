@@ -132,8 +132,8 @@ base::Value& GetAlbumFromGooglePhotosAlbumsResponse(
     absl::optional<base::Value>& response) {
   EXPECT_TRUE(response.has_value());
   auto* album_list = response->FindListPath("collection");
-  EXPECT_TRUE(album_list && album_list->GetList().size() == 1);
-  return album_list->GetList().front();
+  EXPECT_TRUE(album_list && album_list->GetListDeprecated().size() == 1);
+  return album_list->GetListDeprecated().front();
 }
 
 // Returns a reference to the photo in a hypothetical Google Photos photos query
@@ -143,8 +143,8 @@ base::Value& GetPhotoFromGooglePhotosPhotosResponse(
     absl::optional<base::Value>& response) {
   EXPECT_TRUE(response.has_value());
   auto* photo_list = response->FindListPath("item");
-  EXPECT_TRUE(photo_list && photo_list->GetList().size() == 1);
-  return photo_list->GetList().front();
+  EXPECT_TRUE(photo_list && photo_list->GetListDeprecated().size() == 1);
+  return photo_list->GetListDeprecated().front();
 }
 
 class TestWallpaperObserver

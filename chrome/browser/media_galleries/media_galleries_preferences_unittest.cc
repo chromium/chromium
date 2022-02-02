@@ -193,7 +193,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
         new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
     base::Value* list = update->Get();
 
-    for (auto& entry : list->GetList()) {
+    for (auto& entry : list->GetListDeprecated()) {
       base::DictionaryValue* dict;
 
       if (entry.GetAsDictionary(&dict)) {

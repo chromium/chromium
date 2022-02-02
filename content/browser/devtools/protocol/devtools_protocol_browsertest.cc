@@ -1502,8 +1502,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   SendCommand("Target.getTargets", nullptr, true);
   base::ListValue* target_infos;
   EXPECT_TRUE(result_->GetList("targetInfos", &target_infos));
-  EXPECT_EQ(1u, target_infos->GetList().size());
-  const base::Value& target_info_value = target_infos->GetList()[0u];
+  EXPECT_EQ(1u, target_infos->GetListDeprecated().size());
+  const base::Value& target_info_value = target_infos->GetListDeprecated()[0u];
   EXPECT_TRUE(target_info_value.is_dict());
   const base::DictionaryValue& target_info =
       base::Value::AsDictionaryValue(target_info_value);
@@ -1925,9 +1925,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
 
   const base::Value* cookies = result_->FindListKey("cookies");
   ASSERT_TRUE(cookies);
-  EXPECT_EQ(1u, cookies->GetList().size());
+  EXPECT_EQ(1u, cookies->GetListDeprecated().size());
 
-  const base::Value& cookie_value = cookies->GetList()[0];
+  const base::Value& cookie_value = cookies->GetListDeprecated()[0];
   EXPECT_TRUE(cookie_value.is_dict());
   const base::DictionaryValue& cookie =
       base::Value::AsDictionaryValue(cookie_value);
@@ -1943,11 +1943,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
 
   cookies = result_->FindListKey("cookies");
   ASSERT_TRUE(cookies);
-  EXPECT_EQ(2u, cookies->GetList().size());
+  EXPECT_EQ(2u, cookies->GetListDeprecated().size());
 
   // Note: the cookies will be returned in unspecified order.
   size_t found = 0;
-  for (const base::Value& cookie_value : cookies->GetList()) {
+  for (const base::Value& cookie_value : cookies->GetListDeprecated()) {
     EXPECT_TRUE(cookie_value.is_dict());
     const base::DictionaryValue& cookie =
         base::Value::AsDictionaryValue(cookie_value);

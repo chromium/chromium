@@ -69,7 +69,7 @@ void FollowJavaScriptFeature::HandleResponse(
     return;
 
   NSMutableArray* rss_links = [[NSMutableArray alloc] init];
-  for (const auto& link : response->GetList()) {
+  for (const auto& link : response->GetListDeprecated()) {
     if (link.is_string()) {
       [rss_links addObject:[NSURL URLWithString:base::SysUTF8ToNSString(
                                                     *link.GetIfString())]];

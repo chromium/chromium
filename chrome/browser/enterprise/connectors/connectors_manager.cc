@@ -152,7 +152,8 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   const base::Value* policy_value =
       pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings : policy_value->GetList())
+    for (const base::Value& service_settings :
+         policy_value->GetListDeprecated())
       analysis_connector_settings_[connector].emplace_back(
           service_settings, *service_provider_config_);
   }
@@ -169,7 +170,8 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   const base::Value* policy_value =
       pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings : policy_value->GetList())
+    for (const base::Value& service_settings :
+         policy_value->GetListDeprecated())
       reporting_connector_settings_[connector].emplace_back(
           service_settings, *service_provider_config_);
   }
@@ -186,7 +188,8 @@ void ConnectorsManager::CacheFileSystemConnectorPolicy(
   const base::Value* policy_value =
       pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings : policy_value->GetList())
+    for (const base::Value& service_settings :
+         policy_value->GetListDeprecated())
       file_system_connector_settings_[connector].emplace_back(
           service_settings, *service_provider_config_);
   }

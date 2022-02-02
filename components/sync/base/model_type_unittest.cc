@@ -31,7 +31,7 @@ TEST_F(ModelTypeTest, ModelTypeSetToValue) {
 
   std::unique_ptr<base::ListValue> value(ModelTypeSetToValue(model_types));
   ASSERT_TRUE(value->is_list());
-  base::Value::ConstListView value_list = value->GetList();
+  base::Value::ConstListView value_list = value->GetListDeprecated();
   ASSERT_EQ(2u, value_list.size());
   ASSERT_TRUE(value_list[0].is_string());
   EXPECT_EQ("Bookmarks", value_list[0].GetString());

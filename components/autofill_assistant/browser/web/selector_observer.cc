@@ -552,7 +552,7 @@ void SelectorObserver::OnHasChanges(
 
   const base::Value* updates_val = value->FindKey("updates");
   DCHECK(updates_val->is_list());
-  auto update_list = updates_val->GetList();
+  auto update_list = updates_val->GetListDeprecated();
   if (update_list.size() == 0) {
     AwaitChanges(dom_root);
     return;

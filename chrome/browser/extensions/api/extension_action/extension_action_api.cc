@@ -546,7 +546,7 @@ ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(color_value);
   SkColor color = 0;
   if (color_value->is_list()) {
-    base::Value::ConstListView list = color_value->GetList();
+    base::Value::ConstListView list = color_value->GetListDeprecated();
 
     EXTENSION_FUNCTION_VALIDATE(list.size() == 4);
 

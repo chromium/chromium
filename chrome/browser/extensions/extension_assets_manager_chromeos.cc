@@ -310,7 +310,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
   if (shared_path && users) {
     // This extension version already in shared location.
     bool user_found = false;
-    for (const base::Value& user : users->GetList()) {
+    for (const base::Value& user : users->GetListDeprecated()) {
       const std::string* temp = user.GetIfString();
       if (temp && *temp == user_id) {
         // Re-installation for the same user.
@@ -454,7 +454,8 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
       NOTREACHED();
       continue;
     }
-    if (users->EraseListValue(user_name) && users->GetList().empty()) {
+    if (users->EraseListValue(user_name) &&
+        users->GetListDeprecated().empty()) {
       std::string* shared_path =
           version_info->FindStringKey(kSharedExtensionPath);
       if (!shared_path) {
@@ -515,9 +516,9 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
       return false;
     }
 
-    size_t num_users = users->GetList().size();
+    size_t num_users = users->GetListDeprecated().size();
     for (size_t i = 0; i < num_users; i++) {
-      const std::string* user_id = users->GetList()[i].GetIfString();
+      const std::string* user_id = users->GetListDeprecated()[i].GetIfString();
       if (!user_id) {
         NOTREACHED();
         return false;
@@ -547,7 +548,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
       }
 
       if (not_used) {
-        users->EraseListIter(users->GetList().begin() + i);
+        users->EraseListIter(users->GetListDeprecated().begin() + i);
 
         i--;
         num_users--;

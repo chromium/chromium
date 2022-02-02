@@ -623,7 +623,7 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
 
   const base::Value* handlers = prefs->GetList(pref_name);
   if (handlers) {
-    for (const auto& dict : handlers->GetList()) {
+    for (const auto& dict : handlers->GetListDeprecated()) {
       if (!dict.is_dict())
         continue;
       const base::DictionaryValue* dict_value =

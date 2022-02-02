@@ -112,7 +112,7 @@ void ShillLogSource::OnGetManagerProperties(
 
   const base::Value* devices = result->FindListKey(shill::kDevicesProperty);
   if (devices) {
-    for (const base::Value& device : devices->GetList()) {
+    for (const base::Value& device : devices->GetListDeprecated()) {
       std::string path = GetString(&device);
       if (path.empty())
         continue;
@@ -126,7 +126,7 @@ void ShillLogSource::OnGetManagerProperties(
 
   const base::Value* services = result->FindListKey(shill::kServicesProperty);
   if (services) {
-    for (const base::Value& service : services->GetList()) {
+    for (const base::Value& service : services->GetListDeprecated()) {
       std::string path = GetString(&service);
       if (path.empty())
         continue;
@@ -163,7 +163,7 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
   if (!ip_configs)
     return;
 
-  for (const base::Value& ip_config : ip_configs->GetList()) {
+  for (const base::Value& ip_config : ip_configs->GetListDeprecated()) {
     std::string ip_config_path = GetString(&ip_config);
     if (ip_config_path.empty())
       continue;

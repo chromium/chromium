@@ -129,7 +129,7 @@ void VerifyDictionaryWithDeviceInfo(const base::Value* actual_value,
 const base::Value* GetDictionaryFromList(int index, base::Value* value) {
   const base::Value* dictionary = nullptr;
   int cur_index = 0;
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     if (cur_index++ != index)
       continue;
     if (!item.is_dict()) {

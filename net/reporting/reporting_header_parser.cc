@@ -166,7 +166,7 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
 
   std::vector<ReportingEndpoint::EndpointInfo> endpoints;
 
-  for (const base::Value& endpoint : endpoint_list->GetList()) {
+  for (const base::Value& endpoint : endpoint_list->GetListDeprecated()) {
     ReportingEndpoint::EndpointInfo parsed_endpoint;
     if (ProcessEndpoint(delegate, group_key, endpoint, &parsed_endpoint))
       endpoints.push_back(std::move(parsed_endpoint));
@@ -286,8 +286,8 @@ void ReportingHeaderParser::ParseReportToHeader(
 
   std::vector<ReportingEndpointGroup> parsed_header;
 
-  for (size_t i = 0; i < value->GetList().size(); i++) {
-    const base::Value& group_value = value->GetList()[i];
+  for (size_t i = 0; i < value->GetListDeprecated().size(); i++) {
+    const base::Value& group_value = value->GetListDeprecated()[i];
     ReportingEndpointGroup parsed_endpoint_group;
     if (ProcessEndpointGroup(delegate, cache, network_isolation_key, origin,
                              group_value, &parsed_endpoint_group)) {
@@ -295,7 +295,7 @@ void ReportingHeaderParser::ParseReportToHeader(
     }
   }
 
-  if (parsed_header.empty() && value->GetList().size() > 0) {
+  if (parsed_header.empty() && value->GetListDeprecated().size() > 0) {
     RecordReportingHeaderType(ReportingHeaderType::kReportToInvalid);
   }
 

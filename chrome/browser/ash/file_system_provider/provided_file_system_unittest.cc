@@ -71,7 +71,7 @@ class FakeEventRouter : public extensions::EventRouter {
       const extensions::ExtensionId& extension_id,
       std::unique_ptr<extensions::Event> event) override {
     ASSERT_TRUE(file_system_);
-    const base::Value* dict = &event->event_args->GetList()[0];
+    const base::Value* dict = &event->event_args->GetListDeprecated()[0];
     ASSERT_TRUE(dict->is_dict());
     const std::string* file_system_id = dict->FindStringKey("fileSystemId");
     EXPECT_NE(file_system_id, nullptr);
