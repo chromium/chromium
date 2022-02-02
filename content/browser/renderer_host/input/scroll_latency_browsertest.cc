@@ -289,7 +289,14 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
 
 using ScrollThroughputBrowserTest = ScrollLatencyBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(ScrollThroughputBrowserTest, ScrollThroughputMetrics) {
+// https://crbug.com/1067492. Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ScrollThroughputMetrics DISABLED_ScrollThroughputMetrics
+#else
+#define MAYBE_ScrollThroughputMetrics ScrollThroughputMetrics
+#endif
+IN_PROC_BROWSER_TEST_F(ScrollThroughputBrowserTest,
+                       MAYBE_ScrollThroughputMetrics) {
   LoadURL();
   auto scroll_update_watcher = std::make_unique<InputMsgWatcher>(
       GetWidgetHost(), blink::WebInputEvent::Type::kGestureScrollEnd);
