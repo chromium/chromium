@@ -128,7 +128,7 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
         }
         String cancelDialog = mStringMap.get(SPLIT_ONBOARDING_CLOSE_DIALOG_KEY);
         if (cancelDialog == null) {
-            acceptDialog = mContext.getString(R.string.cancel);
+            cancelDialog = mContext.getString(R.string.cancel);
         }
 
         mDialog = new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
