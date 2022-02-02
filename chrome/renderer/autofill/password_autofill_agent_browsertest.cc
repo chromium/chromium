@@ -4087,4 +4087,30 @@ TEST_F(PasswordAutofillAgentTest, NoXhrSubmissionAfterFillingOnPageload) {
   ASSERT_FALSE(fake_driver_.called_dynamic_form_submission());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordAutofillAgentTest, TriggerSubmission) {
+  // Simulate the browser sending the login info, but set |wait_for_username|
+  // to prevent the form from being immediately filled because the test
+  // simulates filling with |FillSuggestion|, the function that TouchToFill
+  // uses.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Fill the form.
+  EXPECT_TRUE(password_autofill_agent_->FillSuggestion(
+      username_element_, kAliceUsername16, kAlicePassword16));
+  base::RunLoop().RunUntilIdle();
+  // Check that two input fields are modified as |TriggerSubmission| expects the
+  // last intereacted input to be set.
+  EXPECT_EQ(1, fake_driver_.called_inform_about_user_input_count());
+
+  // Trigger a form submission.
+  password_autofill_agent_->TriggerFormSubmission();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the driver actually has seen a submission.
+  EXPECT_TRUE(fake_driver_.called_password_form_submitted());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace autofill
