@@ -2502,6 +2502,14 @@ const FeatureEntry::FeatureVariation kQuerySearchBurnInPeriodVariations[] = {
      base::size(kQuerySearchBurnInPeriod_500ms), nullptr},
     {"2000ms", kQuerySearchBurnInPeriod_2000ms,
      base::size(kQuerySearchBurnInPeriod_2000ms), nullptr}};
+
+const FeatureEntry::FeatureParam kProductivityLauncher_WithoutContinue[] = {
+    {"enable_continue", "false"}};
+
+const FeatureEntry::FeatureVariation kProductivityLauncherVariations[] = {
+    {"without Continue", kProductivityLauncher_WithoutContinue,
+     base::size(kProductivityLauncher_WithoutContinue), nullptr}};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr FeatureEntry::FeatureParam kPlatformProvidedTrustTokenIssuance[] = {
@@ -6613,7 +6621,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"productivity-launcher", flag_descriptions::kProductivityLauncherName,
      flag_descriptions::kProductivityLauncherDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kProductivityLauncher)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kProductivityLauncher,
+                                    kProductivityLauncherVariations,
+                                    "ProductivityLauncher")},
     {"shelf-drag-to-pin", flag_descriptions::kShelfDragToPinName,
      flag_descriptions::kShelfDragToPinDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDragUnpinnedAppToPin)},
