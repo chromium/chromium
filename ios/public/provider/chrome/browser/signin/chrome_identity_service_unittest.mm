@@ -24,6 +24,10 @@ using signin_metrics::FetchAccountCapabilitiesFromSystemLibraryResult;
 namespace ios {
 namespace {
 
+// A wrapper for the API to fetch Capability results for a specific Capability
+// type.
+using CapabilityFetcherBlock = void (^)(ChromeIdentityCapabilityResult*);
+
 class TestChromeIdentityService : public ChromeIdentityService {
  public:
   struct FetchCapabilitiesRequest {
@@ -35,16 +39,31 @@ class TestChromeIdentityService : public ChromeIdentityService {
   TestChromeIdentityService() = default;
   ~TestChromeIdentityService() override = default;
 
-  const FetchCapabilitiesRequest& fetch_capabilities_request() const {
-    return fetch_capabilities_request_.value();
+  // Sets the capability and its corresponding fetcher in the test service.
+  void SetCapabilityUnderTest(NSString* capability_name,
+                              CapabilityFetcherBlock capability_fetcher_block) {
+    capability_name_ = capability_name;
+    capability_fetcher_block_ = capability_fetcher_block;
   }
 
-  void RunFinishCapabilitiesCompletion(NSDictionary* capabilities,
-                                       NSError* error) {
-    EXPECT_TRUE(fetch_capabilities_request_.has_value());
-    EXPECT_TRUE(fetch_capabilities_request_.value().completion);
-    fetch_capabilities_request_.value().completion(capabilities, error);
-    fetch_capabilities_request_.reset();
+  // Retrieves the capability tribool result for the capability under test.
+  ChromeIdentityCapabilityResult FetchCapability(NSNumber* capability_value,
+                                                 NSError* error) {
+    base::HistogramTester histogramTester;
+    base::ScopedMockClockOverride clock;
+    ChromeIdentityCapabilityResult result;
+    capability_fetcher_block_(&result);
+
+    clock.Advance(base::Minutes(1));
+    // Capability result is set after completion.
+    RunFinishCapabilitiesCompletion(capability_value, error);
+
+    histogramTester.ExpectUniqueTimeSample(
+        "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
+        base::Minutes(1),
+        /*expected_bucket_count=*/1);
+
+    return result;
   }
 
  protected:
@@ -61,7 +80,19 @@ class TestChromeIdentityService : public ChromeIdentityService {
   }
 
  private:
+  void RunFinishCapabilitiesCompletion(NSNumber* capability_value,
+                                       NSError* error) {
+    NSDictionary* capabilities =
+        capability_value ? @{capability_name_ : capability_value} : nil;
+    EXPECT_TRUE(fetch_capabilities_request_.has_value());
+    EXPECT_TRUE(fetch_capabilities_request_.value().completion);
+    fetch_capabilities_request_.value().completion(capabilities, error);
+    fetch_capabilities_request_.reset();
+  }
+
   absl::optional<FetchCapabilitiesRequest> fetch_capabilities_request_;
+  NSString* capability_name_ = nil;
+  CapabilityFetcherBlock capability_fetcher_block_ = nil;
 };
 
 class ChromeIdentityServiceTest : public PlatformTest {
@@ -74,130 +105,120 @@ class ChromeIdentityServiceTest : public PlatformTest {
   ~ChromeIdentityServiceTest() override = default;
 
  protected:
-  ChromeIdentityCapabilityResult FetchCanOfferExtendedSyncPromos(
-      ChromeIdentity* identity,
-      int capability_value) {
-    base::HistogramTester histogramTester;
-    ChromeIdentityCapabilityResult result = FetchCanOfferExtendedSyncPromos(
-        identity, [NSNumber numberWithInt:capability_value], /*error=*/nil);
-    histogramTester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-        FetchAccountCapabilitiesFromSystemLibraryResult::kSuccess, 1);
-    return result;
-  }
-
-  ChromeIdentityCapabilityResult FetchCanOfferExtendedSyncPromos(
-      ChromeIdentity* identity,
-      NSNumber* capability_value,
-      NSError* error) {
-    __block ChromeIdentityCapabilityResult fetched_capability_result;
-    service_.CanOfferExtendedSyncPromos(
-        identity, ^(ChromeIdentityCapabilityResult result) {
-          fetched_capability_result = result;
-        });
-    EXPECT_NSEQ(@[ @(kCanOfferExtendedChromeSyncPromosCapabilityName) ],
-                service_.fetch_capabilities_request().capabilities);
-    EXPECT_EQ(identity, service_.fetch_capabilities_request().identity);
-
-    NSDictionary* capability_values = capability_value ? @{
-      @(kCanOfferExtendedChromeSyncPromosCapabilityName) : capability_value
-    }
-                                                       : nil;
-    service_.RunFinishCapabilitiesCompletion(capability_values, error);
-    return fetched_capability_result;
+  void RunCapabilitySmokeTests() {
+    CheckChromeIdentityCapabilityResult();
+    CheckMissingCapability();
+    CheckCapabilityValueOutOfRange();
+    CheckCapabillityFetcherWithError();
   }
 
   FakeChromeIdentity* identity_;
   TestChromeIdentityService service_;
+
+ private:
+  void CheckChromeIdentityCapabilityResult() {
+    {
+      base::HistogramTester histogramTester;
+      EXPECT_EQ(ChromeIdentityCapabilityResult::kFalse,
+                service_.FetchCapability(/*capability_value=*/@0, nil));
+      histogramTester.ExpectUniqueSample(
+          "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+          FetchAccountCapabilitiesFromSystemLibraryResult::kSuccess, 1);
+    }
+    {
+      base::HistogramTester histogramTester;
+      EXPECT_EQ(ChromeIdentityCapabilityResult::kTrue,
+                service_.FetchCapability(/*capability_value=*/@1, nil));
+      histogramTester.ExpectUniqueSample(
+          "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+          FetchAccountCapabilitiesFromSystemLibraryResult::kSuccess, 1);
+    }
+    {
+      base::HistogramTester histogramTester;
+      EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
+                service_.FetchCapability(/*capability_value=*/@2, nil));
+      histogramTester.ExpectUniqueSample(
+          "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+          FetchAccountCapabilitiesFromSystemLibraryResult::kSuccess, 1);
+    }
+  }
+
+  void CheckMissingCapability() {
+    base::HistogramTester histogramTester;
+    EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
+              service_.FetchCapability(/*capability_value=*/nil, nil));
+    histogramTester.ExpectUniqueSample(
+        "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+        FetchAccountCapabilitiesFromSystemLibraryResult::
+            kErrorMissingCapability,
+        1);
+  }
+
+  void CheckCapabilityValueOutOfRange() {
+    base::HistogramTester histogramTester;
+    EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
+              service_.FetchCapability(/*capability_value=*/@100, nil));
+    histogramTester.ExpectUniqueSample(
+        "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+        FetchAccountCapabilitiesFromSystemLibraryResult::kErrorUnexpectedValue,
+        1);
+  }
+
+  void CheckCapabillityFetcherWithError() {
+    NSError* error = [NSError errorWithDomain:@"test" code:-100 userInfo:nil];
+    {
+      base::HistogramTester histogramTester;
+      EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
+                service_.FetchCapability(
+                    /*capability_value=*/nil, error));
+      histogramTester.ExpectUniqueSample(
+          "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+          FetchAccountCapabilitiesFromSystemLibraryResult::kErrorGeneric, 1);
+    }
+    {
+      base::HistogramTester histogramTester;
+      EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
+                service_.FetchCapability(/*capability_value=*/@0, error));
+      histogramTester.ExpectUniqueSample(
+          "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+          FetchAccountCapabilitiesFromSystemLibraryResult::kErrorGeneric, 1);
+    }
+    {
+      base::HistogramTester histogramTester;
+      EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
+                service_.FetchCapability(
+                    /*capability_value=*/@1, error));
+      histogramTester.ExpectUniqueSample(
+          "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+          FetchAccountCapabilitiesFromSystemLibraryResult::kErrorGeneric, 1);
+    }
+  }
 };
 
 TEST_F(ChromeIdentityServiceTest, CanOfferExtendedSyncPromos) {
-  EXPECT_EQ(ChromeIdentityCapabilityResult::kFalse,
-            FetchCanOfferExtendedSyncPromos(identity_,
-                                            /*capability_value=*/0));
+  service_.SetCapabilityUnderTest(
+      @(kCanOfferExtendedChromeSyncPromosCapabilityName),
+      ^(ChromeIdentityCapabilityResult* fetched_capability_result) {
+        service_.CanOfferExtendedSyncPromos(
+            identity_, ^(ChromeIdentityCapabilityResult result) {
+              *fetched_capability_result = result;
+            });
+      });
 
-  EXPECT_EQ(ChromeIdentityCapabilityResult::kTrue,
-            FetchCanOfferExtendedSyncPromos(identity_,
-                                            /*capability_value=*/1));
-
-  EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
-            FetchCanOfferExtendedSyncPromos(identity_,
-                                            /*capability_value=*/2));
+  RunCapabilitySmokeTests();
 }
 
-TEST_F(ChromeIdentityServiceTest,
-       CanOfferExtendedSyncPromos_MissingCapability) {
-  base::HistogramTester histogramTester;
-  EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
-            FetchCanOfferExtendedSyncPromos(identity_, /*capability_value=*/nil,
-                                            /*error=*/nil));
-  histogramTester.ExpectUniqueSample(
-      "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-      FetchAccountCapabilitiesFromSystemLibraryResult::kErrorMissingCapability,
-      1);
-}
+TEST_F(ChromeIdentityServiceTest, IsSubjectToParentalControls) {
+  service_.SetCapabilityUnderTest(
+      @(kIsSubjectToParentalControlsCapabilityName),
+      ^(ChromeIdentityCapabilityResult* fetched_capability_result) {
+        service_.IsSubjectToParentalControls(
+            identity_, ^(ChromeIdentityCapabilityResult result) {
+              *fetched_capability_result = result;
+            });
+      });
 
-TEST_F(ChromeIdentityServiceTest,
-       CanOfferExtendedSyncPromos_UnexpectedCapabilityValue) {
-  base::HistogramTester histogramTester;
-  // Capability value of 100 is out of range.
-  EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
-            FetchCanOfferExtendedSyncPromos(
-                identity_, /*capability_value=*/[NSNumber numberWithInt:100],
-                /*error=*/nil));
-  histogramTester.ExpectUniqueSample(
-      "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-      FetchAccountCapabilitiesFromSystemLibraryResult::kErrorUnexpectedValue,
-      1);
-}
-
-TEST_F(ChromeIdentityServiceTest, CanOfferExtendedSyncPromos_Error) {
-  NSError* error = [NSError errorWithDomain:@"test" code:-100 userInfo:nil];
-
-  {
-    base::HistogramTester histogramTester;
-    EXPECT_EQ(ChromeIdentityCapabilityResult::kUnknown,
-              FetchCanOfferExtendedSyncPromos(identity_,
-                                              /*capability_value=*/nil, error));
-    histogramTester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-        FetchAccountCapabilitiesFromSystemLibraryResult::kErrorGeneric, 1);
-  }
-
-  {
-    base::HistogramTester histogramTester;
-    EXPECT_EQ(
-        ChromeIdentityCapabilityResult::kUnknown,
-        FetchCanOfferExtendedSyncPromos(
-            identity_, /*capability_value=*/[NSNumber numberWithInt:0], error));
-    histogramTester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-        FetchAccountCapabilitiesFromSystemLibraryResult::kErrorGeneric, 1);
-  }
-  {
-    base::HistogramTester histogramTester;
-    EXPECT_EQ(
-        ChromeIdentityCapabilityResult::kUnknown,
-        FetchCanOfferExtendedSyncPromos(
-            identity_, /*capability_value=*/[NSNumber numberWithInt:1], error));
-    histogramTester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-        FetchAccountCapabilitiesFromSystemLibraryResult::kErrorGeneric, 1);
-  }
-}
-
-TEST_F(ChromeIdentityServiceTest, CanOfferExtendedSyncPromos_Histogram) {
-  base::HistogramTester histogramTester;
-  base::ScopedMockClockOverride clock;
-  service_.CanOfferExtendedSyncPromos(identity_, /*callback=*/nil);
-  clock.Advance(base::Minutes(1));
-  service_.RunFinishCapabilitiesCompletion(
-      @{@(kCanOfferExtendedChromeSyncPromosCapabilityName) : @0},
-      /*error=*/nil);
-  histogramTester.ExpectUniqueTimeSample(
-      "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
-      base::Minutes(1),
-      /*expected_bucket_count=*/1);
+  RunCapabilitySmokeTests();
 }
 
 }  // namespace
