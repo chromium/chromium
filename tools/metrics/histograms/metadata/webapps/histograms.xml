@@ -495,6 +495,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Preinstalled.AppDuplicationFixApplied" units="apps"
+    expires_after="2022-07-27">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Chrome apps migrated to preinstalled web apps encountered an issue where
+    apps became duplicated, see https://crbug.com/1266234.
+
+    The PreinstalledWebAppDuplicationFixer was added to fix users that
+    encountered duplicate apps. See https://crbug.com/1290716. This metric
+    records how many app duplications got fixed.
+
+    This gets recorded at start up after Chrome apps have loaded.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Preinstalled.AppToReplaceStillDefaultInstalledCount"
     units="apps" expires_after="2022-04-17">
   <owner>alancutter@chromium.org</owner>

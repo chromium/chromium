@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace web_app {
@@ -18,11 +19,23 @@ namespace web_app {
 // WebAppAdjustments implementation
 // --------------------------------
 
+WebAppAdjustments* WebAppAdjustments::Get(Profile* profile) {
+  return static_cast<WebAppAdjustments*>(
+      WebAppAdjustmentsFactory::GetInstance()->GetServiceForBrowserContext(
+          profile, /*create=*/false));
+}
+
 WebAppAdjustments::WebAppAdjustments(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   link_capturing_pref_migration_ =
       std::make_unique<web_app::LinkCapturingPrefMigration>(*profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (base::FeatureList::IsEnabled(
+          features::kPreinstalledWebAppDuplicationFixer)) {
+    preinstalled_web_app_duplication_fixer_ =
+        std::make_unique<PreinstalledWebAppDuplicationFixer>(*profile);
+  }
 }
 
 WebAppAdjustments::~WebAppAdjustments() = default;
