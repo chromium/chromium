@@ -182,7 +182,9 @@ class ClientAndroid : public Client,
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
+  // Contains AssistantStaticDependencies which do not change.
   const std::unique_ptr<const Dependencies> dependencies_;
+  // Can change based on activity attachment.
   const base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

@@ -27,22 +27,27 @@ using ::base::android::AttachCurrentThread;
 using ::base::android::JavaObjectArrayReader;
 using ::base::android::JavaParamRef;
 using ::base::android::ScopedJavaGlobalRef;
-using ::base::android::ScopedJavaLocalRef;
 
 namespace autofill_assistant {
 
 static jlong JNI_Starter_FromWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& jstatic_dependencies) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
-  StarterAndroid::CreateForWebContents(web_contents);
+
+  auto dependencies = Dependencies::CreateFromJavaStaticDependencies(
+      ScopedJavaGlobalRef<jobject>(env, jstatic_dependencies));
+  StarterAndroid::CreateForWebContents(web_contents, std::move(dependencies));
   auto* tab_helper_android = StarterAndroid::FromWebContents(web_contents);
   return reinterpret_cast<intptr_t>(tab_helper_android);
 }
 
-StarterAndroid::StarterAndroid(content::WebContents* web_contents)
+StarterAndroid::StarterAndroid(content::WebContents* web_contents,
+                               std::unique_ptr<Dependencies> dependencies)
     : content::WebContentsUserData<StarterAndroid>(*web_contents),
+      dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
           ChromePasswordManagerClient::FromWebContents(web_contents),
           web_contents)) {}

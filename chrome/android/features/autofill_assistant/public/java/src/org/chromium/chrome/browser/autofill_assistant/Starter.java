@@ -117,7 +117,8 @@ public class Starter implements AssistantTabObserver, UserData {
             if (mWebContents != null) {
                 // Some dependencies are tied to the web-contents and need to be fetched again.
                 mDependencies = null;
-                mNativeStarter = StarterJni.get().fromWebContents(mWebContents);
+                mNativeStarter =
+                        StarterJni.get().fromWebContents(mWebContents, mStaticDependencies);
                 // Note: This is intentionally split into two methods (fromWebContents, attach).
                 // It ensures that at the time of attach, the native pointer is already set and
                 // this instance is ready to serve requests from native.
@@ -320,7 +321,8 @@ public class Starter implements AssistantTabObserver, UserData {
 
     @NativeMethods
     interface Natives {
-        long fromWebContents(WebContents webContents);
+        long fromWebContents(
+                WebContents webContents, AssistantStaticDependencies staticDependencies);
         void attach(long nativeStarterAndroid, Starter caller);
         void detach(long nativeStarterAndroid, Starter caller);
         void onFeatureModuleInstalled(long nativeStarterAndroid, Starter caller, int result);
