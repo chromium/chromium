@@ -21,7 +21,6 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,11 +36,9 @@ class PredictionModelFetcherTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        network_tracker_(network::TestNetworkConnectionTracker::GetInstance()) {
+                &test_url_loader_factory_)) {
     prediction_model_fetcher_ = std::make_unique<PredictionModelFetcherImpl>(
-        shared_url_loader_factory_, GURL(optimization_guide_service_url),
-        network_tracker_);
+        shared_url_loader_factory_, GURL(optimization_guide_service_url));
   }
 
   PredictionModelFetcherTest(const PredictionModelFetcherTest&) = delete;
@@ -57,16 +54,6 @@ class PredictionModelFetcherTest : public testing::Test {
   }
 
   bool models_fetched() { return models_fetched_; }
-
-  void SetConnectionOffline() {
-    network_tracker_->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_NONE);
-  }
-
-  void SetConnectionOnline() {
-    network_tracker_->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_4G);
-  }
 
  protected:
   bool FetchModels(const std::vector<proto::ModelInfo> models_request_info,
@@ -116,7 +103,6 @@ class PredictionModelFetcherTest : public testing::Test {
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  raw_ptr<network::TestNetworkConnectionTracker> network_tracker_;
 };
 
 TEST_F(PredictionModelFetcherTest, FetchOptimizationGuideServiceModels) {
@@ -171,26 +157,6 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_FALSE(models_fetched());
-}
-
-TEST_F(PredictionModelFetcherTest, FetchAttemptWhenNetworkOffline) {
-  SetConnectionOffline();
-  std::string response_content;
-  proto::ModelInfo model_info;
-  model_info.set_optimization_target(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  EXPECT_FALSE(FetchModels({model_info}, /*active_field_trials=*/{},
-                           proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
-                           "en-US"));
-  EXPECT_FALSE(models_fetched());
-
-  SetConnectionOnline();
-  EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
-                          "en-US"));
-  VerifyHasPendingFetchRequests();
-  EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
-  EXPECT_TRUE(models_fetched());
 }
 
 TEST_F(PredictionModelFetcherTest, EmptyModelInfo) {

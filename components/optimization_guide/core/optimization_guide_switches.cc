@@ -27,12 +27,6 @@ const char kHintsProtoOverride[] = "optimization_guide_hints_override";
 // hosts.
 const char kFetchHintsOverride[] = "optimization-guide-fetch-hints-override";
 
-// Overrides scheduling and time delays for fetching prediction models and host
-// model features. This causes a prediction model and host model features fetch
-// immediately on start up.
-const char kFetchModelsAndHostModelFeaturesOverrideTimer[] =
-    "optimization-guide-fetch-models-and-features-override";
-
 // Overrides the hints fetch scheduling and delay, causing a hints fetch
 // immediately on start up using the TopHostProvider. This is meant for testing.
 const char kFetchHintsOverrideTimer[] =
@@ -140,11 +134,6 @@ ParseHintsFetchOverrideFromCommandLine() {
 bool ShouldOverrideFetchHintsTimer() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kFetchHintsOverrideTimer);
-}
-
-bool ShouldOverrideFetchModelsAndFeaturesTimer() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kFetchModelsAndHostModelFeaturesOverrideTimer);
 }
 
 std::unique_ptr<optimization_guide::proto::Configuration>

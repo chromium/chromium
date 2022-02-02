@@ -212,9 +212,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // |last_success_time|.
   void SetLastModelFetchSuccessTime(base::Time last_success_time);
 
-  // Determine whether to schedule fetching new prediction models or fetch
-  // immediately due to override.
-  void MaybeScheduleModelFetch();
+  // Fetch models if enabled for this profile.
+  void MaybeFetchModels();
 
   // Schedule |fetch_timer_| to fire based on:
   // 1. The update time for models in the store and

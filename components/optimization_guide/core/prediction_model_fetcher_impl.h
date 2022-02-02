@@ -19,7 +19,6 @@
 #include "url/gurl.h"
 
 namespace network {
-class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
@@ -34,8 +33,7 @@ class PredictionModelFetcherImpl : public PredictionModelFetcher {
  public:
   PredictionModelFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& optimization_guide_service_get_models_url,
-      network::NetworkConnectionTracker* network_connection_tracker);
+      const GURL& optimization_guide_service_get_models_url);
 
   PredictionModelFetcherImpl(const PredictionModelFetcherImpl&) = delete;
   PredictionModelFetcherImpl& operator=(const PredictionModelFetcherImpl&) =
@@ -81,10 +79,6 @@ class PredictionModelFetcherImpl : public PredictionModelFetcher {
 
   // Used for creating a |url_loader_| when needed for request hints.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Listens to changes around the network connection. Not owned. Guaranteed to
-  // outlive |this|.
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

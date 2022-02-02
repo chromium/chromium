@@ -276,7 +276,7 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
 
   // If no fetch is scheduled, maybe schedule one.
   if (!fetch_timer_.IsRunning())
-    MaybeScheduleModelFetch();
+    MaybeFetchModels();
 
   // Otherwise, load prediction models for any newly registered targets.
   LoadPredictionModels({optimization_target});
@@ -371,8 +371,7 @@ void PredictionManager::FetchModels() {
   if (!prediction_model_fetcher_) {
     prediction_model_fetcher_ = std::make_unique<PredictionModelFetcherImpl>(
         url_loader_factory_,
-        features::GetOptimizationGuideServiceGetModelsURL(),
-        content::GetNetworkConnectionTracker());
+        features::GetOptimizationGuideServiceGetModelsURL());
   }
 
   std::vector<proto::ModelInfo> models_info = std::vector<proto::ModelInfo>();
@@ -633,7 +632,7 @@ void PredictionManager::OnStoreInitialized() {
   // targets.
   LoadPredictionModels(GetRegisteredOptimizationTargets());
 
-  MaybeScheduleModelFetch();
+  MaybeFetchModels();
 }
 
 void PredictionManager::LoadPredictionModels(
@@ -818,16 +817,14 @@ void PredictionManager::StoreLoadedPredictionModel(
       optimization_target, std::move(prediction_model));
 }
 
-void PredictionManager::MaybeScheduleModelFetch() {
+void PredictionManager::MaybeFetchModels() {
   if (!ShouldFetchModels(profile_))
     return;
 
-  if (switches::ShouldOverrideFetchModelsAndFeaturesTimer()) {
-    fetch_timer_.Start(FROM_HERE, base::Seconds(1), this,
-                       &PredictionManager::FetchModels);
-  } else {
-    ScheduleModelsFetch();
-  }
+  // Add a slight delay to allow the rest of the browser startup process to
+  // finish up.
+  fetch_timer_.Start(FROM_HERE, base::Seconds(2), this,
+                     &PredictionManager::FetchModels);
 }
 
 base::Time PredictionManager::GetLastFetchAttemptTime() const {

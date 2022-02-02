@@ -22,7 +22,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -32,16 +31,14 @@ namespace optimization_guide {
 
 PredictionModelFetcherImpl::PredictionModelFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const GURL& optimization_guide_service_get_models_url,
-    network::NetworkConnectionTracker* network_connection_tracker)
+    const GURL& optimization_guide_service_get_models_url)
     : optimization_guide_service_get_models_url_(
           net::AppendOrReplaceQueryParameter(
               optimization_guide_service_get_models_url,
               "key",
               optimization_guide::features::
                   GetOptimizationGuideServiceAPIKey())),
-      url_loader_factory_(url_loader_factory),
-      network_connection_tracker_(network_connection_tracker) {
+      url_loader_factory_(url_loader_factory) {
   CHECK(optimization_guide_service_get_models_url_.SchemeIs(url::kHttpsScheme));
 }
 
@@ -54,11 +51,6 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
     const std::string& locale,
     ModelsFetchedCallback models_fetched_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (network_connection_tracker_->IsOffline()) {
-    std::move(models_fetched_callback).Run(absl::nullopt);
-    return false;
-  }
 
   if (url_loader_)
     return false;

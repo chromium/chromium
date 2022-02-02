@@ -205,11 +205,9 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
   TestPredictionModelFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& optimization_guide_service_get_models_url,
-      network::NetworkConnectionTracker* network_connection_tracker,
       PredictionModelFetcherEndState fetch_state)
       : PredictionModelFetcherImpl(url_loader_factory,
-                                   optimization_guide_service_get_models_url,
-                                   network_connection_tracker),
+                                   optimization_guide_service_get_models_url),
         fetch_state_(fetch_state) {}
 
   bool FetchOptimizationGuideServiceModels(
@@ -445,8 +443,6 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
             &test_url_loader_factory_);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableCheckingUserPermissionsForTesting);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kFetchModelsAndHostModelFeaturesOverrideTimer);
   }
 
   void CreatePredictionManager() {
@@ -482,8 +478,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
       PredictionModelFetcherEndState end_state) {
     std::unique_ptr<TestPredictionModelFetcher> prediction_model_fetcher =
         std::make_unique<TestPredictionModelFetcher>(
-            url_loader_factory_, GURL("https://hintsserver.com"),
-            network::TestNetworkConnectionTracker::GetInstance(), end_state);
+            url_loader_factory_, GURL("https://hintsserver.com"), end_state);
     return prediction_model_fetcher;
   }
 
@@ -1178,9 +1173,6 @@ TEST_F(PredictionManagerTest,
 }
 
 TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kFetchModelsAndHostModelFeaturesOverrideTimer);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1205,9 +1197,6 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
 }
 
 TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kFetchModelsAndHostModelFeaturesOverrideTimer);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1220,8 +1209,6 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
 
   SetStoreInitialized();
-  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
-  MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
   EXPECT_EQ("en-US", prediction_model_fetcher()->locale_requested());
 
