@@ -55,13 +55,43 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.SnapshotInterval" units="ms"
-    expires_after="2022-12-02">
+    expires_after="2022-02-02">
+  <obsolete>
+    Replaced by
+    HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime} on
+    2022-02-02.
+  </obsolete>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     The time until the next heap snapshot is scheduled. Emitted once per
     snapshot when the in-process heap profiler is enabled.
   </summary>
+</histogram>
+
+<histogram
+    name="HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime}"
+    units="ms" expires_after="2022-12-02">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The time between heap snapshots on {Platform}. Emitted for each snapshot
+    when the in-process heap profiler is enabled, at the beginning and end of
+    the snapshot interval. *.Scheduled histograms are recorded at the beginning
+    of the interval, when the snapshot is scheduled. *.Taken histograms are
+    recorded at the end of the interval, when the snapshot is taken. Entries in
+    *.Scheduled that don't appear in *.Taken show which snapshot intervals are
+    interrupted before the snapshot is taken.
+  </summary>
+  <token key="Platform">
+    <variant name="Desktop" summary="All desktop platforms"/>
+    <variant name="Mobile" summary="Android and iOS"/>
+  </token>
+  <token key="RecordingTime">
+    <variant name="Scheduled"
+        summary="Recorded when the snapshot is scheduled."/>
+    <variant name="Taken" summary="Recorded when the snapshot is taken."/>
+  </token>
 </histogram>
 
 <histogram name="HeapProfiling.ProfiledProcess.Type"

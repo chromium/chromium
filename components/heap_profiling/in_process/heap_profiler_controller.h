@@ -76,8 +76,15 @@ class HeapProfilerController {
   };
   static void ScheduleNextSnapshot(scoped_refptr<StoppedFlag> stopped,
                                    CollectionInterval heap_collection_interval);
+
+  // Takes a heap snapshot unless the `stopped` flag is set.
+  // `heap_collection_interval` is used to schedule the next snapshot.
+  // `previous_interval` is the time since the previous snapshot, which is used
+  // to log metrics about snapshot frequency.
   static void TakeSnapshot(scoped_refptr<StoppedFlag> stopped,
-                           CollectionInterval heap_collection_interval);
+                           CollectionInterval heap_collection_interval,
+                           base::TimeDelta previous_interval);
+
   static void RetrieveAndSendSnapshot();
 
   // On startup this will be determined randomly based on the current channel
