@@ -96,12 +96,6 @@ class BadBeaconFileTest
     : public testing::WithParamInterface<BadBeaconTestParams>,
       public CleanExitBeaconTest {};
 
-#if BUILDFLAG(IS_ANDROID)
-class IgnoredBeaconFileTest
-    : public testing::WithParamInterface<version_info::Channel>,
-      public CleanExitBeaconTest {};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 struct BeaconConsistencyTestParams {
   // Inputs:
   const std::string test_name;
@@ -419,15 +413,10 @@ TEST_P(BeaconFileConsistencyTest, BeaconConsistency) {
 
 #if BUILDFLAG(IS_ANDROID)
 // TODO(crbug/1248239): Remove this test once the Extended Variations Safe Mode
-// experiment is fully enabled on Android Chrome. Until then, update the
-// channels as necessary.
-INSTANTIATE_TEST_SUITE_P(All,
-                         IgnoredBeaconFileTest,
-                         ::testing::Values(version_info::Channel::BETA,
-                                           version_info::Channel::STABLE));
-
+// experiment is enabled on Android Chrome stable.
+//
 // Verify that the beacon file, if any, is ignored on Android.
-TEST_P(IgnoredBeaconFileTest, FileIgnoredOnAndroid) {
+TEST_F(CleanExitBeaconTest, FileIgnoredOnAndroid) {
   SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
 
   // Set up the beacon file such that the previous session did not exit cleanly
@@ -453,7 +442,7 @@ TEST_P(IgnoredBeaconFileTest, FileIgnoredOnAndroid) {
                     expected_num_crashes);
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path,
-                                        GetParam());
+                                        version_info::Channel::STABLE);
 
   // Verify that the Local State beacon was used (not the beacon file beacon).
   EXPECT_TRUE(clean_exit_beacon.exited_cleanly());
