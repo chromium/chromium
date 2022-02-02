@@ -1,0 +1,56 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+# Test files that do not require preprocessing.
+non_preprocessed_files = [
+  "history_clusters/utils.js",
+  "history_drawer_test.js",
+  "history_item_focus_test.js",
+  "history_item_test.js",
+  "history_list_focus_test.js",
+  "history_list_test.js",
+  "history_metrics_test.js",
+  "history_overflow_menu_test.js",
+  "history_routing_test.js",
+  "history_routing_with_query_param_test.js",
+  "history_supervised_user_test.js",
+  "history_synced_device_manager_focus_test.js",
+  "history_synced_tabs_test.js",
+  "history_toolbar_focus_test.js",
+  "history_toolbar_test.js",
+  "link_click_test.js",
+  "searched_label_test.js",
+  "test_browser_service.js",
+  "test_util.js",
+]
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_history"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "history"
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://history/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/history/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = non_preprocessed_files
+
+  deps = [ "//chrome/browser/resources/history:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
+}

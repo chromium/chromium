@@ -111,6 +111,7 @@ html_to_wrapper("html_wrapper_files") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = ts_files + css_wrapper_files + html_wrapper_files +
              [ "history_clusters/history_clusters.mojom-webui.js" ]

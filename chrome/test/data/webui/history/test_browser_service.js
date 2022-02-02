@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {createHistoryInfo} from 'chrome://test/history/test_util.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {createHistoryInfo} from './test_util.js';
 
 export class TestBrowserService extends TestBrowserProxy {
   constructor() {

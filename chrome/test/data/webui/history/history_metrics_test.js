@@ -5,9 +5,10 @@
 import {BrowserService, ensureLazyLoaded, HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
-import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks, polymerSelectAll} from 'chrome://test/history/test_util.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+
+import {TestBrowserService} from './test_browser_service.js';
+import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks, polymerSelectAll} from './test_util.js';
 
 suite('Metrics', function() {
   let testService;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://history/history.js';
-import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestBrowserProxy extends BaseTestBrowserProxy {
   constructor() {

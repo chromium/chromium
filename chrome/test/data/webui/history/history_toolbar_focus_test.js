@@ -5,8 +5,9 @@
 import {BrowserService} from 'chrome://history/history.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {TestBrowserService} from './test_browser_service.js';
 
 suite('<history-toolbar>', function() {
   let app;

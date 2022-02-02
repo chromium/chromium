@@ -5,9 +5,10 @@
 import {BrowserProxyImpl, BrowserService, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
+import {TestBrowserService} from './test_browser_service.js';
 
 [true, false].forEach(isHistoryClustersEnabled => {
   const suitSuffix = isHistoryClustersEnabled ? 'enabled' : 'disabled';

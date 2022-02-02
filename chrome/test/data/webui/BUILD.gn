@@ -614,6 +614,7 @@ generate_grd("build_grd") {
     "cr_components:build_grdp",
     "cr_elements:build_grdp",
     "downloads:build_grdp",
+    "history:build_grdp",
     "read_later:build_grdp",
     "settings:build_grdp",
     "tab_search:build_grdp",
@@ -621,10 +622,11 @@ generate_grd("build_grd") {
 
   grdp_files = [
     "$target_gen_dir/bookmarks/resources.grdp",
+    "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/cr_components/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
-    "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
+    "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/read_later/resources.grdp",
     "$target_gen_dir/settings/resources.grdp",
     "$target_gen_dir/tab_search/resources.grdp",

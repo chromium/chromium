@@ -4,7 +4,7 @@
 
 import {BrowserService, listenForPrivilegedLinkClicks} from 'chrome://history/history.js';
 import {$} from 'chrome://resources/js/util.m.js';
-import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {TestBrowserService} from './test_browser_service.js';
 
 suite('listenForPrivilegedLinkClicks unit test', function() {
   test('click handler', async () => {
