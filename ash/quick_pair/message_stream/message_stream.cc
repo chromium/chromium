@@ -31,6 +31,9 @@ MessageStream::MessageStream(const std::string& device_address,
 }
 
 MessageStream::~MessageStream() {
+  if (socket_.get())
+    socket_->Disconnect(base::DoNothing());
+
   // Notify observers for lifetime management
   for (auto& obs : observers_)
     obs.OnMessageStreamDestroyed(device_address_);
@@ -50,8 +53,12 @@ void MessageStream::Receive() {
         << __func__
         << ": Failed to receive or parse data from socket more than "
         << kMaxRetryCount << " times.";
-    socket_->Disconnect(base::BindOnce(&MessageStream::OnSocketDisconnected,
-                                       weak_ptr_factory_.GetWeakPtr()));
+
+    if (socket_.get()) {
+      socket_->Disconnect(base::BindOnce(&MessageStream::OnSocketDisconnected,
+                                         weak_ptr_factory_.GetWeakPtr()));
+    }
+
     return;
   }
 
@@ -107,7 +114,7 @@ void MessageStream::Disconnect(base::OnceClosure on_disconnect_callback) {
   // This can happen since the socket might have disconnected previously but
   // we kept the MessageStream instance alive to preserve messages from the
   // corresponding device.
-  if (!socket_) {
+  if (!socket_.get()) {
     std::move(on_disconnect_callback).Run();
     return;
   }
@@ -118,7 +125,6 @@ void MessageStream::Disconnect(base::OnceClosure on_disconnect_callback) {
 }
 
 void MessageStream::OnSocketDisconnected() {
-  socket_ = nullptr;
   for (auto& obs : observers_)
     obs.OnDisconnected(device_address_);
 }
@@ -131,6 +137,8 @@ void MessageStream::OnSocketDisconnectedWithCallback(
 
 void MessageStream::ParseMessageStreamSuccess(
     std::vector<mojom::MessageStreamMessagePtr> messages) {
+  QP_LOG(VERBOSE) << __func__;
+
   if (messages.empty()) {
     Receive();
     return;
