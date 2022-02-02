@@ -506,6 +506,15 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
   }
+  // If we are in a container query style recalc, return the container element,
+  // otherwise return nullptr.
+  Element* GetContainerForContainerStyleRecalc() const {
+    // The To<Element>() should not fail because the style_recalc_root_ is set
+    // to the container element when doing a container query style recalc.
+    if (InContainerQueryStyleRecalc())
+      return To<Element>(style_recalc_root_.GetRootNode());
+    return nullptr;
+  }
   void SkipStyleRecalcForContainer() { skipped_container_recalc_ = true; }
   void ChangeRenderingForHTMLSelect(HTMLSelectElement& select);
   void DetachedFromParent(LayoutObject* parent) {

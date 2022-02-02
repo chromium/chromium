@@ -4820,6 +4820,9 @@ bool Element::ForceLegacyLayoutInFormattingContext(
   bool found_fc = DefinitelyNewFormattingContext(*this, new_style);
   bool needs_reattach = false;
 
+  Element* container_recalc_root =
+      GetDocument().GetStyleEngine().GetContainerForContainerStyleRecalc();
+
   // TODO(mstensho): Missing call to SetNeedsReattachLayoutTree() on Document
   // here. We may have to re-attach it if we want to change from LayoutNGView to
   // LayoutView.
@@ -4843,7 +4846,7 @@ bool Element::ForceLegacyLayoutInFormattingContext(
     // CSSContainerQueries rely on LayoutNG being fully shipped before shipping.
     // In the meantime, make sure we do not mark containers for re-attachment
     // since we might be in the process of laying out the container.
-    if (style->IsContainerForContainerQueries(*ancestor))
+    if (container_recalc_root == ancestor)
       break;
 
     found_fc = DefinitelyNewFormattingContext(*ancestor, *style);
