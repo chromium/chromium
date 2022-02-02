@@ -86,7 +86,7 @@ OneDeviceTrainNeuralStylusPalmDetectionFilterModel::
     config_.min_sample_count = 5;
     config_.max_sample_count = 12;
     config_.neighbor_min_sample_count = 5;
-    config_.output_threshold = 1.2885f;
+    config_.output_threshold = 2.519f;
     expected_feature_size_ = 323;
   }
 }
