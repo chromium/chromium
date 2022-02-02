@@ -4,13 +4,28 @@
 
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 
+#include <memory>
+
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc {
 namespace input_overlay {
 
+namespace {
+constexpr int kMinAnchorSide = 40;
+}  // namespace
+
+// TODO(djacobo): Evaluate to move this to its own class for readability.
 class DisplayOverlayController::InputMappingView : public views::View {
  public:
   explicit InputMappingView(DisplayOverlayController* owner) : owner_(owner) {
@@ -37,7 +52,7 @@ DisplayOverlayController::DisplayOverlayController(
     TouchInjector* touch_injector)
     : touch_injector_(touch_injector) {
   AddOverlay();
-  AddInputMappingView();
+  AddOverlayChildrenViews();
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
@@ -46,7 +61,7 @@ DisplayOverlayController::~DisplayOverlayController() {
 
 void DisplayOverlayController::OnWindowBoundsChanged() {
   RemoveInputMappingView();
-  AddInputMappingView();
+  AddOverlayChildrenViews();
 }
 
 // For test:
@@ -81,16 +96,64 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
     shell_surface_base->RemoveOverlay();
 }
 
-void DisplayOverlayController::AddInputMappingView() {
+void DisplayOverlayController::AddOverlayChildrenViews() {
   if (input_mapping_view_)
     return;
   auto* overlay_widget = GetOverlayWidget();
   DCHECK(overlay_widget);
   if (!overlay_widget)
     return;
+
+  AddInputMappingView(overlay_widget);
+  AddInputOverlayMenuView(overlay_widget);
+}
+
+void DisplayOverlayController::AddInputMappingView(
+    views::Widget* overlay_widget) {
+  DCHECK(overlay_widget);
+
+  auto input_mapping_view = std::make_unique<InputMappingView>(this);
+  input_mapping_view->SetPosition(gfx::Point());
+
   input_mapping_view_ = overlay_widget->GetContentsView()->AddChildView(
-      std::make_unique<InputMappingView>(this));
+      std::move(input_mapping_view));
   input_mapping_view_->SetPosition(gfx::Point());
+}
+
+void DisplayOverlayController::AddInputOverlayMenuView(
+    views::Widget* overlay_widget) {
+  DCHECK(overlay_widget);
+  auto game_icon = gfx::CreateVectorIcon(
+      vector_icons::kVideogameAssetOutlineIcon, SK_ColorBLACK);
+
+  // Create and position entry point for |InputOverlayMenuView|.
+  auto overlay_menu_anchor = std::make_unique<views::ImageButton>(
+      base::BindRepeating(&DisplayOverlayController::OnMenuAnchorPressed,
+                          base::Unretained(this)));
+  overlay_menu_anchor->SetImage(views::Button::STATE_NORMAL, game_icon);
+  overlay_menu_anchor->SetBackground(
+      views::CreateSolidBackground(SK_ColorWHITE));
+  overlay_menu_anchor->SetSize(gfx::Size(kMinAnchorSide, kMinAnchorSide));
+  overlay_menu_anchor->SetImageHorizontalAlignment(
+      views::ImageButton::ALIGN_CENTER);
+  overlay_menu_anchor->SetImageVerticalAlignment(
+      views::ImageButton::ALIGN_MIDDLE);
+  // TODO(djacobo): Set proper positioning based on specs and responding to
+  // resize.
+  overlay_menu_anchor->SetPosition(CalculateMenuAnchorPosition());
+  // TODO(djacobo): come up with a new resource for this so it can be
+  // translated, or just keep reusing the one I set here.
+  overlay_menu_anchor->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_ENTRY_BUTTON));
+
+  auto* parent_view = overlay_widget->GetContentsView();
+  DCHECK(parent_view);
+  overlay_menu_anchor_ =
+      parent_view->AddChildView(std::move(overlay_menu_anchor));
+}
+
+void DisplayOverlayController::OnMenuAnchorPressed() {
+  // TODO(djacobo): Implement calling |InputOverlayMenuView|.
 }
 
 void DisplayOverlayController::RemoveInputMappingView() {
@@ -112,6 +175,17 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
   return shell_surface_base ? static_cast<views::Widget*>(
                                   shell_surface_base->GetFocusTraversable())
                             : nullptr;
+}
+
+gfx::Point DisplayOverlayController::CalculateMenuAnchorPosition() {
+  auto* overlay_widget = GetOverlayWidget();
+  if (!overlay_widget)
+    return gfx::Point();
+  auto* view = overlay_widget->GetContentsView();
+  if (!view || view->bounds().IsEmpty())
+    return gfx::Point();
+
+  return gfx::Point(view->width() - 2 * kMinAnchorSide, view->height() / 2);
 }
 
 }  // namespace input_overlay

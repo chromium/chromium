@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/vector_icons/vector_icons.gni")
 
 aggregate_vector_icons("components_vector_icons") {
@@ -116,6 +117,10 @@ aggregate_vector_icons("components_vector_icons") {
     "warning.icon",
     "wifi_add.icon",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "videogame_asset_outline.icon" ]
+  }
 }
 
 static_library("vector_icons") {

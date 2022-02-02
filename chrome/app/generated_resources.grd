@@ -12271,6 +12271,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Continue
       </message>
     </if>
+
+    <!-- Input overlay strings -->
+    <if expr="chromeos_ash">
+      <message name="IDS_INPUT_OVERLAY_MENU_ENTRY_BUTTON" desc="Button to access Input Overlay's settings menu.">
+        Game Control
+      </message>
+    </if>
   </messages>
 </release>
 </grit>

@@ -7,8 +7,14 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
-#include "ui/views/widget/widget.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace arc {
 namespace input_overlay {
@@ -34,12 +40,22 @@ class DisplayOverlayController {
 
   void AddOverlay();
   void RemoveOverlayIfAny();
-  void AddInputMappingView();
+  void AddOverlayChildrenViews();
+  void AddInputMappingView(views::Widget* overlay_widget);
+  void AddInputOverlayMenuView(views::Widget* overlay_widget);
+  void OnMenuAnchorPressed();
   void RemoveInputMappingView();
   views::Widget* GetOverlayWidget();
+  gfx::Point CalculateMenuAnchorPosition();
+  gfx::Rect get_overlay_menu_anchor_bounds() const {
+    return overlay_menu_anchor_->bounds();
+  }
 
   TouchInjector* touch_injector_;
+
+  // References to UI elements owned by the overlay widget.
   InputMappingView* input_mapping_view_ = nullptr;
+  views::ImageButton* overlay_menu_anchor_ = nullptr;
 };
 
 }  // namespace input_overlay
