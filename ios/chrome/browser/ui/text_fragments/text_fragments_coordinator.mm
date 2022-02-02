@@ -6,14 +6,19 @@
 
 #import <memory>
 
+#import "components/shared_highlighting/ios/shared_highlighting_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_mediator.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,11 +67,19 @@
 
   // TODO(crbug.com/1281931): The Learn More and Reshare options are currently
   //     no-ops. This functionality will be implemented in a follow-up patch.
-  [actionSheet addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE)
-                         action:^{
-                         }
-                          style:UIAlertActionStyleDefault];
+  [actionSheet
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE)
+                action:^{
+                  id<ApplicationCommands> handler =
+                      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                         ApplicationCommands);
+                  [handler openURLInNewTab:[OpenNewTabCommand
+                                               commandWithURLFromChrome:
+                                                   GURL(shared_highlighting::
+                                                            kLearnMoreUrl)]];
+                }
+                 style:UIAlertActionStyleDefault];
   [actionSheet
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_RESHARE)
                 action:^{

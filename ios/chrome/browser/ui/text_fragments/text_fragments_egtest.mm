@@ -4,6 +4,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#import "components/shared_highlighting/ios/shared_highlighting_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -130,6 +131,23 @@ void DismissMenu() {
   // Verify that the mark is still present
   ElementSelector* selector = [ElementSelector selectorWithCSSSelector:"mark"];
   [ChromeEarlGrey waitForWebStateContainingElement:selector];
+}
+
+- (void)testLearnMore {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+
+  ClickMarkAndWaitForMenu();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE))]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  // Compare only the host; the path could change upon opening.
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL].host(),
+                  GURL(shared_highlighting::kLearnMoreUrl).host(),
+                  @"Did not open correct Learn More URL.");
 }
 
 @end

@@ -7,6 +7,8 @@ source_set("ios") {
   sources = [
     "parsing_utils.h",
     "parsing_utils.mm",
+    "shared_highlighting_constants.h",
+    "shared_highlighting_constants.mm",
   ]
 
   deps = [
