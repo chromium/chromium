@@ -187,13 +187,23 @@ void ZeroStateFileProvider::OnFilesOpened(
   if (!files_ranker_)
     return;
 
-  // The DriveQuickAccessProvider handles Drive files, so recording them here
-  // would be redundant. Filter them out by checking the file resides within the
-  // user's cryptohome.
   const auto& profile_path = profile_->GetPath();
   for (const auto& file_open : file_opens) {
-    if (profile_path.AppendRelativePath(file_open.path, nullptr))
-      files_ranker_->Use(file_open.path.value());
+    // Filter out file opens if:
+    // 1. The open event is not a kLaunch or a kOpen.
+    if (file_open.open_type != FileTasksObserver::OpenType::kLaunch &&
+        file_open.open_type != FileTasksObserver::OpenType::kOpen) {
+      continue;
+    }
+
+    // 2. The open relates to a Drive file, which is handled by another
+    // provider. Filter this out by checking if the file resides in the user's
+    // cryptohome.
+    if (!profile_path.AppendRelativePath(file_open.path, nullptr)) {
+      continue;
+    }
+
+    files_ranker_->Use(file_open.path.value());
   }
 }
 
