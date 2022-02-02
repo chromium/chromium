@@ -5,11 +5,8 @@
 #ifndef IOS_WEB_FAVICON_FAVICON_UTIL_H_
 #define IOS_WEB_FAVICON_FAVICON_UTIL_H_
 
+#include "base/values.h"
 #include "ios/web/public/favicon/favicon_url.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace web {
 
@@ -19,7 +16,7 @@ namespace web {
 // structured as containing a list of favicons containing the href, rel and
 // sizes attributes of the favicons. Returns whether the extraction was
 // completely successful or not.
-bool ExtractFaviconURL(const base::ListValue* favicons,
+bool ExtractFaviconURL(const base::Value::ConstListView& favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* out_parameter);
 
