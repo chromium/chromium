@@ -10,6 +10,7 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
 <link rel="import" href="nearby_contact_manager.html">
 <link rel="import" href="nearby_page_template.html">
 <link rel="import" href="nearby_share_settings_behavior.html">
@@ -282,8 +283,11 @@
           if="[[showZeroState_(selectedVisibility, contactsState)]]">
         <div id="zeroStateContainer" class="content">
           <div id="zeroStateImageContainer">
+            <iron-media-query query="(prefers-color-scheme: dark)"
+                query-matches="{{isDarkModeActive_}}">
+            </iron-media-query>
             <iron-icon id="zeroStateImage"
-                icon="nearby-images:nearby-device-visibility">
+                icon="[[getDeviceVisibilityIcon_(isDarkModeActive_)]]">
             </iron-icon>
           </div>
           <div id="zeroStateTextContainer">

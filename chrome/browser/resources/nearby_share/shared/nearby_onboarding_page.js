@@ -7,6 +7,19 @@
  * onboarding flow. It is embedded in chrome://os-settings, chrome://settings
  * and as a standalone dialog via chrome://nearby.
  */
+
+/**
+ * @type {string}
+ */
+const ONBOARDING_SPLASH_LIGHT_ICON =
+    'nearby-images:nearby-onboarding-splash-light';
+
+/**
+ * @type {string}
+ */
+const ONBOARDING_SPLASH_DARK_ICON =
+    'nearby-images:nearby-onboarding-splash-dark';
+
 Polymer({
   is: 'nearby-onboarding-page',
 
@@ -22,6 +35,15 @@ Polymer({
     errorMessage: {
       type: String,
       value: '',
+    },
+
+    /**
+     * Whether the onboarding page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -118,5 +140,14 @@ Polymer({
    */
   hasErrorMessage_(errorMessage) {
     return errorMessage !== '';
-  }
+  },
+
+  /**
+   * Returns the icon based on Light/Dark mode.
+   * @return {string}
+   */
+  getOnboardingSplashIcon_() {
+    return this.isDarkModeActive_ ? ONBOARDING_SPLASH_DARK_ICON :
+                                    ONBOARDING_SPLASH_LIGHT_ICON;
+  },
 });

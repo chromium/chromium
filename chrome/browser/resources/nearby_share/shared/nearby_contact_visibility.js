@@ -56,6 +56,18 @@ const visibilityValueToString = function(visibility) {
 };
 
 /**
+ * @type {string}
+ */
+const DEVICE_VISIBILITY_LIGHT_ICON =
+    'nearby-images:nearby-device-visibility-light';
+
+/**
+ * @type {string}
+ */
+const DEVICE_VISIBILITY_DARK_ICON =
+    'nearby-images:nearby-device-visibility-dark';
+
+/**
  * @typedef {{
  *            id:string,
  *            name:string,
@@ -126,6 +138,15 @@ Polymer({
       type: Boolean,
       computed: 'isVisibilitySelected_(selectedVisibility)',
       notify: true,
+    },
+
+    /**
+     * Whether the contact visibility page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -576,6 +597,16 @@ Polymer({
       }
     }
     this.contactManager_.setAllowedContacts(allowedContacts);
+  },
+
+  /**
+   * Returns the icon based on Light/Dark mode.
+   * @returns {string}
+   * @private
+   */
+  getDeviceVisibilityIcon_() {
+    return this.isDarkModeActive_ ? DEVICE_VISIBILITY_DARK_ICON :
+                                    DEVICE_VISIBILITY_LIGHT_ICON;
   },
 });
 })();
