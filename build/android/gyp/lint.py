@@ -377,9 +377,6 @@ def _ParseArgs(argv):
   parser.add_argument('--skip-build-server',
                       action='store_true',
                       help='Avoid using the build server.')
-  parser.add_argument('--use-build-server',
-                      action='store_true',
-                      help='Always use the build server.')
   parser.add_argument('--lint-binary-path',
                       required=True,
                       help='Path to lint executable.')
@@ -460,10 +457,8 @@ def main():
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place.
   if (not args.create_cache and not args.skip_build_server
-      and server_utils.MaybeRunCommand(name=args.target_name,
-                                       argv=sys.argv,
-                                       stamp_file=args.stamp,
-                                       force=args.use_build_server)):
+      and server_utils.MaybeRunCommand(
+          name=args.target_name, argv=sys.argv, stamp_file=args.stamp)):
     return
 
   sources = []
