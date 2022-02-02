@@ -90,7 +90,6 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::Feature> enabled_features;
-  enabled_features.push_back(kStartSurface);
   enabled_features.push_back(kRemoveExcessNTPs);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
@@ -117,7 +116,6 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
 TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::Feature> enabled_features;
-  enabled_features.push_back(kStartSurface);
   enabled_features.push_back(kRemoveExcessNTPs);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
@@ -144,7 +142,6 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
 TEST_F(StartSurfaceSceneAgentTest, KeepNTPAsActiveTab) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::Feature> enabled_features;
-  enabled_features.push_back(kStartSurface);
   enabled_features.push_back(kRemoveExcessNTPs);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});

@@ -95,14 +95,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 
 @implementation TabGridTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  config.features_disabled.push_back(kStartSurface);
-
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 

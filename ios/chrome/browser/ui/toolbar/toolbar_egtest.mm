@@ -61,12 +61,6 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int suggestionID) {
 
 @implementation ToolbarTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(kStartSurface);
-  return config;
-}
-
 #pragma mark Tests
 
 // Verifies that entering a URL in the omnibox navigates to the correct URL and
