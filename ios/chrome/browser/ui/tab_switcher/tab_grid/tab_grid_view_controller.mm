@@ -125,8 +125,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      GridViewControllerDelegate,
                                      LayoutSwitcher,
                                      UIScrollViewAccessibilityDelegate,
-                                     ViewRevealingAnimatee,
-                                     UISearchBarDelegate>
+                                     UISearchBarDelegate,
+                                     ViewRevealingAnimatee>
 // Whether the view is visible. Bookkeeping is based on |-viewWillAppear:| and
 // |-viewWillDisappear methods. Note that the |Did| methods are not reliably
 // called (e.g., edge case in multitasking).
@@ -486,6 +486,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)contentWillDisappearAnimated:(BOOL)animated {
   self.undoCloseAllAvailable = NO;
+  self.tabGridMode = TabGridModeNormal;
   [self.regularTabsDelegate discardSavedClosedItems];
   // When the view disappears, the toolbar alpha should be set to 0; either as
   // part of the animation, or directly with -hideToolbars.
@@ -1278,6 +1279,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [topToolbar
         setCancelSearchButtonTarget:self
                              action:@selector(cancelSearchButtonTapped:)];
+
+    [topToolbar setSearchBarDelegate:self];
   }
   // Configure and initialize the page control.
   [topToolbar.pageControl addTarget:self
@@ -1286,9 +1289,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [topToolbar.pageControl addTarget:self
                              action:@selector(pageControlChangedPage:)
                    forControlEvents:UIControlEventTouchUpInside];
-
-  if (IsTabsSearchEnabled())
-    [topToolbar setSearchBarDelegate:self];
 
   [NSLayoutConstraint activateConstraints:@[
     [topToolbar.topAnchor
@@ -1828,9 +1828,34 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark UISearchBarDelegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar*)searchBar {
-  NSString* text = searchBar.text;
+  [self updateScrimVisibilityForText:searchBar.text];
+}
 
-  if (text.length == 0) {
+- (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar {
+  [searchBar resignFirstResponder];
+}
+
+- (void)searchBar:(UISearchBar*)searchBar textDidChange:(NSString*)searchText {
+  [self updateScrimVisibilityForText:searchText];
+
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      // TODO(crbug.com/1287190): Use the search text for the search and reload
+      // data.
+      break;
+    case TabGridPageRegularTabs:
+      // TODO(crbug.com/1287190): Use the search text for the search and reload
+      // data.
+      break;
+    case TabGridPageRemoteTabs:
+      // TODO(crbug.com/1287190): Use the search text for the search and reload
+      // data.
+      break;
+  }
+}
+
+- (void)updateScrimVisibilityForText:(NSString*)searchText {
+  if (_tabGridMode == TabGridModeSearch && searchText.length == 0) {
     if (!self.isScrimDisplayed)
       [self showScrim];
   } else {
@@ -1839,8 +1864,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     if (self.isScrimDisplayed) {
       [self hideScrim];
     }
-    // TODO(crbug.com/1287190): Use the search text for the search and reload
-    // data.
   }
 }
 
@@ -2111,9 +2134,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  if (self.isScrimDisplayed) {
-    [self hideScrim];
-  } else {
+  if (!self.isScrimDisplayed) {
     // Only record search cancel event when an actual search happened.
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
