@@ -2079,6 +2079,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
+    @DisabledTest(message = "https://crbug.com/1291558")
     public void testTapOnARIAIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -2533,6 +2534,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously flaky, disabled 4/2021.  https://crbug.com/1192285
+    @DisabledTest(message = "https://crbug.com/1291558")
     public void testPreventHandlingCurrentSelectionModification() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -2750,6 +2752,7 @@ public class ContextualSearchManagerTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky. See https://crbug.com/1032955
+    @DisabledTest(message = "https://crbug.com/1291558")
     public void testResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
@@ -2788,7 +2791,8 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "crbug.com/1032760")
+    // Previously flaky https://crbug.com/1032760 on sdk<P.
+    @DisabledTest(message = "https://crbug.com/1291558")
     public void testNonResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
@@ -3274,6 +3278,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "https://crbug.com/1291558")
     public void testQuickActionCaptionAndImage(@EnabledFeature int enabledFeature)
             throws Exception {
         CompositorAnimationHandler.setTestingMode(true);
