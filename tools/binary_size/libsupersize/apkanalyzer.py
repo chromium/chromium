@@ -17,6 +17,7 @@ import zipfile
 
 import models
 import path_util
+import parallel
 
 
 _TOTAL_NODE_NAME = '<TOTAL>'
@@ -32,22 +33,29 @@ def _ParseJarInfoFile(file_name):
   return source_map
 
 
-def _RunApkAnalyzer(apk_path, mapping_path):
+def RunApkAnalyzerAsync(apk_path, mapping_path):
   args = [path_util.GetApkAnalyzerPath(), 'dex', 'packages', apk_path]
   if mapping_path and os.path.exists(mapping_path):
     args.extend(['--proguard-mappings', mapping_path])
   env = os.environ.copy()
   env['JAVA_HOME'] = path_util.GetJavaHome()
-  result = subprocess.run(args,
-                          env=env,
-                          encoding='utf8',
-                          capture_output=True,
-                          check=True)
-  stderr = re.sub(r'Successfully loaded.*?\n', '', result.stderr)
+
+  # Use a thread rather than directly using a Popen instance so that stdout is
+  # being read from.
+  return parallel.CallOnThread(subprocess.run,
+                               args,
+                               env=env,
+                               encoding='utf8',
+                               capture_output=True,
+                               check=True)
+
+
+def _ParseApkAnalyzerOutput(stdout, stderr):
+  stderr = re.sub(r'Successfully loaded.*?\n', '', stderr)
   if stderr.strip():
     raise Exception('Unexpected stderr:\n' + stderr)
   data = []
-  for line in result.stdout.splitlines():
+  for line in stdout.splitlines():
     try:
       vals = line.split()
       # We want to name these columns so we know exactly which is which.
@@ -270,10 +278,11 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
                        source_path=source_path)
 
 
-def CreateDexSymbols(apk_path, mapping_path, size_info_prefix, dex_total_size):
+def CreateDexSymbols(apk_analyzer_result, dex_total_size, size_info_prefix):
   source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
 
-  nodes = _RunApkAnalyzer(apk_path, mapping_path)
+  nodes = _ParseApkAnalyzerOutput(apk_analyzer_result.stdout,
+                                  apk_analyzer_result.stderr)
   nodes = UndoHierarchicalSizing(nodes)
 
   total_node_size = sum([x[2] for x in nodes])

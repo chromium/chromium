@@ -24,6 +24,7 @@ import file_format
 import models
 import pakfile
 import test_util
+import zip_util
 
 
 _SCRIPT_DIR = os.path.dirname(__file__)
@@ -238,7 +239,12 @@ class IntegrationTest(unittest.TestCase):
         container_name = ''
         if use_minimal_apks:
           container_name = 'Bundle.minimal.apks/base.apk'
-        yield container_name, apk_spec, pak_spec, native_spec
+        yield archive.ContainerSpec(container_name=container_name,
+                                    apk_spec=apk_spec,
+                                    pak_spec=pak_spec,
+                                    native_specs=[native_spec],
+                                    source_directory=_TEST_SOURCE_DIR,
+                                    output_directory=output_directory)
 
         if use_minimal_apks:
           for split_name, apk_path in [
@@ -250,37 +256,26 @@ class IntegrationTest(unittest.TestCase):
                 apk_path=apk_path,
                 split_name=split_name,
                 size_info_prefix=apk_spec.size_info_prefix)
-            native_spec = None
-            pak_spec = None
             container_name = 'Bundle.minimal.apks/%s.apk' % split_name
             if split_name == 'on_demand':
               container_name += '?'
               apk_spec.default_component = 'DEFAULT'
-            yield container_name, apk_spec, pak_spec, native_spec
+            yield archive.ContainerSpec(container_name=container_name,
+                                        apk_spec=apk_spec,
+                                        pak_spec=None,
+                                        native_specs=[],
+                                        source_directory=_TEST_SOURCE_DIR,
+                                        output_directory=output_directory)
 
-      raw_symbols_list = []
-
-      with test_util.AddMocksToPath():
+      with test_util.AddMocksToPath(), \
+          zip_util.ApkFileManager() as apk_file_manager:
         build_config = archive.CreateBuildConfig(output_directory,
                                                  _TEST_SOURCE_DIR)
-        pak_id_map = pakfile.PakIdMap()
-        for container_name, apk_spec, pak_spec, native_spec in iter_specs():
-          metadata = archive.CreateMetadata(apk_spec=apk_spec,
-                                            native_spec=native_spec,
-                                            output_directory=output_directory)
-          raw_symbols = archive.CreateContainerSymbols(
-              container_name=container_name,
-              metadata=metadata,
-              apk_spec=apk_spec,
-              pak_spec=pak_spec,
-              native_spec=native_spec,
-              source_directory=_TEST_SOURCE_DIR,
-              output_directory=output_directory,
-              pak_id_map=pak_id_map)
-          raw_symbols_list.append(raw_symbols)
+        container_specs = list(iter_specs())
+        size_info = archive.CreateSizeInfo(container_specs, build_config,
+                                           apk_file_manager)
+        IntegrationTest.cached_size_info[cache_key] = size_info
 
-        IntegrationTest.cached_size_info[cache_key] = archive.CreateSizeInfo(
-            build_config, raw_symbols_list)
     return copy.deepcopy(IntegrationTest.cached_size_info[cache_key])
 
   def _DoArchive(self,
