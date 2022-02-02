@@ -12,7 +12,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -31,7 +32,7 @@ class TestAppBannerManagerDesktop;
 class AppBannerManagerDesktop
     : public AppBannerManager,
       public content::WebContentsUserData<AppBannerManagerDesktop>,
-      public web_app::AppRegistrarObserver {
+      public web_app::WebAppInstallManagerObserver {
  public:
   AppBannerManagerDesktop(const AppBannerManagerDesktop&) = delete;
   AppBannerManagerDesktop& operator=(const AppBannerManagerDesktop&) = delete;
@@ -89,20 +90,20 @@ class AppBannerManagerDesktop
                          double score,
                          site_engagement::EngagementType type) override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::WebAppInstallManagerObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   void CreateWebApp(WebappInstallSource install_source);
 
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   web_app::AppId uninstalling_app_id_;
 
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::WeakPtrFactory<AppBannerManagerDesktop> weak_factory_{this};
 

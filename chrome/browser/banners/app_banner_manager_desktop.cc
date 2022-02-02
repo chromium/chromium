@@ -19,6 +19,8 @@
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
@@ -90,7 +92,7 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // May be null in unit tests e.g. TabDesktopMediaListTest.*.
   if (provider)
-    registrar_observation_.Observe(&provider->registrar());
+    install_manager_observation_.Observe(&provider->install_manager());
 }
 
 AppBannerManagerDesktop::~AppBannerManagerDesktop() { }
@@ -235,8 +237,8 @@ void AppBannerManagerDesktop::OnWebAppUninstalled(
     RecheckInstallabilityForLoadedPage(validated_url(), true);
 }
 
-void AppBannerManagerDesktop::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void AppBannerManagerDesktop::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
