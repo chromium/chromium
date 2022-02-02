@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_custom_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -204,6 +206,10 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
 
   // Ignore any non-ARC++ window.
   if (arc::GetWindowTaskId(gained_active) <= 0)
+    return;
+
+  // Ghost window is not an actual app window.
+  if (gained_active->GetProperty(ash::full_restore::kArcGhostSurface))
     return;
 
   // Observe active ARC++ window.

@@ -256,15 +256,15 @@ bool IsArcOptInVerificationDisabled() {
 absl::optional<int> GetWindowTaskId(const aura::Window* window) {
   if (!window)
     return absl::nullopt;
-  const std::string* arc_app_id = exo::GetShellApplicationId(window);
-  if (!arc_app_id)
+  const std::string* window_app_id = exo::GetShellApplicationId(window);
+  if (!window_app_id)
     return absl::nullopt;
-  return GetTaskIdFromWindowAppId(*arc_app_id);
+  return GetTaskIdFromWindowAppId(*window_app_id);
 }
 
-absl::optional<int> GetTaskIdFromWindowAppId(const std::string& app_id) {
+absl::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
   int task_id;
-  if (std::sscanf(app_id.c_str(), "org.chromium.arc.%d", &task_id) != 1)
+  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d", &task_id) != 1)
     return absl::nullopt;
   return task_id;
 }
@@ -272,29 +272,27 @@ absl::optional<int> GetTaskIdFromWindowAppId(const std::string& app_id) {
 absl::optional<int> GetWindowSessionId(const aura::Window* window) {
   if (!window)
     return absl::nullopt;
-  const std::string* arc_app_id = exo::GetShellApplicationId(window);
-  if (!arc_app_id)
+  const std::string* window_app_id = exo::GetShellApplicationId(window);
+  if (!window_app_id)
     return absl::nullopt;
-  return GetSessionIdFromWindowAppId(*arc_app_id);
+  return GetSessionIdFromWindowAppId(*window_app_id);
 }
 
-absl::optional<int> GetSessionIdFromWindowAppId(const std::string& app_id) {
+absl::optional<int> GetSessionIdFromWindowAppId(
+    const std::string& window_app_id) {
   int session_id;
-  if (std::sscanf(app_id.c_str(), "org.chromium.arc.session.%d", &session_id) !=
-      1) {
+  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.session.%d",
+                  &session_id) != 1) {
     return absl::nullopt;
   }
   return session_id;
 }
 
 absl::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
-  if (!window)
-    return absl::nullopt;
-  const std::string* arc_app_id = exo::GetShellApplicationId(window);
-  if (!arc_app_id)
-    return absl::nullopt;
-  auto task_id = GetTaskIdFromWindowAppId(*arc_app_id);
-  return task_id ? *task_id : GetSessionIdFromWindowAppId(*arc_app_id);
+  auto result = GetWindowTaskId(window);
+  if (result)
+    return result;
+  return GetWindowSessionId(window);
 }
 
 bool IsArcForceCacheAppIcon() {

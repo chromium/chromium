@@ -6,9 +6,13 @@
 
 #include <memory>
 
+#include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
+#include "chrome/browser/ash/app_restore/arc_window_handler.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
@@ -18,10 +22,15 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/app_restore/app_restore_data.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
+
+#include "ui/display/display.h"
+#include "ui/display/test/test_screen.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace arc {
 
@@ -309,6 +318,42 @@ TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
   arc_widget->Close();
+}
+
+TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          ash::Shell::GetPrimaryRootWindow());
+
+  ash::full_restore::ArcWindowHandler handler;
+  app_restore::AppRestoreData restore_data;
+  restore_data.display_id = display.id();
+  auto ghost_window = ash::full_restore::ArcGhostWindowShellSurface::Create(
+      &handler, "app_id" /* app_id */, 1 /* window_id */,
+      gfx::Rect(10, 10, 100, 100) /* bounds */, &restore_data,
+      base::BindRepeating([]() {}));
+  ASSERT_TRUE(ghost_window);
+
+  // Associate ghost window with real app.
+  ghost_window->SetApplicationId("org.chromium.arc.1");
+
+  // This creates window.
+  ghost_window->SetSystemUiVisibility(false /* autohide */);
+  ASSERT_TRUE(ghost_window->GetWidget());
+  ASSERT_TRUE(ghost_window->GetWidget()->GetNativeWindow());
+  ghost_window->GetWidget()->GetNativeWindow()->Show();
+
+  tracing_helper().GetTracing()->OnTaskCreated(
+      1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
+      std::string() /* intent */, 0 /* session_id */);
+
+  tracing_helper().GetTracing()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      ghost_window->GetWidget()->GetNativeWindow() /* gained_active */,
+      nullptr /* lost_active */);
+
+  // Ghost window should not trigger tracing sessions.
+  DCHECK(!tracing_helper().GetTracingSession());
 }
 
 }  // namespace arc

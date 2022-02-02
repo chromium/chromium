@@ -19,35 +19,38 @@ namespace full_restore {
 
 class ArcWindowHandler;
 
-std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
-    ArcWindowHandler* window_handler,
-    const std::string& app_id,
-    int window_id,
-    const gfx::Rect& bounds,
-    app_restore::AppRestoreData* restore_data,
-    base::RepeatingClosure close_callback);
+// Explicitly identifies ARC ghost surface.
+extern const aura::WindowProperty<bool>* const kArcGhostSurface;
 
 // ArcGhostWindowShellSurface class is a shell surface which controlled its
 // root surface.
 class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
  public:
-  ArcGhostWindowShellSurface(std::unique_ptr<exo::Surface> surface,
-                             int container,
-                             double scale_factor,
-                             const std::string& application_id);
   ArcGhostWindowShellSurface(const ArcGhostWindowShellSurface&) = delete;
   ArcGhostWindowShellSurface& operator=(const ArcGhostWindowShellSurface&) =
       delete;
   ~ArcGhostWindowShellSurface() override;
 
-  void OverrideInitParams(views::Widget::InitParams* params) override;
+  static std::unique_ptr<ArcGhostWindowShellSurface> Create(
+      ArcWindowHandler* window_handler,
+      const std::string& app_id,
+      int window_id,
+      const gfx::Rect& bounds,
+      app_restore::AppRestoreData* restore_data,
+      base::RepeatingClosure close_callback);
 
-  void InitContentOverlay(const std::string& app_id, uint32_t theme_color);
-  void SetAppId(const absl::optional<std::string>& id);
+  void OverrideInitParams(views::Widget::InitParams* params) override;
 
   exo::Surface* controller_surface();
 
  private:
+  ArcGhostWindowShellSurface(std::unique_ptr<exo::Surface> surface,
+                             int container,
+                             double scale_factor,
+                             const std::string& application_id);
+
+  void InitContentOverlay(const std::string& app_id, uint32_t theme_color);
+  void SetAppId(const absl::optional<std::string>& id);
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const absl::optional<std::string>& id);
 

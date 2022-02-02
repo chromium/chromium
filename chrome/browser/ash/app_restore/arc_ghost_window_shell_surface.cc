@@ -24,7 +24,40 @@ constexpr int kDiameter = 24;
 namespace ash {
 namespace full_restore {
 
-std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
+// Explicitly identifies ARC ghost surface.
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kArcGhostSurface, false)
+
+ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
+    std::unique_ptr<exo::Surface> surface,
+    int container,
+    double scale_factor,
+    const std::string& application_id)
+    : ClientControlledShellSurface(surface.get(),
+                                   /*can_minimize=*/true,
+                                   container,
+                                   /*default_scale_cancellation=*/true) {
+  controller_surface_ = std::move(surface);
+  buffer_ = std::make_unique<exo::Buffer>(
+      aura::Env::GetInstance()
+          ->context_factory()
+          ->GetGpuMemoryBufferManager()
+          ->CreateGpuMemoryBuffer({1, 1}, gfx::BufferFormat::RGBA_8888,
+                                  gfx::BufferUsage::GPU_READ,
+                                  gpu::kNullSurfaceHandle, nullptr));
+  SetApplicationId(application_id.c_str());
+  controller_surface_->Attach(buffer_.get());
+  controller_surface_->SetFrame(exo::SurfaceFrameType::NORMAL);
+  SetScale(scale_factor);
+  CommitPendingScale();
+}
+
+ArcGhostWindowShellSurface::~ArcGhostWindowShellSurface() {
+  controller_surface_.reset();
+  buffer_.reset();
+}
+
+// static
+std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     ArcWindowHandler* window_handler,
     const std::string& app_id,
     int window_id,
@@ -49,9 +82,10 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
   int container = ash::desks_util::GetActiveDeskContainerId();
 
   auto surface = std::make_unique<exo::Surface>();
-  auto shell_surface = std::make_unique<ArcGhostWindowShellSurface>(
-      std::move(surface), container, scale_factor.value(),
-      WindowIdToAppId(window_id));
+  std::unique_ptr<ArcGhostWindowShellSurface> shell_surface(
+      new ArcGhostWindowShellSurface(std::move(surface), container,
+                                     scale_factor.value(),
+                                     WindowIdToAppId(window_id)));
 
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
@@ -104,43 +138,15 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
   return shell_surface;
 }
 
-ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
-    std::unique_ptr<exo::Surface> surface,
-    int container,
-    double scale_factor,
-    const std::string& application_id)
-    : ClientControlledShellSurface(surface.get(),
-                                   /*can_minimize=*/true,
-                                   container,
-                                   /*default_scale_cancellation=*/true) {
-  controller_surface_ = std::move(surface);
-  buffer_ = std::make_unique<exo::Buffer>(
-      aura::Env::GetInstance()
-          ->context_factory()
-          ->GetGpuMemoryBufferManager()
-          ->CreateGpuMemoryBuffer({1, 1}, gfx::BufferFormat::RGBA_8888,
-                                  gfx::BufferUsage::GPU_READ,
-                                  gpu::kNullSurfaceHandle, nullptr));
-  SetApplicationId(application_id.c_str());
-  controller_surface_->Attach(buffer_.get());
-  controller_surface_->SetFrame(exo::SurfaceFrameType::NORMAL);
-  SetScale(scale_factor);
-  CommitPendingScale();
-}
-
-ArcGhostWindowShellSurface::~ArcGhostWindowShellSurface() {
-  controller_surface_.reset();
-  buffer_.reset();
-}
-
-exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
-  return controller_surface_.get();
-}
-
 void ArcGhostWindowShellSurface::OverrideInitParams(
     views::Widget::InitParams* params) {
   ClientControlledShellSurface::OverrideInitParams(params);
   SetShellAppId(&params->init_properties_container, app_id_);
+  params->init_properties_container.SetProperty(kArcGhostSurface, true);
+}
+
+exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
+  return controller_surface_.get();
 }
 
 void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
