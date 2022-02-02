@@ -456,4 +456,62 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
   return base::MakeRefCounted<PrintBackendWin>();
 }
 
+mojom::ResultCode PrintBackend::GetPrinterCapabilitiesForXpsDriver(
+    const std::string& printer_name,
+    PrinterSemanticCapsAndDefaults* printer_info) {
+  DCHECK(printer_info);
+  ScopedXPSInitializer xps_initializer;
+  CHECK(xps_initializer.initialized());
+
+  if (!IsValidPrinter(printer_name))
+    return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
+
+  HPTPROVIDER provider = nullptr;
+  std::wstring wide_printer_name = base::UTF8ToWide(printer_name);
+  HRESULT hr =
+      XPSModule::OpenProvider(wide_printer_name, /*version=*/1, &provider);
+  if (FAILED(hr) || !provider) {
+    LOG(ERROR) << "Failed to open provider";
+    XPSModule::CloseProvider(provider);
+    return mojom::ResultCode::kFailed;
+  }
+  Microsoft::WRL::ComPtr<IStream> print_capabilities_stream;
+  hr = CreateStreamOnHGlobal(/*hGlobal=*/nullptr, /*fDeleteOnRelease=*/TRUE,
+                             &print_capabilities_stream);
+  if (FAILED(hr) || !print_capabilities_stream.Get()) {
+    LOG(ERROR) << "Failed to create stream";
+    XPSModule::CloseProvider(provider);
+    return mojom::ResultCode::kFailed;
+  }
+  base::win::ScopedBstr error;
+  hr = XPSModule::GetPrintCapabilities(provider, /*print_ticket=*/nullptr,
+                                       print_capabilities_stream.Get(),
+                                       error.Receive());
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to get print capabilities";
+    XPSModule::CloseProvider(provider);
+
+    // Failures from getting print capabilities don't give a system error,
+    // so just indicate general failure.
+    return mojom::ResultCode::kFailed;
+  }
+  std::string print_capabilities;
+  hr = StreamOnHGlobalToString(print_capabilities_stream.Get(),
+                               &print_capabilities);
+
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to convert stream to string";
+    XPSModule::CloseProvider(provider);
+    return mojom::ResultCode::kFailed;
+  }
+  DVLOG(2) << "Printer capabilities info: Name = " << printer_name
+           << ", capabilities = " << print_capabilities;
+
+  // TODO(crbug.com/1291257)  Need to parse the XML to extract
+  // capabilities. More work expected here.
+
+  XPSModule::CloseProvider(provider);
+  return mojom::ResultCode::kSuccess;
+}
+
 }  // namespace printing

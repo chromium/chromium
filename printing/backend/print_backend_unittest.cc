@@ -55,4 +55,20 @@ TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersNoneInstalled) {
   EXPECT_TRUE(printer_list.empty());
 }
 
+#if BUILDFLAG(IS_WIN)
+// This test is for the XPS API that read the capabilities of a
+// specific printer.
+TEST_F(PrintBackendTest, MANUAL_GetPrinterCapabilitiesForXpsDriver) {
+  PrinterList printer_list;
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+            mojom::ResultCode::kSuccess);
+  PrinterSemanticCapsAndDefaults printer_info;
+  for (const auto& printer : printer_list) {
+    EXPECT_EQ(GetPrintBackend()->GetPrinterCapabilitiesForXpsDriver(
+                  printer.printer_name, &printer_info),
+              mojom::ResultCode::kSuccess);
+  }
+}
+#endif
+
 }  // namespace printing

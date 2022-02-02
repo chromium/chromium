@@ -223,6 +223,12 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
  protected:
   friend class base::RefCountedThreadSafe<PrintBackend>;
+
+#if BUILDFLAG(IS_WIN)
+  FRIEND_TEST_ALL_PREFIXES(PrintBackendTest,
+                           MANUAL_GetPrinterCapabilitiesForXpsDriver);
+#endif
+
   PrintBackend();
   virtual ~PrintBackend();
 
@@ -230,6 +236,15 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
   static scoped_refptr<PrintBackend> CreateInstanceImpl(
       const base::DictionaryValue* print_backend_settings,
       const std::string& locale);
+
+#if BUILDFLAG(IS_WIN)
+  // Gets the semantic capabilities and defaults for a specific printer.
+  // This method uses the XPS API to get the printer capabilities.
+  // TODO(crbug.com/1291257): This method is not fully implemented yet.
+  mojom::ResultCode GetPrinterCapabilitiesForXpsDriver(
+      const std::string& printer_name,
+      PrinterSemanticCapsAndDefaults* printer_info);
+#endif
 };
 
 }  // namespace printing
