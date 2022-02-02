@@ -4,42 +4,32 @@
 
 Storage.initialize();
 
-function injectContentScripts() {
+function forAllTabs(tabCallback) {
   chrome.windows.getAll({'populate': true}, function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        var url = tabs[j].url;
-        if (url.startsWith('chrome') || url.startsWith('about'))
+    for (const window of windows) {
+      for (const tab of window.tabs) {
+        if (isDisallowedUrl(tab.url)) {
           continue;
-
-        chrome.tabs.executeScript(
-            tabs[j].id,
-            {file: 'highcontrast.js', allFrames: true});
+        }
+        tabCallback(tab);
       }
     }
   });
 }
 
+function injectContentScripts() {
+  forAllTabs(tab => chrome.tabs.executeScript(
+      tab.id,
+      {file: 'highcontrast.js', allFrames: true}));
+}
+
 function updateTabs() {
-  var msg = {
-    'enabled': Storage.enabled
-  };
-  chrome.windows.getAll({'populate': true}, function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        var url = tabs[j].url;
-        if (isDisallowedUrl(url)) {
-          continue;
-        }
-        var msg = {
-          'enabled': Storage.enabled,
-          'scheme': Storage.getSiteScheme(siteFromUrl(url))
-        };
-        chrome.tabs.sendRequest(tabs[j].id, msg);
-      }
-    }
+  forAllTabs(tab => {
+    const msg = {
+      'enabled': Storage.enabled,
+      'scheme': Storage.getSiteScheme(siteFromUrl(tab.url))
+    };
+    chrome.tabs.sendRequest(tab.id, msg);
   });
 }
 
