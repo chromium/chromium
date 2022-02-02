@@ -2615,12 +2615,14 @@ TEST_F(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   EXPECT_TRUE(cookie->IsPartitioned());
 }
 
-TEST_F(SiteSettingsHandlerTest, ClearUnpartitionedClearsHints) {
-  // Confirm that when the user clears unpartitioned storage, client hints
-  // are also cleared.
+TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
+  // Confirm that when the user clears unpartitioned storage, or the eTLD+1
+  // group, client hints are also cleared.
   SetUpCookiesTreeModel();
+  handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://google.com/")};
+  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
+                  GURL("https://google.com/"), GURL("https://www.google.com/")};
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -2645,16 +2647,40 @@ TEST_F(SiteSettingsHandlerTest, ClearUnpartitionedClearsHints) {
         client_hints_dictionary.Clone());
   }
 
-  // Clear unpartitioned usage data.
+  // Clear at the eTLD+1 level and ensure affected origins are cleared.
   base::Value args(base::Value::Type::LIST);
-  args.Append("https://example.com/");
+  args.Append("example.com");
+  handler()->HandleClearEtldPlus1DataAndCookies(
+      &base::Value::AsListValue(args));
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
+  EXPECT_EQ(2U, client_hints_settings.size());
+
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
+            client_hints_settings.at(0).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            client_hints_settings.at(0).secondary_pattern);
+  EXPECT_EQ(client_hints_dictionary, client_hints_settings.at(0).setting_value);
+
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+            client_hints_settings.at(1).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            client_hints_settings.at(1).secondary_pattern);
+  EXPECT_EQ(client_hints_dictionary, client_hints_settings.at(1).setting_value);
+
+  // Clear unpartitioned usage data, which should only affect the specific
+  // origin.
+  args.ClearList();
+  args.Append("https://google.com/");
   handler()->HandleClearUnpartitionedUsage(&base::Value::AsListValue(args));
 
   // Validate the client hint has been cleared.
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
   EXPECT_EQ(1U, client_hints_settings.size());
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[1]),
+
+  // www.google.com should be the only remainining entry.
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             client_hints_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             client_hints_settings.at(0).secondary_pattern);

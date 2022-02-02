@@ -129,8 +129,7 @@ class SiteSettingsHandler
                            HandleClearEtldPlus1DataAndCookies);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleClearUnpartitionedUsage);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           ClearUnpartitionedClearsHints);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ClearClientHints);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleClearPartitionedUsage);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, CookieSettingDescription);
@@ -270,6 +269,12 @@ class SiteSettingsHandler
 
   // Record metrics for actions on All Sites Page.
   void HandleRecordAction(const base::ListValue* args);
+
+  // Provides an opportunity for site data which is not integrated into the
+  // tree model to be removed when entries for |origins| are removed.
+  // TODO(crbug.com/1271155): This function is a temporary hack while the
+  // CookiesTreeModel is deprecated.
+  void RemoveNonTreeModelData(const std::vector<url::Origin>& origins);
 
   void SetCookiesTreeModelForTesting(
       std::unique_ptr<CookiesTreeModel> cookies_tree_model);

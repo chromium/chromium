@@ -799,23 +799,15 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
 void SiteSettingsHandler::HandleClearUnpartitionedUsage(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  const std::string& origin = args->GetList()[0].GetString();
-  GURL url(origin);
-  if (!url.is_valid())
+  const std::string& origin_string = args->GetList()[0].GetString();
+  auto origin = url::Origin::Create(GURL(origin_string));
+  if (origin.opaque())
     return;
   AllowJavascript();
 
-  RemoveMatchingNodes(cookies_tree_model_.get(), origin, absl::nullopt);
+  RemoveMatchingNodes(cookies_tree_model_.get(), origin_string, absl::nullopt);
 
-  // TODO(crbug.com/1271155, crbug.com/1268626): This is a temporary hack while
-  // the CookiesTreeModel is deprecated. Currently cookies will fail to be
-  // deleted if only cookies exist and the origin's scheme is 'https'. The
-  // origin's scheme in the cookie node is `http` whereas the expected scheme
-  // for the origin is `https`, so we cannot use the cookie node origin to
-  // remove site client hints data before the issue is resolved.
-  HostContentSettingsMapFactory::GetForProfile(profile_)
-      ->SetWebsiteSettingDefaultScope(
-          url, GURL(), ContentSettingsType::CLIENT_HINTS, base::Value());
+  RemoveNonTreeModelData({origin});
 }
 
 void SiteSettingsHandler::HandleClearPartitionedUsage(
@@ -1737,6 +1729,29 @@ void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
 
   AllowJavascript();
   RemoveMatchingNodes(cookies_tree_model_.get(), absl::nullopt, etld_plus1);
+
+  // Retrieve all of the origin entries grouped under this eTLD + 1.
+  std::vector<url::Origin> affected_origins;
+  for (const auto& origin_is_partitioned : all_sites_map_[etld_plus1]) {
+    // Ignore entries which are partitioned, as no non-cookie tree storage is
+    // partitioned.
+    if (origin_is_partitioned.second)
+      continue;
+
+    affected_origins.emplace_back(
+        url::Origin::Create(GURL(origin_is_partitioned.first)));
+  }
+
+  // Cookies may have associated with the entry for the eTLD+1 itself.
+  // As per the logic in CreateOrAppendSiteGroupEntry, this will only occur
+  // if the existing entry was https, otherwise a new http entry would be
+  // created. Hence, we need only additionally include the HTTPS version of
+  // the eTLD+1 as an origin.
+  std::string https_url = std::string(url::kHttpsScheme) +
+                          url::kStandardSchemeSeparator + etld_plus1 + "/";
+  affected_origins.emplace_back(url::Origin::Create(GURL(https_url)));
+
+  RemoveNonTreeModelData(affected_origins);
 }
 
 void SiteSettingsHandler::HandleRecordAction(const base::ListValue* args) {
@@ -1747,6 +1762,19 @@ void SiteSettingsHandler::HandleRecordAction(const base::ListValue* args) {
   DCHECK_GE(action, static_cast<int>(AllSitesAction2::kLoadPage));
 
   LogAllSitesAction(static_cast<AllSitesAction2>(action));
+}
+
+void SiteSettingsHandler::RemoveNonTreeModelData(
+    const std::vector<url::Origin>& origins) {
+  // TODO(crbug.com/1268626): Remove client hint information, which cannot be
+  // associated with Cookie node information as the scheme in the cookie node
+  // may not match due to HTTP / HTTPS distinction issues.
+  for (const auto& origin : origins) {
+    HostContentSettingsMapFactory::GetForProfile(profile_)
+        ->SetWebsiteSettingDefaultScope(origin.GetURL(), GURL(),
+                                        ContentSettingsType::CLIENT_HINTS,
+                                        base::Value());
+  }
 }
 
 void SiteSettingsHandler::SetCookiesTreeModelForTesting(
