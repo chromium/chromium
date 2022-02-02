@@ -419,11 +419,6 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
         crate_name = crate_key.name
         crate_epoch = crate_key.epoch
 
-        last_printed = common.print_same_line(
-            "Collecting build and dev dependencies: {}/{} {} v{}".format(
-                1 + num_done, 1 + num_done + len(crate_keys_left), crate_name,
-                crate_epoch), last_printed)
-
         orig_cargo_toml_path = common.os_crate_cargo_dir(
             crate_name, crate_epoch, rel_path=["Cargo.toml"])
 
@@ -438,6 +433,10 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                 list_of_3p_cargo_toml,
                 orig_toml_path=orig_cargo_toml_path)
 
+            last_printed = common.print_same_line(
+                "Collecting normal dependencies: {}/{} {} v{}".format(
+                    1 + num_done, 1 + num_done + len(crate_keys_left),
+                    crate_name, crate_epoch), last_printed)
             new_keys = _collect_deps_for_crate(args,
                                                tmp_cargo_toml_path,
                                                build_data_set,
@@ -446,6 +445,11 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                                                crate_key=crate_key,
                                                depth=1)
             crate_keys_left.update(new_keys)
+
+            last_printed = common.print_same_line(
+                "Collecting build dependencies: {}/{} {} v{}".format(
+                    1 + num_done, 1 + num_done + len(crate_keys_left),
+                    crate_name, crate_epoch), last_printed)
             new_keys = _collect_deps_for_crate(args,
                                                tmp_cargo_toml_path,
                                                build_data_set,
@@ -459,6 +463,10 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                 if per_crate.for_first_party:
                     find_test_deps = True
             if find_test_deps:
+                last_printed = common.print_same_line(
+                    "Collecting test dependencies: {}/{} {} v{}".format(
+                        1 + num_done, 1 + num_done + len(crate_keys_left),
+                        crate_name, crate_epoch), last_printed)
                 new_keys = _collect_deps_for_crate(args,
                                                    tmp_cargo_toml_path,
                                                    build_data_set,
@@ -469,11 +477,10 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                 crate_keys_left.update(new_keys)
 
         num_done += 1
-    common.print_same_line(
-        "Collecting build and dev dependencies: {}/{} ".format(
-            num_done, num_done),
-        last_printed,
-        done=True)
+    common.print_same_line("Collecting dependencies: {}/{} ".format(
+        num_done, num_done),
+                           last_printed,
+                           done=True)
 
     if args.verbose:
         pprint(build_data_set)
@@ -891,8 +898,8 @@ def _add_edges_for_dep_on_target_arch(
         new_keys.add(dep.key)
 
     # Add outgoing edges from the parent crate to the dependency crate. If the
-    # parent is third_party.toml, then the crate key will not exist, as it's not
-    # actually a crate, and we don't need to set up any edges.
+    # parent is the virtual third_party.toml crate, then the crate key will not
+    # exist, and we don't need to set up any edges.
     if not parent_crate_key:
         return
 
@@ -914,7 +921,7 @@ def _collect_deps_for_crate(args: argparse.Namespace,
                             build_data_set: BuildData,
                             usage: cargo.CrateUsage,
                             is_third_party_toml: bool,
-                            crate_key: str = None,
+                            crate_key: cargo.CrateKey = None,
                             depth: int = None) -> set[cargo.CrateKey]:
     """Runs `cargo tree` and collects all dependency data for a specific crate.
 

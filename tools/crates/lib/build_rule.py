@@ -220,11 +220,15 @@ class BuildRule:
 
         build_rule_usage = build_rule.get_usage(usage)
 
-        if build_rule_usage.deps:
+        for (deps, gn_name) in [(build_rule_usage.deps, "deps"),
+                                (build_rule_usage.build_deps, "build_deps"),
+                                (build_rule_usage.dev_deps, "test_deps")]:
+            if not deps:
+                continue
             global_deps = []
             specific_deps = []
 
-            for d in build_rule_usage.deps:
+            for d in deps:
                 compile_modes = d["compile_modes"]
                 if compile_modes.is_always_true(
                 ) or compile_modes == build_rule_usage.used_on_archs:
@@ -233,7 +237,7 @@ class BuildRule:
                     specific_deps += [d]
 
             if global_deps or specific_deps:
-                self._write(indent, "deps = [")
+                self._write(indent, "{} = [".format(gn_name))
             for d in global_deps:
                 self._write(indent + 2, "\"{}\",".format(d["deppath"]))
             if global_deps or specific_deps:
