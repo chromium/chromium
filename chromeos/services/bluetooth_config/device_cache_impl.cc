@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "chromeos/services/bluetooth_config/device_conversion_util.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 namespace chromeos {
@@ -63,6 +64,7 @@ void DeviceCacheImpl::OnAdapterStateChanged() {
 
 void DeviceCacheImpl::DeviceAdded(device::BluetoothAdapter* adapter,
                                   device::BluetoothDevice* device) {
+  BLUETOOTH_LOG(DEBUG) << "Device added: " << device->GetAddress();
   if (device->IsPaired()) {
     if (AttemptSetDeviceInPairedDeviceList(device))
       NotifyPairedDevicesListChanged();
@@ -75,6 +77,7 @@ void DeviceCacheImpl::DeviceAdded(device::BluetoothAdapter* adapter,
 
 void DeviceCacheImpl::DeviceRemoved(device::BluetoothAdapter* adapter,
                                     device::BluetoothDevice* device) {
+  BLUETOOTH_LOG(DEBUG) << "Device removed: " << device->GetAddress();
   if (device->IsPaired()) {
     if (RemoveFromPairedDeviceList(device))
       NotifyPairedDevicesListChanged();
@@ -100,6 +103,9 @@ void DeviceCacheImpl::DeviceChanged(device::BluetoothAdapter* adapter,
 void DeviceCacheImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
                                           device::BluetoothDevice* device,
                                           bool new_paired_status) {
+  BLUETOOTH_LOG(DEBUG) << "Device " << device->GetAddress()
+                       << " paired changed, device is now "
+                       << (new_paired_status ? "paired" : "unpaired");
   if (new_paired_status) {
     // Remove from unpaired list and add to paired device list.
     bool unpaired_device_list_updated = RemoveFromUnpairedDeviceList(device);
@@ -128,6 +134,9 @@ void DeviceCacheImpl::DeviceConnectedStateChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool is_now_connected) {
+  BLUETOOTH_LOG(DEBUG) << "Device connected state changed: "
+                       << device->GetAddress()
+                       << ", is now connected: " << is_now_connected;
   DeviceChanged(adapter, device);
 }
 
@@ -135,6 +144,9 @@ void DeviceCacheImpl::DeviceBlockedByPolicyChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool new_blocked_status) {
+  BLUETOOTH_LOG(DEBUG) << "Device blocked by policy changed: "
+                       << device->GetAddress()
+                       << ", new blocked status: " << new_blocked_status;
   DeviceChanged(adapter, device);
 }
 
@@ -147,7 +159,10 @@ void DeviceCacheImpl::DeviceBatteryChanged(
 
 void DeviceCacheImpl::OnDeviceNicknameChanged(
     const std::string& device_id,
-    const absl::optional<std::string>&) {
+    const absl::optional<std::string>& nickname) {
+  BLUETOOTH_LOG(DEBUG) << "Device nickname changed: " << device_id
+                       << ", new nickname: "
+                       << (nickname.has_value() ? nickname.value() : "null");
   for (device::BluetoothDevice* device : bluetooth_adapter_->GetDevices()) {
     if (device->GetIdentifier() != device_id)
       continue;
@@ -155,6 +170,8 @@ void DeviceCacheImpl::OnDeviceNicknameChanged(
     DeviceChanged(bluetooth_adapter_.get(), device);
     return;
   }
+
+  BLUETOOTH_LOG(ERROR) << "Device nickname changed but device was not found";
 }
 
 void DeviceCacheImpl::FetchInitialDeviceLists() {
@@ -176,8 +193,11 @@ void DeviceCacheImpl::FetchInitialDeviceLists() {
 
 bool DeviceCacheImpl::AttemptSetDeviceInPairedDeviceList(
     device::BluetoothDevice* device) {
-  if (!device->IsPaired())
+  if (!device->IsPaired()) {
+    BLUETOOTH_LOG(ERROR) << "Attempted to set device in paired device list but "
+                         << "device is not paired: " << device->GetAddress();
     return false;
+  }
 
   // Remove the old (stale) properties, if they exist.
   RemoveFromPairedDeviceList(device);
@@ -214,8 +234,12 @@ bool DeviceCacheImpl::AttemptUpdatePairedDeviceMetadata(
   // device->IsPaired() == true. If we don't have this check here, the device
   // will be incorrectly added back into |paired_devices|. See
   // crrev.com/c/3287422.
-  if (!device_found)
+  if (!device_found) {
+    BLUETOOTH_LOG(DEBUG)
+        << "Device was not found in paired device list, not updating: "
+        << device->GetAddress();
     return false;
+  }
 
   // Remove existing metadata about |device|.
   bool updated = RemoveFromPairedDeviceList(device);
@@ -236,12 +260,19 @@ void DeviceCacheImpl::SortPairedDeviceList() {
 
 bool DeviceCacheImpl::AttemptSetDeviceInUnpairedDeviceList(
     device::BluetoothDevice* device) {
-  if (device->IsPaired())
+  if (device->IsPaired()) {
+    BLUETOOTH_LOG(DEBUG) << "Attempted to set device in unpaired device list "
+                         << "but device is paired: " << device->GetAddress();
     return false;
+  }
 
   // Check if the device should be added to the unpaired device list.
-  if (device::IsUnsupportedDevice(device))
+  if (device::IsUnsupportedDevice(device)) {
+    BLUETOOTH_LOG(DEBUG) << "Attempted to set device in unpaired device list "
+                         << "but device is unsupported: "
+                         << device->GetAddress();
     return false;
+  }
 
   // Remove the old (stale) properties, if they exist.
   RemoveFromUnpairedDeviceList(device);

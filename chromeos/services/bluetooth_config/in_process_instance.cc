@@ -10,6 +10,7 @@
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,6 +39,7 @@ void OnBluetoothAdapter(
     return;
 
   if (!g_instance) {
+    BLUETOOTH_LOG(EVENT) << "Initializing CrosBluetoothConfig";
     InitializerImpl initializer;
     g_instance = new CrosBluetoothConfig(
         initializer, std::move(bluetooth_adapter), g_fast_pair_delegate);
@@ -53,6 +55,7 @@ void OnBluetoothAdapter(
 }  // namespace
 
 void Initialize(FastPairDelegate* delegate) {
+  BLUETOOTH_LOG(EVENT) << "Beginning CrosBluetoothConfig initialization";
   CHECK(ash::features::IsBluetoothRevampEnabled());
   CHECK(!g_instance);
   DCHECK_EQ(ash::features::IsFastPairEnabled(), static_cast<bool>(delegate));
@@ -64,6 +67,7 @@ void Initialize(FastPairDelegate* delegate) {
 }
 
 void Shutdown() {
+  BLUETOOTH_LOG(EVENT) << "Shutting down CrosBluetoothConfig";
   CHECK(ash::features::IsBluetoothRevampEnabled());
   if (g_instance) {
     delete g_instance;
@@ -89,6 +93,7 @@ void SetPrefs(PrefService* logged_in_profile_prefs, PrefService* device_prefs) {
 
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver) {
+  BLUETOOTH_LOG(DEBUG) << "Binding to CrosBluetoothConfig";
   CHECK(ash::features::IsBluetoothRevampEnabled());
   DCHECK_EQ(ash::features::IsFastPairEnabled(),
             static_cast<bool>(g_fast_pair_delegate));

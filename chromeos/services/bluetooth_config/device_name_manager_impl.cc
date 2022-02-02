@@ -42,8 +42,11 @@ DeviceNameManagerImpl::~DeviceNameManagerImpl() = default;
 
 absl::optional<std::string> DeviceNameManagerImpl::GetDeviceNickname(
     const std::string& device_id) {
-  if (!local_state_)
+  if (!local_state_) {
+    BLUETOOTH_LOG(ERROR) << "Cannot get device nickname for " << device_id
+                         << " because local_state_ is null";
     return absl::nullopt;
+  }
 
   const std::string* nickname =
       local_state_->GetDictionary(kDeviceIdToNicknameMapPrefName)
@@ -86,6 +89,9 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
       DictionaryPrefUpdate(local_state_, kDeviceIdToNicknameMapPrefName).Get();
   DCHECK(device_id_to_nickname_map)
       << "Device ID to nickname map pref is unregistered.";
+
+  BLUETOOTH_LOG(USER) << "Setting device nickname for " << device_id << " to "
+                      << nickname;
   device_id_to_nickname_map->SetStringKey(device_id, nickname);
 
   NotifyDeviceNicknameChanged(device_id, nickname);
@@ -111,6 +117,7 @@ void DeviceNameManagerImpl::RemoveDeviceNickname(const std::string& device_id) {
     return;
   }
 
+  BLUETOOTH_LOG(EVENT) << "Removing device nickname for " << device_id;
   device_id_to_nickname_map->RemoveKey(device_id);
   NotifyDeviceNicknameChanged(device_id, /*nickname=*/absl::nullopt);
 }

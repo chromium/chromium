@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/bluetooth_config/discovery_session_manager.h"
+#include "components/device_event_log/device_event_log.h"
 
 #include "base/bind.h"
 
@@ -28,6 +29,8 @@ void DiscoverySessionManager::StartDiscovery(
     mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate) {
   // If Bluetooth is not enabled, we cannot start discovery.
   if (!IsBluetoothEnabled()) {
+    BLUETOOTH_LOG(ERROR)
+        << "StartDiscovery() called while Bluetooth is not enabled";
     mojo::Remote<mojom::BluetoothDiscoveryDelegate> delegate_remote(
         std::move(delegate));
     delegate_remote->OnBluetoothDiscoveryStopped();
@@ -40,6 +43,7 @@ void DiscoverySessionManager::StartDiscovery(
 
   // The number of clients has increased from 0 to 1.
   if (!had_client_before_call) {
+    BLUETOOTH_LOG(EVENT) << "StartDiscovery() called as the first client";
     OnHasAtLeastOneDiscoveryClientChanged();
     return;
   }
@@ -47,6 +51,8 @@ void DiscoverySessionManager::StartDiscovery(
   // If discovery is already active, notify the delegate that discovery has
   // started and of the current discovered devices list.
   if (IsDiscoverySessionActive()) {
+    BLUETOOTH_LOG(EVENT)
+        << "StartDiscovery() called with a discovery session already active";
     delegates_.Get(id)->OnBluetoothDiscoveryStarted(
         RegisterNewDevicePairingHandler(id));
     delegates_.Get(id)->OnDiscoveredDevicesListChanged(
@@ -62,6 +68,8 @@ void DiscoverySessionManager::NotifyDiscoveryStarted() {
 }
 
 void DiscoverySessionManager::NotifyDiscoveryStoppedAndClearActiveClients() {
+  BLUETOOTH_LOG(EVENT) << "Notifying discovery stopped";
+
   if (!HasAtLeastOneDiscoveryClient())
     return;
 
@@ -135,8 +143,11 @@ void DiscoverySessionManager::OnDelegateDisconnected(
 
   // If the disconnected client was the last one, the number of clients has
   // decreased from 1 to 0.
-  if (!HasAtLeastOneDiscoveryClient())
+  if (!HasAtLeastOneDiscoveryClient()) {
+    BLUETOOTH_LOG(EVENT)
+        << "The number of discovery clients has decreased from 1 to 0";
     OnHasAtLeastOneDiscoveryClientChanged();
+  }
 }
 
 void DiscoverySessionManager::FlushForTesting() {

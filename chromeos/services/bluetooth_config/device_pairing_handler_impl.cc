@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/bluetooth_config/device_pairing_handler_impl.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -48,8 +49,12 @@ DevicePairingHandlerImpl::DevicePairingHandlerImpl(
 DevicePairingHandlerImpl::~DevicePairingHandlerImpl() {
   // If we have a pairing attempt and this class is destroyed, cancel the
   // pairing.
-  if (!current_pairing_device_id().empty())
+  if (!current_pairing_device_id().empty()) {
+    BLUETOOTH_LOG(EVENT)
+        << "DevicePairingHandlerImpl is being destroyed while pairing with "
+        << current_pairing_device_id() << ", canceling pairing";
     CancelPairing();
+  }
 
   NotifyFinished();
 }

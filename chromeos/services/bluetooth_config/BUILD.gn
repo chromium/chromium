@@ -87,6 +87,7 @@ component("in_process_bluetooth_config") {
 
   deps = [
     ":bluetooth_config",
+    "//components/device_event_log",
     "//device/bluetooth",
   ]
 }

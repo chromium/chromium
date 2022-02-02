@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier.h"
+#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -18,6 +20,8 @@ void BluetoothDeviceStatusNotifier::ObserveDeviceStatusChanges(
 
 void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyPaired(
     const mojom::PairedBluetoothDevicePropertiesPtr& device) {
+  BLUETOOTH_LOG(EVENT) << "Notifying observers device "
+                       << GetPairedDeviceName(device) << " is newly paired";
   for (auto& observer : observers_) {
     observer->OnDevicePaired(mojo::Clone(device));
   }
@@ -25,6 +29,8 @@ void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyPaired(
 
 void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyConnected(
     const mojom::PairedBluetoothDevicePropertiesPtr& device) {
+  BLUETOOTH_LOG(EVENT) << "Notifying observers device "
+                       << GetPairedDeviceName(device) << " is newly connected";
   for (auto& observer : observers_) {
     observer->OnDeviceConnected(mojo::Clone(device));
   }
@@ -32,6 +38,9 @@ void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyConnected(
 
 void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyDisconnected(
     const mojom::PairedBluetoothDevicePropertiesPtr& device) {
+  BLUETOOTH_LOG(EVENT) << "Notifying observers device "
+                       << GetPairedDeviceName(device)
+                       << " is newly disconnected";
   for (auto& observer : observers_) {
     observer->OnDeviceDisconnected(mojo::Clone(device));
   }

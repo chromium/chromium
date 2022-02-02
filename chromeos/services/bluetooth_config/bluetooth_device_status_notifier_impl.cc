@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier_impl.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
+#include "components/device_event_log/device_event_log.h"
 
 #include <vector>
 
@@ -29,6 +30,7 @@ void BluetoothDeviceStatusNotifierImpl::OnPairedDevicesListChanged() {
 }
 
 void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
+  BLUETOOTH_LOG(DEBUG) << "Checking for device state changes";
   const std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices =
       device_cache_->GetPairedDevices();
 

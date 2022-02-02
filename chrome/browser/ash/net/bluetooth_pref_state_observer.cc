@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/bluetooth_config/in_process_instance.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace ash {
 
@@ -35,9 +36,15 @@ void BluetoothPrefStateObserver::OnUserProfileLoaded(
   DCHECK(profile);
 
   // Only set the prefs for primary users.
-  if (!ProfileHelper::IsPrimaryProfile(profile))
+  if (!ProfileHelper::IsPrimaryProfile(profile)) {
+    BLUETOOTH_LOG(EVENT)
+        << "User profile loaded, but user is not primary. Not setting "
+        << "CrosBluetoothConfig with profile prefs service";
     return;
+  }
 
+  BLUETOOTH_LOG(EVENT) << "Primary profile loaded, setting CrosBluetoothConfig "
+                       << "with profile prefs service";
   SetPrefs(profile);
   session_observation_.Reset();
 }

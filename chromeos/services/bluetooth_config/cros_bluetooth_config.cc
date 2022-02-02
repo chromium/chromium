@@ -13,6 +13,7 @@
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/initializer.h"
 #include "chromeos/services/bluetooth_config/system_properties_provider_impl.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace chromeos {
@@ -50,8 +51,10 @@ CrosBluetoothConfig::CrosBluetoothConfig(
           bluetooth_adapter,
           device_name_manager_.get())),
       fast_pair_delegate_(fast_pair_delegate) {
-  if (fast_pair_delegate_)
+  if (fast_pair_delegate_) {
+    BLUETOOTH_LOG(EVENT) << "Setting fast pair delegate's device name manager";
     fast_pair_delegate_->SetDeviceNameManager(device_name_manager_.get());
+  }
 }
 
 CrosBluetoothConfig::~CrosBluetoothConfig() {
@@ -61,6 +64,7 @@ CrosBluetoothConfig::~CrosBluetoothConfig() {
 
 void CrosBluetoothConfig::SetPrefs(PrefService* logged_in_profile_prefs,
                                    PrefService* local_state) {
+  BLUETOOTH_LOG(EVENT) << "Setting CrosBluetoothConfig services' pref services";
   bluetooth_power_controller_->SetPrefs(logged_in_profile_prefs, local_state);
   device_name_manager_->SetPrefs(local_state);
 }

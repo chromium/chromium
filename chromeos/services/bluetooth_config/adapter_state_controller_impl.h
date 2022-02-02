@@ -28,6 +28,9 @@ class AdapterStateControllerImpl : public AdapterStateController,
 
   enum class PowerStateChange { kNoChange, kEnable, kDisable };
 
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const PowerStateChange& power_state_change);
+
   // AdapterStateController:
   mojom::BluetoothSystemState GetAdapterState() const override;
   void SetBluetoothEnabledState(bool enabled) override;

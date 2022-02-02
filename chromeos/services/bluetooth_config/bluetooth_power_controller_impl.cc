@@ -107,10 +107,19 @@ void BluetoothPowerControllerImpl::OnAdapterStateChanged() {
 
 void BluetoothPowerControllerImpl::InitLocalStatePrefService(
     PrefService* local_state) {
+  BLUETOOTH_LOG(EVENT) << "Initializing local state pref service";
+
   // Return early if |local_state_| has already been initialized or
   // |local_state| is invalid.
-  if (local_state_ || !local_state)
+  if (local_state_) {
+    BLUETOOTH_LOG(EVENT) << "Local state has already be initialized";
     return;
+  }
+
+  if (!local_state) {
+    BLUETOOTH_LOG(EVENT) << "local_state is null, not initializing";
+    return;
+  }
 
   local_state_ = local_state;
 
@@ -141,8 +150,11 @@ void BluetoothPowerControllerImpl::ApplyBluetoothLocalStatePref() {
 
 void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
     PrefService* primary_profile_prefs) {
+  BLUETOOTH_LOG(EVENT) << "Initializing primary user pref service";
+
   primary_profile_prefs_ = primary_profile_prefs;
   if (!primary_profile_prefs_) {
+    BLUETOOTH_LOG(EVENT) << "primary_profile_prefs_ is null, not initializing";
     return;
   }
 
@@ -150,6 +162,8 @@ void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
             user_manager::UserManager::Get()->GetPrimaryUser());
 
   if (!has_attempted_apply_primary_user_pref_) {
+    BLUETOOTH_LOG(EVENT)
+        << "Primary user pref has not been attempted to be applied, applying";
     ApplyBluetoothPrimaryUserPref();
     has_attempted_apply_primary_user_pref_ = true;
   }

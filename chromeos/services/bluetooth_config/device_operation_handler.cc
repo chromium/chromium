@@ -103,7 +103,7 @@ void DeviceOperationHandler::EnqueueOperation(Operation operation,
                                               OperationCallback callback) {
   BLUETOOTH_LOG(DEBUG) << "Device with id: " << device_id
                        << " enqueueing operation: " << operation << " ("
-                       << (queue_.size() + 1) << " operations already queued)";
+                       << queue_.size() << " operations already queued)";
   device::BluetoothDevice* device = FindDevice(device_id);
   device::BluetoothTransport type =
       device ? device->GetType()
