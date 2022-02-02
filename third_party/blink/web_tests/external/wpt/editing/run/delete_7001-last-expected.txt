@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 255 tests; 252 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 300 tests; 297 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -255,5 +255,50 @@ PASS [["delete",""]] "<div contenteditable=\"false\"><custom-element contentedit
 PASS [["delete",""]] "<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><b>a[b</b></p><p><i>cd]</i></p></custom-element></div>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><b>a[b</b></p><p><i>cd]</i></p></custom-element></div>" queryCommandState("delete") after
 PASS [["delete",""]] "<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><b>a[b</b></p><p><i>cd]</i></p></custom-element></div>" queryCommandValue("delete") after
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" checks for modifications to non-editable content
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" compare innerHTML
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" queryCommandState("delete") before
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" queryCommandValue("delete") before
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" queryCommandState("delete") after
+PASS [["delete",""]] "<p>abc</p><ul contenteditable=\"false\"><li>def</li></ul><p>[]ghi</p>" queryCommandValue("delete") after
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" checks for modifications to non-editable content
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" compare innerHTML
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandState("delete") before
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandValue("delete") before
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandState("delete") after
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandValue("delete") after
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" compare innerHTML
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandState("delete") before
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandValue("delete") before
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandState("delete") after
+PASS [["delete",""]] "<p>abc</p><ul><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandValue("delete") after
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandState("delete") before
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandValue("delete") before
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandState("delete") after
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li><li>[]ghi</li></ul>" queryCommandValue("delete") after
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" compare innerHTML
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandState("delete") before
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandValue("delete") before
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandState("delete") after
+PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandValue("delete") after
 Harness: the test ran to completion.
 

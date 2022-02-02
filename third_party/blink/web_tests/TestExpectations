@@ -3207,6 +3207,8 @@ crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.12 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/external/wpt/html/cross-origin-embedder-policy/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/hidpi/device-pixel-ratio.https.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.https.html [ Timeout ]

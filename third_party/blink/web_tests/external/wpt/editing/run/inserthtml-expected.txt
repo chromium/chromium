@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1516 tests; 1460 PASS, 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1525 tests; 1469 PASS, 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
@@ -1516,5 +1516,14 @@ PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<
 PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandIndeterm("inserthtml") after
 PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandState("inserthtml") after
 PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandValue("inserthtml") after
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}": execCommand("inserthtml", false, "<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>") return value
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" checks for modifications to non-editable content
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" compare innerHTML
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" queryCommandIndeterm("inserthtml") before
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" queryCommandState("inserthtml") before
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" queryCommandValue("inserthtml") before
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" queryCommandIndeterm("inserthtml") after
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" queryCommandState("inserthtml") after
+PASS [["inserthtml","<div class=\"d1\"></div><div class=\"d2\"><span class=\"s1\">some text</span><a href=\"foo.html\"></a></div>"]] "{}" queryCommandValue("inserthtml") after
 Harness: the test ran to completion.
 
