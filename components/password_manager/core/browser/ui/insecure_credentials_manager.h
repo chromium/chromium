@@ -139,7 +139,7 @@ struct PasswordCredentialLess {
 struct CredentialMetadata;
 
 // This class provides clients with saved insecure credentials and possibility
-// to save new LeakedCredentials, edit/delete/mute insecure credentials and
+// to save new LeakedCredentials, edit/delete/[un]mute insecure credentials and
 // match insecure credentials with corresponding autofill::PasswordForms. It
 // supports an observer interface, and clients can register themselves to get
 // notified about changes to the list.
@@ -187,6 +187,10 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   // Attempts to mute |credential| from the password store.
   // Returns whether the mute succeeded.
   bool MuteCredential(const CredentialView& credential);
+
+  // Attempts to unmute |credential| from the password store.
+  // Returns whether the unmute succeeded.
+  bool UnmuteCredential(const CredentialView& credential);
 
   // Returns a vector of currently insecure credentials.
   std::vector<CredentialWithPassword> GetInsecureCredentials() const;
