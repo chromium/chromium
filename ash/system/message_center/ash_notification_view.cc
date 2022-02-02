@@ -1149,7 +1149,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
   // expanded and collapsed mode if there's a difference between them (a.k.a
   // when `message_label()` is truncated).
   if (message_label() && message_label()->GetVisible() &&
-      message_label()->IsDisplayTextTruncated()) {
+      IsMessageLabelTruncated()) {
     message_center_utils::FadeInView(message_label(),
                                      kMessageLabelFadeInAnimationDelayMs,
                                      kMessageLabelFadeInAnimationDurationMs);
@@ -1158,7 +1158,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
   // Fade in `message_label_in_expanded_state_`.
   if (message_label_in_expanded_state_ &&
       message_label_in_expanded_state_->GetVisible() && message_label() &&
-      message_label()->IsDisplayTextTruncated()) {
+      IsMessageLabelTruncated()) {
     message_center_utils::FadeInView(
         message_label_in_expanded_state_,
         kMessageLabelInExpandedStateFadeInAnimationDelayMs,
@@ -1381,6 +1381,24 @@ int AshNotificationView::CalculateMaxHeightForGroupedNotifications() {
   return free_space_height_above_anchor -
          control_buttons_container_->bounds().height() -
          main_view_->bounds().height() - vertical_margin;
+}
+
+bool AshNotificationView::IsMessageLabelTruncated() {
+  // True if the expanded label has more than one line.
+  if (message_label_in_expanded_state_->GetRequiredLines() > 1)
+    return true;
+
+  // Get the first row's width of `message_label_in_expanded_state_`'s text,
+  // which is also the text width of this label since it has one line. If text
+  // width is larger than `left_content()`'s width, which is the space dedicated
+  // to `message_label()`, the text is truncated.
+  int text_width =
+      message_label_in_expanded_state_
+          ->GetSubstringBounds(gfx::Range(
+              0, message_label_in_expanded_state_->GetText().length()))
+          .front()
+          .width();
+  return text_width > left_content()->width();
 }
 
 }  // namespace ash

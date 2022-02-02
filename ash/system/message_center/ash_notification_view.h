@@ -209,6 +209,11 @@ class ASH_EXPORT AshNotificationView
   // grouped_notifications_scroll_view_
   int CalculateMaxHeightForGroupedNotifications();
 
+  // Return true is `message_label()` is truncated. We need this helper because
+  // Label::IsDisplayTextTruncated doesn't work when `message_label()` hasn't
+  // been laid out yet.
+  bool IsMessageLabelTruncated();
+
   // Owned by views hierarchy.
   views::View* main_view_ = nullptr;
   views::View* main_right_view_ = nullptr;
