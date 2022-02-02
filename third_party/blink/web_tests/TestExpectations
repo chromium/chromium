@@ -1855,8 +1855,6 @@ crbug.com/1068610 external/wpt/css/css-color/color-mix-non-srgb-001.html [ Failu
 crbug.com/1068610 virtual/system-color-compute/external/wpt/css/css-color/color-mix-basic-001.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/tagged-images-003.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/tagged-images-004.html [ Failure ]
-crbug.com/1068610 [ Mac11 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
-crbug.com/1068610 [ Win10.20h2 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
 crbug.com/1068610 external/wpt/css/css-color/color-mix-percents-01.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/color-mix-percents-02.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/display-p3-001.html [ Failure ]
