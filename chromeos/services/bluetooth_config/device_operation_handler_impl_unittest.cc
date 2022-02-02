@@ -72,20 +72,23 @@ class DeviceOperationHandlerImplTest : public testing::Test {
 
   void AssertDurationHistogramMetrics(base::TimeDelta bucket,
                                       int success_count,
-                                      int failure_count) {
+                                      int failure_count,
+                                      std::string transport_name) {
     histogram_tester.ExpectBucketCount(
         "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Success",
         bucket.InMilliseconds(), success_count);
     histogram_tester.ExpectBucketCount(
-        "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Success."
-        "Classic",
+        base::StrCat({"Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt."
+                      "Duration.Success.",
+                      transport_name}),
         bucket.InMilliseconds(), success_count);
     histogram_tester.ExpectBucketCount(
         "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure",
         bucket.InMilliseconds(), failure_count);
     histogram_tester.ExpectBucketCount(
-        "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure."
-        "Classic",
+        base::StrCat({"Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt."
+                      "Duration.Failure.",
+                      transport_name}),
         bucket.InMilliseconds(), failure_count);
   }
 
@@ -264,8 +267,9 @@ TEST_F(DeviceOperationHandlerImplTest,
   EXPECT_EQ(results()[0], std::make_tuple(device_id, Operation::kConnect,
                                           /*success=*/false));
   AssertHistogramMetrics(/*success_count=*/0, /*failure_count=*/1);
-  AssertDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
-                                 /*failure_count=*/0);
+  AssertDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
+                                 /*failure_count=*/1,
+                                 /*transport_name=*/"Invalid");
 
   // Connect should fail due to device not being found.
   SetBluetoothSystemState(mojom::BluetoothSystemState::kEnabled);
@@ -273,8 +277,9 @@ TEST_F(DeviceOperationHandlerImplTest,
   EXPECT_EQ(results()[1],
             std::make_tuple(device_id, Operation::kConnect, false));
   AssertHistogramMetrics(/*success_count=*/0, /*failure_count=*/2);
-  AssertDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
-                                 /*failure_count=*/0);
+  AssertDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
+                                 /*failure_count=*/2,
+                                 /*transport_name=*/"Invalid");
 
   // Add the device and simulate BluetoothDevice::Connect() failing.
   AddDevice(&device_id);
@@ -287,7 +292,8 @@ TEST_F(DeviceOperationHandlerImplTest,
 
   AssertHistogramMetrics(/*success_count=*/0, /*failure_count=*/3);
   AssertDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
-                                 /*failure_count=*/1);
+                                 /*failure_count=*/1,
+                                 /*transport_name=*/"Classic");
 
   // Simulate BluetoothDevice::Connect() succeeding.
   ConnectDevice(device_id);
@@ -298,7 +304,8 @@ TEST_F(DeviceOperationHandlerImplTest,
                                           /*success=*/true));
   AssertHistogramMetrics(/*success_count=*/1, /*failure_count=*/3);
   AssertDurationHistogramMetrics(kTestDuration, /*success_count=*/1,
-                                 /*failure_count=*/1);
+                                 /*failure_count=*/1,
+                                 /*transport_name=*/"Classic");
 }
 
 TEST_F(DeviceOperationHandlerImplTest, DisconnectNotFoundFailThenSucceed) {
@@ -384,7 +391,8 @@ TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {
                                           /*success=*/false));
   AssertHistogramMetrics(/*success_count=*/0, /*failure_count=*/1);
   AssertDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
-                                 /*failure_count=*/1);
+                                 /*failure_count=*/1,
+                                 /*transport_name=*/"Classic");
 
   // Now the second operation's BluetoothDevice::Disconnect() should have been
   // called.
@@ -429,7 +437,8 @@ TEST_F(DeviceOperationHandlerImplTest, OperationsTimeout) {
   EXPECT_TRUE(HasPendingDisconnectCallback());
   AssertHistogramMetrics(/*success_count=*/0, /*failure_count=*/1);
   AssertDurationHistogramMetrics(GetOperationTimeout(), /*success_count=*/0,
-                                 /*failure_count=*/1);
+                                 /*failure_count=*/1,
+                                 /*transport_name=*/"Classic");
 
   // Simulate disconnect timing out. The operation should finish with a failure
   // result.
@@ -451,7 +460,8 @@ TEST_F(DeviceOperationHandlerImplTest, OperationCompletesBeforeTimeout) {
                                           /*success=*/true));
   AssertHistogramMetrics(/*success_count=*/1, /*failure_count=*/0);
   AssertDurationHistogramMetrics(kTestDuration, /*success_count=*/1,
-                                 /*failure_count=*/0);
+                                 /*failure_count=*/0,
+                                 /*transport_name=*/"Classic");
 
   // Fast forward to where the timer would timeout if it was still running. This
   // will crash if the timer isn't cancelled after the operation finished.
@@ -481,7 +491,8 @@ TEST_F(DeviceOperationHandlerImplTest, OperationCompletesAfterTimeout) {
   EXPECT_TRUE(HasPendingDisconnectCallback());
   AssertHistogramMetrics(/*success_count=*/0, /*failure_count=*/1);
   AssertDurationHistogramMetrics(GetOperationTimeout(), /*success_count=*/0,
-                                 /*failure_count=*/1);
+                                 /*failure_count=*/1,
+                                 /*transport_name=*/"Classic");
 
   // Simulate the connect call now finishing after the timeout. This should not
   // cause the current operation (disconnect) to finish with a result.
@@ -494,7 +505,8 @@ TEST_F(DeviceOperationHandlerImplTest, OperationCompletesAfterTimeout) {
                                           /*success=*/true));
   AssertHistogramMetrics(/*success_count=*/0, /*failure_count=*/1);
   AssertDurationHistogramMetrics(GetOperationTimeout(), /*success_count=*/0,
-                                 /*failure_count=*/1);
+                                 /*failure_count=*/1,
+                                 /*transport_name=*/"Classic");
 }
 
 }  // namespace bluetooth_config

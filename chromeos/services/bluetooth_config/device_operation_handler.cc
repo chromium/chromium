@@ -138,7 +138,7 @@ void DeviceOperationHandler::PerformNextOperation() {
         << current_operation_->device_id;
     RecordUserInitiatedReconnectionMetrics(
         device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID,
-        /*reconnection_attempt_start=*/absl::nullopt,
+        base::Time::Now(),
         device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     HandleFinishedOperation(/*success=*/false);
     return;

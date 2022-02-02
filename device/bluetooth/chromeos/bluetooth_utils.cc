@@ -141,8 +141,10 @@ std::string GetTransportName(BluetoothTransport transport) {
       return "BLE";
     case BluetoothTransport::BLUETOOTH_TRANSPORT_DUAL:
       return "Dual";
+    case BLUETOOTH_TRANSPORT_INVALID:
+      return "Invalid";
     default:
-      // A transport type of INVALID or other is unexpected, and no success
+      // A transport type of other is unexpected, and no success
       // metric for it exists.
       return "";
   }
