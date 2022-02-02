@@ -4085,13 +4085,13 @@
     'ios_eg2_cq_tests': {
       'ios_chrome_integration_eg2tests_module': {
         'swarming': {
-          'shards': 3,
+          'shards': 4,
         },
       },
       'ios_chrome_signin_eg2tests_module': {},
       'ios_chrome_ui_eg2tests_module': {
         'swarming': {
-          'shards': 5,
+          'shards': 6,
         },
       },
       'ios_web_shell_eg2tests_module': {},
