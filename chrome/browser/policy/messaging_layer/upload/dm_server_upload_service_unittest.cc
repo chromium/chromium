@@ -68,20 +68,14 @@ class TestRecordHandler : public DmServerUploadService::RecordHandler {
                DmServerUploadService::EncryptionKeyAttachedCallback));
 };
 
-class DmServerUploaderTest : public ::testing::TestWithParam<
-                                 ::testing::tuple</*need_encryption_key*/ bool,
-                                                  /*force_confirm*/ bool>> {
+class DmServerTest {
  public:
-  DmServerUploaderTest()
+  DmServerTest()
       : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
         handler_(std::make_unique<TestRecordHandler>()),
         records_(std::make_unique<std::vector<EncryptedRecord>>()) {}
 
  protected:
-  bool need_encryption_key() const { return std::get<0>(GetParam()); }
-
-  bool force_confirm() const { return std::get<1>(GetParam()); }
-
   content::BrowserTaskEnvironment task_envrionment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -91,6 +85,19 @@ class DmServerUploaderTest : public ::testing::TestWithParam<
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
 
   const base::TimeDelta kMaxDelay_ = base::Seconds(1);
+};
+
+class DmServerFailureTest : public DmServerTest,
+                            public testing::TestWithParam<error::Code> {};
+
+class DmServerUploaderTest : public DmServerTest,
+                             public testing::TestWithParam<
+                                 ::testing::tuple</*need_encryption_key*/ bool,
+                                                  /*force_confirm*/ bool>> {
+ protected:
+  bool need_encryption_key() const { return std::get<0>(GetParam()); }
+
+  bool force_confirm() const { return std::get<1>(GetParam()); }
 };
 
 using TestSuccessfulUpload = MockFunction<void(SequenceInformation,
@@ -223,38 +230,6 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
               Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
 }
 
-TEST_P(DmServerUploaderTest, ReportsFailureToUpload) {
-  // Add an empty record.
-  records_->emplace_back();
-
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
-      .WillOnce(WithArgs<2>(
-          Invoke([](DmServerUploadService::CompletionCallback callback) {
-            std::move(callback).Run(
-                Status(error::DEADLINE_EXCEEDED, "Fail for test"));
-          })));
-
-  StrictMock<TestSuccessfulUpload> successful_upload;
-  EXPECT_CALL(successful_upload, Call(_, _)).Times(0);
-  auto successful_upload_cb = base::BindRepeating(
-      &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
-  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
-  EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
-  auto encryption_key_attached_cb =
-      base::BindRepeating(&TestEncryptionKeyAttached::Call,
-                          base::Unretained(&encryption_key_attached));
-
-  test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
-  Start<DmServerUploadService::DmServerUploader>(
-      need_encryption_key(), std::move(records_), handler_.get(),
-      std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
-      callback_waiter.cb(), sequenced_task_runner_);
-
-  const auto response = callback_waiter.result();
-  EXPECT_THAT(response.status(),
-              Property(&Status::error_code, Eq(error::DEADLINE_EXCEEDED)));
-}
-
 TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _))
@@ -304,10 +279,52 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
   }
 }
 
+TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
+  const error::Code& error_code = GetParam();
+  // Add an empty record.
+  records_->emplace_back();
+
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
+      .WillOnce(WithArgs<2>(Invoke(
+          [error_code](DmServerUploadService::CompletionCallback callback) {
+            std::move(callback).Run(Status(error_code, "Failing for test"));
+          })));
+
+  StrictMock<TestSuccessfulUpload> successful_upload;
+  EXPECT_CALL(successful_upload, Call(_, _)).Times(0);
+  auto successful_upload_cb = base::BindRepeating(
+      &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
+  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
+  EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
+  auto encryption_key_attached_cb =
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
+
+  test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
+  Start<DmServerUploadService::DmServerUploader>(
+      /*need_encryption_key*/ true, std::move(records_), handler_.get(),
+      std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
+      callback_waiter.cb(), sequenced_task_runner_);
+
+  const auto response = callback_waiter.result();
+  EXPECT_THAT(response.status(), Property(&Status::code, Eq(error_code)));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     NeedOrNoNeedKey,
     DmServerUploaderTest,
     ::testing::Combine(/*need_encryption_key*/ ::testing::Bool(),
                        /*force_confirm*/ ::testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    DmServerFailureTests,
+    DmServerFailureTest,
+    testing::Values(error::INVALID_ARGUMENT,
+                    error::PERMISSION_DENIED,
+                    error::OUT_OF_RANGE,
+                    error::UNAVAILABLE),
+    [](const testing::TestParamInfo<DmServerFailureTest::ParamType>& info) {
+      return Status(info.param, "").ToString();
+    });
 }  // namespace
 }  // namespace reporting
