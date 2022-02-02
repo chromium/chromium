@@ -648,6 +648,7 @@ js_unittest("file_manager_commands_unittest.m") {
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/webui/resources/js:load_time_data.m",
   ]

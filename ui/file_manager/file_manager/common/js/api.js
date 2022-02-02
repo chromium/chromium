@@ -78,6 +78,14 @@ export async function getSizeStats(volumeId) {
   return promisify(chrome.fileManagerPrivate.getSizeStats, volumeId);
 }
 
+/**
+ * Retrieves the current holding space state, for example the list of items the
+ * holding space currently contains.
+ *  @returns {!Promise<(!chrome.fileManagerPrivate.HoldingSpaceState|undefined)>}
+ */
+export async function getHoldingSpaceState() {
+  return promisify(chrome.fileManagerPrivate.getHoldingSpaceState);
+}
 
 /*
  * FileSystemEntry helpers
