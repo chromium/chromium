@@ -17,6 +17,7 @@
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
+#include "base/callback.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -189,6 +190,9 @@ class AmbientAshTestBase : public AshTestBase {
   void SetDecodePhotoImage(const gfx::ImageSkia& image);
 
  private:
+  void SpinWaitForAmbientViewAvailable(
+      const base::RepeatingClosure& quit_closure);
+
   std::unique_ptr<views::Widget> widget_;
   power_manager::PowerSupplyProperties proto_;
   TestImageDownloader image_downloader_;

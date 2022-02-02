@@ -28,10 +28,13 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -204,10 +207,29 @@ void AmbientAshTestBase::SetAmbientAnimationTheme(AmbientAnimationTheme theme) {
 void AmbientAshTestBase::ShowAmbientScreen() {
   // The widget will be destroyed in |AshTestBase::TearDown()|.
   ambient_controller()->ShowUi();
-  // The UI only shows when images are downloaded to avoid showing blank screen.
-  FastForwardToNextImage();
-  // Flush the message loop to finish all async calls.
-  base::RunLoop().RunUntilIdle();
+
+  static constexpr base::TimeDelta kTimeout = base::Seconds(10);
+  base::test::ScopedRunLoopTimeout loop_timeout(FROM_HERE, kTimeout);
+  base::RunLoop run_loop;
+  task_environment()->GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AmbientAshTestBase::SpinWaitForAmbientViewAvailable,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+void AmbientAshTestBase::SpinWaitForAmbientViewAvailable(
+    const base::RepeatingClosure& quit_closure) {
+  if (GetContainerView()) {
+    quit_closure.Run();
+  } else {
+    static constexpr base::TimeDelta kPollingPeriod = base::Milliseconds(250);
+    task_environment()->GetMainThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AmbientAshTestBase::SpinWaitForAmbientViewAvailable,
+                       base::Unretained(this), quit_closure),
+        kPollingPeriod);
+  }
 }
 
 void AmbientAshTestBase::HideAmbientScreen() {
