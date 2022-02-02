@@ -594,16 +594,15 @@ mojom::CSPSourceListPtr ParseSourceList(
   if (base::EqualsCaseInsensitiveASCII(value, "'none'"))
     return directive;
 
-  for (const auto& expression : base::SplitStringPiece(
-           value, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
+  std::vector<base::StringPiece> tokens =
+      base::SplitStringPiece(value, base::kWhitespaceASCII,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  bool contains_none = false;
+
+  for (const auto& expression : tokens) {
     if (base::EqualsCaseInsensitiveASCII(expression, "'none'")) {
-      parsing_errors.emplace_back(base::StringPrintf(
-          "The Content-Security-Policy directive '%s' contains the keyword "
-          "'none' alongside with other source expressions. The keyword 'none' "
-          "must be the only source expression in the directive value, "
-          "otherwise it is ignored.",
-          ToString(directive_name).c_str()));
+      contains_none = true;
       continue;
     }
 
@@ -703,6 +702,19 @@ mojom::CSPSourceListPtr ParseSourceList(
         "The source list for the Content Security Policy directive '%s' "
         "contains an invalid source: '%s'. It will be ignored.",
         ToString(directive_name).c_str(), std::string(expression).c_str()));
+  }
+
+  if (contains_none &&
+      base::ranges::any_of(tokens, [](const auto& token) -> bool {
+        return !base::EqualsCaseInsensitiveASCII(token, "'report-sample'") &&
+               !base::EqualsCaseInsensitiveASCII(token, "'none'");
+      })) {
+    parsing_errors.emplace_back(base::StringPrintf(
+        "The Content-Security-Policy directive '%s' contains the keyword "
+        "'none' alongside with other source expressions. The keyword 'none' "
+        "must be the only source expression in the directive value, "
+        "otherwise it is ignored.",
+        ToString(directive_name).c_str()));
   }
 
   return directive;

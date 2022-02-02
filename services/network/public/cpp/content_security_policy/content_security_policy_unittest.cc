@@ -1386,6 +1386,28 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "otherwise it is ignored.",
       },
       {
+          "'none' 'report-sample'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->report_sample = true;
+            return csp;
+          }),
+          "",
+      },
+      {
+          "'none' 'self' 'report-sample'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_self = true;
+            csp->report_sample = true;
+            return csp;
+          }),
+          "The Content-Security-Policy directive 'script-src' contains the "
+          "keyword 'none' alongside with other source expressions. The keyword "
+          "'none' must be the only source expression in the directive value, "
+          "otherwise it is ignored.",
+      },
+      {
           "'self'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
