@@ -35,7 +35,7 @@ class UserInputMonitor;
 }  // namespace media
 
 namespace audio {
-class AudioProcessorHandler;
+class OutputTapper;
 class DeviceOutputListener;
 class InputStreamActivityMonitor;
 
@@ -266,7 +266,7 @@ class InputController final : public StreamMonitor {
   double max_volume_ = 0.0;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  std::unique_ptr<AudioProcessorHandler> audio_processor_handler_;
+  std::unique_ptr<OutputTapper> output_tapper_;
 #endif
 
   const raw_ptr<media::UserInputMonitor> user_input_monitor_;

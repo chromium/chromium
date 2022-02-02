@@ -111,8 +111,6 @@ source_set("audio") {
 
   if (chrome_wide_echo_cancellation_supported) {
     sources += [
-      "audio_processor_handler.cc",
-      "audio_processor_handler.h",
       "mixing_graph.cc",
       "mixing_graph.h",
       "mixing_graph_impl.cc",
@@ -123,6 +121,8 @@ source_set("audio") {
       "output_device_mixer_impl.h",
       "output_device_mixer_manager.cc",
       "output_device_mixer_manager.h",
+      "output_tapper.cc",
+      "output_tapper.h",
       "sync_mixing_graph_input.cc",
       "sync_mixing_graph_input.h",
     ]

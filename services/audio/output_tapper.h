@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_AUDIO_AUDIO_PROCESSOR_HANDLER_H_
-#define SERVICES_AUDIO_AUDIO_PROCESSOR_HANDLER_H_
+#ifndef SERVICES_AUDIO_OUTPUT_TAPPER_H_
+#define SERVICES_AUDIO_OUTPUT_TAPPER_H_
 
 #include <string>
 
@@ -20,15 +20,15 @@ class AudioBus;
 namespace audio {
 class DeviceOutputListener;
 
-class AudioProcessorHandler final : public ReferenceOutput::Listener {
+class OutputTapper final : public ReferenceOutput::Listener {
  public:
   using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
 
-  AudioProcessorHandler(DeviceOutputListener* device_output_listener,
-                        LogCallback log_callback);
-  AudioProcessorHandler(const AudioProcessorHandler&) = delete;
-  AudioProcessorHandler& operator=(const AudioProcessorHandler&) = delete;
-  ~AudioProcessorHandler() final;
+  OutputTapper(DeviceOutputListener* device_output_listener,
+               LogCallback log_callback);
+  OutputTapper(const OutputTapper&) = delete;
+  OutputTapper& operator=(const OutputTapper&) = delete;
+  ~OutputTapper() final;
 
   void SetOutputDeviceForAec(const std::string& output_device_id);
   void Start();
@@ -53,4 +53,4 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener {
 
 }  // namespace audio
 
-#endif  // SERVICES_AUDIO_AUDIO_PROCESSOR_HANDLER_H_
+#endif  // SERVICES_AUDIO_OUTPUT_TAPPER_H_

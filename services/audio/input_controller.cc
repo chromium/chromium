@@ -28,9 +28,9 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_bus.h"
 #include "media/base/user_input_monitor.h"
-#include "services/audio/audio_processor_handler.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"
+#include "services/audio/output_tapper.h"
 
 namespace audio {
 namespace {
@@ -226,8 +226,8 @@ InputController::InputController(EventHandler* event_handler,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (device_output_listener) {
     // Unretained() is safe, because |event_handler_| outlives
-    // |audio_processor_handler_|.
-    audio_processor_handler_ = std::make_unique<AudioProcessorHandler>(
+    // |output_tapper_|.
+    output_tapper_ = std::make_unique<OutputTapper>(
         device_output_listener,
         base::BindRepeating(&EventHandler::OnLog,
                             base::Unretained(event_handler_)));
@@ -297,8 +297,8 @@ void InputController::Record() {
   audio_callback_ = std::make_unique<AudioCallback>(this);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (audio_processor_handler_)
-    audio_processor_handler_->Start();
+  if (output_tapper_)
+    output_tapper_->Start();
 #endif
 
   stream_->Start(audio_callback_.get());
@@ -321,8 +321,8 @@ void InputController::Close() {
   // Allow calling unconditionally and bail if we don't have a stream to close.
   if (audio_callback_) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    if (audio_processor_handler_)
-      audio_processor_handler_->Stop();
+    if (output_tapper_)
+      output_tapper_->Stop();
 #endif
     stream_->Stop();
     activity_monitor_->OnInputStreamInactive();
@@ -419,8 +419,8 @@ void InputController::SetOutputDeviceForAec(
     stream_->SetOutputDeviceForAec(output_device_id);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (audio_processor_handler_)
-    audio_processor_handler_->SetOutputDeviceForAec(output_device_id);
+  if (output_tapper_)
+    output_tapper_->SetOutputDeviceForAec(output_device_id);
 #endif
 }
 

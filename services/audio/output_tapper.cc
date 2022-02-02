@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/audio_processor_handler.h"
+#include "services/audio/output_tapper.h"
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,7 +15,7 @@
 
 namespace audio {
 
-class AudioProcessorHandler::UmaLogger {
+class OutputTapper::UmaLogger {
  public:
   UmaLogger(const std::string& device_id)
       : is_default_(media::AudioDeviceDescription::IsDefaultDevice(device_id)),
@@ -36,23 +36,21 @@ class AudioProcessorHandler::UmaLogger {
   base::TimeTicks start_;
 };
 
-AudioProcessorHandler::AudioProcessorHandler(
-    DeviceOutputListener* device_output_listener,
-    LogCallback log_callback)
+OutputTapper::OutputTapper(DeviceOutputListener* device_output_listener,
+                           LogCallback log_callback)
     : device_output_listener_(device_output_listener),
       log_callback_(std::move(log_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(device_output_listener_);
 }
 
-AudioProcessorHandler::~AudioProcessorHandler() {
+OutputTapper::~OutputTapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   if (active_)
     Stop();
 }
 
-void AudioProcessorHandler::SetOutputDeviceForAec(
-    const std::string& output_device_id) {
+void OutputTapper::SetOutputDeviceForAec(const std::string& output_device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   if (output_device_id_ == output_device_id ||
       (media::AudioDeviceDescription::IsDefaultDevice(output_device_id_) &&
@@ -66,36 +64,35 @@ void AudioProcessorHandler::SetOutputDeviceForAec(
     StartListening();
 }
 
-void AudioProcessorHandler::Start() {
+void OutputTapper::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(!active_);
   active_ = true;
   StartListening();
 }
 
-void AudioProcessorHandler::Stop() {
+void OutputTapper::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
   device_output_listener_->StopListening(this);
-  log_callback_.Run("AudioProcessorHandler: stop listening");
+  log_callback_.Run("OutputTapper: stop listening");
   active_ = false;
   uma_logger_.reset();
 }
 
-void AudioProcessorHandler::OnPlayoutData(const media::AudioBus& audio_bus,
-                                          int sample_rate,
-                                          base::TimeDelta delay) {
-  TRACE_EVENT2("audio", "AudioProcessorHandler::OnData", " this ",
+void OutputTapper::OnPlayoutData(const media::AudioBus& audio_bus,
+                                 int sample_rate,
+                                 base::TimeDelta delay) {
+  TRACE_EVENT2("audio", "OutputTapper::OnData", " this ",
                static_cast<void*>(this), "delay", delay.InMillisecondsF());
 }
 
-void AudioProcessorHandler::StartListening() {
+void OutputTapper::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
   uma_logger_ = std::make_unique<UmaLogger>(output_device_id_);
-  log_callback_.Run(
-      base::StrCat({"AudioProcessorHandler: listening to output device: ",
-                    output_device_id_}));
+  log_callback_.Run(base::StrCat(
+      {"OutputTapper: listening to output device: ", output_device_id_}));
   device_output_listener_->StartListening(this, output_device_id_);
 }
 
