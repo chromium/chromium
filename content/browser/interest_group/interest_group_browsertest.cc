@@ -3052,23 +3052,15 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
   CheckAdComponents(/*expected_ad_component_urls=*/std::vector<GURL>{},
                     ad_frame);
 
-  // Navigate the ad component fenced frame to some of the URNs, which
-  // should navigate it to about:blank. MPArch mode currently crashes on
-  // navigations to about:blank, so skip in that case.
-  //
-  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
-  // about:blank navigations.
-  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
-    absl::optional<std::vector<GURL>> all_component_urls =
-        GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
-    ASSERT_TRUE(all_component_urls);
-    NavigateFencedFrameAndWait((*all_component_urls)[0],
-                               GURL(url::kAboutBlankURL),
-                               GetFencedFrameRenderFrameHost(shell()));
-    NavigateFencedFrameAndWait(
-        (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
-        GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
-  }
+  absl::optional<std::vector<GURL>> all_component_urls =
+      GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
+  ASSERT_TRUE(all_component_urls);
+  NavigateFencedFrameAndWait((*all_component_urls)[0],
+                             GURL(url::kAboutBlankURL),
+                             GetFencedFrameRenderFrameHost(shell()));
+  NavigateFencedFrameAndWait(
+      (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+      GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
 }
 
 // Test with an ad component. Run an auction with an ad component, load the ad
@@ -3090,23 +3082,15 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponents) {
       /*expected_ad_component_urls=*/std::vector<GURL>{ad_component_url},
       ad_frame);
 
-  // Navigate the ad component fenced frame to some of the about:blank URNs.
-  // MPArch mode currently crashes on navigations to about:blank, so skip in
-  // that case.
-  //
-  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
-  // about:blank navigations.
-  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
-    absl::optional<std::vector<GURL>> all_component_urls =
-        GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
-    ASSERT_TRUE(all_component_urls);
-    NavigateFencedFrameAndWait((*all_component_urls)[1],
-                               GURL(url::kAboutBlankURL),
-                               GetFencedFrameRenderFrameHost(shell()));
-    NavigateFencedFrameAndWait(
-        (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
-        GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
-  }
+  absl::optional<std::vector<GURL>> all_component_urls =
+      GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
+  ASSERT_TRUE(all_component_urls);
+  NavigateFencedFrameAndWait((*all_component_urls)[1],
+                             GURL(url::kAboutBlankURL),
+                             GetFencedFrameRenderFrameHost(shell()));
+  NavigateFencedFrameAndWait(
+      (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+      GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
 }
 
 // Checked that navigator.adAuctionComponents() from an ad auction with
@@ -3338,14 +3322,8 @@ interestGroupBuyers: [$1]
                              ad_frame);
   NavigateFencedFrameAndWait((*components)[1], ad_components[2].render_url,
                              ad_frame);
-  // MPArch currently crashes on navigations to about:blank.
-  //
-  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
-  // about:blank navigations.
-  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
-    NavigateFencedFrameAndWait((*components)[2], GURL(url::kAboutBlankURL),
-                               ad_frame);
-  }
+  NavigateFencedFrameAndWait((*components)[2], GURL(url::kAboutBlankURL),
+                             ad_frame);
 }
 
 // These end-to-end tests validate that information from navigator-exposed APIs

@@ -147,6 +147,40 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, Navigation) {
             fenced_frame_rfh->GetLastCommittedOrigin());
 }
 
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, AboutBlankNavigation) {
+  const GURL main_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* primary_rfh = primary_main_frame_host();
+
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
+  fenced_frame_test_helper().CreateFencedFrame(primary_rfh, fenced_frame_url);
+
+  std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
+  ASSERT_EQ(1ul, fenced_frames.size());
+  FencedFrame* fenced_frame = fenced_frames.back();
+
+  // Exepct the origin is correct.
+  EXPECT_EQ(url::Origin::Create(fenced_frame_url),
+            EvalJs(fenced_frame->GetInnerRoot(), "self.origin;"));
+
+  // Assigning the location from the parent cause the SiteInstance
+  // to be calculated incorrectly and crash. see https://crbug.com/1268238.
+  // We can't use `NavigateFrameInFencedFrameTree` because that navigates
+  // from the inner frame tree and we want the navigation to occur from
+  // the outer frame tree.
+  EXPECT_TRUE(
+      ExecJs(primary_rfh,
+             "document.querySelector('fencedframe').src = 'about:blank';"));
+
+  fenced_frame->WaitForDidStopLoadingForTesting();
+  EXPECT_TRUE(!fenced_frame->GetInnerRoot()->IsErrorDocument());
+
+  EXPECT_EQ("null", EvalJs(fenced_frame->GetInnerRoot(), "self.origin;"));
+}
+
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, FrameIteration) {
   const GURL main_url =
       embedded_test_server()->GetURL("fencedframe.test", "/title1.html");

@@ -89,19 +89,19 @@ void FencedFrame::Navigate(const GURL& url) {
   // treated as downloads, and implement the correct thing.
   blink::NavigationDownloadPolicy download_policy;
 
-  // Note `initiator_frame_token` here *always* corresponds to the outer render
-  // frame host, however crbug.com/1074422 points out that it is possible that
-  // another same-origin-domain document can synchronously script the document
-  // hosted in the outer render frame host, and thus be the true initiator of
-  // the navigation even though this wouldn't be reflected here. See that bug
-  // for more discussion and plans for an eventual resolution.
-  const blink::LocalFrameToken initiator_frame_token =
-      owner_render_frame_host_->GetFrameToken();
+  // This method is only invoked in the context of the embedder navigating
+  // the embeddee via a `src` attribute modification on the fenced frame
+  // element. The `initiator_origin` is left as a new opaque origin since
+  // we do not want to leak information from the outer frame tree to the
+  // inner frame tree. Note that this will always create a "Sec-Fetch-Site" as
+  // cross-site. Since we assign an opaque initiator_origin we do not
+  // need to provide a `source_site_instance`.
+  url::Origin initiator_origin;
+
   inner_root->navigator().NavigateFromFrameProxy(
-      inner_root->current_frame_host(), url, &initiator_frame_token,
-      owner_render_frame_host_->GetProcess()->GetID(),
-      owner_render_frame_host_->GetLastCommittedOrigin(),
-      owner_render_frame_host_->GetSiteInstance(), content::Referrer(),
+      inner_root->current_frame_host(), url, /*initiator_frame_token=*/nullptr,
+      owner_render_frame_host_->GetProcess()->GetID(), initiator_origin,
+      /*source_site_instance=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*should_replace_current_entry=*/true, download_policy, "GET",
       /*post_body=*/nullptr, /*extra_headers=*/"",

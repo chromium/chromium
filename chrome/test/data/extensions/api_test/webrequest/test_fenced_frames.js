@@ -28,6 +28,11 @@ runTests([
   // frame. This allows us to test that the parentFrameId is the iframe
   // and redirection events are dispatched correctly.
   function simpleLoadHttp() {
+    // MPArch assigns an opaque origin as the initiator.
+    // Opaque initiators serialize to "null".
+    var fencedFrameInitiator = mparchEnabled ? "null" :
+        getServerDomain(initiators.WEB_INITIATED);
+
     expect(
       [
         // events
@@ -173,7 +178,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onBeforeSendHeaders-3',
@@ -184,7 +189,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onSendHeaders-3',
@@ -195,7 +200,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onHeadersReceived-3',
@@ -208,7 +213,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onBeforeRedirect-3',
@@ -224,7 +229,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onBeforeRequest-4',
@@ -235,7 +240,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onBeforeSendHeaders-4',
@@ -246,7 +251,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onSendHeaders-4',
@@ -257,7 +262,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onHeadersReceived-4',
@@ -270,7 +275,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onResponseStarted-4',
@@ -285,7 +290,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
         { label: 'onCompleted-4',
@@ -300,7 +305,7 @@ runTests([
             type: 'sub_frame',
             frameId: 2,
             parentFrameId: 1,
-            initiator: getServerDomain(initiators.WEB_INITIATED),
+            initiator: fencedFrameInitiator,
           }
         },
       ],

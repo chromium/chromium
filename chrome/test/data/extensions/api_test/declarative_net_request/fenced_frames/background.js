@@ -39,6 +39,9 @@ function verifyExpectedRuleInfo(expectedRuleInfo) {
   chrome.test.assertEq(expectedRuleInfo, matchedRule);
 }
 
+// Opaque initiators serialize to "null".
+const kOpaqueInitiator = "null";
+
 var tests = [
   function setup() {
     chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(
@@ -60,7 +63,7 @@ var tests = [
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: getServerURL('a.com'),
+          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.com'),
           method: 'GET',
           frameId: mparchEnabled ? 5 : 4,
           parentFrameId: 0,
@@ -76,7 +79,8 @@ var tests = [
   },
 
   // Makes sure rule 4 for subframes applies and not rule 2 for main frames
-  // or rule 3 for thirdParty domains.
+  // or rule 3 for thirdParty domains. Note for shadowDOM the initiator is
+  // not opaque so the initiator is available and a rule 3 applies.
   function testAllowRule() {
     resetMatchedRules();
 
@@ -87,7 +91,7 @@ var tests = [
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: getServerURL('a.com'),
+          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.com'),
           method: 'GET',
           frameId: mparchEnabled ? 7 : 5,
           parentFrameId: 0,
@@ -95,7 +99,7 @@ var tests = [
           tabId: tab.id,
           url: fencedFrameUrl
         },
-        rule: {ruleId: 4, rulesetId: 'rules'}
+        rule: {ruleId: mparchEnabled ? 4 : 3, rulesetId: 'rules'}
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
       chrome.test.succeed();
