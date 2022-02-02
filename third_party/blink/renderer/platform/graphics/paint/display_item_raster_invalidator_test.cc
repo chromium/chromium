@@ -33,11 +33,11 @@ class DisplayItemRasterInvalidatorTest : public PaintControllerTestBase,
   RasterInvalidator invalidator_;
 };
 
-class RasterInvalidationCycleScope : public PaintController::CycleScope {
+class RasterInvalidationCycleScope : public PaintControllerCycleScope {
  public:
   RasterInvalidationCycleScope(PaintController& controller,
                                RasterInvalidator& invalidator)
-      : PaintController::CycleScope(controller, true),
+      : PaintControllerCycleScope(controller, true),
         invalidator_(invalidator) {}
   ~RasterInvalidationCycleScope() {
     ++sequence_number_;

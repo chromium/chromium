@@ -2667,7 +2667,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
   bool needed_update;
   {
-    PaintController::CycleScope cycle_scope(PaintDebugInfoEnabled());
+    PaintControllerCycleScope cycle_scope(PaintDebugInfoEnabled());
     bool repainted = PaintTree(benchmark_mode, cycle_scope);
 
     if (paint_artifact_compositor_ &&
@@ -2791,7 +2791,7 @@ void LocalFrameView::EnqueueScrollEvents() {
 }
 
 bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
-                               PaintController::CycleScope& cycle_scope) {
+                               PaintControllerCycleScope& cycle_scope) {
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kPaint);
 
@@ -4004,7 +4004,7 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
   OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(), cull_rect);
   PaintController& paint_controller = EnsurePaintController();
   if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
-    PaintController::CycleScope cycle_scope(paint_controller);
+    PaintControllerCycleScope cycle_scope(paint_controller);
     GraphicsContext graphics_context(paint_controller);
     PaintFrame(graphics_context);
     paint_controller.CommitNewDisplayItems();

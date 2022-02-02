@@ -18,10 +18,10 @@ namespace blink {
 
 class GraphicsContext;
 
-class CommitCycleScope : public PaintController::CycleScope {
+class CommitCycleScope : public PaintControllerCycleScope {
  public:
   explicit CommitCycleScope(PaintController& controller)
-      : PaintController::CycleScope(controller, true) {}
+      : PaintControllerCycleScope(controller, true) {}
   ~CommitCycleScope() {
     for (auto* controller : controllers_)
       controller->CommitNewDisplayItems();

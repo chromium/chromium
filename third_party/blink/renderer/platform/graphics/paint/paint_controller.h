@@ -87,34 +87,7 @@ class PLATFORM_EXPORT PaintController {
   Usage GetUsage() const { return usage_; }
 #endif
 
-  class PLATFORM_EXPORT CycleScope {
-    STACK_ALLOCATED();
-
-   public:
-    explicit CycleScope(bool record_debug_info = false)
-        : record_debug_info_(record_debug_info) {
-      clients_to_validate_ =
-          MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
-    }
-    explicit CycleScope(PaintController& controller,
-                        bool record_debug_info = false)
-        : CycleScope(record_debug_info) {
-      AddController(controller);
-    }
-    void AddController(PaintController& controller) {
-      controller.StartCycle(*clients_to_validate_, record_debug_info_);
-      controllers_.push_back(&controller);
-    }
-    ~CycleScope();
-
-   protected:
-    Vector<PaintController*> controllers_;
-
-   private:
-    HeapVector<Member<const DisplayItemClient>>* clients_to_validate_;
-    bool record_debug_info_;
-  };
-  friend class CycleScope;
+  friend class PaintControllerCycleScope;
 
   // These methods are called during painting.
 
@@ -314,17 +287,19 @@ class PLATFORM_EXPORT PaintController {
   // previous ones (|current_paint_artifact_| and |current_subsequences_|).
   void ReserveCapacity();
 
-  // Called at the beginning of a paint cycle, as defined by CycleScope.
+  // Called at the beginning of a paint cycle, as defined by
+  // PaintControllerCycleScope.
   void StartCycle(
       HeapVector<Member<const DisplayItemClient>>& clients_to_validate,
       bool record_debug_info);
 
-  // Called at the end of a paint cycle, as defined by CycleScope.
-  // The PaintController will cleanup data that will no longer be used for the
-  // next cycle, and update status to be ready for the next cycle.
-  // It updates caching status of DisplayItemClients, so if there are
-  // DisplayItemClients painting on multiple PaintControllers, we should call
-  // there FinishCycle() at the same time to ensure consistent caching status.
+  // Called at the end of a paint cycle, as defined by
+  // PaintControllerCycleScope. The PaintController will cleanup data that will
+  // no longer be used for the next cycle, and update status to be ready for the
+  // next cycle. It updates caching status of DisplayItemClients, so if there
+  // are DisplayItemClients painting on multiple PaintControllers, we should
+  // call there FinishCycle() at the same time to ensure consistent caching
+  // status.
   void FinishCycle();
 
   // True if all display items associated with the client are validly cached.
@@ -472,6 +447,34 @@ class PLATFORM_EXPORT PaintController {
   static CounterForTesting* counter_for_testing_;
 
   class PaintArtifactAsJSON;
+};
+
+class PLATFORM_EXPORT PaintControllerCycleScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit PaintControllerCycleScope(bool record_debug_info = false)
+      : record_debug_info_(record_debug_info) {
+    clients_to_validate_ =
+        MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
+  }
+  explicit PaintControllerCycleScope(PaintController& controller,
+                                     bool record_debug_info = false)
+      : PaintControllerCycleScope(record_debug_info) {
+    AddController(controller);
+  }
+  void AddController(PaintController& controller) {
+    controller.StartCycle(*clients_to_validate_, record_debug_info_);
+    controllers_.push_back(&controller);
+  }
+  ~PaintControllerCycleScope();
+
+ protected:
+  Vector<PaintController*> controllers_;
+
+ private:
+  HeapVector<Member<const DisplayItemClient>>* clients_to_validate_;
+  bool record_debug_info_;
 };
 
 }  // namespace blink

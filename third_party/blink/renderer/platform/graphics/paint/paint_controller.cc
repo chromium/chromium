@@ -675,15 +675,6 @@ void PaintController::CommitNewDisplayItems() {
 #endif
 }
 
-PaintController::CycleScope::~CycleScope() {
-  for (const auto& client : *clients_to_validate_) {
-    if (client->IsCacheable())
-      client->Validate();
-  }
-  for (auto* controller : controllers_)
-    controller->FinishCycle();
-}
-
 void PaintController::StartCycle(
     HeapVector<Member<const DisplayItemClient>>& clients_to_validate,
     bool record_debug_info) {
@@ -806,6 +797,15 @@ void PaintController::ValidateNewChunkClient(const DisplayItemClient& client) {
 void PaintController::SetBenchmarkMode(PaintBenchmarkMode mode) {
   DCHECK(new_paint_artifact_->IsEmpty());
   benchmark_mode_ = mode;
+}
+
+PaintControllerCycleScope::~PaintControllerCycleScope() {
+  for (const auto& client : *clients_to_validate_) {
+    if (client->IsCacheable())
+      client->Validate();
+  }
+  for (auto* controller : controllers_)
+    controller->FinishCycle();
 }
 
 }  // namespace blink
