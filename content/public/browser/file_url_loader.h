@@ -70,7 +70,7 @@ CONTENT_EXPORT void CreateFileURLLoaderBypassingSecurityChecks(
 // Helper to create a FileURLLoaderFactory. This exposes the ability to load
 // file:// URLs through SimpleURLLoader to non-content classes.
 //
-// When non-empty, |profile_path| is used to whitelist specific directories on
+// When non-empty, |profile_path| is used to allowlist specific directories on
 // ChromeOS and Android. It is checked by
 // ContentBrowserClient::IsFileAccessAllowed.
 // |shared_cors_origin_access_list| can be specified if caller wants only
