@@ -1079,6 +1079,11 @@ void SurfaceAggregator::AddRootReadbackPass() {
     }
   }
 
+  if (extra_pass_for_readback_option_ ==
+      ExtraPassForReadbackOption::kAlwaysAddPass) {
+    needs_readback_pass = true;
+  }
+
   if (needs_readback_pass != last_frame_had_readback_pass_)
     root_render_pass->damage_rect = output_rect;
 

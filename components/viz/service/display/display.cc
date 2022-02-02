@@ -599,7 +599,10 @@ void Display::InitializeRenderer(bool enable_shared_images) {
       SurfaceAggregator::ExtraPassForReadbackOption::kNone;
   if (output_surface_->capabilities().root_is_vulkan_secondary_command_buffer) {
     extra_pass_option =
-        SurfaceAggregator::ExtraPassForReadbackOption::kAddPassForReadback;
+        base::FeatureList::IsEnabled(features::kWebViewVulkanIntermediateBuffer)
+            ? SurfaceAggregator::ExtraPassForReadbackOption::kAlwaysAddPass
+            : SurfaceAggregator::ExtraPassForReadbackOption::
+                  kAddPassForReadback;
   }
   aggregator_ = std::make_unique<SurfaceAggregator>(
       surface_manager_, resource_provider_.get(), output_partial_list,

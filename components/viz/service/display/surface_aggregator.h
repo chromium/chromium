@@ -49,6 +49,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
     kNone,
     // Add an extra render pass only if readback is needed.
     kAddPassForReadback,
+    // Always add an extra pass. Useful for debugging.
+    kAlwaysAddPass,
   };
 
   // Interface that can modify the aggregated CompositorFrame to annotate it.

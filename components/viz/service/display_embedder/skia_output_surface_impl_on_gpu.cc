@@ -64,7 +64,6 @@
 #include "gpu/vulkan/vulkan_util.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb.h"
-#include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.h"
 #endif
 #endif
 
@@ -1575,17 +1574,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 
 #if BUILDFLAG(IS_ANDROID)
   if (vulkan_context_provider_->GetGrSecondaryCBDrawContext()) {
-    if (base::FeatureList::IsEnabled(
-            features::kWebViewVulkanIntermediateBuffer)) {
-      output_device_ =
-          std::make_unique<SkiaOutputDeviceVulkanSecondaryCBOffscreen>(
-              context_state_, shared_gpu_deps_->memory_tracker(),
-              GetDidSwapBuffersCompleteCallback());
-    } else {
-      output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
-          vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
-          GetDidSwapBuffersCompleteCallback());
-    }
+    output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
+        vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
     return true;
   }
 #endif
