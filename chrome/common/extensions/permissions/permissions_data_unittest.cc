@@ -141,7 +141,7 @@ void CheckRestrictedUrls(const Extension* extension,
       << name;
   EXPECT_TRUE(error.empty()) << name;
 
-  // We should only allow other schemes for extensions when it's a whitelisted
+  // We should only allow other schemes for extensions when it's an allowed
   // extension.
   error.clear();
   bool allow_on_other_schemes = PermissionsData::CanExecuteScriptEverywhere(
@@ -1018,8 +1018,8 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PolicyHostRestrictionsSwap) {
   extension->permissions_data()->SetPolicyHostRestrictions(blocked, allowed);
 
   // Adding example.com and all its subdomains to the blocked list and
-  // test.example.com to the whitelist. This is still the individual policy
-  // Since the whitelist overrides a blacklist we expect to allow access to
+  // test.example.com to the allowlist. This is still the individual policy
+  // Since the allowlist overrides a blocklist we expect to allow access to
   // test.example.com but block access to all other example.com subdomains
   // (sample.example.com) and example.com itself.
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), example_com));
@@ -1105,8 +1105,8 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PolicyHostRestrictions) {
 
   // Supress host permission for example.com since its on the blocklist
   EXPECT_FALSE(extension->permissions_data()->HasHostPermission(example_com));
-  // Allow host permission for test.example.com since its on the whitelist and
-  // blacklist. The whitelist overrides the blacklist.
+  // Allow host permission for test.example.com since its on the allowlist and
+  // blocklist. The allowlist overrides the blocklist.
   EXPECT_TRUE(
       extension->permissions_data()->HasHostPermission(test_example_com));
   EXPECT_FALSE(extension->permissions_data()->HasHostPermission(settings_url));

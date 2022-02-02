@@ -116,13 +116,13 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void UpdateTabSpecificPermissions(const std::string& extension_id,
                                     URLPatternSet new_hosts,
                                     int tab_id,
-                                    bool update_origin_whitelist) override {}
+                                    bool update_origin_allowlist) override {}
   void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                          mojom::HostIDPtr host_id) override {}
   void ClearTabSpecificPermissions(
       const std::vector<std::string>& extension_ids,
       int tab_id,
-      bool update_origin_whitelist) override {}
+      bool update_origin_allowlist) override {}
   void WatchPages(const std::vector<std::string>& css_selectors) override {}
 
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;

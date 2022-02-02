@@ -45,7 +45,7 @@ using RendererMessageFunction =
 void UpdateTabSpecificPermissions(const std::string& extension_id,
                                   const extensions::URLPatternSet& new_hosts,
                                   int tab_id,
-                                  bool update_origin_whitelist,
+                                  bool update_origin_allowlist,
                                   content::RenderProcessHost* process) {
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(
@@ -53,13 +53,13 @@ void UpdateTabSpecificPermissions(const std::string& extension_id,
           ->GetRenderer(process);
   if (renderer) {
     renderer->UpdateTabSpecificPermissions(extension_id, new_hosts.Clone(),
-                                           tab_id, update_origin_whitelist);
+                                           tab_id, update_origin_allowlist);
   }
 }
 
 void ClearTabSpecificPermissions(const std::vector<std::string>& extension_ids,
                                  int tab_id,
-                                 bool update_origin_whitelist,
+                                 bool update_origin_allowlist,
                                  content::RenderProcessHost* process) {
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(
@@ -67,7 +67,7 @@ void ClearTabSpecificPermissions(const std::vector<std::string>& extension_ids,
           ->GetRenderer(process);
   if (renderer) {
     renderer->ClearTabSpecificPermissions(extension_ids, tab_id,
-                                          update_origin_whitelist);
+                                          update_origin_allowlist);
   }
 }
 

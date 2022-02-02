@@ -242,7 +242,7 @@ bool ExtensionManagement::IsInstallationExplicitlyBlocked(
   // No settings explicitly specified for |id|.
   if (setting == nullptr)
     return false;
-  // Checks if the extension is on the black list or removed list.
+  // Checks if the extension is listed as blocked or removed.
   InstallationMode mode = setting->installation_mode;
   return mode == INSTALLATION_BLOCKED || mode == INSTALLATION_REMOVED;
 }

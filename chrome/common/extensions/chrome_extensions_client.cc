@@ -169,7 +169,7 @@ bool ChromeExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   // therefore not determined by Chromium. If the location of the blocklist file
   // ever changes, we need to update this function. A DCHECK in the
   // ExtensionUpdater ensures that we notice a change. This is the full URL
-  // of a blacklist:
+  // of a blocklist:
   // http://www.gstatic.com/chrome/extensions/blocklist/l_0_0_0_7.txt
   return base::StartsWith(url.spec(), kExtensionBlocklistUrlPrefix,
                           base::CompareCase::SENSITIVE) ||
@@ -223,7 +223,7 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   }
 
   // TODO(jstritar): We should try to remove this special case. Also, these
-  // whitelist entries need to be updated when the kManagement permission
+  // allowed entries need to be updated when the kManagement permission
   // changes.
   if (is_extension_active && extension.permissions_data()->HasAPIPermission(
                                  mojom::APIPermissionID::kManagement)) {

@@ -20,7 +20,7 @@ bool IsSyncable(const Extension* extension);
 
 // Component extensions usually aren't synced, but some are so that they'll
 // retain their position in the app list. Returns true for component extensions
-// on that whitelist.
+// that are allowed.
 bool IsSyncableComponentExtension(const Extension* extension);
 
 }  // namespace sync_helper

@@ -28,7 +28,7 @@ class WarningBadgeService : public KeyedService,
 
   static WarningBadgeService* Get(content::BrowserContext* context);
 
-  // Black lists all currently active extension warnings, so that they do not
+  // Suppresses all currently active extension warnings, so that they do not
   // trigger a warning badge again for the life-time of the browsing session.
   void SuppressCurrentWarnings();
 
