@@ -599,6 +599,9 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     } else {
       ReportVpdCacheReadResult(VpdCacheReadResult::kParseFailed);
       LOG(ERROR) << "Failed to parse FILE_VPD: " << vpd_path;
+
+      LOG(WARNING) << "Forcing check_enrollment=1";
+      machine_info_[kCheckEnrollmentKey] = "1";
     }
   }
 
