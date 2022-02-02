@@ -161,7 +161,7 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // destroyed once the request is failed.
   if (resource.IsMainPageLoadBlocked()) {
     content::NavigationEntry* entry =
-        web_contents->GetController().GetPendingEntry();
+        security_interstitials::GetNavigationEntryForResource(resource);
     if (entry) {
       security_interstitials::UnsafeResource resource_copy(resource);
       resource_copy.navigation_url = entry->GetURL();

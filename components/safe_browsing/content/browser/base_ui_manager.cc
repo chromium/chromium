@@ -471,13 +471,10 @@ void BaseUIManager::RemoveAllowlistUrlSet(const GURL& allowlist_url,
 // static
 GURL BaseUIManager::GetMainFrameAllowlistUrlForResource(
     const security_interstitials::UnsafeResource& resource) {
-  if (resource.is_subresource) {
-    NavigationEntry* entry = GetNavigationEntryForResource(resource);
-    if (!entry)
-      return GURL();
-    return entry->GetURL().GetWithEmptyPath();
-  }
-  return resource.url.GetWithEmptyPath();
+  return GetAllowlistUrl(resource.url, resource.is_subresource,
+                         resource.is_subresource
+                             ? GetNavigationEntryForResource(resource)
+                             : nullptr);
 }
 
 }  // namespace safe_browsing
