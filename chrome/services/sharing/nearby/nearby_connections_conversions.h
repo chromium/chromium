@@ -11,7 +11,6 @@
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
 #include "ash/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
 #include "base/callback_forward.h"
-#include "third_party/nearby/src/cpp/core/options.h"
 #include "third_party/nearby/src/cpp/core/params.h"
 
 namespace location {

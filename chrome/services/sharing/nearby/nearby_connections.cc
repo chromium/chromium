@@ -252,9 +252,7 @@ void NearbyConnections::StartAdvertising(
     mojom::AdvertisingOptionsPtr options,
     mojo::PendingRemote<mojom::ConnectionLifecycleListener> listener,
     StartAdvertisingCallback callback) {
-  ConnectionOptions connection_options{
-      .strategy = StrategyFromMojom(options->strategy),
-      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
+  AdvertisingOptions advertising_options{
       .auto_upgrade_bandwidth = options->auto_upgrade_bandwidth,
       .enforce_topology_constraints = options->enforce_topology_constraints,
       .enable_bluetooth_listening = options->enable_bluetooth_listening,
@@ -262,9 +260,13 @@ void NearbyConnections::StartAdvertising(
       .fast_advertisement_service_uuid =
           options->fast_advertisement_service_uuid.canonical_value()};
 
+  advertising_options.strategy = StrategyFromMojom(options->strategy);
+  advertising_options.allowed =
+      MediumSelectorFromMojom(options->allowed_mediums.get());
+
   GetCore(service_id)
       ->StartAdvertising(
-          service_id, std::move(connection_options),
+          service_id, std::move(advertising_options),
           CreateConnectionRequestInfo(endpoint_info, std::move(listener)),
           ResultCallbackFromMojom(std::move(callback)));
 }
@@ -287,11 +289,12 @@ void NearbyConnections::StartDiscovery(
         options->fast_advertisement_service_uuid->canonical_value();
   }
 
-  ConnectionOptions connection_options{
-      .strategy = StrategyFromMojom(options->strategy),
-      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
+  DiscoveryOptions discovery_options{
       .is_out_of_band_connection = options->is_out_of_band_connection,
       .fast_advertisement_service_uuid = fast_advertisement_service_uuid};
+  discovery_options.strategy = StrategyFromMojom(options->strategy);
+  discovery_options.allowed =
+      MediumSelectorFromMojom(options->allowed_mediums.get());
   mojo::SharedRemote<mojom::EndpointDiscoveryListener> remote(
       std::move(listener), thread_task_runner_);
   DiscoveryListener discovery_listener{
@@ -332,7 +335,7 @@ void NearbyConnections::StartDiscovery(
   ResultCallback result_callback = ResultCallbackFromMojom(std::move(callback));
 
   GetCore(service_id)
-      ->StartDiscovery(service_id, std::move(connection_options),
+      ->StartDiscovery(service_id, std::move(discovery_options),
                        std::move(discovery_listener),
                        std::move(result_callback));
 }
@@ -377,10 +380,11 @@ void NearbyConnections::RequestConnection(
           : 0;
 
   ConnectionOptions connection_options{
-      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
       .keep_alive_interval_millis = std::max(keep_alive_interval_millis, 0),
-      .keep_alive_timeout_millis = std::max(keep_alive_timeout_millis, 0),
-  };
+      .keep_alive_timeout_millis = std::max(keep_alive_timeout_millis, 0)};
+  connection_options.allowed =
+      MediumSelectorFromMojom(options->allowed_mediums.get());
+
   if (options->remote_bluetooth_mac_address) {
     connection_options.remote_bluetooth_mac_address =
         ByteArrayFromMojom(*options->remote_bluetooth_mac_address);

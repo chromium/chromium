@@ -12,22 +12,33 @@ if (is_chromeos_device) {
 # Nearby Config
 config("nearby_include_config") {
   include_dirs = [
+    "src",
     "src/cpp",
     "$root_gen_dir/third_party/nearby",
 
     # For WebRTC APIs.
     "//third_party",
+
+    # For bloom filter.
+    "//third_party/smhasher",
   ]
 }
 
+config("nearby_defines") {
+  defines = [ "NEARBY_CHROMIUM=1" ]
+}
+
 ###############################################################################
-# src/cpp/analytics
+# src/internal/analytics
 ###############################################################################
-# src/cpp/analytics
+# src/internal/analytics
 source_set("analytics") {
-  public_configs = [ ":nearby_include_config" ]
-  sources = [ "src/cpp/analytics/analytics_recorder.cc" ]
-  public = [ "src/cpp/analytics/analytics_recorder.h" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [ "src/internal/analytics/analytics_recorder.cc" ]
+  public = [ "src/internal/analytics/analytics_recorder.h" ]
   public_deps = [
     ":connections_enums_proto",
     ":connections_log_proto",
@@ -49,7 +60,10 @@ source_set("analytics") {
 ###############################################################################
 # src/cpp/core
 source_set("core") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [ "src/cpp/core/core.cc" ]
   public = [ "src/cpp/core/core.h" ]
   public_deps = [
@@ -65,19 +79,28 @@ source_set("core") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("core_types") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
-    "src/cpp/core/options.cc",
+    "src/cpp/core/advertising_options.cc",
+    "src/cpp/core/connection_options.cc",
+    "src/cpp/core/discovery_options.cc",
     "src/cpp/core/payload.cc",
     "src/cpp/core/strategy.cc",
   ]
   public = [
+    "src/cpp/core/advertising_options.h",
+    "src/cpp/core/connection_options.h",
+    "src/cpp/core/discovery_options.h",
     "src/cpp/core/listeners.h",
-    "src/cpp/core/options.h",
+    "src/cpp/core/options_base.h",
+    "src/cpp/core/out_of_band_connection_metadata.h",
     "src/cpp/core/params.h",
     "src/cpp/core/payload.h",
+    "src/cpp/core/power_level.h",
     "src/cpp/core/status.h",
     "src/cpp/core/strategy.h",
   ]
@@ -92,9 +115,11 @@ source_set("core_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("core_event_logger") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   public = [ "src/cpp/core/event_logger.h" ]
   public_deps = [ ":connections_log_proto" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -103,7 +128,10 @@ source_set("core_event_logger") {
 
 # src/cpp/core/internal
 source_set("core_internal") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/core/internal/base_endpoint_channel.cc",
     "src/cpp/core/internal/base_pcp_handler.cc",
@@ -197,7 +225,10 @@ source_set("core_internal") {
 
 source_set("core_internal_test") {
   testonly = true
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   public = [ "src/cpp/core/internal/mock_service_controller_router.h" ]
   deps = [
     ":core_internal",
@@ -207,14 +238,17 @@ source_set("core_internal_test") {
 
 # src/cpp/core/internal/mediums
 source_set("core_internal_mediums") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/core/internal/mediums/ble.cc",
     "src/cpp/core/internal/mediums/ble_v2/advertisement_read_result.cc",
     "src/cpp/core/internal/mediums/ble_v2/ble_advertisement.cc",
     "src/cpp/core/internal/mediums/ble_v2/ble_advertisement_header.cc",
     "src/cpp/core/internal/mediums/ble_v2/ble_packet.cc",
-    "src/cpp/core/internal/mediums/bloom_filter.cc",
+    "src/cpp/core/internal/mediums/ble_v2/bloom_filter.cc",
     "src/cpp/core/internal/mediums/bluetooth_classic.cc",
     "src/cpp/core/internal/mediums/bluetooth_radio.cc",
     "src/cpp/core/internal/mediums/mediums.cc",
@@ -229,7 +263,7 @@ source_set("core_internal_mediums") {
     "src/cpp/core/internal/mediums/ble_v2/ble_advertisement_header.h",
     "src/cpp/core/internal/mediums/ble_v2/ble_packet.h",
     "src/cpp/core/internal/mediums/ble_v2/ble_peripheral.h",
-    "src/cpp/core/internal/mediums/bloom_filter.h",
+    "src/cpp/core/internal/mediums/ble_v2/bloom_filter.h",
     "src/cpp/core/internal/mediums/bluetooth_classic.h",
     "src/cpp/core/internal/mediums/bluetooth_radio.h",
     "src/cpp/core/internal/mediums/lost_entity_tracker.h",
@@ -255,9 +289,11 @@ source_set("core_internal_mediums") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("core_internal_mediums_utils") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/core/internal/mediums/utils.cc",
     "src/cpp/core/internal/mediums/webrtc_peer_id.cc",
@@ -277,9 +313,11 @@ source_set("core_internal_mediums_utils") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("core_internal_mediums_webrtc_data_types") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [ "src/cpp/core/internal/mediums/webrtc/webrtc_socket_impl.cc" ]
   public = [ "src/cpp/core/internal/mediums/webrtc/webrtc_socket_impl.h" ]
   public_deps = [
@@ -291,9 +329,11 @@ source_set("core_internal_mediums_webrtc_data_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("core_internal_mediums_webrtc") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/core/internal/mediums/webrtc/connection_flow.cc",
     "src/cpp/core/internal/mediums/webrtc/signaling_frames.cc",
@@ -326,7 +366,10 @@ source_set("core_internal_mediums_webrtc") {
 ###############################################################################
 # src/cpp/platform/api
 source_set("platform_api_comm") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/platform/api/ble.h",
     "src/cpp/platform/api/ble_v2.h",
@@ -347,9 +390,11 @@ source_set("platform_api_comm") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_api_types") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/platform/api/atomic_boolean.h",
     "src/cpp/platform/api/atomic_reference.h",
@@ -376,9 +421,11 @@ source_set("platform_api_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_api_platform") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   public = [ "src/cpp/platform/api/platform.h" ]
   public_deps = [
     ":platform_api_comm",
@@ -392,7 +439,10 @@ source_set("platform_api_platform") {
 
 # src/cpp/platform/base
 source_set("platform_base") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/platform/base/base64_utils.cc",
     "src/cpp/platform/base/bluetooth_utils.cc",
@@ -421,9 +471,11 @@ source_set("platform_base") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_base_error_code_recorder") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [ "src/cpp/platform/base/error_code_recorder.cc" ]
   public = [
     "src/cpp/platform/base/error_code_params.h",
@@ -437,9 +489,11 @@ source_set("platform_base_error_code_recorder") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_base_util") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/platform/base/base_input_stream.cc",
     "src/cpp/platform/base/base_pipe.cc",
@@ -457,9 +511,11 @@ source_set("platform_base_util") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_base_logging") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   public = [ "src/cpp/platform/base/logging.h" ]
   public_deps = [
     ":platform_api_platform",
@@ -469,9 +525,11 @@ source_set("platform_base_logging") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_base_cancellation_flag") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [ "src/cpp/platform/base/cancellation_flag.cc" ]
   public = [ "src/cpp/platform/base/cancellation_flag.h" ]
   public_deps = [
@@ -485,7 +543,10 @@ source_set("platform_base_cancellation_flag") {
 
 # src/cpp/platform/impl/shared
 source_set("platform_impl_shared_file") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [ "src/cpp/platform/impl/shared/file.cc" ]
   public = [ "src/cpp/platform/impl/shared/file.h" ]
   public_deps = [
@@ -499,7 +560,10 @@ source_set("platform_impl_shared_file") {
 
 # src/cpp/platform/public
 source_set("platform_public_types") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/platform/public/monitored_runnable.cc",
     "src/cpp/platform/public/pending_job_registry.cc",
@@ -541,9 +605,11 @@ source_set("platform_public_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_public_comm") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   sources = [
     "src/cpp/platform/public/ble.cc",
     "src/cpp/platform/public/bluetooth_classic.cc",
@@ -569,9 +635,11 @@ source_set("platform_public_comm") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("platform_public_logging") {
-  public_configs = [ ":nearby_include_config" ]
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
   public = [ "src/cpp/platform/public/logging.h" ]
   public_deps = [ ":platform_base_logging" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -588,10 +656,10 @@ proto_library("connections_enums_proto") {
   proto_out_dir = "third_party/nearby"
 }
 
-# src/proto/analytics
+# src/internal/proto/analytics
 proto_library("connections_log_proto") {
   proto_in_dir = "src"
-  sources = [ "${proto_in_dir}/proto/analytics/connections_log.proto" ]
+  sources = [ "${proto_in_dir}/internal/proto/analytics/connections_log.proto" ]
   proto_out_dir = "third_party/nearby"
   proto_deps = [
     ":connections_enums_proto",
@@ -603,10 +671,10 @@ proto_library("connections_log_proto") {
   ]
 }
 
-# src/proto/connections
+# src/connections/implementation/proto
 proto_library("offline_wire_formats_proto") {
   proto_in_dir = "src"
-  sources = [ "${proto_in_dir}/proto/connections/offline_wire_formats.proto" ]
+  sources = [ "${proto_in_dir}/connections/implementation/proto/offline_wire_formats.proto" ]
   proto_out_dir = "third_party/nearby"
 }
 
@@ -636,7 +704,6 @@ if (is_chromeos_device) {
   # and artifacts to GCS.
   process_version("nearby_lacros_version_metadata") {
     sources = [ "//chrome/VERSION" ]
-
     template_file = "metadata.json.in"
     output = "$root_out_dir/metadata.json"
     process_only = true
