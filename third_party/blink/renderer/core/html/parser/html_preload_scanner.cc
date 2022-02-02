@@ -649,36 +649,12 @@ class TokenPreloadScanner::StartTagScanner {
     if (!document_parameters.lazy_load_image_observer)
       return false;
 
-    bool is_fully_loadable =
-        document_parameters.lazy_load_image_observer
-            ->IsFullyLoadableFirstKImageAndDecrementCount();
     if (document_parameters.lazy_load_image_setting ==
         LocalFrame::LazyLoadImageSetting::kDisabled) {
       return false;
     }
 
-    switch (loading_attr_value_) {
-      case LoadingAttributeValue::kEager:
-        return false;
-      case LoadingAttributeValue::kLazy:
-        return true;
-      case LoadingAttributeValue::kAuto:
-        if ((width_attr_dimension_type_ ==
-                 HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall &&
-             height_attr_dimension_type_ ==
-                 HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall) ||
-            inline_style_dimensions_type_ ==
-                HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall) {
-          // Fetch small images eagerly.
-          return false;
-        } else if (is_fully_loadable ||
-                   document_parameters.lazy_load_image_setting !=
-                       LocalFrame::LazyLoadImageSetting::kEnabledAutomatic) {
-          return false;
-        }
-        break;
-    }
-    return true;
+    return loading_attr_value_ == LoadingAttributeValue::kLazy;
   }
 
   void SetUrlToLoad(const String& value, URLReplacement replacement) {

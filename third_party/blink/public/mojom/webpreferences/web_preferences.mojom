@@ -419,7 +419,6 @@ struct WebPreferences {
       lazy_frame_loading_distance_thresholds_px;
   map<EffectiveConnectionType, int32>
       lazy_image_loading_distance_thresholds_px;
-  map<EffectiveConnectionType, int32> lazy_image_first_k_fully_load;
 
   // Setting to false disables upgrades to HTTPS for HTTP resources in HTTPS
   // sites.

@@ -335,9 +335,7 @@ void HTMLImageElement::ParseAttribute(
   } else if (name == html_names::kLoadingAttr) {
     LoadingAttributeValue loading = GetLoadingAttributeValue(params.new_value);
     if (loading == LoadingAttributeValue::kEager ||
-        (loading == LoadingAttributeValue::kAuto && GetDocument().GetFrame() &&
-         GetDocument().GetFrame()->GetLazyLoadImageSetting() !=
-             LocalFrame::LazyLoadImageSetting::kEnabledAutomatic)) {
+        (loading == LoadingAttributeValue::kAuto)) {
       GetImageLoader().LoadDeferredImage(referrer_policy_);
     }
   } else if (name == html_names::kImportanceAttr &&

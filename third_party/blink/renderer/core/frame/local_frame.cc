@@ -192,7 +192,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
-#include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -1484,7 +1483,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       interface_registry_(interface_registry
                               ? interface_registry
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),
-      is_save_data_enabled_(GetNetworkStateNotifier().SaveDataEnabled()),
       lifecycle_state_(mojom::FrameLifecycleState::kRunning) {
   auto frame_tracking_result =
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
@@ -1925,24 +1923,7 @@ LocalFrame::LazyLoadImageSetting LocalFrame::GetLazyLoadImageSetting() const {
     return LocalFrame::LazyLoadImageSetting::kDisabled;
   }
 
-  if (!RuntimeEnabledFeatures::AutomaticLazyImageLoadingEnabled())
-    return LocalFrame::LazyLoadImageSetting::kEnabledExplicit;
-  if (RuntimeEnabledFeatures::
-          RestrictAutomaticLazyImageLoadingToDataSaverEnabled() &&
-      !is_save_data_enabled_) {
-    return LocalFrame::LazyLoadImageSetting::kEnabledExplicit;
-  }
-
-  // Skip automatic lazyload when reloading a page.
-  if (!RuntimeEnabledFeatures::AutoLazyLoadOnReloadsEnabled() &&
-      Loader().GetDocumentLoader() &&
-      IsReloadLoadType(Loader().GetDocumentLoader()->LoadType())) {
-    return LocalFrame::LazyLoadImageSetting::kEnabledExplicit;
-  }
-
-  if (Owner() && !Owner()->ShouldLazyLoadChildren())
-    return LocalFrame::LazyLoadImageSetting::kEnabledExplicit;
-  return LocalFrame::LazyLoadImageSetting::kEnabledAutomatic;
+  return LocalFrame::LazyLoadImageSetting::kEnabledExplicit;
 }
 
 WebURLLoaderFactory* LocalFrame::GetURLLoaderFactory() {

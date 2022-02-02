@@ -54,29 +54,6 @@ int GetLazyImageLoadingViewportDistanceThresholdPx(const Document& document) {
   return 0;
 }
 
-int GetFirstKFullyLoadCount(const Document& document) {
-  const Settings* settings = document.GetSettings();
-  if (!settings)
-    return 0;
-
-  switch (GetNetworkStateNotifier().EffectiveType()) {
-    case WebEffectiveConnectionType::kTypeOffline:
-      return 0;
-    case WebEffectiveConnectionType::kTypeUnknown:
-      return settings->GetLazyImageFirstKFullyLoadUnknown();
-    case WebEffectiveConnectionType::kTypeSlow2G:
-      return settings->GetLazyImageFirstKFullyLoadSlow2G();
-    case WebEffectiveConnectionType::kType2G:
-      return settings->GetLazyImageFirstKFullyLoad2G();
-    case WebEffectiveConnectionType::kType3G:
-      return settings->GetLazyImageFirstKFullyLoad3G();
-    case WebEffectiveConnectionType::kType4G:
-      return settings->GetLazyImageFirstKFullyLoad4G();
-  }
-  NOTREACHED();
-  return 0;
-}
-
 // Returns if the element or its ancestors are invisible, due to their style or
 // attribute or due to themselves not connected to the main document tree.
 bool IsElementInInvisibleSubTree(const Element& element) {
@@ -170,8 +147,7 @@ void RecordVisibleLoadTimeForImage(
 
 }  // namespace
 
-LazyLoadImageObserver::LazyLoadImageObserver(const Document& document)
-    : count_remaining_images_fully_loaded_(GetFirstKFullyLoadCount(document)) {}
+LazyLoadImageObserver::LazyLoadImageObserver(const Document& document) {}
 
 void LazyLoadImageObserver::StartMonitoringNearViewport(
     Document* root_document,
@@ -190,15 +166,6 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
   }
   lazy_load_intersection_observer_->observe(element);
 
-  if (deferral_message == DeferralMessage::kLoadEventsDeferred &&
-      !is_load_event_deferred_intervention_shown_) {
-    is_load_event_deferred_intervention_shown_ = true;
-    root_document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kIntervention,
-        mojom::ConsoleMessageLevel::kInfo,
-        "Images loaded lazily and replaced with placeholders. Load events are "
-        "deferred. See https://crbug.com/954323"));
-  }
   if (deferral_message == DeferralMessage::kMissingDimensionForLazy) {
     UseCounter::Count(root_document,
                       WebFeature::kLazyLoadImageMissingDimensionsForLazy);
@@ -357,14 +324,6 @@ void LazyLoadImageObserver::OnVisibilityChanged(
 
     visibility_metrics_observer_->unobserve(image_element);
   }
-}
-
-bool LazyLoadImageObserver::IsFullyLoadableFirstKImageAndDecrementCount() {
-  if (count_remaining_images_fully_loaded_ > 0) {
-    count_remaining_images_fully_loaded_--;
-    return true;
-  }
-  return false;
 }
 
 void LazyLoadImageObserver::Trace(Visitor* visitor) const {

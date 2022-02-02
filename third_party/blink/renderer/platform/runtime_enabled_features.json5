@@ -226,20 +226,6 @@
       status: "experimental",
     },
     {
-      name: "AutoLazyLoadOnReloads",
-      depends_on: ["LazyFrameLoading"],
-    },
-    {
-      name: "AutomaticLazyFrameLoading",
-      depends_on: ["LazyFrameLoading"],
-      status: "stable",
-    },
-    {
-      name: "AutomaticLazyImageLoading",
-      depends_on: ["LazyImageLoading"],
-      status: "stable",
-    },
-    {
       name: "AutomationControlled",
       settable_from_internals: true,
     },
@@ -1947,16 +1933,6 @@
     {
       // See https://crbug.com/1012063
       name: "RequestVideoFrameCallback",
-      status: "stable",
-    },
-    {
-      name: "RestrictAutomaticLazyFrameLoadingToDataSaver",
-      depends_on: ["AutomaticLazyFrameLoading"],
-      status: "stable",
-    },
-    {
-      name: "RestrictAutomaticLazyImageLoadingToDataSaver",
-      depends_on: ["AutomaticLazyImageLoading"],
       status: "stable",
     },
     {

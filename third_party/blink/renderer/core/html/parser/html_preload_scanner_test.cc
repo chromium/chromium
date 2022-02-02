@@ -1276,24 +1276,21 @@ TEST_F(HTMLPreloadScannerTest, MetaCsp_NoPreloadsAfter) {
     Test(test_case);
 }
 
-TEST_F(HTMLPreloadScannerTest, LazyLoadImage_DisabledForSmallImages) {
+TEST_F(HTMLPreloadScannerTest, LazyLoadImage_SmallImages) {
   ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
-  ScopedAutomaticLazyImageLoadingForTest
-      scoped_automatic_lazy_image_loading_for_test(true);
-  ScopedRestrictAutomaticLazyImageLoadingToDataSaverForTest
-      scoped_restrict_automatic_lazy_image_loading_to_data_saver_for_test(
-          false);
   RunSetUp(kViewportEnabled);
   LazyLoadImageTestCase test_cases[] = {
-      {"<img src='foo.jpg'>", true},
-      {"<img src='foo.jpg' height='1px' width='1px'>", false},
-      {"<img src='foo.jpg' style='height: 1px; width: 1px'>", false},
-      {"<img src='foo.jpg' height='10px' width='10px'>", false},
-      {"<img src='foo.jpg' style='height: 10px; width: 10px'>", false},
-      {"<img src='foo.jpg' height='1px'>", true},
-      {"<img src='foo.jpg' style='height: 1px;'>", true},
-      {"<img src='foo.jpg' width='1px'>", true},
-      {"<img src='foo.jpg' style='width: 1px;'>", true},
+      {"<img src='foo.jpg' loading='lazy'>", true},
+      {"<img src='foo.jpg' height='1px' width='1px' loading='lazy'>", true},
+      {"<img src='foo.jpg' style='height: 1px; width: 1px' loading='lazy'>",
+       true},
+      {"<img src='foo.jpg' height='10px' width='10px' loading='lazy'>", true},
+      {"<img src='foo.jpg' style='height: 10px; width: 10px' loading='lazy'>",
+       true},
+      {"<img src='foo.jpg' height='1px' loading='lazy'>", true},
+      {"<img src='foo.jpg' style='height: 1px;' loading='lazy'>", true},
+      {"<img src='foo.jpg' width='1px' loading='lazy'>", true},
+      {"<img src='foo.jpg' style='width: 1px;' loading='lazy'>", true},
   };
 
   for (const auto& test_case : test_cases)
@@ -1315,14 +1312,9 @@ TEST_F(HTMLPreloadScannerTest, LazyLoadImage_FeatureDisabledWithAttribute) {
 TEST_F(HTMLPreloadScannerTest,
        LazyLoadImage_FeatureAutomaticEnabledWithAttribute) {
   ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
-  ScopedAutomaticLazyImageLoadingForTest
-      scoped_automatic_lazy_image_loading_for_test(true);
-  ScopedRestrictAutomaticLazyImageLoadingToDataSaverForTest
-      scoped_restrict_automatic_lazy_image_loading_to_data_saver_for_test(
-          false);
   RunSetUp(kViewportEnabled);
   LazyLoadImageTestCase test_cases[] = {
-      {"<img src='foo.jpg' loading='auto'>", true},
+      {"<img src='foo.jpg' loading='auto'>", false},
       {"<img src='foo.jpg' loading='lazy'>", true},
       {"<img src='foo.jpg' loading='eager'>", false},
       // loading=lazy should override other conditions.
@@ -1351,29 +1343,25 @@ TEST_F(HTMLPreloadScannerTest,
        LazyLoadImage_FeatureAutomaticPreloadForLargeImages) {
   // Large images should not be preloaded, when loading is auto or lazy.
   ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
-  ScopedAutomaticLazyImageLoadingForTest
-      scoped_automatic_lazy_image_loading_for_test(true);
-  ScopedRestrictAutomaticLazyImageLoadingToDataSaverForTest
-      scoped_restrict_automatic_lazy_image_loading_to_data_saver_for_test(
-          false);
   RunSetUp(kViewportEnabled);
   PreloadScannerTestCase test_cases[] = {
-      {"http://example.test", "<img src='foo.jpg' height='20px' width='20px'>",
-       nullptr, "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' style='height: 20px; width: 20px'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
       {"http://example.test",
        "<img src='foo.jpg' height='20px' width='20px' loading='lazy'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' height='20px' width='20px' loading='auto'>", nullptr,
        "http://example.test/", ResourceType::kImage, 0},
       {"http://example.test",
        "<img src='foo.jpg' style='height: 20px; width: 20px' loading='lazy'>",
        nullptr, "http://example.test/", ResourceType::kImage, 0},
       {"http://example.test",
-       "<img src='foo.jpg' style='height: 20px; width: 20px' loading='auto'>",
+       "<img src='foo.jpg' height='20px' width='20px' loading='lazy'>", nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<img src='foo.jpg' height='20px' width='20px' loading='lazy'>", nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<img src='foo.jpg' style='height: 20px; width: 20px' loading='lazy'>",
+       nullptr, "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<img src='foo.jpg' style='height: 20px; width: 20px' loading='lazy'>",
        nullptr, "http://example.test/", ResourceType::kImage, 0},
   };
   for (const auto& test_case : test_cases)
@@ -1422,31 +1410,21 @@ TEST_F(HTMLPreloadScannerTest,
 // longer have metadata fetching?
 TEST_F(HTMLPreloadScannerTest, LazyLoadImage_DisableMetadataFetch) {
   struct TestCase {
-    bool automatic_lazy_image_loading_enabled;
     const char* loading_attr_value;
     bool expected_is_preload;
   };
   const TestCase test_cases[] = {
       // The lazyload eligible cases should not trigger a preload.
-      {false, "lazy", false},
-      {true, "lazy", false},
-      {true, "auto", false},
+      {"lazy", false},
 
       // Lazyload ineligible case.
-      {false, "auto", true},
+      {"auto", true},
 
       // Full image should be fetched when loading='eager' irrespective of
       // automatic lazyload feature state.
-      {false, "eager", true},
-      {true, "eager", true},
+      {"eager", true},
   };
   for (const auto& test_case : test_cases) {
-    ScopedAutomaticLazyImageLoadingForTest
-        scoped_automatic_lazy_image_loading_for_test(
-            test_case.automatic_lazy_image_loading_enabled);
-    ScopedRestrictAutomaticLazyImageLoadingToDataSaverForTest
-        scoped_restrict_automatic_lazy_image_loading_to_data_saver_for_test(
-            false);
     RunSetUp(kViewportEnabled);
     const std::string img_html = base::StringPrintf(
         "<img src='foo.jpg' loading='%s'>", test_case.loading_attr_value);
@@ -1460,57 +1438,6 @@ TEST_F(HTMLPreloadScannerTest, LazyLoadImage_DisableMetadataFetch) {
       Test(test_no_preload);
     }
   }
-}
-
-TEST_F(HTMLPreloadScannerTest,
-       LazyLoadImage_FirstKImagesNotAppliesForExplicit) {
-  ScopedAutomaticLazyImageLoadingForTest
-      scoped_automatic_lazy_image_loading_for_test(false);
-  ScopedRestrictAutomaticLazyImageLoadingToDataSaverForTest
-      scoped_restrict_automatic_lazy_image_loading_to_data_saver_for_test(
-          false);
-  GetDocument().GetSettings()->SetLazyImageFirstKFullyLoadUnknown(1);
-  RunSetUp(kViewportEnabled);
-
-  // Neither of the images should be preloaded.
-  LazyLoadImageTestCase test1 = {"<img src='foo.jpg' loading='lazy'>", true};
-  Test(test1);
-  LazyLoadImageTestCase test2 = {"<img src='bar.jpg' loading='lazy'>", true};
-  Test(test2);
-}
-
-TEST_F(HTMLPreloadScannerTest, LazyLoadImage_FirstKImagesAppliesForAutomatic) {
-  ScopedAutomaticLazyImageLoadingForTest
-      scoped_automatic_lazy_image_loading_for_test(true);
-  ScopedRestrictAutomaticLazyImageLoadingToDataSaverForTest
-      scoped_restrict_automatic_lazy_image_loading_to_data_saver_for_test(
-          false);
-  GetDocument().GetSettings()->SetLazyImageFirstKFullyLoadUnknown(1);
-  RunSetUp(kViewportEnabled);
-
-  // Only the first image should get preloaded
-  LazyLoadImageTestCase test1 = {"<img src='foo.jpg'>", false};
-  Test(test1);
-  LazyLoadImageTestCase test2 = {"<img src='bar.jpg'>", true};
-  Test(test2);
-}
-
-TEST_F(HTMLPreloadScannerTest,
-       LazyLoadImage_ExplicitImageCountedForFirstKImages) {
-  ScopedAutomaticLazyImageLoadingForTest
-      scoped_automatic_lazy_image_loading_for_test(true);
-  ScopedRestrictAutomaticLazyImageLoadingToDataSaverForTest
-      scoped_restrict_automatic_lazy_image_loading_to_data_saver_for_test(
-          false);
-  GetDocument().GetSettings()->SetLazyImageFirstKFullyLoadUnknown(1);
-  RunSetUp(kViewportEnabled);
-
-  // The first image should be counted towards first K images limit, even though
-  // it has loading='lazy'.
-  LazyLoadImageTestCase test1 = {"<img src='foo.jpg' loading='lazy'>", true};
-  Test(test1);
-  LazyLoadImageTestCase test2 = {"<img src='bar.jpg'>", true};
-  Test(test2);
 }
 
 // https://crbug.com/1087854

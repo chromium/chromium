@@ -22,11 +22,7 @@ class IntersectionObserverEntry;
 class LazyLoadImageObserver final
     : public GarbageCollected<LazyLoadImageObserver> {
  public:
-  enum class DeferralMessage {
-    kNone,
-    kLoadEventsDeferred,
-    kMissingDimensionForLazy
-  };
+  enum class DeferralMessage { kNone, kMissingDimensionForLazy };
 
   struct VisibleLoadTimeMetrics {
     // Keeps track of whether the image was initially intersecting the viewport.
@@ -48,8 +44,6 @@ class LazyLoadImageObserver final
   void StartMonitoringVisibility(Document*, HTMLImageElement*);
   void OnLoadFinished(HTMLImageElement*);
 
-  bool IsFullyLoadableFirstKImageAndDecrementCount();
-
   void Trace(Visitor*) const;
 
   // Loads all currently known lazy-loaded images. Returns whether any
@@ -68,12 +62,6 @@ class LazyLoadImageObserver final
 
   // The intersection observer used to track when the image becomes visible.
   Member<IntersectionObserver> visibility_metrics_observer_;
-
-  // Count of remaining images that can be fully loaded.
-  int count_remaining_images_fully_loaded_ = 0;
-
-  // Used to show the intervention console message one time only.
-  bool is_load_event_deferred_intervention_shown_ = false;
 };
 
 }  // namespace blink

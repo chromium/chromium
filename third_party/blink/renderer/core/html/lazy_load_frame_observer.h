@@ -37,9 +37,10 @@ class LazyLoadFrameObserver final
     kLoadedNearOrInViewport = 1,
     // The frame was determined to likely be a hidden frame (e.g. analytics or
     // communication iframes), so it was loaded immediately.
-    kLoadedHidden = 2,
+    // Deprecated in Jan 2022.
+    kDeprecatedLoadedHidden = 2,
 
-    kMaxValue = kLoadedHidden
+    kMaxValue = kDeprecatedLoadedHidden
   };
 
   // The loading pipeline for an iframe differs depending on whether the

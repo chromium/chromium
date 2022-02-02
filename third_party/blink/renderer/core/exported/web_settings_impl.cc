@@ -739,26 +739,6 @@ void WebSettingsImpl::SetLazyImageLoadingDistanceThresholdPx4G(
   settings_->SetLazyImageLoadingDistanceThresholdPx4G(distance_px);
 }
 
-void WebSettingsImpl::SetLazyImageFirstKFullyLoadUnknown(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoadUnknown(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoadSlow2G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoadSlow2G(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoad2G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoad2G(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoad3G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoad3G(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoad4G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoad4G(num_images);
-}
-
 void WebSettingsImpl::SetForceDarkModeEnabled(bool enabled) {
   settings_->SetForceDarkModeEnabled(enabled);
 }

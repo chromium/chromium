@@ -254,16 +254,6 @@ void ElementStyleResources::LoadPendingSVGResources(ComputedStyle& style) {
   }
 }
 
-static bool BackgroundLayerMayBeSprite(const FillLayer& background_layer) {
-  // Simple heuristic to guess if a CSS background image layer is used to
-  // create CSS sprites. For a legit background image it's very likely the X
-  // and the Y position will not be explicitly specifed. For CSS sprite image,
-  // background X or Y position will probably be specified.
-  DCHECK(background_layer.GetImage());
-  return background_layer.PositionX().IsFixed() ||
-         background_layer.PositionY().IsFixed();
-}
-
 static CSSValue* PendingCssValue(StyleImage* style_image) {
   if (auto* pending_image = DynamicTo<StylePendingImage>(style_image))
     return pending_image->CssValue();
@@ -298,14 +288,6 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
                   PendingCssValue(background_layer->GetImage())) {
             FetchParameters::ImageRequestBehavior image_request_behavior =
                 FetchParameters::kNone;
-            if (!BackgroundLayerMayBeSprite(*background_layer)) {
-              if (element_.GetDocument()
-                      .GetFrame()
-                      ->GetLazyLoadImageSetting() ==
-                  LocalFrame::LazyLoadImageSetting::kEnabledAutomatic) {
-                image_request_behavior = FetchParameters::kDeferImageLoad;
-              }
-            }
             StyleImage* new_image =
                 loader.Load(*pending_value, image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {

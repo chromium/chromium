@@ -973,34 +973,6 @@
       initial: 1250,
       type: "int",
     },
-    //
-    // Count of the images to fully load for different effective connection types.
-    //
-    {
-      name: "lazyImageFirstKFullyLoadUnknown",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoadSlow2G",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoad2G",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoad3G",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoad4G",
-      initial: 0,
-      type: "int",
-    },
 
     // Preferred color scheme from the OS/application passed to the renderer for
     // evaluating the prefers-color-scheme media query.

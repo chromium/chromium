@@ -26,7 +26,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
           &out->lazy_frame_loading_distance_thresholds_px) ||
       !data.ReadLazyImageLoadingDistanceThresholdsPx(
           &out->lazy_image_loading_distance_thresholds_px) ||
-      !data.ReadLazyImageFirstKFullyLoad(&out->lazy_image_first_k_fully_load) ||
       !data.ReadDefaultEncoding(&out->default_encoding) ||
       !data.ReadTextTrackBackgroundColor(&out->text_track_background_color) ||
       !data.ReadTextTrackTextColor(&out->text_track_text_color) ||
