@@ -1974,6 +1974,8 @@ static_library("ui") {
       "app_list/search/help_app_provider.h",
       "app_list/search/keyboard_shortcut_provider.cc",
       "app_list/search/keyboard_shortcut_provider.h",
+      "app_list/search/keyboard_shortcut_result.cc",
+      "app_list/search/keyboard_shortcut_result.h",
       "app_list/search/mixer.cc",
       "app_list/search/mixer.h",
       "app_list/search/omnibox_answer_result.cc",

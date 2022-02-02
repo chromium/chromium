@@ -3490,6 +3490,7 @@ Unknown properties are collapsed to zero. -->
   <int value="43" label="Drive file search"/>
   <int value="44" label="Help App (Updates page)"/>
   <int value="45" label="Help App (Discover page)"/>
+  <int value="46" label="Keyboard Shortcut"/>
 </enum>
 
 <enum name="AppListSearchResultDisplayType">
