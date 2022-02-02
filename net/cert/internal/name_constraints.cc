@@ -73,10 +73,9 @@ bool DNSNameMatches(base::StringPiece name,
       name[0] == '*' && name[1] == '.') {
     size_t dns_constraint_dot_pos = dns_constraint.find('.');
     if (dns_constraint_dot_pos != std::string::npos) {
-      base::StringPiece dns_constraint_domain(
-          dns_constraint.begin() + dns_constraint_dot_pos + 1,
-          dns_constraint.size() - dns_constraint_dot_pos - 1);
-      base::StringPiece wildcard_domain(name.begin() + 2, name.size() - 2);
+      base::StringPiece dns_constraint_domain =
+          dns_constraint.substr(dns_constraint_dot_pos + 1);
+      base::StringPiece wildcard_domain = name.substr(2);
       if (base::EqualsCaseInsensitiveASCII(wildcard_domain,
                                            dns_constraint_domain)) {
         return true;
