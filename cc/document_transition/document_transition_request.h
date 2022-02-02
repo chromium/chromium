@@ -34,7 +34,8 @@ class CC_EXPORT DocumentTransitionRequest {
       uint32_t document_tag,
       TransitionConfig root_config,
       std::vector<TransitionConfig> shared_element_config,
-      base::OnceClosure commit_callback);
+      base::OnceClosure commit_callback,
+      bool is_renderer_driven_animation);
 
   // Creates a Type::kSave type of request.
   static std::unique_ptr<DocumentTransitionRequest> CreateStart(
@@ -90,7 +91,8 @@ class CC_EXPORT DocumentTransitionRequest {
                             uint32_t document_tag,
                             TransitionConfig root_config,
                             std::vector<TransitionConfig> shared_element_config,
-                            base::OnceClosure commit_callback);
+                            base::OnceClosure commit_callback,
+                            bool is_renderer_driven_animation);
   DocumentTransitionRequest(uint32_t document_tag,
                             uint32_t shared_element_count,
                             base::OnceClosure commit_callback);
@@ -103,6 +105,7 @@ class CC_EXPORT DocumentTransitionRequest {
   const uint32_t shared_element_count_;
   const std::vector<TransitionConfig> shared_element_config_;
   base::OnceClosure commit_callback_;
+  const bool is_renderer_driven_animation_;
   const uint32_t sequence_id_;
 
   static uint32_t s_next_sequence_id_;

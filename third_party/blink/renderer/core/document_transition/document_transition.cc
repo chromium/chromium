@@ -235,14 +235,17 @@ ScriptPromise DocumentTransition::prepare(
   prepare_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
+  const bool is_renderer_transition =
+      !RuntimeEnabledFeatures::DocumentTransitionVizEnabled();
   state_ = State::kPreparing;
   pending_request_ = DocumentTransitionRequest::CreatePrepare(
       effect, document_tag_, root_config, std::move(shared_elements_config),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
-          WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
+          WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)),
+      is_renderer_transition);
 
-  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
+  if (is_renderer_transition) {
     style_tracker_ =
         MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_);
     style_tracker_->Prepare(active_shared_elements_);

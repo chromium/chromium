@@ -18,7 +18,7 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
   auto request = DocumentTransitionRequest::CreatePrepare(
       DocumentTransitionRequest::Effect::kRevealLeft,
       /*document_tag=*/0, DocumentTransitionRequest::TransitionConfig(),
-      /*shared_element_config=*/{}, std::move(callback));
+      /*shared_element_config=*/{}, std::move(callback), false);
 
   EXPECT_FALSE(called);
   request->TakeFinishedCallback().Run();
@@ -30,11 +30,14 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
   EXPECT_EQ(DocumentTransitionRequest::Effect::kRevealLeft, directive.effect());
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kSave,
             directive.type());
+  EXPECT_FALSE(directive.is_renderer_driven_animation());
 
   auto duplicate = request->ConstructDirective({});
   EXPECT_EQ(duplicate.sequence_id(), directive.sequence_id());
   EXPECT_EQ(duplicate.effect(), directive.effect());
   EXPECT_EQ(duplicate.type(), directive.type());
+  EXPECT_EQ(duplicate.is_renderer_driven_animation(),
+            directive.is_renderer_driven_animation());
 }
 
 TEST(DocumentTransitionRequestTest, StartRequest) {
@@ -53,6 +56,7 @@ TEST(DocumentTransitionRequestTest, StartRequest) {
   EXPECT_GT(directive.sequence_id(), 0u);
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kAnimate,
             directive.type());
+  EXPECT_FALSE(directive.is_renderer_driven_animation());
 }
 
 }  // namespace cc

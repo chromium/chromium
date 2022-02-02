@@ -4,6 +4,7 @@
 
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 
+#include <string>
 #include <utility>
 
 #include "base/time/time.h"
@@ -22,11 +23,13 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     uint32_t sequence_id,
     Type type,
+    bool is_renderer_driven_animation,
     Effect effect,
     const TransitionConfig& root_config,
     std::vector<SharedElement> shared_elements)
     : sequence_id_(sequence_id),
       type_(type),
+      is_renderer_driven_animation_(is_renderer_driven_animation),
       effect_(effect),
       root_config_(root_config),
       shared_elements_(std::move(shared_elements)) {}

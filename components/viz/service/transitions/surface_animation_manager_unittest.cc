@@ -41,7 +41,8 @@ std::vector<CompositorFrameTransitionDirective> CreateSaveDirectiveAsVector(
         CompositorFrameTransitionDirective::Effect::kCoverDown) {
   std::vector<CompositorFrameTransitionDirective> result;
   result.emplace_back(sequence_id,
-                      CompositorFrameTransitionDirective::Type::kSave, effect);
+                      CompositorFrameTransitionDirective::Type::kSave, false,
+                      effect);
   return result;
 }
 
@@ -434,14 +435,14 @@ TEST_F(SurfaceAnimationManagerTest, ConfigWithAllZeroDurations) {
   CompositorFrameTransitionDirective::TransitionConfig zero_config;
   zero_config.duration = zero_config.delay = base::TimeDelta();
   CompositorFrameTransitionDirective save(
-      1, CompositorFrameTransitionDirective::Type::kSave,
+      1, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kCoverDown,
       /*root_config=*/zero_config,
       /*shared_elements=*/
       CreateSharedElements(frame.render_pass_list, {zero_config}));
 
   CompositorFrameTransitionDirective animate(
-      2, CompositorFrameTransitionDirective::Type::kAnimate,
+      2, CompositorFrameTransitionDirective::Type::kAnimate, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/zero_config,
       /*shared_elements=*/
@@ -475,13 +476,13 @@ TEST_F(SurfaceAnimationManagerTest, CustomRootConfig) {
   root_config.delay = base::Seconds(1);
 
   CompositorFrameTransitionDirective save(
-      1, CompositorFrameTransitionDirective::Type::kSave,
+      1, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kExplode,
       /*root_config=*/root_config,
       /*shared_elements=*/{});
 
   CompositorFrameTransitionDirective animate(
-      2, CompositorFrameTransitionDirective::Type::kAnimate,
+      2, CompositorFrameTransitionDirective::Type::kAnimate, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/root_config,
       /*shared_elements=*/{});
@@ -573,7 +574,7 @@ TEST_F(SurfaceAnimationManagerTest, CustomSharedConfig) {
   shared_config.delay = base::Seconds(1);
 
   CompositorFrameTransitionDirective save(
-      1, CompositorFrameTransitionDirective::Type::kSave,
+      1, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/zero_config,
       /*shared_elements=*/
@@ -604,7 +605,7 @@ TEST_F(SurfaceAnimationManagerTest, CustomSharedConfig) {
                                                 new_transform, new_opacity);
 
   CompositorFrameTransitionDirective animate(
-      2, CompositorFrameTransitionDirective::Type::kAnimate,
+      2, CompositorFrameTransitionDirective::Type::kAnimate, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/zero_config,
       /*shared_elements=*/

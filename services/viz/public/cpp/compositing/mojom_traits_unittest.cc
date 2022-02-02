@@ -601,7 +601,7 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
   element.render_pass_id = frame.render_pass_list.front()->id;
   frame.metadata.transition_directives.push_back(
       CompositorFrameTransitionDirective(
-          1u, CompositorFrameTransitionDirective::Type::kSave,
+          1u, CompositorFrameTransitionDirective::Type::kSave, false,
           CompositorFrameTransitionDirective::Effect::kNone,
           CompositorFrameTransitionDirective::TransitionConfig(), {element}));
 
@@ -614,7 +614,7 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
       frame.render_pass_list.back()->id.GetUnsafeValue() + 1);
   frame.metadata.transition_directives.push_back(
       CompositorFrameTransitionDirective(
-          1u, CompositorFrameTransitionDirective::Type::kSave,
+          1u, CompositorFrameTransitionDirective::Type::kSave, false,
           CompositorFrameTransitionDirective::Effect::kNone,
           CompositorFrameTransitionDirective::TransitionConfig(), {element}));
 

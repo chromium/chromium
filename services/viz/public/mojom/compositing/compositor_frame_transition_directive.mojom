@@ -30,13 +30,14 @@ enum CompositorFrameTransitionDirectiveEffect {
   kRevealUp
 };
 
-// These values are currently limited to 5 seconds so no animation can run for
-// longer than 10 seconds.
+// For a viz driven animation, these values are currently limited to 5 seconds
+// so no animation can run for longer than 10 seconds.
 struct CompositorFrameTransitionDirectiveConfig {
   mojo_base.mojom.TimeDelta duration;
   mojo_base.mojom.TimeDelta delay;
 };
 
+// This struct identifes a shared element.
 struct CompositorFrameTransitionDirectiveSharedElement {
   CompositorRenderPassId render_pass_id;
   CompositorFrameTransitionDirectiveConfig config;
@@ -46,13 +47,23 @@ struct CompositorFrameTransitionDirectiveSharedElement {
 // See components/viz/common/quads/compositor_frame_transition_directive.h
 // for a description of this struct.
 struct CompositorFrameTransitionDirective {
+  // A monotonically increasing sequence_id for a given communication channel
+  // (i.e. surface). This is used to distinguish new directives from directives
+  // that have already been processed.
   uint32 sequence_id;
 
+  // The type of this directive.
   CompositorFrameTransitionDirectiveType type;
 
+  // A value indicating whether this is a viz or renderer driven animation.
+  bool is_renderer_driven_animation;
+
+  // The effect for the transition.
   CompositorFrameTransitionDirectiveEffect effect;
 
+  // The config struct for the root (element) transition
   CompositorFrameTransitionDirectiveConfig root_config;
 
+  // A collection of shared elements.
   array<CompositorFrameTransitionDirectiveSharedElement> shared_elements;
 };

@@ -77,10 +77,11 @@ DocumentTransitionRequest::CreatePrepare(
     uint32_t document_tag,
     TransitionConfig root_config,
     std::vector<TransitionConfig> shared_element_config,
-    base::OnceClosure commit_callback) {
+    base::OnceClosure commit_callback,
+    bool is_renderer_driven_animation) {
   return base::WrapUnique(new DocumentTransitionRequest(
       effect, document_tag, root_config, shared_element_config,
-      std::move(commit_callback)));
+      std::move(commit_callback), is_renderer_driven_animation));
 }
 
 // static
@@ -111,7 +112,8 @@ DocumentTransitionRequest::DocumentTransitionRequest(
     uint32_t document_tag,
     TransitionConfig root_config,
     std::vector<TransitionConfig> shared_element_config,
-    base::OnceClosure commit_callback)
+    base::OnceClosure commit_callback,
+    bool is_renderer_driven_animation)
     : type_(Type::kSave),
       effect_(effect),
       root_config_(root_config),
@@ -119,6 +121,7 @@ DocumentTransitionRequest::DocumentTransitionRequest(
       shared_element_count_(shared_element_config.size()),
       shared_element_config_(std::move(shared_element_config)),
       commit_callback_(std::move(commit_callback)),
+      is_renderer_driven_animation_(is_renderer_driven_animation),
       sequence_id_(s_next_sequence_id_++) {}
 
 DocumentTransitionRequest::DocumentTransitionRequest(
@@ -129,6 +132,7 @@ DocumentTransitionRequest::DocumentTransitionRequest(
       document_tag_(document_tag),
       shared_element_count_(shared_element_count),
       commit_callback_(std::move(commit_callback)),
+      is_renderer_driven_animation_(false),
       sequence_id_(s_next_sequence_id_++) {}
 
 DocumentTransitionRequest::DocumentTransitionRequest(Type type,
@@ -137,7 +141,10 @@ DocumentTransitionRequest::DocumentTransitionRequest(Type type,
       document_tag_(document_tag),
       shared_element_count_(0u),
       commit_callback_(base::DoNothing()),
-      sequence_id_(s_next_sequence_id_++) {}
+      is_renderer_driven_animation_(true),
+      sequence_id_(s_next_sequence_id_++) {
+  DCHECK(type_ == Type::kAnimateRenderer || type_ == Type::kRelease);
+}
 
 DocumentTransitionRequest::~DocumentTransitionRequest() = default;
 
@@ -169,7 +176,8 @@ DocumentTransitionRequest::ConstructDirective(
     shared_elements[i].shared_element_resource_id = it->second.resource_id;
   }
   return viz::CompositorFrameTransitionDirective(
-      sequence_id_, type_, effect_, root_config_, std::move(shared_elements));
+      sequence_id_, type_, is_renderer_driven_animation_, effect_, root_config_,
+      std::move(shared_elements));
 }
 
 std::string DocumentTransitionRequest::ToString() const {
