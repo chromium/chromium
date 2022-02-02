@@ -87,6 +87,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarLayout.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarSnapshotState.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarTablet.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayCoordinator.java",

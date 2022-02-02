@@ -624,9 +624,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     exploreIconProvider,
                     new UserEducationHelper(mActivity, mHandler),
                     merchantTrustSignalsCoordinatorSupplier,
-                    omniboxPedalDelegate);
+                    omniboxPedalDelegate, mControlsVisibilityDelegate);
             // clang-format on
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
+            toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
         }
 

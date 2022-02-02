@@ -5296,6 +5296,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStoreHoursAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kStoreHoursAndroid)},
 
+    {"suppress-toolbar-captures",
+     flag_descriptions::kSuppressToolbarCapturesName,
+     flag_descriptions::kSuppressToolbarCapturesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSuppressToolbarCaptures)},
+
     {"enable-tab-grid-layout", flag_descriptions::kTabGridLayoutAndroidName,
      flag_descriptions::kTabGridLayoutAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabGridLayoutAndroid,

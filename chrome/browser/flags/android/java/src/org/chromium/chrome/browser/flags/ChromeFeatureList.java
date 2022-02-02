@@ -490,6 +490,7 @@ public abstract class ChromeFeatureList {
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
     public static final String STORE_HOURS = "StoreHoursAndroid";
+    public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
     public static final String SWAP_ANDROID_SHARE_HUB_ROWS = "SwapAndroidShareHubRows";
     public static final String SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT =
             "SwapPixelFormatToFixConvertFromTranslucent";

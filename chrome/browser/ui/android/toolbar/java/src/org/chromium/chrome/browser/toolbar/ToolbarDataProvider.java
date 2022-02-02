@@ -67,4 +67,14 @@ public interface ToolbarDataProvider {
      * @return Whether the current primary color is a brand color.
      */
     boolean isUsingBrandColor();
+
+    /**
+     * Returns the resource ID of the icon that should be displayed or 0 if no icon should be shown.
+     *
+     * @param isTablet Whether or not the display context of the icon is a tablet.
+     */
+    int getSecurityIconResource(boolean isTablet);
+
+    /** Returns whether the page currently shown is a paint preview. */
+    boolean isPaintPreview();
 }

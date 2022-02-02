@@ -238,4 +238,9 @@ public class MenuButtonCoordinator {
         return mMediator.getUrlFocusingAnimator(isFocusingUrl,
                 mMenuButton != null && mMenuButton.getLayoutDirection() == LAYOUT_DIRECTION_RTL);
     }
+
+    /** Returns whether the menu button is currently showing an update badge. */
+    public boolean isShowingUpdateBadge() {
+        return mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge;
+    }
 }

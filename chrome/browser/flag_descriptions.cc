@@ -2340,6 +2340,10 @@ const char kSuggestionsWithSubStringMatchDescription[] =
     "Match Autofill suggestions based on substrings (token prefixes) rather "
     "than just prefixes.";
 
+const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
+const char kSuppressToolbarCapturesDescription[] =
+    "Suppress Toolbar Captures except when certain properties change.";
+
 const char kSyncAutofillWalletOfferDataName[] =
     "Enable syncing autofill offer data";
 const char kSyncAutofillWalletOfferDataDescription[] =

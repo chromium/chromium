@@ -270,6 +270,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
+    &kSuppressToolbarCaptures,
     &kStoreHoursAndroid,
     &kSwapPixelFormatToFixConvertFromTranslucent,
     &kTabEngagementReportingAndroid,
@@ -745,6 +746,9 @@ const base::Feature kSpecialUserDecision{"SpecialUserDecision",
 
 const base::Feature kStoreHoursAndroid{"StoreHoursAndroid",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSuppressToolbarCaptures{"SuppressToolbarCaptures",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSwapPixelFormatToFixConvertFromTranslucent{
     "SwapPixelFormatToFixConvertFromTranslucent",

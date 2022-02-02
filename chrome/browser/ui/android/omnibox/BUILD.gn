@@ -138,6 +138,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",

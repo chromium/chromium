@@ -199,7 +199,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
                 /*ExploreIconState*/(pixelSize, callback) ->{},
                 /*userEducationHelper=*/null, /*merchantTrustSignalsCoordinatorSupplier=*/null,
-                new OmniboxPedalDelegateImpl(this));
+                new OmniboxPedalDelegateImpl(this), null);
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

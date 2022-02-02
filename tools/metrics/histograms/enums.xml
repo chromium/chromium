@@ -54301,6 +54301,7 @@ from previous Chrome versions.
   <int value="223591010" label="CastMediaRouteProvider:enabled"/>
   <int value="223662457" label="BackgroundLoadingForDownloads:enabled"/>
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
+  <int value="224065816" label="SuppressToolbarCaptures:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="228107154"
@@ -56841,6 +56842,7 @@ from previous Chrome versions.
   <int value="2024172900" label="KidsManagementUrlClassification:disabled"/>
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
+  <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
   <int value="2027729007" label="WindowControlMenu:enabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2032558514"

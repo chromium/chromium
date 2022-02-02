@@ -29,6 +29,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -289,6 +290,16 @@ public abstract class ToolbarLayout
 
             @Override
             public boolean isUsingBrandColor() {
+                return false;
+            }
+
+            @Override
+            public int getSecurityIconResource(boolean isTablet) {
+                return 0;
+            }
+
+            @Override
+            public boolean isPaintPreview() {
                 return false;
             }
         };
@@ -860,4 +871,12 @@ public abstract class ToolbarLayout
                 ThemeUtils.getToolbarHairlineColor(getContext(), toolbarColor, isIncognito());
         shadow.setImageTintList(ColorStateList.valueOf(hairlineColor));
     }
+
+    /**
+     * Sets the {@link BrowserStateBrowserControlsVisibilityDelegate} instance the toolbar should
+     * use to manipulate the visibility of browser controls; notably, "browser controls" includes
+     * the toolbar itself.
+     */
+    public void setBrowserControlsVisibilityDelegate(
+            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {}
 }

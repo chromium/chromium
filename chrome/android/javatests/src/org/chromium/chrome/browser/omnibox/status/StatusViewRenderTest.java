@@ -94,8 +94,6 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
                     ToolbarTestUtils.OFFLINE_STATUS, mSearchEngineLogoUtils);
             // clang-format on
             mLocationBarModel.setTab(null, /*  incognito= */ false);
-            mStatusView.setLocationBarDataProvider(mLocationBarModel);
-            mStatusView.setSearchEngineLogoUtils(mSearchEngineLogoUtils);
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             PropertyModelChangeProcessor.create(mStatusModel, mStatusView, new StatusViewBinder());
 

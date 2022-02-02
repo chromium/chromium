@@ -21,6 +21,7 @@ import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -161,7 +162,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @Nullable UserEducationHelper userEducationHelper,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
+            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -192,10 +194,10 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 exploreIconProvider, omniboxPedalDelegate);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
-                incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,
-                mTemplateUrlServiceSupplier, searchEngineLogoUtils, profileObservableSupplier,
-                windowAndroid, pageInfoAction, userEducationHelper,
-                merchantTrustSignalsCoordinatorSupplier);
+                modalDialogManagerSupplier, locationBarDataProvider, mTemplateUrlServiceSupplier,
+                searchEngineLogoUtils, profileObservableSupplier, windowAndroid, pageInfoAction,
+                userEducationHelper, merchantTrustSignalsCoordinatorSupplier,
+                browserControlsVisibilityDelegate);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
