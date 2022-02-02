@@ -51532,6 +51532,8 @@ from previous Chrome versions.
   <int value="-1766317053" label="GridTabSwitcherForTablets:enabled"/>
   <int value="-1766162197" label="AppServiceInstanceRegistry:enabled"/>
   <int value="-1766129470" label="DataSaverLiteModeRebranding:disabled"/>
+  <int value="-1765004425"
+      label="CertificateTransparency2022PolicyAllCerts:disabled"/>
   <int value="-1763899404" label="LayoutNGTable:enabled"/>
   <int value="-1760624380"
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:enabled"/>
@@ -52948,6 +52950,7 @@ from previous Chrome versions.
   <int value="-771080109" label="GrantNotificationsToDSE:disabled"/>
   <int value="-770319039" label="enable-touch-editing"/>
   <int value="-769865314" label="AutofillCacheQueryResponses:disabled"/>
+  <int value="-768240392" label="CertificateTransparency2022Policy:enabled"/>
   <int value="-767903409" label="EarlyBodyLoad:enabled"/>
   <int value="-767460914"
       label="ExperimentalAccessibilityDictationCommands:disabled"/>
@@ -53446,6 +53449,8 @@ from previous Chrome versions.
   <int value="-399333540" label="FiltersInRecents:disabled"/>
   <int value="-398922143" label="IframeOneGoogleBar:enabled"/>
   <int value="-398623652" label="CCTTargetTranslateLanguage:enabled"/>
+  <int value="-398012541"
+      label="CertificateTransparency2022PolicyAllCerts:enabled"/>
   <int value="-397959190" label="ClipboardHistory:enabled"/>
   <int value="-397392156" label="FtpProtocol:disabled"/>
   <int value="-396994784" label="enable-vr-shell"/>
@@ -54323,6 +54328,7 @@ from previous Chrome versions.
   <int value="259633436" label="AutofillDropdownLayout:disabled"/>
   <int value="259812169" label="OmniboxSuggestionsWrapAround:disabled"/>
   <int value="261245835" label="ContextualSearchLiteralTapSearch:disabled"/>
+  <int value="261903398" label="CertificateTransparency2022Policy:disabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
   <int value="264609083" label="PasswordDomainCapabilitiesFetching:disabled"/>
   <int value="265140282" label="Prerender2:disabled"/>

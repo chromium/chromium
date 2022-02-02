@@ -80,6 +80,7 @@
 #include "components/bookmarks/browser/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browsing_data/core/features.h"
+#include "components/certificate_transparency/ct_features.h"
 #include "components/cloud_devices/common/cloud_devices_switches.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
@@ -7885,6 +7886,19 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableVirtualCardManagementInDesktopSettingsPage)},
+
+    {"certificate-transparency-2022-policy",
+     flag_descriptions::kCertificateTransparency2022PolicyName,
+     flag_descriptions::kCertificateTransparency2022PolicyDescription, kOsAll,
+     FEATURE_VALUE_TYPE(certificate_transparency::features::
+                            kCertificateTransparency2022Policy)},
+
+    {"certificate-transparency-2022-policy-all-certs",
+     flag_descriptions::kCertificateTransparency2022PolicyAllCertsName,
+     flag_descriptions::kCertificateTransparency2022PolicyAllCertsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(certificate_transparency::features::
+                            kCertificateTransparency2022PolicyAllCerts)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

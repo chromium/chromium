@@ -283,6 +283,12 @@ extern const char kBypassAppBannerEngagementChecksDescription[];
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 
+extern const char kCertificateTransparency2022PolicyName[];
+extern const char kCertificateTransparency2022PolicyDescription[];
+
+extern const char kCertificateTransparency2022PolicyAllCertsName[];
+extern const char kCertificateTransparency2022PolicyAllCertsDescription[];
+
 extern const char kCheckOfflineCapabilityName[];
 extern const char kCheckOfflineCapabilityDescription[];
 

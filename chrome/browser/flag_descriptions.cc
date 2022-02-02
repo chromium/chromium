@@ -502,6 +502,24 @@ const char kBypassAppBannerEngagementChecksDescription[] =
     "eligibility requirements for showing app banners, such as having a "
     "manifest, are met.";
 
+const char kCertificateTransparency2022PolicyName[] =
+    "Certificate Transparency 2022 Policy";
+const char kCertificateTransparency2022PolicyDescription[] =
+    "Enables the 2022 policy for Certificate Transparency requirements for "
+    "certificates issued after February 1, 2022. This policy increases the "
+    "number of SCTs required for certificates with a lifetime over 180 days, "
+    "and replaces the one Google log requirement with log operator diversity "
+    "requirements.";
+
+const char kCertificateTransparency2022PolicyAllCertsName[] =
+    "Certificate Transparency 2022 Policy All Certificates";
+const char kCertificateTransparency2022PolicyAllCertsDescription[] =
+    "Enables the 2022 policy for Certificate Transparency requirements for "
+    "all certificates regardless of issuance date. This policy increases the "
+    "number of SCTs required for certificates with a lifetime over 180 days, "
+    "and replaces the one Google log requirement with log operator diversity "
+    "requirements.";
+
 const char kCheckOfflineCapabilityName[] = "Check offline capability for PWAs";
 const char kCheckOfflineCapabilityDescription[] =
     "Use advanced offline capability check to decide whether the browser "
