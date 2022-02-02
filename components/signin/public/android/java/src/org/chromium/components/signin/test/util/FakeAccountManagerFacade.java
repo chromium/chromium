@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ChildAccountStatus;
 
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public AccessTokenData getAccessToken(Account account, String scope) {
+    public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
         synchronized (mLock) {
             AccountHolder accountHolder = getAccountHolder(account);
             if (accountHolder.getAuthToken(scope) == null) {
@@ -172,13 +173,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @GuardedBy("mLock")
-    private AccountHolder getAccountHolder(Account account) {
+    private AccountHolder getAccountHolder(Account account) throws AuthException {
         for (AccountHolder accountHolder : mAccountHolders) {
             if (accountHolder.getAccount().equals(account)) {
                 return accountHolder;
             }
         }
-        throw new IllegalArgumentException("Cannot find account:" + account);
+        // Since token requests are asynchronous, sometimes they arrive after the account has been
+        // removed. Thus, throwing an unchecked exception here would cause test failures (see
+        // https://crbug.com/1205346 for details). On the other hand, AuthException thrown here
+        // will be caught by ProfileOAuth2TokenServiceDelegate and reported as a token request
+        // failure (which matches the behavior of the production code in the situation when a token
+        // is requested for an account that doesn't exist or has been removed).
+        throw new AuthException(/* isTransientError = */ false, "Cannot find account:" + account);
     }
 
     @MainThread

@@ -34,6 +34,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
@@ -110,7 +111,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
-    public void testGetOAuth2AccessTokenOnSuccess() {
+    public void testGetOAuth2AccessTokenOnSuccess() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
         final AccessTokenData expectedToken = mAccountManagerFacade.getAccessToken(ACCOUNT, scope);
@@ -122,7 +123,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
-    public void testGetOAuth2AccessTokenOnFailure() {
+    public void testGetOAuth2AccessTokenOnFailure() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
         doReturn(null).when(mAccountManagerFacade).getAccessToken(any(Account.class), anyString());
