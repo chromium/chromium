@@ -558,7 +558,12 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
 
     @Override
     public boolean isRestoringPreviousState() {
-        return BrowserImplJni.get().isRestoringPreviousState(mNativeBrowser);
+        // In the case of minimal restore, the C++ side will return true if actively restoring
+        // minimal state. By returning true if mMinimalPersistenceInfo is non-null,
+        // isRestoringPreviousState() will return true from the the time the fragment is created
+        // until start.
+        return mMinimalPersistenceInfo != null
+                || BrowserImplJni.get().isRestoringPreviousState(mNativeBrowser);
     }
 
     @CalledByNative
@@ -600,6 +605,11 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         } else {
             boolean setActiveResult = setActiveTab(createTab());
             assert setActiveResult;
+        }
+        try {
+            onRestoreCompleted();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
         }
     }
 

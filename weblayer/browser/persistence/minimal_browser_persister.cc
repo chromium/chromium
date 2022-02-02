@@ -363,7 +363,9 @@ std::vector<uint8_t> PersistMinimalState(BrowserImpl* browser,
 void RestoreMinimalStateForBrowser(BrowserImpl* browser,
                                    const std::vector<uint8_t>& value) {
   MinimalRestorer restorer(value);
+  browser->set_is_minimal_restore_in_progress(true);
   RestoreBrowserState(browser, restorer.RestoreCommands());
+  browser->set_is_minimal_restore_in_progress(false);
 }
 
 }  // namespace weblayer
