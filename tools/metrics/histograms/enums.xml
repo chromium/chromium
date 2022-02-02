@@ -6787,6 +6787,11 @@ others/histograms.xml -->
              fill but exp. date missing)"/>
   <int value="48"
       label="CreditCardSeamlessFill :-( (all other scenarios = Partial fill)"/>
+  <int value="49"
+      label="Missing shared-autofill feature prevented a cross-origin
+             credit-card field from being filled. Shared-autofill is a
+             policy-controlled feature by which a frame can allow a
+             child-frame to be autofilled across origin."/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
