@@ -587,12 +587,12 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
 
   // The machine-info file is generated only for OOBE and enterprise enrollment
   // and may not be present. See login-manager/init/machine-info.conf.
-  parser.GetNameValuePairsFromFile(machine_info_path,
-                                   NameValuePairsFormat::kMachineInfo);
+  parser.GetNameValuePairsFromFile(machine_info_path, kMachineHardwareInfoEq,
+                                   kMachineHardwareInfoDelim);
   parser.GetNameValuePairsFromFile(base::FilePath(kEchoCouponFile),
-                                   NameValuePairsFormat::kVpdDump);
-  bool vpd_parse_result = parser.GetNameValuePairsFromFile(
-      vpd_path, NameValuePairsFormat::kVpdDump);
+                                   kEchoCouponEq, kEchoCouponDelim);
+  bool vpd_parse_result =
+      parser.GetNameValuePairsFromFile(vpd_path, kVpdEq, kVpdDelim);
   if (base::SysInfo::IsRunningOnChromeOS()) {
     if (vpd_parse_result) {
       ReportVpdCacheReadResult(VpdCacheReadResult::kSuccess);
