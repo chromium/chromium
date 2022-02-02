@@ -107,6 +107,11 @@ void SystemMediaControlsLinux::SetIsPlayPauseEnabled(bool value) {
                            DbusBoolean(value));
 }
 
+void SystemMediaControlsLinux::SetIsSeekToEnabled(bool value) {
+  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "CanSeek",
+                           DbusBoolean(value));
+}
+
 void SystemMediaControlsLinux::SetPlaybackStatus(PlaybackStatus value) {
   auto status = [&]() {
     switch (value) {
@@ -282,8 +287,12 @@ void SystemMediaControlsLinux::InitializeDbusInterface() {
   export_method(kMprisAPIPlayerInterfaceName, "Play",
                 base::BindRepeating(&SystemMediaControlsLinux::Play,
                                     base::Unretained(this)));
-  export_unhandled_method(kMprisAPIPlayerInterfaceName, "Seek");
-  export_unhandled_method(kMprisAPIPlayerInterfaceName, "SetPosition");
+  export_method(kMprisAPIPlayerInterfaceName, "Seek",
+                base::BindRepeating(&SystemMediaControlsLinux::Seek,
+                                    base::Unretained(this)));
+  export_method(kMprisAPIPlayerInterfaceName, "SetPosition",
+                base::BindRepeating(&SystemMediaControlsLinux::SetPositionMpris,
+                                    base::Unretained(this)));
   export_unhandled_method(kMprisAPIPlayerInterfaceName, "OpenUri");
 
   DCHECK_EQ(kNumMethodsToExport, num_methods_attempted_to_export);
@@ -360,6 +369,45 @@ void SystemMediaControlsLinux::Play(
     dbus::ExportedObject::ResponseSender response_sender) {
   for (SystemMediaControlsObserver& obs : observers_)
     obs.OnPlay();
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void SystemMediaControlsLinux::Seek(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  int64_t offset;
+  dbus::MessageReader reader(method_call);
+  if (!reader.PopInt64(&offset)) {
+    std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+    return;
+  }
+
+  for (SystemMediaControlsObserver& obs : observers_)
+    obs.OnSeek(base::Microseconds(offset));
+
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void SystemMediaControlsLinux::SetPositionMpris(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::ObjectPath track_id;
+  int64_t position;
+  dbus::MessageReader reader(method_call);
+
+  if (!reader.PopObjectPath(&track_id)) {
+    std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+    return;
+  }
+
+  if (!reader.PopInt64(&position)) {
+    std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+    return;
+  }
+
+  for (SystemMediaControlsObserver& obs : observers_)
+    obs.OnSeekTo(base::Microseconds(position));
+
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 

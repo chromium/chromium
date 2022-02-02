@@ -61,6 +61,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetIsPreviousEnabled(bool value) override;
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override {}
+  void SetIsSeekToEnabled(bool value) override;
   void SetPlaybackStatus(PlaybackStatus value) override;
   void SetID(const std::string* value) override;
   void SetTitle(const std::u16string& value) override;
@@ -100,6 +101,10 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
             dbus::ExportedObject::ResponseSender response_sender);
   void Play(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender response_sender);
+  void Seek(dbus::MethodCall* method_call,
+            dbus::ExportedObject::ResponseSender response_sender);
+  void SetPositionMpris(dbus::MethodCall* method_call,
+                        dbus::ExportedObject::ResponseSender response_sender);
 
   // Used for API methods we don't support.
   void DoNothing(dbus::MethodCall* method_call,

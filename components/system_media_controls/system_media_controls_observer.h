@@ -20,16 +20,17 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsObserver
  public:
   // Called when the service has completed setup. Also called when an observer
   // is added if the service is already set up.
-  virtual void OnServiceReady() = 0;
+  virtual void OnServiceReady() {}
 
   // Called when the observer should handle the given control.
-  virtual void OnNext() = 0;
-  virtual void OnPrevious() = 0;
-  virtual void OnPlay() = 0;
-  virtual void OnPause() = 0;
-  virtual void OnPlayPause() = 0;
-  virtual void OnStop() = 0;
-  virtual void OnSeekTo(const base::TimeDelta& time) = 0;
+  virtual void OnNext() {}
+  virtual void OnPrevious() {}
+  virtual void OnPlay() {}
+  virtual void OnPause() {}
+  virtual void OnPlayPause() {}
+  virtual void OnStop() {}
+  virtual void OnSeek(const base::TimeDelta& time) {}
+  virtual void OnSeekTo(const base::TimeDelta& time) {}
 
  protected:
   ~SystemMediaControlsObserver() override = default;

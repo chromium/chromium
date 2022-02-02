@@ -49,6 +49,7 @@ class MockSystemMediaControlsObserver : public SystemMediaControlsObserver {
   MOCK_METHOD0(OnPlayPause, void());
   MOCK_METHOD0(OnStop, void());
   MOCK_METHOD0(OnPlay, void());
+  MOCK_METHOD1(OnSeek, void(const base::TimeDelta&));
   MOCK_METHOD1(OnSeekTo, void(const base::TimeDelta&));
 };
 
@@ -79,6 +80,30 @@ class SystemMediaControlsLinuxTest : public testing::Test,
     // We need to supply a serial or the test will crash.
     dbus::MethodCall method_call(kMprisAPIPlayerInterfaceName, method_name);
     method_call.SetSerial(kFakeSerial);
+
+    // Call the method and await a response.
+    player_interface_exported_methods_[method_name].Run(
+        &method_call,
+        base::BindRepeating(&SystemMediaControlsLinuxTest::OnResponse,
+                            base::Unretained(this)));
+    response_wait_loop_->Run();
+  }
+
+  void CallSeekAndBlock(bool is_seek_to, int64_t offset_or_position) {
+    response_wait_loop_ = std::make_unique<base::RunLoop>();
+
+    // We need to supply a serial or the test will crash.
+    const std::string method_name = is_seek_to ? "SetPosition" : "Seek";
+    dbus::MethodCall method_call(kMprisAPIPlayerInterfaceName, method_name);
+    method_call.SetSerial(kFakeSerial);
+
+    dbus::MessageWriter writer(&method_call);
+
+    if (is_seek_to)
+      writer.AppendObjectPath(
+          dbus::ObjectPath("/org/chromium/MediaPlayer2/TrackList/TrackFooId"));
+
+    writer.AppendInt64(offset_or_position);
 
     // Call the method and await a response.
     player_interface_exported_methods_[method_name].Run(
@@ -269,6 +294,20 @@ TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfPlayCalls) {
   EXPECT_CALL(observer, OnPlay());
   AddObserver(&observer);
   CallMediaPlayer2PlayerMethodAndBlock("Play");
+}
+
+TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfSeekCalls) {
+  MockSystemMediaControlsObserver observer;
+  EXPECT_CALL(observer, OnSeek(base::Seconds(3)));
+  AddObserver(&observer);
+  CallSeekAndBlock(/*is_seek_to=*/false, base::Seconds(3).InMicroseconds());
+}
+
+TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfSetPositionCalls) {
+  MockSystemMediaControlsObserver observer;
+  EXPECT_CALL(observer, OnSeekTo(base::Seconds(7)));
+  AddObserver(&observer);
+  CallSeekAndBlock(/*is_seek_to=*/true, base::Seconds(7).InMicroseconds());
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ChangingPropertyEmitsSignal) {
