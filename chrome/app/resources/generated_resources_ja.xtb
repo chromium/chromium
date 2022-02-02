@@ -1895,6 +1895,7 @@
 <translation id="287205682142673348">ポート転送</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> を追加...</translation>
 <translation id="2872961005593481000">終了</translation>
+<translation id="2873995907777332853">すべての Cookie のブロックについて詳細を表示する</translation>
 <translation id="2874939134665556319">前のトラック</translation>
 <translation id="2875698561019555027">（Chrome エラーページ）</translation>
 <translation id="2876336351874743617">指 2</translation>
@@ -2201,6 +2202,7 @@
 <translation id="3189187154924005138">大きいカーソル</translation>
 <translation id="3190558889382726167">パスワードを保存しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
+<translation id="3194786596445804250">サードパーティの Cookie のブロックについて詳細を表示する</translation>
 <translation id="3197453258332670132">右クリックするか長押しすると、選択したテキストに関連する情報が表示されます</translation>
 <translation id="3199127022143353223">サーバー</translation>
 <translation id="3200061262156232574">ショッピング カートの商品</translation>
@@ -5285,6 +5287,7 @@
 <translation id="6455264371803474013">特定のサイト</translation>
 <translation id="6455894534188563617">新しいフォルダ(&amp;N)</translation>
 <translation id="645705751491738698">JavaScript を引き続きブロックする</translation>
+<translation id="6458347417133445570">すべての Cookie の許可について詳細を表示する</translation>
 <translation id="6458701200018867744">アップロードできませんでした（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">選択部分を検索に使用</translation>
 <translation id="6459799433792303855">アクティブなウィンドウが別のディスプレイに移動しました。</translation>
@@ -6714,6 +6717,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
 <translation id="7920482456679570420">スペルチェックしない語句を追加してください</translation>
+<translation id="7922935920104868876">シークレット モードでのサードパーティの Cookie のブロックについて詳細を表示する</translation>
 <translation id="7924358170328001543">ポート転送エラー</translation>
 <translation id="7925108652071887026">自動入力のデータ</translation>
 <translation id="792514962475806987">ドッキング画面のズームレベル:</translation>

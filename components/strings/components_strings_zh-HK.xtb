@@ -14,11 +14,11 @@
 <translation id="1028781062521375153">查看詳情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在您的裝置上永久儲存大量數據</translation>
 <translation id="1032854598605920125">順時針方向旋轉</translation>
-<translation id="1033329911862281889">無痕模式無法讓你在網路上不留痕跡：
+<translation id="1033329911862281889">無痕模式無法讓您在網絡上不留痕跡：
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />網站及其使用的服務可以查看造訪記錄<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />雇主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />網際網路服務供應商可以監控網路流量<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />網站及其使用的服務可以查看瀏覽活動<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />僱主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />互聯網服務供應商可以監察網絡流量<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1036982837258183574">按下 |<ph name="ACCELERATOR" />| 即可退出全螢幕</translation>
@@ -187,11 +187,11 @@
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1484290072879560759">選擇付運地址</translation>
 <translation id="1492194039220927094">政策推送：</translation>
-<translation id="149293076951187737">關閉所有 Chrome 無痕分頁後，系統會將你在這些分頁上的活動記錄從這部裝置上清除：
+<translation id="149293076951187737">關閉所有 Chrome 無痕式分頁後，系統會從此裝置上清除您在這些分頁上的活動記錄：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />瀏覽活動<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />搜尋記錄<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表格中輸入的資料<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1501859676467574491">顯示您 Google 帳戶中的付款卡</translation>
@@ -535,12 +535,12 @@
 <translation id="2597378329261239068">此文件受到密碼保護，請輸入密碼。</translation>
 <translation id="2609632851001447353">變化</translation>
 <translation id="2610561535971892504">點擊複製</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />你的瀏覽記錄
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-          <ph name="LIST_ITEM" />在表單中輸入的資訊
-        <ph name="END_LIST" /></translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />您的瀏覽記錄
+            <ph name="LIST_ITEM" />Cookie 和網站資料
+            <ph name="LIST_ITEM" />在表格中輸入的資料
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (信封)</translation>
 <translation id="2623663032199728144">可要求使用螢幕中的資料</translation>
 <translation id="2625385379895617796">您時鐘的時間過快</translation>
@@ -1896,11 +1896,11 @@
 <translation id="7111012039238467737">(有效)</translation>
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
-<translation id="7129355289156517987">關閉所有 Chromium 無痕分頁後，系統會將你在這些分頁上的活動記錄從這部裝置上清除：
+<translation id="7129355289156517987">關閉所有 Chromium 無痕式分頁後，系統會從此裝置上清除您在這些分頁上的活動記錄：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />瀏覽活動<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />搜尋記錄<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表格中輸入的資料<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">無法運送至此地址，請選取其他地址。</translation>
 <translation id="7132939140423847331">管理員已禁止複製此資料。</translation>
@@ -2020,12 +2020,12 @@
 <translation id="7485870689360869515">找不到任何數據。</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="7497998058912824456">建立文件掣，㩒一下 Enter 鍵就可以快速建立新嘅 Google 文件</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />你的瀏覽記錄
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-          <ph name="LIST_ITEM" />在表單中輸入的資訊
-        <ph name="END_LIST" /></translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />您的瀏覽記錄
+            <ph name="LIST_ITEM" />Cookie 和網站資料
+            <ph name="LIST_ITEM" />在表格中輸入的資料
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">傳回的政策裝置識別碼為空白或與目前裝置識別碼不符</translation>
 <translation id="7508870219247277067">牛油果色</translation>
 <translation id="7511955381719512146">目前使用的 Wi-Fi 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
@@ -2245,7 +2245,7 @@
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8206978196348664717">Prc4 (信封)</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
-<translation id="8217240300496046857">網站無法使用 Cookie 來追蹤你在網路上的活動。某些網站的功能可能無法正常運作。</translation>
+<translation id="8217240300496046857">網站不能使用 Cookie 追蹤您的網絡活動。有些網站的功能可能無法正常運作。</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (信封)</translation>
 <translation id="8225771182978767009">設定此電腦的用戶已封鎖此網站。</translation>

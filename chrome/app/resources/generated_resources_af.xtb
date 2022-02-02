@@ -1913,6 +1913,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="287205682142673348">Poortaanstuur</translation>
 <translation id="287286579981869940">Voeg <ph name="PROVIDER_NAME" /> by …</translation>
 <translation id="2872961005593481000">Skakel af</translation>
+<translation id="2873995907777332853">Wys besonderhede oor wat gebeur wanneer alle webkoekies geblokkeer word</translation>
 <translation id="2874939134665556319">Vorige snit</translation>
 <translation id="2875698561019555027">(Chrome-foutbladsye)</translation>
 <translation id="2876336351874743617">Vinger 2</translation>
@@ -2219,6 +2220,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3189187154924005138">Groot skermpyltjie</translation>
 <translation id="3190558889382726167">Wagwoord is gestoor</translation>
 <translation id="3192947282887913208">Oudiolêers</translation>
+<translation id="3194786596445804250">Wys besonderhede oor wat gebeur wanneer alle derdepartywebkoekies geblokkeer word</translation>
 <translation id="3197453258332670132">Wys verwante inligting vir jou tekskeuse met 'n regsklik of langdruk</translation>
 <translation id="3199127022143353223">Bedieners</translation>
 <translation id="3200061262156232574">In jou inkopiemandjie</translation>
@@ -5316,6 +5318,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6455264371803474013">Op spesifieke werwe</translation>
 <translation id="6455894534188563617">&amp;Nuwe vouer</translation>
 <translation id="645705751491738698">Hou aan om JavaScript te blokkeer</translation>
+<translation id="6458347417133445570">Wys besonderhede oor wat gebeur wanneer alle webkoekies toegelaat word</translation>
 <translation id="6458701200018867744">Kon nie oplaai nie (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Gebruik Selection for Find</translation>
 <translation id="6459799433792303855">Aktiewe venster is na 'n ander vertoonskerm geskuif.</translation>
@@ -6749,6 +6752,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekyk</translation>
 <translation id="7920482456679570420">Voeg woorde by wat jy wil hê speltoets moet oorslaan</translation>
+<translation id="7922935920104868876">Wys besonderhede oor wat gebeur wanneer derdepartywebkoekies in Incognito geblokkeer word</translation>
 <translation id="7924358170328001543">Kon nie poort aanstuur nie</translation>
 <translation id="7925108652071887026">Vul data outomaties in</translation>
 <translation id="792514962475806987">Gedokte zoemvlak:</translation>

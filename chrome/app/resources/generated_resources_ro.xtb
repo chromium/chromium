@@ -1899,6 +1899,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="287205682142673348">Redirecționare de port</translation>
 <translation id="287286579981869940">Adaugă <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Închide</translation>
+<translation id="2873995907777332853">Afișează detalii despre blocarea tuturor cookie-urilor</translation>
 <translation id="2874939134665556319">Melodia anterioară</translation>
 <translation id="2875698561019555027">(pagini de erori Chrome)</translation>
 <translation id="2876336351874743617">Deget 2</translation>
@@ -2205,6 +2206,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3189187154924005138">Cursor mare</translation>
 <translation id="3190558889382726167">Parola a fost salvată</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
+<translation id="3194786596445804250">Afișează detalii despre blocarea cookie-urilor terțe</translation>
 <translation id="3197453258332670132">Dacă dai clic dreapta sau apeși lung, se afișează informații conexe pentru textul selectat</translation>
 <translation id="3199127022143353223">Servere</translation>
 <translation id="3200061262156232574">În coșul de cumpărături</translation>
@@ -5300,6 +5302,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6455264371803474013">Pe anumite site-uri</translation>
 <translation id="6455894534188563617">Dosar &amp;nou</translation>
 <translation id="645705751491738698">Continuă blocarea JavaScript</translation>
+<translation id="6458347417133445570">Afișează detalii despre permiterea tuturor cookie-urilor</translation>
 <translation id="6458701200018867744">Încărcarea nu a reușit (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Folosește selecția pentru a găsi</translation>
 <translation id="6459799433792303855">Fereastra activă a fost mutată pe alt ecran.</translation>
@@ -6732,6 +6735,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7919210519031517829"><ph name="DURATION" /> sec.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> poate să vadă <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Adaugă cuvinte pe care vrei să le sară verificarea ortografiei</translation>
+<translation id="7922935920104868876">Afișează detalii despre blocarea cookie-urilor terțe în modul incognito</translation>
 <translation id="7924358170328001543">Eroare la redirecționarea de port</translation>
 <translation id="7925108652071887026">Datele de completare automată</translation>
 <translation id="792514962475806987">Nivelul de zoom al lupei andocate:</translation>

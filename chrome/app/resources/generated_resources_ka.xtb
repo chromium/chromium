@@ -1898,6 +1898,7 @@
 <translation id="287205682142673348">პორტების გადამისამართება</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />-ის დამატება…</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
+<translation id="2873995907777332853">ყველა ქუქი-ჩანაწერის დაბლოკვასთან დაკავშირებული დეტალების ჩვენება</translation>
 <translation id="2874939134665556319">წინა ჩანაწერი</translation>
 <translation id="2875698561019555027">(Chrome-ის შეცდომების გვერდები)</translation>
 <translation id="2876336351874743617">თითის ანაბეჭდი 2</translation>
@@ -2204,6 +2205,7 @@
 <translation id="3189187154924005138">დიდი კურსორი</translation>
 <translation id="3190558889382726167">პაროლი შენახულია</translation>
 <translation id="3192947282887913208">აუდიო ფაილები</translation>
+<translation id="3194786596445804250">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვასთან დაკავშირებული დეტალების ჩვენება</translation>
 <translation id="3197453258332670132">მარჯვენა ღილაკზე დაწკაპუნების ან ხანგრძლივად დაჭერის შემთხვევაში მონიშნულ ტექსთან დაკავშირებული ინფორმაციის ჩვენება</translation>
 <translation id="3199127022143353223">სერვერები</translation>
 <translation id="3200061262156232574">თქვენს სავაჭრო კალათაში</translation>
@@ -5299,6 +5301,7 @@
 <translation id="6455264371803474013">კონკრეტულ საიტებზე</translation>
 <translation id="6455894534188563617">&amp;ახალი საქაღალდე</translation>
 <translation id="645705751491738698">JavaScript-ის დაბლოკვის გაგრძელება</translation>
+<translation id="6458347417133445570">ყველა ქუქი-ჩანაწერის დაშვებასთან დაკავშირებული დეტალების ჩვენება</translation>
 <translation id="6458701200018867744">ატვირთვა ვერ მოხერხდა (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">მონიშნულის ძებნისთვის გამოყენება</translation>
 <translation id="6459799433792303855">აქტიური ფანჯარა გადატანილია სხვა ეკრანზე.</translation>
@@ -6731,6 +6734,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />წმ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის ნახვა</translation>
 <translation id="7920482456679570420">დაამატეთ სიტყვები, რომლებიც გსურთ, გამოტოვებული იყოს მართლწერის შემოწმებისას</translation>
+<translation id="7922935920104868876">ინკოგნიტო რეჟიმში მესამე მხარის ქუქი-ჩანაწერების დაბლოკვასთან დაკავშირებული დეტალების ჩვენება</translation>
 <translation id="7924358170328001543">პორტის გადამისამართება ვერ მოხერხდა</translation>
 <translation id="7925108652071887026">ავტომატური შევსების მონაცემები</translation>
 <translation id="792514962475806987">ჩამაგრებული მასშტაბის დონე:</translation>

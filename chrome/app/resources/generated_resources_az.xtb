@@ -1896,6 +1896,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="287205682142673348">Port yönləndirməsi</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> əlavə edin...</translation>
 <translation id="2872961005593481000">Qapadın</translation>
+<translation id="2873995907777332853">Bütün kukiləri bloklamaq haqqında detalları göstərin</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
 <translation id="2875698561019555027">(Chrome xəta səhifələri)</translation>
 <translation id="2876336351874743617">Barmaq 2</translation>
@@ -2202,6 +2203,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3189187154924005138">Böyük kursor</translation>
 <translation id="3190558889382726167">Yadda saxlanılmış Parol</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
+<translation id="3194786596445804250">Üçüncü tərəf kukilərini bloklamaq haqqında detalları göstərin</translation>
 <translation id="3197453258332670132">Sağ düymə ilə toxunduqda və ya basıb saxladıqda mətn seçiminizlə əlaqəli məlumatlar göstərilsin</translation>
 <translation id="3199127022143353223">Serverlər</translation>
 <translation id="3200061262156232574">Alış-veriş arabanızda</translation>
@@ -5293,6 +5295,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6455264371803474013">Xüsusi saytlarda</translation>
 <translation id="6455894534188563617">&amp;Yeni Qovluq</translation>
 <translation id="645705751491738698">JavaScripti blok etməyə davam edin</translation>
+<translation id="6458347417133445570">Bütün kukilərə icazə vermək haqqında detalları göstərin</translation>
 <translation id="6458701200018867744">Yükləmək alınmadı (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Tapmaq üçün Seçimi istifadə edin</translation>
 <translation id="6459799433792303855">Aktiv pəncərə digər ekrana köçürüldü.</translation>
@@ -6725,6 +6728,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7919210519031517829"><ph name="DURATION" />san</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylına baxa bilər</translation>
 <translation id="7920482456679570420">Orfoqrafiya yoxlayıcısının ötürməsini istədiyiniz sözləri əlavə edin</translation>
+<translation id="7922935920104868876">Anonim rejimdə üçüncü tərəf kukilərini bloklamaq haqqında detalları göstərin</translation>
 <translation id="7924358170328001543">Portu yönləndirərkən xəta oldu</translation>
 <translation id="7925108652071887026">Datanı avtomatik doldurun</translation>
 <translation id="792514962475806987">Daxili miqyas səviyyəsi:</translation>

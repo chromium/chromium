@@ -1914,6 +1914,7 @@
 <translation id="287205682142673348">ਪੋਰਟ ਫਾਰਵਰਡਿੰਗ</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> ਜੋੜੋ...</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
+<translation id="2873995907777332853">ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰਨ ਬਾਰੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="2874939134665556319">ਪਿਛਲਾ ਟਰੈਕ</translation>
 <translation id="2875698561019555027">(Chrome ਗੜਬੜ ਪੰਨੇ)</translation>
 <translation id="2876336351874743617">ਉਂਗਲ 2</translation>
@@ -2219,6 +2220,7 @@
 <translation id="3189187154924005138">ਵੱਡਾ ਕਰਸਰ</translation>
 <translation id="3190558889382726167">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3192947282887913208">ਆਡੀਓ ਫਾਈਲ</translation>
+<translation id="3194786596445804250">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰਨ ਬਾਰੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="3197453258332670132">ਸੱਜਾ-ਕਲਿੱਕ ਕਰਕੇ ਜਾਂ ਦਬਾਈ ਰੱਖ ਕੇ, ਆਪਣੀ ਲਿਖਤੀ ਚੋਣ ਲਈ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਦਿਖਾਓ</translation>
 <translation id="3199127022143353223">ਸਰਵਰ</translation>
 <translation id="3200061262156232574">ਤੁਹਾਡੇ ਖਰੀਦਦਾਰੀ ਕਾਰਟ ਵਿੱਚ</translation>
@@ -5315,6 +5317,7 @@
 <translation id="6455264371803474013">ਕੁਝ ਖਾਸ ਸਾਈਟਾਂ 'ਤੇ</translation>
 <translation id="6455894534188563617">&amp;ਨਵਾਂ ਫੋਲਡਰ</translation>
 <translation id="645705751491738698">JavaScript ਨੂੰ ਬਲੌਕ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="6458347417133445570">ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦੇਣ ਬਾਰੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="6458701200018867744">ਅੱਪਲੋਡ ਅਸਫਲ ਰਿਹਾ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">ਲੱਭਣ ਲਈ ਚੋਣ ਵਰਤੋ</translation>
 <translation id="6459799433792303855">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡਿਸਪਲੇ 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ।</translation>
@@ -6748,6 +6751,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> ਸਕਿੰਟ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ਵੱਲੋਂ <ph name="FILENAME" /> ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="7920482456679570420">ਉਹ ਸ਼ਬਦ ਸ਼ਾਮਲ ਕਰੋ ਜਿੰਨ੍ਹਾਂ ਲਈ ਤੁਸੀਂ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਨੂੰ ਛੱਡਣਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
+<translation id="7922935920104868876">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰਨ ਬਾਰੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="7924358170328001543">ਪੋਰਟ ਨੂੰ ਅੱਗੇ ਭੇਜਣ ਵੇਲੇ ਗੜਬੜ</translation>
 <translation id="7925108652071887026">ਆਟੋਫਿਲ ਡਾਟਾ</translation>
 <translation id="792514962475806987">ਡੌਕ ਜ਼ੂਮ ਪੱਧਰ:</translation>
