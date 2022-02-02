@@ -632,15 +632,21 @@ editing.EditableLine = class {
     // ancestors of line nodes.
     const isLineBreakingSpace = this.text === '\u00a0';
 
-    let prev = (prevLine && prevLine.startContainer_.role) ?
+    const prev = (prevLine && prevLine.startContainer_.role) ?
         prevLine.startContainer_ :
         null;
     const lineNodes =
         /** @type {Array<!AutomationNode>} */ (this.value_.getSpansInstanceOf(
             /** @type {function()} */ (this.startContainer_.constructor)));
-    for (let i = 0, cur; cur = lineNodes[i]; i++) {
+    const speakNodeAtIndex = (index, prev) => {
+      const cur = lineNodes[index];
+      if (!cur) {
+        return;
+      }
+
       if (cur.children.length) {
-        continue;
+        speakNodeAtIndex(++index, cur);
+        return;
       }
 
       const o = new Output();
@@ -651,17 +657,23 @@ editing.EditableLine = class {
       }
 
       o.withRichSpeech(
-          Range.fromNode(cur),
-          prev ? Range.fromNode(prev) : Range.fromNode(cur),
-          OutputEventType.NAVIGATE);
+           Range.fromNode(cur),
+           prev ? Range.fromNode(prev) : Range.fromNode(cur),
+           OutputEventType.NAVIGATE)
+          .onSpeechEnd(() => {
+            speakNodeAtIndex(++index, cur);
+          });
 
       // Ignore whitespace only output except if it is leading content on the
       // line.
-      if (!o.isOnlyWhitespace || i === 0) {
+      if (!o.isOnlyWhitespace || index === 0) {
         o.go();
+      } else {
+        speakNodeAtIndex(++index, cur);
       }
-      prev = cur;
-    }
+    };
+
+    speakNodeAtIndex(0, prev);
   }
 
   /**

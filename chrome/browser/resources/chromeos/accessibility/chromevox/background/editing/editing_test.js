@@ -1689,7 +1689,7 @@ TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', function() {
     await this.focusFirstTextField(root);
 
     mockFeedback.call(this.press(KeyCode.DOWN))
-        .expectSpeech(' typing')
+        .expectSpeech('I ')
         // Move forward through line.
         .call(this.press(KeyCode.RIGHT))
         .expectSpeech(' ')
@@ -1738,7 +1738,7 @@ TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', function() {
     await this.focusFirstTextField(root);
 
     mockFeedback.call(this.press(KeyCode.DOWN))
-        .expectSpeech(' typing')
+        .expectSpeech('I ')
         // Move forward through line.
         .call(this.press(KeyCode.RIGHT, {ctrl: true}))
         .expectSpeech('I')
@@ -1804,7 +1804,7 @@ TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestionsNoIntents', function() {
     await this.focusFirstTextField(root);
 
     mockFeedback.call(this.press(KeyCode.DOWN))
-        .expectSpeech(' typing')
+        .expectSpeech('I ')
         // Move forward through line.
 
         // This first right arrow is allowed to be processed by the content
