@@ -45,4 +45,13 @@ bool RebootShlib::IsOtaForNextRebootSupported() {
 void RebootShlib::SetOtaForNextReboot() {
   NOTREACHED();
 }
+
+bool RebootShlib::IsClearOtaForNextRebootSupported() {
+  return false;
+}
+
+void RebootShlib::ClearOtaForNextReboot() {
+  NOTREACHED();
+}
+
 }  // namespace chromecast

@@ -168,6 +168,15 @@ class CHROMECAST_EXPORT RebootShlib {
   // must result in any available OTA update getting applied upon the next
   // reboot (regardless of the RebootSource or cause of reboot).
   static void SetOtaForNextReboot();
+
+  // If IsClearOtaFromNextRebootSupported() returns true and
+  // ClearOtaForNextReboot() has been called, then the device will cancel any
+  // pending OTA waiting to be applied.
+  static bool IsClearOtaForNextRebootSupported();
+
+  // If IsClearOtaForNextRebootSupported() returns true then calling
+  // ClearOtaForNextReboot voids any prior call to SetOtaForNextReboot.
+  static void ClearOtaForNextReboot();
 };
 
 }  // namespace chromecast

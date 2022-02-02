@@ -101,6 +101,18 @@ void RebootUtil::SetOtaForNextReboot() {
 }
 
 // static
+bool RebootUtil::IsClearOtaForNextRebootSupported() {
+  return RebootShlib::IsSupported() &&
+         RebootShlib::IsClearOtaForNextRebootSupported();
+}
+
+// static
+void RebootUtil::ClearOtaForNextReboot() {
+  DCHECK(IsClearOtaForNextRebootSupported());
+  RebootShlib::ClearOtaForNextReboot();
+}
+
+// static
 void RebootUtil::SetRebootCallbackForTest(
     const RebootUtil::RebootCallback& callback) {
   GetTestRebootCallback() = callback;

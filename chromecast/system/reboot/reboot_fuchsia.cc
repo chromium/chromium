@@ -164,6 +164,14 @@ bool RebootShlib::IsOtaForNextRebootSupported() {
 // static
 void RebootShlib::SetOtaForNextReboot() {}
 
+// static
+bool RebootShlib::IsClearOtaForNextRebootSupported() {
+  return false;
+}
+
+// static
+void RebootShlib::ClearOtaForNextReboot() {}
+
 // RebootUtil implementation:
 
 // static

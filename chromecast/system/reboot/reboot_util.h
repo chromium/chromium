@@ -45,6 +45,11 @@ class RebootUtil {
   static bool IsOtaForNextRebootSupported();
   static void SetOtaForNextReboot();
 
+  // Before calling IsClearOtaForNextRebootSupported, the called must check
+  // if clearing the ota is supported.
+  static bool IsClearOtaForNextRebootSupported();
+  static void ClearOtaForNextReboot();
+
   // Returns last reboot source. This value persists throughout each boot.
   static RebootShlib::RebootSource GetLastRebootSource();
 
