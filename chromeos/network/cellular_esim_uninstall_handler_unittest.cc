@@ -147,6 +147,15 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         }));
   }
 
+  void ResetEuiccMemory(base::RunLoop& run_loop, bool& status) {
+    cellular_esim_uninstall_handler_->ResetEuiccMemory(
+        dbus::ObjectPath(kDefaultEuiccPath),
+        base::BindLambdaForTesting([&](bool status_result) {
+          status = status_result;
+          std::move(run_loop.QuitClosure()).Run();
+        }));
+  }
+
   void HandleNetworkDisconnect(bool should_fail) {
     // Run until the uninstallation state hits the disconnect on the
     // FakeNetworkConnectionHandler.
@@ -188,8 +197,14 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         expected_count);
   }
 
+  void FastForward(base::TimeDelta time) {
+    task_environment_.FastForwardBy(time);
+  }
+
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
@@ -319,6 +334,34 @@ TEST_F(CellularESimUninstallHandlerTest, MultipleRequests) {
 
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
                /*expected_count=*/2);
+}
+
+TEST_F(CellularESimUninstallHandlerTest, ResetEuiccMemory) {
+  Init();
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath2));
+
+  bool status;
+  base::RunLoop run_loop;
+  ResetEuiccMemory(run_loop, status);
+
+  HandleNetworkDisconnect(/*should_fail=*/false);
+  FastForward(CellularESimUninstallHandler::kNetworkListWaitTimeout);
+
+  run_loop.Run();
+
+  // Verify that both profiles were removed successfully.
+  EXPECT_TRUE(status);
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(
+          dbus::ObjectPath(kDefaultEuiccPath));
+  ASSERT_TRUE(euicc_properties);
+  EXPECT_TRUE(euicc_properties->installed_carrier_profiles().value().empty());
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
+               /*expected_count=*/1);
 }
 
 TEST_F(CellularESimUninstallHandlerTest, StubCellularNetwork) {
