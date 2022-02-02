@@ -1358,6 +1358,31 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE" desc="Label on the button in the dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
     More
   </message>
+  <!-- TODO(crbug.com/1286276) These strings are not final yet and therefore marked as translateable="false" -->
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_TITLE" translateable="false" desc="Title of the Trails section of the privacy sandbox settings.">
+    Trials
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_SUMMARY" translateable="false" desc="Summary of the Trails section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" translateable="false" desc="Title of the Ad Personalization section of the privacy sandbox settings.">
+    Browser-based ad personalization
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" translateable="false" desc="Summary of the Ad Personalization section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" translateable="false" desc="Title of the Ad Measurement section of the privacy sandbox settings.">
+    Ad measurement
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" translateable="false" desc="Summary of the Ad Measurement section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_TITLE" translateable="false" desc="Title of the Spam and Fraud section of the privacy sandbox settings.">
+    Spam &#38; fraud reduction
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_SUMMARY" translateable="false" desc="Summary of the Spam and Fraud section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
 
   <!-- Privacy Review -->
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the privacy review.">

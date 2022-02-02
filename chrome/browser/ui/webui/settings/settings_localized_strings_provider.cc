@@ -68,6 +68,7 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_chromium_strings.h"
@@ -1590,6 +1591,23 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT_NEXT_UPDATE},
       {"privacySandboxPageFlocResetCohort",
        IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_RESET_COHORT},
+      // The following strings are used for PrivacySandboxSettings3.
+      {"privacySandboxTrialsTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_TITLE},
+      {"privacySandboxTrialsSummary",
+       IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_SUMMARY},
+      {"privacySandboxAdPersonalizationTitle",
+       IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE},
+      {"privacySandboxAdPersonalizationSummary",
+       IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY},
+      {"privacySandboxAdMeasurementTitle",
+       IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE},
+      {"privacySandboxAdMeasurementSummary",
+       IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY},
+      {"privacySandboxSpamAndFraudTitle",
+       IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_TITLE},
+      {"privacySandboxSpamAndFraudSummary",
+       IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_SUMMARY},
+
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1616,6 +1634,10 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   html_source->AddString("privacySandboxPageFlocResetExplanation",
                          PrivacySandboxServiceFactory::GetForProfile(profile)
                              ->GetFlocResetExplanationForDisplay());
+
+  html_source->AddBoolean(
+      "privacySandboxSettings3Enabled",
+      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3));
 }
 
 void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {

@@ -12,19 +12,9 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
-
-export interface PrivacySandboxAppElement {
-  $: {
-    flocId: HTMLElement,
-    flocStatus: HTMLElement,
-    flocToggleButton: SettingsToggleButtonElement,
-    flocUpdatedOn: HTMLElement,
-    resetFlocIdButton: CrButtonElement,
-  };
-}
 
 const PrivacySandboxAppElementBase = PrefsMixin(PolymerElement);
 
@@ -40,6 +30,23 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   static get properties() {
     return {
       flocId_: Object,
+
+      privacySandboxSettings3Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacySandboxSettings3Enabled'),
+      },
+
+      // TODO(crbug/1286276): Remove this when connecting the new pref.
+      privacySandboxTrialsEnabled_: {
+        type: Object,
+        notify: true,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          };
+        },
+      },
     };
   }
 

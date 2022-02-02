@@ -7,11 +7,11 @@ import 'chrome://settings/privacy_sandbox/app.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -43,6 +43,12 @@ suite('PrivacySandbox', function() {
   let testHatsBrowserProxy: TestHatsBrowserProxy;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
 
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacySandboxSettings3Enabled: false,
+    });
+  });
+
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
@@ -67,6 +73,12 @@ suite('PrivacySandbox', function() {
 
   teardown(function() {
     CrSettingsPrefs.resetForTesting();
+  });
+
+  test('testSandboxSettings3Visibility', function() {
+    assertTrue(isChildVisible(page, '#trialsCard'));
+    assertTrue(isChildVisible(page, '#flocCard'));
+    assertFalse(isChildVisible(page, '#trialsCardSettings3'));
   });
 
   test('clickApiToggleTest', async function() {
@@ -110,10 +122,21 @@ suite('PrivacySandbox', function() {
     // The page should automatically retrieve the FLoC state when it is attached
     // to the document.
     await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-    assertEquals('test-trial-status', page.$.flocStatus.textContent!.trim());
-    assertEquals('test-id', page.$.flocId.textContent!.trim());
-    assertEquals('test-time', page.$.flocUpdatedOn!.textContent!.trim());
-    assertFalse(page.$.resetFlocIdButton.disabled);
+    assertEquals(
+        'test-trial-status',
+        page.shadowRoot!.querySelector<HTMLElement>(
+                            '#flocStatus')!.textContent!.trim());
+    assertEquals(
+        'test-id',
+        page.shadowRoot!.querySelector<HTMLElement>(
+                            '#flocId')!.textContent!.trim());
+    assertEquals(
+        'test-time',
+        page.shadowRoot!.querySelector<HTMLElement>(
+                            '#flocUpdatedOn')!.textContent!.trim());
+    assertFalse(
+        page.shadowRoot!.querySelector<CrButtonElement>(
+                            '#resetFlocIdButton')!.disabled);
 
     // The page should listen for changes via a WebUI listener.
     webUIListenerCallback('floc-id-changed', {
@@ -125,14 +148,24 @@ suite('PrivacySandbox', function() {
 
     await flushTasks();
     assertEquals(
-        'new-test-trial-status', page.$.flocStatus.textContent!.trim());
-    assertEquals('new-test-id', page.$.flocId.textContent!.trim());
-    assertEquals('new-test-time', page.$.flocUpdatedOn!.textContent!.trim());
-    assertTrue(page.$.resetFlocIdButton.disabled);
+        'new-test-trial-status',
+        page.shadowRoot!.querySelector<HTMLElement>(
+                            '#flocStatus')!.textContent!.trim());
+    assertEquals(
+        'new-test-id',
+        page.shadowRoot!.querySelector<HTMLElement>(
+                            '#flocId')!.textContent!.trim());
+    assertEquals(
+        'new-test-time',
+        page.shadowRoot!.querySelector<HTMLElement>(
+                            '#flocUpdatedOn')!.textContent!.trim());
+    assertTrue(
+        page.shadowRoot!.querySelector<CrButtonElement>(
+                            '#resetFlocIdButton')!.disabled);
   });
 
   test('resetFlocId', function() {
-    page.$.resetFlocIdButton.click();
+    page.shadowRoot!.querySelector<HTMLElement>('#resetFlocIdButton')!.click();
     return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
   });
 
@@ -148,13 +181,13 @@ suite('PrivacySandbox', function() {
   });
 
   test('userActions', async function() {
-    page.$.flocToggleButton.click();
+    page.shadowRoot!.querySelector<HTMLElement>('#flocToggleButton')!.click();
     assertEquals(
         'Settings.PrivacySandbox.FlocDisabled',
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
 
-    page.$.flocToggleButton.click();
+    page.shadowRoot!.querySelector<HTMLElement>('#flocToggleButton')!.click();
     assertEquals(
         'Settings.PrivacySandbox.FlocEnabled',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -165,5 +198,31 @@ suite('PrivacySandbox', function() {
     page.set('prefs.generated.floc_enabled.value', false);
     await flushTasks();
     assertEquals(0, metricsBrowserProxy.getCallCount('recordAction'));
+  });
+});
+
+suite('PrivacySandboxSettings3', function() {
+  let page: PrivacySandboxAppElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacySandboxSettings3Enabled: true,
+    });
+  });
+
+  setup(function() {
+    assertTrue(loadTimeData.getBoolean('privacySandboxSettings3Enabled'));
+    document.body.innerHTML = '';
+    page = /** @type {!PrivacySandboxAppElement} */
+        (document.createElement('privacy-sandbox-app'));
+    document.body.appendChild(page);
+
+    return flushTasks();
+  });
+
+  test('testSandboxSettings3Visibility', function() {
+    assertFalse(isChildVisible(page, '#trialsCard'));
+    assertFalse(isChildVisible(page, '#flocCard'));
+    assertTrue(isChildVisible(page, '#trialsCardSettings3'));
   });
 });
