@@ -161,7 +161,10 @@ public class FeedPlaceholderLayout extends LinearLayout {
     }
 
     private void setPlaceholders() {
-        setPadding();
+        // If showing this layout for Instant Start, add some padding to imitate the eventual width
+        // of the feed.
+        if (mInstantStart) setPadding();
+
         LinearLayout cardsParentView = findViewById(R.id.placeholders_layout);
         cardsParentView.removeAllViews();
 
