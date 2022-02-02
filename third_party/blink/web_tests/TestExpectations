@@ -7575,8 +7575,8 @@ crbug.com/1291488 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTC
 crbug.com/1248386 http/tests/text-autosizing/wide-iframe.html [ Failure Pass Timeout ]
 crbug.com/1287563 [ Linux ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation-stress-glare-linear.https.html [ Crash Failure Pass ]
 
-# Now flaky due to a timing issue, but so far only on Windows 7.
-crbug.com/1292296 [ Win7 ] http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js [ Failure Pass ]
+# Now flaky due to a timing issue.
+crbug.com/1292296 http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js [ Failure Pass ]
 
 # Sheriff 2022-02-01
 # Flaky test on Mac
