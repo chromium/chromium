@@ -73,7 +73,8 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
   const cc::ScrollNode* GetScrollNode(const cc::Layer* layer) const {
     return layer->layer_tree_host()
         ->property_trees()
-        ->scroll_tree.FindNodeFromElementId(layer->element_id());
+        ->scroll_tree()
+        .FindNodeFromElementId(layer->element_id());
   }
 
   bool IsScrollable(const cc::Layer* layer) const {

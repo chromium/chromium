@@ -362,7 +362,7 @@ ScrollNode* Viewport::OuterScrollNode() const {
 }
 
 ScrollTree& Viewport::scroll_tree() const {
-  return host_impl_->active_tree()->property_trees()->scroll_tree;
+  return host_impl_->active_tree()->property_trees()->scroll_tree_mutable();
 }
 
 }  // namespace cc

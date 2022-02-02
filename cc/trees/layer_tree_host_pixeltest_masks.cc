@@ -224,8 +224,9 @@ class LayerTreeHostMaskPixelTest_SolidColorEmptyMaskWithEffectAndRenderSurface
   void SetupTree() override {
     LayerTreeHostMaskPixelTestWithLayerList::SetupTree();
 
-    auto* effect = layer_tree_host()->property_trees()->effect_tree.Node(
-        mask_layer_->effect_tree_index());
+    auto* effect =
+        layer_tree_host()->property_trees()->effect_tree_mutable().Node(
+            mask_layer_->effect_tree_index());
     effect->render_surface_reason = RenderSurfaceReason::kTest;
   }
 };

@@ -72,10 +72,10 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
       is_inner_viewport_scroll_layer_(false),
       background_color_(0),
       safe_opaque_background_color_(0),
-      transform_tree_index_(TransformTree::kInvalidNodeId),
-      effect_tree_index_(EffectTree::kInvalidNodeId),
-      clip_tree_index_(ClipTree::kInvalidNodeId),
-      scroll_tree_index_(ScrollTree::kInvalidNodeId),
+      transform_tree_index_(kInvalidPropertyNodeId),
+      effect_tree_index_(kInvalidPropertyNodeId),
+      clip_tree_index_(kInvalidPropertyNodeId),
+      scroll_tree_index_(kInvalidPropertyNodeId),
       current_draw_mode_(DRAW_MODE_NONE),
       needs_push_properties_(false),
       needs_show_scrollbars_(false),
@@ -442,15 +442,15 @@ bool LayerImpl::LayerPropertyChanged() const {
 
 bool LayerImpl::LayerPropertyChangedFromPropertyTrees() const {
   if (layer_property_changed_from_property_trees_ ||
-      GetPropertyTrees()->full_tree_damaged)
+      GetPropertyTrees()->full_tree_damaged())
     return true;
-  if (transform_tree_index() == TransformTree::kInvalidNodeId)
+  if (transform_tree_index() == kInvalidPropertyNodeId)
     return false;
   TransformNode* transform_node =
       GetTransformTree().Node(transform_tree_index());
   if (transform_node && transform_node->transform_changed)
     return true;
-  if (effect_tree_index() == EffectTree::kInvalidNodeId)
+  if (effect_tree_index() == kInvalidPropertyNodeId)
     return false;
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
   if (effect_node && effect_node->effect_changed)
@@ -806,7 +806,8 @@ gfx::Rect LayerImpl::GetScaledEnclosingVisibleRectInTargetSpace(
   DCHECK_GT(scale, 0.0);
 
   bool only_draws_visible_content = GetPropertyTrees()
-                                        ->effect_tree.Node(effect_tree_index())
+                                        ->effect_tree()
+                                        .Node(effect_tree_index())
                                         ->only_draws_visible_content;
   gfx::Rect drawable_bounds = visible_layer_rect();
   if (!only_draws_visible_content) {
@@ -897,19 +898,19 @@ PropertyTrees* LayerImpl::GetPropertyTrees() const {
 }
 
 ClipTree& LayerImpl::GetClipTree() const {
-  return GetPropertyTrees()->clip_tree;
+  return GetPropertyTrees()->clip_tree_mutable();
 }
 
 EffectTree& LayerImpl::GetEffectTree() const {
-  return GetPropertyTrees()->effect_tree;
+  return GetPropertyTrees()->effect_tree_mutable();
 }
 
 ScrollTree& LayerImpl::GetScrollTree() const {
-  return GetPropertyTrees()->scroll_tree;
+  return GetPropertyTrees()->scroll_tree_mutable();
 }
 
 TransformTree& LayerImpl::GetTransformTree() const {
-  return GetPropertyTrees()->transform_tree;
+  return GetPropertyTrees()->transform_tree_mutable();
 }
 
 void LayerImpl::EnsureValidPropertyTreeIndices() const {

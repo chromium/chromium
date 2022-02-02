@@ -166,9 +166,8 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     if (!scrollable_area)
       return nullptr;
     auto* property_trees = RootCcLayer()->layer_tree_host()->property_trees();
-    return property_trees->scroll_tree.Node(
-        property_trees->element_id_to_scroll_node_index.at(
-            scrollable_area->GetScrollElementId()));
+    return property_trees->scroll_tree_mutable().FindNodeFromElementId(
+        scrollable_area->GetScrollElementId());
   }
 
   cc::ScrollNode* ScrollNodeByDOMElementId(const char* dom_id) {
@@ -179,7 +178,8 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     return RootCcLayer()
         ->layer_tree_host()
         ->property_trees()
-        ->scroll_tree.current_scroll_offset(element_id);
+        ->scroll_tree()
+        .current_scroll_offset(element_id);
   }
 
   gfx::PointF CurrentScrollOffset(const cc::ScrollNode* scroll_node) const {
@@ -2086,9 +2086,8 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
       return nullptr;
     const auto* property_trees =
         RootCcLayer()->layer_tree_host()->property_trees();
-    return property_trees->scroll_tree.Node(
-        property_trees->element_id_to_scroll_node_index.at(
-            scrollable_area->GetScrollElementId()));
+    return property_trees->scroll_tree().FindNodeFromElementId(
+        scrollable_area->GetScrollElementId());
   }
 
   PaintLayerScrollableArea* ScrollableAreaByDOMElementId(const char* id_value) {
@@ -2153,7 +2152,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*scroll_node));
 
   // Now remove the box-shadow property and ensure the compositor scroll node
   // changes.
@@ -2166,7 +2166,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
   EXPECT_TRUE(RootCcLayer()
                   ->layer_tree_host()
                   ->property_trees()
-                  ->scroll_tree.IsComposited(*scroll_node));
+                  ->scroll_tree()
+                  .IsComposited(*scroll_node));
 }
 
 // Tests that the compositor retains the scroll node for a composited scroller
@@ -2211,7 +2212,8 @@ TEST_P(UnifiedScrollingSimTest,
   EXPECT_TRUE(RootCcLayer()
                   ->layer_tree_host()
                   ->property_trees()
-                  ->scroll_tree.IsComposited(*scroll_node));
+                  ->scroll_tree()
+                  .IsComposited(*scroll_node));
 
   // Now add an inset box-shadow property to make the node noncomposited and
   // ensure the compositor scroll node updates accordingly.
@@ -2226,7 +2228,8 @@ TEST_P(UnifiedScrollingSimTest,
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*scroll_node));
 }
 
 // Tests that the compositor gets a scroll node for noncomposited scrollers
@@ -2292,7 +2295,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
   EXPECT_TRUE(RootCcLayer()
                   ->layer_tree_host()
                   ->property_trees()
-                  ->scroll_tree.IsComposited(*iframe_scroll_node));
+                  ->scroll_tree()
+                  .IsComposited(*iframe_scroll_node));
 
   // Ensure we have a compositor scroll node for the noncomposited subscroller.
   auto* child_scrollable_area = iframe->contentDocument()
@@ -2312,7 +2316,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*child_scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*child_scroll_node));
 }
 
 // Similar to the above test, but for deeper nesting iframes to ensure we
@@ -2397,7 +2402,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*child_scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*child_scroll_node));
 }
 
 // Tests that the compositor gets a scroll node for opacity 0 noncomposited
@@ -2457,7 +2463,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*invisible_scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*invisible_scroll_node));
 
   // Ensure there's no scrollable area (and therefore no scroll node) for a
   // display none scroller.
@@ -2491,7 +2498,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*scroll_node));
 }
 
 class ScrollingSimTest : public SimTest,

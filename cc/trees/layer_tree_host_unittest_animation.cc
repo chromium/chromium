@@ -2148,7 +2148,8 @@ class ImplSideInvalidationWithoutCommitTestFilter
         std::string("{\"FilterOperations\":[{\"type\":5,\"amount\":0.0}]}"),
         host_impl->active_tree()
             ->property_trees()
-            ->effect_tree.FindNodeFromElementId(layer_element_id_)
+            ->effect_tree()
+            .FindNodeFromElementId(layer_element_id_)
             ->filters.ToString());
   }
 
@@ -2160,7 +2161,8 @@ class ImplSideInvalidationWithoutCommitTestFilter
         std::string("{\"FilterOperations\":[{\"type\":5,\"amount\":1.0}]}"),
         host_impl->sync_tree()
             ->property_trees()
-            ->effect_tree.FindNodeFromElementId(layer_element_id_)
+            ->effect_tree()
+            .FindNodeFromElementId(layer_element_id_)
             ->filters.ToString());
     LayerTreeHostAnimationTestImplSideInvalidationWithoutCommit::
         DidInvalidateContentOnImplSide(host_impl);
@@ -2293,10 +2295,10 @@ class LayerTreeHostAnimationTestChangeAnimation
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     PropertyTrees* property_trees = host_impl->sync_tree()->property_trees();
-    TransformNode* node =
-        property_trees->transform_tree.Node(host_impl->sync_tree()
-                                                ->LayerById(layer_->id())
-                                                ->transform_tree_index());
+    const TransformNode* node =
+        property_trees->transform_tree().Node(host_impl->sync_tree()
+                                                  ->LayerById(layer_->id())
+                                                  ->transform_tree_index());
     gfx::Transform translate;
     translate.Translate(5, 5);
     switch (host_impl->sync_tree()->source_frame_number()) {

@@ -89,7 +89,7 @@ TEST_F(PropertyTreeBuilderTest, EffectTreeTransformIdTest) {
   UpdateMainDrawProperties();
   EffectNode* node = GetEffectNode(child.get());
   const int transform_tree_size =
-      GetPropertyTrees(parent.get())->transform_tree.next_available_id();
+      GetPropertyTrees(parent.get())->transform_tree().next_available_id();
   EXPECT_LT(node->transform_id, transform_tree_size);
 }
 
@@ -593,13 +593,13 @@ TEST_F(PropertyTreeBuilderTest, ChangingAxisAlignmentTriggersRebuild) {
   host()->SetRootLayer(root);
 
   UpdateMainDrawProperties();
-  EXPECT_FALSE(host()->property_trees()->needs_rebuild);
+  EXPECT_FALSE(host()->property_trees()->needs_rebuild());
 
   root->SetTransform(translate);
-  EXPECT_FALSE(host()->property_trees()->needs_rebuild);
+  EXPECT_FALSE(host()->property_trees()->needs_rebuild());
 
   root->SetTransform(rotate);
-  EXPECT_TRUE(host()->property_trees()->needs_rebuild);
+  EXPECT_TRUE(host()->property_trees()->needs_rebuild());
 }
 
 TEST_F(PropertyTreeBuilderTest, ResetPropertyTreeIndices) {
@@ -689,7 +689,7 @@ TEST_F(PropertyTreeBuilderTest, PropertyTreesRebuildWithOpacityChanges) {
   // property trees as a new effect node will be created.
   child->SetOpacity(0.5f);
   PropertyTrees* property_trees = host()->property_trees();
-  EXPECT_TRUE(property_trees->needs_rebuild);
+  EXPECT_TRUE(property_trees->needs_rebuild());
 
   UpdateMainDrawProperties();
   EXPECT_NE(child->effect_tree_index(), root->effect_tree_index());
@@ -698,7 +698,7 @@ TEST_F(PropertyTreeBuilderTest, PropertyTreesRebuildWithOpacityChanges) {
   // a property trees rebuild.
   child->SetOpacity(0.8f);
   property_trees = host()->property_trees();
-  EXPECT_FALSE(property_trees->needs_rebuild);
+  EXPECT_FALSE(property_trees->needs_rebuild());
 
   UpdateMainDrawProperties();
   EXPECT_NE(child->effect_tree_index(), root->effect_tree_index());
@@ -707,7 +707,7 @@ TEST_F(PropertyTreeBuilderTest, PropertyTreesRebuildWithOpacityChanges) {
   // property trees as the effect node may no longer be needed.
   child->SetOpacity(1.f);
   property_trees = host()->property_trees();
-  EXPECT_TRUE(property_trees->needs_rebuild);
+  EXPECT_TRUE(property_trees->needs_rebuild());
 
   UpdateMainDrawProperties();
   EXPECT_EQ(child->effect_tree_index(), root->effect_tree_index());

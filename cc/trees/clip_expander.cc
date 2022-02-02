@@ -23,7 +23,7 @@ bool ClipExpander::operator==(const ClipExpander& other) const {
 gfx::Rect ClipExpander::MapRect(const gfx::Rect& rect,
                                 const PropertyTrees* property_trees) const {
   const EffectNode* effect_node =
-      property_trees->effect_tree.Node(target_effect_id_);
+      property_trees->effect_tree().Node(target_effect_id_);
   gfx::Transform filter_draw_transform;
   filter_draw_transform.Scale(effect_node->surface_contents_scale.x(),
                               effect_node->surface_contents_scale.y());
@@ -35,7 +35,7 @@ gfx::Rect ClipExpander::MapRectReverse(
     const gfx::Rect& rect,
     const PropertyTrees* property_trees) const {
   const EffectNode* effect_node =
-      property_trees->effect_tree.Node(target_effect_id_);
+      property_trees->effect_tree().Node(target_effect_id_);
   gfx::Transform filter_draw_transform;
   filter_draw_transform.Scale(effect_node->surface_contents_scale.x(),
                               effect_node->surface_contents_scale.y());

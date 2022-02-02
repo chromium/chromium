@@ -273,9 +273,9 @@ void CreateScrollingNodeForElement(ElementId element_id,
   TransformNode transform_node;
   transform_node.scrolls = true;
   int transform_node_id =
-      property_trees->transform_tree.Insert(transform_node, 0);
-  property_trees->element_id_to_transform_node_index[element_id] =
-      transform_node_id;
+      property_trees->transform_tree_mutable().Insert(transform_node, 0);
+  property_trees->transform_tree_mutable().SetElementIdForNodeId(
+      transform_node_id, element_id);
 
   ScrollNode scroll_node;
   scroll_node.scrollable = true;
@@ -285,17 +285,20 @@ void CreateScrollingNodeForElement(ElementId element_id,
   scroll_node.element_id = element_id;
   scroll_node.transform_id = transform_node_id;
 
-  int scroll_node_id = property_trees->scroll_tree.Insert(scroll_node, 0);
-  property_trees->element_id_to_scroll_node_index[element_id] = scroll_node_id;
+  int scroll_node_id =
+      property_trees->scroll_tree_mutable().Insert(scroll_node, 0);
+  property_trees->scroll_tree_mutable().SetElementIdForNodeId(scroll_node_id,
+                                                              element_id);
 }
 
 void SetScrollOffset(PropertyTrees* property_trees,
                      ElementId element_id,
                      gfx::PointF offset) {
   // Update both scroll and transform trees
-  property_trees->scroll_tree.SetScrollOffset(element_id, offset);
+  property_trees->scroll_tree_mutable().SetScrollOffset(element_id, offset);
   TransformNode* transform_node =
-      property_trees->transform_tree.FindNodeFromElementId(element_id);
+      property_trees->transform_tree_mutable().FindNodeFromElementId(
+          element_id);
   transform_node->scroll_offset = offset;
   transform_node->needs_local_transform_update = true;
 }
@@ -312,8 +315,8 @@ TEST_F(AnimationHostTest, LayerTreeMutatorUpdateReflectsScrollAnimations) {
   host_impl_->AddAnimationTimeline(timeline_);
 
   PropertyTrees property_trees;
-  property_trees.is_main_thread = false;
-  property_trees.is_active = true;
+  property_trees.set_is_main_thread(false);
+  property_trees.set_is_active(true);
   CreateScrollingNodeForElement(element_id, &property_trees);
 
   // Set an initial scroll value.
@@ -361,7 +364,7 @@ TEST_F(AnimationHostTest, LayerTreeMutatorUpdateReflectsScrollAnimations) {
   // Ticking host should cause scroll animation to scroll which should also be
   // reflected in the input of the layer tree mutator in the same animation
   // frame.
-  host_impl_->TickAnimations(base::TimeTicks(), property_trees.scroll_tree,
+  host_impl_->TickAnimations(base::TimeTicks(), property_trees.scroll_tree(),
                              false);
 }
 
@@ -370,8 +373,8 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
   client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
   client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   PropertyTrees property_trees;
-  property_trees.is_main_thread = false;
-  property_trees.is_active = true;
+  property_trees.set_is_main_thread(false);
+  property_trees.set_is_active(true);
   CreateScrollingNodeForElement(element_id_, &property_trees);
 
   // Create scroll timeline that links scroll animation and scroll-linked
@@ -397,10 +400,10 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
   EXPECT_EQ(keyframe_model->run_state(),
             KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY);
 
-  auto& scroll_tree = property_trees.scroll_tree;
+  const auto& scroll_tree = property_trees.scroll_tree();
   SetScrollOffset(&property_trees, element_id_, gfx::PointF(0, 20));
-  EXPECT_TRUE(host_impl_->TickAnimations(base::TimeTicks(),
-                                         property_trees.scroll_tree, false));
+  EXPECT_TRUE(
+      host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false));
 
   EXPECT_EQ(keyframe_model->run_state(), KeyframeModel::STARTING);
   double tick_time = (scroll_timeline->CurrentTime(scroll_tree, false).value() -
@@ -409,8 +412,8 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
   EXPECT_EQ(tick_time, 0.2 * ScrollTimeline::kScrollTimelineDurationMs);
 
   scroll_timeline->DetachAnimation(animation);
-  EXPECT_FALSE(host_impl_->TickAnimations(base::TimeTicks(),
-                                          property_trees.scroll_tree, false));
+  EXPECT_FALSE(
+      host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false));
 }
 
 TEST_F(AnimationHostTest, PushPropertiesToImpl) {
@@ -437,8 +440,8 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   host_impl_->AddAnimationTimeline(timeline_);
 
   PropertyTrees property_trees;
-  property_trees.is_main_thread = false;
-  property_trees.is_active = true;
+  property_trees.set_is_main_thread(false);
+  property_trees.set_is_active(true);
   CreateScrollingNodeForElement(element_id_, &property_trees);
 
   int animation_id = 11;
@@ -461,11 +464,12 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   auto scroll_timeline = ScrollTimeline::Create(
       element_id_, ScrollTimeline::ScrollDown, scroll_offsets);
 
-  host_impl_->TickAnimations(base::TimeTicks(), property_trees.scroll_tree,
+  host_impl_->TickAnimations(base::TimeTicks(), property_trees.scroll_tree(),
                              false);
 
   double tick_time =
-      (scroll_timeline->CurrentTime(property_trees.scroll_tree, false).value() -
+      (scroll_timeline->CurrentTime(property_trees.scroll_tree(), false)
+           .value() -
        base::TimeTicks())
           .InMillisecondsF();
   EXPECT_EQ(tick_time, 0.2 * ScrollTimeline::kScrollTimelineDurationMs);

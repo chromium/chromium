@@ -22,8 +22,12 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/trees/clip_node.h"
+#include "cc/trees/effect_node.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/trees/scroll_node.h"
 #include "cc/trees/sticky_position_constraint.h"
+#include "cc/trees/transform_node.h"
 #include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -45,37 +49,31 @@ namespace cc {
 
 class LayerTreeImpl;
 class RenderSurfaceImpl;
-struct ClipNode;
-struct EffectNode;
 struct CompositorCommitData;
-struct ScrollNode;
-struct TransformNode;
-struct TransformCachedNodeData;
 
 using SyncedScrollOffset =
     SyncedProperty<AdditionGroup<gfx::PointF, gfx::Vector2dF>>;
 
 class PropertyTrees;
 
+// Property tree node starts from index 0. See equivalent constants in
+// property_tree_manager.cc for comments.
 enum {
   kInvalidPropertyNodeId = -1,
   kRootPropertyNodeId = 0,
-  kSecondaryRootPropertyNodeId = 1
+  kSecondaryRootPropertyNodeId = 1,
+  kContentsRootPropertyNodeId = kSecondaryRootPropertyNodeId,
+  kViewportPropertyNodeId = kSecondaryRootPropertyNodeId
 };
 
 template <typename T>
 class CC_EXPORT PropertyTree {
+  friend class PropertyTrees;
+
  public:
-  PropertyTree();
   PropertyTree(const PropertyTree& other) = delete;
   ~PropertyTree();
   PropertyTree<T>& operator=(const PropertyTree<T>&);
-
-  // Property tree node starts from index 0. See equivalent constants in
-  // property_tree_manager.cc for comments.
-  static const int kInvalidNodeId = -1;
-  static const int kRootNodeId = 0;
-  static const int kSecondaryRootNodeId = 1;
 
 #if DCHECK_IS_ON()
   bool operator==(const PropertyTree<T>& other) const;
@@ -85,11 +83,11 @@ class CC_EXPORT PropertyTree {
 
   T* Node(int i) {
     CHECK_LT(i, static_cast<int>(nodes_.size()));
-    return i > kInvalidNodeId ? &nodes_[i] : nullptr;
+    return i > kInvalidPropertyNodeId ? &nodes_[i] : nullptr;
   }
   const T* Node(int i) const {
     CHECK_LT(i, static_cast<int>(nodes_.size()));
-    return i > kInvalidNodeId ? &nodes_[i] : nullptr;
+    return i > kInvalidPropertyNodeId ? &nodes_[i] : nullptr;
   }
 
   T* parent(const T* t) { return Node(t->parent_id); }
@@ -97,6 +95,22 @@ class CC_EXPORT PropertyTree {
 
   T* back() { return size() ? &nodes_.back() : nullptr; }
   const T* back() const { return size() ? &nodes_.back() : nullptr; }
+
+  void SetElementIdForNodeId(int node_id, ElementId element_id) {
+    element_id_to_node_index_[element_id] = node_id;
+  }
+  T* FindNodeFromElementId(ElementId id) {
+    auto iterator = element_id_to_node_index_.find(id);
+    if (iterator == element_id_to_node_index_.end())
+      return nullptr;
+    return Node(iterator->second);
+  }
+  const T* FindNodeFromElementId(ElementId id) const {
+    auto iterator = element_id_to_node_index_.find(id);
+    if (iterator == element_id_to_node_index_.end())
+      return nullptr;
+    return Node(iterator->second);
+  }
 
   void clear();
   size_t size() const { return nodes_.size(); }
@@ -111,17 +125,32 @@ class CC_EXPORT PropertyTree {
 
   int next_available_id() const { return static_cast<int>(size()); }
 
-  void SetPropertyTrees(PropertyTrees* property_trees) {
-    property_trees_ = property_trees;
-  }
   PropertyTrees* property_trees() const { return property_trees_; }
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
+  const base::flat_map<ElementId, int>& element_id_to_node_index() const {
+    return element_id_to_node_index_;
+  }
+
  protected:
+  PropertyTree();
   std::vector<T> nodes_;
+
+ private:
+  void SetPropertyTrees(PropertyTrees* property_trees) {
+    property_trees_ = property_trees;
+  }
+
   bool needs_update_;
   raw_ptr<PropertyTrees> property_trees_;
+  // This map allow mapping directly from a compositor element id to the
+  // respective property node. This will eventually allow simplifying logic in
+  // various places that today has to map from element id to layer id, and then
+  // from layer id to the respective property node. Completing that work is
+  // pending the launch of BlinkGenPropertyTrees and reworking UI compositor
+  // logic to produce cc property trees and these maps.
+  base::flat_map<ElementId, int> element_id_to_node_index_;
 };
 
 struct StickyPositionNodeData;
@@ -142,13 +171,10 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   bool operator==(const TransformTree& other) const;
 #endif
 
-  static const int kContentsRootNodeId = 1;
-
   int Insert(const TransformNode& tree_node, int parent_id);
 
   void clear();
 
-  TransformNode* FindNodeFromElementId(ElementId id);
   bool OnTransformAnimated(ElementId element_id,
                            const gfx::Transform& transform);
   void ResetChangeTracking();
@@ -274,9 +300,9 @@ struct StickyPositionNodeData {
   gfx::Vector2dF total_containing_block_sticky_offset;
 
   StickyPositionNodeData()
-      : scroll_ancestor(TransformTree::kInvalidNodeId),
-        nearest_node_shifting_sticky_box(TransformTree::kInvalidNodeId),
-        nearest_node_shifting_containing_block(TransformTree::kInvalidNodeId) {}
+      : scroll_ancestor(kInvalidPropertyNodeId),
+        nearest_node_shifting_sticky_box(kInvalidPropertyNodeId),
+        nearest_node_shifting_containing_block(kInvalidPropertyNodeId) {}
 };
 
 class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
@@ -284,8 +310,6 @@ class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
 #if DCHECK_IS_ON()
   bool operator==(const ClipTree& other) const;
 #endif
-
-  static const int kViewportNodeId = 1;
 
   void SetViewportClip(gfx::RectF viewport_rect);
   gfx::RectF ViewportClip() const;
@@ -302,8 +326,6 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   bool operator==(const EffectTree& other) const;
 #endif
 
-  static const int kContentsRootNodeId = 1;
-
   int Insert(const EffectNode& tree_node, int parent_id);
 
   void clear();
@@ -312,7 +334,6 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
 
   void UpdateSurfaceContentsScale(EffectNode* node);
 
-  EffectNode* FindNodeFromElementId(ElementId id);
   bool OnOpacityAnimated(ElementId id, float opacity);
   bool OnFilterAnimated(ElementId id, const FilterOperations& filters);
   bool OnBackdropFilterAnimated(ElementId id,
@@ -346,7 +367,18 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
     return render_surfaces_[id].get();
   }
 
-  bool ContributesToDrawnSurface(int id);
+  void SetSharedElementResourceIdForNodeId(
+      int node_id,
+      viz::SharedElementResourceId resource_id);
+  EffectNode* FindNodeFromSharedElementResourceId(
+      viz::SharedElementResourceId resource_id);
+  const EffectNode* FindNodeFromSharedElementResourceId(
+      viz::SharedElementResourceId resource_id) const;
+  void ClearSharedElementResourceIdToNodeMap() {
+    document_transition_layer_to_node_index_.clear();
+  }
+
+  bool ContributesToDrawnSurface(int id) const;
 
   void ResetChangeTracking();
 
@@ -384,6 +416,12 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
 
   // Indexed by node id.
   std::vector<std::unique_ptr<RenderSurfaceImpl>> render_surfaces_;
+
+  // If an element is being rendered as a "live snapshot" using a
+  // DocumentTransitionLayer, this maps the layer's SharedElementResourceId to
+  // the EffectNode id associated with that layer.
+  base::flat_map<viz::SharedElementResourceId, int>
+      document_transition_layer_to_node_index_;
 };
 
 // These callbacks are called in the main thread to notify changes of scroll
@@ -504,9 +542,6 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void CopyCompleteTreeState(const ScrollTree& other);
 #endif
 
-  ScrollNode* FindNodeFromElementId(ElementId id);
-  const ScrollNode* FindNodeFromElementId(ElementId id) const;
-
   void SetScrollCallbacks(base::WeakPtr<ScrollCallbacks> callbacks);
 
   void NotifyDidCompositorScroll(
@@ -600,21 +635,11 @@ struct DrawTransforms {
 
 struct DrawTransformData {
   int update_number = kInvalidUpdateNumber;
-  int target_id = EffectTree::kInvalidNodeId;
+  int target_id = kInvalidPropertyNodeId;
 
   // TODO(sunxd): Move screen space transforms here if it can improve
   // performance.
   DrawTransforms transforms{gfx::Transform(), gfx::Transform()};
-};
-
-struct ConditionalClip {
-  bool is_clipped;
-  gfx::RectF clip_rect;
-};
-
-struct ClipRectData {
-  int target_id = ClipTree::kInvalidNodeId;
-  ConditionalClip clip;
 };
 
 struct PropertyTreesCachedData {
@@ -638,41 +663,33 @@ class CC_EXPORT PropertyTrees final {
   bool operator==(const PropertyTrees& other) const;
 #endif
 
-  // These maps allow mapping directly from a compositor element id to the
-  // respective property node. This will eventually allow simplifying logic in
-  // various places that today has to map from element id to layer id, and then
-  // from layer id to the respective property node. Completing that work is
-  // pending the launch of BlinkGenPropertyTrees and reworking UI compositor
-  // logic to produce cc property trees and these maps.
-  base::flat_map<ElementId, int> element_id_to_effect_node_index;
-  base::flat_map<ElementId, int> element_id_to_scroll_node_index;
-  base::flat_map<ElementId, int> element_id_to_transform_node_index;
+  const ClipTree& clip_tree() const { return clip_tree_; }
+  ClipTree& clip_tree_mutable() { return clip_tree_; }
+  const EffectTree& effect_tree() const { return effect_tree_; }
+  EffectTree& effect_tree_mutable() { return effect_tree_; }
+  const ScrollTree& scroll_tree() const { return scroll_tree_; }
+  ScrollTree& scroll_tree_mutable() { return scroll_tree_; }
+  const TransformTree& transform_tree() const { return transform_tree_; }
+  TransformTree& transform_tree_mutable() { return transform_tree_; }
 
-  // If an element is being rendered as a "live snapshot" using a
-  // DocumentTransitionLayer, this maps the layer's SharedElementResourceId to
-  // the EffectNode id associated with that layer.
-  base::flat_map<viz::SharedElementResourceId, int>
-      document_transition_layer_to_effect_node_index;
+  void set_needs_rebuild(bool value) { needs_rebuild_ = value; }
+  bool needs_rebuild() const { return needs_rebuild_; }
 
-  TransformTree transform_tree;
-  EffectTree effect_tree;
-  ClipTree clip_tree;
-  ScrollTree scroll_tree;
-  bool needs_rebuild;
-  // Change tracking done on property trees needs to be preserved across commits
-  // (when they are not rebuild). We cache a global bool which stores whether
-  // we did any change tracking so that we can skip copying the change status
-  // between property trees when this bool is false.
-  bool changed;
-  // We cache a global bool for full tree damages to avoid walking the entire
-  // tree.
-  // TODO(jaydasika): Changes to transform and effects that damage the entire
-  // tree should be tracked by this bool. Currently, they are tracked by the
-  // individual nodes.
-  bool full_tree_damaged;
-  int sequence_number;
-  bool is_main_thread;
-  bool is_active;
+  void set_changed(bool value) { changed_ = value; }
+  bool changed() const { return changed_; }
+
+  void set_full_tree_damaged(bool value) { full_tree_damaged_ = value; }
+  bool full_tree_damaged() const { return full_tree_damaged_; }
+
+  void set_is_main_thread(bool value) { is_main_thread_ = value; }
+  bool is_main_thread() const { return is_main_thread_; }
+
+  void set_is_active(bool value) { is_active_ = value; }
+  bool is_active() const { return is_active_; }
+
+  void set_sequence_number(int n) { sequence_number_ = n; }
+  void increment_sequence_number() { sequence_number_++; }
+  int sequence_number() const { return sequence_number_; }
 
   void clear();
 
@@ -687,7 +704,7 @@ class CC_EXPORT PropertyTrees final {
   void SetInnerViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
   void SetOuterViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
   void UpdateChangeTracking();
-  void PushChangeTrackingTo(PropertyTrees* tree);
+  void PushChangeTrackingTo(PropertyTrees* tree) const;
   void ResetAllChangeTracking();
 
   gfx::Vector2dF inner_viewport_container_bounds_delta() const {
@@ -696,7 +713,7 @@ class CC_EXPORT PropertyTrees final {
   gfx::Vector2dF inner_viewport_scroll_bounds_delta() const {
     // Inner viewport scroll bounds are always the same as outer viewport
     // container bounds.
-    return outer_viewport_container_bounds_delta_;
+    return outer_viewport_container_bounds_delta();
   }
   gfx::Vector2dF outer_viewport_container_bounds_delta() const {
     return outer_viewport_container_bounds_delta_;
@@ -733,6 +750,28 @@ class CC_EXPORT PropertyTrees final {
   bool HasElement(ElementId element_id) const;
 
  private:
+  TransformTree transform_tree_;
+  EffectTree effect_tree_;
+  ClipTree clip_tree_;
+  ScrollTree scroll_tree_;
+
+  bool needs_rebuild_ = true;
+  // Change tracking done on property trees needs to be preserved across commits
+  // (when they are not rebuild). We cache a global bool which stores whether
+  // we did any change tracking so that we can skip copying the change status
+  // between property trees when this bool is false.
+  bool changed_ = false;
+  // We cache a global bool for full tree damages to avoid walking the entire
+  // tree.
+  // TODO(jaydasika): Changes to transform and effects that damage the entire
+  // tree should be tracked by this bool. Currently, they are tracked by the
+  // individual nodes.
+  bool full_tree_damaged_ = false;
+  bool is_main_thread_ = true;
+  bool is_active_ = false;
+
+  int sequence_number_ = 0;
+
   gfx::Vector2dF inner_viewport_container_bounds_delta_;
   gfx::Vector2dF outer_viewport_container_bounds_delta_;
 
@@ -743,7 +782,8 @@ class CC_EXPORT PropertyTrees final {
   DrawTransformData& FetchDrawTransformsDataFromCache(int transform_id,
                                                       int effect_id) const;
 
-  PropertyTreesCachedData cached_data_;
+  // This can be mutable because it isn't copied by operator=();
+  mutable PropertyTreesCachedData cached_data_;
 };
 
 }  // namespace cc

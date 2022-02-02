@@ -80,8 +80,8 @@ void ScrollElasticityHelperImpl::ScrollBy(const gfx::Vector2dF& delta) {
                                      : host_impl_->InnerViewportScrollNode();
   if (root_scroll_node) {
     LayerTreeImpl* tree_impl = host_impl_->active_tree();
-    tree_impl->property_trees()->scroll_tree.ScrollBy(*root_scroll_node, delta,
-                                                      tree_impl);
+    tree_impl->property_trees()->scroll_tree_mutable().ScrollBy(
+        *root_scroll_node, delta, tree_impl);
   }
 }
 

@@ -153,7 +153,7 @@ bool PaintedScrollbarLayer::UpdateInternalContentScale() {
   DCHECK(IsMutationAllowed());
   gfx::Transform transform;
   transform = draw_property_utils::ScreenSpaceTransform(
-      this, layer_tree_host()->property_trees()->transform_tree);
+      this, layer_tree_host()->property_trees()->transform_tree());
 
   gfx::Vector2dF transform_scales = gfx::ComputeTransform2dScaleComponents(
       transform, layer_tree_host()->device_scale_factor());

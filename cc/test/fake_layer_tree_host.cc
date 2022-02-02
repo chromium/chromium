@@ -113,9 +113,12 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
   mutator_host()->PushPropertiesTo(host_impl_->mutator_host(),
                                    *property_trees());
 
-  active_tree()->property_trees()->scroll_tree.PushScrollUpdatesFromMainThread(
-      property_trees(), active_tree(),
-      GetSettings().commit_fractional_scroll_deltas);
+  active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .PushScrollUpdatesFromMainThread(
+          property_trees(), active_tree(),
+          GetSettings().commit_fractional_scroll_deltas);
 
   return active_tree()->root_layer();
 }
@@ -132,9 +135,12 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreatePendingTree() {
   mutator_host()->PushPropertiesTo(host_impl_->mutator_host(),
                                    *property_trees());
 
-  pending_tree()->property_trees()->scroll_tree.PushScrollUpdatesFromMainThread(
-      property_trees(), pending_tree(),
-      GetSettings().commit_fractional_scroll_deltas);
+  pending_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .PushScrollUpdatesFromMainThread(
+          property_trees(), pending_tree(),
+          GetSettings().commit_fractional_scroll_deltas);
   return pending_tree()->root_layer();
 }
 

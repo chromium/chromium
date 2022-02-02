@@ -593,7 +593,7 @@ TEST_F(TreeSynchronizerTest, SynchronizeCurrentlyScrollingNode) {
                           host_impl->active_tree());
 
   ScrollNode* scroll_node =
-      host_impl->active_tree()->property_trees()->scroll_tree.Node(
+      host_impl->active_tree()->property_trees()->scroll_tree_mutable().Node(
           scroll_layer->scroll_tree_index());
   host_impl->active_tree()->SetCurrentlyScrollingNode(scroll_node);
   transient_scroll_layer->SetScrollable(gfx::Size(0, 0));
@@ -653,25 +653,26 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
       scroll_layer_offset.get(),
       host_impl->active_tree()
           ->property_trees()
-          ->scroll_tree.GetSyncedScrollOffset(scroll_layer->element_id())));
+          ->scroll_tree()
+          .GetSyncedScrollOffset(scroll_layer->element_id())));
 
   scoped_refptr<SyncedScrollOffset> transient_scroll_layer_offset =
       new SyncedScrollOffset;
   transient_scroll_layer_offset->PushMainToPending(
       transient_scroll_layer->scroll_offset());
   transient_scroll_layer_offset->PushPendingToActive();
-  EXPECT_TRUE(
-      AreScrollOffsetsEqual(transient_scroll_layer_offset.get(),
-                            host_impl->active_tree()
-                                ->property_trees()
-                                ->scroll_tree.GetSyncedScrollOffset(
-                                    transient_scroll_layer->element_id())));
+  EXPECT_TRUE(AreScrollOffsetsEqual(
+      transient_scroll_layer_offset.get(),
+      host_impl->active_tree()
+          ->property_trees()
+          ->scroll_tree()
+          .GetSyncedScrollOffset(transient_scroll_layer->element_id())));
 
   // Set ScrollOffset active delta: gfx::PointF(10, 10)
   LayerImpl* scroll_layer_impl =
       host_impl->active_tree()->LayerById(scroll_layer->id());
   ScrollTree& scroll_tree =
-      host_impl->active_tree()->property_trees()->scroll_tree;
+      host_impl->active_tree()->property_trees()->scroll_tree_mutable();
   scroll_tree.SetScrollOffset(scroll_layer_impl->element_id(),
                               gfx::PointF(20, 30));
 
@@ -711,11 +712,13 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
       scroll_layer_offset.get(),
       host_impl->active_tree()
           ->property_trees()
-          ->scroll_tree.GetSyncedScrollOffset(scroll_layer->element_id())));
-  EXPECT_EQ(nullptr, host_impl->active_tree()
-                         ->property_trees()
-                         ->scroll_tree.GetSyncedScrollOffset(
-                             transient_scroll_layer->element_id()));
+          ->scroll_tree()
+          .GetSyncedScrollOffset(scroll_layer->element_id())));
+  EXPECT_EQ(nullptr,
+            host_impl->active_tree()
+                ->property_trees()
+                ->scroll_tree()
+                .GetSyncedScrollOffset(transient_scroll_layer->element_id()));
 }
 
 TEST_F(TreeSynchronizerTest, RefreshPropertyTreesCachedData) {

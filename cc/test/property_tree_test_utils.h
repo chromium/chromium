@@ -35,25 +35,22 @@ void CopyProperties(const LayerImpl* from, LayerImpl* to);
 // Otherwise the layer's current property node of the corresponding type will
 // be the parent. The latter case is useful to create property nodes after
 // CopyProperties() under the copied properties.
-TransformNode& CreateTransformNode(
-    Layer*,
-    int parent_id = TransformTree::kInvalidNodeId);
-TransformNode& CreateTransformNode(
-    LayerImpl*,
-    int parent_id = TransformTree::kInvalidNodeId);
-ClipNode& CreateClipNode(Layer*, int parent_id = ClipTree::kInvalidNodeId);
-ClipNode& CreateClipNode(LayerImpl*, int parent_id = ClipTree::kInvalidNodeId);
-EffectNode& CreateEffectNode(Layer*,
-                             int parent_id = EffectTree::kInvalidNodeId);
+TransformNode& CreateTransformNode(Layer*,
+                                   int parent_id = kInvalidPropertyNodeId);
+TransformNode& CreateTransformNode(LayerImpl*,
+                                   int parent_id = kInvalidPropertyNodeId);
+ClipNode& CreateClipNode(Layer*, int parent_id = kInvalidPropertyNodeId);
+ClipNode& CreateClipNode(LayerImpl*, int parent_id = kInvalidPropertyNodeId);
+EffectNode& CreateEffectNode(Layer*, int parent_id = kInvalidPropertyNodeId);
 EffectNode& CreateEffectNode(LayerImpl*,
-                             int parent_id = EffectTree::kInvalidNodeId);
+                             int parent_id = kInvalidPropertyNodeId);
 // The scroll node is not scrollable if |scroll_container_bounds| is empty.
 ScrollNode& CreateScrollNode(Layer*,
                              const gfx::Size& scroll_container_bounds,
-                             int parent_id = ScrollTree::kInvalidNodeId);
+                             int parent_id = kInvalidPropertyNodeId);
 ScrollNode& CreateScrollNode(LayerImpl*,
                              const gfx::Size& scroll_container_bounds,
-                             int parent_id = ScrollTree::kInvalidNodeId);
+                             int parent_id = kInvalidPropertyNodeId);
 
 // These functions create property nodes not associated with layers.
 TransformNode& CreateTransformNode(PropertyTrees*, int parent_id);
@@ -83,37 +80,42 @@ const PropertyTrees* GetPropertyTrees(const LayerImpl* layer);
 
 template <typename LayerType>
 TransformNode* GetTransformNode(LayerType* layer) {
-  return GetPropertyTrees(layer)->transform_tree.Node(
+  return GetPropertyTrees(layer)->transform_tree_mutable().Node(
       layer->transform_tree_index());
 }
 template <typename LayerType>
 const TransformNode* GetTransformNode(const LayerType* layer) {
-  return GetPropertyTrees(layer)->transform_tree.Node(
+  return GetPropertyTrees(layer)->transform_tree().Node(
       layer->transform_tree_index());
 }
 template <typename LayerType>
 ClipNode* GetClipNode(LayerType* layer) {
-  return GetPropertyTrees(layer)->clip_tree.Node(layer->clip_tree_index());
+  return GetPropertyTrees(layer)->clip_tree_mutable().Node(
+      layer->clip_tree_index());
 }
 template <typename LayerType>
 const ClipNode* GetClipNode(const LayerType* layer) {
-  return GetPropertyTrees(layer)->clip_tree.Node(layer->clip_tree_index());
+  return GetPropertyTrees(layer)->clip_tree().Node(layer->clip_tree_index());
 }
 template <typename LayerType>
 EffectNode* GetEffectNode(LayerType* layer) {
-  return GetPropertyTrees(layer)->effect_tree.Node(layer->effect_tree_index());
+  return GetPropertyTrees(layer)->effect_tree_mutable().Node(
+      layer->effect_tree_index());
 }
 template <typename LayerType>
 const EffectNode* GetEffectNode(const LayerType* layer) {
-  return GetPropertyTrees(layer)->effect_tree.Node(layer->effect_tree_index());
+  return GetPropertyTrees(layer)->effect_tree().Node(
+      layer->effect_tree_index());
 }
 template <typename LayerType>
 ScrollNode* GetScrollNode(LayerType* layer) {
-  return GetPropertyTrees(layer)->scroll_tree.Node(layer->scroll_tree_index());
+  return GetPropertyTrees(layer)->scroll_tree_mutable().Node(
+      layer->scroll_tree_index());
 }
 template <typename LayerType>
 const ScrollNode* GetScrollNode(const LayerType* layer) {
-  return GetPropertyTrees(layer)->scroll_tree.Node(layer->scroll_tree_index());
+  return GetPropertyTrees(layer)->scroll_tree().Node(
+      layer->scroll_tree_index());
 }
 
 void SetScrollOffset(Layer*, const gfx::PointF&);
@@ -128,7 +130,7 @@ void SetLocalTransformChanged(LayerType* layer) {
   auto* transform_node = GetTransformNode(layer);
   transform_node->needs_local_transform_update = true;
   transform_node->transform_changed = true;
-  GetPropertyTrees(layer)->transform_tree.set_needs_update(true);
+  GetPropertyTrees(layer)->transform_tree_mutable().set_needs_update(true);
 }
 
 template <typename LayerType>
@@ -137,7 +139,7 @@ void SetWillChangeTransform(LayerType* layer, bool will_change_transform) {
   auto* transform_node = GetTransformNode(layer);
   transform_node->will_change_transform = will_change_transform;
   transform_node->transform_changed = true;
-  GetPropertyTrees(layer)->transform_tree.set_needs_update(true);
+  GetPropertyTrees(layer)->transform_tree_mutable().set_needs_update(true);
 }
 
 template <typename LayerType>
@@ -165,7 +167,7 @@ void SetOpacity(LayerType* layer, float opacity) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->opacity = opacity;
   effect_node->effect_changed = true;
-  GetPropertyTrees(layer)->effect_tree.set_needs_update(true);
+  GetPropertyTrees(layer)->effect_tree_mutable().set_needs_update(true);
 }
 
 // This will affect all layers associated with this layer's effect node.
@@ -174,7 +176,7 @@ void SetFilter(LayerType* layer, const FilterOperations& filters) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->filters = filters;
   effect_node->effect_changed = true;
-  GetPropertyTrees(layer)->effect_tree.set_needs_update(true);
+  GetPropertyTrees(layer)->effect_tree_mutable().set_needs_update(true);
 }
 
 // This will affect all layers associated with this layer's effect node.
@@ -183,7 +185,7 @@ void SetRenderSurfaceReason(LayerType* layer, RenderSurfaceReason reason) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->render_surface_reason = reason;
   effect_node->effect_changed = true;
-  GetPropertyTrees(layer)->effect_tree.set_needs_update(true);
+  GetPropertyTrees(layer)->effect_tree_mutable().set_needs_update(true);
 }
 
 // This will affect all layers associated with this layer's effect node.
@@ -192,7 +194,7 @@ void SetBackdropFilter(LayerType* layer, const FilterOperations& filters) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->backdrop_filters = filters;
   effect_node->effect_changed = true;
-  GetPropertyTrees(layer)->effect_tree.set_needs_update(true);
+  GetPropertyTrees(layer)->effect_tree_mutable().set_needs_update(true);
 }
 
 // This will affect all layers associated with this layer's clip node.

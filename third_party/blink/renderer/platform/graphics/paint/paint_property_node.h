@@ -10,6 +10,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/trees/property_tree.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -151,7 +152,8 @@ class PaintPropertyNode
   }
 
   int CcNodeId(int sequence_number) const {
-    return cc_sequence_number_ == sequence_number ? cc_node_id_ : -1;
+    return cc_sequence_number_ == sequence_number ? cc_node_id_
+                                                  : cc::kInvalidPropertyNodeId;
   }
   void SetCcNodeId(int sequence_number, int id) const {
     cc_sequence_number_ = sequence_number;
@@ -266,7 +268,7 @@ class PaintPropertyNode
 
   // Caches the id of the associated cc property node. It's valid only when
   // cc_sequence_number_ matches the sequence number of the cc property tree.
-  mutable int cc_node_id_ = -1;
+  mutable int cc_node_id_ = cc::kInvalidPropertyNodeId;
   mutable int cc_sequence_number_ = 0;
 
   scoped_refptr<const NodeTypeOrAlias> parent_;

@@ -753,7 +753,8 @@ void PaintArtifactCompositor::Update(
   for (auto& request : transition_requests)
     host->AddDocumentTransitionRequest(std::move(request));
 
-  host->property_trees()->scroll_tree.SetScrollCallbacks(scroll_callbacks_);
+  host->property_trees()->scroll_tree_mutable().SetScrollCallbacks(
+      scroll_callbacks_);
   root_layer_->set_property_tree_sequence_number(
       g_s_property_tree_sequence_number);
 
@@ -783,7 +784,8 @@ void PaintArtifactCompositor::Update(
     entry.in_use = false;
 
   host->property_trees()
-      ->document_transition_layer_to_effect_node_index.clear();
+      ->effect_tree_mutable()
+      .ClearSharedElementResourceIdToNodeMap();
   cc::LayerSelection layer_selection;
   for (const auto& pending_layer : pending_layers_) {
     const auto& property_state = pending_layer.GetPropertyTreeState();
@@ -812,7 +814,7 @@ void PaintArtifactCompositor::Update(
       static_cast<cc::PictureLayer*>(layer.get())
           ->SetIsBackdropFilterMask(true);
       layer->SetElementId(effect.GetCompositorElementId());
-      auto& effect_tree = host->property_trees()->effect_tree;
+      auto& effect_tree = host->property_trees()->effect_tree_mutable();
       auto* cc_node = effect_tree.Node(effect_id);
       effect_tree.Node(cc_node->parent_id)->backdrop_mask_element_id =
           effect.GetCompositorElementId();
@@ -854,8 +856,8 @@ void PaintArtifactCompositor::Update(
     auto shared_element_id = layer->DocumentTransitionResourceId();
     if (shared_element_id.IsValid()) {
       host->property_trees()
-          ->document_transition_layer_to_effect_node_index[shared_element_id] =
-          effect_id;
+          ->effect_tree_mutable()
+          .SetSharedElementResourceIdForNodeId(effect_id, shared_element_id);
     }
   }
 
@@ -875,7 +877,8 @@ void PaintArtifactCompositor::Update(
   // This should be done before
   // property_tree_manager.UpdateConditionalRenderSurfaceReasons() for which to
   // get property tree node ids from the layers.
-  host->property_trees()->sequence_number = g_s_property_tree_sequence_number;
+  host->property_trees()->set_sequence_number(
+      g_s_property_tree_sequence_number);
 
   auto layers = layer_list_builder.Finalize();
   property_tree_manager.UpdateConditionalRenderSurfaceReasons(layers);
@@ -885,7 +888,7 @@ void PaintArtifactCompositor::Update(
   host->UpdateActiveElements();
 
   // Mark the property trees as having been rebuilt.
-  host->property_trees()->needs_rebuild = false;
+  host->property_trees()->set_needs_rebuild(false);
   host->property_trees()->ResetCachedData();
   previous_update_for_testing_ = PreviousUpdateType::kFull;
   needs_update_ = false;
@@ -1107,7 +1110,7 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
   if (!root_layer_ || !root_layer_->layer_tree_host())
     return false;
   auto* property_trees = root_layer_->layer_tree_host()->property_trees();
-  if (!property_trees->element_id_to_scroll_node_index.contains(element_id))
+  if (!property_trees->scroll_tree().FindNodeFromElementId(element_id))
     return false;
   PropertyTreeManager::DirectlySetScrollOffset(*root_layer_->layer_tree_host(),
                                                element_id, scroll_offset);

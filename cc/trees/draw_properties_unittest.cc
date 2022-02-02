@@ -62,8 +62,8 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
                                    const gfx::Vector2dF& delta) {
     if (layer_impl->layer_tree_impl()
             ->property_trees()
-            ->scroll_tree.SetScrollOffsetDeltaForTesting(
-                layer_impl->element_id(), delta))
+            ->scroll_tree_mutable()
+            .SetScrollOffsetDeltaForTesting(layer_impl->element_id(), delta))
       layer_impl->layer_tree_impl()->DidUpdateScrollOffset(
           layer_impl->element_id());
   }
@@ -223,9 +223,9 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   LayerImpl* layer = AddLayer<LayerImpl>();
 
   TransformTree& transform_tree =
-      host_impl()->active_tree()->property_trees()->transform_tree;
+      host_impl()->active_tree()->property_trees()->transform_tree_mutable();
   EffectTree& effect_tree =
-      host_impl()->active_tree()->property_trees()->effect_tree;
+      host_impl()->active_tree()->property_trees()->effect_tree_mutable();
 
   root->SetBounds(gfx::Size(1, 2));
   CopyProperties(root, layer);
@@ -338,7 +338,7 @@ TEST_F(DrawPropertiesTest, TransformsAboutScrollOffset) {
                 scroll_layer->bounds().height() - kMaxScrollOffset.y()));
   CopyProperties(scroll_layer, sublayer);
 
-  auto& scroll_tree = GetPropertyTrees(scroll_layer)->scroll_tree;
+  auto& scroll_tree = GetPropertyTrees(scroll_layer)->scroll_tree_mutable();
   scroll_tree.UpdateScrollOffsetBaseForTesting(scroll_layer->element_id(),
                                                kScrollOffset);
   SetScrollOffsetDelta(scroll_layer, kScrollDelta);
@@ -375,7 +375,7 @@ TEST_F(DrawPropertiesTest, TransformsAboutScrollOffset) {
   page_scale = 1.888f;
 
   host_impl()->active_tree()->SetPageScaleOnActiveTree(page_scale);
-  EXPECT_FALSE(host_impl()->active_tree()->property_trees()->needs_rebuild);
+  EXPECT_FALSE(host_impl()->active_tree()->property_trees()->needs_rebuild());
   UpdateActiveTreeDrawProperties(kDeviceScale);
 
   expected_transform.MakeIdentity();
@@ -399,9 +399,9 @@ TEST_F(DrawPropertiesTest, TransformsForSimpleHierarchy) {
   root->SetBounds(gfx::Size(1, 2));
 
   TransformTree& transform_tree =
-      host_impl()->active_tree()->property_trees()->transform_tree;
+      host_impl()->active_tree()->property_trees()->transform_tree_mutable();
   EffectTree& effect_tree =
-      host_impl()->active_tree()->property_trees()->effect_tree;
+      host_impl()->active_tree()->property_trees()->effect_tree_mutable();
 
   // Case 1: parent's anchor point should not affect child or grand_child.
   parent->SetBounds(gfx::Size(10, 12));
@@ -2953,7 +2953,8 @@ TEST_F(DrawPropertiesTest,
   // consideration.
   root->layer_tree_impl()
       ->property_trees()
-      ->effect_tree.Node(child1->effect_tree_index())
+      ->effect_tree_mutable()
+      .Node(child1->effect_tree_index())
       ->backdrop_filters.Append(
           FilterOperation::CreateZoomFilter(1.f /* zoom */, 0 /* inset */));
 
@@ -3521,7 +3522,7 @@ TEST_F(DrawPropertiesTest, OpacityAnimatingOnPendingTree) {
   UpdatePendingTreeDrawProperties();
 
   EXPECT_TRUE(GetEffectNode(child)->is_drawn);
-  EXPECT_TRUE(GetPropertyTrees(root)->effect_tree.ContributesToDrawnSurface(
+  EXPECT_TRUE(GetPropertyTrees(root)->effect_tree().ContributesToDrawnSurface(
       child->effect_tree_index()));
 
   // But if the opacity of the layer remains 0 after activation, it should not
@@ -3530,7 +3531,8 @@ TEST_F(DrawPropertiesTest, OpacityAnimatingOnPendingTree) {
   LayerTreeImpl* active_tree = host_impl()->active_tree();
   LayerImpl* active_child = active_tree->LayerById(child->id());
 
-  EffectTree& active_effect_tree = active_tree->property_trees()->effect_tree;
+  const EffectTree& active_effect_tree =
+      active_tree->property_trees()->effect_tree();
   EXPECT_TRUE(active_effect_tree.needs_update());
 
   UpdateActiveTreeDrawProperties();
@@ -4729,8 +4731,9 @@ class DrawPropertiesStickyPositionTest : public DrawPropertiesTest {
   }
 
   StickyPositionNodeData& EnsureStickyData(Layer* layer) {
-    return GetPropertyTrees(layer)->transform_tree.EnsureStickyPositionData(
-        layer->transform_tree_index());
+    return GetPropertyTrees(layer)
+        ->transform_tree_mutable()
+        .EnsureStickyPositionData(layer->transform_tree_index());
   }
 
   scoped_refptr<Layer> root_;
@@ -4956,7 +4959,8 @@ TEST_F(DrawPropertiesStickyPositionTest,
 
   SetPostTranslation(sticky_pos_.get(), gfx::Vector2dF(0, 70));
   GetPropertyTrees(sticky_pos_.get())
-      ->transform_tree.AddNodeAffectedByOuterViewportBoundsDelta(
+      ->transform_tree_mutable()
+      .AddNodeAffectedByOuterViewportBoundsDelta(
           sticky_pos_->transform_tree_index());
   auto& sticky_position = EnsureStickyData(sticky_pos_.get()).constraints;
   sticky_position.is_anchored_bottom = true;
@@ -5126,7 +5130,9 @@ TEST_F(DrawPropertiesStickyPositionTest, StickyPositionMainThreadUpdates) {
   // Shift the layer by -offset_for_position_sticky.
   SetPostTranslation(sticky_pos_.get(),
                      gfx::PointF(10, 25) - gfx::PointF(0, 5));
-  GetPropertyTrees(scroller_.get())->transform_tree.set_needs_update(true);
+  GetPropertyTrees(scroller_.get())
+      ->transform_tree_mutable()
+      .set_needs_update(true);
 
   CommitAndUpdateImplPointers();
 
@@ -6583,7 +6589,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
   CommitAndActivate();
   EXPECT_EQ(gfx::Rect(10, 10), ImplOf(grandchild)->visible_layer_rect());
 
-  GetPropertyTrees(root.get())->effect_tree.ClearCopyRequests();
+  GetPropertyTrees(root.get())->effect_tree_mutable().ClearCopyRequests();
   child->SetOpacity(1.f);
 
   // A double sided render surface with backface visible should not be skipped
@@ -6692,7 +6698,7 @@ TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
   SetTransform(child, gfx::Transform());
   grand_child->set_visible_layer_rect(gfx::Rect());
   child->set_visible_layer_rect(gfx::Rect());
-  root->layer_tree_impl()->property_trees()->needs_rebuild = true;
+  root->layer_tree_impl()->property_trees()->set_needs_rebuild(true);
   UpdateActiveTreeDrawProperties();
   ASSERT_EQ(gfx::Rect(10, 10), grand_child->visible_layer_rect());
   ASSERT_EQ(gfx::Rect(10, 10), child->visible_layer_rect());
@@ -7692,7 +7698,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, CopyRequestScalingTest) {
             ImplOf(test_layer)->visible_drawable_content_rect());
 
   // Clear the copy request and call UpdateSurfaceContentsScale.
-  GetPropertyTrees(root.get())->effect_tree.ClearCopyRequests();
+  GetPropertyTrees(root.get())->effect_tree_mutable().ClearCopyRequests();
   CommitAndActivate();
 }
 

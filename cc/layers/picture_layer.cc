@@ -246,7 +246,7 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
     return;
 
   // We could run into this situation as CaptureContent could start at any time.
-  if (transform_tree_index() == TransformTree::kInvalidNodeId)
+  if (transform_tree_index() == kInvalidPropertyNodeId)
     return;
 
   gfx::Transform inverse_screen_space_transform;

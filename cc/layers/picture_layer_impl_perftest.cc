@@ -97,8 +97,9 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     host_impl()
         ->pending_tree()
         ->property_trees()
-        ->scroll_tree.UpdateScrollOffsetBaseForTesting(
-            pending_layer_->element_id(), gfx::PointF(viewport.origin()));
+        ->scroll_tree_mutable()
+        .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
+                                          gfx::PointF(viewport.origin()));
     host_impl()->pending_tree()->UpdateDrawProperties();
 
     timer_.Reset();
@@ -144,8 +145,9 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     host_impl()
         ->pending_tree()
         ->property_trees()
-        ->scroll_tree.UpdateScrollOffsetBaseForTesting(
-            pending_layer_->element_id(), gfx::PointF(viewport.origin()));
+        ->scroll_tree_mutable()
+        .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
+                                          gfx::PointF(viewport.origin()));
     host_impl()->pending_tree()->UpdateDrawProperties();
 
     timer_.Reset();

@@ -88,7 +88,7 @@ void ConfigureAndroidCompositing(WebSettings* settings) {
 }
 
 const cc::EffectNode* GetEffectNode(const cc::Layer* layer) {
-  return layer->layer_tree_host()->property_trees()->effect_tree.Node(
+  return layer->layer_tree_host()->property_trees()->effect_tree().Node(
       layer->effect_tree_index());
 }
 
@@ -2301,18 +2301,20 @@ TEST_P(VisualViewportTest, EnsureEffectNodeForScrollbars) {
   EXPECT_EQ(vertical_scrollbar->effect_tree_index(),
             vertical_scrollbar->layer_tree_host()
                 ->property_trees()
-                ->element_id_to_effect_node_index
-                    [visual_viewport.GetScrollbarElementId(
-                        ScrollbarOrientation::kVerticalScrollbar)]);
+                ->effect_tree()
+                .FindNodeFromElementId((visual_viewport.GetScrollbarElementId(
+                    ScrollbarOrientation::kVerticalScrollbar)))
+                ->id);
   EXPECT_EQ(vertical_scrollbar->offset_to_transform_parent(),
             gfx::Vector2dF(400 - scrollbar_thickness, 0));
 
   EXPECT_EQ(horizontal_scrollbar->effect_tree_index(),
             horizontal_scrollbar->layer_tree_host()
                 ->property_trees()
-                ->element_id_to_effect_node_index
-                    [visual_viewport.GetScrollbarElementId(
-                        ScrollbarOrientation::kHorizontalScrollbar)]);
+                ->effect_tree()
+                .FindNodeFromElementId(visual_viewport.GetScrollbarElementId(
+                    ScrollbarOrientation::kHorizontalScrollbar))
+                ->id);
   EXPECT_EQ(horizontal_scrollbar->offset_to_transform_parent(),
             gfx::Vector2dF(0, 400 - scrollbar_thickness));
 
@@ -2611,11 +2613,11 @@ TEST_P(VisualViewportTest, PaintScrollbar) {
 
     gfx::Transform transform;
     transform.Scale(scale, scale);
-    EXPECT_EQ(transform,
-              scrollbar->layer_tree_host()
-                  ->property_trees()
-                  ->transform_tree.Node(scrollbar->transform_tree_index())
-                  ->local);
+    EXPECT_EQ(transform, scrollbar->layer_tree_host()
+                             ->property_trees()
+                             ->transform_tree()
+                             .Node(scrollbar->transform_tree_index())
+                             ->local);
   };
 
   // The last layer should be the vertical scrollbar.
@@ -2756,7 +2758,7 @@ TEST_P(VisualViewportTest, SetLocationBeforePrePaint) {
   auto* layer_tree_host = GetFrame()->View()->RootCcLayer()->layer_tree_host();
   EXPECT_EQ(
       gfx::PointF(12, 34),
-      layer_tree_host->property_trees()->scroll_tree.current_scroll_offset(
+      layer_tree_host->property_trees()->scroll_tree().current_scroll_offset(
           visual_viewport.GetScrollElementId()));
 }
 

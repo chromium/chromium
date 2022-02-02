@@ -193,11 +193,13 @@ class LayerTreeHostCaptureContentTestTwoLayers
     TransformNode transform_node;
     transform_node.local.Translate(translate);
     transform_node.id =
-        layer_tree_host()->property_trees()->transform_tree.Insert(
+        layer_tree_host()->property_trees()->transform_tree_mutable().Insert(
             transform_node, 0);
     picture_layer->SetTransformTreeIndex(transform_node.id);
-    layer_tree_host()->property_trees()->transform_tree.UpdateTransforms(
-        transform_node.id);
+    layer_tree_host()
+        ->property_trees()
+        ->transform_tree_mutable()
+        .UpdateTransforms(transform_node.id);
   }
 
   void SetupSecondaryPictureLayer(const gfx::Size& size) {

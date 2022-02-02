@@ -10,11 +10,11 @@ EffectTreeLayerListIterator::EffectTreeLayerListIterator(
     LayerTreeImpl* layer_tree_impl)
     : state_(EffectTreeLayerListIterator::State::END),
       layer_list_iterator_(layer_tree_impl->rbegin()),
-      current_effect_tree_index_(EffectTree::kInvalidNodeId),
-      next_effect_tree_index_(EffectTree::kInvalidNodeId),
-      lowest_common_effect_tree_ancestor_index_(EffectTree::kInvalidNodeId),
+      current_effect_tree_index_(kInvalidPropertyNodeId),
+      next_effect_tree_index_(kInvalidPropertyNodeId),
+      lowest_common_effect_tree_ancestor_index_(kInvalidPropertyNodeId),
       layer_tree_impl_(layer_tree_impl),
-      effect_tree_(&layer_tree_impl->property_trees()->effect_tree) {
+      effect_tree_(&layer_tree_impl->property_trees()->effect_tree_mutable()) {
   // Find the front-most drawn layer.
   while (layer_list_iterator_ != layer_tree_impl->rend() &&
          !(*layer_list_iterator_)->contributes_to_drawn_render_surface()) {
@@ -24,9 +24,9 @@ EffectTreeLayerListIterator::EffectTreeLayerListIterator(
   // If there are no drawn layers, start at the root render surface, if it
   // exists.
   if (layer_list_iterator_ == layer_tree_impl->rend()) {
-    DCHECK(effect_tree_->size() > EffectTree::kContentsRootNodeId);
+    DCHECK(effect_tree_->size() > kContentsRootPropertyNodeId);
     state_ = State::TARGET_SURFACE;
-    current_effect_tree_index_ = EffectTree::kContentsRootNodeId;
+    current_effect_tree_index_ = kContentsRootPropertyNodeId;
   } else {
     state_ = State::LAYER;
     current_effect_tree_index_ =
@@ -51,8 +51,8 @@ void EffectTreeLayerListIterator::operator++() {
         ++layer_list_iterator_;
       }
       if (layer_list_iterator_ == layer_tree_impl_->rend()) {
-        next_effect_tree_index_ = EffectTree::kInvalidNodeId;
-        lowest_common_effect_tree_ancestor_index_ = EffectTree::kInvalidNodeId;
+        next_effect_tree_index_ = kInvalidPropertyNodeId;
+        lowest_common_effect_tree_ancestor_index_ = kInvalidPropertyNodeId;
         state_ = State::TARGET_SURFACE;
         break;
       }
@@ -80,10 +80,10 @@ void EffectTreeLayerListIterator::operator++() {
       }
       break;
     case State::TARGET_SURFACE:
-      if (current_effect_tree_index_ == EffectTree::kContentsRootNodeId) {
-        current_effect_tree_index_ = EffectTree::kInvalidNodeId;
+      if (current_effect_tree_index_ == kContentsRootPropertyNodeId) {
+        current_effect_tree_index_ = kInvalidPropertyNodeId;
         state_ = State::END;
-        DCHECK(next_effect_tree_index_ == EffectTree::kInvalidNodeId);
+        DCHECK(next_effect_tree_index_ == kInvalidPropertyNodeId);
         DCHECK(layer_list_iterator_ == layer_tree_impl_->rend());
       } else {
         state_ = State::CONTRIBUTING_SURFACE;

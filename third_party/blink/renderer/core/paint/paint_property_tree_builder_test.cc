@@ -6585,7 +6585,8 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleOpacityChangeDoesNotCausePacUpdate) {
       GetChromeClient()
           .layer_tree_host()
           ->property_trees()
-          ->effect_tree.FindNodeFromElementId(
+          ->effect_tree_mutable()
+          .FindNodeFromElementId(
               properties->Effect()->GetCompositorElementId());
   ASSERT_TRUE(cc_effect);
   EXPECT_FLOAT_EQ(cc_effect->opacity, 0.5f);
@@ -6593,7 +6594,8 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleOpacityChangeDoesNotCausePacUpdate) {
   EXPECT_FALSE(GetChromeClient()
                    .layer_tree_host()
                    ->property_trees()
-                   ->effect_tree.needs_update());
+                   ->effect_tree()
+                   .needs_update());
 
   Element* element = GetDocument().getElementById("element");
   element->setAttribute(html_names::kStyleAttr, "opacity: 0.9");
@@ -6606,7 +6608,8 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleOpacityChangeDoesNotCausePacUpdate) {
   EXPECT_TRUE(GetChromeClient()
                   .layer_tree_host()
                   ->property_trees()
-                  ->effect_tree.needs_update());
+                  ->effect_tree()
+                  .needs_update());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
@@ -6638,19 +6641,22 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
   EXPECT_FALSE(pac->NeedsUpdate());
 
   auto* property_trees = GetChromeClient().layer_tree_host()->property_trees();
-  auto* cc_scroll_node = property_trees->scroll_tree.FindNodeFromElementId(
-      properties->ScrollTranslation()->ScrollNode()->GetCompositorElementId());
+  const auto* cc_scroll_node =
+      property_trees->scroll_tree().FindNodeFromElementId(
+          properties->ScrollTranslation()
+              ->ScrollNode()
+              ->GetCompositorElementId());
   ASSERT_TRUE(cc_scroll_node);
 
-  auto* cc_transform_node =
-      property_trees->transform_tree.Node(cc_scroll_node->transform_id);
+  const auto* cc_transform_node =
+      property_trees->transform_tree().Node(cc_scroll_node->transform_id);
   ASSERT_TRUE(cc_transform_node);
 
   EXPECT_TRUE(cc_transform_node->local.IsIdentity());
   EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.x(), 0);
   EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.y(), 0);
   auto current_scroll_offset =
-      property_trees->scroll_tree.current_scroll_offset(
+      property_trees->scroll_tree().current_scroll_offset(
           properties->ScrollTranslation()
               ->ScrollNode()
               ->GetCompositorElementId());
@@ -6666,11 +6672,11 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
   EXPECT_TRUE(cc_transform_node->local.IsIdentity());
   EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.x(), 0);
   EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.y(), 10);
-  current_scroll_offset = property_trees->scroll_tree.current_scroll_offset(
+  current_scroll_offset = property_trees->scroll_tree().current_scroll_offset(
       properties->ScrollTranslation()->ScrollNode()->GetCompositorElementId());
   EXPECT_FLOAT_EQ(current_scroll_offset.x(), 0);
   EXPECT_FLOAT_EQ(current_scroll_offset.y(), 10);
-  EXPECT_TRUE(property_trees->transform_tree.needs_update());
+  EXPECT_TRUE(property_trees->transform_tree().needs_update());
   EXPECT_TRUE(cc_transform_node->transform_changed);
 
   UpdateAllLifecyclePhasesForTest();

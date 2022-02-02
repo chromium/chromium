@@ -73,10 +73,14 @@ void ClearDamageForAllSurfaces(LayerImpl* root) {
 }
 
 void SetCopyRequest(LayerImpl* root) {
-  auto* root_node = root->layer_tree_impl()->property_trees()->effect_tree.Node(
-      root->effect_tree_index());
+  auto* root_node =
+      root->layer_tree_impl()->property_trees()->effect_tree_mutable().Node(
+          root->effect_tree_index());
   root_node->has_copy_request = true;
-  root->layer_tree_impl()->property_trees()->effect_tree.set_needs_update(true);
+  root->layer_tree_impl()
+      ->property_trees()
+      ->effect_tree_mutable()
+      .set_needs_update(true);
 }
 
 class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
@@ -250,7 +254,8 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
     // consideration.
     root->layer_tree_impl()
         ->property_trees()
-        ->effect_tree.Node(child1_->effect_tree_index())
+        ->effect_tree_mutable()
+        .Node(child1_->effect_tree_index())
         ->backdrop_filters.Append(
             FilterOperation::CreateZoomFilter(2.f /* zoom */, 0 /* inset */));
 

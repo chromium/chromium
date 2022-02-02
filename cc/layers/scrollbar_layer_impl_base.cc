@@ -86,7 +86,7 @@ float ScrollbarLayerImplBase::vertical_adjust() const {
 bool ScrollbarLayerImplBase::CanScrollOrientation() const {
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
   const auto* scroll_node =
-      property_trees->scroll_tree.FindNodeFromElementId(scroll_element_id_);
+      property_trees->scroll_tree().FindNodeFromElementId(scroll_element_id_);
   DCHECK(scroll_node);
   // TODO(bokan): Looks like we sometimes get here without a ScrollNode. It
   // should be safe to just return false here (we don't use scroll_element_id_
@@ -267,14 +267,15 @@ void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
 
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
 
-  EffectNode* node = property_trees->effect_tree.Node(effect_tree_index());
+  EffectNode* node =
+      property_trees->effect_tree_mutable().Node(effect_tree_index());
   if (node->opacity == opacity)
     return;
 
   node->opacity = opacity;
   node->effect_changed = true;
-  property_trees->changed = true;
-  property_trees->effect_tree.set_needs_update(true);
+  property_trees->set_changed(true);
+  property_trees->effect_tree_mutable().set_needs_update(true);
   layer_tree_impl()->set_needs_update_draw_properties();
 }
 

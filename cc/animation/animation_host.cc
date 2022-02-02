@@ -396,7 +396,7 @@ AnimationHost::GetElementAnimationsForElementId(ElementId element_id) const {
 gfx::PointF AnimationHost::GetScrollOffsetForAnimation(
     ElementId element_id) const {
   DCHECK(property_trees_);
-  return property_trees_->scroll_tree.current_scroll_offset(element_id);
+  return property_trees_->scroll_tree().current_scroll_offset(element_id);
 }
 
 void AnimationHost::SetScrollAnimationDurationForTesting(

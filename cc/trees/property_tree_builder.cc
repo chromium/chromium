@@ -57,10 +57,10 @@ class PropertyTreeBuilderContext {
         root_layer_(layer_tree_host->root_layer()),
         mutator_host_(*layer_tree_host->mutator_host()),
         property_trees_(*layer_tree_host->property_trees()),
-        transform_tree_(property_trees_.transform_tree),
-        clip_tree_(property_trees_.clip_tree),
-        effect_tree_(property_trees_.effect_tree),
-        scroll_tree_(property_trees_.scroll_tree) {}
+        transform_tree_(property_trees_.transform_tree_mutable()),
+        clip_tree_(property_trees_.clip_tree_mutable()),
+        effect_tree_(property_trees_.effect_tree_mutable()),
+        scroll_tree_(property_trees_.scroll_tree_mutable()) {}
 
   void BuildPropertyTrees();
 
@@ -236,7 +236,7 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
                        has_any_transform_animation || has_surface ||
                        layer->HasRoundedCorner();
 
-  int parent_index = TransformTree::kRootNodeId;
+  int parent_index = kRootPropertyNodeId;
   gfx::Vector2dF parent_offset;
   if (!is_root) {
     parent_index = data_from_ancestor.transform_tree_parent;
@@ -262,8 +262,8 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   // For animation subsystem purposes, if this layer has a compositor element
   // id, we build a map from that id to this transform node.
   if (layer->element_id()) {
-    property_trees_.element_id_to_transform_node_index[layer->element_id()] =
-        node->id;
+    property_trees_.transform_tree_mutable().SetElementIdForNodeId(
+        node->id, layer->element_id());
     node->element_id = layer->element_id();
   }
 
@@ -534,8 +534,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
     // layer (which includes device scale factor) and the clip node created from
     // the root layer apply to the root render surface's content, but not to the
     // root render surface itself.
-    node->transform_id = TransformTree::kRootNodeId;
-    node->clip_id = ClipTree::kViewportNodeId;
+    node->transform_id = kRootPropertyNodeId;
+    node->clip_id = kViewportPropertyNodeId;
   }
 
   data_for_children->closest_ancestor_with_cached_render_surface =
@@ -550,8 +550,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   // For animation subsystem purposes, if this layer has a compositor element
   // id, we build a map from that id to this effect node.
   if (layer->element_id()) {
-    property_trees_.element_id_to_effect_node_index[layer->element_id()] =
-        node_id;
+    property_trees_.effect_tree_mutable().SetElementIdForNodeId(
+        node_id, layer->element_id());
   }
 
   std::vector<std::unique_ptr<viz::CopyOutputRequest>> layer_copy_requests;
@@ -647,8 +647,8 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
     // For animation subsystem purposes, if this layer has a compositor element
     // id, we build a map from that id to this scroll node.
     if (layer->element_id()) {
-      property_trees_.element_id_to_scroll_node_index[layer->element_id()] =
-          node_id;
+      property_trees_.scroll_tree_mutable().SetElementIdForNodeId(
+          node_id, layer->element_id());
     }
 
     if (node.scrollable) {
@@ -675,7 +675,7 @@ void SetSafeOpaqueBackgroundColor(const DataForRecursion& data_from_ancestor,
 void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
     Layer* layer,
     const DataForRecursion& data_from_parent) const {
-  layer->set_property_tree_sequence_number(property_trees_.sequence_number);
+  layer->set_property_tree_sequence_number(property_trees_.sequence_number());
 
   DataForRecursion data_for_children(data_from_parent);
   *data_for_children.subtree_has_rounded_corner = false;
@@ -717,12 +717,12 @@ void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
 }
 
 void PropertyTreeBuilderContext::BuildPropertyTrees() {
-  property_trees_.is_main_thread = true;
-  property_trees_.is_active = false;
+  property_trees_.set_is_main_thread(true);
+  property_trees_.set_is_active(false);
 
   UpdateSubtreeHasCopyRequestRecursive(root_layer_);
 
-  if (!property_trees_.needs_rebuild) {
+  if (!property_trees_.needs_rebuild()) {
     clip_tree_.SetViewportClip(
         gfx::RectF(layer_tree_host_->device_viewport_rect()));
     // SetRootScaleAndTransform will be incorrect if the root layer has
@@ -734,16 +734,15 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   }
 
   DataForRecursion data_for_recursion;
-  data_for_recursion.transform_tree_parent = TransformTree::kInvalidNodeId;
-  data_for_recursion.clip_tree_parent = ClipTree::kRootNodeId;
-  data_for_recursion.effect_tree_parent = EffectTree::kInvalidNodeId;
-  data_for_recursion.scroll_tree_parent = ScrollTree::kRootNodeId;
+  data_for_recursion.transform_tree_parent = kInvalidPropertyNodeId;
+  data_for_recursion.clip_tree_parent = kRootPropertyNodeId;
+  data_for_recursion.effect_tree_parent = kInvalidPropertyNodeId;
+  data_for_recursion.scroll_tree_parent = kRootPropertyNodeId;
   data_for_recursion.closest_ancestor_with_cached_render_surface =
-      EffectTree::kInvalidNodeId;
+      kInvalidPropertyNodeId;
   data_for_recursion.closest_ancestor_with_copy_request =
-      EffectTree::kInvalidNodeId;
-  data_for_recursion.closest_ancestor_being_captured =
-      EffectTree::kInvalidNodeId;
+      kInvalidPropertyNodeId;
+  data_for_recursion.closest_ancestor_being_captured = kInvalidPropertyNodeId;
   data_for_recursion.compound_transform_since_render_target = gfx::Transform();
   data_for_recursion.animation_axis_aligned_since_render_target = true;
   data_for_recursion.not_axis_aligned_since_last_clip = false;
@@ -759,15 +758,15 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   ClipNode root_clip;
   root_clip.clip_type = ClipNode::ClipType::APPLIES_LOCAL_CLIP;
   root_clip.clip = gfx::RectF(layer_tree_host_->device_viewport_rect());
-  root_clip.transform_id = TransformTree::kRootNodeId;
+  root_clip.transform_id = kRootPropertyNodeId;
   data_for_recursion.clip_tree_parent =
-      clip_tree_.Insert(root_clip, ClipTree::kRootNodeId);
+      clip_tree_.Insert(root_clip, kRootPropertyNodeId);
 
   bool subtree_has_rounded_corner;
   data_for_recursion.subtree_has_rounded_corner = &subtree_has_rounded_corner;
 
   BuildPropertyTreesInternal(root_layer_, data_for_recursion);
-  property_trees_.needs_rebuild = false;
+  property_trees_.set_needs_rebuild(false);
 
   // The transform tree is kept up to date as it is built, but the
   // combined_clips stored in the clip tree and the screen_space_opacity and

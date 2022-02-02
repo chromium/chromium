@@ -39,18 +39,18 @@ static void AssertValidPropertyTreeIndices(
 static void AssertValidPropertyTreeIndices(const LayerImpl* layer,
                                            const PropertyTrees&) {
   DCHECK(layer);
-  DCHECK_NE(layer->transform_tree_index(), TransformTree::kInvalidNodeId);
-  DCHECK_NE(layer->effect_tree_index(), EffectTree::kInvalidNodeId);
-  DCHECK_NE(layer->clip_tree_index(), ClipTree::kInvalidNodeId);
-  DCHECK_NE(layer->scroll_tree_index(), ScrollTree::kInvalidNodeId);
+  DCHECK_NE(layer->transform_tree_index(), kInvalidPropertyNodeId);
+  DCHECK_NE(layer->effect_tree_index(), kInvalidPropertyNodeId);
+  DCHECK_NE(layer->clip_tree_index(), kInvalidPropertyNodeId);
+  DCHECK_NE(layer->scroll_tree_index(), kInvalidPropertyNodeId);
 }
 
 static bool LayerHasValidPropertyTreeIndices(const LayerImpl* layer) {
   DCHECK(layer);
-  return layer->transform_tree_index() != TransformTree::kInvalidNodeId &&
-         layer->effect_tree_index() != EffectTree::kInvalidNodeId &&
-         layer->clip_tree_index() != ClipTree::kInvalidNodeId &&
-         layer->scroll_tree_index() != ScrollTree::kInvalidNodeId;
+  return layer->transform_tree_index() != kInvalidPropertyNodeId &&
+         layer->effect_tree_index() != kInvalidPropertyNodeId &&
+         layer->clip_tree_index() != kInvalidPropertyNodeId &&
+         layer->scroll_tree_index() != kInvalidPropertyNodeId;
 }
 
 static bool LayerWillPushProperties(const ThreadUnsafeCommitState* unsafe_state,

@@ -28,9 +28,10 @@ void SetScrollOffset(PropertyTrees* property_trees,
                      ElementId scroller_id,
                      gfx::PointF offset) {
   // Update both scroll and transform trees
-  property_trees->scroll_tree.SetScrollOffset(scroller_id, offset);
+  property_trees->scroll_tree_mutable().SetScrollOffset(scroller_id, offset);
   TransformNode* transform_node =
-      property_trees->transform_tree.FindNodeFromElementId(scroller_id);
+      property_trees->transform_tree_mutable().FindNodeFromElementId(
+          scroller_id);
   transform_node->scroll_offset = offset;
   transform_node->needs_local_transform_update = true;
 }
@@ -43,9 +44,9 @@ void CreateScrollingElement(PropertyTrees* property_trees,
   TransformNode transform_node;
   transform_node.scrolls = true;
   int transform_node_id =
-      property_trees->transform_tree.Insert(transform_node, 0);
-  property_trees->element_id_to_transform_node_index[scroller_id] =
-      transform_node_id;
+      property_trees->transform_tree_mutable().Insert(transform_node, 0);
+  property_trees->transform_tree_mutable().SetElementIdForNodeId(
+      transform_node_id, scroller_id);
 
   // Add the scrolling node for the scrolling and link it to the above transform
   // node.
@@ -55,9 +56,11 @@ void CreateScrollingElement(PropertyTrees* property_trees,
   scroll_node.container_bounds = container_size;
   scroll_node.element_id = scroller_id;
   scroll_node.transform_id = transform_node_id;
-  int scroll_node_id = property_trees->scroll_tree.Insert(scroll_node, 0);
+  int scroll_node_id =
+      property_trees->scroll_tree_mutable().Insert(scroll_node, 0);
 
-  property_trees->element_id_to_scroll_node_index[scroller_id] = scroll_node_id;
+  property_trees->scroll_tree_mutable().SetElementIdForNodeId(scroll_node_id,
+                                                              scroller_id);
 }
 
 // Helper method to calculate the current time, implementing only step 5 of
@@ -87,8 +90,8 @@ class ScrollTimelineTest : public ::testing::Test {
       : scroller_id_(1), container_size_(100, 100), content_size_(500, 500) {
     // For simplicity we make the property_tree main thread; this avoids the
     // need to deal with the synced scroll offset code.
-    property_trees_.is_main_thread = true;
-    property_trees_.is_active = false;
+    property_trees_.set_is_main_thread(true);
+    property_trees_.set_is_active(false);
 
     // Create a single scroller that is scrolling a 500x500 contents inside a
     // 100x100 container.
@@ -98,7 +101,7 @@ class ScrollTimelineTest : public ::testing::Test {
 
   PropertyTrees& property_trees() { return property_trees_; }
 
-  ScrollTree& scroll_tree() { return property_trees_.scroll_tree; }
+  ScrollTree& scroll_tree() { return property_trees_.scroll_tree_mutable(); }
   ElementId scroller_id() const { return scroller_id_; }
   gfx::Size container_size() const { return container_size_; }
   gfx::Size content_size() const { return content_size_; }
@@ -257,13 +260,13 @@ TEST_F(ScrollTimelineTest, ActiveTimeIsSetOnlyAfterPromotion) {
   PropertyTrees pending_tree;
   PropertyTrees active_tree;
 
-  pending_tree.is_active = false;
-  active_tree.is_active = true;
+  pending_tree.set_is_active(false);
+  active_tree.set_is_active(true);
 
   // For simplicity we pretend the trees are main thread; this avoids the need
   // to deal with the synced scroll offset code.
-  pending_tree.is_main_thread = true;
-  active_tree.is_main_thread = true;
+  pending_tree.set_is_main_thread(true);
+  active_tree.set_is_main_thread(true);
 
   // Initially only the pending tree has the scroll node.
   ElementId scroller_id(1);
@@ -289,10 +292,10 @@ TEST_F(ScrollTimelineTest, ActiveTimeIsSetOnlyAfterPromotion) {
       ToScrollTimeline(main_timeline->CreateImplInstance().get()));
 
   EXPECT_TRUE(std::isnan(
-      ToDouble(impl_timeline->CurrentTime(active_tree.scroll_tree, true))));
+      ToDouble(impl_timeline->CurrentTime(active_tree.scroll_tree(), true))));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       expectedTime,
-      impl_timeline->CurrentTime(pending_tree.scroll_tree, false));
+      impl_timeline->CurrentTime(pending_tree.scroll_tree(), false));
 
   // Now fake a tree activation; this should cause the ScrollTimeline to update
   // its active scroller id. Note that we deliberately pass in the pending_tree
@@ -300,10 +303,11 @@ TEST_F(ScrollTimelineTest, ActiveTimeIsSetOnlyAfterPromotion) {
   // implement tree swapping just for the test.
   impl_timeline->ActivateTimeline();
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
-      expectedTime, impl_timeline->CurrentTime(pending_tree.scroll_tree, true));
+      expectedTime,
+      impl_timeline->CurrentTime(pending_tree.scroll_tree(), true));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       expectedTime,
-      impl_timeline->CurrentTime(pending_tree.scroll_tree, false));
+      impl_timeline->CurrentTime(pending_tree.scroll_tree(), false));
 }
 
 TEST_F(ScrollTimelineTest, CurrentTimeIsAdjustedForPixelSnapping) {
@@ -319,7 +323,8 @@ TEST_F(ScrollTimelineTest, CurrentTimeIsAdjustedForPixelSnapping) {
   // For simplicity emulate snapping by directly setting snap_amount of
   // transform node.
   TransformNode* transform_node =
-      property_trees().transform_tree.FindNodeFromElementId(scroller_id());
+      property_trees().transform_tree_mutable().FindNodeFromElementId(
+          scroller_id());
   transform_node->snap_amount = gfx::Vector2dF(0, 0.5);
 
   // Scale necessary to convert absolute unit times to progress based values

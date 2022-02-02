@@ -170,7 +170,7 @@ TEST_F(LayerTreeImplTest, UpdateViewportAndHitTest) {
   UpdateDrawProperties(host_impl().active_tree());
   EXPECT_EQ(
       gfx::RectF(gfx::SizeF(bounds)),
-      host_impl().active_tree()->property_trees()->clip_tree.ViewportClip());
+      host_impl().active_tree()->property_trees()->clip_tree().ViewportClip());
   EXPECT_EQ(gfx::Rect(bounds), root->visible_layer_rect());
 
   gfx::Size new_bounds(50, 50);
@@ -179,7 +179,7 @@ TEST_F(LayerTreeImplTest, UpdateViewportAndHitTest) {
   host_impl().active_tree()->FindLayerThatIsHitByPoint(test_point);
   EXPECT_EQ(
       gfx::RectF(gfx::SizeF(new_bounds)),
-      host_impl().active_tree()->property_trees()->clip_tree.ViewportClip());
+      host_impl().active_tree()->property_trees()->clip_tree().ViewportClip());
   EXPECT_EQ(gfx::Rect(new_bounds), root->visible_layer_rect());
 }
 
@@ -1715,7 +1715,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
       expected_screen_space_transform,
       draw_property_utils::ScreenSpaceTransform(
           test_layer,
-          host_impl().active_tree()->property_trees()->transform_tree));
+          host_impl().active_tree()->property_trees()->transform_tree()));
 
   // We change the position of the test layer such that the test point is now
   // inside the test_layer.
@@ -1735,7 +1735,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
       expected_screen_space_transform,
       draw_property_utils::ScreenSpaceTransform(
           test_layer,
-          host_impl().active_tree()->property_trees()->transform_tree));
+          host_impl().active_tree()->property_trees()->transform_tree()));
 }
 
 TEST_F(LayerTreeImplTest, SelectionBoundsForSingleLayer) {

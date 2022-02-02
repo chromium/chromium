@@ -2516,7 +2516,7 @@ DOMRectList* Internals::nonFastScrollableRects(
       // Map |layer_rect| into screen space.
       layer_rect.Offset(layer->offset_to_transform_parent());
       auto& transform_tree =
-          layer->layer_tree_host()->property_trees()->transform_tree;
+          layer->layer_tree_host()->property_trees()->transform_tree_mutable();
       transform_tree.UpdateTransforms(layer->transform_tree_index());
       const gfx::Transform& to_screen =
           transform_tree.ToScreen(layer->transform_tree_index());

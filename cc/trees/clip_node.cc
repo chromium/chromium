@@ -13,11 +13,10 @@
 namespace cc {
 
 ClipNode::ClipNode()
-    : id(ClipTree::kInvalidNodeId),
-      parent_id(ClipTree::kInvalidNodeId),
+    : id(kInvalidPropertyNodeId),
+      parent_id(kInvalidPropertyNodeId),
       clip_type(ClipType::APPLIES_LOCAL_CLIP),
-      transform_id(TransformTree::kInvalidNodeId) {
-}
+      transform_id(kInvalidPropertyNodeId) {}
 
 ClipNode::ClipNode(const ClipNode& other) = default;
 

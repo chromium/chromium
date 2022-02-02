@@ -276,10 +276,10 @@ TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
   EXPECT_EQ(cc::ElementId(), layer->element_id());
   auto effect_tree_index = layer->effect_tree_index();
   auto* property_trees = layer->layer_tree_host()->property_trees();
-  EXPECT_EQ(
-      effect_tree_index,
-      property_trees
-          ->element_id_to_effect_node_index[highlight->ElementIdForTesting()]);
+  EXPECT_EQ(effect_tree_index,
+            property_trees->effect_tree()
+                .FindNodeFromElementId(highlight->ElementIdForTesting())
+                ->id);
   // The link highlight cc effect node should correspond to the blink effect
   // node.
   EXPECT_EQ(highlight->Effect().GetCompositorElementId(),
@@ -384,8 +384,9 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
     auto effect_tree_index = layer->effect_tree_index();
     auto* property_trees = layer->layer_tree_host()->property_trees();
     EXPECT_EQ(effect_tree_index,
-              property_trees->element_id_to_effect_node_index.at(
-                  highlight->ElementIdForTesting()));
+              property_trees->effect_tree()
+                  .FindNodeFromElementId(highlight->ElementIdForTesting())
+                  ->id);
   };
 
   // The highlight should create 2 additional layer, each for each fragment.

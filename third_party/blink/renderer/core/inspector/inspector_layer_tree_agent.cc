@@ -149,7 +149,8 @@ BuildStickyInfoForLayer(const cc::Layer* root, const cc::Layer* layer) {
   const cc::StickyPositionNodeData* sticky_data =
       layer->layer_tree_host()
           ->property_trees()
-          ->transform_tree.GetStickyPositionData(layer->transform_tree_index());
+          ->transform_tree()
+          .GetStickyPositionData(layer->transform_tree_index());
   if (!sticky_data)
     return nullptr;
   const cc::StickyPositionConstraint& constraints = sticky_data->constraints;

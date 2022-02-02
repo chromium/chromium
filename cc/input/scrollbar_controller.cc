@@ -72,7 +72,8 @@ PointerResultType ScrollbarController::HitTest(
   const ScrollNode* target_node =
       layer_tree_host_impl_->active_tree()
           ->property_trees()
-          ->scroll_tree.FindNodeFromElementId(scrollbar->scroll_element_id());
+          ->scroll_tree()
+          .FindNodeFromElementId(scrollbar->scroll_element_id());
   if (target_node->main_thread_scrolling_reasons)
     return PointerResultType::kUnhandled;
 
@@ -337,7 +338,8 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
   const ScrollNode* target_node =
       layer_tree_host_impl_->active_tree()
           ->property_trees()
-          ->scroll_tree.FindNodeFromElementId(scrollbar->scroll_element_id());
+          ->scroll_tree()
+          .FindNodeFromElementId(scrollbar->scroll_element_id());
 
   // If a scrollbar exists, it should always have an ElementId pointing to a
   // valid ScrollNode.
@@ -569,9 +571,9 @@ void ScrollbarController::StartAutoScrollAnimation(
   // scroll_node is set up while handling GSB. If there's no node to scroll, we
   // don't need to create any animation for it.
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
-  ScrollTree& scroll_tree =
-      layer_tree_host_impl_->active_tree()->property_trees()->scroll_tree;
-  ScrollNode* scroll_node =
+  const ScrollTree& scroll_tree =
+      layer_tree_host_impl_->active_tree()->property_trees()->scroll_tree();
+  const ScrollNode* scroll_node =
       scroll_tree.FindNodeFromElementId(scrollbar->scroll_element_id());
 
   if (!(scroll_node && scrollbar_scroll_is_active_))
@@ -644,7 +646,8 @@ float ScrollbarController::GetViewportLength() const {
   const ScrollNode* scroll_node =
       layer_tree_host_impl_->active_tree()
           ->property_trees()
-          ->scroll_tree.FindNodeFromElementId(scrollbar->scroll_element_id());
+          ->scroll_tree()
+          .FindNodeFromElementId(scrollbar->scroll_element_id());
   DCHECK(scroll_node);
   if (!scroll_node->scrolls_outer_viewport) {
     float length = scrollbar->orientation() == ScrollbarOrientation::VERTICAL
@@ -667,7 +670,8 @@ float ScrollbarController::GetScrollDistanceForPercentBasedScroll() const {
   const ScrollNode* scroll_node =
       layer_tree_host_impl_->active_tree()
           ->property_trees()
-          ->scroll_tree.FindNodeFromElementId(scrollbar->scroll_element_id());
+          ->scroll_tree()
+          .FindNodeFromElementId(scrollbar->scroll_element_id());
   DCHECK(scroll_node);
 
   const gfx::Vector2dF scroll_delta =

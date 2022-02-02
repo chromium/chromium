@@ -60,7 +60,7 @@ void AppendLayerPropertiesMatchedStyle(
     // Property trees must be updated in order to get valid render surface
     // reasons.
     if (!cc_layer->layer_tree_host() ||
-        cc_layer->layer_tree_host()->property_trees()->needs_rebuild)
+        cc_layer->layer_tree_host()->property_trees()->needs_rebuild())
       return;
     cc::RenderSurfaceReason render_surface = cc_layer->GetRenderSurfaceReason();
     if (render_surface != cc::RenderSurfaceReason::kNone) {

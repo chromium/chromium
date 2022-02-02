@@ -185,7 +185,8 @@ void TestHostClient::MaximumScaleChanged(ElementId element_id,
 void TestHostClient::SetScrollOffsetForAnimation(
     const gfx::PointF& scroll_offset,
     ElementId element_id) {
-  property_trees_.scroll_tree.SetScrollOffset(element_id, scroll_offset);
+  property_trees_.scroll_tree_mutable().SetScrollOffset(element_id,
+                                                        scroll_offset);
 }
 
 void TestHostClient::RegisterElementId(ElementId element_id,
