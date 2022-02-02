@@ -15,20 +15,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Reuse ID for registering cell class in table views.
-constexpr NSString* kReuseID = @"InstructionTableCell";
-
-}  // namespace
-
-@interface DefaultBrowserScreenViewController ()
-
-// Instruction list to set the default browser.
-@property(nonatomic, strong) NSArray* defaultBrowserSteps;
-
-@end
-
 @implementation DefaultBrowserScreenViewController
 
 #pragma mark - UIViewController
@@ -48,7 +34,7 @@ constexpr NSString* kReuseID = @"InstructionTableCell";
   self.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
 
-  self.defaultBrowserSteps = @[
+  NSArray* defaultBrowserSteps = @[
     l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
     l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
@@ -56,7 +42,7 @@ constexpr NSString* kReuseID = @"InstructionTableCell";
   ];
 
   UIView* instructionView =
-      [[InstructionView alloc] initWithList:self.defaultBrowserSteps];
+      [[InstructionView alloc] initWithList:defaultBrowserSteps];
   instructionView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.specificContentView addSubview:instructionView];
