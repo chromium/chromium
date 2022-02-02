@@ -99,6 +99,7 @@ export function createTheme() {
     bg: {value: 0xff000000},
     icon: {value: 0xff000001},
     iconSelected: {value: 0xff000002},
+    ntpBg: {value: 0xff00000e},
     placeholder: {value: 0xff000003},
     resultsBg: {value: 0xff000004},
     resultsBgHovered: {value: 0xff000005},

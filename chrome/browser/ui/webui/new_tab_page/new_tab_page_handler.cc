@@ -172,6 +172,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
+  search_box->ntp_bg =
+      theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
   search_box->bg =
       GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
   search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);

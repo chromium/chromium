@@ -294,8 +294,25 @@ class RealboxElement extends I18nMixin
       return;
     }
 
+    const variant = loadTimeData.getInteger('realboxMatchOmniboxThemeVariant');
+    if (variant === 0) {
+      this.updateStyles({
+        '--search-box-bg': skColorToRgba(assert(this.theme.bg)),
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bg))
+      });
+    } else if (variant === 1) {
+      this.updateStyles({
+        '--search-box-bg': skColorToRgba(assert(this.theme.ntpBg)),
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bg))
+      });
+    } else if (variant === 2) {
+      this.updateStyles({
+        '--search-box-bg': skColorToRgba(assert(this.theme.ntpBg)),
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.resultsBg))
+      });
+    }
+
     this.updateStyles({
-      '--search-box-bg': skColorToRgba(assert(this.theme.bg)),
       '--search-box-placeholder': skColorToRgba(assert(this.theme.placeholder)),
       '--search-box-results-bg': skColorToRgba(assert(this.theme.resultsBg)),
       '--search-box-text': skColorToRgba(assert(this.theme.text)),

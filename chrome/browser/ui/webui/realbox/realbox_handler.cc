@@ -288,6 +288,11 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
       {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
 
+  source->AddInteger(
+      "realboxMatchOmniboxThemeVariant",
+      base::GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kRealboxMatchOmniboxTheme,
+          ntp_features::kRealboxMatchOmniboxThemeVariantParam, 0));
   source->AddBoolean(
       "realboxMatchOmniboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme));

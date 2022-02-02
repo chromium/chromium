@@ -1511,7 +1511,7 @@ const FeatureEntry::FeatureVariation kRealboxMatchOmniboxThemeVariations[] = {
      "hover)",
      kRealboxMatchOmniboxThemeVar1, base::size(kRealboxMatchOmniboxThemeVar1),
      nullptr},
-    {"(NTP background on steady state and Omnibox steady state background on "
+    {"(NTP background on steady state and Omnibox active state background on "
      "hover)",
      kRealboxMatchOmniboxThemeVar2, base::size(kRealboxMatchOmniboxThemeVar2),
      nullptr}};

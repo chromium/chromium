@@ -95,6 +95,7 @@ struct SearchBoxTheme {
   skia.mojom.SkColor bg;
   skia.mojom.SkColor icon;
   skia.mojom.SkColor icon_selected;
+  skia.mojom.SkColor ntp_bg;
   skia.mojom.SkColor placeholder;
   skia.mojom.SkColor results_bg;
   skia.mojom.SkColor results_bg_hovered;
