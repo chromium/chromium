@@ -58,10 +58,6 @@ luci.realm(
     ],
 )
 
-luci.builder.defaults.experiments.set({
-    # Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
-    "luci.use_realms": 100,
-})
 luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
 
 exec("//dev/swarming.star")
