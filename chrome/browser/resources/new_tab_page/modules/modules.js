@@ -78,6 +78,13 @@ export class ModulesElement extends mixinBehaviors
         value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
         reflectToAttribute: true,
       },
+
+      /** @private {boolean} */
+      modulesRedesignedLayoutEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesRedesignedLayoutEnabled'),
+        reflectToAttribute: true,
+      },
     };
   }
 
