@@ -350,8 +350,14 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // The dialog initially shows the pending message for the appropriate access
     // point and scan type.
     std::u16string pending_message = dialog->GetMessageForTesting()->GetText();
-    std::u16string expected_message = l10n_util::GetPluralStringFUTF16(
-        IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE, file_scan() ? 1 : 0);
+    std::u16string expected_message;
+    if (access_point() == safe_browsing::DeepScanAccessPoint::PRINT) {
+      expected_message = l10n_util::GetStringUTF16(
+          IDS_DEEP_SCANNING_DIALOG_PRINT_PENDING_MESSAGE);
+    } else {
+      expected_message = l10n_util::GetPluralStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE, file_scan() ? 1 : 0);
+    }
     ASSERT_EQ(pending_message, expected_message);
 
     // The top image is the pending one corresponding to the access point.
@@ -393,6 +399,12 @@ class ContentAnalysisDialogAppearanceBrowserTest
   }
 
   virtual std::u16string GetExpectedMessage() {
+    if (access_point() == safe_browsing::DeepScanAccessPoint::PRINT) {
+      return success() ? l10n_util::GetStringUTF16(
+                             IDS_DEEP_SCANNING_DIALOG_PRINT_SUCCESS_MESSAGE)
+                       : l10n_util::GetStringUTF16(
+                             IDS_DEEP_SCANNING_DIALOG_PRINT_WARNING_MESSAGE);
+    }
     int files_count = file_scan() ? 1 : 0;
     return success()
                ? l10n_util::GetPluralStringFUTF16(
@@ -423,6 +435,13 @@ class ContentAnalysisDialogCustomMessageAppearanceBrowserTest
     : public ContentAnalysisDialogAppearanceBrowserTest {
  private:
   std::u16string GetExpectedMessage() override {
+    if (access_point() == safe_browsing::DeepScanAccessPoint::PRINT) {
+      return success() ? l10n_util::GetStringUTF16(
+                             IDS_DEEP_SCANNING_DIALOG_PRINT_SUCCESS_MESSAGE)
+                       : l10n_util::GetStringFUTF16(
+                             IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                             u"Custom message");
+    }
     int files_count = file_scan() ? 1 : 0;
     return success()
                ? l10n_util::GetPluralStringFUTF16(

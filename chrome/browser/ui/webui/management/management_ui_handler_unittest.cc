@@ -1295,6 +1295,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
                           "[]", chrome_policies);
   SetConnectorPolicyValue(policy::key::kOnBulkDataEntryEnterpriseConnector,
                           "[]", chrome_policies);
+  SetConnectorPolicyValue(policy::key::kOnPrintEnterpriseConnector, "[]",
+                          chrome_policies);
   SetConnectorPolicyValue(policy::key::kOnSecurityEventEnterpriseConnector,
                           "[]", chrome_policies);
   profile_no_domain->GetPrefs()->SetInteger(
@@ -1320,6 +1322,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
                                       enterprise_connectors::BULK_DATA_ENTRY,
                                       "[{\"service_provider\":\"google\"}]");
+  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
+                                      enterprise_connectors::PRINT,
+                                      "[{\"service_provider\":\"google\"}]");
   safe_browsing::SetOnSecurityEventReporting(profile_no_domain->GetPrefs(),
                                              true);
   profile_no_domain->GetPrefs()->SetInteger(
@@ -1344,7 +1349,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
   threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_EQ(5u, threat_protection_info->FindListKey("info")->GetList().size());
+  EXPECT_EQ(6u, threat_protection_info->FindListKey("info")->GetList().size());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
       base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
@@ -1366,6 +1371,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
     base::Value value(base::Value::Type::DICTIONARY);
     value.SetStringKey("title", kManagementOnBulkDataEntryEvent);
     value.SetStringKey("permission", kManagementOnBulkDataEntryVisibleData);
+    expected_info.Append(std::move(value));
+  }
+  {
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.SetStringKey("title", kManagementOnPrintEvent);
+    value.SetStringKey("permission", kManagementOnPrintVisibleData);
     expected_info.Append(std::move(value));
   }
   {

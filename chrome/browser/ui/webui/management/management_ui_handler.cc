@@ -138,6 +138,8 @@ const char kManagementOnFileDownloadedVisibleData[] =
 const char kManagementOnBulkDataEntryEvent[] = "managementOnBulkDataEntryEvent";
 const char kManagementOnBulkDataEntryVisibleData[] =
     "managementOnBulkDataEntryVisibleData";
+const char kManagementOnPrintEvent[] = "managementOnPrintEvent";
+const char kManagementOnPrintVisibleData[] = "managementOnPrintVisibleData";
 
 const char kManagementOnPageVisitedEvent[] = "managementOnPageVisitedEvent";
 const char kManagementOnPageVisitedVisibleData[] =
@@ -799,6 +801,8 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
        kManagementOnFileDownloadedVisibleData},
       {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
        kManagementOnBulkDataEntryVisibleData},
+      {enterprise_connectors::PRINT, kManagementOnPrintEvent,
+       kManagementOnPrintVisibleData},
   };
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(

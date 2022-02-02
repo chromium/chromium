@@ -230,6 +230,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   std::u16string GetCustomMessage() const;
 
+  // Helper that indicates if the dialog corresponds to a print scan.
+  bool is_print_scan() const;
+
   void AcceptButtonCallback();
   void CancelButtonCallback();
   void LearnMoreLinkClickedCallback(const ui::Event& event);

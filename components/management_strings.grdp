@@ -253,6 +253,9 @@
   <message name="IDS_MANAGEMENT_TEXT_ENTERED_EVENT" desc="Event for the text entry scanning feature.">
     Text is entered
   </message>
+  <message name="IDS_MANAGEMENT_PAGE_PRINTED_EVENT" desc="Event for the page print scanning feature.">
+    Page is printed
+  </message>
   <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature">
     Security event occurs
   </message>
@@ -267,6 +270,9 @@
   </message>
   <message name="IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA" desc="Description of the visible data for the text entry scanning feature.">
     Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
+  </message>
+  <message name="IDS_MANAGEMENT_PAGE_PRINTED_VISIBLE_DATA" desc="Description of the visible data for the page print scanning feature.">
+    The content of pages you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
   </message>
   <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature">
     When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, file names or metadata, and the username that you use to sign in to web based applications, your device and Chrome.

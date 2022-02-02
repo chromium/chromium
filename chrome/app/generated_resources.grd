@@ -11875,11 +11875,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
         =1 {Checking this file with your organization's security policies...}
       other {Checking these files with your organization's security policies...}}
     </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_PRINT_PENDING_MESSAGE" desc="Message shown in tab modal dialog while performing a deep scan of a printed document to see if it complies with enterprise policies">
+      Checking this document with your organization's security policies...
+    </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of data when it complies with enterprise policies">
       {NUM_FILES, plural,
         =0 {Security checks are done. Your data will be uploaded.}
         =1 {Security checks are done. Your file will be uploaded.}
       other {Security checks are done. Your files will be uploaded.}}
+    </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_PRINT_SUCCESS_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of a printed document when it complies with enterprise policies">
+        Security checks are done. Your document will be printed.
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAILURE_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of uploaded data when it doesn't comply with enterprise security policies">
       {NUM_FILES, plural,
@@ -11892,6 +11898,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         =0 {This data has sensitive or dangerous content}
         =1 {This file has sensitive or dangerous content}
       other {These files have sensitive or dangerous content}}
+    </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_PRINT_WARNING_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of a printed document when it doesn't comply with enterprise security policies">
+        This document has sensitive content.
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_TIMEOUT_MESSAGE" desc="Message shown in tab modal dialog after a deep scan times out.">
       Something went wrong. Scanning could not be completed. Please try again.
@@ -11909,6 +11918,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       {NUM_FILES, plural,
         =1 {This file is too big for a security check. You can upload files up to 50 MB.}
       other {Some of these files are too big for a security check. You can upload files up to 50 MB.}}
+    </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_LARGE_PRINT_FAILURE_MESSAGE" desc="Message shown in the tab modal dialog when the printed document to be scanned is too large according to the enterprise policies">
+        This document is too big for a security check. You can print documents of up to 50 MB.
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE" desc="Message shown in the tab modal dialog when the uploaded file to be scanned is encrypted and when this is not allowed by enterprise policies">
       {NUM_FILES, plural,

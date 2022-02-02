@@ -741,6 +741,11 @@ int ContentAnalysisDialog::GetTopImageId(bool use_dark) const {
 
 std::u16string ContentAnalysisDialog::GetPendingMessage() const {
   DCHECK(is_pending());
+  if (is_print_scan()) {
+    return l10n_util::GetStringUTF16(
+        IDS_DEEP_SCANNING_DIALOG_PRINT_PENDING_MESSAGE);
+  }
+
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE, files_count_);
 }
@@ -754,6 +759,10 @@ std::u16string ContentAnalysisDialog::GetFailureMessage() const {
     return GetCustomMessage();
 
   if (final_result_ == ContentAnalysisDelegateBase::FinalResult::LARGE_FILES) {
+    if (is_print_scan()) {
+      return l10n_util::GetStringUTF16(
+          IDS_DEEP_SCANNING_DIALOG_LARGE_PRINT_FAILURE_MESSAGE);
+    }
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_LARGE_FILE_FAILURE_MESSAGE, files_count_);
   }
@@ -762,6 +771,11 @@ std::u16string ContentAnalysisDialog::GetFailureMessage() const {
       ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE, files_count_);
+  }
+
+  if (is_print_scan()) {
+    return l10n_util::GetStringUTF16(
+        IDS_DEEP_SCANNING_DIALOG_PRINT_WARNING_MESSAGE);
   }
 
   return l10n_util::GetPluralStringFUTF16(
@@ -776,12 +790,21 @@ std::u16string ContentAnalysisDialog::GetWarningMessage() const {
   if (has_custom_message())
     return GetCustomMessage();
 
+  if (is_print_scan()) {
+    return l10n_util::GetStringUTF16(
+        IDS_DEEP_SCANNING_DIALOG_PRINT_WARNING_MESSAGE);
+  }
+
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE, files_count_);
 }
 
 std::u16string ContentAnalysisDialog::GetSuccessMessage() const {
   DCHECK(is_success());
+  if (is_print_scan()) {
+    return l10n_util::GetStringUTF16(
+        IDS_DEEP_SCANNING_DIALOG_PRINT_SUCCESS_MESSAGE);
+  }
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count_);
 }
@@ -796,6 +819,10 @@ const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
   const bool use_dark = color_utils::IsDark(GetBackgroundColor(contents_view_));
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       GetTopImageId(use_dark));
+}
+
+bool ContentAnalysisDialog::is_print_scan() const {
+  return access_point_ == safe_browsing::DeepScanAccessPoint::PRINT;
 }
 
 SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {
