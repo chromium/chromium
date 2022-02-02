@@ -162,8 +162,6 @@ class OmniboxViewIOS : public OmniboxView,
                                  const std::u16string& pasted_text,
                                  size_t index) override;
 
-  ChromeBrowserState* browser_state() { return browser_state_; }
-
   // Updates this edit view to show the proper text, highlight and images.
   void UpdateAppearance();
 
@@ -207,8 +205,6 @@ class OmniboxViewIOS : public OmniboxView,
   // may modify text field contents.
   // TODO(crbug.com/303212): Remove this workaround once the crash is fixed.
   bool ShouldIgnoreUserInputDueToPendingVoiceSearch();
-
-  ChromeBrowserState* browser_state_;
 
   OmniboxTextFieldIOS* field_;
 

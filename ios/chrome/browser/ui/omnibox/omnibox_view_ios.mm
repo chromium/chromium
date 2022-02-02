@@ -81,7 +81,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                       ? std::make_unique<ChromeOmniboxClientIOS>(controller,
                                                                  browser_state)
                       : nullptr),
-      browser_state_(browser_state),
       field_(field),
       controller_(controller),
       left_image_consumer_(left_image_consumer),
