@@ -10,6 +10,9 @@
   <message name="IDS_ACCESS_CODE_CAST_CAST" desc="Label for the button to start casting">
     Cast
   </message>
+  <message name="IDS_ACCESS_CODE_CAST_CONNECT" desc="Button text to connect to a cast device by typing an access code which is a string consisting of letters, or by scanning a qr code">
+    Connect with a code
+  </message>
   <message name="IDS_ACCESS_CODE_CAST_DIALOG_TITLE" desc="Title for access code cast dialog, for casting to a display that is managed">
     Cast to a managed device
   </message>

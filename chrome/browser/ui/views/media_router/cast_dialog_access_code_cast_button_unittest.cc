@@ -26,29 +26,8 @@ class CastDialogAccessCodeCastButtonTest : public ChromeViewsTestBase {
 };
 
 TEST_F(CastDialogAccessCodeCastButtonTest, DefaultText) {
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  pref_service->registry()->RegisterBooleanPref(prefs::kAccessCodeCastEnabled,
-                                                true);
-  pref_service->registry()->RegisterIntegerPref(
-      prefs::kAccessCodeCastDeviceDuration, 0);
-
-  CastDialogAccessCodeCastButton button(views::Button::PressedCallback(),
-                                        pref_service.get());
-  EXPECT_EQ(u"Cast to a new device", button.title()->GetText());
-}
-
-TEST_F(CastDialogAccessCodeCastButtonTest, AddDeviceText) {
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  pref_service->registry()->RegisterBooleanPref(prefs::kAccessCodeCastEnabled,
-                                                true);
-  pref_service->registry()->RegisterIntegerPref(
-      prefs::kAccessCodeCastDeviceDuration, 0);
-  pref_service->SetManagedPref(prefs::kAccessCodeCastDeviceDuration,
-                               std::make_unique<base::Value>(10));
-
-  CastDialogAccessCodeCastButton button(views::Button::PressedCallback(),
-                                        pref_service.get());
-  EXPECT_EQ(u"Add new device", button.title()->GetText());
+  CastDialogAccessCodeCastButton button((views::Button::PressedCallback()));
+  EXPECT_EQ(u"Connect with a code", button.title()->GetText());
 }
 
 }  // namespace media_router

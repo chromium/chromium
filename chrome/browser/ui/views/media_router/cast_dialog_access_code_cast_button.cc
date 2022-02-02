@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
-#include "components/prefs/pref_service.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -22,10 +22,6 @@ namespace media_router {
 
 namespace {
 
-bool ShouldSaveDevice(PrefService* pref_service) {
-  return GetAccessCodeDeviceDurationPref(pref_service) > base::Seconds(1);
-}
-
 std::unique_ptr<views::ImageView> CreatePrimaryIconView(
     const gfx::ImageSkia& image) {
   auto icon_view = std::make_unique<views::ImageView>();
@@ -34,11 +30,8 @@ std::unique_ptr<views::ImageView> CreatePrimaryIconView(
   return icon_view;
 }
 
-// TODO(b/202529859): Change icons based on final UX design
-std::unique_ptr<views::View> CreatePrimaryIconForProfile(
-    PrefService* pref_service) {
-  const gfx::VectorIcon& icon =
-      ShouldSaveDevice(pref_service) ? kAddIcon : kTvIcon;
+std::unique_ptr<views::View> CreatePrimaryIcon() {
+  const gfx::VectorIcon& icon = vector_icons::kQrCodeIcon;
 
   auto image =
       gfx::CreateVectorIcon(icon, kPrimaryIconSize, gfx::kChromeIconGrey);
@@ -47,19 +40,17 @@ std::unique_ptr<views::View> CreatePrimaryIconForProfile(
 }
 
 // TODO(b/202529859): Change text to match final UX design
-std::u16string CreateTextForProfile(PrefService* pref_service) {
-  return ShouldSaveDevice(pref_service) ? u"Add new device"
-                                        : u"Cast to a new device";
+std::u16string CreateText() {
+  return l10n_util::GetStringUTF16(IDS_ACCESS_CODE_CAST_CONNECT);
 }
 
 }  // namespace
 
 CastDialogAccessCodeCastButton::CastDialogAccessCodeCastButton(
-    PressedCallback callback,
-    PrefService* pref_service)
+    PressedCallback callback)
     : HoverButton(std::move(callback),
-                  CreatePrimaryIconForProfile(pref_service),
-                  CreateTextForProfile(pref_service),
+                  CreatePrimaryIcon(),
+                  CreateText(),
                   /** button subtitle */ std::u16string(),
                   /** secondary_icon_view */ nullptr) {}
 

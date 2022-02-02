@@ -292,7 +292,7 @@ void CastDialogView::MaybeShowAccessCodeCastButton() {
                                       base::Unretained(this));
 
   access_code_cast_button_ =
-      new CastDialogAccessCodeCastButton(callback, profile_->GetPrefs());
+      new CastDialogAccessCodeCastButton(callback);
   AddChildView(access_code_cast_button_.get());
 }
 

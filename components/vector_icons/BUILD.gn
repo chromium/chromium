@@ -90,6 +90,7 @@ aggregate_vector_icons("components_vector_icons") {
     "play_arrow.icon",
     "protected_content.icon",
     "protocol_handler.icon",
+    "qr_code.icon",
     "reload.icon",
     "replay.icon",
     "save_original_file.icon",
