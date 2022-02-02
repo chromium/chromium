@@ -5,7 +5,6 @@
 // https://storage.spec.whatwg.org/#api
 
 dictionary StorageUsageDetails {
-    unsigned long long applicationCache;
     unsigned long long indexedDB;
     unsigned long long caches;
     unsigned long long serviceWorkerRegistrations;
