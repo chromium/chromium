@@ -50,6 +50,11 @@ Dumping matched rules:
         padding-right: 10px; @[26:8-26:28]
         padding-right: 10px; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
 Dumping inherited rules: 
     padding-top: 20px; @[0:0-0:18]
     padding-top: 20px; @[undefined-undefined]

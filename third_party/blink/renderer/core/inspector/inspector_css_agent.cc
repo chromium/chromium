@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
@@ -1907,6 +1908,48 @@ InspectorCSSAgent::BuildContainerQueries(CSSRule* rule) {
   return container_queries;
 }
 
+std::unique_ptr<protocol::CSS::CSSSupports>
+InspectorCSSAgent::BuildSupportsObject(CSSSupportsRule* rule) {
+  std::unique_ptr<protocol::CSS::CSSSupports> supports_object =
+      protocol::CSS::CSSSupports::create()
+          .setText(rule->ConditionTextInternal())
+          .build();
+
+  auto it =
+      css_style_sheet_to_inspector_style_sheet_.find(rule->parentStyleSheet());
+  if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
+    InspectorStyleSheet* inspector_style_sheet = it->value;
+    supports_object->setStyleSheetId(inspector_style_sheet->Id());
+  }
+
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(rule->parentStyleSheet());
+  supports_object->setRange(inspector_style_sheet->RuleHeaderSourceRange(rule));
+
+  return supports_object;
+}
+
+void InspectorCSSAgent::CollectSupportsFromRule(
+    CSSRule* rule,
+    protocol::Array<protocol::CSS::CSSSupports>* supports_list) {
+  if (auto* supports_rule = DynamicTo<CSSSupportsRule>(rule))
+    supports_list->emplace_back(BuildSupportsObject(supports_rule));
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSSupports>>
+InspectorCSSAgent::BuildSupportsList(CSSRule* rule) {
+  if (!rule)
+    return nullptr;
+  auto supports_list =
+      std::make_unique<protocol::Array<protocol::CSS::CSSSupports>>();
+  CSSRule* parent_rule = rule;
+  while (parent_rule) {
+    CollectSupportsFromRule(parent_rule, supports_list.get());
+    parent_rule = parent_rule->parentRule();
+  }
+  return supports_list;
+}
+
 InspectorStyleSheetForInlineStyle* InspectorCSSAgent::AsInspectorStyleSheet(
     Element* element) {
   NodeToInspectorStyleSheet::iterator it =
@@ -2085,6 +2128,7 @@ std::unique_ptr<protocol::CSS::CSSRule> InspectorCSSAgent::BuildObjectForRule(
   result->setMedia(BuildMediaListChain(rule));
   if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
     result->setContainerQueries(BuildContainerQueries(rule));
+  result->setSupports(BuildSupportsList(rule));
   return result;
 }
 

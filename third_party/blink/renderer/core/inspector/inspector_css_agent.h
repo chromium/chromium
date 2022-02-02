@@ -54,6 +54,7 @@ class CSSPropertyName;
 class CSSRule;
 class CSSStyleRule;
 class CSSStyleSheet;
+class CSSSupportsRule;
 class Document;
 class Element;
 class FontCustomPlatformData;
@@ -339,6 +340,14 @@ class CORE_EXPORT InspectorCSSAgent final
       protocol::Array<protocol::CSS::CSSContainerQuery>*);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSContainerQuery>>
   BuildContainerQueries(CSSRule*);
+
+  // Supports at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSSupports> BuildSupportsObject(
+      CSSSupportsRule*);
+  void CollectSupportsFromRule(CSSRule*,
+                               protocol::Array<protocol::CSS::CSSSupports>*);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSSupports>>
+  BuildSupportsList(CSSRule*);
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;

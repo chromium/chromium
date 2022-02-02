@@ -91,6 +91,13 @@
       baseIndent += 4;
     }
 
+    const supports = rule.supports || [];
+    const supportsLine = supports.map(s => s.text).join(' ');
+    if (supportsLine.length) {
+      this._indentLog(baseIndent, '@supports ' + supportsLine);
+      baseIndent += 4;
+    }
+
     var selectorLine = '';
     var selectors = rule.selectorList.selectors;
     for (var i = 0; i < selectors.length; ++i) {
