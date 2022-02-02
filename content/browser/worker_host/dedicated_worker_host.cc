@@ -360,7 +360,10 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // https://html.spec.whatwg.org/C/#run-a-worker
   if (final_response_url.SchemeIsBlob() ||
       final_response_url.SchemeIs(url::kAboutScheme) ||
-      final_response_url.SchemeIs(url::kDataScheme)) {
+      final_response_url.SchemeIs(url::kDataScheme) ||
+      // TODO(https://crbug.com/1146362): Inherit from the file creator instead
+      // once creator policies are persisted through the filesystem store.
+      final_response_url.SchemeIs(url::kFileSystemScheme)) {
     // > 14.5 If response's url's scheme is a local scheme, then set worker
     // global scope's embedder policy to owner's embedder policy.
     coep = creator_client_security_state_->cross_origin_embedder_policy;

@@ -212,7 +212,10 @@ void SharedWorkerHost::Start(
   worker_client_security_state_ = network::mojom::ClientSecurityState::New();
   if (final_response_url.SchemeIsBlob() ||
       final_response_url.SchemeIs(url::kAboutScheme) ||
-      final_response_url.SchemeIs(url::kDataScheme)) {
+      final_response_url.SchemeIs(url::kDataScheme) ||
+      // TODO(https://crbug.com/1146362): Inherit from the file creator instead
+      // once creator policies are persisted through the filesystem store.
+      final_response_url.SchemeIs(url::kFileSystemScheme)) {
     // > 13.6 If response's url's scheme is a local scheme, then set worker
     // global scope's embedder policy to owner's embedder policy.
     if (base::FeatureList::IsEnabled(
@@ -237,38 +240,37 @@ void SharedWorkerHost::Start(
               worker_client_security_state_->ip_address_space,
               worker_client_security_state_->is_web_secure_context);
     }
-      // https://html.spec.whatwg.org/C/#run-a-worker
-      if (main_script_load_params->response_head->parsed_headers) {
-        // > 13.7 Otherwise, set worker global scope's embedder policy to the
-        // result of obtaining an embedder policy from response.
-        worker_client_security_state_->cross_origin_embedder_policy =
-            main_script_load_params->response_head->parsed_headers
-                ->cross_origin_embedder_policy;
-      }
-      switch (
-          worker_client_security_state_->cross_origin_embedder_policy.value) {
-        case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
-          OnFeatureUsed(blink::mojom::WebFeature::kCoepNoneSharedWorker);
-          break;
-        case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
-          OnFeatureUsed(
-              blink::mojom::WebFeature::kCoepCredentiallessSharedWorker);
-          break;
-        case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
-          OnFeatureUsed(blink::mojom::WebFeature::kCoepRequireCorpSharedWorker);
-          break;
-      }
+    // https://html.spec.whatwg.org/C/#run-a-worker
+    if (main_script_load_params->response_head->parsed_headers) {
+      // > 13.7 Otherwise, set worker global scope's embedder policy to the
+      // result of obtaining an embedder policy from response.
+      worker_client_security_state_->cross_origin_embedder_policy =
+          main_script_load_params->response_head->parsed_headers
+              ->cross_origin_embedder_policy;
+    }
+    switch (worker_client_security_state_->cross_origin_embedder_policy.value) {
+      case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
+        OnFeatureUsed(blink::mojom::WebFeature::kCoepNoneSharedWorker);
+        break;
+      case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
+        OnFeatureUsed(
+            blink::mojom::WebFeature::kCoepCredentiallessSharedWorker);
+        break;
+      case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+        OnFeatureUsed(blink::mojom::WebFeature::kCoepRequireCorpSharedWorker);
+        break;
+    }
 
-      auto* storage_partition = static_cast<StoragePartitionImpl*>(
-          GetProcessHost()->GetStoragePartition());
-      // Create a COEP reporter with worker's policy.
-      coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-          storage_partition->GetWeakPtr(), final_response_url,
-          worker_client_security_state_->cross_origin_embedder_policy
-              .reporting_endpoint,
-          worker_client_security_state_->cross_origin_embedder_policy
-              .report_only_reporting_endpoint,
-          GetReportingSource(), GetNetworkIsolationKey());
+    auto* storage_partition = static_cast<StoragePartitionImpl*>(
+        GetProcessHost()->GetStoragePartition());
+    // Create a COEP reporter with worker's policy.
+    coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+        storage_partition->GetWeakPtr(), final_response_url,
+        worker_client_security_state_->cross_origin_embedder_policy
+            .reporting_endpoint,
+        worker_client_security_state_->cross_origin_embedder_policy
+            .report_only_reporting_endpoint,
+        GetReportingSource(), GetNetworkIsolationKey());
   }
 
   auto options = blink::mojom::WorkerOptions::New(
