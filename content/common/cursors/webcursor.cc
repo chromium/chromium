@@ -26,11 +26,13 @@ bool WebCursor::SetCursor(const ui::Cursor& cursor) {
   // - kMaximumCursorSize in Blink's EventHandler
   // - kCursorSize in Chrome's DevToolsEyeDropper
   static constexpr int kMaximumCursorSize = 150;
+  // This value limits the underlying bitmap to a reasonable size.
+  static constexpr int kMaximumBitmapSize = 1024;
   if (cursor.image_scale_factor() < 0.01f ||
       cursor.image_scale_factor() > 100.f ||
       (cursor.type() == ui::mojom::CursorType::kCustom &&
-       (cursor.custom_bitmap().width() > kMaximumCursorSize ||
-        cursor.custom_bitmap().height() > kMaximumCursorSize ||
+       (cursor.custom_bitmap().width() > kMaximumBitmapSize ||
+        cursor.custom_bitmap().height() > kMaximumBitmapSize ||
         cursor.custom_bitmap().width() / cursor.image_scale_factor() >
             kMaximumCursorSize ||
         cursor.custom_bitmap().height() / cursor.image_scale_factor() >
