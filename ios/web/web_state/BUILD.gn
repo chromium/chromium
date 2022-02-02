@@ -51,6 +51,8 @@ source_set("web_state") {
     "web_state_policy_decider_bridge.mm",
   ]
 
+  frameworks = [ "QuartzCore.framework" ]
+
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

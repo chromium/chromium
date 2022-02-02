@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #import "base/compiler_specific.h"
+#include "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -28,7 +29,38 @@ namespace {
 WebState* ReturnWeakReference(base::WeakPtr<WebStateImpl> weak_web_state) {
   return weak_web_state.get();
 }
+
+// With |kEnableUnrealizedWebStates|, detect inefficient usage of WebState
+// realization. Various bugs have triggered the realization of the entire
+// WebStateList. Detect this by checking for the realization of 3 WebStates
+// within one second. Only report this error once per launch.
+constexpr size_t kMaxEvents = 3;
+constexpr CFTimeInterval kWindowSizeInSeconds = 1.0f;
+size_t g_last_realized_count = 0;
+CFTimeInterval g_last_creation_time = 0;
+bool g_has_reported_once = false;
+void CheckForOverRealization() {
+  if (g_has_reported_once)
+    return;
+  CFTimeInterval now = CACurrentMediaTime();
+  if (now - g_last_creation_time < kWindowSizeInSeconds) {
+    g_last_realized_count++;
+    if (g_last_realized_count >= kMaxEvents) {
+      base::debug::DumpWithoutCrashing();
+      g_has_reported_once = true;
+      NOTREACHED();
+    }
+  } else {
+    g_last_creation_time = now;
+    g_last_realized_count = 0;
+  }
+}
+
 }  // namespace
+
+void IgnoreOverRealizationCheck() {
+  g_last_realized_count = 0;
+}
 
 #pragma mark - WebState factory methods
 
@@ -331,6 +363,8 @@ WebState* WebStateImpl::ForceRealized() {
     // Notify all observers that the WebState has become realized.
     for (auto& observer : observers_)
       observer.WebStateRealized(this);
+
+    CheckForOverRealization();
   }
 
   return this;
