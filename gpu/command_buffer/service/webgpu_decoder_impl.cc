@@ -994,62 +994,74 @@ void WebGPUDecoderImpl::DoRequestDevice(
   DCHECK_LT(static_cast<size_t>(requested_adapter_index),
             dawn_adapters_.size());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
-  if (request_device_properties.textureCompressionBC) {
-    device_descriptor.requiredFeatures.push_back("texture-compression-bc");
-  }
-  if (request_device_properties.textureCompressionETC2) {
-    device_descriptor.requiredFeatures.push_back("texture-compression-etc2");
-  }
-  if (request_device_properties.textureCompressionASTC) {
-    device_descriptor.requiredFeatures.push_back("texture-compression-astc");
-  }
-  if (request_device_properties.shaderFloat16) {
-    device_descriptor.requiredFeatures.push_back("shader-float16");
-  }
-  if (request_device_properties.pipelineStatisticsQuery) {
-    device_descriptor.requiredFeatures.push_back("pipeline-statistics-query");
-  }
-  if (request_device_properties.timestampQuery) {
-    device_descriptor.requiredFeatures.push_back("timestamp-query");
-  }
-  if (request_device_properties.depthClamping) {
-    device_descriptor.requiredFeatures.push_back("depth-clamping");
-  }
-  if (request_device_properties.invalidFeature) {
-    device_descriptor.requiredFeatures.push_back("invalid-feature");
-  }
+  WGPUDeviceDescriptor device_descriptor;
 
   // We need to request internal usage to be able to do operations with internal
   // methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  std::vector<WGPUFeatureName> required_features;
+  required_features.push_back(WGPUFeatureName_DawnInternalUsages);
+  if (request_device_properties.textureCompressionBC) {
+    required_features.push_back(WGPUFeatureName_TextureCompressionBC);
+  }
+  if (request_device_properties.textureCompressionETC2) {
+    required_features.push_back(WGPUFeatureName_TextureCompressionETC2);
+  }
+  if (request_device_properties.textureCompressionASTC) {
+    required_features.push_back(WGPUFeatureName_TextureCompressionASTC);
+  }
+  if (request_device_properties.shaderFloat16) {
+    required_features.push_back(WGPUFeatureName_DawnShaderFloat16);
+  }
+  if (request_device_properties.pipelineStatisticsQuery) {
+    required_features.push_back(WGPUFeatureName_PipelineStatisticsQuery);
+  }
+  if (request_device_properties.timestampQuery) {
+    required_features.push_back(WGPUFeatureName_TimestampQuery);
+  }
+  if (request_device_properties.depthClamping) {
+    required_features.push_back(WGPUFeatureName_DepthClamping);
+  }
+  if (request_device_properties.invalidFeature) {
+    // Pass something invalid.
+    required_features.push_back(static_cast<WGPUFeatureName>(-1));
+  }
+  device_descriptor.requiredFeatures = required_features.data();
+  device_descriptor.requiredFeaturesCount = required_features.size();
 
   // If a new toggle is added here, ForceDawnTogglesForWebGPU() which collects
   // info for about:gpu should be updated as well.
+  WGPUDawnTogglesDeviceDescriptor dawn_toggles;
+  std::vector<const char*> force_enabled_toggles;
+  std::vector<const char*> force_disabled_toggles;
 
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
   // is secure), unless --enable-unsafe-webgpu is used.
   if (!enable_unsafe_webgpu_) {
-    device_descriptor.forceEnabledToggles.push_back("disallow_spirv");
+    force_enabled_toggles.push_back("disallow_spirv");
   }
-
   for (const std::string& toggles : force_enabled_toggles_) {
-    device_descriptor.forceEnabledToggles.push_back(toggles.c_str());
+    force_enabled_toggles.push_back(toggles.c_str());
   }
   for (const std::string& toggles : force_disabled_toggles_) {
-    device_descriptor.forceDisabledToggles.push_back(toggles.c_str());
+    force_disabled_toggles.push_back(toggles.c_str());
   }
+  dawn_toggles.forceEnabledToggles = force_enabled_toggles.data();
+  dawn_toggles.forceEnabledTogglesCount = force_enabled_toggles.size();
+  dawn_toggles.forceDisabledToggles = force_disabled_toggles.data();
+  dawn_toggles.forceDisabledTogglesCount = force_disabled_toggles.size();
+  dawn_toggles.chain.sType = WGPUSType_DawnTogglesDeviceDescriptor;
+  device_descriptor.nextInChain =
+      reinterpret_cast<WGPUChainedStruct*>(&dawn_toggles);
 
   // webgpu_implementation.cc sends the requested limits inside a
   // WGPUDeviceProperties struct which contains WGPUSupportedLimits, not
   // WGPURequiredLimits. It should be WGPURequiredLimits, but to avoid
   // additional custom serialization, we reuse the WGPUDeviceProperties struct
   // until requestDevice is implemented in dawn::wire.
-  WGPURequiredLimits requiredLimits;
-  requiredLimits.nextInChain = nullptr;
-  requiredLimits.limits = request_device_properties.limits.limits;
-
-  device_descriptor.requiredLimits = &requiredLimits;
+  WGPURequiredLimits required_limits;
+  required_limits.nextInChain = nullptr;
+  required_limits.limits = request_device_properties.limits.limits;
+  device_descriptor.requiredLimits = &required_limits;
 
   auto callback =
       base::BindOnce(&WebGPUDecoderImpl::OnRequestDeviceCallback,
