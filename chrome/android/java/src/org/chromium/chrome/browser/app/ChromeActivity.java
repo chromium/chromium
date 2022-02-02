@@ -37,6 +37,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -1237,7 +1238,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * is kept up-to-date.
      */
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onPictureInPictureModeChanged(boolean inPicture, Configuration newConfig) {
+        super.onPictureInPictureModeChanged(inPicture, newConfig);
         if (inPicture) {
             ensurePictureInPictureController();
             mPictureInPictureController.onEnteredPictureInPictureMode();
