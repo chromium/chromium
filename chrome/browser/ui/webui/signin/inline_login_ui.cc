@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
@@ -211,10 +212,14 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
           : profile->GetPrefs()->GetBoolean(
                 chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
   if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    int message_id =
+        profiles::IsGuestModeEnabled()
+            ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE
+            : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2;
     source->AddString(
         "accountManagerDialogWelcomeBody",
         l10n_util::GetStringFUTF16(
-            IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2,
+            message_id,
             base::UTF8ToUTF16(
                 chrome::GetOSSettingsUrl(
                     chromeos::settings::mojom::kMyAccountsSubpagePath)

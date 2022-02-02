@@ -493,6 +493,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog.">
           Permissions you've already given to websites and apps may apply to this account. If you don't want websites or apps to access your account info, use Guest mode in Chrome browser. You can also manage your Google Accounts in <ph name="LINK_2_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="LINK_2_END">&lt;/a&gt;</ph>.
         </message>
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog.">
+          Permissions you've already given to websites and apps may apply to this account. If you don't want websites or apps to access your account info, use <ph name="LINK_BEGIN">&lt;a id="guestModeLink" href="#"&gt;</ph>Guest mode<ph name="LINK_END">&lt;/a&gt;</ph> in Chrome browser. You can also manage your Google Accounts in <ph name="LINK_2_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="LINK_2_END">&lt;/a&gt;</ph>.
+        </message>
       </if>
       <!-- Crash Recovery Dialog -->
       <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes.">

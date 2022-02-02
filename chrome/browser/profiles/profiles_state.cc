@@ -206,23 +206,25 @@ bool IsProfileCreationAllowed() {
 }
 
 bool IsGuestModeEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!AreSecondaryProfilesAllowed())
     return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const PrefService* const pref_service = g_browser_process->local_state();
   DCHECK(pref_service);
   return pref_service->GetBoolean(prefs::kBrowserGuestModeEnabled);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 bool AreSecondaryProfilesAllowed() {
   const PrefService* const pref_service = g_browser_process->local_state();
   DCHECK(pref_service);
+  // This Lacros policy is used on Ash, as it impacts the Ash UI where the user
+  // can launch Lacros Guest mode window.
   return pref_service->GetBoolean(prefs::kLacrosSecondaryProfilesAllowed);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsProfileLocked(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
