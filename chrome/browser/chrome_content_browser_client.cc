@@ -5022,10 +5022,13 @@ void ChromeContentBrowserClient::
   content::BrowserContext* browser_context =
       content::RenderProcessHost::FromID(render_process_id)
           ->GetBrowserContext();
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(browser_context)
-          ->enabled_extensions()
-          .GetExtensionOrAppByURL(request_initiator_origin->GetURL());
+  const extensions::Extension* extension = nullptr;
+
+  if (request_initiator_origin != absl::nullopt) {
+    extension = extensions::ExtensionRegistry::Get(browser_context)
+                    ->enabled_extensions()
+                    .GetExtensionOrAppByURL(request_initiator_origin->GetURL());
+  }
 
   // For service worker contexts, we only allow file access. The remainder of
   // this code is used to allow extensions to access chrome:-scheme

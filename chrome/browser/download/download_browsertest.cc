@@ -2848,6 +2848,31 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, TransientDownload) {
   ASSERT_FALSE(downloads[0]->IsTemporary());
 }
 
+IN_PROC_BROWSER_TEST_F(DownloadTest, NullInitiator) {
+  GURL extensions_url("chrome-extension://fakeextension/resources");
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath target_file_full_path =
+      temp_dir.GetPath().Append(file.BaseName());
+  content::DownloadTestObserver* observer(CreateWaiter(browser(), 1));
+  std::unique_ptr<DownloadUrlParameters> params(
+      content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          web_contents, extensions_url, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  params->set_file_path(target_file_full_path);
+  params->set_transient(true);
+  DownloadManagerForBrowser(browser())->DownloadUrl(std::move(params));
+  observer->WaitForFinished();
+  EXPECT_EQ(0u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
+}
+
 class DownloadTestSplitCacheEnabled : public DownloadTest {
  public:
   DownloadTestSplitCacheEnabled() {
