@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
@@ -326,24 +327,28 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
   auto show = crostini_enabled_ ? apps::mojom::OptionalBool::kTrue
                                 : apps::mojom::OptionalBool::kFalse;
 
-  // The Crostini Terminal app is a hard-coded special case. It is the entry
-  // point to installing other Crostini apps, and is always in search.
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kCrostini;
-  mojom_app->app_id = crostini::kCrostiniTerminalSystemAppId;
-  mojom_app->show_in_launcher = show;
-  mojom_app->show_in_shelf = show;
-  mojom_app->show_in_search = apps::mojom::OptionalBool::kTrue;
-  mojom_app->handles_intents = show;
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
+  if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
+    // If they don't have the terminal app for ssh, then we need to update the
+    // terminal's registration when Crostini is installed/uninstalled.
+    // It is the entry point to installing other Crostini apps, and is always in
+    // search, but should only show up elsewhere when installed.
+    apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+    mojom_app->app_type = apps::mojom::AppType::kCrostini;
+    mojom_app->app_id = crostini::kCrostiniTerminalSystemAppId;
+    mojom_app->show_in_launcher = show;
+    mojom_app->show_in_shelf = show;
+    mojom_app->show_in_search = apps::mojom::OptionalBool::kTrue;
+    mojom_app->handles_intents = show;
+    PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(
-      AppType::kCrostini, crostini::kCrostiniTerminalSystemAppId);
-  app->show_in_launcher = crostini_enabled_;
-  app->show_in_shelf = crostini_enabled_;
-  app->show_in_search = true;
-  app->handles_intents = crostini_enabled_;
-  AppPublisher::Publish(std::move(app));
+    std::unique_ptr<App> app = std::make_unique<App>(
+        AppType::kCrostini, crostini::kCrostiniTerminalSystemAppId);
+    app->show_in_launcher = crostini_enabled_;
+    app->show_in_shelf = crostini_enabled_;
+    app->show_in_search = true;
+    app->handles_intents = crostini_enabled_;
+    AppPublisher::Publish(std::move(app));
+  }
 }
 
 std::unique_ptr<App> CrostiniApps::CreateApp(
