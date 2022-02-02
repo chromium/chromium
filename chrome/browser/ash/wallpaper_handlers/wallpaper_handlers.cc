@@ -34,6 +34,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -65,6 +66,11 @@ constexpr char kFilteringLabel[] = "chromebook";
 
 // The label used to return exclusive content for Google branded chromebooks.
 constexpr char kGoogleDeviceFilteringLabel[] = "google_branded_chromebook";
+
+// The URL to download an album's photos from a user's Google Photos library.
+constexpr char kGooglePhotosAlbumUrl[] =
+    "https://photosfirstparty-pa.googleapis.com/v1/chromeos/"
+    "collectionById:read";
 
 // The URL to download the albums in a user's Google Photos library.
 constexpr char kGooglePhotosAlbumsUrl[] =
@@ -131,8 +137,10 @@ constexpr net::NetworkTrafficAnnotationTag
         description:
           "Within the Google Photos tile, the ChromeOS Wallpaper Picker "
           "shows the user all the visible photos in their Google Photos "
-          "library so that they can pick one as their wallpaper. This query "
-          "fetches those photos."
+          "library so that they can pick one as their wallpaper. "
+          "Alternatively, the user can select an album within the Google "
+          "Photos tile to pick a photo from there. This query fetches photos "
+          "from one of those sources."
         trigger: "When the user accesses the Google Photos tile within the "
                  "ChromeOS Wallpaper Picker app."
         data: "OAuth credentials for the user's Google Photos account."
@@ -481,7 +489,7 @@ GooglePhotosFetcher<T>::~GooglePhotosFetcher() = default;
 
 template <typename T>
 void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
-    const std::string& service_url,
+    const GURL& service_url,
     ClientCallback callback) {
   pending_client_callbacks_[service_url].push_back(std::move(callback));
   if (pending_client_callbacks_[service_url].size() > 1)
@@ -504,7 +512,7 @@ void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnTokenReceived(
-    const std::string& service_url,
+    const GURL& service_url,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -514,7 +522,7 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
-  resource_request->url = GURL(service_url);
+  resource_request->url = service_url;
   // Cookies should not be allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
@@ -535,7 +543,7 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnJsonReceived(
-    const std::string& service_url,
+    const GURL& service_url,
     std::unique_ptr<std::string> response_body) {
   const int net_error = url_loaders_[service_url]->NetError();
   if (net_error != net::OK || !response_body) {
@@ -554,7 +562,7 @@ void GooglePhotosFetcher<T>::OnJsonReceived(
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnResponseReady(
-    const std::string& service_url,
+    const GURL& service_url,
     absl::optional<base::Value> response) {
   T args = ParseResponse(std::move(response));
   for (auto& callback : pending_client_callbacks_[service_url])
@@ -575,11 +583,10 @@ GooglePhotosAlbumsFetcher::~GooglePhotosAlbumsFetcher() = default;
 void GooglePhotosAlbumsFetcher::AddRequestAndStartIfNecessary(
     const absl::optional<std::string>& resume_token,
     base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
-  std::string service_url =
-      resume_token.has_value()
-          ? base::StrCat({kGooglePhotosAlbumsUrl,
-                          "?resume_token=", resume_token.value()})
-          : kGooglePhotosAlbumsUrl;
+  GURL service_url = GURL(kGooglePhotosAlbumsUrl);
+  if (resume_token.has_value())
+    service_url = net::AppendQueryParameter(service_url, "resume_token",
+                                            resume_token.value());
   GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
                                                      std::move(callback));
 }
@@ -654,8 +661,8 @@ GooglePhotosCountFetcher::~GooglePhotosCountFetcher() = default;
 
 void GooglePhotosCountFetcher::AddRequestAndStartIfNecessary(
     base::OnceCallback<void(int)> callback) {
-  GooglePhotosFetcher::AddRequestAndStartIfNecessary(kGooglePhotosCountUrl,
-                                                     std::move(callback));
+  GooglePhotosFetcher::AddRequestAndStartIfNecessary(
+      GURL(kGooglePhotosCountUrl), std::move(callback));
 }
 
 int GooglePhotosCountFetcher::ParseResponse(
@@ -680,13 +687,21 @@ GooglePhotosPhotosFetcher::GooglePhotosPhotosFetcher(Profile* profile)
 GooglePhotosPhotosFetcher::~GooglePhotosPhotosFetcher() = default;
 
 void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
+    const absl::optional<std::string>& album_id,
     const absl::optional<std::string>& resume_token,
     base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
-  std::string service_url =
-      resume_token.has_value()
-          ? base::StrCat({kGooglePhotosPhotosUrl,
-                          "?resume_token=", resume_token.value()})
-          : kGooglePhotosPhotosUrl;
+  GURL service_url;
+  if (album_id.has_value()) {
+    service_url = net::AppendQueryParameter(GURL(kGooglePhotosAlbumUrl),
+                                            "album_id", album_id.value());
+  } else {
+    service_url = GURL(kGooglePhotosPhotosUrl);
+  }
+
+  if (resume_token.has_value()) {
+    service_url = net::AppendQueryParameter(service_url, "resume_token",
+                                            resume_token.value());
+  }
   GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
                                                      std::move(callback));
 }

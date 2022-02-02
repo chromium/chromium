@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "url/gurl.h"
 
 class GoogleServiceAuthError;
 class Profile;
@@ -166,7 +167,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // function that prepares `service_url`--with appended query params from the
   // client if applicable--and delegates the rest of the work to this function.
   using ClientCallback = base::OnceCallback<void(T)>;
-  void AddRequestAndStartIfNecessary(const std::string& service_url,
+  void AddRequestAndStartIfNecessary(const GURL& service_url,
                                      ClientCallback callback);
 
   // Called when the API request finishes. `response` will be absent if there
@@ -176,12 +177,12 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   virtual T ParseResponse(absl::optional<base::Value> response) = 0;
 
  private:
-  void OnTokenReceived(const std::string& service_url,
+  void OnTokenReceived(const GURL& service_url,
                        GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnJsonReceived(const std::string& service_url,
+  void OnJsonReceived(const GURL& service_url,
                       std::unique_ptr<std::string> response_body);
-  void OnResponseReady(const std::string& service_url,
+  void OnResponseReady(const GURL& service_url,
                        absl::optional<base::Value> response);
 
   // Profile associated with the Google Photos account that will be queried.
@@ -199,17 +200,16 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // Callbacks for each distinct query this fetcher has been asked to make. A
   // URL's callbacks are called and then removed when the download finishes,
   // successfully or in error.
-  std::map<std::string, std::vector<ClientCallback>> pending_client_callbacks_;
+  std::map<GURL, std::vector<ClientCallback>> pending_client_callbacks_;
 
   // OAuth2 access token fetcher for each distinct query this fetcher has been
   // asked to make. A URL's fetcher exists until its callbacks have been called.
-  std::map<std::string,
-           std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>>
+  std::map<GURL, std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>>
       token_fetchers_;
 
   // Used to download the client's desired information from the Google Photos
   // service. A URL's loader exists until its callbacks have been called.
-  std::map<std::string, std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
+  std::map<GURL, std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
 
   base::WeakPtrFactory<GooglePhotosFetcher> weak_factory_{this};
 };
@@ -258,7 +258,7 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
 
 using GooglePhotosPhotosCbkArgs =
     ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr;
-// Downloads the visible photos in a user's Google Photos library.
+// Downloads visible photos from a user's Google Photos library.
 class GooglePhotosPhotosFetcher
     : public GooglePhotosFetcher<GooglePhotosPhotosCbkArgs> {
  public:
@@ -271,6 +271,7 @@ class GooglePhotosPhotosFetcher
   ~GooglePhotosPhotosFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
+      const absl::optional<std::string>& album_id,
       const absl::optional<std::string>& resume_token,
       base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback);
 

@@ -208,6 +208,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosCount(
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
+    const absl::optional<std::string>& album_id,
     const absl::optional<std::string>& resume_token,
     FetchGooglePhotosPhotosCallback callback) {
   if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
@@ -226,7 +227,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
             profile_);
   }
   google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
-      resume_token, std::move(callback));
+      album_id, resume_token, std::move(callback));
 }
 
 void PersonalizationAppWallpaperProviderImpl::GetLocalImages(

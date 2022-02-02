@@ -62,8 +62,8 @@ class MockGooglePhotosCountFetcher : public GooglePhotosCountFetcher {
 };
 
 // Fetcher that returns an empty photo list and no resume token in response to a
-// request for the user's Google Photos photos. Used to avoid network requests
-// in unit tests.
+// request for photos from the user's Google Photos library. Used to avoid
+// network requests in unit tests.
 class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
  public:
   explicit MockGooglePhotosPhotosFetcher(Profile* profile);
@@ -77,7 +77,8 @@ class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
   // GooglePhotosPhotosFetcher:
   MOCK_METHOD(void,
               AddRequestAndStartIfNecessary,
-              (const absl::optional<std::string>& resume_token,
+              (const absl::optional<std::string>& album_id,
+               const absl::optional<std::string>& resume_token,
                base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback),
               (override));
 

@@ -62,7 +62,8 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
 
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
-          [](const absl::optional<std::string>& resume_token,
+          [](const absl::optional<std::string>& album_id,
+             const absl::optional<std::string>& resume_token,
              base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
             auto response = FetchGooglePhotosPhotosResponse::New(
                 std::vector<GooglePhotosPhotoPtr>(), absl::nullopt);

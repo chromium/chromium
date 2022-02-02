@@ -95,6 +95,7 @@ class PersonalizationAppWallpaperProviderImpl
   void FetchGooglePhotosCount(FetchGooglePhotosCountCallback callback) override;
 
   void FetchGooglePhotosPhotos(
+      const absl::optional<std::string>& album_id,
       const absl::optional<std::string>& resume_token,
       FetchGooglePhotosPhotosCallback callback) override;
 
@@ -227,7 +228,7 @@ class PersonalizationAppWallpaperProviderImpl
   std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher>
       google_photos_count_fetcher_;
 
-  // Fetches the visible photos in the user's Google Photos library. Constructed
+  // Fetches visible photos from the user's Google Photos library. Constructed
   // lazily at the time of the first request and then persists for the rest of
   // the delegate's lifetime, unless preemptively or subsequently replaced by a
   // mock in a test.

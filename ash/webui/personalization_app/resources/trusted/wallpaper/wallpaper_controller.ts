@@ -121,12 +121,14 @@ async function fetchGooglePhotosPhotos(
   store.dispatch(action.beginLoadGooglePhotosPhotosAction());
 
   let photos: Array<GooglePhotosPhoto>|null = [];
+  const albumId: string|null|undefined = null;
   let resumeToken: string|null|undefined = null;
 
   // TODO(b/216882690): Support incremental load of photos as the user scrolls
   // through their library as opposed to loading them all at once.
   do {
-    const {response} = await provider.fetchGooglePhotosPhotos(resumeToken) as
+    const {response} =
+        await provider.fetchGooglePhotosPhotos(albumId, resumeToken) as
         {response: FetchGooglePhotosPhotosResponse};
     if (!Array.isArray(response.photos)) {
       console.warn('Failed to fetch Google Photos photos');
