@@ -54,6 +54,7 @@ const char kFakeUpdateVersionForTesting[] = "1.0.0";
 const char kFakeUpdateUriForTesting[] =
     "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
 const char kFakeUpdateFileNameForTesting[] = "testFirmwarePath-V1.cab";
+const char kFilePathIdentifier[] = "file://";
 const char kFwupdServiceName[] = "org.freedesktop.fwupd";
 const char kFwupdServicePath[] = "/";
 const char kDescriptionKey[] = "Description";
@@ -539,7 +540,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
   EXPECT_EQ(ash::firmware_update::mojom::UpdatePriority(
                 kFakeUpdatePriorityForTesting),
             updates[0]->priority);
-  EXPECT_EQ(kFakeUpdateFileNameForTesting, updates[0]->filepath.value());
+  EXPECT_EQ(kFakeUpdateUriForTesting, updates[0]->filepath.value());
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
@@ -654,7 +655,8 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   SetupObserver(&update_observer);
   ASSERT_EQ(1, update_observer.num_times_notified());
 
-  std::string fake_url = "https://faketesturl/";
+  const std::string fake_url =
+      std::string("https://faketesturl/") + kFakeUpdateFileNameForTesting;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   SetFakeUrlForTesting(fake_url);
   GetTestUrlLoaderFactory().AddResponse(fake_url, "");
@@ -662,8 +664,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
   FakeUpdateProgressObserver update_progress_observer;
   SetupProgressObserver(&update_progress_observer);
-  StartInstall(std::string(kFakeDeviceIdForTesting),
-               base::FilePath(kFakeUpdateFileNameForTesting));
+  StartInstall(std::string(kFakeDeviceIdForTesting), base::FilePath(fake_url));
 
   base::RunLoop().RunUntilIdle();
 
@@ -687,6 +688,45 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.FirmwareUpdateUi.InstallResult",
       firmware_update::metrics::FirmwareUpdateInstallResult::kSuccess, 1);
+}
+
+TEST_F(FirmwareUpdateManagerTest, RequestInstallLocalPatch) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  dbus_responses_.push_back(dbus::Response::CreateEmpty());
+  // Add dbus response for RequestAllUpdates() call made after an install
+  // is completed.
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  base::RunLoop().RunUntilIdle();
+
+  base::FilePath root_dir;
+  CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
+  const base::FilePath root_path =
+      root_dir.Append(FILE_PATH_LITERAL(kDownloadDir))
+          .Append(FILE_PATH_LITERAL(kCacheDir));
+  const std::string test_filename =
+      std::string(kFakeDeviceIdForTesting) + std::string(kCabExtension);
+  base::FilePath full_path = root_path.Append(test_filename);
+  // Create a temporary file to simulate a .cab available for install.
+  base::WriteFile(full_path, "", 0);
+  EXPECT_TRUE(base::PathExists(full_path));
+  const std::string uri = kFilePathIdentifier + full_path.value();
+
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+  StartInstall(std::string(kFakeDeviceIdForTesting), base::FilePath(uri));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kSuccess,
+            update_progress_observer.GetLatestUpdate()->state);
 }
 
 TEST_F(FirmwareUpdateManagerTest, OnPropertiesChangedResponse) {

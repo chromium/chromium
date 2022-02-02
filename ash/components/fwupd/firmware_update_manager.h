@@ -134,11 +134,16 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
                             const base::FilePath& filepath,
                             base::OnceCallback<void()> callback);
 
+  void MaybeDownloadFileToInternal(const base::FilePath& patch_path,
+                                   const std::string& device_id,
+                                   const base::FilePath& filepath,
+                                   base::OnceCallback<void()> callback,
+                                   bool write_file_success);
+
   void DownloadFileToInternal(const base::FilePath& patch_path,
                               const std::string& device_id,
                               const base::FilePath& filepath,
-                              base::OnceCallback<void()> callback,
-                              bool write_file_success);
+                              base::OnceCallback<void()> callback);
 
   void OnUrlDownloadedToFile(
       const std::string& device_id,

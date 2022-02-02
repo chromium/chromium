@@ -31,7 +31,6 @@ const char kFakeUpdateDescriptionForTesting[] =
 const uint32_t kFakeUpdatePriorityForTesting = 1;
 const char kFakeUpdateUriForTesting[] =
     "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
-const char kFakeUpdateFileNameForTesting[] = "testFirmwarePath-V1.cab";
 const char kNameKey[] = "Name";
 const char kIdKey[] = "DeviceId";
 const char kVersionKey[] = "Version";
@@ -132,7 +131,7 @@ class FwupdClientTest : public testing::Test {
     // that doesn't support unsigned numbers. So it needs to be casted to int.
     CHECK_EQ(static_cast<int>(kFakeUpdatePriorityForTesting),
              (*updates)[0].priority);
-    CHECK_EQ(kFakeUpdateFileNameForTesting, (*updates)[0].filepath.value());
+    CHECK_EQ(kFakeUpdateUriForTesting, (*updates)[0].filepath.value());
   }
 
   void CheckInstallState(bool success) { CHECK_EQ(install_success_, success); }

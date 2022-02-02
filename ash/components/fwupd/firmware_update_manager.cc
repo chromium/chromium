@@ -84,10 +84,10 @@ const char* GetFwupdStatusString(FwupdStatus enum_val) {
 const char kBaseRootPath[] = "firmware-updates";
 const char kCachePath[] = "cache";
 const char kCabFileExtension[] = ".cab";
-const char kFirmwareMirrorPrefix[] =
-    "https://storage.googleapis.com/chromeos-localmirror/lvfs/";
 const char kAllowedFilepathChars[] =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-._";
+const char kHttpsComponent[] = "https:";
+const char kFileComponent[] = "file:";
 
 FirmwareUpdateManager* g_instance = nullptr;
 
@@ -198,7 +198,8 @@ bool IsValidFirmwarePatchFile(const base::FilePath& filepath) {
   }
 
   // Check for invalid characters in filepath.
-  return base::ContainsOnlyChars(filepath.value(), kAllowedFilepathChars);
+  return base::ContainsOnlyChars(filepath.BaseName().value(),
+                                 kAllowedFilepathChars);
 }
 
 }  // namespace
@@ -362,7 +363,8 @@ void FirmwareUpdateManager::CreateLocalPatchFile(
     const std::string& device_id,
     const base::FilePath& filepath,
     base::OnceCallback<void()> callback) {
-  const base::FilePath patch_path = cache_path.Append(filepath.value());
+  const base::FilePath patch_path =
+      cache_path.Append(filepath.BaseName().value());
 
   // Create the patch file.
   task_runner_->PostTaskAndReplyWithResult(
@@ -380,21 +382,56 @@ void FirmwareUpdateManager::CreateLocalPatchFile(
             return write_file_success;
           },
           patch_path),
-      base::BindOnce(&FirmwareUpdateManager::DownloadFileToInternal,
+      base::BindOnce(&FirmwareUpdateManager::MaybeDownloadFileToInternal,
                      weak_ptr_factory_.GetWeakPtr(), patch_path, device_id,
                      filepath, std::move(callback)));
 }
 
-void FirmwareUpdateManager::DownloadFileToInternal(
+void FirmwareUpdateManager::MaybeDownloadFileToInternal(
     const base::FilePath& patch_path,
     const std::string& device_id,
     const base::FilePath& filepath,
     base::OnceCallback<void()> callback,
     bool write_file_success) {
   if (!write_file_success) {
+    std::move(callback).Run();
     return;
   }
-  const std::string url = std::string(kFirmwareMirrorPrefix) + filepath.value();
+
+  std::vector<base::FilePath::StringType> components;
+  filepath.GetComponents(&components);
+
+  if (components[0] == kHttpsComponent) {
+    // Firmware patch is available for download.
+    DownloadFileToInternal(patch_path, device_id, filepath,
+                           std::move(callback));
+    return;
+  } else if (components[0] == kFileComponent) {
+    // Firmware patch is already available from the local filesystem.
+    size_t filepath_start = filepath.value().find(components[1]);
+    if (filepath_start != std::string::npos) {
+      const base::FilePath file(filepath.value().substr(filepath_start - 1));
+      std::map<std::string, bool> options = {
+          {"none", false}, {"force", true}, {"allow-reinstall", true}};
+      task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&OpenFileAndGetFileDescriptor, file),
+          base::BindOnce(&FirmwareUpdateManager::InstallUpdate,
+                         weak_ptr_factory_.GetWeakPtr(), device_id,
+                         std::move(options), std::move(callback)));
+      return;
+    }
+  }
+
+  LOG(ERROR) << "Invalid file or download URI: " << filepath.value();
+  std::move(callback).Run();
+}
+
+void FirmwareUpdateManager::DownloadFileToInternal(
+    const base::FilePath& patch_path,
+    const std::string& device_id,
+    const base::FilePath& filepath,
+    base::OnceCallback<void()> callback) {
+  const std::string url = filepath.value();
   GURL download_url(fake_url_for_testing_.empty() ? url
                                                   : fake_url_for_testing_);
 

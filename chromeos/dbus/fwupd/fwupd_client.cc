@@ -27,7 +27,7 @@ FwupdClient* g_instance = nullptr;
 const char kCabFileExtension[] = ".cab";
 
 base::FilePath GetFilePathFromUri(const GURL uri) {
-  const std::string filepath = uri.ExtractFileName();
+  const std::string filepath = uri.spec();
 
   if (!filepath.empty()) {
     // Verify that the extension is .cab.
@@ -35,7 +35,7 @@ base::FilePath GetFilePathFromUri(const GURL uri) {
     if (extension_delim == std::string::npos ||
         filepath.substr(extension_delim) != kCabFileExtension) {
       // Bad file, return with empty file path;
-      LOG(ERROR) << "Bad file found: " << uri.spec();
+      LOG(ERROR) << "Bad file found: " << filepath;
       return base::FilePath();
     }
 
