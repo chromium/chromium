@@ -192,7 +192,7 @@ bool AddElement(const LayoutObject* object,
     if (!tap_targets->insert(object).is_new_entry)
       return false;
 
-    if (!rect.IsEmpty() && !tap_targets->insert(object).is_new_entry) {
+    if (!rect.IsEmpty()) {
       const int top = ClampTo<int>(rect.y() - finger_radius);
       const int bottom = ClampTo<int>(rect.bottom() + finger_radius);
       const int left = ClampTo<int>(rect.x() - finger_radius);
