@@ -2656,6 +2656,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_CONFIRMATION_TITLE_TEXT" desc="Label for the confirmation dialog title.">
         Update firmware on <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
       </message>
+      <message name="IDS_FIRMWARE_NUM_AVAILABLE_UPDATES_TEXT" desc="Message annouced in aria-live when we receive a list of available firmware updates.">
+        Update firmware for external devices window is open. <ph name="NUM_UPDATES">$1<ex>3</ex></ph> updates available.
+      </message>
 
       <!-- Quick Answers -->
       <message name="IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">

@@ -146,7 +146,9 @@ js_library("peripheral_updates_list") {
     ":mojo_interface_provider",
     ":update_card",
     "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
