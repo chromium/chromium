@@ -14,9 +14,15 @@ import '../../controls/settings_radio_group.js';
 import '../../privacy_page/collapse_radio_button.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
-export class PrivacyReviewCookiesFragmentElement extends PolymerElement {
+const PrivacyReviewCookiesFragmentBase = PrefsMixin(PolymerElement);
+
+export class PrivacyReviewCookiesFragmentElement extends
+    PrivacyReviewCookiesFragmentBase {
   static get is() {
     return 'privacy-review-cookies-fragment';
   }
@@ -43,6 +49,40 @@ export class PrivacyReviewCookiesFragmentElement extends PolymerElement {
         value: CookiePrimarySetting,
       },
     };
+  }
+
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+  private startStateBlock3PIncognito_: boolean;
+
+  ready() {
+    super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+    this.addEventListener('view-exit-finish', this.onViewExitFinish_);
+  }
+
+  private onViewEnterStart_() {
+    this.startStateBlock3PIncognito_ =
+        this.getPref('generated.cookie_primary_setting').value ===
+        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+  }
+
+  private onViewExitFinish_() {
+    const endStateBlock3PIncognito =
+        this.getPref('generated.cookie_primary_setting').value ===
+        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+
+    let state: PrivacyGuideSettingsStates|null = null;
+    if (this.startStateBlock3PIncognito_) {
+      state = endStateBlock3PIncognito ?
+          PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P_INCOGNITO :
+          PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P;
+    } else {
+      state = endStateBlock3PIncognito ?
+          PrivacyGuideSettingsStates.BLOCK_3P_TO_3P_INCOGNITO :
+          PrivacyGuideSettingsStates.BLOCK_3P_TO_3P;
+    }
+    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
   }
 }
 

@@ -80553,6 +80553,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Privacy Guide Promo Entry"/>
 </enum>
 
+<enum name="SettingsPrivacyGuideSettingsStates">
+  <int value="0" label="MSBB Remains On"/>
+  <int value="1" label="MSBB Turned Off"/>
+  <int value="2" label="MSBB Turned On"/>
+  <int value="3" label="MSBB Remains Off"/>
+  <int value="4" label="Cookies Remains Block 3P Incognito"/>
+  <int value="5" label="Cookies Turned to Block 3P"/>
+  <int value="6" label="Cookies Turned to Block 3P Incognito"/>
+  <int value="7" label="Cookies Remains Block 3P"/>
+  <int value="8" label="History Sync Remains On"/>
+  <int value="9" label="History Sync Turned Off"/>
+  <int value="10" label="History Sync Turned On"/>
+  <int value="11" label="History Sync Remains Off"/>
+  <int value="12" label="Safe Browsing Remains Enhanced"/>
+  <int value="13" label="Safe Browsing Turned To Standard"/>
+  <int value="14" label="Safe Browsing Turned to Enhanced"/>
+  <int value="15" label="Safe Browsing Remains Standard"/>
+</enum>
+
 <enum name="SettingsPrivacySandboxEnabled">
   <int value="0" label="PS enabled, allow all cookies"/>
   <int value="1" label="PS enabled, block 3P cookies"/>

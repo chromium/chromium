@@ -11,7 +11,8 @@
 <settings-radio-group id="safeBrowsingRadioGroup"
     pref="{{prefs.generated.safe_browsing}}"
     selectable-elements="settings-collapse-radio-button">
-  <settings-collapse-radio-button pref="[[prefs.generated.safe_browsing]]"
+  <settings-collapse-radio-button id="safeBrowsingRadioEnhanced"
+      pref="[[prefs.generated.safe_browsing]]"
       name="[[safeBrowsingSettingEnum_.ENHANCED]]"
       label="$i18n{safeBrowsingEnhanced}"
       sub-label="$i18n{safeBrowsingEnhancedDesc}"
@@ -57,7 +58,8 @@
         </div>
       </div>
   </settings-collapse-radio-button>
-  <settings-collapse-radio-button pref="[[prefs.generated.safe_browsing]]"
+  <settings-collapse-radio-button id="safeBrowsingRadioStandard"
+      pref="[[prefs.generated.safe_browsing]]"
       name="[[safeBrowsingSettingEnum_.STANDARD]]"
       label="$i18n{safeBrowsingStandard}"
       sub-label="$i18n{safeBrowsingStandardDesc}"

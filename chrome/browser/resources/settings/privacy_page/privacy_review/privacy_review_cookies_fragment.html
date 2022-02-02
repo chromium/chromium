@@ -11,7 +11,8 @@
 <settings-radio-group id="cookiesRadioGroup"
     pref="{{prefs.generated.cookie_primary_setting}}"
     selectable-elements="settings-collapse-radio-button">
-  <settings-collapse-radio-button pref="[[prefs.generated.cookie_primary_setting]]"
+  <settings-collapse-radio-button id="block3PIncognito"
+      pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
       label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoSubheader}"
       expand-aria-label=
@@ -45,7 +46,8 @@
       </div>
     </div>
   </settings-collapse-radio-button>
-  <settings-collapse-radio-button pref="[[prefs.generated.cookie_primary_setting]]"
+  <settings-collapse-radio-button id="block3P"
+      pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
       label="$i18n{privacyReviewCookiesCardBlockTpcSubheader}"
       expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">

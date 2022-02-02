@@ -14,9 +14,15 @@ import '../../controls/settings_radio_group.js';
 import '../../privacy_page/collapse_radio_button.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 
-export class PrivacyReviewSafeBrowsingFragmentElement extends PolymerElement {
+const PrivacyReviewSafeBrowsingFragmentBase = PrefsMixin(PolymerElement);
+
+export class PrivacyReviewSafeBrowsingFragmentElement extends
+    PrivacyReviewSafeBrowsingFragmentBase {
   static get is() {
     return 'privacy-review-safe-browsing-fragment';
   }
@@ -43,6 +49,38 @@ export class PrivacyReviewSafeBrowsingFragmentElement extends PolymerElement {
         value: SafeBrowsingSetting,
       },
     };
+  }
+
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+  private startStateEnhanced_: boolean;
+
+  ready() {
+    super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+    this.addEventListener('view-exit-finish', this.onViewExitFinish_);
+  }
+
+  private onViewEnterStart_() {
+    this.startStateEnhanced_ = this.getPref('generated.safe_browsing').value ===
+        SafeBrowsingSetting.ENHANCED;
+  }
+
+  private onViewExitFinish_() {
+    const endStateEnhanced = this.getPref('generated.safe_browsing').value ===
+        SafeBrowsingSetting.ENHANCED;
+
+    let state: PrivacyGuideSettingsStates|null = null;
+    if (this.startStateEnhanced_) {
+      state = endStateEnhanced ?
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED :
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD;
+    } else {
+      state = endStateEnhanced ?
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED :
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD;
+    }
+    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
   }
 }
 

@@ -6,9 +6,10 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {getSyncAllPrefs} from './sync_test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -42,6 +43,12 @@ suite('PrivacyReviewPage', function() {
         viewed: {
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,
+        },
+      },
+      url_keyed_anonymized_data_collection: {
+        enabled: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
         },
       },
       generated: {
@@ -103,9 +110,23 @@ suite('PrivacyReviewPage', function() {
   }
 
   /**
-   * Fire a sync status changed event and flush the UI.
+   * Set all relevant sync status and fire a changed event and flush the UI.
    */
-  function setSyncEnabled(syncOn: boolean) {
+  function setupSync({
+    syncOn,
+    syncAllDataTypes,
+    typedUrlsSynced,
+  }: {
+    syncAllDataTypes: boolean,
+    typedUrlsSynced: boolean,
+    syncOn: boolean,
+  }) {
+    if (syncAllDataTypes) {
+      assertTrue(typedUrlsSynced);
+    }
+    if (typedUrlsSynced) {
+      assertTrue(syncOn);
+    }
     syncBrowserProxy.testSyncStatus = {
       signedIn: syncOn,
       hasError: false,
@@ -113,6 +134,12 @@ suite('PrivacyReviewPage', function() {
     };
     webUIListenerCallback(
         'sync-status-changed', syncBrowserProxy.testSyncStatus);
+
+    const event = getSyncAllPrefs();
+    // Overwrite datatypes needed in tests.
+    event.syncAllDataTypes = syncAllDataTypes;
+    event.typedUrlsSynced = typedUrlsSynced;
+    webUIListenerCallback('sync-prefs-changed', event);
     flush();
   }
 
@@ -301,6 +328,135 @@ suite('PrivacyReviewPage', function() {
     assertStepIndicatorModel(activeIndex);
   }
 
+  async function assertMsbbMetrics({
+    msbbStartOn,
+    changeSetting,
+    expectedMetric,
+  }: {
+    msbbStartOn: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    page.setPrefValue(
+        'url_keyed_anonymized_data_collection.enabled', msbbStartOn);
+    flush();
+    navigateToStep(PrivacyReviewStep.MSBB);
+    assertMsbbCardVisible();
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector('#' + PrivacyReviewStep.MSBB)!.shadowRoot!
+          .querySelector<HTMLElement>('#urlCollectionToggle')!.click();
+      flush();
+    }
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
+  async function assertHistorySyncMetrics({
+    historySyncStartOn,
+    changeSetting,
+    expectedMetric,
+  }: {
+    historySyncStartOn: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: historySyncStartOn,
+      typedUrlsSynced: historySyncStartOn,
+    });
+    navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
+    assertHistorySyncCardVisible();
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector('#' + PrivacyReviewStep.HISTORY_SYNC)!
+          .shadowRoot!.querySelector<HTMLElement>('#historyToggle')!.click();
+      flush();
+    }
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
+  async function assertSafeBrowsingMetrics({
+    safeBrowsingStartsEnhanced,
+    changeSetting,
+    expectedMetric,
+  }: {
+    safeBrowsingStartsEnhanced: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    const safeBrowsingStartState = safeBrowsingStartsEnhanced ?
+        SafeBrowsingSetting.ENHANCED :
+        SafeBrowsingSetting.STANDARD;
+    page.setPrefValue('generated.safe_browsing', safeBrowsingStartState);
+    flush();
+    navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
+    assertSafeBrowsingCardVisible();
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector(
+                          '#' + PrivacyReviewStep.SAFE_BROWSING)!.shadowRoot!
+          .querySelector<HTMLElement>(
+              safeBrowsingStartsEnhanced ?
+                  '#safeBrowsingRadioStandard' :
+                  '#safeBrowsingRadioEnhanced')!.click();
+      flush();
+    }
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
+  async function assertCookieMetrics({
+    cookieStartsBlock3PIncognito,
+    changeSetting,
+    expectedMetric,
+  }: {
+    cookieStartsBlock3PIncognito: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    const cookieStartState = cookieStartsBlock3PIncognito ?
+        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO :
+        CookiePrimarySetting.BLOCK_THIRD_PARTY;
+    page.setPrefValue('generated.cookie_primary_setting', cookieStartState);
+    flush();
+    navigateToStep(PrivacyReviewStep.COOKIES);
+    assertCookiesCardVisible();
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector(
+                          '#' + PrivacyReviewStep.COOKIES)!.shadowRoot!
+          .querySelector<HTMLElement>(
+              cookieStartsBlock3PIncognito ? '#block3P' :
+                                             '#block3PIncognito')!.click();
+      flush();
+    }
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
   test('startPrivacyReview', function() {
     // Navigating to the privacy review without a step parameter navigates to
     // the welcome card.
@@ -333,7 +489,11 @@ suite('PrivacyReviewPage', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickWelcome');
 
-    setSyncEnabled(true);
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     assertMsbbCardVisible();
   });
 
@@ -350,9 +510,45 @@ suite('PrivacyReviewPage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickMSBB');
   });
 
+  test('msbbMetricsOnToOn', async function() {
+    await assertMsbbMetrics({
+      msbbStartOn: true,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_ON
+    });
+  });
+
+  test('msbbMetricsOnToOff', async function() {
+    await assertMsbbMetrics({
+      msbbStartOn: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_OFF
+    });
+  });
+
+  test('msbbMetricsOffToOn', async function() {
+    await assertMsbbMetrics({
+      msbbStartOn: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_ON
+    });
+  });
+
+  test('msbbMetricsOffToOff', async function() {
+    await assertMsbbMetrics({
+      msbbStartOn: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF
+    });
+  });
+
   test('msbbForwardNavigationSyncOn', async function() {
     navigateToStep(PrivacyReviewStep.MSBB);
-    setSyncEnabled(true);
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     assertMsbbCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
@@ -369,7 +565,11 @@ suite('PrivacyReviewPage', function() {
 
   test('msbbForwardNavigationSyncOff', function() {
     navigateToStep(PrivacyReviewStep.MSBB);
-    setSyncEnabled(false);
+    setupSync({
+      syncOn: false,
+      syncAllDataTypes: false,
+      typedUrlsSynced: false,
+    });
     assertMsbbCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
@@ -378,7 +578,11 @@ suite('PrivacyReviewPage', function() {
 
   test('historySyncBackNavigation', async function() {
     navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
-    setSyncEnabled(true);
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     assertHistorySyncCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
@@ -389,19 +593,68 @@ suite('PrivacyReviewPage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickHistorySync');
   });
 
+  test('historySyncOnToOn', async function() {
+    await assertHistorySyncMetrics({
+      historySyncStartOn: true,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON
+    });
+  });
+
+  test('historySyncOnToOff', async function() {
+    await assertHistorySyncMetrics({
+      historySyncStartOn: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF
+    });
+  });
+
+  test('historySyncOffToOn', async function() {
+    await assertHistorySyncMetrics({
+      historySyncStartOn: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON
+    });
+  });
+
+  test('historySyncOffToOff', async function() {
+    await assertHistorySyncMetrics({
+      historySyncStartOn: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF
+    });
+  });
+
   test('historySyncNavigatesAwayOnSyncOff', function() {
     navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
-    setSyncEnabled(true);
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     assertHistorySyncCardVisible();
 
     // User disables sync while history sync card is shown.
-    setSyncEnabled(false);
+    setupSync({
+      syncOn: false,
+      syncAllDataTypes: false,
+      typedUrlsSynced: false,
+    });
     assertSafeBrowsingCardVisible();
   });
 
   test('historySyncNotReachableWhenSyncOff', function() {
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
-    setSyncEnabled(false);
+    setupSync({
+      syncOn: false,
+      syncAllDataTypes: false,
+      typedUrlsSynced: false,
+    });
     assertSafeBrowsingCardVisible();
   });
 
@@ -409,7 +662,11 @@ suite('PrivacyReviewPage', function() {
       'historySyncCardForwardNavigationShouldShowSafeBrowsingCard',
       async function() {
         navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
-        setSyncEnabled(true);
+        setupSync({
+          syncOn: true,
+          syncAllDataTypes: true,
+          typedUrlsSynced: true,
+        });
         setSafeBrowsingSetting(SafeBrowsingSetting.ENHANCED);
         setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
         assertHistorySyncCardVisible();
@@ -430,7 +687,11 @@ suite('PrivacyReviewPage', function() {
   test(
       'historySyncCardForwardNavigationShouldHideSafeBrowsingCard', function() {
         navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
-        setSyncEnabled(true);
+        setupSync({
+          syncOn: true,
+          syncAllDataTypes: true,
+          typedUrlsSynced: true,
+        });
         setSafeBrowsingSetting(SafeBrowsingSetting.DISABLED);
         setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
         assertHistorySyncCardVisible();
@@ -441,7 +702,11 @@ suite('PrivacyReviewPage', function() {
 
   test('safeBrowsingCardBackNavigationSyncOn', async function() {
     navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
-    setSyncEnabled(true);
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     assertSafeBrowsingCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
@@ -452,9 +717,49 @@ suite('PrivacyReviewPage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickSafeBrowsing');
   });
 
-  test('safeBrowsingCardBackNavigationSyncOff', function() {
+  test('safeBrowsingMetricsEnhancedToEnhanced', async function() {
+    await assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: true,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED,
+    });
+  });
+
+  test('safeBrowsingMetricsEnhancedToStandard', async function() {
+    await assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: true,
+      changeSetting: true,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD,
+    });
+  });
+
+  test('safeBrowsingMetricsStandardToEnhanced', async function() {
+    await assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: false,
+      changeSetting: true,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED,
+    });
+  });
+
+  test('safeBrowsingMetricsStandardToStandard', async function() {
+    await assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: false,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD,
+    });
+  });
+
+  test('safeBrowsingCardBackNavigationSyncOff', async function() {
     navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
-    setSyncEnabled(false);
+    setupSync({
+      syncOn: false,
+      syncAllDataTypes: false,
+      typedUrlsSynced: false,
+    });
     assertSafeBrowsingCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
@@ -519,7 +824,11 @@ suite('PrivacyReviewPage', function() {
 
   test('cookiesCardBackNavigationShouldShowSafeBrowsingCard', async function() {
     navigateToStep(PrivacyReviewStep.COOKIES);
-    setSyncEnabled(true);
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     setSafeBrowsingSetting(SafeBrowsingSetting.STANDARD);
     assertCookiesCardVisible();
 
@@ -532,9 +841,46 @@ suite('PrivacyReviewPage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCookies');
   });
 
+  test('cookiesMetrics3PIncognitoTo3PIncognito', async function() {
+    await assertCookieMetrics({
+      cookieStartsBlock3PIncognito: true,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P_INCOGNITO,
+    });
+  });
+
+  test('cookiesMetrics3PIncognitoTo3P', async function() {
+    await assertCookieMetrics({
+      cookieStartsBlock3PIncognito: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P,
+    });
+  });
+
+  test('cookiesMetrics3PTo3PIncognito', async function() {
+    await assertCookieMetrics({
+      cookieStartsBlock3PIncognito: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P_INCOGNITO,
+    });
+  });
+
+  test('cookiesMetrics3PTo3P', async function() {
+    await assertCookieMetrics({
+      cookieStartsBlock3PIncognito: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P,
+    });
+  });
+
   test('cookiesCardBackNavigationShouldHideSafeBrowsingCard', function() {
     navigateToStep(PrivacyReviewStep.COOKIES);
-    setSyncEnabled(true);
+    setupSync({
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     setSafeBrowsingSetting(SafeBrowsingSetting.DISABLED);
     assertCookiesCardVisible();
 

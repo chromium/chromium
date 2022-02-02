@@ -212,6 +212,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacyGuide.SettingsStates"
+    enum="SettingsPrivacyGuideSettingsStates" expires_after="M104">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Records whether or not the user kept the same settings or changed it, and
+    the corresponding value, on every |Next| or |Back| button click inside of
+    Privacy guide.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.Enabled"
     enum="SettingsPrivacySandboxEnabled" expires_after="2022-06-26">
   <owner>harrisonsean@chromium.org</owner>

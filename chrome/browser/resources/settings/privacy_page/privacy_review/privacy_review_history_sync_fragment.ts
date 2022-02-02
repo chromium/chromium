@@ -18,6 +18,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {BaseMixin} from '../../base_mixin.js';
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from '../../people_page/sync_browser_proxy.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
@@ -79,6 +80,15 @@ export class PrivacyReviewHistorySyncFragmentElement extends
    */
   private syncAllCache_: boolean|null = null;
   private historySyncVirtualPref_: chrome.settingsPrivate.PrefObject;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+  private startStateHistorySyncOn_: boolean;
+  /*
+   * This is needed as the nature of SyncPrefs means there is a chance they are
+   * not actually initialized before view-enter-start, so the pref value is read
+   * when the page fires its on-load update/initialization of SyncPrefs.
+   */
+  private firstSyncPrefUpdate_: boolean = true;
 
   ready() {
     super.ready();
@@ -87,6 +97,24 @@ export class PrivacyReviewHistorySyncFragmentElement extends
         'sync-prefs-changed',
         (syncPrefs: SyncPrefs) => this.onSyncPrefsChange_(syncPrefs));
     this.syncBrowserProxy_.sendSyncPrefsChanged();
+    this.addEventListener('view-exit-finish', this.onViewExitFinish_);
+  }
+
+  private onViewExitFinish_() {
+    const endStateHistorySyncOn = this.syncPrefs_.typedUrlsSynced;
+    let state: PrivacyGuideSettingsStates|null = null;
+    if (this.startStateHistorySyncOn_) {
+      state = endStateHistorySyncOn ?
+          PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON :
+          PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF;
+    } else {
+      state = endStateHistorySyncOn ?
+          PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON :
+          PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF;
+    }
+    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
+
+    this.firstSyncPrefUpdate_ = true;
   }
 
   currentRouteChanged(newRoute: Route) {
@@ -107,6 +135,11 @@ export class PrivacyReviewHistorySyncFragmentElement extends
     this.set(
         'historySyncVirtualPref_.value',
         this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced);
+
+    if (this.firstSyncPrefUpdate_) {
+      this.startStateHistorySyncOn_ = this.syncPrefs_.typedUrlsSynced;
+      this.firstSyncPrefUpdate_ = false;
+    }
   }
 
   private onToggleClick_() {
