@@ -114,13 +114,19 @@ void GpuWatchdogTest::SetUp() {
   }
 
   full_thread_time_on_windows_ = timeout_ * kMaxCountOfMoreGpuThreadTimeAllowed;
+
 #elif BUILDFLAG(IS_MAC)
   int os_version = base::mac::internal::MacOSVersion();
-  // Use slow timeout for all Mac versions for now.
-  if (os_version <= 1300) {
+  // Use slow timeout for Mac versions < 11.00.
+  if (os_version <= 1100) {
     timeout_ = kGpuWatchdogTimeoutForTestingSlow;
     extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
+  } else {
+    // To prevent flakiness on the very first test, call Sleep() once before
+    // tests start.
+    base::PlatformThread::Sleep(timeout_ / 4);
   }
+
 #elif BUILDFLAG(IS_ANDROID)
   int32_t major_version = 0;
   int32_t minor_version = 0;
