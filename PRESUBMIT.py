@@ -3569,12 +3569,8 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
   """Checks if a .pydeps file needs to be regenerated."""
   # This check is for Python dependency lists (.pydeps files), and involves
   # paths not only in the PRESUBMIT.py, but also in the .pydeps files. It
-  # doesn't work on Windows and Mac, so skip it on other platforms and skip if
-  # no pydeps files are affected.
+  # doesn't work on Windows and Mac, so skip it on other platforms.
   if not input_api.platform.startswith('linux'):
-    return []
-  if not any(f.LocalPath().endswith('.pydeps') for f in input_api.AffectedFiles(
-             include_deletes=True)):
     return []
 
   is_android = _ParseGclientArgs().get('checkout_android', 'false') == 'true'
@@ -3587,8 +3583,8 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
     # os_path.exists is relative to src repo.
     # Therefore if os_path.exists is true, it means f.LocalPath is relative
     # to src and we can conclude that the pydeps is in src.
-    if input_api.os_path.exists(f.LocalPath()):
-      if f.LocalPath().endswith('.pydeps'):
+    if f.LocalPath().endswith('.pydeps'):
+      if input_api.os_path.exists(f.LocalPath()):
         if f.Action() == 'D' and f.LocalPath() in _ALL_PYDEPS_FILES:
           results.append(output_api.PresubmitError(
               'Please update _ALL_PYDEPS_FILES within //PRESUBMIT.py to '

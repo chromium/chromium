@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -604,7 +604,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def mock_check_output(cmd, shell=False, env=None, encoding=None):
       self.assertEqual('CMD --output A.pydeps A --output ""', cmd)
       return self.checker._file_cache['A.pydeps']
 
@@ -613,7 +613,6 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     results = self._RunCheck()
     self.assertEqual(0, len(results), 'Unexpected results: %r' % results)
 
-  @unittest.skip("Disabled, see crbug.com/1289871")
   def testRelevantPyOneChange(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
     if not self.mock_input_api.platform.startswith('linux'):
@@ -623,7 +622,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def mock_check_output(cmd, shell=False, env=None, encoding=None):
       self.assertEqual('CMD --output A.pydeps A --output ""', cmd)
       return 'changed data'
 
@@ -633,7 +632,6 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     self.assertEqual(1, len(results))
     self.assertIn('File is stale', str(results[0]))
 
-  @unittest.skip("Disabled, see crbug.com/1289871")
   def testRelevantPyTwoChanges(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
     if not self.mock_input_api.platform.startswith('linux'):
@@ -643,7 +641,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('C.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def mock_check_output(cmd, shell=False, env=None, encoding=None):
       return 'changed data'
 
     self.mock_input_api.subprocess.check_output = mock_check_output
@@ -653,7 +651,6 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     self.assertIn('File is stale', str(results[0]))
     self.assertIn('File is stale', str(results[1]))
 
-  @unittest.skip("Disabled, see crbug.com/1289871")
   def testRelevantAndroidPyInNonAndroidCheckout(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
     if not self.mock_input_api.platform.startswith('linux'):
@@ -663,7 +660,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('D.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def mock_check_output(cmd, shell=False, env=None, encoding=None):
       self.assertEqual('CMD --output D.pydeps D --output ""', cmd)
       return 'changed data'
 
@@ -675,7 +672,6 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     self.assertIn('Android', str(results[0]))
     self.assertIn('D.pydeps', str(results[0]))
 
-  @unittest.skip("Disabled, see crbug.com/1289871")
   def testGnPathsAndMissingOutputFlag(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
     if not self.mock_input_api.platform.startswith('linux'):
@@ -691,7 +687,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def mock_check_output(cmd, shell=False, env=None, encoding=None):
       self.assertEqual('CMD --gn-paths A --output A.pydeps --output ""', cmd)
       return 'changed data'
 
