@@ -717,6 +717,17 @@
         },
         'os_type': 'android',
       },
+      'android-bfcache-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'marshmallow',
+          'bullhead',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'bfcache_android_gtests',
+        }
+      },
       'android-cronet-arm-dbg': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -984,17 +995,6 @@
         'test_suites': {
           'gtest_tests': 'android_marshmallow_emulator_non_cq_gtests',
           'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
-        }
-      },
-      'android-no-bfcache-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'bfcache_android_gtests',
         }
       },
       'android-pie-arm64-coverage-experimental-rel': {
@@ -4983,6 +4983,15 @@
           'all',
         ],
       },
+      'linux-bfcache-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'bfcache_linux_gtests',
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'linux-bionic-rel': {
         'mixins': [
           'linux-bionic',
@@ -5002,15 +5011,6 @@
         'additional_compile_targets': [
           'empty_main',
         ],
-      },
-      'linux-no-bfcache-rel': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'bfcache_linux_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
       },
       'linux-trusty-rel': {
         'mixins': [

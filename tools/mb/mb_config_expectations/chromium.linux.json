@@ -194,6 +194,16 @@
       "use_remoteexec": true
     }
   },
+  "linux-bfcache-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    }
+  },
   "linux-bionic-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -223,16 +233,6 @@
       "target_cpu": "x86",
       "use_cxx11": true,
       "use_goma": false
-    }
-  },
-  "linux-no-bfcache-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
     }
   },
   "linux-trusty-rel": {
