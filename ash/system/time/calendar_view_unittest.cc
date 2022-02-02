@@ -138,6 +138,11 @@ class CalendarViewTest : public AshTestBase {
     generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
   }
 
+  void PressShiftTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  }
+
   void PressEnter() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EventFlags::EF_NONE);
@@ -618,6 +623,17 @@ TEST_F(CalendarViewTest, ExpandableViewFocusing) {
   // Opens the event list.
   PressEnter();
   EXPECT_EQ(views::ScrollView::ScrollBarMode::kDisabled, GetScrollBarMode());
+
+  // Focus moves to the event list close button.
+  EXPECT_EQ(close_button(), focus_manager->GetFocusedView());
+
+  // Focus moves back to the date cell.
+  PressShiftTab();
+  PressShiftTab();
+  EXPECT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  EXPECT_EQ(u"June", GetCurrentLabelText());
 
   // Tapping on up arrow keys should go to the previous month, which mens the
   // scroll bar is enabled during the key pressed.

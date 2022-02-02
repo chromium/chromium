@@ -1250,6 +1250,16 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   calendar_view_controller_->OnEventListOpened();
+  if (IsDateCellViewFocused()) {
+    auto* focus_manager = GetFocusManager();
+    event_list_container_->RequestFocus();
+    event_list_container_->SetFocusBehavior(FocusBehavior::NEVER);
+    focus_manager->AdvanceFocus(/*reverse=*/false);
+    current_month_->DisableFocus();
+    previous_month_->DisableFocus();
+    next_month_->DisableFocus();
+    content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
+  }
 }
 
 BEGIN_METADATA(CalendarView, views::View)
