@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
+#include "chromeos/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -118,7 +119,8 @@ class ArcNetHostImpl : public KeyedService,
 
  private:
   const chromeos::NetworkState* GetDefaultNetworkFromChrome();
-  void UpdateActiveNetworks();
+  void UpdateActiveNetworks(
+      const std::vector<patchpanel::NetworkDevice>& devices);
   void DefaultNetworkSuccessCallback(const std::string& service_path,
                                      const base::DictionaryValue& dictionary);
 
@@ -129,6 +131,11 @@ class ArcNetHostImpl : public KeyedService,
   // This is sufficient to pass CTS but it might not handle multiple
   // successive Create operations (crbug.com/631646).
   bool GetNetworkPathFromGuid(const std::string& guid, std::string* path);
+
+  // Get active layer 3 network connections for ARC. This function will run
+  // a callback that listed current active networks for ARC.
+  void GetActiveNetworks(GetNetworksCallback callback,
+                         const std::vector<patchpanel::NetworkDevice>& devices);
 
   // Look through the list of known networks for an ARC VPN service.
   // If found, return the Shill service path.  Otherwise return

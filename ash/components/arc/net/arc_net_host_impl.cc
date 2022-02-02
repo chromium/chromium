@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/net/arc_net_host_impl.h"
 
+#include <net/if.h>
+
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -16,6 +18,8 @@
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/dbus/patchpanel/patchpanel_client.h"
+#include "chromeos/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/device_state.h"
@@ -60,7 +64,7 @@ const chromeos::NetworkProfile* GetNetworkProfile() {
       chromeos::LoginState::Get()->primary_user_hash());
 }
 
-std::vector<const chromeos::NetworkState*> GetActiveNetworks() {
+std::vector<const chromeos::NetworkState*> GetHostActiveNetworks() {
   std::vector<const chromeos::NetworkState*> active_networks;
   GetStateHandler()->GetActiveNetworkListByType(
       chromeos::NetworkTypePattern::Default(), &active_networks);
@@ -354,12 +358,31 @@ const chromeos::NetworkState* GetShillBackedNetwork(
   return GetStateHandler()->GetNetworkStateFromGuid(network->tether_guid());
 }
 
+std::string IPv4AddressToString(uint32_t addr) {
+  char buf[INET_ADDRSTRLEN] = {0};
+  struct in_addr ia;
+  ia.s_addr = addr;
+  return !inet_ntop(AF_INET, &ia, buf, sizeof(buf)) ? std::string() : buf;
+}
+
 // Convenience helper for translating a vector of NetworkState objects to a
 // vector of mojo NetworkConfiguration objects.
 std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const chromeos::NetworkStateHandler::NetworkStateList& network_states,
-    const std::map<std::string, base::Value>& shill_network_properties) {
+    const std::map<std::string, base::Value>& shill_network_properties,
+    const std::vector<patchpanel::NetworkDevice>& devices) {
+  // Move the devices vector to a map keyed by its physical interface name in
+  // order to avoid multiple loops. The map also filters non-ARC devices.
+  std::map<std::string, patchpanel::NetworkDevice> arc_devices;
+  for (const auto& d : devices) {
+    if (d.guest_type() != patchpanel::NetworkDevice::ARC &&
+        d.guest_type() != patchpanel::NetworkDevice::ARCVM) {
+      continue;
+    }
+    arc_devices.emplace(d.phys_ifname(), d);
+  }
+
   std::vector<arc::mojom::NetworkConfigurationPtr> networks;
   for (const chromeos::NetworkState* state : network_states) {
     const std::string& network_path = state->path();
@@ -381,6 +404,19 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     auto network = TranslateNetworkProperties(state, shill_dict);
     network->is_default_network = state == GetStateHandler()->DefaultNetwork();
     network->service_name = network_path;
+
+    // Fill in ARC properties.
+    auto arc_it =
+        arc_devices.find(network->network_interface.value_or(std::string()));
+    if (arc_it != arc_devices.end()) {
+      network->arc_network_interface = arc_it->second.guest_ifname();
+      network->arc_ipv4_address =
+          IPv4AddressToString(arc_it->second.ipv4_addr());
+      network->arc_ipv4_gateway =
+          IPv4AddressToString(arc_it->second.host_ipv4_addr());
+      network->arc_ipv4_prefix_length =
+          arc_it->second.ipv4_subnet().prefix_len();
+    }
     networks.push_back(std::move(network));
   }
   return networks;
@@ -532,25 +568,41 @@ void ArcNetHostImpl::OnConnectionClosed() {
 void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
                                  GetNetworksCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  chromeos::NetworkStateHandler::NetworkStateList network_states;
   if (type == mojom::GetNetworksRequestType::ACTIVE_ONLY) {
-    // Retrieve list of currently active networks.
-    GetStateHandler()->GetActiveNetworkListByType(
-        chromeos::NetworkTypePattern::Default(), &network_states);
-  } else {
-    // Otherwise retrieve list of configured or visible WiFi networks.
-    bool configured_only =
-        type == mojom::GetNetworksRequestType::CONFIGURED_ONLY;
-    chromeos::NetworkTypePattern network_pattern =
-        chromeos::onc::NetworkTypePatternFromOncType(onc::network_type::kWiFi);
-    GetStateHandler()->GetNetworkListByType(
-        network_pattern, configured_only, !configured_only /* visible_only */,
-        kGetNetworksListLimit, &network_states);
+    chromeos::PatchPanelClient::Get()->GetDevices(
+        base::BindOnce(&ArcNetHostImpl::GetActiveNetworks,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
   }
 
-  std::vector<mojom::NetworkConfigurationPtr> networks = TranslateNetworkStates(
-      arc_vpn_service_path_, network_states, shill_network_properties_);
+  // Otherwise retrieve list of configured or visible WiFi networks.
+  bool configured_only = type == mojom::GetNetworksRequestType::CONFIGURED_ONLY;
+  chromeos::NetworkTypePattern network_pattern =
+      chromeos::onc::NetworkTypePatternFromOncType(onc::network_type::kWiFi);
+
+  chromeos::NetworkStateHandler::NetworkStateList network_states;
+  GetStateHandler()->GetNetworkListByType(
+      network_pattern, configured_only, !configured_only /* visible_only */,
+      kGetNetworksListLimit, &network_states);
+
+  std::vector<mojom::NetworkConfigurationPtr> networks =
+      TranslateNetworkStates(arc_vpn_service_path_, network_states,
+                             shill_network_properties_, {} /* devices */);
+  std::move(callback).Run(mojom::GetNetworksResponseType::New(
+      arc::mojom::NetworkResult::SUCCESS, std::move(networks)));
+}
+
+void ArcNetHostImpl::GetActiveNetworks(
+    GetNetworksCallback callback,
+    const std::vector<patchpanel::NetworkDevice>& devices) {
+  // Retrieve list of currently active networks.
+  chromeos::NetworkStateHandler::NetworkStateList network_states;
+  GetStateHandler()->GetActiveNetworkListByType(
+      chromeos::NetworkTypePattern::Default(), &network_states);
+
+  std::vector<mojom::NetworkConfigurationPtr> networks =
+      TranslateNetworkStates(arc_vpn_service_path_, network_states,
+                             shill_network_properties_, devices);
   std::move(callback).Run(mojom::GetNetworksResponseType::New(
       arc::mojom::NetworkResult::SUCCESS, std::move(networks)));
 }
@@ -1089,17 +1141,22 @@ void ArcNetHostImpl::ReceiveShillProperties(
     return;
 
   shill_network_properties_[service_path] = std::move(*shill_properties);
-  UpdateActiveNetworks();
+
+  // Get patchpanel devices and update active networks.
+  chromeos::PatchPanelClient::Get()->GetDevices(base::BindOnce(
+      &ArcNetHostImpl::UpdateActiveNetworks, weak_factory_.GetWeakPtr()));
 }
 
-void ArcNetHostImpl::UpdateActiveNetworks() {
+void ArcNetHostImpl::UpdateActiveNetworks(
+    const std::vector<patchpanel::NetworkDevice>& devices) {
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    ActiveNetworksChanged);
   if (!net_instance)
     return;
 
-  net_instance->ActiveNetworksChanged(TranslateNetworkStates(
-      arc_vpn_service_path_, GetActiveNetworks(), shill_network_properties_));
+  net_instance->ActiveNetworksChanged(
+      TranslateNetworkStates(arc_vpn_service_path_, GetHostActiveNetworks(),
+                             shill_network_properties_, devices));
 }
 
 void ArcNetHostImpl::NetworkListChanged() {
@@ -1108,11 +1165,11 @@ void ArcNetHostImpl::NetworkListChanged() {
     return !IsActiveNetworkState(
         GetStateHandler()->GetNetworkState(entry.first));
   });
-  const auto active_networks = GetActiveNetworks();
+  const auto active_networks = GetHostActiveNetworks();
   // If there is no active networks, send an explicit ActiveNetworksChanged
   // event to ARC and skip updating Shill properties.
   if (active_networks.empty()) {
-    UpdateActiveNetworks();
+    UpdateActiveNetworks({} /* devices */);
     return;
   }
   for (const auto* network : active_networks)
