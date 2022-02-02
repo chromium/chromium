@@ -28,9 +28,13 @@ public class PureJavaExceptionReporterTest {
     @Rule
     public CrashTestRule mTestRule = new CrashTestRule();
 
-    private static class TestPureJavaExceptionReporter extends PureJavaExceptionReporter {
+    private class TestPureJavaExceptionReporter extends PureJavaExceptionReporter {
         private boolean mReportUploaded;
         private File mMinidump;
+
+        public TestPureJavaExceptionReporter() {
+            super(mTestRule.getCacheDir());
+        }
 
         @Override
         protected String getProductName() {
@@ -41,6 +45,11 @@ public class PureJavaExceptionReporterTest {
         protected void uploadMinidump(File minidump) {
             mMinidump = minidump;
             mReportUploaded = (minidump != null);
+        }
+
+        @Override
+        protected String getMinidumpPrefix() {
+            return "test-minidump-";
         }
 
         public boolean reportUploaded() {

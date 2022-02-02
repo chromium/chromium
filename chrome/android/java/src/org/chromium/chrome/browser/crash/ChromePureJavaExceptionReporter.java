@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.crash;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.task.PostTask;
@@ -19,9 +20,12 @@ import java.io.File;
 @UsedByReflection("SplitCompatApplication.java")
 public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
     private static final String CHROME_CRASH_PRODUCT_NAME = "Chrome_Android";
+    private static final String FILE_PREFIX = "chromium-browser-minidump-";
 
     @UsedByReflection("SplitCompatApplication.java")
-    public ChromePureJavaExceptionReporter() {}
+    public ChromePureJavaExceptionReporter() {
+        super(ContextUtils.getApplicationContext().getCacheDir());
+    }
 
     @Override
     protected String getProductName() {
@@ -31,6 +35,11 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
     @Override
     protected void uploadMinidump(File minidump) {
         LogcatExtractionRunnable.uploadMinidump(minidump, true);
+    }
+
+    @Override
+    protected String getMinidumpPrefix() {
+        return FILE_PREFIX;
     }
 
     /**

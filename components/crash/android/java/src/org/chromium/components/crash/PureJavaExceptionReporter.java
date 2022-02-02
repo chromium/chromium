@@ -15,6 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;
@@ -54,8 +55,6 @@ public abstract class PureJavaExceptionReporter
     public static final String RESOURCES_VERSION = "resources_version";
 
     private static final String DUMP_LOCATION_SWITCH = "breakpad-dump-location";
-    private static final String CRASH_DUMP_DIR = "Crash Reports";
-    private static final String FILE_PREFIX = "chromium-browser-minidump-";
     private static final String FILE_SUFFIX = ".dmp";
     private static final String RN = "\r\n";
     private static final String FORM_DATA_MESSAGE = "Content-Disposition: form-data; name=\"";
@@ -65,6 +64,13 @@ public abstract class PureJavaExceptionReporter
     private FileOutputStream mMinidumpFileStream;
     private final String mLocalId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     private final String mBoundary = "------------" + UUID.randomUUID() + RN;
+
+    // The top level directory where all crash related files are stored.
+    protected final File mCrashFilesDirectory;
+
+    public PureJavaExceptionReporter(File crashFilesDirectory) {
+        mCrashFilesDirectory = crashFilesDirectory;
+    }
 
     @Override
     public void createAndUploadReport(Throwable javaException) {
@@ -93,9 +99,8 @@ public abstract class PureJavaExceptionReporter
     @SuppressLint("WrongConstant")
     private void createReport(Throwable javaException) {
         try {
-            String minidumpFileName = FILE_PREFIX + mLocalId + FILE_SUFFIX;
-            File minidumpDir =
-                    new File(ContextUtils.getApplicationContext().getCacheDir(), CRASH_DUMP_DIR);
+            String minidumpFileName = getMinidumpPrefix() + mLocalId + FILE_SUFFIX;
+            File minidumpDir = new File(mCrashFilesDirectory, CrashFileManager.CRASH_DUMP_DIR);
             // Tests disable minidump uploading by not creating the minidump directory.
             mUpload = minidumpDir.exists();
             String overrideMinidumpDirPath =
@@ -196,4 +201,9 @@ public abstract class PureJavaExceptionReporter
      * @param minidump the minidump file to be uploaded.
      */
     protected abstract void uploadMinidump(File minidump);
+
+    /**
+     * @return prefix to be added before the minidump file name.
+     */
+    protected abstract String getMinidumpPrefix();
 }

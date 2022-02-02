@@ -29,6 +29,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.ui.base.ResourceBundle;
@@ -86,6 +87,8 @@ public class WebViewApkApplication extends Application {
         if (isWebViewProcess()) {
             PathUtils.setPrivateDataDirectorySuffix("webview", "WebView");
             CommandLineUtil.initCommandLine();
+
+            PureJavaExceptionHandler.installHandler(() -> new AwPureJavaExceptionReporter());
 
             // TODO(crbug.com/1182693): Do set up a native UMA recorder once we support recording
             // metrics from native nonembedded code.

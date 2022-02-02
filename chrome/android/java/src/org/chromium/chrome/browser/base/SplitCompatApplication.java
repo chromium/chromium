@@ -203,7 +203,8 @@ public class SplitCompatApplication extends Application {
 
         BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());
 
-        if (!isIsolatedProcess) {
+        // WebView installs its own PureJavaExceptionHandler.
+        if (!isIsolatedProcess && !isWebViewProcess()) {
             // Incremental install disables process isolation, so things in this block will
             // actually be run for incremental apks, but not normal apks.
             PureJavaExceptionHandler.installHandler(() -> {
