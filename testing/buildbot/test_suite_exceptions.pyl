@@ -436,6 +436,13 @@
           '--release',
         ],
       },
+      'linux-bfcache-rel': {
+        'args': [
+          '--flag-specific=enable-back-forward-cache-same-site',
+          # TODO(crbug.com/1255537): Re-enable the test.
+          '--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html',
+        ],
+      },
       'linux-blink-animation-use-time-delta': {
         'args': [
           '--debug',
@@ -463,11 +470,6 @@
       'linux-layout-tests-edit-ng': {
         'args': [
           '--flag-specific=enable-editing-ng',
-        ],
-      },
-      'linux-no-bfcache-rel': {
-        'args': [
-          '--flag-specific=disable-bfcache',
         ],
       },
       'linux-xenial-rel': {

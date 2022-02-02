@@ -407,13 +407,13 @@
     'bfcache_android_specific_gtests': {
       'bf_cache_android_browsertests': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
         ],
         'test': 'android_browsertests',
       },
       'bf_cache_chrome_public_test_apk': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
         ],
         'swarming': {
           'shards': 20,
@@ -426,7 +426,7 @@
       },
       'bf_cache_chrome_public_unit_test_apk': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
         ],
         'mixins': [
           'chrome-gold-service-account',
@@ -436,7 +436,7 @@
       },
       'bf_cache_content_shell_test_apk': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
         ],
         'swarming': {
           'shards': 5,
@@ -448,7 +448,7 @@
     'bfcache_generic_gtests': {
       'bf_cache_content_browsertests': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
         ],
         'swarming': {
           'shards': 20,
@@ -457,7 +457,7 @@
       },
       'bf_cache_content_unittests': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
         ],
         'swarming': {
           'shards': 10,
@@ -466,7 +466,7 @@
       },
       'bf_cache_unit_tests': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
           '--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter'
         ],
         'swarming': {
@@ -479,7 +479,7 @@
     'bfcache_linux_specific_gtests': {
       'bf_cache_browser_tests': {
         'args': [
-          '--disable-features=BackForwardCache',
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
         ],
         'swarming': {
           'shards': 10,

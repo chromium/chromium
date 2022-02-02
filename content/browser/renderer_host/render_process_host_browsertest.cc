@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1865,11 +1864,6 @@ class RenderFrameDeletionObserver : public WebContentsObserver {
 // that is no longer discoverable via FromID, while handling the deletion of a
 // subframe. One way this can occur is during bfcache eviction.
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
-  if (!IsBackForwardCacheEnabled()) {
-    // This test requires back/forward cache. Skip this test when the
-    // back/forward cache is disabled.
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Ensure all sites get dedicated processes during the test.

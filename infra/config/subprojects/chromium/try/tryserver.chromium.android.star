@@ -60,7 +60,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-no-bfcache-rel",
+    name = "android-bfcache-rel",
 )
 
 try_.builder(

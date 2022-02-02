@@ -1070,7 +1070,7 @@
                         "blocked_websites": "https://domain1.org,https://domain2.org",
                         "cache_size": "6",
                         "content_injection_supported": "true",
-                        "enable_same_site": "true",
+                        "enable_same_site": "false",
                         "extension_message_supported": "true",
                         "file_system_api_supported": "true",
                         "foreground_cache_size": "2",

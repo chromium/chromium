@@ -85,7 +85,7 @@
       'Deterministic Android (dbg)': 'android_debug_bot',
 
       'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
-      'android-no-bfcache-rel': 'android_release_bot_minimal_symbols',
+      'android-bfcache-rel': 'android_release_bot_minimal_symbols',
       'android-binary-size-generator': 'android_binary_size',
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon_reclient',
       'android-cronet-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient',
@@ -521,7 +521,7 @@
       'fuchsia-arm64-cast': 'release_bot_fuchsia_arm64_cast',
       'fuchsia-x64-cast': 'release_bot_fuchsia_cast',
       'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
-      'linux-no-bfcache-rel': 'release_bot_blink',
+      'linux-bfcache-rel': 'release_bot_blink',
       'linux-bionic-rel': 'gpu_tests_release_bot',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing',
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
@@ -788,7 +788,7 @@
 
     'tryserver.chromium.android': {
       'android-asan': 'android_clang_asan_release_trybot',
-      'android-no-bfcache-rel': 'android_release_trybot',
+      'android-bfcache-rel': 'android_release_trybot',
       'android-opus-arm-rel': 'android_release_trybot',
       'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan',
       # TODO(crbug/597596): Switch this back to debug_trybot when cronet's
@@ -1026,7 +1026,7 @@
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification',
       'linux-blink-v8-oilpan': 'release_trybot_enable_v8_oilpan',
-      'linux-no-bfcache-rel': 'release_bot_blink',
+      'linux-bfcache-rel': 'release_bot_blink',
       'linux-bionic-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
       'linux-clang-tidy-dbg': 'debug_bot',
       'linux-clang-tidy-rel': 'release_trybot',

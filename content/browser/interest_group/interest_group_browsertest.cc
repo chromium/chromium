@@ -31,7 +31,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -4974,11 +4973,6 @@ class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
 // That is, the auction limit count is preserved due to bfcache.
 IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
                        MAYBE_NavigatingWithBfcachePreservesAuctionLimits) {
-  if (!IsBackForwardCacheEnabled()) {
-    // This test requires back/forward cache. Skip this test when the
-    // back/forward cache is disabled.
-    return;
-  }
   const GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   const url::Origin test_origin = url::Origin::Create(test_url);
