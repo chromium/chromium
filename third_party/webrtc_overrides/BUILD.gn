@@ -140,54 +140,6 @@ component("webrtc_component") {
   public_deps = webrtc_public_deps
 }
 
-if (rtc_include_tests) {
-  component("webrtc_test_component") {
-    configs += webrtc_configs
-    public_configs = webrtc_public_configs
-
-    testonly = true
-
-    public_deps = webrtc_public_deps
-
-    public_deps += [
-      "//third_party/webrtc/api:audio_quality_analyzer_api",
-      "//third_party/webrtc/api:create_frame_generator",
-      "//third_party/webrtc/api:create_network_emulation_manager",
-      "//third_party/webrtc/api:create_peer_connection_quality_test_frame_generator",
-      "//third_party/webrtc/api:create_simulcast_test_fixture_api",
-      "//third_party/webrtc/api:create_time_controller",
-      "//third_party/webrtc/api:create_videocodec_test_fixture_api",
-      "//third_party/webrtc/api:dummy_peer_connection",
-      "//third_party/webrtc/api:fake_frame_decryptor",
-      "//third_party/webrtc/api:fake_frame_encryptor",
-      "//third_party/webrtc/api:frame_generator_api",
-      "//third_party/webrtc/api:mock_audio_mixer",
-      "//third_party/webrtc/api:mock_data_channel",
-      "//third_party/webrtc/api:mock_fec_controller_override",
-      "//third_party/webrtc/api:mock_frame_decryptor",
-      "//third_party/webrtc/api:mock_frame_encryptor",
-      "//third_party/webrtc/api:mock_media_stream_interface",
-      "//third_party/webrtc/api:mock_peer_connection_factory_interface",
-      "//third_party/webrtc/api:mock_peerconnectioninterface",
-      "//third_party/webrtc/api:mock_rtp",
-      "//third_party/webrtc/api:mock_transformable_video_frame",
-      "//third_party/webrtc/api:mock_video_bitrate_allocator",
-      "//third_party/webrtc/api:mock_video_bitrate_allocator_factory",
-      "//third_party/webrtc/api:mock_video_codec_factory",
-      "//third_party/webrtc/api:mock_video_decoder",
-      "//third_party/webrtc/api:mock_video_encoder",
-      "//third_party/webrtc/api:peer_connection_quality_test_fixture_api",
-      "//third_party/webrtc/api:simulcast_test_fixture_api",
-      "//third_party/webrtc/api:stats_observer_interface",
-      "//third_party/webrtc/api:test_dependency_factory",
-      "//third_party/webrtc/api:video_quality_analyzer_api",
-      "//third_party/webrtc/api:video_quality_test_fixture_api",
-      "//third_party/webrtc/api:videocodec_test_fixture_api",
-      "//third_party/webrtc/media:rtc_media_tests_utils",
-    ]
-  }
-}
-
 source_set("init_webrtc") {
   visibility = [ ":*" ]
   sources = [
