@@ -708,7 +708,9 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     // the way to the root of the fragmentation context without finding any such
     // container, we have no valid class A break point, and if a forced break
     // was requested, none will be inserted.
-    builder->SetInitialBreakBeforeIfNeeded(child.Style().BreakBefore());
+    EBreakBetween break_before = JoinFragmentainerBreakValues(
+        layout_result.InitialBreakBefore(), child.Style().BreakBefore());
+    builder->SetInitialBreakBeforeIfNeeded(break_before);
 
     // We also need to store the previous break-after value we've seen, since it
     // will serve as input to the next breakpoint (where we will combine the

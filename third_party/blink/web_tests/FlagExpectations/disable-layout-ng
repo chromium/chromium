@@ -109,6 +109,7 @@ crbug.com/829028 external/wpt/css/css-break/break-between-avoid-001.html [ Failu
 crbug.com/829028 external/wpt/css/css-break/break-between-avoid-003.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/break-between-avoid-004.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/break-between-avoid-007.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/break-between-avoid-009.html [ Failure ]
 crbug.com/1277976 external/wpt/css/css-break/change-inline-color.html [ Failure Pass ]
 crbug.com/726125 external/wpt/css/css-break/chrome-bug-1289999-crash.https.html [ Skip ]
 crbug.com/829028 external/wpt/css/css-break/fieldset-003.html [ Failure ]
