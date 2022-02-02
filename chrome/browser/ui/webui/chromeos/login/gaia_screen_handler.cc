@@ -308,7 +308,6 @@ base::Value MakeSecurityTokenPinDialogParameters(
 bool ShouldPrepareForRecovery(const AccountId& account_id) {
   if (!account_id.is_valid())
     return false;
-  int reauth_reason;
   // Cryptohome recovery is probably needed when password is entered incorrectly
   // for many times or password changed.
   // TODO(b/197615068): Add metric to record the number of times we prepared for
@@ -320,8 +319,9 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
       ash::ReauthReason::PASSWORD_UPDATE_SKIPPED,
   };
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  return known_user.FindReauthReason(account_id, &reauth_reason) &&
-         base::Contains(kPossibleReasons, reauth_reason);
+  absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
+  return reauth_reason.has_value() &&
+         base::Contains(kPossibleReasons, reauth_reason.value());
 }
 
 }  // namespace

@@ -398,20 +398,20 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
   // Unconfirmed
   EXPECT_FALSE(IsArcCompatibleFileSystemUsedForUser(user));
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // Old FS
-  user_manager::known_user::SetIntegerPref(
-      id, prefs::kArcCompatibleFilesystemChosen, kFileSystemIncompatible);
+  known_user.SetIntegerPref(id, prefs::kArcCompatibleFilesystemChosen,
+                            kFileSystemIncompatible);
   EXPECT_FALSE(IsArcCompatibleFileSystemUsedForUser(user));
 
   // New FS
-  user_manager::known_user::SetIntegerPref(
-      id, prefs::kArcCompatibleFilesystemChosen, kFileSystemCompatible);
+  known_user.SetIntegerPref(id, prefs::kArcCompatibleFilesystemChosen,
+                            kFileSystemCompatible);
   EXPECT_TRUE(IsArcCompatibleFileSystemUsedForUser(user));
 
   // New FS (User notified)
-  user_manager::known_user::SetIntegerPref(
-      id, prefs::kArcCompatibleFilesystemChosen,
-      kFileSystemCompatibleAndNotifiedDeprecated);
+  known_user.SetIntegerPref(id, prefs::kArcCompatibleFilesystemChosen,
+                            kFileSystemCompatibleAndNotifiedDeprecated);
   EXPECT_TRUE(IsArcCompatibleFileSystemUsedForUser(user));
 }
 

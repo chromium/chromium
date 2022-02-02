@@ -107,10 +107,10 @@ bool IsArcCompatibleFilesystem(const base::FilePath& path) {
 
 FileSystemCompatibilityState GetFileSystemCompatibilityPref(
     const AccountId& account_id) {
-  int pref_value = kFileSystemIncompatible;
-  user_manager::known_user::GetIntegerPref(
-      account_id, prefs::kArcCompatibleFilesystemChosen, &pref_value);
-  return static_cast<FileSystemCompatibilityState>(pref_value);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  return static_cast<FileSystemCompatibilityState>(
+      known_user.FindIntPath(account_id, prefs::kArcCompatibleFilesystemChosen)
+          .value_or(kFileSystemIncompatible));
 }
 
 // Stores the result of IsArcCompatibleFilesystem posted back from the blocking
@@ -119,9 +119,9 @@ void StoreCompatibilityCheckResult(const AccountId& account_id,
                                    base::OnceClosure callback,
                                    bool is_compatible) {
   if (is_compatible) {
-    user_manager::known_user::SetIntegerPref(
-        account_id, prefs::kArcCompatibleFilesystemChosen,
-        kFileSystemCompatible);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetIntegerPref(account_id, prefs::kArcCompatibleFilesystemChosen,
+                              kFileSystemCompatible);
 
     // TODO(kinaba): Remove this code for accounts without user prefs.
     // See the comment for |g_known_compatible_users| for the detail.

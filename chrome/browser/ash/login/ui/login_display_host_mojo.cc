@@ -505,9 +505,14 @@ void LoginDisplayHostMojo::ShowEnableConsumerKioskScreen() {
 bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {
+  if (!focused_pod_account_id_.is_valid())
+    return false;
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  return focused_pod_account_id_.is_valid() &&
-         known_user.GetIntegerPref(focused_pod_account_id_, pref_name, value);
+  absl::optional<int> opt_val =
+      known_user.FindIntPath(focused_pod_account_id_, pref_name);
+  if (value && opt_val.has_value())
+    *value = opt_val.value();
+  return opt_val.has_value();
 }
 
 bool LoginDisplayHostMojo::IsWebUIStarted() const {

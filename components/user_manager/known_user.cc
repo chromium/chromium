@@ -321,18 +321,23 @@ void KnownUser::SetBooleanPref(const AccountId& account_id,
   SetPath(account_id, path, base::Value(in_value));
 }
 
-bool KnownUser::GetIntegerPref(const AccountId& account_id,
-                               const std::string& path,
-                               int* out_value) {
+absl::optional<int> KnownUser::FindIntPath(const AccountId& account_id,
+                                           base::StringPiece path) const {
   const base::Value* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
-    return false;
-  absl::optional<int> optional_value = user_pref_dict->FindIntPath(path);
+    return absl::nullopt;
 
-  if (out_value && optional_value.has_value())
-    *out_value = optional_value.value();
+  return user_pref_dict->FindIntPath(path);
+}
 
-  return optional_value.has_value();
+bool KnownUser::GetIntegerPrefForTest(const AccountId& account_id,
+                                      const std::string& path,
+                                      int* out_value) {
+  auto opt_val = FindIntPath(account_id, path);
+  if (out_value && opt_val.has_value())
+    *out_value = opt_val.value();
+
+  return opt_val.has_value();
 }
 
 void KnownUser::SetIntegerPref(const AccountId& account_id,
@@ -581,8 +586,9 @@ void KnownUser::UpdateReauthReason(const AccountId& account_id,
   SetIntegerPref(account_id, kReauthReasonKey, reauth_reason);
 }
 
-bool KnownUser::FindReauthReason(const AccountId& account_id, int* out_value) {
-  return GetIntegerPref(account_id, kReauthReasonKey, out_value);
+absl::optional<int> KnownUser::FindReauthReason(
+    const AccountId& account_id) const {
+  return FindIntPath(account_id, kReauthReasonKey);
 }
 
 void KnownUser::SetChallengeResponseKeys(const AccountId& account_id,
@@ -667,10 +673,7 @@ void KnownUser::SetUserPinLength(const AccountId& account_id, int pin_length) {
 }
 
 int KnownUser::GetUserPinLength(const AccountId& account_id) {
-  int pin_length = 0;
-  if (GetIntegerPref(account_id, kPinAutosubmitLength, &pin_length))
-    return pin_length;
-  return 0;
+  return FindIntPath(account_id, kPinAutosubmitLength).value_or(0);
 }
 
 bool KnownUser::PinAutosubmitIsBackfillNeeded(const AccountId& account_id) {
@@ -821,7 +824,11 @@ bool GetIntegerPref(const AccountId& account_id,
   // Local State may not be initialized in tests.
   if (!local_state)
     return false;
-  return KnownUser(local_state).GetIntegerPref(account_id, path, out_value);
+  absl::optional<int> val =
+      KnownUser(local_state).FindIntPath(account_id, path);
+  if (out_value && val.has_value())
+    *out_value = val.value();
+  return val.has_value();
 }
 
 void SetIntegerPref(const AccountId& account_id,
@@ -1004,22 +1011,6 @@ void ClearProfileRequiresPolicy(const AccountId& account_id) {
   if (!local_state)
     return;
   return KnownUser(local_state).ClearProfileRequiresPolicy(account_id);
-}
-
-void UpdateReauthReason(const AccountId& account_id, const int reauth_reason) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).UpdateReauthReason(account_id, reauth_reason);
-}
-
-bool FindReauthReason(const AccountId& account_id, int* out_value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state).FindReauthReason(account_id, out_value);
 }
 
 void SetLastOnlineSignin(const AccountId& account_id, base::Time time) {

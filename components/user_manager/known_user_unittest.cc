@@ -415,17 +415,10 @@ TEST_F(KnownUserTest, ProfileRequiresPolicy) {
 
 TEST_F(KnownUserTest, ReauthReason) {
   KnownUser known_user(local_state());
-  {
-    int auth_reason;
-    EXPECT_FALSE(known_user.FindReauthReason(kDefaultAccountId, &auth_reason));
-  }
+  EXPECT_FALSE(known_user.FindReauthReason(kDefaultAccountId).has_value());
 
   known_user.UpdateReauthReason(kDefaultAccountId, 3);
-  {
-    int auth_reason;
-    EXPECT_TRUE(known_user.FindReauthReason(kDefaultAccountId, &auth_reason));
-    EXPECT_EQ(auth_reason, 3);
-  }
+  EXPECT_EQ(known_user.FindReauthReason(kDefaultAccountId), 3);
 }
 
 TEST_F(KnownUserTest, ChallengeResponseKeys) {
@@ -611,7 +604,7 @@ struct PrefTypeInfoInteger {
   using PrefTypeForReading = int;
 
   static constexpr auto SetFunc = &KnownUser::SetIntegerPref;
-  static constexpr auto GetFunc = &KnownUser::GetIntegerPref;
+  static constexpr auto GetFunc = &KnownUser::GetIntegerPrefForTest;
 
   static PrefType CreatePrefValue() { return 7; }
   static bool CheckPrefValue(PrefTypeForReading read_value) {

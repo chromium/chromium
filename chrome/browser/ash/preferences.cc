@@ -1055,8 +1055,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   for (auto* remap_pref : kLanguageRemapPrefs) {
     if (pref_name == remap_pref || reason != REASON_ACTIVE_USER_CHANGED) {
       const int value = prefs_->GetInteger(remap_pref);
-      user_manager::known_user::SetIntegerPref(user_->GetAccountId(),
-                                               remap_pref, value);
+      user_manager::KnownUser known_user(g_browser_process->local_state());
+      known_user.SetIntegerPref(user_->GetAccountId(), remap_pref, value);
     }
   }
 
@@ -1158,12 +1158,12 @@ void Preferences::UpdateAutoRepeatRate() {
   input_method::InputMethodManager::Get()->GetImeKeyboard()->SetAutoRepeatRate(
       rate);
 
-  user_manager::known_user::SetIntegerPref(user_->GetAccountId(),
-                                           prefs::kXkbAutoRepeatDelay,
-                                           rate.initial_delay_in_ms);
-  user_manager::known_user::SetIntegerPref(user_->GetAccountId(),
-                                           prefs::kXkbAutoRepeatInterval,
-                                           rate.repeat_interval_in_ms);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetIntegerPref(user_->GetAccountId(), prefs::kXkbAutoRepeatDelay,
+                            rate.initial_delay_in_ms);
+  known_user.SetIntegerPref(user_->GetAccountId(),
+                            prefs::kXkbAutoRepeatInterval,
+                            rate.repeat_interval_in_ms);
 }
 
 void Preferences::ActiveUserChanged(user_manager::User* active_user) {

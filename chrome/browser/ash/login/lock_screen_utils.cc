@@ -163,15 +163,16 @@ void SetKeyboardSettings(const AccountId& account_id) {
     }
   }
 
-  int auto_repeat_delay = kDefaultKeyAutoRepeatDelay.InMilliseconds();
-  int auto_repeat_interval = kDefaultKeyAutoRepeatInterval.InMilliseconds();
-  user_manager::known_user::GetIntegerPref(
-      account_id, prefs::kXkbAutoRepeatDelay, &auto_repeat_delay);
-  user_manager::known_user::GetIntegerPref(
-      account_id, prefs::kXkbAutoRepeatInterval, &auto_repeat_interval);
   input_method::AutoRepeatRate rate;
-  rate.initial_delay_in_ms = auto_repeat_delay;
-  rate.repeat_interval_in_ms = auto_repeat_interval;
+
+  rate.initial_delay_in_ms =
+      known_user.FindIntPath(account_id, prefs::kXkbAutoRepeatDelay)
+          .value_or(kDefaultKeyAutoRepeatDelay.InMilliseconds());
+
+  rate.repeat_interval_in_ms =
+      known_user.FindIntPath(account_id, prefs::kXkbAutoRepeatInterval)
+          .value_or(kDefaultKeyAutoRepeatInterval.InMilliseconds());
+
   input_method::InputMethodManager::Get()
       ->GetImeKeyboard()
       ->SetAutoRepeatEnabled(true);
