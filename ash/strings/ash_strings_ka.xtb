@@ -627,7 +627,6 @@
 <translation id="5075554201838155866">დახურული სუბტიტრების გაშვება</translation>
 <translation id="5078796286268621944">არასწორი პინი</translation>
 <translation id="5083553833479578423">განბლოკეთ ასისტენტის დამატებითი ფუნქციები.</translation>
-<translation id="5090752371472782287">ტრანსლირება <ph name="MANAGER" /> მოწყობილობაზე</translation>
 <translation id="5106223312672646208">პერსონალიზება</translation>
 <translation id="5117590920725113268">შემდეგი თვის ჩვენება</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
@@ -928,6 +927,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">დრო ძველ გარჩევადობაზე დაბრუნებამდე: <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">განახლება</translation>
+<translation id="718361511487535372">Google Calendar-ში გახსნა</translation>
 <translation id="7188494361780961876">მენიუ გადატანილია ეკრანის ზედა მარცხენა კუთხეში.</translation>
 <translation id="7189412385142492784">რა მანძილია ვენერამდე</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. გასაახლებლად ეს Chromebook საჭიროებს გადატვირთვას. ამას შეიძლება 1 წუთამდე დრო დასჭირდეს.</translation>

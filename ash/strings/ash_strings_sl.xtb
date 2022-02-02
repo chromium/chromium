@@ -627,7 +627,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5075554201838155866">Začni podnapise</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
-<translation id="5090752371472782287">Predvajanje v napravi <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Osebno prilagajanje</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
@@ -928,6 +927,7 @@ Nova namestitev</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Ponastavitev na prejšnjo ločljivost čez <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="718361511487535372">Odpri v Google Koledarju</translation>
 <translation id="7188494361780961876">Meni je bil premaknjen v zgornji levi kot zaslona.</translation>
 <translation id="7189412385142492784">Kako daleč je Venera</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ta Chromebook je treba znova zagnati, če želite uveljaviti posodobitev. Traja lahko največ eno minuto.</translation>

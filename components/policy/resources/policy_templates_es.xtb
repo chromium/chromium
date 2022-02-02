@@ -481,15 +481,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1574258262373444557">No usa <ph name="AES_KL_NAME" /> como algoritmo de cifrado para el cifrado del almacenamiento de los datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración del conector OnFileDownloaded de Chrome Enterprise Connectors</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada</translation>
-<translation id="1587042984081085960">Esta política permite que un administrador especifique si las páginas pueden enviar solicitudes XHR síncronas durante el cierre de la página.
-
-      Si la política se habilita, las páginas podrán enviar solicitudes XHR síncronas durante el cierre de la página.
-
-      Si la política se inhabilita o no se establece, las páginas no podrán enviar solicitudes XHR síncronas durante el cierre de la página.
-
-      Esta política se eliminará en la versión 93 de Chrome.
-
-      Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">No permite utilizar el modo sin interfaz gráfica</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
 <translation id="1597684038583138808">Habilitar definición de Respuestas rápidas</translation>

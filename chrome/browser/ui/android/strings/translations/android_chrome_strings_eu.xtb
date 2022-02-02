@@ -290,7 +290,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audio-fitxategi}other{# audio-fitxategi}}</translation>
 <translation id="265156376773362237">Aurrez kargatzeko modu arrunta</translation>
 <translation id="2656405586795711023">Sareko aplikazioak</translation>
-<translation id="2689830683995595741">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-n Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Family Link aplikazioaren bidez kudeatutako Google-ko kontuen Pribatutasun-oharra<ph name="END_LINK3" /> aplikatzen da ere.</translation>
 <translation id="2702516483241149200">Berria: partekatu testu honetan gora eta behera egiteko esteka bat</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
 <translation id="2707726405694321444">Freskatu orria</translation>
@@ -626,7 +625,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Bidali testua zure gailuetara</translation>
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
-<translation id="471759387343966120">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Zerbitzu-baldintzak<ph name="END_TOS_LINK" /> eta <ph name="BEGIN_PRIVACY_LINK" />Pribatutasun-gidalerroak<ph name="END_PRIVACY_LINK" />.\nAplikazioa hobetzeko, erabilerarekin eta hutsegiteekin erlazionatutako datuak bidaltzen dizkio Chrome-k Google-ri. <ph name="BEGIN_UMA_LINK" />Kudeatu<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Eskaini itzultzea</translation>
 <translation id="4720023427747327413">Ireki <ph name="PRODUCT_NAME" />-n</translation>
 <translation id="4720982865791209136">Lagundu Chrome hobetzen. <ph name="BEGIN_LINK" />Hartu parte inkestan<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6277522088822131679">Arazo bat izan da orria inprimatzean. Saiatu berriro.</translation>
 <translation id="6277722725779679269">Ezin izan da eguneratu prezioen jarraipena</translation>
 <translation id="6278428485366576908">Gaia</translation>
-<translation id="6292420053234093573">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-n Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Google-ko kontu berean saioa hasita daukaten gailuen artean fitxak bidal ditzakezu</translation>
 <translation id="6297765934698848803">Gailua kudeatzen duen erakundeak kamera desaktibatu du.</translation>
 <translation id="6301525844455696527">Ekin zain daukazun irakurketa-zerrendari</translation>

@@ -1908,7 +1908,7 @@
 <translation id="287205682142673348">連接埠轉送</translation>
 <translation id="287286579981869940">新增「<ph name="PROVIDER_NAME" />」…</translation>
 <translation id="2872961005593481000">關閉</translation>
-<translation id="2873995907777332853">顯示封鎖所有 Cookie 的詳細資料</translation>
+<translation id="2873995907777332853">顯示封鎖所有 Cookie 嘅詳情</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2875698561019555027">(Chrome 錯誤頁面)</translation>
 <translation id="2876336351874743617">手指 2</translation>
@@ -2212,7 +2212,7 @@
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192947282887913208">音效檔案</translation>
-<translation id="3194786596445804250">顯示封鎖第三方 Cookie 的詳細資料</translation>
+<translation id="3194786596445804250">顯示封鎖第三方 Cookie 嘅詳情</translation>
 <translation id="3197453258332670132">按一下右鍵或長按畫面，即可查看所選文字的相關資料</translation>
 <translation id="3199127022143353223">伺服器</translation>
 <translation id="3200061262156232574">購物車內商品</translation>
@@ -3211,7 +3211,7 @@
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
-<translation id="4236163961381003811">探索其他擴充功能</translation>
+<translation id="4236163961381003811">探索更多擴充程式</translation>
 <translation id="4241182343707213132">重新啟動即可更新機構的應用程式</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -5309,7 +5309,7 @@
 <translation id="6455264371803474013">在特定網站上</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
 <translation id="645705751491738698">繼續封鎖 JavaScript</translation>
-<translation id="6458347417133445570">顯示允許所有 Cookie 的詳細資料</translation>
+<translation id="6458347417133445570">顯示允許所有 Cookie 嘅詳情</translation>
 <translation id="6458701200018867744">上載失敗 (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)。</translation>
 <translation id="6459488832681039634">使用所選範圍尋找</translation>
 <translation id="6459799433792303855">使用中的視窗已移至其他顯示屏。</translation>
@@ -6741,7 +6741,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可查看「<ph name="FILENAME" />」</translation>
 <translation id="7920482456679570420">新增您想拼字檢查略過的字詞</translation>
-<translation id="7922935920104868876">顯示在無痕模式中封鎖第三方 Cookie 的詳細資料</translation>
+<translation id="7922935920104868876">顯示喺無痕模式入面封鎖第三方 Cookie 嘅詳情</translation>
 <translation id="7924358170328001543">轉送連接埠時發生錯誤</translation>
 <translation id="7925108652071887026">自動填入數據</translation>
 <translation id="792514962475806987">固定放大鏡的縮放等級：</translation>
@@ -6906,7 +6906,7 @@
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8076835018653442223">管理員已停用裝置的本機檔案存取權</translation>
 <translation id="808089508890593134">Google</translation>
-<translation id="8081243065355858508">可存取 Android 應用程式的帳戶</translation>
+<translation id="8081243065355858508">可使用 Android 應用程式的帳戶</translation>
 <translation id="8081989000209387414">要停用 ADB 偵錯嗎？</translation>
 <translation id="8082106343289440791">要與「<ph name="DEVICE_NAME" />」配對嗎？</translation>
 <translation id="8082390128630131497">停用 ADB 偵錯會將此 <ph name="DEVICE_TYPE" /> 回復原廠設定。所有使用者帳戶和本機資料都將被清除。</translation>
@@ -7167,7 +7167,7 @@
 <translation id="8342861492835240085">選取相片集</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="834785183489258869">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
-<translation id="8349499562373871073">你可以選取使用現有帳戶存取 Android 應用程式，或新增 Google 帳戶。登入其中一個 Android 應用程式後，你的帳戶即可存取其他 Android 應用程式。如要變更 Android 應用程式存取權，請依序前往<ph name="LINK_BEGIN" />「設定」&gt;「帳戶」<ph name="LINK_END" />。</translation>
+<translation id="8349499562373871073">您可選取使用現有帳戶以使用 Android 應用程式，或新增 Google 帳戶。登入其中一個 Android 應用程式後，您的帳戶即可使用其他 Android 應用程式。如要變更 Android 應用程式存取權，請前往 <ph name="LINK_BEGIN" />[設定] &gt; [帳戶]<ph name="LINK_END" /></translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
 <translation id="8351316842353540018">一律顯示無障礙功能選項</translation>
 <translation id="8351419472474436977">您的 Proxy 設定已受到這個擴充功能控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>

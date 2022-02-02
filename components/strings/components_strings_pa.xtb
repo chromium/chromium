@@ -1964,6 +1964,7 @@
 <translation id="7334320624316649418">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
 <translation id="7335157162773372339">ਸਾਈਟ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="7337248890521463931">ਹੋਰ ਲਾਈਨਾਂ ਦਿਖਾਓ</translation>
+<translation id="7337418456231055214">ਕੀ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਨਹੀਂ ਗਿਆ? ਕਾਪੀ ਕਰਨ ਲਈ ਕਾਰਡ ਦੇ ਵੇਰਵਿਆਂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">ਤੁਹਾਡੇ ਪਲੇਟਫਾਰਮ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="733923710415886693">ਸਰਵਰ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦਾ ਖੁਲਾਸਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪਾਰਦਰਸ਼ਤਾ ਰਾਹੀਂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਸੀ।</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2426,6 +2427,7 @@
 <translation id="883848425547221593">ਹੋਰ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="884264119367021077">ਸ਼ਿਪਿੰਗ ਪਤਾ</translation>
 <translation id="884923133447025588">ਕੋਈ ਖੰਡਨ ਮਕੈਨਿਜ਼ਮ ਨਹੀਂ ਮਿਲਿਆ।</translation>
+<translation id="8849262850971482943">ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ ਆਪਣੇ ਆਭਾਸੀ ਕਾਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="885730110891505394">Google ਨਾਲ ਸ਼ੇਅਰਿੰਗ</translation>
 <translation id="8858065207712248076">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣੇ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ਪਾਸਵਰਡ ਨੂੰ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਮੁੜ ਵਰਤਿਆ ਹੈ, ਤਾਂ Chrome ਵੱਲੋਂ ਇਸਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="885906927438988819">ਜੇ ਸ਼ਬਦ-ਜੋੜ ਸਹੀ ਹੈ, ਤਾਂ <ph name="BEGIN_LINK" />Windows ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸਾਂ ਨੂੰ ਚਲਾ ਕੇ ਦੇਖੋ<ph name="END_LINK" />।</translation>

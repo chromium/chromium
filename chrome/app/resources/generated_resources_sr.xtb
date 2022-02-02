@@ -386,6 +386,7 @@
 <translation id="1396259464226642517">Да ли је ово неочекиван резултат? <ph name="BEGIN_LINK" />Пошаљите повратне информације<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Корисничко име и лозинка које сте унели се не подударају</translation>
 <translation id="1397500194120344683">Нема уређаја који испуњавају услове. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Пријављени сте у Chrome на овим уређајима, па можете да их користите као безбедносне кључеве.</translation>
 <translation id="1398853756734560583">Увећај</translation>
 <translation id="139911022479327130">Откључајте телефон и потврдите да сте то ви</translation>
 <translation id="1401308693935339022">Користи локацију. Дозволите апликацијама и услугама са дозволом за локацију да користе локацију овог уређаја. Google може повремено да прикупља податке о локацији и да их користи на анониман начин за побољшање прецизности локације и услуга заснованих на локацији.</translation>
@@ -1167,6 +1168,7 @@
 <translation id="2163470535490402084">Повежите се на интернет да бисте се пријавили на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Укључите тамни режим</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и још 1 прекидач</translation>
+<translation id="2165102982098084499">Повезали сте ове уређаје скенирањем QR кода.</translation>
 <translation id="2165177462441582039">Изаберите колико дуго свака ставка треба да остане истакнута</translation>
 <translation id="2166369534954157698">На врх брда врба мрда</translation>
 <translation id="2169062631698640254">Ипак ме пријави</translation>
@@ -5685,6 +5687,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Подешавања проксија...</translation>
 <translation id="6860427144121307915">Отвори на картици</translation>
+<translation id="6863496016067551393">Сви додаци су дозвољени</translation>
 <translation id="686366188661646310">Желите да избришете лозинку?</translation>
 <translation id="6865313869410766144">Подаци Аутоматског попуњавања за обрасце</translation>
 <translation id="6865598234501509159">Језик ове странице није <ph name="LANGUAGE" /></translation>
@@ -5714,6 +5717,7 @@
 <translation id="6900532703269623216">Напредна заштита</translation>
 <translation id="6900651018461749106">Пријавите се поново да бисте ажурирали <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Желите ли стварно да избришете овај претраживач?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Глас за преглед</translation>
 <translation id="6902336033320348843">Одељак није подржан: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Придружите уређај домену</translation>
@@ -7365,6 +7369,7 @@
 <translation id="8610103157987623234">Погрешан формат. Пробајте поново</translation>
 <translation id="8611682088849615761">Настави да дозвољаваш овом сајту да има потпуну контролу над MIDI уређајима</translation>
 <translation id="8613164732773110792">Само мала слова, цифре, доње црте или црте</translation>
+<translation id="8613645710357126807">Коришћење додатака није дозвољено</translation>
 <translation id="8613786722548417558">Датотека <ph name="FILE_NAME" /> је превелика за безбедносну проверу. Можете да отворите датотеке величине до 50 MB.</translation>
 <translation id="8615618338313291042">Апл. у режиму без архивирања: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Додајте контакт <ph name="CONTACT_NAME" /> у контакте</translation>

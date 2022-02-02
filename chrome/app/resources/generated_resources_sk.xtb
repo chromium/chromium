@@ -386,6 +386,7 @@
 <translation id="1396259464226642517">Bol tento výsledok neočakávaný? <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Zadané používateľské meno a heslo sa nezhodujú</translation>
 <translation id="1397500194120344683">Žiadne zariadenia spĺňajúce kritériá. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Prihlásili ste sa do Chromu v týchto zariadeniach, takže ich môžete používať ako bezpečnostné kľúče.</translation>
 <translation id="1398853756734560583">Maximalizovať</translation>
 <translation id="139911022479327130">Odomknite telefón a potvrďte, že ste to vy</translation>
 <translation id="1401308693935339022">Používanie polohy. Povoľte aplikáciám a službám s povoleným prístupom k polohe používať polohu tohto zariadenia. Google môže pravidelne zhromažďovať údaje o polohe a anonymne pomocou nich zlepšovať presnosť a služby na základe polohy.</translation>
@@ -1170,6 +1171,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2163470535490402084">Ak sa chcete prihlásiť do zariadenia <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 ďalší prepínač</translation>
+<translation id="2165102982098084499">Tieto zariadenia ste prepojili naskenovaním QR kódu.</translation>
 <translation id="2165177462441582039">Zvoľte, ako dlho majú byť zvýraznené jednotlivé položky</translation>
 <translation id="2166369534954157698">Kŕdeľ ďateľov učí koňa žrať kôru</translation>
 <translation id="2169062631698640254">Napriek tomu sa prihlásiť</translation>
@@ -1896,6 +1898,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="287205682142673348">Presmerovanie portov</translation>
 <translation id="287286579981869940">Pridať poskytovateľa <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
+<translation id="2873995907777332853">Zobraziť podrobnosti o blokovaní všetkých súborov cookie</translation>
 <translation id="2874939134665556319">Predchádzajúca skladba</translation>
 <translation id="2875698561019555027">(Chybové stránky prehliadača Chrome)</translation>
 <translation id="2876336351874743617">2. prst</translation>
@@ -2199,6 +2202,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3189187154924005138">Veľký kurzor</translation>
 <translation id="3190558889382726167">Heslo bolo uložené</translation>
 <translation id="3192947282887913208">Zvukové súbory</translation>
+<translation id="3194786596445804250">Zobraziť podrobnosti o blokovaní súborov cookie tretích strán</translation>
 <translation id="3197453258332670132">Kliknutím pravým tlačidlom alebo dlhým stlačením zobrazíte súvisiace informácie pre daný výber textu</translation>
 <translation id="3199127022143353223">Servery</translation>
 <translation id="3200061262156232574">Vo vašom nákupnom košíku</translation>
@@ -5293,6 +5297,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6455264371803474013">Na konkrétnych weboch</translation>
 <translation id="6455894534188563617">&amp;Nový priečinok</translation>
 <translation id="645705751491738698">Pokračovať v blokovaní jazyka JavaScript</translation>
+<translation id="6458347417133445570">Zobraziť podrobnosti o povolení všetkých súborov cookie</translation>
 <translation id="6458701200018867744">Nepodarilo sa nahrať (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Použiť výber na hľadanie</translation>
 <translation id="6459799433792303855">Aktívne okno bolo presunuté na inú obrazovku.</translation>
@@ -5685,6 +5690,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Nastavenia servera proxy...</translation>
 <translation id="6860427144121307915">Otvoriť na karte</translation>
+<translation id="6863496016067551393">Všetky rozšírenia sú povolené</translation>
 <translation id="686366188661646310">Chcete heslo odstrániť?</translation>
 <translation id="6865313869410766144">Dáta automatického dopĺňania formulárov</translation>
 <translation id="6865598234501509159">Stránka nie je v jazyku <ph name="LANGUAGE" /></translation>
@@ -5714,6 +5720,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6900532703269623216">Rozšírená ochrana</translation>
 <translation id="6900651018461749106">Prihláste sa znova a aktualizujte účet <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Naozaj chcete odstrániť tento vyhľadávač?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Hlas, ktorého ukážku si chcete vypočuť</translation>
 <translation id="6902336033320348843">Sekcia nie je podporovaná: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Pripojte zariadenie k doméne</translation>
@@ -6723,6 +6730,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> uvidí <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Pridajte slová, ktoré má kontrola pravopisu preskočiť</translation>
+<translation id="7922935920104868876">Zobraziť podrobnosti o blokovaní súborov cookie tretích strán v režime inkognito</translation>
 <translation id="7924358170328001543">Chyba presmerovania portu</translation>
 <translation id="7925108652071887026">Údaje automatického dopĺňania</translation>
 <translation id="792514962475806987">Úroveň ukotvenej lupy:</translation>
@@ -6887,6 +6895,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8076835018653442223">Prístup k miestnym súborom vo vašom zariadení zakázal správca</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Účty, ktoré je možné používať s aplikáciami pre Android</translation>
 <translation id="8081989000209387414">Chcete deaktivovať ladenie ADB?</translation>
 <translation id="8082106343289440791">Chcete spárovať so zariadením <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082390128630131497">Deaktivácia ladenia ADB obnoví výrobné nastavenia tohto zariadenia <ph name="DEVICE_TYPE" />. Všetky používateľské účty a miestne údaje budú odstránené.</translation>
@@ -7147,6 +7156,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8342861492835240085">Vybrať zbierku</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="834785183489258869">Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
+<translation id="8349499562373871073">Na používanie s aplikáciami pre Android môžete vybrať existujúci účet alebo pridať nový účet Google. Keď sa prihlásite do aplikácie pre Android, budete môcť svoj účet používať aj s inými aplikáciami pre Android. Prístup do aplikácií pre Android môžete zmeniť v sekcii <ph name="LINK_BEGIN" />Nastavenia &gt; Účty<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Nástroje dotykového pera v doku</translation>
 <translation id="8351316842353540018">Vždy zobrazovať možnosti a11y</translation>
 <translation id="8351419472474436977">Vaše nastavenia servera proxy začalo ovládať toto rozšírenie, čo znamená, že dané rozšírenie môže zmeniť, prerušiť alebo zachytiť všetku vašu činnosť online. Ak neviete, prečo k tomu došlo, pravdepodobne si to neželáte.</translation>
@@ -7362,6 +7372,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8610103157987623234">Nesprávny formát. Skúste to znova.</translation>
 <translation id="8611682088849615761">Naďalej umožňovať tomuto webu prístup k úplnému ovládaniu zariadení MIDI</translation>
 <translation id="8613164732773110792">Iba malé znaky, čísla, podčiarkovníky alebo pomlčky</translation>
+<translation id="8613645710357126807">Používanie rozšírení nie je povolené</translation>
 <translation id="8613786722548417558">Súbor <ph name="FILE_NAME" /> je príliš veľký na kontrolu. Otvoriť môžete súbory s maximálnou veľkosťou 50 MB.</translation>
 <translation id="8615618338313291042">Aplikácia inkognito: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Pridať používateľa <ph name="CONTACT_NAME" /> do kontaktov</translation>

@@ -290,7 +290,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Fail audio}other{# Fail audio}}</translation>
 <translation id="265156376773362237">Pramuat standard</translation>
 <translation id="2656405586795711023">Apl web</translation>
-<translation id="2689830683995595741">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan OS Chrome<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Notis Privasi untuk Akaun Google yang Diurus dengan Family Link<ph name="END_LINK3" /> juga terpakai.</translation>
 <translation id="2702516483241149200">Baharu: kongsi pautan yang menatal ke teks ini</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2707726405694321444">Muat semula halaman</translation>
@@ -626,7 +625,6 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}}</translation>
 <translation id="4696983787092045100">Hantar teks ke Peranti Anda</translation>
 <translation id="4699172675775169585">Imej dan fail dicache</translation>
-<translation id="471759387343966120">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_TOS_LINK" />Syarat Perkhidmatan<ph name="END_TOS_LINK" /> dan <ph name="BEGIN_PRIVACY_LINK" />Dasar\u00A0Privasi<ph name="END_PRIVACY_LINK" />.\nUntuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_UMA_LINK" />Urus<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tawaran untuk menterjemah</translation>
 <translation id="4720023427747327413">Buka dalam <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Bantu meningkatkan Chrome. <ph name="BEGIN_LINK" />Jawab tinjauan<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6277522088822131679">Terdapat masalah semasa mencetak halaman. Sila cuba sekali lagi.</translation>
 <translation id="6277722725779679269">Tidak dapat mengemas kini Penjejakan harga</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6292420053234093573">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan OS Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Anda boleh menghantar tab antara peranti yang dilog masuk dengan Google Account yang sama</translation>
 <translation id="6297765934698848803">Organisasi yang mengurus peranti anda telah mematikan kamera anda.</translation>
 <translation id="6301525844455696527">Ikuti senarai bacaan anda</translation>

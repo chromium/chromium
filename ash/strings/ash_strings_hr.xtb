@@ -627,7 +627,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5075554201838155866">Pokreni titlove</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5083553833479578423">Otključajte više značajki Asistenta.</translation>
-<translation id="5090752371472782287">Emitirajte na uređaju: <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Prilagodba</translation>
 <translation id="5117590920725113268">Prikaži sljedeći mjesec</translation>
 <translation id="5136175204352732067">Povezana je neka druga tipkovnica</translation>
@@ -928,6 +927,7 @@ Novo instaliranje</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Vraćanje na staru razlučivost za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osvježi</translation>
+<translation id="718361511487535372">Otvori u Google kalendaru</translation>
 <translation id="7188494361780961876">Izbornik je premješten u gornji lijevi kut zaslona.</translation>
 <translation id="7189412385142492784">Kolika je udaljenost do Venere</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj se Chromebook treba pokrenuti ponovo da bi se primijenilo ažuriranje. To može potrajati minutu.</translation>

@@ -627,7 +627,6 @@
 <translation id="5075554201838155866">ເລີ່ມຄຳບັນຍາຍ</translation>
 <translation id="5078796286268621944">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5083553833479578423">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມຂອງຜູ້ຊ່ວຍ.</translation>
-<translation id="5090752371472782287">ສົ່ງສັນຍານໄປຫາອຸປະກອນ <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">ປັບແຕ່ງສ່ວນຕົວ</translation>
 <translation id="5117590920725113268">ສະ​ແດງ​ເດືອນ​ຕໍ່​ໄປ</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
@@ -928,6 +927,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">ການກັບໄປຫາຄວາມລະອຽດເກົ່າໃນ <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
+<translation id="718361511487535372">ເປີດໃນ Google ປະຕິທິນ</translation>
 <translation id="7188494361780961876">ຍ້າຍເມນູໄປແຈເທິງສຸດເບື້ອງຊ້າຍຂອງໜ້າຈໍ.</translation>
 <translation id="7189412385142492784">ດາວສຸກຢູ່ໄກເທົ່າໃດ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ນີ້ຈຳເປັນຕ້ອງຣິສະຕາດຄືນໃໝ່ເພື່ອນຳໃຊ້ການອັບເດດ. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາເຖິງ 1 ນາທີ.</translation>

@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 件の音声ファイル}other{# 件の音声ファイル}}</translation>
 <translation id="265156376773362237">標準プリロード</translation>
 <translation id="2656405586795711023">ウェブアプリ</translation>
-<translation id="2689830683995595741">Chrome を使用すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。また、<ph name="BEGIN_LINK3" />ファミリー リンクで管理する Google アカウントのプライバシーに関するお知らせ<ph name="END_LINK3" />も適用されます。</translation>
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2707726405694321444">ページを更新</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
 <translation id="4696983787092045100">デバイスにテキストを送信</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
-<translation id="471759387343966120">続行すると、<ph name="BEGIN_TOS_LINK" />利用規約<ph name="END_TOS_LINK" />と<ph name="BEGIN_PRIVACY_LINK" />プライバシー\u00A0ポリシー<ph name="END_PRIVACY_LINK" />に同意されたものとみなされます。\nアプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> で開く</translation>
 <translation id="4720982865791209136">Chrome の品質向上にご協力ください。<ph name="BEGIN_LINK" />アンケートに回答する<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="6277722725779679269">価格のトラッキングを更新できませんでした</translation>
 <translation id="6278428485366576908">テーマ</translation>
-<translation id="6292420053234093573">Chrome を使用すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。</translation>
 <translation id="6294610283659775533">同じ Google アカウントでログインしているデバイス間でタブを送信できます</translation>
 <translation id="6297765934698848803">デバイスの管理者がカメラをオフにしています。</translation>
 <translation id="6301525844455696527">リーディング リストをチェックしよう</translation>

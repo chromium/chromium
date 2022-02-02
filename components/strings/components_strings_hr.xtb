@@ -363,7 +363,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2003709556000175978">Poništite zaporku odmah</translation>
 <translation id="2003775180883135320">Četverostruko bušenje pri vrhu</translation>
 <translation id="201174227998721785">Dopuštenjima i podacima koji se pohranjuju na web-lokacijama možete upravljati u postavkama Chromea</translation>
-<translation id="2019607688127825327">Gumb Upravljaj postavkama pristupačnosti, pritisnite Enter da biste prilagodili svoje alate za pristupačnost u postavkama Chromea</translation>
+<translation id="2019607688127825327">Gumb Upravljajte postavkama pristupačnosti, pritisnite Enter da biste prilagodili svoje alate za pristupačnost u postavkama Chromea</translation>
 <translation id="2025115093177348061">Proširena stvarnost</translation>
 <translation id="2025186561304664664">Proxy je postavljen na automatsko konfiguriranje.</translation>
 <translation id="2025891858974379949">Nesiguran sadržaj</translation>
@@ -531,7 +531,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2556876185419854533">&amp;Poništi uređivanje</translation>
 <translation id="2570734079541893434">Upravljajte postavkama</translation>
 <translation id="257674075312929031">Grupa</translation>
-<translation id="2576880857912732701">Gumb Upravljaj sigurnosnim postavkama, pritisnite Enter da biste upravljali sigurnim pregledavanjem i drugim značajkama u postavkama Chromea</translation>
+<translation id="2576880857912732701">Gumb Upravljajte sigurnosnim postavkama, pritisnite Enter da biste upravljali sigurnim pregledavanjem i drugim značajkama u postavkama Chromea</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2587730715158995865">Izdavač: <ph name="ARTICLE_PUBLISHER" />. Pročitajte ovaj članak i još <ph name="OTHER_ARTICLE_COUNT" />.</translation>
 <translation id="2587841377698384444">ID API-ja direktorija:</translation>
@@ -735,7 +735,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3257954757204451555">Tko stoji iza ovih podataka?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novi događaj u Google kalendaru</translation>
 <translation id="3261488570342242926">Saznajte više o virtualnim karticama</translation>
-<translation id="3264837738038045344">Gumb Upravljaj postavkama Chromea, pritisnite Enter da biste otvorili svoje postavke u Chromeu</translation>
+<translation id="3264837738038045344">Gumb Upravljajte postavkama Chromea, pritisnite Enter da biste otvorili svoje postavke u Chromeu</translation>
 <translation id="3266793032086590337">Vrijednost (sukob)</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
 <translation id="3270847123878663523">&amp;Poništi promjenu rasporeda</translation>
@@ -1977,6 +1977,7 @@ Dodatne pojedinosti:
 <translation id="7334320624316649418">&amp;Ponovi promjenu rasporeda</translation>
 <translation id="7335157162773372339">Može tražiti dopuštenje za upotrebu kamere</translation>
 <translation id="7337248890521463931">Prikaži više redaka</translation>
+<translation id="7337418456231055214">Broj virtualne kartice nije ispunjen? Kliknite podatke o kartici da biste kopirali. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nije dostupno na vašoj platformi.</translation>
 <translation id="733923710415886693">Certifikat poslužitelja nije otkriven putem Transparentnosti certifikata.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2440,6 +2441,7 @@ Dodatne pojedinosti:
 <translation id="883848425547221593">Druge oznake</translation>
 <translation id="884264119367021077">Adresa za dostavu</translation>
 <translation id="884923133447025588">Nije pronađen mehanizam za opoziv.</translation>
+<translation id="8849262850971482943">Koristite virtualnu karticu radi dodatne sigurnosti</translation>
 <translation id="885730110891505394">Dijeljenje s Googleom</translation>
 <translation id="8858065207712248076">Chrome preporučuje poništavanje zaporke za organizaciju <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako ste je upotrebljavali za druge web-lokacije.</translation>
 <translation id="885906927438988819">Ako nema pravopisnih pogrešaka, <ph name="BEGIN_LINK" />pokušajte pokrenuti Mrežnu dijagnostiku sustava Windows<ph name="END_LINK" />.</translation>

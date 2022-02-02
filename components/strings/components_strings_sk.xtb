@@ -1963,6 +1963,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7334320624316649418">&amp;Znova zmeniť poradie</translation>
 <translation id="7335157162773372339">Môže žiadať o povolenie používať kameru</translation>
 <translation id="7337248890521463931">Zobraziť viac riadkov</translation>
+<translation id="7337418456231055214">Nebolo vyplnené číslo virtuálnej karty? Kliknutím skopírujte podrobnosti karty. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nie je k dispozícii pre vašu platformu.</translation>
 <translation id="733923710415886693">Certifikát servera nebol zverejnený prostredníctvom pravidla transparentnosti certifikátov.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2426,6 +2427,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="883848425547221593">Iné záložky</translation>
 <translation id="884264119367021077">Dodacia adresa</translation>
 <translation id="884923133447025588">Nenašiel sa žiadny mechanizmus rušenia certifikátov.</translation>
+<translation id="8849262850971482943">V záujme vyššej bezpečnosti použite virtuálnu kartu</translation>
 <translation id="885730110891505394">Zdieľanie s Googlom</translation>
 <translation id="8858065207712248076">Ak ste heslo organizácie <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili aj na iných weboch, Chrome ho odporúča obnoviť.</translation>
 <translation id="885906927438988819">Ak je pravopis správny, <ph name="BEGIN_LINK" />skúste spustiť nástroj Windows Network Diagnostics<ph name="END_LINK" />.</translation>

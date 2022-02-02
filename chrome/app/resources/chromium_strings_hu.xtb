@@ -222,6 +222,7 @@
 A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Új ablak</translation>
+<translation id="7342713658732509484">A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra is érvényesek lehetnek. Ha nem szeretné, hogy webhelyek és alkalmazások hozzáférjenek a fiókadataihoz, használja a vendég módot a Chromium böngészőben. A <ph name="LINK_2_BEGIN" />Beállításokban<ph name="LINK_2_END" /> is kezelheti Google-fiókjait.</translation>
 <translation id="734373864078049451">Az Ön könyvjelzői, valamint az internetezéssel és a Chromiummal kapcsolatos egyéb dolgai vannak itt.</translation>
 <translation id="7349591376906416160">Rendszergazdája úgy állította be a Chromiumot, hogy a(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> böngészőt nyissa meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
 <translation id="7398989605938454041">A Chromium-profilokkal különválaszthatja minden Chromium-anyagát. Így könnyebben különítheti el egymástól a munkát és a szórakozást.</translation>

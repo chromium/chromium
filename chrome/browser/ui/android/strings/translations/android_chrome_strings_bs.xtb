@@ -290,7 +290,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audio fajl}one{# audio fajl}few{# audio fajla}other{# audio fajlova}}</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
 <translation id="2656405586795711023">Web aplikacije</translation>
-<translation id="2689830683995595741">Korištenjem Chromea pristajete na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />. Također se primjenjuje <ph name="BEGIN_LINK3" />Obavještenje o privatnosti za Google račune kojima se upravlja putem Family Linka<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Novo: dijelite link koji kliže do ovog teksta</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2707726405694321444">Osvježavanje stranice</translation>
@@ -626,7 +625,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Pošaljite SMS na svoje uređaje</translation>
 <translation id="4699172675775169585">Slike i fajlovi u keš memoriji</translation>
-<translation id="471759387343966120">Ako nastavite, pristajete na <ph name="BEGIN_TOS_LINK" />Uslove korištenja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_PRIVACY_LINK" />Pravila\u00A0privatnosti<ph name="END_PRIVACY_LINK" />.\nRadi poboljšanja aplikacije Chrome šalje Googleu podatke o korištenju i padovima aplikacije. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720023427747327413">Otvori u aplikaciji <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Pomozite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Učestvujte u anketi<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6277522088822131679">Došlo je do problema sa štampanjem stranice. Pokušajte ponovo.</translation>
 <translation id="6277722725779679269">Ažuriranje postavke Prati cijenu nije uspjelo</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6292420053234093573">Korištenjem Chromea pristajete na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Možete slati kartice između uređaja koji su prijavljeni s istim Google računom</translation>
 <translation id="6297765934698848803">Organizacija koja upravlja vašim uređajem je isključila kameru.</translation>
 <translation id="6301525844455696527">Nemojte zaboraviti svoju listu za čitanje</translation>

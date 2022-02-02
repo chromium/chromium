@@ -382,6 +382,7 @@
 <translation id="1396259464226642517">तपाईंलाई यस्तो परिणाम आउला भन्ने लागेको थियो? <ph name="BEGIN_LINK" />प्रतिक्रिया पठाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">तपाईंले प्रविष्ट गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
 <translation id="1397500194120344683">कुनै पनि योग्य यन्त्र छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्।<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">तपाईं यी डिभाइसहरूमा Chrome मा साइन इन अवस्थामा हुनुहुन्छ, त्यसैले तपाईं यी डिभाइसलाई सुरक्षा साँचोका रूपमा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="1398853756734560583">अधिकतम बनाउनुहोस्</translation>
 <translation id="139911022479327130">आफ्नो फोन अनलक गर्नुहोस् र यो व्यक्ति तपाईं नै हो भन्ने पुष्टि गर्नुहोस्</translation>
 <translation id="1401308693935339022">लोकेसन सर्भिस प्रयोग गर्नुहोस्। लोकेसन सर्भिस प्रयोग गर्ने अनुमति भएका एप र सेवाहरूलाई यो डिभाइसको स्थानसम्बन्धी जानकारी प्रयोग गर्न दिनुहोस्। Google ले आवधिक रूपमा स्थानसम्बन्धी डेटा सङ्कलन गर्न र स्थानसम्बन्धी जानकारीको सटीकता र स्थानमा आधारित सेवाहरूमा सुधार ल्याउन व्यक्तिगत पहिचान नखुल्ने गरी उक्त डेटा प्रयोग गर्न सक्छ।</translation>
@@ -1165,6 +1166,7 @@
 <translation id="2163470535490402084">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्न कृपया इन्टरनेट कनेक्ट गर्नुहोस्।</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र थप एउटा स्विच</translation>
+<translation id="2165102982098084499">तपाईंले QR कोड स्क्यान गरेर यी डिभाइसहरू लिंक गर्नुभएको छ।</translation>
 <translation id="2165177462441582039">कुनै वस्तु कति बेरसम्म हाइलाइट गर्ने हो छनौट गर्नुहोस्</translation>
 <translation id="2166369534954157698">अ आ इ ई उ ऊ ए ऐ ओ औ अं अ: क ख ग घ ङ</translation>
 <translation id="2169062631698640254">कुनैपनि अवस्थामा साइन इन गर्नुहोस्</translation>
@@ -5682,6 +5684,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="6860097299815761905">प्रोक्सी सेटिङहरू...</translation>
 <translation id="6860427144121307915">ट्याबमा खोल्नुहोस्</translation>
+<translation id="6863496016067551393">सबै एक्स्टेन्सन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="686366188661646310">पासवर्ड मेट्ने हो?</translation>
 <translation id="6865313869410766144">स्वत: भर्ने फारम लगत</translation>
 <translation id="6865598234501509159">पृष्ठ <ph name="LANGUAGE" /> भाषामा उपलब्ध छैन</translation>
@@ -5711,6 +5714,7 @@
 <translation id="6900532703269623216">उन्नत सुरक्षा</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> अपडेट गर्न फेरि साइन इन गर्नुहोस्</translation>
 <translation id="6900654715912436255">तपाईंले यो सर्च इन्जिन मेटाउन चाहनुभएकै हो?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">आवाजको पूर्वावलोकन</translation>
 <translation id="6902336033320348843">यो खण्ड प्रयोग गर्न मिल्दैन: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">यन्त्रलाई डोमेनमा सामेल गर्नुहोस्</translation>
@@ -7362,6 +7366,7 @@
 <translation id="8610103157987623234">गलत ढाँचा, फेरि प्रयास गर्नुहोस्</translation>
 <translation id="8611682088849615761">यो साइटलाई MIDI यन्त्रहरू पूर्ण रूपमा नियन्त्रण गर्न दिइरहनुहोस्</translation>
 <translation id="8613164732773110792">लोअरकेसका वर्ण, अङ्क, underscore वा ड्यासहरू मात्र</translation>
+<translation id="8613645710357126807">एक्स्टेन्सन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> सुरक्षासम्बन्धी जाँच गर्नै नसकिने गरी ठुलो छ। तपाईं बढीमा ५० एम.बि. सम्मका फाइलहरू खोल्न सक्नुहुन्छ।</translation>
 <translation id="8615618338313291042">इन्कोग्निटो एप: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> लाई आफ्नो सम्पर्क सूचीमा समावेश गर्नुहोस्</translation>

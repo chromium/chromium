@@ -290,7 +290,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}one{# lydfil}other{# lydfiler}}</translation>
 <translation id="265156376773362237">Standardforudindlæsning</translation>
 <translation id="2656405586795711023">Webapps</translation>
-<translation id="2689830683995595741">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Erklæringen om privatliv for Google-konti, der administreres med Family Link<ph name="END_LINK3" />, gælder også.</translation>
 <translation id="2702516483241149200">Nyhed: Del et link, der ruller til denne tekst</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2707726405694321444">Opdater siden</translation>
@@ -626,7 +625,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}}</translation>
 <translation id="4696983787092045100">Send sms til dine enheder</translation>
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
-<translation id="471759387343966120">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" /> og <ph name="BEGIN_PRIVACY_LINK" />privatlivspolitikken<ph name="END_PRIVACY_LINK" />.\nChrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
 <translation id="4720023427747327413">Åbn i <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Vær med til at forbedre Chrome. <ph name="BEGIN_LINK" />Deltag i undersøgelsen<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6277522088822131679">Der opstod et problem med udskrivning af siden. Prøv igen.</translation>
 <translation id="6277722725779679269">Overvåg pris kunne ikke opdateres</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6292420053234093573">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Du kan sende faner mellem enheder, hvor du er logget ind på den samme Google-konto</translation>
 <translation id="6297765934698848803">Den organisation, der administrerer din enhed, har deaktiveret dit kamera.</translation>
 <translation id="6301525844455696527">Hold styr på din læseliste</translation>

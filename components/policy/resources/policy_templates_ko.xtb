@@ -481,15 +481,6 @@
 <translation id="1574258262373444557">사용자 저장용량 암호화로 <ph name="AES_KL_NAME" /> 알고리즘 사용 안함</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 설정 정책</translation>
 <translation id="1583248206450240930">기본으로 <ph name="PRODUCT_FRAME_NAME" /> 사용</translation>
-<translation id="1587042984081085960">이 정책은 페이지를 닫는 중에 페이지에서 동기 XHR 요청을 전송하도록 관리자가 지정할 수 있게 합니다.
-
-      정책이 사용 설정되어 있으면 페이지를 닫는 중에 페이지에서 동기 XHR 요청을 전송할 수 있습니다.
-
-      정책이 사용 중지되거나 설정되어 있지 않으면 페이지를 닫는 중에 페이지에서 동기 XHR 요청을 전송할 수 없습니다.
-
-      이 정책은 Chrome 93에서 삭제됩니다.
-
-      https://www.chromestatus.com/feature/4664843055398912 페이지를 참고하세요.</translation>
 <translation id="1587585749332985896">헤드리스 모드 사용 허용 안 함</translation>
 <translation id="1588240398285670601">브라우저 설정</translation>
 <translation id="1597684038583138808">빠른 답변 정의 사용 설정</translation>

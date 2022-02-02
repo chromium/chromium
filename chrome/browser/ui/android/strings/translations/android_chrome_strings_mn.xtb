@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Аудио файл}other{# Аудио файл}}</translation>
 <translation id="265156376773362237">Стандарт урьдчилан ачаалал</translation>
 <translation id="2656405586795711023">Веб программууд</translation>
-<translation id="2689830683995595741">Chrome-г ашигласнаар та <ph name="BEGIN_LINK1" />Google-н Үйлчилгээний нөхцөл<ph name="END_LINK1" /> ба <ph name="BEGIN_LINK2" />Google Chrome болон Chrome үйлдлийн системийн Үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна. <ph name="BEGIN_LINK3" />Family Link-р удирддаг Google Бүртгэлийн нууцлалын сануулгыг<ph name="END_LINK3" /> мөн хэрэгжүүлнэ.</translation>
 <translation id="2702516483241149200">Шинэ: энэ текст рүү гүйлгэж очих холбоосыг хуваалцаарай</translation>
 <translation id="2704606927547763573">Хуулсан</translation>
 <translation id="2707726405694321444">Хуудсыг дахин шинэчлэх</translation>
@@ -626,7 +625,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Төхөөрөмжүүддээ текст илгээх</translation>
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
-<translation id="471759387343966120">Үргэлжлүүлснээр та <ph name="BEGIN_TOS_LINK" />Үйлчилгээний нөхцөл<ph name="END_TOS_LINK" /> болон <ph name="BEGIN_PRIVACY_LINK" />Нууцлалын\u00A0бодлогыг<ph name="END_PRIVACY_LINK" /> зөвшөөрч байна.\nТухайн аппыг сайжруулахад туслахын тулд Chrome ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээнэ. <ph name="BEGIN_UMA_LINK" />Удирдах<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Орчуулахыг санал болгох</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />-д нээлттэй</translation>
 <translation id="4720982865791209136">Chrome-г сайжруулахад тусална уу. <ph name="BEGIN_LINK" />Судалгаанд оролцоно уу<ph name="END_LINK" /></translation>
@@ -908,7 +906,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6277522088822131679">Энэ хуудсыг хэвлэхэд алдаа гарсан байна. Та дахин ачаална уу.</translation>
 <translation id="6277722725779679269">Үнэ хянахыг шинэчилж чадсангүй</translation>
 <translation id="6278428485366576908">Загвар</translation>
-<translation id="6292420053234093573">Chrome-г ашигласнаар та <ph name="BEGIN_LINK1" />Google-н Үйлчилгээний нөхцөл<ph name="END_LINK1" /> ба <ph name="BEGIN_LINK2" />Google Chrome болон Chrome үйлдлийн системийн Үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна.</translation>
 <translation id="6294610283659775533">Та ижил Google Бүртгэлээр нэвтэрсэн төхөөрөмжүүдийн хооронд таб илгээх боломжтой</translation>
 <translation id="6297765934698848803">Таны төхөөрөмжийг удирддаг байгууллага таны камерыг унтраасан байна.</translation>
 <translation id="6301525844455696527">Унших жагсаалтаа гүйцээрэй</translation>
@@ -1173,6 +1170,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7663313374500954251">Энэ хөтчийг <ph name="PARENT_NAME" /> удирддаг.</translation>
 <translation id="7665369617277396874">Бүртгэл нэмэх</translation>
 <translation id="766587987807204883">Офлайн үедээ ч унших боломжтой нийтлэлүүд энд харагддаг</translation>
+<translation id="768232549260819724">GIF-г хуулсан</translation>
 <translation id="7682724950699840886">Дараах зөвлөмжийг хэрэгжүүлж үзнэ үү: төхөөрөмж дээрээ хангалттай сул зай гаргаад дахин экспорт хийж үзнэ үү.</translation>
 <translation id="768618399695552958">Таны зочилдог зарим хуудсыг урьдчилан ачаална. Google-н сайтаас холбосон үед хуудаснуудыг Google-н серверүүдээр урьдчилан ачаалж магадгүй.</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />-д имэйл үүсгэнэ үү</translation>
@@ -1351,6 +1349,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8570677896027847510">Файлыг аюулгүйгээр татах боломжгүй</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
 <translation id="8572344201470131220">Зургийг хуулсан</translation>
+<translation id="8580884231102452214">GIF-г хуулах</translation>
 <translation id="8583805026567836021">Бүртгэлийн өгөгдлийг цэвэрлэж байна</translation>
 <translation id="859046281437143747">Бусад сонголт товчлуураас үнэ хянаарай</translation>
 <translation id="860043288473659153">Карт эзэмшигчийн нэр</translation>

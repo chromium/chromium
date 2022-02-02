@@ -1909,6 +1909,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="287205682142673348">Poortaanstuur</translation>
 <translation id="287286579981869940">Voeg <ph name="PROVIDER_NAME" /> by …</translation>
 <translation id="2872961005593481000">Skakel af</translation>
+<translation id="2873995907777332853">Wys besonderhede oor wat gebeur wanneer alle webkoekies geblokkeer word</translation>
 <translation id="2874939134665556319">Vorige snit</translation>
 <translation id="2875698561019555027">(Chrome-foutbladsye)</translation>
 <translation id="2876336351874743617">Vinger 2</translation>
@@ -2212,6 +2213,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3189187154924005138">Groot skermpyltjie</translation>
 <translation id="3190558889382726167">Wagwoord is gestoor</translation>
 <translation id="3192947282887913208">Oudiolêers</translation>
+<translation id="3194786596445804250">Wys besonderhede oor wat gebeur wanneer alle derdepartywebkoekies geblokkeer word</translation>
 <translation id="3197453258332670132">Wys verwante inligting vir jou tekskeuse met 'n regsklik of langdruk</translation>
 <translation id="3199127022143353223">Bedieners</translation>
 <translation id="3200061262156232574">In jou inkopiemandjie</translation>
@@ -5308,6 +5310,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6455264371803474013">Op spesifieke werwe</translation>
 <translation id="6455894534188563617">&amp;Nuwe vouer</translation>
 <translation id="645705751491738698">Hou aan om JavaScript te blokkeer</translation>
+<translation id="6458347417133445570">Wys besonderhede oor wat gebeur wanneer alle webkoekies toegelaat word</translation>
 <translation id="6458701200018867744">Kon nie oplaai nie (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Gebruik Selection for Find</translation>
 <translation id="6459799433792303855">Aktiewe venster is na 'n ander vertoonskerm geskuif.</translation>
@@ -6739,6 +6742,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekyk</translation>
 <translation id="7920482456679570420">Voeg woorde by wat jy wil hê speltoets moet oorslaan</translation>
+<translation id="7922935920104868876">Wys besonderhede oor wat gebeur wanneer derdepartywebkoekies in Incognito geblokkeer word</translation>
 <translation id="7924358170328001543">Kon nie poort aanstuur nie</translation>
 <translation id="7925108652071887026">Vul data outomaties in</translation>
 <translation id="792514962475806987">Gedokte zoemvlak:</translation>
@@ -6902,6 +6906,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8076492880354921740">Oortjies</translation>
 <translation id="8076835018653442223">Toegang tot plaaslike lêers op jou toestel is deur jou administrateur gedeaktiveer</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Rekeninge beskikbaar om met Android-programme te gebruik</translation>
 <translation id="8081989000209387414">Deaktiveer ADB-ontfouting?</translation>
 <translation id="8082106343289440791">Bind saam met "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">As jy ADB-ontfouting deaktiveer, sal <ph name="DEVICE_TYPE" /> teruggestel word na fabriekinstellings. Alle gebruikerrekeninge en plaaslike data sal uitgevee word.</translation>
@@ -7162,6 +7167,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8342861492835240085">Kies 'n versameling</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="834785183489258869">Terwyl jy in Incognito is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
+<translation id="8349499562373871073">Jy kan 'n bestaande rekening kies om met Android-programme te gebruik of 'n nuwe Google-rekening byvoeg. Sodra jy by 'n Android-program aanmeld, kan jou rekening met ander Android-programme gebruik word. Jy kan Android-programtoegang in <ph name="LINK_BEGIN" />Instellings &gt; Rekeninge<ph name="LINK_END" /> verander.</translation>
 <translation id="8350789879725387295">Stilusnutsgoed in dok</translation>
 <translation id="8351316842353540018">Wys altyd a11y-opsies</translation>
 <translation id="8351419472474436977">Hierdie uitbreiding het beheer oor jou instaanbediener-instellings oorgeneem, wat beteken dit kan alles wat jy aanlyn doen, verander, breek of afluister. As jy nie seker is hoekom hierdie verandering plaasgevind het nie, wil jy dit waarskynlik nie hê nie.</translation>

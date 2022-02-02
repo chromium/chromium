@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# աուդիո ֆայլ}one{# աուդիո ֆայլ}other{# աուդիո ֆայլ}}</translation>
 <translation id="265156376773362237">Սովորական նախաբեռնում</translation>
 <translation id="2656405586795711023">Վեբ հավելվածներ</translation>
-<translation id="2689830683995595741">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Գործում է նաև <ph name="BEGIN_LINK3" />Family Link-ի միջոցով կառավարվող Google հաշիվների գաղտնիության ծանուցագիրը<ph name="END_LINK3" />։</translation>
 <translation id="2702516483241149200">Նորույթ․ կիսվեք հղումով, որն ուղղորդում է դեպի այս տեքստ</translation>
 <translation id="2704606927547763573">Պատճենվեց</translation>
 <translation id="2707726405694321444">Թարմացնել էջը</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
 <translation id="4696983787092045100">Ուղարկել SMS սարքերին</translation>
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
-<translation id="471759387343966120">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_PRIVACY_LINK" />Գաղտնիության\u00A0քաղաքականությունը<ph name="END_PRIVACY_LINK" />։\nՀավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_UMA_LINK" />Կառավարել<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Առաջարկել թարգմանել</translation>
 <translation id="4720023427747327413">Բացել <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="4720982865791209136">Օգնեք ավելի լավը դարձնել Chrome-ը: <ph name="BEGIN_LINK" />Մասնակցեք հարցմանը<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6277522088822131679">Այս էջը տպելիս խնդիր առաջացավ: Նորից փորձեք:</translation>
 <translation id="6277722725779679269">Չհաջողվեց թարմացնել գների հետագծումը</translation>
 <translation id="6278428485366576908">Թեմա</translation>
-<translation id="6292420053234093573">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="6294610283659775533">Դուք կարող եք ուղարկել ներդիրները մի սարքից մյուսը, եթե դրանցում մտել եք հաշիվ միևնույն Google հաշվով</translation>
 <translation id="6297765934698848803">Ձեր սարքը կառավարող կազմակերպությունն անջատել է տեսախցիկը։</translation>
 <translation id="6301525844455696527">Մի՛ մոռացեք ձեր ընթերցանության ցանկի մասին</translation>

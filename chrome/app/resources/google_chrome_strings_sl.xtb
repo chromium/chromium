@@ -69,6 +69,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2574930892358684005">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromu. Če želite ločiti brskanje, lahko Chrome za vas ustvari nov profil.</translation>
 <translation id="2580411288591421699">Ni mogoče namestiti različice Google Chroma, enake tisti, ki se trenutno izvaja. Zaprite Google Chrome in poskusite znova.</translation>
 <translation id="2586406160782125153">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Če ne želite, da bi spletna mesta ali aplikacije dostopali do podatkov o vašem računu, v brskalniku Chrome uporabite način za goste. Račune Google lahko tudi upravljate v <ph name="LINK_2_BEGIN" />nastavitvah<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome ne more preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2644798301485385923">Sistem OS Chrome</translation>
 <translation id="2652691236519827073">Odpiranje povezave na novem &amp;zavihku v Chromu</translation>

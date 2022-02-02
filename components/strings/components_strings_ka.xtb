@@ -1968,6 +1968,7 @@
 <translation id="7334320624316649418">გადალაგების &amp;გამეორება</translation>
 <translation id="7335157162773372339">შეუძლია თქვენი კამერის გამოყენების თხოვნა</translation>
 <translation id="7337248890521463931">მეტი ხაზის ჩვენება</translation>
+<translation id="7337418456231055214">ვირტუალური ბარათის ნომერი არ არის შევსებული? კოპირებისთვის შეეხეთ ბარათის დეტალებს. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">მიუწვდომელია თქვენი პლატფორმისთვის.</translation>
 <translation id="733923710415886693">სერვერის სერტიფიკატის გამოქვეყნება სერტიფიკატთა გამჭვირვალობის შესახებ წესების შესაბამისად არ მომხდარა.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2430,6 +2431,7 @@
 <translation id="883848425547221593">სხვა სანიშნეები</translation>
 <translation id="884264119367021077">მიწოდების მისამართი</translation>
 <translation id="884923133447025588">გაუქმების მექანიზმის პოვნა ვერ მოხერხდა.</translation>
+<translation id="8849262850971482943">დამატებითი უსაფრთხოებისთვის გამოიყენეთ თქვენი ვირტუალური ბარათი</translation>
 <translation id="885730110891505394">Google-თან გაზიარება</translation>
 <translation id="8858065207712248076">Chrome გირჩევთ, გადააყენოთ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ის პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
 <translation id="885906927438988819">თუ სწორად არის აკრეფილი, <ph name="BEGIN_LINK" />ცადეთ Windows-ის ქსელის დიაგნოსტიკა<ph name="END_LINK" />.</translation>

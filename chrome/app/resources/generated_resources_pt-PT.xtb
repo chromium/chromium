@@ -385,6 +385,7 @@
 <translation id="1396259464226642517">Este resultado foi inesperado? <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">O nome de utilizador e a palavra-passe introduzidos não coincidem</translation>
 <translation id="1397500194120344683">Nenhum dispositivo elegível. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Iniciou sessão no Chrome nestes dispositivos, pelo que pode utilizá-los como chaves de segurança.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquear o telemóvel e confirmar a sua identidade</translation>
 <translation id="1401308693935339022">Utilize a localização. Permita que as apps e os serviços com a autorização de acesso à localização utilizem a localização deste dispositivo. A Google pode recolher periodicamente dados de localização e utilizá-los de forma anónima para melhorar a exatidão da localização e os serviços baseados na localização.</translation>
@@ -1169,6 +1170,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2163470535490402084">Ligue-se à Internet para iniciar sessão no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Ativar modo escuro</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor.</translation>
+<translation id="2165102982098084499">Associou estes dispositivos através da leitura de um código QR.</translation>
 <translation id="2165177462441582039">Escolha o tempo de realce de cada item</translation>
 <translation id="2166369534954157698">A ligeira raposa marrom salta sobre o cão preguiçoso</translation>
 <translation id="2169062631698640254">Continuar com o início de sessão</translation>
@@ -5686,6 +5688,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Definições de proxy...</translation>
 <translation id="6860427144121307915">Abrir num separador</translation>
+<translation id="6863496016067551393">Todas as extensões permitidas</translation>
 <translation id="686366188661646310">Pretende eliminar a palavra-passe?</translation>
 <translation id="6865313869410766144">Dados de formulário de Preenchimento automático</translation>
 <translation id="6865598234501509159">A página não está em <ph name="LANGUAGE" />.</translation>
@@ -5715,6 +5718,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6900532703269623216">Proteção melhorada</translation>
 <translation id="6900651018461749106">Inicie sessão novamente para atualizar <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Tem a certeza de que quer eliminar este motor de pesquisa?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voz para pré-visualização</translation>
 <translation id="6902336033320348843">Secção não suportada: <ph name="ERROR_LINE" />.</translation>
 <translation id="6902837902700739466">Associar dispositivo ao domínio</translation>
@@ -7364,6 +7368,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8610103157987623234">Formato incorreto. Tente novamente.</translation>
 <translation id="8611682088849615761">Continuar a permitir que este site tenha controlo total sobre dispositivos MIDI</translation>
 <translation id="8613164732773110792">Apenas carateres minúsculos, dígitos, sublinhados ou traços.</translation>
+<translation id="8613645710357126807">Sem autorização para utilizar extensões</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> é demasiado grande para uma verificação de segurança. Pode abrir ficheiros até 50 MB.</translation>
 <translation id="8615618338313291042">Aplicação em navegação anónima: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Adicionar <ph name="CONTACT_NAME" /> aos seus contactos</translation>

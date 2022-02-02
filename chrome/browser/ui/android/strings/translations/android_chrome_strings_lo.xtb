@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ໄຟລ໌ສຽງ}other{# ໄຟລ໌ສຽງ}}</translation>
 <translation id="265156376773362237">ການໂຫຼດກ່ອນລ່ວງໜ້າແບບມາດຕະຖານ</translation>
 <translation id="2656405586795711023">ເວັບແອັບ</translation>
-<translation id="2689830683995595741">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານເຫັນດີນຳ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດການບໍລິການຂອງ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດການບໍລິການເພີ່ມເຕີມຂອງ Google Chrome ແລະ Chrome OS<ph name="END_LINK2" />. ນຳໃຊ້ <ph name="BEGIN_LINK3" />ແຈ້ງການຄວາມເປັນສ່ວນຕົວສຳລັບບັນຊີ Google ທີ່ຈັດການດ້ວຍ Family Link<ph name="END_LINK3" /> ເຊັ່ນກັນ.</translation>
 <translation id="2702516483241149200">ໃໝ່: ແບ່ງປັນລິ້ງທີ່ເລື່ອນຫາຂໍ້ຄວາມນີ້</translation>
 <translation id="2704606927547763573">ອັດ​ສຳ​ເນົາ​ແລ້ວ</translation>
 <translation id="2707726405694321444">ຣີ​ເຟ​ຣ​ຊຫນ້າ</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທາງເລືອກການຈັດສົ່ງ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທາງເລືອກການຈັດສົ່ງ}}</translation>
 <translation id="4696983787092045100">ສົ່ງຂໍ້ຄວາມຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4699172675775169585">ຮູບ ແລະໄຟລ໌ທີ່ແຄຊ໌ແລ້ວ</translation>
-<translation id="471759387343966120">ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_TOS_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_TOS_LINK" /> ແລະ <ph name="BEGIN_PRIVACY_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_PRIVACY_LINK" />.\nເພື່ອຊ່ວຍປັບປຸງແອັບ, Chrome ຈະສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_UMA_LINK" />ຈັດການ<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">ໃຫ້ການແປພາສາ</translation>
 <translation id="4720023427747327413">ເປີດ​ຢູ່​ໃນ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">ຊ່ວຍປັບປຸງ Chrome. <ph name="BEGIN_LINK" />ເຮັດການສຳຫຼວດ<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">ມີບັນຫາການພິມໜ້າ. ກະລຸນາລອງໃໝ່ອີກ.</translation>
 <translation id="6277722725779679269">ບໍ່ສາມາດອັບເດດການຕິດຕາມລາຄາໄດ້</translation>
 <translation id="6278428485366576908">ສີສັນໜ້າຕາ</translation>
-<translation id="6292420053234093573">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານເຫັນດີນຳ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດການບໍລິການຂອງ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດການບໍລິການເພີ່ມເຕີມຂອງ Google Chrome ແລະ Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">ທ່ານສາມາດສົ່ງແຖບຕ່າງໆລະຫວ່າງອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ດຽວກັນໄດ້</translation>
 <translation id="6297765934698848803">ອົງການທີ່ຈັດການອຸປະກອນຂອງທ່ານໄດ້ປິດກ້ອງຂອງທ່ານແລ້ວ.</translation>
 <translation id="6301525844455696527">ຕິດຕາມລາຍການອ່ານຂອງທ່ານ</translation>

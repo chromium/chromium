@@ -64,6 +64,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。ブラウジング環境を分ける場合は、Chrome で自分用のプロファイルを作成できます。</translation>
 <translation id="2580411288591421699">実行中の Google Chrome と同じバージョンをインストールすることはできません。Google Chrome を閉じてからもう一度お試しください。</translation>
 <translation id="2586406160782125153">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
+<translation id="260478105521939126">これまでにウェブサイトやアプリに許可した権限がこのアカウントに適用される可能性があります。ウェブサイトやアプリがアカウント情報にアクセスすることを望まない場合は、Chrome ブラウザのゲストモードを使用してください。Google アカウントは [<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />] でも管理できます。</translation>
 <translation id="2622559029861875898">Chrome がアップデートを確認できません。インターネット接続を確認してみてください。</translation>
 <translation id="2644798301485385923">Chrome OS システム</translation>
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>

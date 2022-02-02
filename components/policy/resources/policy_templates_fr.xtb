@@ -481,15 +481,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1574258262373444557">Ne pas utiliser <ph name="AES_KL_NAME" /> comme algorithme de chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1575015449587326319">Règle de configuration du connecteur Chrome Enterprise OnFileDownloaded</translation>
 <translation id="1583248206450240930">Utiliser <ph name="PRODUCT_FRAME_NAME" /> par défaut</translation>
-<translation id="1587042984081085960">Cette règle permet à un administrateur de spécifier qu'une page peut envoyer des requêtes XHR synchrones pendant sa fermeture.
-
-      Si cette règle est activée, les pages sont autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
-
-      Si cette règle est désactivée ou n'est pas configurée, les pages ne sont pas autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
-
-      Cette règle sera supprimée dans Chrome 93.
-
-      Voir https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Ne pas autoriser le mode sans interface graphique</translation>
 <translation id="1588240398285670601">Paramètres du navigateur</translation>
 <translation id="1597684038583138808">Activer la définition pour Réponses rapides</translation>

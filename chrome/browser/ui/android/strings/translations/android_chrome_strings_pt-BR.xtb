@@ -290,7 +290,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# arquivo de áudio}one{# arquivo de áudio}other{# arquivos de áudio}}</translation>
 <translation id="265156376773362237">Pré-carregamento padrão</translation>
 <translation id="2656405586795711023">Apps da Web</translation>
-<translation id="2689830683995595741">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />. O <ph name="BEGIN_LINK3" />Aviso de privacidade para Contas do Google gerenciadas no Family Link<ph name="END_LINK3" /> também é aplicável.</translation>
 <translation id="2702516483241149200">Novo: compartilhe um link para este texto</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2707726405694321444">Atualizar página</translation>
@@ -627,7 +626,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Enviar texto para seus dispositivos</translation>
 <translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
-<translation id="471759387343966120">Ao continuar, você concorda com os <ph name="BEGIN_TOS_LINK" />Termos de Serviço<ph name="END_TOS_LINK" /> e a <ph name="BEGIN_PRIVACY_LINK" />Política\u00A0de\u00A0Privacidade<ph name="END_PRIVACY_LINK" />.\nPara ajudar a melhorar o app, o Chrome envia dados de uso e de falha ao Google. <ph name="BEGIN_UMA_LINK" />Gerenciar<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Oferecer para traduzir</translation>
 <translation id="4720023427747327413">Abrir no <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Ajude a melhorar o Chrome. <ph name="BEGIN_LINK" />Responda à pesquisa.<ph name="END_LINK" /></translation>
@@ -910,7 +908,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6277722725779679269">Não foi possível atualizar o recurso Monitorar preço</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6292420053234093573">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Você pode compartilhar guias entre dispositivos conectados à mesma Conta do Google</translation>
 <translation id="6297765934698848803">A organização que gerencia seu dispositivo desativou a câmera.</translation>
 <translation id="6301525844455696527">Veja sua lista de leitura</translation>

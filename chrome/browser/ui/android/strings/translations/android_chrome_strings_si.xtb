@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ශ්‍රව්‍ය ගොනුවක්}one{ශ්‍රව්‍ය ගොනු #ක්}other{ශ්‍රව්‍ය ගොනු #ක්}}</translation>
 <translation id="265156376773362237">සම්මත පූර්ව පූරණය</translation>
 <translation id="2656405586795711023">වෙබ් යෙදුම්</translation>
-<translation id="2689830683995595741">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියමවලට<ph name="END_LINK1" />, සහ <ph name="BEGIN_LINK2" />Google Chrome සහ Chrome OS අතිරේක සේවා නියමවලට<ph name="END_LINK2" /> එකඟ වෙයි. <ph name="BEGIN_LINK3" />Family Link මඟින් කළමනා කෙරෙන Google ගිණුම් සඳහා වන පෞද්ගලිකත්ව දැනුම්දීම<ph name="END_LINK3" /> ද යෙදේ.</translation>
 <translation id="2702516483241149200">නව: මෙම පෙළට අනුචලනය වන සබැඳියක් බෙදා ගන්න</translation>
 <translation id="2704606927547763573">පිටපත් කරන ලදි</translation>
 <translation id="2707726405694321444">පිටුව නැවුම් කරන්න</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">ඔබේ උපාංග වෙත පාඨය යවන්න</translation>
 <translation id="4699172675775169585">අනුරූ සහ ගොනු කෑෂ් කරන්න</translation>
-<translation id="471759387343966120">ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_TOS_LINK" />සේවා නියම<ph name="END_TOS_LINK" /> සහ <ph name="BEGIN_PRIVACY_LINK" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_PRIVACY_LINK" /> සමග එකඟ වේ.\nයෙදුම වැඩිදියුණු කිරීමට උදවු කිරීමට, Chrome පරිශීලන සහ බිඳ වැටීම් දත්ත Google වෙත යවයි. <ph name="BEGIN_UMA_LINK" />කළමනාකරණය කරන්න<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">පරිවර්තනය කිරීමට පිරිනමන්න</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> හි විවෘත කරන්න</translation>
 <translation id="4720982865791209136">Chrome වැඩි දියුණුවට උදවු කරන්න. <ph name="BEGIN_LINK" />සමීක්ෂණය ගන්න<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">මෙම පිටුව මුද්‍රණය කිරීමේ ගැටලුවක් විය. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6277722725779679269">මිල හඹා යාම යාවත්කාලීන කිරීමට නොහැකි විය</translation>
 <translation id="6278428485366576908">තේමාව</translation>
-<translation id="6292420053234093573">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියමවලට<ph name="END_LINK1" />, සහ <ph name="BEGIN_LINK2" />Google Chrome සහ Chrome OS අතිරේක සේවා නියමවලට<ph name="END_LINK2" /> එකඟ වෙයි.</translation>
 <translation id="6294610283659775533">එකම Google ගිණුම සමඟ පුරා ඇති උපාංග අතර ඔබට ටැබ යැවිය හැකිය</translation>
 <translation id="6297765934698848803">ඔබේ උපාංගය කළමනා කරන ආයතනය ඔබේ කැමරාව අක්‍රිය කර ඇත.</translation>
 <translation id="6301525844455696527">ඔබගේ කියවීම් ලැයිස්තුවේ අල්ලා ගන්න</translation>

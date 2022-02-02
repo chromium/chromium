@@ -484,15 +484,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> niet gebruiken als het versleutelingsalgoritme voor versleuteling van gebruikersopslag</translation>
 <translation id="1575015449587326319">Configuratiebeleid voor de Chrome Enterprise-connector OnFileDownloaded</translation>
 <translation id="1583248206450240930"><ph name="PRODUCT_FRAME_NAME" /> standaard gebruiken</translation>
-<translation id="1587042984081085960">Via dit beleid kan een beheerder opgeven dat een pagina synchrone XHR-verzoeken mag sturen tijdens de afwijzing van de pagina.
-
-      Als je het beleid toepast, mogen pagina's synchrone XHR-verzoeken sturen tijdens de afwijzing van de pagina.
-
-      Als je het beleid niet toepast of niet instelt, mogen pagina's geen synchrone XHR-verzoeken sturen tijdens de afwijzing van de pagina.
-
-      Dit beleid wordt verwijderd in Chrome 93.
-
-      Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Gebruik van de stand zonder interface niet toestaan</translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
 <translation id="1597684038583138808">Definitie van Snelle antwoorden aanzetten</translation>

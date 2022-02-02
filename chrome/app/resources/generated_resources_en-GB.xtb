@@ -386,6 +386,7 @@
 <translation id="1396259464226642517">Was this result unexpected? <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">The username and password that you entered do not match</translation>
 <translation id="1397500194120344683">No eligible devices. <ph name="LINK_BEGIN" />Find out more<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">You're signed in to Chrome on these devices, so you can use them as security keys.</translation>
 <translation id="1398853756734560583">Maximise</translation>
 <translation id="139911022479327130">Unlock your phone and confirm that it's you</translation>
 <translation id="1401308693935339022">Use location. Allow apps and services with location permission to use this device’s location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services.</translation>
@@ -1180,6 +1181,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2163470535490402084">Please connect to the Internet to sign in to your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
+<translation id="2165102982098084499">You linked these devices by scanning a QR code.</translation>
 <translation id="2165177462441582039">Choose how long the highlight should stay on each item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
@@ -5702,6 +5704,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Proxy settings...</translation>
 <translation id="6860427144121307915">Open in a Tab</translation>
+<translation id="6863496016067551393">All extensions allowed</translation>
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6865313869410766144">Auto-fill form data</translation>
 <translation id="6865598234501509159">Page Is not in <ph name="LANGUAGE" /></translation>
@@ -5731,6 +5734,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6900651018461749106">Sign in again to update <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Are you sure that you want to delete this search engine?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voice to preview</translation>
 <translation id="6902336033320348843">Section not supported: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Join device to domain</translation>
@@ -7383,6 +7387,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8610103157987623234">Incorrect format, please try again</translation>
 <translation id="8611682088849615761">Continue allowing this site to have full control of MIDI devices</translation>
 <translation id="8613164732773110792">Lowercase characters, digits, underscores or dashes only</translation>
+<translation id="8613645710357126807">Not allowed to use extensions</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> is too big for a security check. You can open files up to 50 MB.</translation>
 <translation id="8615618338313291042">Incognito App: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Add <ph name="CONTACT_NAME" /> to your contacts</translation>

@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{#টা অডিঅ' ফাইল}one{#টা অডিঅ' ফাইল}other{#টা অডিঅ' ফাইল}}</translation>
 <translation id="265156376773362237">মান্য আগতীয়া ল’ডিং</translation>
 <translation id="2656405586795711023">ৱেব এপ্‌সমূহ</translation>
-<translation id="2689830683995595741">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_LINK1" />Google সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু Chrome OSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে। <ph name="BEGIN_LINK3" />Family Linkৰ জৰিয়তে পৰিচালনা কৰা Google একাউণ্টৰ বাবে গোপনীয়তাৰ জাননী<ph name="END_LINK3" />ও প্ৰযোজ্য হয়।</translation>
 <translation id="2702516483241149200">নতুন: এই পাঠটোলৈ স্ক্ৰ’ল কৰা এটা লিংক শ্বেয়াৰ কৰা</translation>
 <translation id="2704606927547763573">প্ৰতিলিপি কৰা হ'ল</translation>
 <translation id="2707726405694321444">পৃষ্ঠাটো ৰিফ্ৰেশ্ব কৰক</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
 <translation id="4696983787092045100">আপোনাৰ ডিভাইচসমূহলৈ পাঠ পঠিয়াওক</translation>
 <translation id="4699172675775169585">কেশ্ব প্ৰতিচ্ছবি আৰু ফাইল</translation>
-<translation id="471759387343966120">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_TOS_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" /> আৰু <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তাৰ\u00A0নীতি<ph name="END_PRIVACY_LINK" />ত সন্মত হৈছে।\nএপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_UMA_LINK" />পৰিচালনা কৰক<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />ত খোলক</translation>
 <translation id="4720982865791209136">Chromeক উন্নত কৰাত সহায় কৰক। <ph name="BEGIN_LINK" />সমীক্ষাত ভাগ লওক<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">এই পৃষ্ঠাটো প্ৰিণ্ট কৰোঁতে কিবা সমস্যা হৈছিল। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="6277722725779679269">ট্ৰেক কৰা মূল্য আপডে’ট কৰিব পৰা নগ’ল</translation>
 <translation id="6278428485366576908">থীম</translation>
-<translation id="6292420053234093573">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_LINK1" />Google সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু Chrome OSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
 <translation id="6294610283659775533">আপুনি একেটা Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰি থোৱা ডিভাইচসমূহৰ মাজত টেব পঠিয়াব পাৰে</translation>
 <translation id="6297765934698848803">আপোনাৰ ডিভাইচ পৰিচালনা কৰা প্ৰতিষ্ঠানটোৱে আপোনাৰ কেমেৰাটো বন্ধ কৰিছে।</translation>
 <translation id="6301525844455696527">আপোনাৰ পঢ়াৰ সূচীত চাওক</translation>
@@ -1174,6 +1171,7 @@
 <translation id="7663313374500954251">এই ডিভাইচটো <ph name="PARENT_NAME" />এ পৰিচালনা কৰে</translation>
 <translation id="7665369617277396874">একাউণ্ট যোগ কৰক</translation>
 <translation id="766587987807204883">প্ৰৱন্ধসমূহ ইয়াত প্ৰদর্শিত হয়, যিবোৰ আপুনি অফলাইন হৈ থকা অৱস্থাটো পঢ়িব পাৰে</translation>
+<translation id="768232549260819724">GIF প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="7682724950699840886">তলত উল্লেখ কৰা কিটিপসমূহ কৰি চাওক: আপোনাৰ ডিভাইচত পর্যাপ্ত পৰিমাণে খালী ঠাই থকাটো নিশ্চিত কৰি আকৌ আমদানি কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="768618399695552958">আপুনি যোৱা কিছুমান পৃষ্ঠা আগতীয়াকৈ ল’ড কৰা হয়। কোনো Googleৰ ছাইটৰ পৰা লিংক কৰিলে পৃষ্ঠাসমূহ Googleৰ ছাৰ্ভাৰৰ পৰা আগতীয়াকৈ ল’ড কৰা হ’ব পাৰে।</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />ত ইমেইল সৃষ্টি কৰক</translation>
@@ -1352,6 +1350,7 @@
 <translation id="8570677896027847510">ফাইল সুৰক্ষিতভাৱে ডাউনল’ড কৰিব নোৱাৰি</translation>
 <translation id="8571213806525832805">যোৱা ৪ সপ্তাহ</translation>
 <translation id="8572344201470131220">প্ৰতিচ্ছবিৰ প্ৰতিলিপি কৰা হ’ল</translation>
+<translation id="8580884231102452214">GIF প্ৰতিলিপি কৰক</translation>
 <translation id="8583805026567836021">একাউণ্টৰ ডেটা মচি থকা হৈছে</translation>
 <translation id="859046281437143747">অধিক বিকল্পৰ বুটামটোৰ জৰিয়তে মূল্য ট্ৰেক কৰক</translation>
 <translation id="860043288473659153">কার্ডৰ গৰাকীৰ নাম</translation>

@@ -209,6 +209,9 @@
       Il criterio non si applica agli utenti kiosk.
 
       Avviso: Wipe e MinimalMigrate comportano la rimozione dei dati locali.</translation>
+<translation id="1250597158212586309">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente ha la possibilità di ignorare/ripristinare gli avvisi relativi alle password compromesse.
+
+      Se disattivi questa impostazione, gli utenti non potranno ignorare gli avvisi relativi alle password compromesse. Se la attivi, gli utenti potranno ignorare gli avvisi relativi alle password compromesse.</translation>
 <translation id="1252536192437793850">Consenti ai siti di chiedere all'utente di concedere l'accesso a una porta seriale</translation>
 <translation id="1255159327956066463">Attiva la funzionalità di finestre nascoste</translation>
 <translation id="125655429495551011">Se il criterio viene impostato su una stringa, questa viene applicata come nome host del dispositivo durante la richiesta DHCP. La stringa può comportare la sostituzione delle variabili <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> e<ph name="LOCATION_PLACEHOLDER" /> con i valori sul dispositivo prima che venga utilizzata come nome host. La conseguente sostituzione deve essere un nome host valido (come da RFC 1035, sezione 3.1).
@@ -481,15 +484,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1574258262373444557">Non usare <ph name="AES_KL_NAME" /> come algoritmo di crittografia per la crittografia dello spazio di archiviazione degli utenti</translation>
 <translation id="1575015449587326319">Criterio di configurazione per il connettore OnFileDownloaded di Chrome Enterprise</translation>
 <translation id="1583248206450240930">Utilizza <ph name="PRODUCT_FRAME_NAME" /> per impostazione predefinita</translation>
-<translation id="1587042984081085960">Questo criterio consente a un amministratore di specificare che una pagina potrebbe inviare richieste XHR sincrone durante l'uscita dalla pagina.
-
-      Se il criterio viene attivato, le pagine possono inviare richieste XHR sincrone durante l'uscita dalle pagine.
-
-      Se il criterio viene disattivato o non viene impostato, le pagine non possono inviare richieste XHR sincrone durante l'uscita dalle pagine.
-
-      Questo criterio verrà rimosso nella versione 93 di Chrome.
-
-      Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Non è consentito l'uso della modalità headless</translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
 <translation id="1597684038583138808">Attiva definizioni di Risposte rapide</translation>
@@ -891,6 +885,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Le stampanti connesse a <ph name="CLOUD_PRINT_NAME" /> vengono considerate <ph name="PRINTER_TYPE_CLOUD" />, mentre le altre stampanti vengono classificate come <ph name="PRINTER_TYPE_LOCAL" />.
 
       Nota: l'omissione di un campo implica la corrispondenza di tutti i valori. Ad esempio, se non viene specificata la connettività, nell'Anteprima di stampa viene avviato il rilevamento di tutti i tipi di stampanti, <ph name="PRINTER_TYPE_LOCAL" /> e <ph name="PRINTER_TYPE_CLOUD" />. I pattern di espressioni regolari devono seguire la sintassi JavaScript RegExp e per le corrispondenze viene fatta distinzione tra maiuscole e minuscole.</translation>
+<translation id="2004382785802837840">Disattiva la possibilità di ignorare gli avvisi relativi alle password compromesse</translation>
 <translation id="2005506794355327448">L'azione da compiere quando lo schermo è abbassato.</translation>
 <translation id="2006530844219044261">Gestione dell'alimentazione</translation>
 <translation id="2008514891623783266">Criteri di gestione dell'IP di WebRTC</translation>
@@ -1323,6 +1318,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2435232509335686514">Criterio di configurazione per la gestione dei file scaricati da parte del <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2436302465999055995">Imposta <ph name="LACROS_NAME" /> come unico browser disponibile (opzione non ancora implementata)</translation>
 <translation id="2439187682308339104">Non consentire a nessun sito di richiedere l'accesso ai dispositivi HID tramite l'API WebHID</translation>
+<translation id="2439733504887695659">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse per le credenziali inserite</translation>
 <translation id="2448315169529769573">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio report sugli arresti anomali. Se il criterio viene impostato su Disattivato, la segnalazione di metriche e dati diagnostici viene disattivata.
 
        Se il criterio non viene configurato, la segnalazione di metriche e dati diagnostici rimane disattivata sui dispositivi non gestiti e attiva sui dispositivi gestiti.</translation>
@@ -3185,6 +3181,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
           Per avere pattern di esempio, visita il sito https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Apri un elenco di URL</translation>
+<translation id="4674542060943819878">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse</translation>
 <translation id="4674871290487541952">Consente algoritmi non protetti nei controlli dell'integrità durante gli aggiornamenti e le installazioni delle estensioni</translation>
 <translation id="4680961954980851756">Abilita Compilazione automatica</translation>
 <translation id="4685721728282448265">Algoritmo di scambio di chiavi post-quantistico CECPQ2 attivo per TLS</translation>

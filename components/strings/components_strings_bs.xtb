@@ -1977,6 +1977,7 @@ Dodatni detalji:
 <translation id="7334320624316649418">&amp;Ponovi preuređivanje</translation>
 <translation id="7335157162773372339">Može tražiti da koristi kameru</translation>
 <translation id="7337248890521463931">Prikaži više redova</translation>
+<translation id="7337418456231055214">Broj virtualne kartice nije ispunjen? Kliknite podatke o kartici da biste kopirali. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nije dostupno na vašoj platformi.</translation>
 <translation id="733923710415886693">Potvrda servera nije otkrivena korištenjem pravila o transparentnosti potvrde.</translation>
 <translation id="734600844861828519">11 x 15</translation>
@@ -2439,6 +2440,7 @@ Dodatni detalji:
 <translation id="883848425547221593">Ostale oznake</translation>
 <translation id="884264119367021077">Adresa za isporuku</translation>
 <translation id="884923133447025588">Nije pronađen nijedan mehanizam za opoziv.</translation>
+<translation id="8849262850971482943">Koristite virtuelnu karticu radi dodatne sigurnosti</translation>
 <translation id="885730110891505394">Dijeljenje s Googleom</translation>
 <translation id="8858065207712248076">Chrome preporučuje ponovno postavljanje lozinke za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako sto je ponovo koristili na drugim web lokacijama.</translation>
 <translation id="885906927438988819">Ako nema greške u pravopisu, <ph name="BEGIN_LINK" />pokušajte pokrenuti Windows dijagnostiku mreže<ph name="END_LINK" />.</translation>

@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# آڈیو فائل}other{# آڈیو فائلیں}}</translation>
 <translation id="265156376773362237">معیاری پیشگی لوڈنگ</translation>
 <translation id="2656405586795711023">ویب ایپس</translation>
-<translation id="2689830683995595741">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Chrome OS کی اضافی سروس کی شرائط<ph name="END_LINK2" />سے اتفاق کرتے ہیں۔ <ph name="BEGIN_LINK3" />Google اکاؤنٹس کے لیے Family Link سے نظم کردہ رازداری کا نوٹس<ph name="END_LINK3" /> بھی لاگو ہوتا ہے۔</translation>
 <translation id="2702516483241149200">نیا: اس ٹیکسٹ کو اسکرول کرنے والے لنک کا اشتراک کریں</translation>
 <translation id="2704606927547763573">کاپی کیا</translation>
 <translation id="2707726405694321444">صفحہ ریفریش کریں</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}}</translation>
 <translation id="4696983787092045100">اپنے آلات پر متن بھیجیں</translation>
 <translation id="4699172675775169585">کیش کردہ تصاویر اور فائلیں</translation>
-<translation id="471759387343966120">‏جاری رکھ کر، آپ <ph name="BEGIN_TOS_LINK" />سروس کی شرائط<ph name="END_TOS_LINK" /> اور <ph name="BEGIN_PRIVACY_LINK" />رازداری کی پالیسی<ph name="END_PRIVACY_LINK" /> سے اتفاق کرتے ہیں۔\nایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور ناکامی کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_UMA_LINK" />نظم کریں<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">ترجمہ کرنے کی پیشکش</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> میں کھولیں</translation>
 <translation id="4720982865791209136">‏Chrome کو بہتر بنانے میں مدد کریں۔ <ph name="BEGIN_LINK" />سروے مکمل کریں<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="6277722725779679269">قیمت ٹریک کریں کو اپ ڈیٹ نہیں کیا جا سکا</translation>
 <translation id="6278428485366576908">تھیم</translation>
-<translation id="6292420053234093573">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Chrome OS کی اضافی سروس کی شرائط<ph name="END_LINK2" />سے اتفاق کرتے ہیں۔</translation>
 <translation id="6294610283659775533">‏آپ اسی Google اکاؤنٹ کے ساتھ سائن ان کردہ آلات کے درمیان ٹیبز بھیج سکتے ہیں</translation>
 <translation id="6297765934698848803">آپ کے آلہ کا نظم کرنے والی تنظیم نے آپ کا کیمرا آف کر دیا ہے۔</translation>
 <translation id="6301525844455696527">اپنی پڑھنے کی فہرست دیکھیں</translation>

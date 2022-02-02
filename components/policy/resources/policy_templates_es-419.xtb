@@ -481,15 +481,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1574258262373444557">No usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración para el Conector de Chrome Enterprise OnFileDownloaded</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de manera predeterminada</translation>
-<translation id="1587042984081085960">Esta política permite que un administrador especifique si una página puede enviar solicitudes XHR síncronas cuando el usuario la abandona (la cierra o pasa a otra página).
-
-      Si habilitas la política, cuando el usuario abandone las páginas, estas podrán enviar solicitudes XHR síncronas.
-
-      Si la inhabilitas o no la estableces, cuando el usuario abandone las páginas, estas no podrán enviar solicitudes XHR síncronas.
-
-      Se quitará esta política en Chrome 93.
-
-      Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">No permitir el uso del modo sin interfaz gráfica</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
 <translation id="1597684038583138808">Habilitar las definiciones de Respuestas rápidas</translation>

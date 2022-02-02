@@ -767,6 +767,7 @@
 <translation id="176587472219019965">&amp;Yangi oyna</translation>
 <translation id="1766575458646819543">Butun ekran rejimidan chiqildi</translation>
 <translation id="1766957085594317166">Parollaringizni Google hisobingizga saqlasangiz, ularni qayta kiritish kerak boʻlmaydi</translation>
+<translation id="1767043563165955993">Android ilovalarida foydalaning</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> haqida fikr-mulohaza yuboring.</translation>
 <translation id="1768278914020124551">Kirish serveriga ulanishda muammo yuz berdi. Internetga ulanish va domen nomini tekshirib, yana urining.</translation>
 <translation id="1769104665586091481">&amp;Havolani yangi oynada ochish</translation>
@@ -1103,6 +1104,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2113479184312716848">&amp;Faylni ochish...</translation>
 <translation id="2113921862428609753">Vakolat ma’lumotlariga ruxsat</translation>
 <translation id="2114326799768592691">&amp;Freymni qayta yuklash</translation>
+<translation id="2114413269775311385">Android ilovalarida shu hisob ishlatiladi. Android ilovalari uchun ruxsatlarni <ph name="LINK_BEGIN" />Ilovalar sozlamalari<ph name="LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="2114896190328250491">Rasm muallifi: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM karta joylanmagan</translation>
 <translation id="2116619964159595185">Saytlar odatda kam quvvatli mayoqlar, salomatlik yoki fitnes trekerlari, smart chiroq lampalarini sozlash yoki ularni sinxronlash uchun Bluetooth qurilmalarga ulanadi.</translation>
@@ -2945,6 +2947,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3943582379552582368">&amp;Orqaga</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="3945513714196326460">Qisqaroq nom bering</translation>
+<translation id="3947643756376959257">Chromecast TV ekranida chiqqan kirish kodini kiriting.</translation>
 <translation id="3948027458879361203">Host nomini oʻzgartirish</translation>
 <translation id="3948116654032448504">Tasvirni qidirish (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> quyidagi jildlardagi fayllarni tahrirlay oladi</translation>
@@ -3186,12 +3189,14 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4210048056321123003">Virtual mashina yuklab olinmoqda</translation>
 <translation id="421182450098841253">&amp;Xatcho‘plar panelini ko‘rsatish</translation>
 <translation id="4211851069413100178">Foydalanish va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu <ph name="BEGIN_LINK1" />parametr<ph name="END_LINK1" /> qurilma egasi tomonidan oʻrnatilgan. Qurilma egasi undagi foydalanish haqidagi va diagnostika axborotini Google serverlariga avtomatik yuborilishini tayinlashi mumkin. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar Google hisobingizda saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Android ilovlaridan foydalanishni toʻxatish</translation>
 <translation id="42126664696688958">Eksport</translation>
 <translation id="42137655013211669">Server bu manbaga kirishga ruxsat bermagan.</translation>
 <translation id="4217571870635786043">Ovoz bilan yozish</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Sozlashda xatolik yuz berdi.</translation>
 <translation id="4225397296022057997">Barcha saytlarda</translation>
+<translation id="4227605727325220318">Yangi Android telefon qoʻshish</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Bu kengaytmaga ruxsat berilmagan}other{Ayrim kengaytmalarga ruxsat berilmagan}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> qurilmasida Google Play Marketdan ilova va oʻyinlarni yuklab oling <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos chiptasini moslash</translation>
@@ -4723,6 +4728,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5862109781435984885">Stilus vositalari javonda ko‘rsatilsin</translation>
 <translation id="5862319196656206789">Ulangan qurilmalarni sozlash</translation>
 <translation id="5863445608433396414">Nosozliklarni ko‘rib chiqish funksiyalarini yoqish</translation>
+<translation id="5864147196375746035">Boshqariladigan qurilmaga translatsiya qilish</translation>
 <translation id="5864195618110239517">Trafik hisoblanadigan ulanishdan foydalanish</translation>
 <translation id="5864754048328252126">Quvvatlanayotganda kutish amali</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tez orada pauza qilinadi</translation>
@@ -5906,6 +5912,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7086672505018440886">Arxivga Chrome jurnal fayllari ham kiritilsin.</translation>
 <translation id="7088434364990739311">Yangilanish mavjudligini tekshirib bo‘lmadi (xatolik kodi: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Bu qurilma administrator tomonidan o‘chirib qo‘yilgan. Ro‘yxatdan o‘tkazish uchun qurilmani ulanishni kutish holatiga o‘tkazish kerak.</translation>
+<translation id="7090160970140261931">Sayt va ilovalarga kirish uchun <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshimcha hisoblar kiritishingiz mumkin. Android ilovalar uchun qaysi hisobdan foydalanishni boshqara olasiz.</translation>
 <translation id="7093220653036489319">Tezkor javoblar</translation>
 <translation id="7093416310351037609">Axborot himoyasi va xavfsizligi uchun tashkilotingiz barcha tegishli yuklanmalar <ph name="WEB_DRIVE" /> hisobiga saqlanishini talab qiladi.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6964,6 +6971,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8147900440966275470"><ph name="NUM" /> ta varaqda topildi</translation>
 <translation id="8148760431881541277">Kirishni cheklash</translation>
 <translation id="8149564499626272569">Telefoningizni USB kabel orqali tasdiqlang</translation>
+<translation id="815114315010033526">Oʻrniga QR koddan foydalaning</translation>
 <translation id="8151638057146502721">Sozlash</translation>
 <translation id="8154790740888707867">Fayl mavjud emas</translation>
 <translation id="8154912474061769055">Aksariyat saytlardagi funksiyalar ishalamay qolishi mumkin</translation>
@@ -6989,6 +6997,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8176332201990304395">Pushti va oq</translation>
 <translation id="8177196903785554304">Tarmoq tafsilotlari</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Varaqni yangi oynaga olish}other{Varaqlarni yangi oynaga olish}}</translation>
+<translation id="8179188928355984576">Android ilovalar uchun foydalanib boʻlmaydi</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">“<ph name="EXTENSION" />” kengaytmasi belgilangan jildlardan rasm, audio va video fayllarni o‘qishi va o‘chirishi mumkin.</translation>
 <translation id="8181215761849004992">Domenga ulana olmadi. Qurilmalarni ulash huquqi sizga berilmagan bo‘lishi mumkin,</translation>

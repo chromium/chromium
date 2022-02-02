@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">Appareil USB-C (port de gauche)</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1294807885394205587">Ce processus peut prendre quelques minutes. Démarrage du gestionnaire de conteneur en cours…</translation>
+<translation id="1296046226918222533">Un problème est survenu et la mise à niveau Linux a échoué. Vous trouverez plus d'informations sur le problème dans les journaux. Les journaux ont été enregistrés dans le fichier <ph name="LOG_FILE" /></translation>
 <translation id="1296911687402551044">Épingler l'onglet sélectionné</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Envoyer des commentaires sur <ph name="EXPERIMENT_NAME" /></translation>
@@ -2777,6 +2778,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3799128412641261490">Paramètres de Switch Access</translation>
 <translation id="3800806661949714323">Tout afficher (recommandé)</translation>
 <translation id="3800828618615365228">Conditions supplémentaires pour Google Chrome et Chrome OS</translation>
+<translation id="3802486193901166966">Cette extension ne nécessite pas d'autorisation spéciale et n'a pas d'accès de site supplémentaire</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualité de la vidéo</translation>
 <translation id="380408572480438692">L'activation de la collecte de données relatives aux performances nous permet d'améliorer le système au fil du temps. Aucune donnée n'est envoyée avant que vous envoyiez un rapport de commentaires (Alt-Maj-I) comprenant des données relatives aux performances. Vous pouvez revenir à cet écran afin de désactiver la collecte des données à tout moment.</translation>
@@ -3805,6 +3807,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestionnaire de &amp;tâches</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">Cette extension n'a pas d'accès de site supplémentaire</translation>
 <translation id="4887424188275796356">Ouvrir avec le lecteur système</translation>
 <translation id="488785315393301722">Afficher les détails</translation>
 <translation id="4890773143211625964">Afficher les options d'imprimante avancées</translation>
@@ -3978,6 +3981,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5075910247684008552">Le contenu non sécurisé est bloqué par défaut sur les sites sécurisés</translation>
 <translation id="5078638979202084724">Ajouter tous les onglets aux favoris</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
+<translation id="5079010647467150187">Ajouter un RPV intégré…</translation>
 <translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="508059534790499809">Actualiser un ticket Kerberos</translation>
 <translation id="5084230410268011727">Autoriser les sites à utiliser des capteurs de mouvement et de luminosité</translation>
@@ -5522,6 +5526,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6709133671862442373">Actualités</translation>
 <translation id="6709357832553498500">Se connecter à l'aide de <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Précédent</translation>
+<translation id="6710973041022512889">La mise à niveau a bien été effectuée. Pour obtenir des informations détaillées sur la mise à niveau, consultez les journaux enregistrés dans le fichier <ph name="LOG_FILE" /></translation>
 <translation id="6711146141291425900">Associez le compte <ph name="WEB_DRIVE" /> aux téléchargements</translation>
 <translation id="6712943853047024245">Vous avez déjà enregistré un mot de passe avec ce nom d'utilisateur pour <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Ajouter un profil professionnel</translation>

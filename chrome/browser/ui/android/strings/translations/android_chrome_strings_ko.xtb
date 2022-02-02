@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{오디오 파일 #개}other{오디오 파일 #개}}</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
 <translation id="2656405586795711023">웹 앱</translation>
-<translation id="2689830683995595741">Chrome을 사용하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />Family Link로 관리되는 Google 계정에 관한 개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2704606927547763573">복사됨</translation>
 <translation id="2707726405694321444">페이지 새로고침</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}}</translation>
 <translation id="4696983787092045100">기기로 SMS 전송</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
-<translation id="471759387343966120">계속하면 <ph name="BEGIN_TOS_LINK" />서비스 약관<ph name="END_TOS_LINK" /> 및 <ph name="BEGIN_PRIVACY_LINK" />개인정보처리방침<ph name="END_PRIVACY_LINK" />에 동의하는 것으로 간주됩니다.\n앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">번역 옵션 제공</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />에서 열기</translation>
 <translation id="4720982865791209136">Chrome을 개선하는 데 도움을 주세요. <ph name="BEGIN_LINK" />설문조사 참여하기<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="6277722725779679269">가격 추적을 업데이트할 수 없습니다</translation>
 <translation id="6278428485366576908">테마</translation>
-<translation id="6292420053234093573">Chrome을 사용하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="6294610283659775533">동일한 Google 계정으로 로그인한 기기 간에 탭을 보낼 수 있습니다.</translation>
 <translation id="6297765934698848803">내 기기를 관리하는 조직에서 카메라를 사용 중지했습니다.</translation>
 <translation id="6301525844455696527">잊지 말고 읽기 목록을 확인하세요</translation>

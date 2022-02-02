@@ -65,6 +65,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Hvis du vil holde din browsing adskilt, kan Chrome oprette en ny profil til dig selv.</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Hvis du ikke vil have, at websites eller apps tilgår dine kontooplysninger, skal du bruge gæstetilstand i Chrome-browseren. Du kan også administrere dine Google-konti under <ph name="LINK_2_BEGIN" />Indstillinger<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome kan ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2644798301485385923">Chrome OS-system</translation>
 <translation id="2652691236519827073">Åbn linket i en ny Chrome-&amp;fane</translation>

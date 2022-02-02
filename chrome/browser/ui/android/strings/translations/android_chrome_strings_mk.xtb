@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиодатотека}one{# аудиодатотека}other{# аудиодатотеки}}</translation>
 <translation id="265156376773362237">Стандардно вчитување однапред</translation>
 <translation id="2656405586795711023">Веб-апликации</translation>
-<translation id="2689830683995595741">Ако користите Chrome, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Известувањето за приватност за сметките на Google управувани со Family Link<ph name="END_LINK3" /> исто така важи.</translation>
 <translation id="2702516483241149200">Ново: споделете линк што ќе ве одведе до текстов со лизгање</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Освежи ја страницата</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Испратете SMS до вашите уреди</translation>
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
-<translation id="471759387343966120">Ако продолжите, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење<ph name="END_TOS_LINK" /> и <ph name="BEGIN_PRIVACY_LINK" />Политикатa за приватност<ph name="END_PRIVACY_LINK" />.\nЗа да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_UMA_LINK" />Управувајте<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="4720023427747327413">Отвори во <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Помогнете да се подобри Chrome. <ph name="BEGIN_LINK" />Учествувајте во анкетата<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">Настана проблем при печатење на страницата. Обидете се повторно.</translation>
 <translation id="6277722725779679269">Не може да се ажурира „Следете ја цената“</translation>
 <translation id="6278428485366576908">Тема</translation>
-<translation id="6292420053234093573">Ако користите Chrome, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Може да испраќате картички меѓу уредите што се најавени со истата сметка на Google</translation>
 <translation id="6297765934698848803">Организацијата што управува со вашиот уред ви ја исклучила камерата.</translation>
 <translation id="6301525844455696527">Надоместете за пропуштеното од списокот за читање</translation>

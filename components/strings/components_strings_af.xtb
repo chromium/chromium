@@ -1977,6 +1977,7 @@ Bykomende besonderhede:
 <translation id="7334320624316649418">Herdoen herrangskikking</translation>
 <translation id="7335157162773372339">Kan vra om jou kamera te gebruik</translation>
 <translation id="7337248890521463931">Wys meer reëls</translation>
+<translation id="7337418456231055214">Is virtuelekaartnommer nie ingevul nie? Klik kaartbesonderhede om te kopieer. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nie op jou platform beskikbaar nie.</translation>
 <translation id="733923710415886693">Hierdie bediener se sertifikaat is nie via sertifikaatdeursigtigheid openbaar gemaak nie.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2439,6 +2440,7 @@ Bykomende besonderhede:
 <translation id="883848425547221593">Ander boekmerke</translation>
 <translation id="884264119367021077">Versendingsadres</translation>
 <translation id="884923133447025588">Geen herroepingmeganisme gevind nie.</translation>
+<translation id="8849262850971482943">Gebruik jou virtuele kaart vir bykomende sekuriteit</translation>
 <translation id="885730110891505394">Deling met Google</translation>
 <translation id="8858065207712248076">Chrome beveel aan dat jy jou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
 <translation id="885906927438988819">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Windows Network Diagnostics probeer gebruik<ph name="END_LINK" />.</translation>

@@ -477,15 +477,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1574258262373444557">Não usar <ph name="AES_KL_NAME" /> como o algoritmo para a criptografia de armazenamento do usuário</translation>
 <translation id="1575015449587326319">Política de configuração para o conector OnFileDownloaded do Chrome Enterprise</translation>
 <translation id="1583248206450240930">Usar o <ph name="PRODUCT_FRAME_NAME" /> por padrão</translation>
-<translation id="1587042984081085960">Esta política permite que um administrador especifique que uma página pode enviar solicitações XHR síncronas durante a dispensa de páginas.
-
-      Quando a política está ativada, as páginas podem enviar essas solicitações.
-
-      Quando ela está desativada ou não é definida, as páginas não podem enviar as solicitações.
-
-      Esta política será removida no Chrome 93.
-
-      Consulte https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Não permitir o uso do modo headless</translation>
 <translation id="1588240398285670601">Configurações do navegador</translation>
 <translation id="1597684038583138808">Ativar a definição das Respostas rápidas</translation>

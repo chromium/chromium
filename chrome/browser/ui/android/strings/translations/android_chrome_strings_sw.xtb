@@ -290,7 +290,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{Faili # ya sauti}other{Faili # za sauti}}</translation>
 <translation id="265156376773362237">Upakiaji mapema wa kawaida</translation>
 <translation id="2656405586795711023">Programu za wavuti</translation>
-<translation id="2689830683995595741">Kwa kutumia Chrome, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Ilani ya Faragha ya Akaunti za Google Zinazodhibitiwa na Family Link<ph name="END_LINK3" /> inatumika pia.</translation>
 <translation id="2702516483241149200">Mpya: shiriki kiungo kinachoenda kwenye maandishi haya</translation>
 <translation id="2704606927547763573">Imenakiliwa</translation>
 <translation id="2707726405694321444">Onyesha upya ukurasa</translation>
@@ -626,7 +625,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> zaidi}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> zaidi}}</translation>
 <translation id="4696983787092045100">Tuma maandishi kwenye Vifaa Vyako</translation>
 <translation id="4699172675775169585">Picha na faili zilizoakibishwa</translation>
-<translation id="471759387343966120">Kwa kuendelea, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti<ph name="END_TOS_LINK" /> na <ph name="BEGIN_PRIVACY_LINK" />Sera ya\u00A0Faragha<ph name="END_PRIVACY_LINK" />.\nIli kusaidia kuboresha programu, Chrome hutumia Google data ya matumizi na ripoti za kuacha kufanya kazi. <ph name="BEGIN_UMA_LINK" />Dhibiti<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Jitolee kutafsiri</translation>
 <translation id="4720023427747327413">Fungua katika <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Tusaidie kuboresha Chrome.<ph name="BEGIN_LINK" />Shiriki katika utafiti<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6277522088822131679">Kulikuwa na tatizo katika kuchapisha ukurasa. Tafadhali jaribu tena.</translation>
 <translation id="6277722725779679269">Imeshindwa kusasisha bei Unayofuatilia</translation>
 <translation id="6278428485366576908">Mandhari</translation>
-<translation id="6292420053234093573">Kwa kutumia Chrome, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Unaweza kutuma vichupo kati ya vifaa ulivyotumia kuingia katika Akaunti moja ya Google</translation>
 <translation id="6297765934698848803">Shirika linalosimamia kifaa chako limezima kamera yako.</translation>
 <translation id="6301525844455696527">Fuatilia orodha yako ya kusoma</translation>

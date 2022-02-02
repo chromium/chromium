@@ -769,6 +769,7 @@
 <translation id="176587472219019965">&amp;Nuova finestra</translation>
 <translation id="1766575458646819543">Modalità a schermo intero disattivata</translation>
 <translation id="1766957085594317166">Salva le password in sicurezza nel tuo Account Google per non doverle più digitare</translation>
+<translation id="1767043563165955993">Usa con app per Android</translation>
 <translation id="1768212860412467516">Invia feedback su <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Spiacenti. Si è verificato un problema di comunicazione con il server di accesso. Controlla la connessione di rete e il nome di dominio, poi riprova.</translation>
 <translation id="1769104665586091481">Apri link in un'altra &amp;finestra</translation>
@@ -1104,6 +1105,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2113479184312716848">Apri &amp;file...</translation>
 <translation id="2113921862428609753">Accesso alle informazioni sull'autorità</translation>
 <translation id="2114326799768592691">Ricarica &amp;frame</translation>
+<translation id="2114413269775311385">Usa questo account con le app per Android. Puoi gestire le autorizzazioni relative alle app per Android nelle <ph name="LINK_BEGIN" />Impostazioni app<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Foto di <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nessuna scheda SIM inserita</translation>
 <translation id="2116619964159595185">Solitamente i siti si connettono ai dispositivi Bluetooth per funzionalità quali la configurazione o la sincronizzazione di beacon a bassa energia, di tracker per il monitoraggio dell'attività fisica o dello stato di salute oppure di lampadine smart</translation>
@@ -2940,6 +2942,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3943582379552582368">&amp;Indietro</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3945513714196326460">Prova con un nome più corto</translation>
+<translation id="3947643756376959257">Inserisci il codice di accesso mostrato su Chromecast o sulla TV.</translation>
 <translation id="3948027458879361203">Cambia nome host</translation>
 <translation id="3948116654032448504">&amp;Cerca l'immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> può modificare i file nelle seguenti cartelle</translation>
@@ -3181,12 +3184,14 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4210048056321123003">Download della macchina virtuale…</translation>
 <translation id="421182450098841253">&amp;Mostra barra dei Preferiti</translation>
 <translation id="4211851069413100178">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati di diagnostica e utilizzo relativi a questo dispositivo. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google. <ph name="BEGIN_LINK2" />Ulteriori informazioni<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Non usare più con app per Android</translation>
 <translation id="42126664696688958">Esporta</translation>
 <translation id="42137655013211669">L'accesso a questa risorsa è vietato dal server.</translation>
 <translation id="4217571870635786043">Dettatura</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Si è verificato un errore durante l'attivazione.</translation>
 <translation id="4225397296022057997">Su tutti i siti</translation>
+<translation id="4227605727325220318">Aggiungi un nuovo telefono Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Questa estensione non è consentita}one{Questa estensione non è consentita}other{Alcune estensioni non sono consentite}}</translation>
 <translation id="4231095370974836764">Installa app e giochi da Google Play su <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configura Kerberos</translation>
@@ -4717,6 +4722,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5862109781435984885">Mostra strumenti stilo nella barra delle app</translation>
 <translation id="5862319196656206789">Configura i dispositivi connessi</translation>
 <translation id="5863445608433396414">Attiva funzioni di debug</translation>
+<translation id="5864147196375746035">Trasmetti a un dispositivo gestito</translation>
 <translation id="5864195618110239517">Usa connessione a consumo</translation>
 <translation id="5864754048328252126">Azione stabilita in caso di inattività durante la ricarica</translation>
 <translation id="5865508026715185451">L'app <ph name="APP_NAME" /> verrà presto messa in pausa</translation>
@@ -5896,6 +5902,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7086672505018440886">Includi i file di log di Chrome nell'archivio.</translation>
 <translation id="7088434364990739311">Impossibile iniziare controllo disponibilità aggiornamenti (codice di errore <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">L'amministratore ha attivato lo stato Deprovisioning effettuato per questo dispositivo. Per poter registrare il dispositivo, chiedi all'amministratore di attivare lo stato In attesa.</translation>
+<translation id="7090160970140261931">Puoi aggiungere a <ph name="DEVICE_TYPE" /> altri account da usare con siti web e app per Android. Puoi anche stabilire quali account usare con le app per Android.</translation>
 <translation id="7093220653036489319">Risposte rapide</translation>
 <translation id="7093416310351037609">Per la sicurezza e la protezione dei dati, la tua organizzazione richiede il salvataggio di tutti i download idonei nell'account <ph name="WEB_DRIVE" /> dell'organizzazione.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6954,6 +6961,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8147900440966275470">È stata trovata <ph name="NUM" /> scheda</translation>
 <translation id="8148760431881541277">Limitare l'accesso</translation>
 <translation id="8149564499626272569">Verifica la tua identità tramite telefono con cavo USB</translation>
+<translation id="815114315010033526">Usa il codice QR</translation>
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154790740888707867">Nessun file</translation>
 <translation id="8154912474061769055">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
@@ -6979,6 +6987,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8176332201990304395">Rosa e bianco</translation>
 <translation id="8177196903785554304">Dettagli di rete</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Sposta scheda in una nuova finestra}one{Sposta schede in una nuova finestra}other{Sposta schede in una nuova finestra}}</translation>
+<translation id="8179188928355984576">Non usato con app per Android</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8180786512391440389">L'estensione "<ph name="EXTENSION" />" può leggere ed eliminare file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="8181215761849004992">Impossibile aggiungere al dominio. Controlla il tuo account per verificare se hai privilegi sufficienti per aggiungere dispositivi.</translation>

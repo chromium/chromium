@@ -1977,6 +1977,7 @@ Detalii suplimentare:
 <translation id="7334320624316649418">&amp;Repetați reordonarea</translation>
 <translation id="7335157162773372339">Poate solicita permisiunea de a folosi camera</translation>
 <translation id="7337248890521463931">Afișează mai multe rânduri</translation>
+<translation id="7337418456231055214">Numărul de card virtual nu este completat? Dă clic pe detaliile cardului pentru a le copia. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nu este disponibil pe platforma ta.</translation>
 <translation id="733923710415886693">Certificatul serverului nu a fost dezvăluit folosind Transparența certificatului.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2440,6 +2441,7 @@ Detalii suplimentare:
 <translation id="883848425547221593">Alte marcaje</translation>
 <translation id="884264119367021077">Adresa de expediere</translation>
 <translation id="884923133447025588">Nu a fost găsit niciun mecanism de revocare.</translation>
+<translation id="8849262850971482943">Folosește cardul virtual pentru mai multă securitate</translation>
 <translation id="885730110891505394">Permiterea accesului pentru Google</translation>
 <translation id="8858065207712248076">Chrome îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="885906927438988819">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei Windows<ph name="END_LINK" />.</translation>

@@ -290,7 +290,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# hangfájl}other{# hangfájl}}</translation>
 <translation id="265156376773362237">Normál előtöltés</translation>
 <translation id="2656405586795711023">Webalkalmazások</translation>
-<translation id="2689830683995595741">A Chrome használatával elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Family Link szolgáltatással kezelt Google-fiókokra vonatkozó adatvédelmi közlemény<ph name="END_LINK3" /> is érvényben van.</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
 <translation id="2704606927547763573">Másolt</translation>
 <translation id="2707726405694321444">Oldal frissítése</translation>
@@ -626,7 +625,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">SMS küldése az eszközeire</translation>
 <translation id="4699172675775169585">A gyorsítótárban szereplő képek és fájlok</translation>
-<translation id="471759387343966120">A folytatással Ön elfogadja az <ph name="BEGIN_TOS_LINK" />Általános Szerződési Feltételeket<ph name="END_TOS_LINK" /> és az <ph name="BEGIN_PRIVACY_LINK" />Adatvédelmi\u00A0irányelveket<ph name="END_PRIVACY_LINK" />.\nAz alkalmazás továbbfejlesztése érdekében a Chrome használati és hibaadatokat küld a Google-nak. <ph name="BEGIN_UMA_LINK" />Kezelés<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Fordítás felajánlása</translation>
 <translation id="4720023427747327413">Megnyitás itt: <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Segítsen a Chrome fejlesztésében. <ph name="BEGIN_LINK" />Töltse ki ezt a felmérést.<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
 <translation id="6277722725779679269">Nem sikerült frissíteni a nyomon követett árat.</translation>
 <translation id="6278428485366576908">Téma</translation>
-<translation id="6292420053234093573">A Chrome használatával elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Átküldheti a lapokat ugyanazzal a Google-fiókkal bejelentkezett eszközei között</translation>
 <translation id="6297765934698848803">Az eszközét kezelő szervezet kikapcsolta a kamerát.</translation>
 <translation id="6301525844455696527">Ne feledkezzen meg az olvasási listájáról</translation>
@@ -1174,6 +1171,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7663313374500954251">Ezt a böngészőt <ph name="PARENT_NAME" /> kezeli.</translation>
 <translation id="7665369617277396874">Fiók hozzáadása</translation>
 <translation id="766587987807204883">Itt jelennek meg a cikkek, amelyeket offline állapotban is olvashat</translation>
+<translation id="768232549260819724">GIF vágólapra másolva</translation>
 <translation id="7682724950699840886">Próbálkozzon a következő tippekkel: Győződjön meg arról, hogy elegendő tárhely áll rendelkezésre az eszközön, majd próbálja újra az exportálást.</translation>
 <translation id="768618399695552958">Az Ön által felkeresett oldalak némelyikét előre betölti a rendszer. Az oldalakat előre betöltheti a rendszer a Google szerverein keresztül, ha Google-webhellyel vannak összekapcsolva.</translation>
 <translation id="7698359219371678927">E-mail létrehozása a(z) <ph name="APP_NAME" /> alkalmazásban</translation>
@@ -1352,6 +1350,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8570677896027847510">A fájlt nem lehet biztonságosan letölteni</translation>
 <translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
 <translation id="8572344201470131220">Kép vágólapra másolva</translation>
+<translation id="8580884231102452214">GIF másolása</translation>
 <translation id="8583805026567836021">Fiókadatok törlése</translation>
 <translation id="859046281437143747">Az ár követéséhez nyomja meg a További műveletek gombot</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>

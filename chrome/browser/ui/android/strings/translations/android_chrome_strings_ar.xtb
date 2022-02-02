@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{ملف صوتي واحد (#)}zero{# ملف صوتي}two{ملفان صوتيان (#)}few{# ملفات صوتية}many{# ملفًا صوتيًا}other{# ملف صوتي}}</translation>
 <translation id="265156376773362237">التحميل المُسبق العادي</translation>
 <translation id="2656405586795711023">تطبيقات الويب</translation>
-<translation id="2689830683995595741">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome و"نظام التشغيل Chrome"<ph name="END_LINK2" />. وينطبق ذلك أيضًا على <ph name="BEGIN_LINK3" />إشعار الخصوصية لحسابات Google المُدارة من خلال Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">ميزة جديدة: يمكنك مشاركة رابط يؤدي إلى هذا النص.</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
 <translation id="2707726405694321444">إعادة تحميل الصفحة</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخيار إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}zero{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخياران إضافيان (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}few{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات إضافية}many{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا إضافيًا}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}}</translation>
 <translation id="4696983787092045100">إرسال رسالة نصية إلى أجهزتك</translation>
 <translation id="4699172675775169585">الصور والملفات المخزنة مؤقتًا</translation>
-<translation id="471759387343966120">‏تعني المتابعة أنّك توافق على <ph name="BEGIN_TOS_LINK" />بنود الخدمة<ph name="END_TOS_LINK" /> و <ph name="BEGIN_PRIVACY_LINK" />سياسة الخصوصية<ph name="END_PRIVACY_LINK" />.\nللمساعدة في تحسين التطبيق، يرسل Chrome بيانات الاستخدام والأعطال إلى Google. <ph name="BEGIN_UMA_LINK" />إدارة<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">عرض ترجمة</translation>
 <translation id="4720023427747327413">الفتح في <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">‏المساعدة في تحسين Chrome. <ph name="BEGIN_LINK" />المشاركة في الاستطلاع<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">حدثت مشكلة أثناء طباعة الصفحة. يُرجى إعادة المحاولة.</translation>
 <translation id="6277722725779679269">تعذّر تحديث ميزة تتبُّع السعر</translation>
 <translation id="6278428485366576908">مظهر</translation>
-<translation id="6292420053234093573">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome و"نظام التشغيل Chrome"<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">‏يمكنك إرسال علامات التبويب من وإلى الأجهزة التي تم من خلالها تسجيل الدخول إلى حساب Google نفسه.</translation>
 <translation id="6297765934698848803">إن المؤسسة التي تدير الجهاز أوقفت الكاميرا.</translation>
 <translation id="6301525844455696527">متابعة قراءة ما فاتك في قائمة القراءة</translation>

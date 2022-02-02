@@ -290,7 +290,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio fayl}other{# Audio fayl}}</translation>
 <translation id="265156376773362237">Standart əvvəlcədən yükləmə</translation>
 <translation id="2656405586795711023">Veb tətbiqlər</translation>
-<translation id="2689830683995595741">Chrome'u istifadə etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və Chrome ƏS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız. <ph name="BEGIN_LINK3" />Family Link ilə İdarə Edilən Google Hesabları üçün Məxfilik Bildirişi<ph name="END_LINK3" /> də tətbiq edilir.</translation>
 <translation id="2702516483241149200">Yeni: bu mətnə keçidi paylaşın</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2707726405694321444">Səhifəni yeniləyin</translation>
@@ -626,7 +625,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> digəri}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> digəri}}</translation>
 <translation id="4696983787092045100">Mətni Cihazlarınıza göndərin</translation>
 <translation id="4699172675775169585">Keşlənmiş şəkillər və fayllar</translation>
-<translation id="471759387343966120">Davam etməklə, <ph name="BEGIN_TOS_LINK" />Xidmət Şərtləri<ph name="END_TOS_LINK" /> və <ph name="BEGIN_PRIVACY_LINK" />Məxfilik\u00A0Siyasəti<ph name="END_PRIVACY_LINK" /> ilə razılaşırsınız.\nTətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_UMA_LINK" />İdarə edin<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tərcümə təklif edin</translation>
 <translation id="4720023427747327413">Aç <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Chrome'u təkmilləşdirin. <ph name="BEGIN_LINK" />Sorğuya qatılın<ph name="END_LINK" /></translation>
@@ -907,7 +905,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="6277522088822131679">Səhifə çap olunarkən problem oldu. Yenidən cəhd edin.</translation>
 <translation id="6277722725779679269">Qiymətin izlənməsini güncəlləmək mümkün olmadı</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6292420053234093573">Chrome'u istifadə etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və Chrome ƏS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız.</translation>
 <translation id="6294610283659775533">Eyni Google Hesabı ilə daxil olunan cihazlar arasında tablar göndərə bilərsiniz</translation>
 <translation id="6297765934698848803">Cihazınızı idarə edən təşkilat kameranızı deaktiv edib.</translation>
 <translation id="6301525844455696527">Oxuma siyahınıza çatın</translation>

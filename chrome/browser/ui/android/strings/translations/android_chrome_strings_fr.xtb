@@ -290,7 +290,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fichier audio}one{# fichier audio}other{# fichiers audio}}</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
 <translation id="2656405586795711023">Applications Web</translation>
-<translation id="2689830683995595741">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />. L'<ph name="BEGIN_LINK3" />Avis de confidentialité relatif aux comptes Google gérés avec Family Link<ph name="END_LINK3" /> s'applique également.</translation>
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
@@ -626,7 +625,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}}</translation>
 <translation id="4696983787092045100">Envoyer le SMS à vos appareils</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
-<translation id="471759387343966120">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" />.\nPour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Proposer de traduire</translation>
 <translation id="4720023427747327413">Ouvrir dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Aidez-nous à améliorer Chrome. <ph name="BEGIN_LINK" />Répondez à notre enquête<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6277722725779679269">Impossible de mettre à jour le suivi du prix</translation>
 <translation id="6278428485366576908">Thème</translation>
-<translation id="6292420053234093573">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Vous pouvez envoyer des onglets entre appareils connectés au même compte Google</translation>
 <translation id="6297765934698848803">L'organisation qui gère votre appareil a désactivé la caméra.</translation>
 <translation id="6301525844455696527">Rattrapez votre retard sur votre liste de lecture</translation>

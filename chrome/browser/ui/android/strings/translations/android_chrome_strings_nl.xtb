@@ -290,7 +290,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audiobestand}other{# audiobestanden}}</translation>
 <translation id="265156376773362237">Standaard vooraf laden</translation>
 <translation id="2656405586795711023">Web-apps</translation>
-<translation id="2689830683995595741">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK1" />servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />. Ook is de <ph name="BEGIN_LINK3" />privacyverklaring voor Google-accounts die worden beheerd met Family Link<ph name="END_LINK3" /> van toepassing.</translation>
 <translation id="2702516483241149200">Nieuw: deel een link die rechtstreeks naar deze tekst scrollt</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="2707726405694321444">Pagina vernieuwen</translation>
@@ -626,7 +625,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}}</translation>
 <translation id="4696983787092045100">Tekst naar je apparaten verzenden</translation>
 <translation id="4699172675775169585">Gecachte afbeeldingen en bestanden</translation>
-<translation id="471759387343966120">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden<ph name="END_TOS_LINK" /> en het <ph name="BEGIN_PRIVACY_LINK" />Privacybeleid<ph name="END_PRIVACY_LINK" />.\nChrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_UMA_LINK" />Beheren<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Aanbieden om te vertalen</translation>
 <translation id="4720023427747327413">Openen in <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Help bij het verbeteren van Chrome. <ph name="BEGIN_LINK" />Enquête invullen<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6277522088822131679">Er is een fout opgetreden bij het afdrukken van de pagina. Probeer het opnieuw.</translation>
 <translation id="6277722725779679269">Kan Prijs volgen niet updaten</translation>
 <translation id="6278428485366576908">Thema</translation>
-<translation id="6292420053234093573">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK1" />servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Je kunt tabbladen sturen tussen apparaten waarop je bent ingelogd met hetzelfde Google-account.</translation>
 <translation id="6297765934698848803">De organisatie die je apparaat beheert, heeft de camera uitgezet.</translation>
 <translation id="6301525844455696527">Lees wat van je leeslijst</translation>

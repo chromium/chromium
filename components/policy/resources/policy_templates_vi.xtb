@@ -481,15 +481,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1574258262373444557">Không sử dụng <ph name="AES_KL_NAME" /> làm thuật toán mã hoá để mã hoá bộ nhớ của người dùng</translation>
 <translation id="1575015449587326319">Chính sách cấu hình dành cho Trình kết nối OnFileDownloaded của Chrome Enterprise</translation>
 <translation id="1583248206450240930">Sử dụng <ph name="PRODUCT_FRAME_NAME" /> theo mặc định</translation>
-<translation id="1587042984081085960">Chính sách này cho phép quản trị viên chỉ định rằng một trang có thể gửi các yêu cầu XHR đồng bộ trong khi đóng trang.
-
-      Khi bạn đặt chính sách này thành bật, các trang sẽ được phép gửi các yêu cầu XHR đồng bộ trong khi đóng trang.
-
-      Khi bạn không đặt chính sách này hoặc đặt thành tắt, các trang sẽ không được phép gửi các yêu cầu XHR đồng bộ trong khi đóng trang.
-
-      Chính sách này sẽ bị loại bỏ trong Chrome 93.
-
-      Vui lòng xem tại https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Không cho phép sử dụng Chế độ không có giao diện người dùng</translation>
 <translation id="1588240398285670601">Cài đặt của trình duyệt</translation>
 <translation id="1597684038583138808">Bật tính năng tra định nghĩa của Thông tin nhanh</translation>

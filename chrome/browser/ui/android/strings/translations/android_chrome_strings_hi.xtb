@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडियो फ़ाइल}one{# ऑडियो फ़ाइलें}other{# ऑडियो फ़ाइलें}}</translation>
 <translation id="265156376773362237">पहले से लोड करने की स्टैंडर्ड सुविधा</translation>
 <translation id="2656405586795711023">वेब ऐप्लिकेशन</translation>
-<translation id="2689830683995595741">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, आप <ph name="BEGIN_LINK3" />Family Link से प्रबंधित होने वाले Google खातों के लिए निजता सूचना<ph name="END_LINK3" /> से भी सहमत हैं.</translation>
 <translation id="2702516483241149200">नया: इस टेक्स्ट तक स्क्रोल करने वाला लिंक शेयर करें</translation>
 <translation id="2704606927547763573">कॉपी किया गया</translation>
 <translation id="2707726405694321444">पेज रीफ्रेश करें</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
 <translation id="4696983787092045100">अपने डिवाइस पर मैसेज भेजें</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
-<translation id="471759387343966120">जारी रखने का मतलब है कि आप Google की <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" />और <ph name="BEGIN_PRIVACY_LINK" />निजता\u00A0नीति<ph name="END_PRIVACY_LINK" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> में खोलें</translation>
 <translation id="4720982865791209136">Chrome को बेहतर बनाने में सहायता करें. <ph name="BEGIN_LINK" />सर्वे में भाग लें<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">पेज को प्रिंट करने में समस्या थी. कृपया फिर से प्रयास करें.</translation>
 <translation id="6277722725779679269">ट्रैक की गई कीमत अपडेट नहीं हो सकी</translation>
 <translation id="6278428485366576908">थीम</translation>
-<translation id="6292420053234093573">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं.</translation>
 <translation id="6294610283659775533">आप उन डिवाइसों के बीच टैब शेयर कर सकते हैं जिन पर एक ही Google खाते से साइन इन किया हो</translation>
 <translation id="6297765934698848803">आपके डिवाइस काे प्रबंधित करने वाले संगठन ने आपका कैमरा बंद कर दिया है.</translation>
 <translation id="6301525844455696527">पढ़ने की चीज़ों की सूची में आपके लिए बहुत कुछ नया है</translation>

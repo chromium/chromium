@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडिओ फाइल}other{# ऑडिओ फाइल}}</translation>
 <translation id="265156376773362237">साधारण प्रीलोडिंग</translation>
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
-<translation id="2689830683995595741">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />Family Link सोबत व्यवस्थापित केलेली Google खाती यांसाठी गोपनीयतेची सूचना<ph name="END_LINK3" /> देखील लागू होते.</translation>
 <translation id="2702516483241149200">नवीन: या मजकुरापर्यंत स्क्रोल करणारी लिंक शेअर करा</translation>
 <translation id="2704606927547763573">कॉपी केले</translation>
 <translation id="2707726405694321444">पृष्ठ रिफ्रेश करा</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अधिक}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अधिक}}</translation>
 <translation id="4696983787092045100">तुमच्या डिव्हाइसवर एसएमएस पाठवा</translation>
 <translation id="4699172675775169585">कॅशे   इमेज आणि फाइल</translation>
-<translation id="471759387343966120">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_TOS_LINK" />सेवा अटी<ph name="END_TOS_LINK" /> आणि <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता\u00A0धोरण<ph name="END_PRIVACY_LINK" />यांना सहमती दर्शवता.\nअ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_UMA_LINK" />व्यवस्थापित करा<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">भाषांतर करण्यास ऑफर करा</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> मध्‍ये उघडा</translation>
 <translation id="4720982865791209136">Chrome सुधारण्यात मदत करा. <ph name="BEGIN_LINK" />सर्वेक्षण करा<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">पृष्‍ठ प्रिंट करण्‍यात एक समस्‍या होती. कृपया पुन्‍हा प्रयत्न करा.</translation>
 <translation id="6277722725779679269">माग ठेवलेली किंमत अपडेट करता आली नाही</translation>
 <translation id="6278428485366576908">थीम</translation>
-<translation id="6292420053234093573">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
 <translation id="6294610283659775533">तुम्ही हेच Google खाते वापरून साइन केलेल्या डिव्हाइस दरम्यान टॅब पाठवू शकता</translation>
 <translation id="6297765934698848803">तुमचे डिव्हाइस व्यवस्थापित करणार्‍या संस्थेने तुमचा कॅमेरा बंद केला आहे.</translation>
 <translation id="6301525844455696527">वाचन सूचीसह, तुमच्या राहून गेलेल्या वाचनाची भरपाई करा</translation>

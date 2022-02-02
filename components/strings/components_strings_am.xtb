@@ -1969,6 +1969,7 @@
 <translation id="7334320624316649418">&amp;ማስተካከልን ድገም</translation>
 <translation id="7335157162773372339">ካሜራዎን ለመጠቀም መጠየቅ ይችላሉ</translation>
 <translation id="7337248890521463931">ተጨማሪ መስመሮችን አሳይ</translation>
+<translation id="7337418456231055214">የምናባዊ ካርድ ቁጥር አልተሞላም? የሚቀዱ የካርድ ዝርዝሮችን ጠቅ ያድርጉ። <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">በእርስዎ የመሣሪያ ስርዓት ላይ አይገኝም።</translation>
 <translation id="733923710415886693">የአገልጋዩ የእውቅና ማረጋገጫ በእውቅና ማረጋገጫ ግልጽነት በኩል አልተገለጸም።</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2432,6 +2433,7 @@
 <translation id="883848425547221593">ሌላ እልባቶች</translation>
 <translation id="884264119367021077">የመላኪያ አድራሻ</translation>
 <translation id="884923133447025588">ምንም የመሻሪያ ዘዴ አልተገኘም።</translation>
+<translation id="8849262850971482943">ለተጨማሪ ደህንነት የእርስዎን ምናባዊ ካርድ ይጠቀሙ</translation>
 <translation id="885730110891505394">ከGoogle ጋር ማጋራት</translation>
 <translation id="8858065207712248076">Chrome የእርስዎን የ<ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ይለፍ ቃል በሌሎች ጣቢያዎች ላይ ዳግም ከተጠቀሙበት እንደገና እንዲያዋቅሩት ይመክራል።</translation>
 <translation id="885906927438988819">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የWindows አውታረ መረብ ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>

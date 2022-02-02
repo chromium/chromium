@@ -65,6 +65,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chrome-profilba. Ha szeretné elkülöníteni böngészési tevékenységeit, a Chrome saját profilt hozhat létre Önnek.</translation>
 <translation id="2580411288591421699">Nem lehet ugyanazt a Google Chrome verziót telepíteni, amely jelenleg is fut. Zárja be a Google Chrome-ot, és próbálja újra.</translation>
 <translation id="2586406160782125153">Ezzel az eszközön lévő összes böngészési adat törlődik. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra is érvényesek lehetnek. Ha nem szeretné, hogy webhelyek és alkalmazások hozzáférjenek a fiókadataihoz, használja a vendég módot a Chrome böngészőben. A <ph name="LINK_2_BEGIN" />Beállításokban<ph name="LINK_2_END" /> is kezelheti Google-fiókjait.</translation>
 <translation id="2622559029861875898">A Chrome nem tud frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2644798301485385923">Chrome OS rendszer</translation>
 <translation id="2652691236519827073">Link megnyi&amp;tása új Chrome-lapon</translation>

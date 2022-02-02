@@ -1976,6 +1976,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7334320624316649418">&amp;Omorganiser likevel</translation>
 <translation id="7335157162773372339">Kan be om å få bruke kameraet ditt</translation>
 <translation id="7337248890521463931">Vis flere linjer</translation>
+<translation id="7337418456231055214">Ble ikke det virtuelle kortnummeret fylt ut? Klikk på kortopplysningene for å kopiere dem. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Ikke tilgjengelig på plattformen din.</translation>
 <translation id="733923710415886693">Tjenerens sertifikat er ikke vist i henhold til regelen for sertifikatåpenhet.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2438,6 +2439,7 @@ Mer informasjon:
 <translation id="883848425547221593">Andre bokmerker</translation>
 <translation id="884264119367021077">Leveringsadresse</translation>
 <translation id="884923133447025588">Finner ingen tilbakekallingsmekanisme.</translation>
+<translation id="8849262850971482943">Bruk det virtuelle kortet ditt for ekstra sikkerhet</translation>
 <translation id="885730110891505394">Deling med Google</translation>
 <translation id="8858065207712248076">Chrome anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="885906927438988819">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Windows Nettverksdiagnose<ph name="END_LINK" />.</translation>

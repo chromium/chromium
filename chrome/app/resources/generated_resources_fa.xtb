@@ -777,6 +777,7 @@
 <translation id="176587472219019965">پنجره &amp;جدید</translation>
 <translation id="1766575458646819543">از حالت تمام‌صفحه خارج شد</translation>
 <translation id="1766957085594317166">‏گذرواژه‌ها به‌طور ایمن در حساب Google ذخیره می‌شود و هرگز لازم نیست آن‌ها را دوباره تایپ کنید</translation>
+<translation id="1767043563165955993">‏در برنامه‌های Android استفاده شود</translation>
 <translation id="1768212860412467516">برای <ph name="EXPERIMENT_NAME" />، بازخورد ارسال کنید.</translation>
 <translation id="1768278914020124551">وای!  هنگام برقراری ارتباط با سرور ورود به سیستم مشکلی پیش آمد. لطفاً اتصال شبکه و نام دامنه را بررسی کنید، سپس دوباره امتحان کنید.</translation>
 <translation id="1769104665586091481">باز کردن پیوند در &amp;پنجره جدید</translation>
@@ -1112,6 +1113,7 @@
 <translation id="2113479184312716848">باز کردن &amp;فایل...</translation>
 <translation id="2113921862428609753">دسترسی به اطلاعات اعتبار</translation>
 <translation id="2114326799768592691">تازه‌سازی قاب</translation>
+<translation id="2114413269775311385">‏از این حساب در برنامه‌های Android استفاده شود. می‌توانید اجازه‌های برنامه‌های Android را در <ph name="LINK_BEGIN" />تنظیمات برنامه‌ها<ph name="LINK_END" /> کنترل کنید.</translation>
 <translation id="2114896190328250491">عکس از <ph name="NAME" /></translation>
 <translation id="2114995631896158695">سیم کارتی وارد نشده است</translation>
 <translation id="2116619964159595185">سایت‌ها معمولاً برای ارائه ویژگی‌هایی مثل راه‌اندازی یا همگام‌سازی نشان‌فرست کم‌مصرف، ردیاب سلامت یا تناسب اندام، یا چراغ حبابی هوشمند، به دستگاه‌های بلوتوث متصل می‌شوند</translation>
@@ -1904,6 +1906,7 @@
 <translation id="287205682142673348">بازارسال درگاه</translation>
 <translation id="287286579981869940">افزودن <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
+<translation id="2873995907777332853">نمایش جزئیات مربوط به مسدود کردن همه کوکی‌ها</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
 <translation id="2875698561019555027">‏(صفحه‌های خطای Chrome)</translation>
 <translation id="2876336351874743617">انگشت ۲</translation>
@@ -2207,6 +2210,7 @@
 <translation id="3189187154924005138">نشانگر بزرگ</translation>
 <translation id="3190558889382726167">گذرواژه ذخیره شد</translation>
 <translation id="3192947282887913208">فایل‌های صوتی</translation>
+<translation id="3194786596445804250">نمایش جزئیات مربوط به مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="3197453258332670132">با کلیک راست یا فشار طولانی، اطلاعات مربوط به انتخاب نوشتار نمایش داده شود</translation>
 <translation id="3199127022143353223">سرورها</translation>
 <translation id="3200061262156232574">در سبد خرید</translation>
@@ -2951,6 +2955,7 @@
 <translation id="3943582379552582368">&amp;برگشت</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3945513714196326460">نام کوتاه‌تری را امتحان کنید</translation>
+<translation id="3947643756376959257">‏کد دسترسی نمایش داده‌شده در Chromecast یا تلویزیون را وارد کنید.</translation>
 <translation id="3948027458879361203">تغییر نام میزبان</translation>
 <translation id="3948116654032448504">&amp;جستجوی <ph name="SEARCH_ENGINE" /> برای تصویر</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> می‌تواند فایل‌های این پوشه‌ها را ویرایش کند:</translation>
@@ -3192,12 +3197,14 @@
 <translation id="4210048056321123003">درحال بارگیری دستگاه مجازی</translation>
 <translation id="421182450098841253">&amp;نمایش نوار نشانک‌ها</translation>
 <translation id="4211851069413100178">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص عیب و داده‌های استفاده از دستگاه و برنامه به Google، به بهبود تجربه استفاده از Android کمک کنید. این داده‌ها به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند برنامه‌نویس‌های Android) کمک می‌کند. این <ph name="BEGIN_LINK1" />تنظیم<ph name="END_LINK1" /> توسط مالک اعمال می‌شود. ممکن است مالک انتخاب کند داده‌های استفاده و عیب‌یابی این دستگاه به Google ارسال شود. اگر تنظیم «فعالیت وب و برنامه» تکمیلی روشن باشد، ممکن است این داده‌ها در حساب Google شما ذخیره شود. <ph name="BEGIN_LINK2" />بیشتر بدانید<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">‏توقف استفاده در برنامه‌های Android</translation>
 <translation id="42126664696688958">صادر کردن</translation>
 <translation id="42137655013211669">سرور، دسترسی به این منبع را ممنوع کرد.</translation>
 <translation id="4217571870635786043">املا</translation>
 <translation id="4219558185499589032">مشت‌زنی</translation>
 <translation id="4220648711404560261">خطایی درحین فعال‌سازی روی داد.</translation>
 <translation id="4225397296022057997">در همه سایت‌ها</translation>
+<translation id="4227605727325220318">‏افزودن تلفن Android جدید</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{این افزونه مجاز نیست}one{برخی افزونه‌ها مجاز نیستند}other{برخی افزونه‌ها مجاز نیستند}}</translation>
 <translation id="4231095370974836764">‏برنامه‌ها و بازی‌ها را از Google Play در <ph name="DEVICE_TYPE" /> نصب کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
@@ -4729,6 +4736,7 @@
 <translation id="5862109781435984885">نمایش ابزار قلم در قفسه</translation>
 <translation id="5862319196656206789">راه‌اندازی دستگاه‌های متصل</translation>
 <translation id="5863445608433396414">فعال کردن ویژگی‌های رفع اشکال</translation>
+<translation id="5864147196375746035">ارسال محتوا به دستگاه تحت‌مدیریت</translation>
 <translation id="5864195618110239517">استفاده از اتصال محدود</translation>
 <translation id="5864754048328252126">کنش راکد هنگام شارژ شدن</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> به‌زودی متوقف می‌شود</translation>
@@ -5298,6 +5306,7 @@
 <translation id="6455264371803474013">در سایت‌هایی خاص</translation>
 <translation id="6455894534188563617">پوشه &amp;جدید</translation>
 <translation id="645705751491738698">ادامه مسدودکردن جاوا اسکریپت</translation>
+<translation id="6458347417133445570">نمایش جزئیات مربوط به مجاز کردن همه کوکی‌ها</translation>
 <translation id="6458701200018867744">بارگذاری انجام نشد (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">استفاده از انتخاب برای یافتن</translation>
 <translation id="6459799433792303855">پنجره فعال به نمایشگر دیگری منتقل شد.</translation>
@@ -5908,6 +5917,7 @@
 <translation id="7086672505018440886">‏فایل‌های گزارش Chrome در بایگانی اضافه شود.</translation>
 <translation id="7088434364990739311">بررسی برای به‌روزرسانی شروع نشد (کد خطا <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">این دستگاه توسط سرپرست سیستم در وضعیت بدون دسترسی قرار گرفته است. برای فعال کردن آن جهت ثبت‌نام، لطفاً از سرپرستتان بخواهید که دستگاه را در وضعیت در حالت تعلیق قرار دهد.</translation>
+<translation id="7090160970140261931">‏می‌توانید حساب‌های بیشتری به <ph name="DEVICE_TYPE" /> اضافه کنید تا در وب‌سایت‌ها و برنامه‌های Android از آن‌ها استفاده شود. به‌علاوه می‌توانید کنترل کنید در برنامه‌های Android از کدام حساب‌ها استفاده شود.</translation>
 <translation id="7093220653036489319">پاسخ‌های سریع</translation>
 <translation id="7093416310351037609">برای حفظ ایمنی و امنیت داده‌ها، سازمان شما لازم می‌داند همه بارگیری‌های واجدشرایط در حساب <ph name="WEB_DRIVE" /> سازمانتان ذخیره شود.</translation>
 <translation id="7093434536568905704">GTK+‎</translation>
@@ -6728,6 +6738,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /></translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> می‌تواند <ph name="FILENAME" /> را مشاهده کند</translation>
 <translation id="7920482456679570420">واژه‌هایی را که نیازی به غلط‌گیری املا ندارند اضافه کنید</translation>
+<translation id="7922935920104868876">نمایش جزئیات مربوط به مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
 <translation id="7924358170328001543">خطا هنگام ارسال درگاه</translation>
 <translation id="7925108652071887026">داده‌های تکمیل خودکار</translation>
 <translation id="792514962475806987">میزان بزرگ‌نمایی متصل:</translation>
@@ -6892,6 +6903,7 @@
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8076835018653442223">سرپرستتان دسترسی به فایل‌های محلی موجود در دستگاهتان را غیرفعال کرده است</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">‏حساب‌های دردسترس برای استفاده در برنامه‌های Android</translation>
 <translation id="8081989000209387414">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شود؟</translation>
 <translation id="8082106343289440791">با «<ph name="DEVICE_NAME" />» مرتبط شود؟</translation>
 <translation id="8082390128630131497">‏غیرفعال کردن اشکال‌زدایی ADB (پل اشکال‌زدایی Android)، <ph name="DEVICE_TYPE" /> را به تنظیمات کارخانه بازنشانی می‌کند. همه حساب‌های کاربر و داده‌های محلی حذف می‌شوند.</translation>
@@ -6966,6 +6978,7 @@
 <translation id="8147900440966275470"><ph name="NUM" /> برگه پیدا شد</translation>
 <translation id="8148760431881541277">محدود کردن ورود به سیستم</translation>
 <translation id="8149564499626272569">‏به‌تأیید رساندن ازطریق تلفن با سیم USB</translation>
+<translation id="815114315010033526">درعوض، از رمزینه پاسخ‌سریع استفاده شود</translation>
 <translation id="8151638057146502721">پیکربندی</translation>
 <translation id="8154790740888707867">فایلی وجود ندارد</translation>
 <translation id="8154912474061769055">ممکن است ویژگی‌های بسیاری از سایت‌ها کار نکند</translation>
@@ -6991,6 +7004,7 @@
 <translation id="8176332201990304395">صورتی و سفید</translation>
 <translation id="8177196903785554304">جزئیات شبکه</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
+<translation id="8179188928355984576">‏در برنامه‌های Android استفاده نمی‌شود</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8180786512391440389">«<ph name="EXTENSION" />» می‌تواند تصاویر، ویدئوها و فایل‌های صوتی را در مکان‌های انتخاب شده بخواند یا حذف کند.</translation>
 <translation id="8181215761849004992">نمی‌توان به دامنه وصل شد. حسابتان را بررسی کنید تا ببینید آیا دسترسی‌های کافی برای اضافه کردن دستگاه دارید.</translation>
@@ -7150,6 +7164,7 @@
 <translation id="8342861492835240085">انتخاب مجموعه</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="834785183489258869">در «حالت ناشناس»، سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
+<translation id="8349499562373871073">‏می‌توانید یکی از حساب‌های موجود را برای استفاده در برنامه‌های Android انتخاب کنید یا «حساب Google» جدیدی اضافه کنید. وقتی به سیستم یکی از برنامه‌های Android وارد شدید، می‌توانید از حسابتان در برنامه‌های Android دیگر نیز استفاده کنید. در <ph name="LINK_BEGIN" />تنظیمات &gt; حساب‌ها<ph name="LINK_END" /> می‌توانید دسترسی برنامه‌های Android را تغییر دهید.</translation>
 <translation id="8350789879725387295">ابزارهای قلم در قفسه</translation>
 <translation id="8351316842353540018">‏نمایش همیشگی گزینه‌های a11y</translation>
 <translation id="8351419472474436977">این برنامه افزودنی کنترل تنظیمات پروکسی شما را در اختیار گرفته است یعنی می‌تواند هر چیزی را در که حالت آنلاین انجام می‌دهید تغییر دهد، خراب کند یا استراق سمع کند. اگر مطمئن نیستید چرا این تغییر اتفاق افتاده، احتمالاً این برنامه را نمی‌خواهید.</translation>

@@ -480,15 +480,6 @@
 <translation id="1574258262373444557">不採用 <ph name="AES_KL_NAME" /> 做為加密使用者儲存空間的加密演算法 (如果支援)</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
-<translation id="1587042984081085960">這項政策可讓管理員指定頁面是否能在關閉時傳送同步 XHR 要求。
-
-      如果將這項政策設為啟用，頁面可以在關閉時傳送同步 XHR 要求。
-
-      如果將這項政策設為停用或不予設定，則頁面無法在關閉時傳送同步 XHR 要求。
-
-     這項政策將在 Chrome 第 93 版中移除。
-
-      請參閱 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="1587585749332985896">禁止使用無頭模式</translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
 <translation id="1597684038583138808">啟用快速解答的定義功能</translation>

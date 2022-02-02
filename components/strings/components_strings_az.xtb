@@ -1972,6 +1972,7 @@
 <translation id="7334320624316649418">&amp;Yenidən yerbəyer edin</translation>
 <translation id="7335157162773372339">Saytlar kameranızdan istifadə üçün icazə tələb edə bilər</translation>
 <translation id="7337248890521463931">Daha çox sətir göstərin</translation>
+<translation id="7337418456231055214">Virtual kart nömrəsi daxil edilməyib? Kopyalamaq üçün kart məlumatlarını tıklayın. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Platformanızda əlçatan deyil.</translation>
 <translation id="733923710415886693">Serverin sertifikatı Sertifikat Şəffaflığı vasitəsi ilə aşkarlanmayıb.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -2434,6 +2435,7 @@
 <translation id="883848425547221593">Digər Əlfəcinlər</translation>
 <translation id="884264119367021077">Göndərmə ünvanı</translation>
 <translation id="884923133447025588">Ləğv etmə mexanizmi tapılmadı.</translation>
+<translation id="8849262850971482943">Əlavə təhlükəsizlik üçün virtual kartınızdan istifadə edin</translation>
 <translation id="885730110891505394">Google ilə paylaşılır</translation>
 <translation id="8858065207712248076">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chrome <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parolunuzu sıfırlamağı tövsiyə edir.</translation>
 <translation id="885906927438988819">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>

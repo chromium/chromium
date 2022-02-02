@@ -480,15 +480,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="1574258262373444557">Kullanıcı depolama alanı şifrelemesi için şifreleme algoritması olarak <ph name="AES_KL_NAME" /> kullanma</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Bağlayıcı için yapılandırma politikası</translation>
 <translation id="1583248206450240930">Varsayılan olarak <ph name="PRODUCT_FRAME_NAME" /> ürününü kullan</translation>
-<translation id="1587042984081085960">Bu politika, bir yöneticinin sayfa kapatma işlemi sırasında bir sayfanın eş zamanlı XHR istekleri gönderebileceğini belirtmesini sağlar.
-
-      Bu politika, etkin olarak ayarlandığında sayfa kapatma işlemi sırasında sayfaların eş zamanlı XHR istekleri göndermelerine izin verilir.
-
-      Bu politika, devre dışı olarak ayarlanırsa veya ayarlanmadan bırakılırsa sayfa kapatma işlemi sırasında sayfaların eş zamanlı XHR istekleri göndermelerine izin verilmez.
-
-      Bu politika, Chrome 93 sürümünde kaldırılacaktır.
-
-      https://www.chromestatus.com/feature/4664843055398912 adresine bakın.</translation>
 <translation id="1587585749332985896">Gözetimsiz Mod'un kullanımına izin verme</translation>
 <translation id="1588240398285670601">Tarayıcı Ayarları</translation>
 <translation id="1597684038583138808">Bil Bakalım Tanımını Etkinleştir</translation>

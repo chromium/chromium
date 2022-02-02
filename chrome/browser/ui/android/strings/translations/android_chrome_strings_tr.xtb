@@ -290,7 +290,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Ses dosyası}other{# Ses dosyası}}</translation>
 <translation id="265156376773362237">Standart önceden yükleme</translation>
 <translation id="2656405586795711023">Web uygulamaları</translation>
-<translation id="2689830683995595741">Chrome'u kullanarak <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve Chrome OS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz. <ph name="BEGIN_LINK3" />Family Link ile Yönetilen Google Hesapları İçin Gizlilik Uyarısı<ph name="END_LINK3" /> da geçerlidir.</translation>
 <translation id="2702516483241149200">Yeni: bu metne kaydıran bir bağlantı paylaşın</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2707726405694321444">Sayfayı yenile</translation>
@@ -626,7 +625,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> seçenek daha}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> seçenek daha}}</translation>
 <translation id="4696983787092045100">Cihazlarınıza mesaj gönderin</translation>
 <translation id="4699172675775169585">Önbelleğe alınan resimler ve dosyalar</translation>
-<translation id="471759387343966120">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" /> ve <ph name="BEGIN_PRIVACY_LINK" />Gizlilik Politikası<ph name="END_PRIVACY_LINK" />'nı kabul etmiş olursunuz.\nChrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_UMA_LINK" />Yönet<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Çevirmeyi öner</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> uygulamasında aç</translation>
 <translation id="4720982865791209136">Chrome'u daha iyi hale getirmeye yardımcı olun. <ph name="BEGIN_LINK" />Ankete katıl<ph name="END_LINK" />.</translation>
@@ -909,7 +907,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6277522088822131679">Sayfa yazdırılırken bir sorun oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="6277722725779679269">Fiyat takibi özelliği güncellenemedi</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6292420053234093573">Chrome'u kullanarak <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve Chrome OS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz.</translation>
 <translation id="6294610283659775533">Aynı Google Hesabında oturum açmış olan cihazlar arasında sekmeleri gönderebilirsiniz</translation>
 <translation id="6297765934698848803">Cihazınızı yöneten kuruluş, kameranızı kapattı.</translation>
 <translation id="6301525844455696527">Okuma listenizde geride kalmayın</translation>

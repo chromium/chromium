@@ -481,15 +481,6 @@
 <translation id="1574258262373444557">不使用“<ph name="AES_KL_NAME" />”作为加密算法进行用户存储加密</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">默认情况下使用“<ph name="PRODUCT_FRAME_NAME" />”</translation>
-<translation id="1587042984081085960">借助此政策，管理员可以指定页面能否在关闭过程中发送同步 XHR 请求。
-
-      如果此政策已启用，页面便能够在关闭过程中发送同步 XHR 请求。
-
-      如果此政策已停用或未设置，页面将无法在关闭过程中发送同步 XHR 请求。
-
-      在 Chrome 93 中，此政策将被移除。
-
-      请参阅 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="1587585749332985896">不允许使用无头模式</translation>
 <translation id="1588240398285670601">浏览器设置</translation>
 <translation id="1597684038583138808">启用快速解答定义功能</translation>

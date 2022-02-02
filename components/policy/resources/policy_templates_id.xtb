@@ -480,15 +480,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1574258262373444557">Jangan gunakan <ph name="AES_KL_NAME" /> sebagai algoritme enkripsi untuk enkripsi penyimpanan pengguna</translation>
 <translation id="1575015449587326319">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileDownloaded</translation>
 <translation id="1583248206450240930">Gunakan <ph name="PRODUCT_FRAME_NAME" /> jika tidak diubah</translation>
-<translation id="1587042984081085960">Kebijakan ini memungkinkan admin menentukan bahwa halaman dapat mengirimkan permintaan XHR sinkron selama penutupan halaman.
-
-      Jika kebijakan disetel ke aktif, halaman akan diizinkan untuk mengirim permintaan XHR sinkron selama penutupan halaman.
-
-      Jika kebijakan disetel ke nonaktif atau tidak disetel, halaman tidak diizinkan untuk mengirim permintaan XHR sinkron selama penutupan halaman.
-
-      Kebijakan ini akan dihapus di Chrome 93.
-
-      Buka https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Jangan izinkan penggunaan Mode Headless</translation>
 <translation id="1588240398285670601">Setelan Browser</translation>
 <translation id="1597684038583138808">Aktifkan Definisi Jawaban Instan</translation>

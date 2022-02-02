@@ -1895,6 +1895,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="287205682142673348">Prosljeđ. priklj.</translation>
 <translation id="287286579981869940">Dodaj davatelja usluge <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Isključi</translation>
+<translation id="2873995907777332853">Prikaži pojedinosti o blokiranju svih kolačića</translation>
 <translation id="2874939134665556319">Prethodna pjesma</translation>
 <translation id="2875698561019555027">(Chromeove stranice pogrešaka)</translation>
 <translation id="2876336351874743617">Drugi prst</translation>
@@ -2198,6 +2199,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3189187154924005138">Veliki pokazivač</translation>
 <translation id="3190558889382726167">Zaporka spremljena</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
+<translation id="3194786596445804250">Prikaži pojedinosti o blokiranju kolačića trećih strana</translation>
 <translation id="3197453258332670132">Klikom desnom tipkom ili dugim pritiskom prikazuju se povezane informacije za tekst koji ste odabrali</translation>
 <translation id="3199127022143353223">Poslužitelji</translation>
 <translation id="3200061262156232574">U košarici</translation>
@@ -5288,6 +5290,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6455264371803474013">Na određenim web-lokacijama</translation>
 <translation id="6455894534188563617">&amp;Nova mapa</translation>
 <translation id="645705751491738698">Nastavi blokirati JavaScript</translation>
+<translation id="6458347417133445570">Prikaži pojedinosti o dopuštanju svih kolačića</translation>
 <translation id="6458701200018867744">Prijenos nije uspio (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Koristi odabir za traženje</translation>
 <translation id="6459799433792303855">Aktivni prozor premješten je na drugi zaslon.</translation>
@@ -6717,6 +6720,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> može pregledavati datoteku <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Dodajte riječi koje želite preskočiti u provjeri pravopisa</translation>
+<translation id="7922935920104868876">Prikaži pojedinosti o blokiranju kolačića trećih strana u anonimnom načinu</translation>
 <translation id="7924358170328001543">Pogreška prilikom prosljeđivanja priključka</translation>
 <translation id="7925108652071887026">Podaci automatskog popunjavanja</translation>
 <translation id="792514962475806987">Razina zumiranja za usidreno povećalo:</translation>
@@ -6881,6 +6885,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8076835018653442223">Pristup lokalnim datotekama na vašem uređaju onemogućio je administrator</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Računi dostupni za upotrebu s Android aplikacijama</translation>
 <translation id="8081989000209387414">Onemogućiti ADB otklanjanje pogrešaka?</translation>
 <translation id="8082106343289440791">Upariti s uređajem "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Onemogućivanje ADB otklanjanja pogrešaka vratit će uređaj <ph name="DEVICE_TYPE" /> na tvorničke postavke. Izbrisat će se svi korisnički računi i lokalni podaci.</translation>
@@ -7139,6 +7144,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8342861492835240085">Odaberite zbirku</translation>
 <translation id="8347227221149377169">Zadaci ispisa</translation>
 <translation id="834785183489258869">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama možda neće funkcionirati.</translation>
+<translation id="8349499562373871073">Možete odabrati postojeći račun za upotrebu s Android aplikacijama ili dodati novi Google račun. Kada se prijavite na Android aplikaciju, vaš se račun može upotrebljavati s drugim Android aplikacijama. Možete promijeniti pristup Android aplikacijama putem opcije <ph name="LINK_BEGIN" />Postavke &gt; Računi<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Alati pisaljke na traci</translation>
 <translation id="8351316842353540018">Uvijek prikaži opcije pristupačnosti</translation>
 <translation id="8351419472474436977">To proširenje preuzelo je kontrolu nad vašim postavkama proxyja, a to znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni kako je došlo do te promjene, vjerojatno je ne želite.</translation>

@@ -482,15 +482,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> nicht als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
 <translation id="1583248206450240930">Standardmäßig <ph name="PRODUCT_FRAME_NAME" /> verwenden</translation>
-<translation id="1587042984081085960">Mit dieser Richtlinie kann ein Administrator festlegen, ob eine Seite beim Schließen eine synchrone XHR-Anfrage senden darf.
-
-      Wenn die Richtlinie aktiviert ist, dürfen Seiten beim Schließen synchrone XHR-Anfragen senden.
-
-      Wenn sie deaktiviert oder nicht konfiguriert ist, dürfen sie beim Schließen keine synchronen XHR-Anfragen senden.
-
-      Diese Richtlinie wird in Chrome 93 entfernt.
-
-      Siehe https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Verwendung des monitorlosen Modus nicht erlauben</translation>
 <translation id="1588240398285670601">Browsereinstellungen</translation>
 <translation id="1597684038583138808">Definition über „Schnellinfo“ aktivieren</translation>

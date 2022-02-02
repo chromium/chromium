@@ -290,7 +290,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{ไฟล์เสียง # ไฟล์}other{ไฟล์เสียง # ไฟล์}}</translation>
 <translation id="265156376773362237">การโหลดล่วงหน้าแบบมาตรฐาน</translation>
 <translation id="2656405586795711023">เว็บแอป</translation>
-<translation id="2689830683995595741">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวสำหรับบัญชี Google ที่มีการจัดการด้วย Family Link<ph name="END_LINK3" /> จะมีผลใช้บังคับด้วย</translation>
 <translation id="2702516483241149200">ใหม่: แชร์ลิงก์ที่เลื่อนมายังข้อความนี้</translation>
 <translation id="2704606927547763573">คัดลอกแล้ว</translation>
 <translation id="2707726405694321444">รีเฟรชหน้า</translation>
@@ -626,7 +625,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}}</translation>
 <translation id="4696983787092045100">ส่งข้อความไปยังอุปกรณ์ของคุณ</translation>
 <translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
-<translation id="471759387343966120">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_TOS_LINK" />และ<ph name="BEGIN_PRIVACY_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_PRIVACY_LINK" />\nChrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_UMA_LINK" />จัดการ<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">เสนอการแปล</translation>
 <translation id="4720023427747327413">เปิดใน <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">ช่วยปรับปรุง Chrome ด้วยการ<ph name="BEGIN_LINK" />ตอบแบบสำรวจ<ph name="END_LINK" /></translation>
@@ -909,7 +907,6 @@
 <translation id="6277522088822131679">เกิดปัญหาในการพิมพ์หน้านี้ โปรดลองอีกครั้ง</translation>
 <translation id="6277722725779679269">อัปเดตการติดตามราคาไม่ได้</translation>
 <translation id="6278428485366576908">ธีม</translation>
-<translation id="6292420053234093573">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="6294610283659775533">คุณสามารถส่งแท็บระหว่างอุปกรณ์ที่ลงชื่อเข้าใช้บัญชี Google เดียวกัน</translation>
 <translation id="6297765934698848803">องค์กรที่จัดการอุปกรณ์ของคุณปิดกล้องไว้</translation>
 <translation id="6301525844455696527">อ่านเรื่องรออ่านต่อ</translation>

@@ -386,6 +386,7 @@
 <translation id="1396259464226642517">Ийм үр дүнг тооцоолоогүй байсан уу? <ph name="BEGIN_LINK" />Санал хүсэлт илгээх<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Таны оруулсан хэрэглэгчийн нэр, нууц үг таарахгүй байна</translation>
 <translation id="1397500194120344683">Боломжтой төхөөрөмжүүд алга. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Та эдгээр төхөөрөмж дээр Chrome-д нэвтэрсэн тул тэдгээрийг аюулгүй байдлын түлхүүрээр ашиглах боломжтой.</translation>
 <translation id="1398853756734560583">Хэмжээг ихэсгэх</translation>
 <translation id="139911022479327130">Утасныхаа түгжээг тайлж, өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="1401308693935339022">Байршлыг ашиглана уу. Байршлын зөвшөөрөлтэй аппууд болон үйлчилгээнүүдэд энэ төхөөрөмжийн байршлыг ашиглахыг зөвшөөрнө үү. Google нь байршлын нарийвчлал болон байршилд тулгуурласан үйлчилгээг сайжруулахын тулд байршлын өгөгдлийг үе үе цуглуулж, энэ өгөгдлийг нэргүй байдлаар ашиглаж болзошгүй.</translation>
@@ -1176,6 +1177,7 @@
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр 1 сэлгүүр</translation>
+<translation id="2165102982098084499">Та эдгээр төхөөрөмжийг QR кодыг скан хийж холбосон.</translation>
 <translation id="2165177462441582039">Тодруулгыг зүйл бүрд хэр удаан байлгахыг сонгоно уу</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">Ямар ч байсан нэвтэр</translation>
@@ -5697,6 +5699,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Прокси тохиргоо...</translation>
 <translation id="6860427144121307915">Цонхонд нээх</translation>
+<translation id="6863496016067551393">Бүх өргөтгөлийг зөвшөөрсөн</translation>
 <translation id="686366188661646310">Нууц үгийг устгах уу?</translation>
 <translation id="6865313869410766144">Autofill дээрх мэдээлэл</translation>
 <translation id="6865598234501509159">Хуудас <ph name="LANGUAGE" /> хэл дээр биш байна</translation>
@@ -5726,6 +5729,7 @@
 <translation id="6900532703269623216">Сайжруулсан хамгаалалт</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />-г шинэчлэхийн тулд дахин нэвтэрнэ үү</translation>
 <translation id="6900654715912436255">Та энэ хайлтын системийг устгахдаа итгэлтэй байна уу?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Урьдчилан үзэх дуу хоолой</translation>
 <translation id="6902336033320348843">Хэсгийг дэмжээгүй байна: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Домайнд төхөөрөмж нэгтгэх</translation>
@@ -7375,6 +7379,7 @@
 <translation id="8610103157987623234">Формат буруу байна. Дахин оролдоно уу</translation>
 <translation id="8611682088849615761">MIDI төхөөрөмжүүдийг бүрэн удирдахыг нь энэ сайтад үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="8613164732773110792">Зөвхөн жижиг тэмдэгт, тоо, доогуур зураас эсвэл дундуур зураас</translation>
+<translation id="8613645710357126807">Өргөтгөл ашиглахыг зөвшөөрдөггүй</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> аюулгүй байдлын шалгалт хийхэд хэт том байна. Та 50 МБ хүртэлх хэмжээтэй файлуудыг нээх боломжтой.</translation>
 <translation id="8615618338313291042">Incognito апп: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />-г харилцагчид руугаа нэмэх</translation>
