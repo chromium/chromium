@@ -13,7 +13,7 @@ SOCKET_ADDRESS = '\0chromium_build_server_socket'
 BUILD_SERVER_ENV_VARIABLE = 'INVOKED_BY_BUILD_SERVER'
 
 
-def MaybeRunCommand(name, argv, stamp_file, force):
+def MaybeRunCommand(name, argv, stamp_file):
   """Returns True if the command was successfully sent to the build server."""
 
   # When the build server runs a command, it sets this environment variable.
@@ -36,12 +36,6 @@ def MaybeRunCommand(name, argv, stamp_file, force):
       # [Errno 111] Connection refused. Either the server has not been started
       #             or the server is not currently accepting new connections.
       if e.errno == 111:
-        if force:
-          raise RuntimeError(
-              '\n\nBuild server is not running and '
-              'android_static_analysis="build_server" is set.\nPlease run '
-              'this command in a separate terminal:\n\n'
-              '$ build/android/fast_local_dev_server.py\n\n') from None
         return False
       raise e
   return True

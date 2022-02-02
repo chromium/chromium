@@ -24,4 +24,3 @@ javac_output_processor.py
 turbine.py
 util/__init__.py
 util/build_utils.py
-util/server_utils.py
