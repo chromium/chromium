@@ -444,6 +444,10 @@ float GM2TabStyle::GetZValue() const {
     sort_value += 4.f;
   if (tab_->mouse_hovered())
     sort_value += 2.f;
+
+  DCHECK_GE(sort_value, 0.0f);
+  DCHECK_LE(sort_value, TabStyle::kMaximumZValue);
+
   return sort_value;
 }
 

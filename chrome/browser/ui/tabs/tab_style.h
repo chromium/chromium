@@ -108,7 +108,8 @@ class TabStyle {
   virtual gfx::Insets GetContentsInsets() const = 0;
 
   // Returns the z-value of the tab, which should be used to paint them in
-  // ascending order.
+  // ascending order. Return values are in the range (0,
+  // TabStyle::GetMaximumZValue()).
   virtual float GetZValue() const = 0;
 
   // Derives and returns colors for the tab. See TabColors, above.
@@ -161,6 +162,11 @@ class TabStyle {
 
   // Returns the radius of the outer corners of the tab shape.
   static int GetCornerRadius();
+
+  // The largest valid value of TabStyle::GetZValue(). Currently,
+  // GM2TabStyle::GetZValue is the only implementation, and it can't return
+  // values larger than 7.
+  static constexpr float kMaximumZValue = 7.0f;
 
  protected:
   // Avoid implicitly-deleted constructor.

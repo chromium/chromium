@@ -55,6 +55,13 @@ bool IsViewClass(View* view) {
   return !!child;
 }
 
+template <typename V>
+V* AsViewClass(View* view) {
+  if (!IsViewClass<V>(view))
+    return nullptr;
+  return static_cast<V*>(view);
+}
+
 VIEWS_EXPORT void PrintViewHierarchy(View* view,
                                      bool verbose = false,
                                      int depth = -1);

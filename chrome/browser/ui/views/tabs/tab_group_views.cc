@@ -29,6 +29,7 @@ TabGroupViews::TabGroupViews(TabStrip* tab_strip,
       std::make_unique<TabGroupUnderline>(this, group_));
   highlight_ = tab_strip_->AddChildView(
       std::make_unique<TabGroupHighlight>(this, group_));
+  highlight_->SetVisible(false);
 }
 
 TabGroupViews::~TabGroupViews() {

@@ -264,6 +264,91 @@ class TabScrollingAnimation : public gfx::LinearAnimation,
   const gfx::Rect end_visible_rect_;
 };
 
+// A class that calculates a z-value for a TabStrip child view (one of a tab, a
+// tab group header, a tab group underline, or a tab group highlight). Can be
+// compared with other ZOrderableTabStripElements to determine paint order of
+// their associated views.
+class ZOrderableTabStripElement {
+ public:
+  ZOrderableTabStripElement(views::View* const child,
+                            absl::optional<const TabGroupUnderline* const>
+                                dragging_tabs_current_group_underline)
+      : child_(child),
+        z_value_(
+            CalculateZValue(child, dragging_tabs_current_group_underline)) {}
+
+  bool operator<(const ZOrderableTabStripElement& rhs) const {
+    return z_value_ < rhs.z_value_;
+  }
+
+  views::View* view() const { return child_; }
+
+ private:
+  // Determines the 'height' of |child|, which should be used to determine the
+  // paint order of TabStrip's children.  Larger z-values should be painted on
+  // top of smaller ones.
+  static float CalculateZValue(views::View* child,
+                               absl::optional<const TabGroupUnderline* const>
+                                   dragging_tabs_current_group_underline) {
+    Tab* tab = views::AsViewClass<Tab>(child);
+    TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(child);
+    TabGroupUnderline* underline = views::AsViewClass<TabGroupUnderline>(child);
+    TabGroupHighlight* highlight = views::AsViewClass<TabGroupHighlight>(child);
+    DCHECK_EQ(1, !!tab + !!header + !!underline + !!highlight);
+
+    // Construct a bitfield that encodes |child|'s z-value. Higher-order bits
+    // encode more important properties - see usage below for details on each.
+    // The lowest-order |num_bits_reserved_for_tab_style_z_value| bits are
+    // reserved for the factors considered by TabStyle, e.g. selection and hover
+    // state.
+    constexpr int num_bits_reserved_for_tab_style_z_value =
+        base::bits::Log2Ceiling(static_cast<int>(TabStyle::kMaximumZValue) + 1);
+    enum ZValue {
+      kActiveTab = (1u << (num_bits_reserved_for_tab_style_z_value + 4)),
+      kDraggedHeader = (1u << (num_bits_reserved_for_tab_style_z_value + 3)),
+      kDragRelevantUnderline =
+          (1u << (num_bits_reserved_for_tab_style_z_value + 2)),
+      kDraggedTab = (1u << (num_bits_reserved_for_tab_style_z_value + 1)),
+      kGroupView = (1u << num_bits_reserved_for_tab_style_z_value)
+    };
+
+    unsigned int z_value = 0;
+
+    // The active tab is always on top.
+    if (tab && tab->IsActive())
+      z_value |= kActiveTab;
+
+    // If we're dragging a header, that is painted above non-active tabs.
+    if (header && header->dragging())
+      z_value |= kDraggedHeader;
+
+    // If we're dragging tabs into a group, or are dragging a group, the
+    // underline for that group is painted above non-active dragged tabs.
+    if (underline && dragging_tabs_current_group_underline.has_value() &&
+        underline == dragging_tabs_current_group_underline.value())
+      z_value |= kDragRelevantUnderline;
+
+    // Dragged tabs are painted above anything that isn't part of the drag.
+    if (tab && tab->dragging())
+      z_value |= kDraggedTab;
+
+    // Group headers, highlights and underlines are painted above non-active,
+    // non-dragged tabs. Note that a group highlight is only visible when the
+    // associated group is being dragged in a header drag.
+    if (header || underline || highlight)
+      z_value |= kGroupView;
+
+    // The remaining (non-active, non-dragged) tabs are painted last. They are
+    // ordered by their selected or hovered state, which is animated and thus
+    // real-valued.
+    const float tab_style_z_value = tab ? tab->tab_style()->GetZValue() : 0.0f;
+    return z_value + tab_style_z_value;
+  }
+
+  views::View* child_;
+  float z_value_;
+};  // ZOrderableTabStripElement
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -633,6 +718,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
         DCHECK_NE(TabStripModel::kNoTab, tab_data_index);
         view->SetBoundsRect(ideal_bounds(tab_data_index));
       }
+    }
+
+    // If this is a header drag, start painting the group highlight.
+    TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(views[0]);
+    if (header) {
+      tab_strip_->group_views_[header->group().value()]
+          ->highlight()
+          ->SetVisible(true);
     }
 
     tab_strip_->SetTabSlotVisibility();
@@ -2063,106 +2156,42 @@ void TabStrip::Layout() {
 }
 
 void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
-  // The view order doesn't match the paint order (layout_helper_ contains the
-  // view ordering).
-  bool is_dragging = false;
-  Tab* active_tab = nullptr;
-  std::vector<Tab*> tabs_dragging;
-  std::vector<Tab*> selected_and_hovered_tabs;
-
-  // When background tab shapes are visible, as for hovered or selected tabs,
-  // the paint order must be handled carefully to avoid Z-order errors, so
-  // this code defers drawing such tabs until later.
-  const auto paint_or_add_to_tabs = [&paint_info,
-                                     &selected_and_hovered_tabs](Tab* tab) {
-    if (tab->tab_style()->GetZValue() > 0.0) {
-      selected_and_hovered_tabs.push_back(tab);
-    } else {
-      tab->Paint(paint_info);
-    }
-  };
-
-  std::vector<Tab*> all_tabs = layout_helper_->GetTabs();
-
-  for (int i = all_tabs.size() - 1; i >= 0; --i) {
-    Tab* tab = all_tabs[i];
-    if (tab->dragging()) {
-      is_dragging = true;
-      if (tab->IsActive()) {
-        active_tab = tab;
-      } else {
-        tabs_dragging.push_back(tab);
-      }
-    } else if (tab->IsActive()) {
-      active_tab = tab;
-    } else {
-      paint_or_add_to_tabs(tab);
-    }
-  }
-
-  std::stable_sort(selected_and_hovered_tabs.begin(),
-                   selected_and_hovered_tabs.end(), [](Tab* tab1, Tab* tab2) {
-                     return tab1->tab_style()->GetZValue() <
-                            tab2->tab_style()->GetZValue();
-                   });
-  for (Tab* tab : selected_and_hovered_tabs)
-    tab->Paint(paint_info);
-
-  // Keep track of the dragging group if dragging by the group header, or
-  // the current group if just dragging tabs into a group. At most one of these
-  // will have a value, since a drag is either a group drag or a tab drag.
-  absl::optional<tab_groups::TabGroupId> dragging_group = absl::nullopt;
-  absl::optional<tab_groups::TabGroupId> current_group = absl::nullopt;
-
-  // Paint group headers and underlines.
-  for (const auto& group_view_pair : group_views_) {
-    if (group_view_pair.second->header()->dragging()) {
-      // If the whole group is dragging, defer painting both the header and the
-      // underline, since they should appear above non-dragging tabs and groups.
-      // Instead, just track the dragging group.
-      dragging_group = group_view_pair.first;
-    } else {
-      group_view_pair.second->header()->Paint(paint_info);
-
-      if (tabs_dragging.size() > 0 &&
-          tabs_dragging[0]->group() == group_view_pair.first) {
-        // If tabs are being dragged into a group, defer painting just the
-        // underline, which should appear above non-active dragging tabs as well
-        // as all non-dragging tabs and groups. Instead, just track the group
-        // that the tabs are being dragged into.
-        current_group = group_view_pair.first;
-      } else {
-        group_view_pair.second->underline()->Paint(paint_info);
+  // Groups that are being dragged by their header, or that contain the dragged
+  // tabs, need an adjusted z-value. Find that group, if it exists.
+  absl::optional<tab_groups::TabGroupId> dragging_tabs_current_group =
+      absl::nullopt;
+  TabDragController* drag_controller = drag_context_->GetDragController();
+  if (drag_controller) {
+    dragging_tabs_current_group = drag_controller->group();
+    if (!dragging_tabs_current_group.has_value()) {
+      for (const Tab* tab : layout_helper_->GetTabs()) {
+        if (tab->dragging()) {
+          dragging_tabs_current_group = tab->group();
+          break;
+        }
       }
     }
   }
 
-  // Always paint the active tab over all the inactive tabs.
-  if (active_tab && !is_dragging)
-    active_tab->Paint(paint_info);
+  absl::optional<const TabGroupUnderline*>
+      dragging_tabs_current_group_underline =
+          dragging_tabs_current_group.has_value()
+              ? absl::optional<const TabGroupUnderline*>(
+                    group_views_[dragging_tabs_current_group.value()]
+                        ->underline())
+              : absl::nullopt;
 
-  // If dragging a group, paint the group highlight and header above all
-  // non-dragging tabs and groups.
-  if (dragging_group.has_value()) {
-    group_views_[dragging_group.value()]->highlight()->Paint(paint_info);
-    group_views_[dragging_group.value()]->header()->Paint(paint_info);
-  }
+  std::vector<ZOrderableTabStripElement> orderable_children;
+  for (views::View* child : children())
+    orderable_children.emplace_back(child,
+                                    dragging_tabs_current_group_underline);
 
-  // Paint the dragged tabs.
-  for (size_t i = 0; i < tabs_dragging.size(); ++i)
-    tabs_dragging[i]->Paint(paint_info);
+  // Sort in non-descending order. Stable sort breaks z-value ties by index (for
+  // tabs).
+  std::stable_sort(orderable_children.begin(), orderable_children.end());
 
-  // If dragging a group, or dragging tabs into a group, paint the group
-  // underline above the dragging tabs. Otherwise, any non-active dragging tabs
-  // will not get an underline.
-  if (dragging_group.has_value())
-    group_views_[dragging_group.value()]->underline()->Paint(paint_info);
-  if (current_group.has_value())
-    group_views_[current_group.value()]->underline()->Paint(paint_info);
-
-  // If the active tab is being dragged, it goes last.
-  if (active_tab && is_dragging)
-    active_tab->Paint(paint_info);
+  for (const ZOrderableTabStripElement& child : orderable_children)
+    child.view()->Paint(paint_info);
 }
 
 gfx::Size TabStrip::GetMinimumSize() const {
@@ -2740,9 +2769,9 @@ void TabStrip::OnTabCloseAnimationCompleted(Tab* tab) {
 void TabStrip::StoppedDraggingView(TabSlotView* view, bool* is_first_view) {
   if (view &&
       view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader) {
-    // Ensure all tab group UI is repainted, especially the dragging highlight.
     view->set_dragging(false);
-    SchedulePaint();
+    // Disable the group highlight now that the drag is ended.
+    group_views_[view->group().value()]->highlight()->SetVisible(false);
     return;
   }
 
